@@ -118,16 +118,25 @@ export default function Home() {
     const smoothScrubLoop = () => {
       const video = videoRef.current;
       if (video && video.duration && !isNaN(video.duration)) {
-        // Smooth linear interpolation (lerp) with 0.08 factor as requested
-        currentTimeRef.current += (targetTimeRef.current - currentTimeRef.current) * 0.08;
+        // Calculate raw difference
+        const difference = targetTimeRef.current - currentTimeRef.current;
+
+        // Apply smooth interpolation (lerp factor of 0.06 as requested)
+        const lerpedStep = difference * 0.06;
+
+        // Limit the maximum frame time change to prevent aggressive jumping on fast scroll swipes
+        const maxStep = 0.15;
+        const clampedStep = Math.max(-maxStep, Math.min(maxStep, lerpedStep));
+
+        currentTimeRef.current += clampedStep;
 
         // Keep current time within bounds
         if (currentTimeRef.current < 0) currentTimeRef.current = 0;
         if (currentTimeRef.current > video.duration) currentTimeRef.current = video.duration;
 
-        // Throttled seeking to prevent micro-stutters and browser locks
+        // Perform seeks only if change exceeds the 0.03 threshold, and player isn't busy
         const delta = Math.abs(video.currentTime - currentTimeRef.current);
-        if (delta > 0.015 && !video.seeking && !isSeekingRef.current) {
+        if (delta > 0.03 && !video.seeking && !isSeekingRef.current) {
           isSeekingRef.current = true;
           try {
             video.currentTime = currentTimeRef.current;
@@ -173,19 +182,21 @@ export default function Home() {
     const video = videoRef.current;
     if (video) {
       video.pause();
-      video.currentTime = 0;
-      targetTimeRef.current = 0;
-      currentTimeRef.current = 0;
-
+      
       // Force recalculate scrollable range on metadata loaded
       const docHeight = document.documentElement.scrollHeight;
       const viewHeight = window.innerHeight;
       const maxScroll = docHeight - viewHeight;
       maxScrollRef.current = maxScroll > 0 ? maxScroll : 0;
       
+      // Instantly synchronize frame to current scroll position (e.g. on page refresh)
       const progress = maxScrollRef.current > 0 ? window.scrollY / maxScrollRef.current : 0;
       const clampedProgress = Math.max(0, Math.min(1, progress));
-      targetTimeRef.current = clampedProgress * video.duration;
+      const initialTargetTime = clampedProgress * video.duration;
+
+      targetTimeRef.current = initialTargetTime;
+      currentTimeRef.current = initialTargetTime;
+      video.currentTime = initialTargetTime;
     }
   };
 
@@ -245,64 +256,6 @@ export default function Home() {
   return (
     <div ref={homeRef} style={{ backgroundColor: 'transparent', position: 'relative' }}>
       
-      {/* Background Poster Fallback / Loading Wrapper */}
-      {videoPoster && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundImage: `url(${videoPoster})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            zIndex: -3,
-          }}
-        />
-      )}
-
-      <video
-        ref={videoRef}
-        muted
-        playsInline
-        preload="auto"
-        onLoadedMetadata={handleLoadedMetadata}
-        onError={() => setVideoPlayError(true)}
-        disablePictureInPicture
-        disableRemotePlayback
-        poster={videoPoster}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          objectPosition: 'center',
-          zIndex: -2,
-          willChange: 'transform',
-          transform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',
-          display: videoPlayError ? 'none' : 'block'
-        }}
-      >
-        {videoSrc && <source src={videoSrc} type="video/mp4" />}
-      </video>
-
-      {/* Dark Cover Overlay */}
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          background: 'rgba(20, 10, 5, 0.22)',
-          zIndex: -1,
-        }}
-      />
-
       {/* 1. CINEMATIC VIDEO HERO SECTION */}
       <section
         className="hero-section"
@@ -317,6 +270,63 @@ export default function Home() {
           justifyContent: 'center',
         }}
       >
+        {/* Background Poster Fallback / Loading Wrapper */}
+        {videoPoster && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundImage: `url(${videoPoster})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              zIndex: 0,
+            }}
+          />
+        )}
+
+        <video
+          ref={videoRef}
+          muted
+          playsInline
+          preload="auto"
+          onLoadedMetadata={handleLoadedMetadata}
+          onError={() => setVideoPlayError(true)}
+          disablePictureInPicture
+          disableRemotePlayback
+          poster={videoPoster}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center',
+            zIndex: 1,
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+            backfaceVisibility: 'hidden',
+            display: videoPlayError ? 'none' : 'block'
+          }}
+        >
+          {videoSrc && <source src={videoSrc} type="video/mp4" />}
+        </video>
+
+        {/* Dark Cover Overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(20, 10, 5, 0.22)',
+            zIndex: 2,
+          }}
+        />
         {/* Floating Transparent Content */}
         <div 
           className="container hero-content" 
