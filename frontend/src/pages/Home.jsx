@@ -22,8 +22,54 @@ export default function Home() {
 
   const videoRef = useRef(null);
 
+  // Video optimization states
+  const [videoPlayError, setVideoPlayError] = useState(false);
+  const [videoSrc, setVideoSrc] = useState('');
+  const [videoPoster, setVideoPoster] = useState('');
+
+  useEffect(() => {
+    const width = window.innerWidth;
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const isSlowConnection = connection && (connection.saveData || (connection.effectiveType && ['slow-2g', '2g', '3g'].includes(connection.effectiveType)));
+
+    if (isSlowConnection) {
+      // Extremely slow connection: directly disable video, fallback to poster
+      setVideoSrc('');
+      setVideoPlayError(true);
+    } else {
+      if (width <= 767) {
+        setVideoSrc("https://res.cloudinary.com/dmm8lfc3x/video/upload/c_scale,w_480,q_auto:eco,f_auto/v1786811749/milasty/videos/milasty-cookie.mp4");
+      } else if (width <= 1024) {
+        setVideoSrc("https://res.cloudinary.com/dmm8lfc3x/video/upload/c_scale,w_800,q_auto,f_auto/v1786811749/milasty/videos/milasty-cookie.mp4");
+      } else {
+        setVideoSrc("https://res.cloudinary.com/dmm8lfc3x/video/upload/q_auto,f_auto/v1786811749/milasty/videos/milasty-cookie.mp4");
+      }
+    }
+
+    if (width <= 767) {
+      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,c_scale,w_480,q_auto:eco/v1786811749/milasty/videos/milasty-cookie.jpg");
+    } else if (width <= 1024) {
+      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,c_scale,w_800,q_auto/v1786811749/milasty/videos/milasty-cookie.jpg");
+    } else {
+      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1786811749/milasty/videos/milasty-cookie.jpg");
+    }
+  }, []);
+
   // Silky-Smooth Scroll-Driven Video Scrubbing (Forward & Backward)
   useEffect(() => {
+    const isMobileTablet = window.innerWidth <= 1024;
+    if (isMobileTablet) {
+      // On mobile/tablet, make sure video auto-plays and loops naturally
+      const video = videoRef.current;
+      if (video) {
+        video.loop = true;
+        video.play().catch(err => {
+          console.log("Autoplay blocked or failed on mount", err);
+        });
+      }
+      return;
+    }
+
     let targetTime = 0;
     let currentTime = 0;
     let isSeeking = false;
@@ -83,10 +129,39 @@ export default function Home() {
   const handleLoadedMetadata = () => {
     const video = videoRef.current;
     if (video) {
-      video.pause(); // Pause auto-play so scroll drives forward/backward time
-      video.currentTime = 0;
+      const isMobileTablet = window.innerWidth <= 1024;
+      if (isMobileTablet) {
+        video.loop = true;
+        video.play().catch(err => {
+          console.log("Autoplay blocked or failed on loaded metadata", err);
+        });
+      } else {
+        video.pause(); // Pause auto-play so scroll drives forward/backward time
+        video.currentTime = 0;
+      }
     }
   };
+
+  // Mobile Menu state observer to pause/resume background video to optimize CPU/GPU cycles
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const video = videoRef.current;
+      if (!video) return;
+      
+      const isMenuOpen = document.querySelector('.mobile-menu-panel.open') !== null;
+      if (isMenuOpen) {
+        video.pause();
+      } else {
+        const isMobileTablet = window.innerWidth <= 1024;
+        if (isMobileTablet && !videoPlayError) {
+          video.play().catch(() => {});
+        }
+      }
+    });
+
+    observer.observe(document.body, { attributes: true, subtree: true, childList: true });
+    return () => observer.disconnect();
+  }, [videoPlayError]);
 
   const heroRef = useScrollReveal();
   const trustRef = useScrollReveal();
@@ -144,15 +219,36 @@ export default function Home() {
   return (
     <div style={{ backgroundColor: 'transparent', position: 'relative' }}>
       
+      {/* Background Poster Fallback / Loading Wrapper */}
+      {videoPoster && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundImage: `url(${videoPoster})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            zIndex: -3,
+          }}
+        />
+      )}
+
       {/* HTML5 BACKGROUND SCROLL VIDEO (Home Page Only) */}
       <video
         ref={videoRef}
+        autoPlay
         muted
+        loop
         playsInline
-        preload="auto"
+        preload="metadata"
         onLoadedMetadata={handleLoadedMetadata}
+        onError={() => setVideoPlayError(true)}
         disablePictureInPicture
         disableRemotePlayback
+        poster={videoPoster}
         style={{
           position: 'fixed',
           top: 0,
@@ -165,9 +261,10 @@ export default function Home() {
           willChange: 'transform',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
+          display: videoPlayError ? 'none' : 'block'
         }}
       >
-        <source src="https://res.cloudinary.com/dmm8lfc3x/video/upload/v1786811749/milasty/videos/milasty-cookie.mp4" type="video/mp4" />
+        {videoSrc && <source src={videoSrc} type="video/mp4" />}
       </video>
 
       {/* Dark Cover Overlay */}
