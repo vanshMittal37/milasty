@@ -21,6 +21,12 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0);
 
   const videoRef = useRef(null);
+  
+  // Scroll control tracking refs
+  const targetTimeRef = useRef(0);
+  const currentTimeRef = useRef(0);
+  const isSeekingRef = useRef(false);
+  const animationFrameRef = useRef(null);
 
   // Video optimization states
   const [videoPlayError, setVideoPlayError] = useState(false);
@@ -57,24 +63,6 @@ export default function Home() {
 
   // Silky-Smooth Scroll-Driven Video Scrubbing (Forward & Backward)
   useEffect(() => {
-    const isMobileTablet = window.innerWidth <= 1024;
-    if (isMobileTablet) {
-      // On mobile/tablet, make sure video auto-plays and loops naturally
-      const video = videoRef.current;
-      if (video) {
-        video.loop = true;
-        video.play().catch(err => {
-          console.log("Autoplay blocked or failed on mount", err);
-        });
-      }
-      return;
-    }
-
-    let targetTime = 0;
-    let currentTime = 0;
-    let isSeeking = false;
-    let animationFrameId;
-
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setScrollY(currentScrollY);
@@ -82,86 +70,70 @@ export default function Home() {
       const video = videoRef.current;
       if (!video) return;
 
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalHeight <= 0) return;
-
-      const scrollFraction = currentScrollY / totalHeight;
       const duration = video.duration;
+      if (!duration || isNaN(duration)) return;
 
-      if (duration && !isNaN(duration)) {
-        targetTime = Math.max(0, Math.min(duration, scrollFraction * duration));
+      // Determine responsive scroll range based on screen width
+      const width = window.innerWidth;
+      let scrollRange = window.innerHeight * 1.2; // Desktop: 120vh
+      if (width <= 767) {
+        scrollRange = window.innerHeight * 0.8; // Mobile: 80vh
+      } else if (width <= 1024) {
+        scrollRange = window.innerHeight * 1.0; // Tablet: 100vh
       }
+
+      // Calculate scroll fraction (constrained between 0 and 1)
+      const scrollFraction = Math.max(0, Math.min(1, currentScrollY / scrollRange));
+      
+      // Update target time ref
+      targetTimeRef.current = scrollFraction * duration;
     };
 
     const smoothScrubLoop = () => {
       const video = videoRef.current;
       if (video && video.duration && !isNaN(video.duration)) {
         // Smooth linear interpolation (lerp) for fluid transition
-        currentTime += (targetTime - currentTime) * 0.15;
+        currentTimeRef.current += (targetTimeRef.current - currentTimeRef.current) * 0.1;
 
-        // Prevent seek-lock / stutter by checking seeking state & delta
-        if (!video.seeking && !isSeeking && Math.abs(video.currentTime - currentTime) > 0.02) {
-          isSeeking = true;
+        // Keep current time within bounds
+        if (currentTimeRef.current < 0) currentTimeRef.current = 0;
+        if (currentTimeRef.current > video.duration) currentTimeRef.current = video.duration;
+
+        // Throttled seeking to prevent micro-stutters and browser locks
+        const delta = Math.abs(video.currentTime - currentTimeRef.current);
+        if (delta > 0.015 && !video.seeking && !isSeekingRef.current) {
+          isSeekingRef.current = true;
           try {
-            if ('fastSeek' in video) {
-              video.fastSeek(currentTime);
-            } else {
-              video.currentTime = currentTime;
-            }
+            video.currentTime = currentTimeRef.current;
           } catch (e) {
-            // fallback safe block
+            // safe fallback
           }
-          isSeeking = false;
+          isSeekingRef.current = false;
         }
       }
-      animationFrameId = requestAnimationFrame(smoothScrubLoop);
+      animationFrameRef.current = requestAnimationFrame(smoothScrubLoop);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    animationFrameId = requestAnimationFrame(smoothScrubLoop);
+    animationFrameRef.current = requestAnimationFrame(smoothScrubLoop);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
   }, []);
 
   const handleLoadedMetadata = () => {
     const video = videoRef.current;
     if (video) {
-      const isMobileTablet = window.innerWidth <= 1024;
-      if (isMobileTablet) {
-        video.loop = true;
-        video.play().catch(err => {
-          console.log("Autoplay blocked or failed on loaded metadata", err);
-        });
-      } else {
-        video.pause(); // Pause auto-play so scroll drives forward/backward time
-        video.currentTime = 0;
-      }
+      video.pause();
+      video.currentTime = 0;
+      targetTimeRef.current = 0;
+      currentTimeRef.current = 0;
     }
   };
-
-  // Mobile Menu state observer to pause/resume background video to optimize CPU/GPU cycles
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const video = videoRef.current;
-      if (!video) return;
-      
-      const isMenuOpen = document.querySelector('.mobile-menu-panel.open') !== null;
-      if (isMenuOpen) {
-        video.pause();
-      } else {
-        const isMobileTablet = window.innerWidth <= 1024;
-        if (isMobileTablet && !videoPlayError) {
-          video.play().catch(() => {});
-        }
-      }
-    });
-
-    observer.observe(document.body, { attributes: true, subtree: true, childList: true });
-    return () => observer.disconnect();
-  }, [videoPlayError]);
 
   const heroRef = useScrollReveal();
   const trustRef = useScrollReveal();
@@ -236,14 +208,11 @@ export default function Home() {
         />
       )}
 
-      {/* HTML5 BACKGROUND SCROLL VIDEO (Home Page Only) */}
       <video
         ref={videoRef}
-        autoPlay
         muted
-        loop
         playsInline
-        preload="metadata"
+        preload="auto"
         onLoadedMetadata={handleLoadedMetadata}
         onError={() => setVideoPlayError(true)}
         disablePictureInPicture
