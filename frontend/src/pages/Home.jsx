@@ -167,7 +167,7 @@ export default function Home() {
           backfaceVisibility: 'hidden',
         }}
       >
-        <source src="/videos/milasty-cookie.mp4" type="video/mp4" />
+        <source src="https://res.cloudinary.com/dmm8lfc3x/video/upload/v1786811749/milasty/videos/milasty-cookie.mp4" type="video/mp4" />
       </video>
 
       {/* Dark Cover Overlay */}
