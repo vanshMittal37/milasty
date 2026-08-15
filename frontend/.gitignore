@@ -32,3 +32,9 @@ build/
 *.sln
 *.sw?
 .DS_Store
+
+# Media / Video uploads
+*.mp4
+*.webm
+*.ogg
+
