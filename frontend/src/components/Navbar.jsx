@@ -88,7 +88,7 @@ export default function Navbar() {
           position: 'fixed',
           top: 0,
           left: 0,
-          width: '100vw',
+          width: '100%',
           height: '100vh',
           backgroundColor: 'rgba(26, 12, 5, 0.45)',
           backdropFilter: 'blur(4px)',
@@ -180,7 +180,7 @@ export default function Navbar() {
             </nav>
 
             {/* Action Dock - Right */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
               
               {/* Wishlist Link */}
               <Link 
@@ -431,6 +431,38 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            {/* Wishlist Link inside mobile menu */}
+            <Link 
+              to="/wishlist" 
+              onClick={() => setMobileMenuOpen(false)} 
+              style={{ 
+                fontSize: '1.05rem', 
+                fontWeight: location.pathname === '/wishlist' ? '700' : '500', 
+                color: location.pathname === '/wishlist' ? 'var(--primary-dark)' : 'var(--text-muted)',
+                padding: '0.75rem 0',
+                borderBottom: '1px solid var(--border-color)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <span>Wishlist</span>
+              {wishlistCount > 0 && (
+                <span 
+                  style={{ 
+                    backgroundColor: 'var(--accent-gold)', 
+                    color: 'var(--primary-dark)', 
+                    padding: '0.15rem 0.45rem', 
+                    borderRadius: '999px', 
+                    fontSize: '0.75rem', 
+                    fontWeight: '900' 
+                  }}
+                >
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
           </div>
 
           {/* Mobile Account / Auth links */}
