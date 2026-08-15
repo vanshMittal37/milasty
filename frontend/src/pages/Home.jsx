@@ -256,37 +256,25 @@ export default function Home() {
   return (
     <div ref={homeRef} style={{ backgroundColor: 'transparent', position: 'relative' }}>
       
-      {/* 1. CINEMATIC VIDEO HERO SECTION */}
-      <section
-        className="hero-section"
-        style={{
-          position: 'relative',
-          height: '92vh',
-          minHeight: '600px',
-          overflow: 'hidden',
-          backgroundColor: 'transparent',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {/* Background Poster Fallback / Loading Wrapper */}
-        {videoPoster && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              backgroundImage: `url(${videoPoster})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              zIndex: 0,
-            }}
-          />
-        )}
+      {/* Background Poster Fallback / Loading Wrapper */}
+      {videoPoster && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundImage: `url(${videoPoster})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            zIndex: 0,
+          }}
+        />
+      )}
 
+      {/* Video Background Layer */}
+      <div className="home-video-layer" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
         <video
           ref={videoRef}
           muted
@@ -298,14 +286,13 @@ export default function Home() {
           disableRemotePlayback
           poster={videoPoster}
           style={{
-            position: 'absolute',
+            position: 'fixed',
             top: 0,
             left: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            objectPosition: 'center',
-            zIndex: 1,
+            objectPosition: 'center center',
             willChange: 'transform',
             transform: 'translateZ(0)',
             backfaceVisibility: 'hidden',
@@ -314,19 +301,38 @@ export default function Home() {
         >
           {videoSrc && <source src={videoSrc} type="video/mp4" />}
         </video>
+      </div>
 
-        {/* Dark Cover Overlay */}
-        <div
+      {/* Dark Cover Overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(20, 10, 5, 0.20)',
+          zIndex: 2,
+        }}
+      />
+
+      {/* Home Content Layer */}
+      <div className="home-content" style={{ position: 'relative', zIndex: 3 }}>
+
+        {/* 1. CINEMATIC VIDEO HERO SECTION */}
+        <section
+          className="hero-section"
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'rgba(20, 10, 5, 0.22)',
-            zIndex: 2,
+            position: 'relative',
+            height: '92vh',
+            minHeight: '600px',
+            overflow: 'hidden',
+            backgroundColor: 'transparent',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
-        />
+        >
         {/* Floating Transparent Content */}
         <div 
           className="container hero-content" 
@@ -934,6 +940,7 @@ export default function Home() {
         </div>
       </section>
 
+      </div> {/* Close home-content */}
     </div>
   );
 }
