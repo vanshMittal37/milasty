@@ -9,6 +9,8 @@ export default function Footer() {
   return (
     <footer
       style={{
+        position: 'relative',
+        zIndex: 5,
         backgroundColor: isHome ? 'transparent' : '#241209',
         backdropFilter: isHome ? 'blur(20px)' : 'none',
         WebkitBackdropFilter: isHome ? 'blur(20px)' : 'none',
