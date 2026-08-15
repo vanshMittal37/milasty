@@ -27,6 +27,8 @@ export default function Home() {
   const currentTimeRef = useRef(0);
   const isSeekingRef = useRef(false);
   const animationFrameRef = useRef(null);
+  const maxScrollRef = useRef(0);
+  const homeRef = useRef(null);
 
   // Video optimization states
   const [videoPlayError, setVideoPlayError] = useState(false);
@@ -63,6 +65,20 @@ export default function Home() {
 
   // Silky-Smooth Scroll-Driven Video Scrubbing (Forward & Backward)
   useEffect(() => {
+    const updateScrollMetrics = () => {
+      const docHeight = document.documentElement.scrollHeight;
+      const viewHeight = window.innerHeight;
+      const maxScroll = docHeight - viewHeight;
+      maxScrollRef.current = maxScroll > 0 ? maxScroll : 0;
+      
+      const video = videoRef.current;
+      if (video && video.duration && !isNaN(video.duration)) {
+        const progress = maxScrollRef.current > 0 ? window.scrollY / maxScrollRef.current : 0;
+        const clampedProgress = Math.max(0, Math.min(1, progress));
+        targetTimeRef.current = clampedProgress * video.duration;
+      }
+    };
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setScrollY(currentScrollY);
@@ -73,27 +89,37 @@ export default function Home() {
       const duration = video.duration;
       if (!duration || isNaN(duration)) return;
 
-      // Determine responsive scroll range based on screen width
-      const width = window.innerWidth;
-      let scrollRange = window.innerHeight * 1.2; // Desktop: 120vh
-      if (width <= 767) {
-        scrollRange = window.innerHeight * 0.8; // Mobile: 80vh
-      } else if (width <= 1024) {
-        scrollRange = window.innerHeight * 1.0; // Tablet: 100vh
-      }
+      // Live recalculation on scroll to ensure absolute synchronization
+      const docHeight = document.documentElement.scrollHeight;
+      const viewHeight = window.innerHeight;
+      const maxScroll = docHeight - viewHeight;
+      const activeMaxScroll = maxScroll > 0 ? maxScroll : 0;
+      maxScrollRef.current = activeMaxScroll;
 
-      // Calculate scroll fraction (constrained between 0 and 1)
-      const scrollFraction = Math.max(0, Math.min(1, currentScrollY / scrollRange));
+      // Calculate progress mapped to entire page scrollable distance
+      const progress = activeMaxScroll > 0 ? currentScrollY / activeMaxScroll : 0;
+      const clampedProgress = Math.max(0, Math.min(1, progress));
       
       // Update target time ref
-      targetTimeRef.current = scrollFraction * duration;
+      targetTimeRef.current = clampedProgress * duration;
+
+      // Temporarily log scrubbing metrics for debugging/verification
+      // console.log({
+      //   scrollY: currentScrollY,
+      //   documentHeight: docHeight,
+      //   viewportHeight: viewHeight,
+      //   maxScroll: activeMaxScroll,
+      //   progress: clampedProgress,
+      //   videoDuration: duration,
+      //   targetTime: targetTimeRef.current
+      // });
     };
 
     const smoothScrubLoop = () => {
       const video = videoRef.current;
       if (video && video.duration && !isNaN(video.duration)) {
-        // Smooth linear interpolation (lerp) for fluid transition
-        currentTimeRef.current += (targetTimeRef.current - currentTimeRef.current) * 0.1;
+        // Smooth linear interpolation (lerp) with 0.08 factor as requested
+        currentTimeRef.current += (targetTimeRef.current - currentTimeRef.current) * 0.08;
 
         // Keep current time within bounds
         if (currentTimeRef.current < 0) currentTimeRef.current = 0;
@@ -114,11 +140,29 @@ export default function Home() {
       animationFrameRef.current = requestAnimationFrame(smoothScrubLoop);
     };
 
+    // Setup ResizeObserver to watch for Home page container size/height updates
+    const resizeObserver = new ResizeObserver(() => {
+      updateScrollMetrics();
+    });
+    if (homeRef.current) {
+      resizeObserver.observe(homeRef.current);
+    }
+
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', updateScrollMetrics, { passive: true });
+    window.addEventListener('load', updateScrollMetrics, { passive: true });
     animationFrameRef.current = requestAnimationFrame(smoothScrubLoop);
+
+    // Initial calculation
+    updateScrollMetrics();
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateScrollMetrics);
+      window.removeEventListener('load', updateScrollMetrics);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -132,6 +176,16 @@ export default function Home() {
       video.currentTime = 0;
       targetTimeRef.current = 0;
       currentTimeRef.current = 0;
+
+      // Force recalculate scrollable range on metadata loaded
+      const docHeight = document.documentElement.scrollHeight;
+      const viewHeight = window.innerHeight;
+      const maxScroll = docHeight - viewHeight;
+      maxScrollRef.current = maxScroll > 0 ? maxScroll : 0;
+      
+      const progress = maxScrollRef.current > 0 ? window.scrollY / maxScrollRef.current : 0;
+      const clampedProgress = Math.max(0, Math.min(1, progress));
+      targetTimeRef.current = clampedProgress * video.duration;
     }
   };
 
@@ -189,7 +243,7 @@ export default function Home() {
   const activeRitualProduct = ritualProducts[activeRitualIdx] || ritualProducts[0];
 
   return (
-    <div style={{ backgroundColor: 'transparent', position: 'relative' }}>
+    <div ref={homeRef} style={{ backgroundColor: 'transparent', position: 'relative' }}>
       
       {/* Background Poster Fallback / Loading Wrapper */}
       {videoPoster && (
