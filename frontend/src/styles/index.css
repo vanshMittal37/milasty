@@ -685,3 +685,144 @@ body, p, span, li, a {
   }
 }
 
+/* Premium Glassmorphic Cards & Borders for Home Page */
+.home-page .trust-card,
+.home-page .why-grid > div,
+.home-page .timeline-grid > div,
+.home-page .lab-container,
+.home-page .lab-comparison,
+.home-page .testimonial-card,
+.home-page .cta-card,
+.home-page .glass-card {
+  position: relative !important;
+  background: rgba(20, 12, 8, 0.18) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+  transition: all 250ms ease !important;
+}
+
+/* Specific radius overrides as per item 4 & 6 */
+.home-page .lab-container,
+.home-page .cta-card,
+.home-page .glass-card {
+  border-radius: 24px !important;
+}
+
+/* Hover effects for all cards on desktop as per item 10 */
+@media (min-width: 1025px) {
+  .home-page .trust-card:hover,
+  .home-page .why-grid > div:hover,
+  .home-page .timeline-grid > div:hover,
+  .home-page .lab-container:hover,
+  .home-page .lab-comparison:hover,
+  .home-page .testimonial-card:hover,
+  .home-page .cta-card:hover,
+  .home-page .glass-card:hover {
+    border: 1px solid rgba(218, 169, 61, 0.55) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+/* Responsive border opacities as per item 13 */
+@media (max-width: 1024px) {
+  .home-page .trust-card,
+  .home-page .why-grid > div,
+  .home-page .timeline-grid > div,
+  .home-page .lab-container,
+  .home-page .lab-comparison,
+  .home-page .testimonial-card,
+  .home-page .cta-card,
+  .home-page .glass-card {
+    border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .home-page .trust-card,
+  .home-page .why-grid > div,
+  .home-page .timeline-grid > div,
+  .home-page .lab-container,
+  .home-page .lab-comparison,
+  .home-page .testimonial-card,
+  .home-page .cta-card,
+  .home-page .glass-card {
+    border: 1px solid rgba(255, 255, 255, 0.26) !important;
+  }
+}
+
+/* Corner Decorative Lines as per item 5 */
+.home-page .trust-card::before,
+.home-page .why-grid > div::before,
+.home-page .timeline-grid > div::before,
+.home-page .lab-container::before,
+.home-page .lab-comparison::before,
+.home-page .testimonial-card::before,
+.home-page .cta-card::before,
+.home-page .glass-card::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 10px !important;
+  left: 10px !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-top: 1px solid rgba(218, 169, 61, 0.65) !important;
+  border-left: 1px solid rgba(218, 169, 61, 0.65) !important;
+  pointer-events: none !important;
+  transition: all 250ms ease !important;
+}
+
+.home-page .trust-card::after,
+.home-page .why-grid > div::after,
+.home-page .timeline-grid > div::after,
+.home-page .lab-container::after,
+.home-page .lab-comparison::after,
+.home-page .testimonial-card::after,
+.home-page .cta-card::after,
+.home-page .glass-card::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 10px !important;
+  right: 10px !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-bottom: 1px solid rgba(218, 169, 61, 0.65) !important;
+  border-right: 1px solid rgba(218, 169, 61, 0.65) !important;
+  pointer-events: none !important;
+  transition: all 250ms ease !important;
+}
+
+/* Micro-animations for corners on hover */
+@media (min-width: 1025px) {
+  .home-page .trust-card:hover::before,
+  .home-page .why-grid > div:hover::before,
+  .home-page .timeline-grid > div:hover::before,
+  .home-page .lab-container:hover::before,
+  .home-page .lab-comparison:hover::before,
+  .home-page .testimonial-card:hover::before,
+  .home-page .cta-card:hover::before,
+  .home-page .glass-card:hover::before {
+    top: 8px !important;
+    left: 8px !important;
+    border-top-color: rgba(218, 169, 61, 0.95) !important;
+    border-left-color: rgba(218, 169, 61, 0.95) !important;
+  }
+
+  .home-page .trust-card:hover::after,
+  .home-page .why-grid > div:hover::after,
+  .home-page .timeline-grid > div:hover::after,
+  .home-page .lab-container:hover::after,
+  .home-page .lab-comparison:hover::after,
+  .home-page .testimonial-card:hover::after,
+  .home-page .cta-card:hover::after,
+  .home-page .glass-card:hover::after {
+    bottom: 8px !important;
+    right: 8px !important;
+    border-bottom-color: rgba(218, 169, 61, 0.95) !important;
+    border-right-color: rgba(218, 169, 61, 0.95) !important;
+  }
+}
+

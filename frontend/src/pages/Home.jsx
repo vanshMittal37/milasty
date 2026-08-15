@@ -254,7 +254,7 @@ export default function Home() {
   const activeRitualProduct = ritualProducts[activeRitualIdx] || ritualProducts[0];
 
   return (
-    <div ref={homeRef} style={{ backgroundColor: 'transparent', position: 'relative' }}>
+    <div ref={homeRef} className="home-page" style={{ backgroundColor: 'transparent', position: 'relative' }}>
       
       {/* Background Poster Fallback / Loading Wrapper */}
       {videoPoster && (
