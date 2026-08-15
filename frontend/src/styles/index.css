@@ -278,3 +278,299 @@ button {
     transform: translateY(5px);
   }
 }
+
+/* ==========================================================================
+   GLOBAL RESPONSIVE OVERRIDES (MOBILE & TABLET SUPPORT)
+   ========================================================================== */
+
+/* 1. Global Reset & Overflows */
+html,
+body,
+#root {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Ensure no child component overflows */
+.container {
+  width: 100% !important;
+  max-width: 1240px !important;
+  padding: 0 1.25rem !important;
+}
+
+/* Table responsiveness utility */
+.table-responsive {
+  width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  margin-bottom: 1.5rem !important;
+}
+
+/* 2. Responsive Typography (Fluid sizes with clamp) */
+h1 {
+  font-size: clamp(32px, 9vw, 64px) !important;
+}
+h2 {
+  font-size: clamp(24px, 7vw, 42px) !important;
+}
+h3 {
+  font-size: clamp(18px, 5vw, 28px) !important;
+}
+body, p, span, li, a {
+  font-size: clamp(14px, 2vw, 17px);
+}
+
+/* ==========================================
+   TABLET & MOBILE SCREEN OVERRIDES (< 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  /* Spacing */
+  section {
+    padding: clamp(3rem, 8vw, 5rem) 0 !important;
+  }
+
+  /* Header & Navigation */
+  .announcement-bar {
+    font-size: clamp(10px, 3vw, 12px) !important;
+    line-height: 1.4 !important;
+    padding: 0.55rem 0.75rem !important;
+  }
+
+  .header-container {
+    padding: 0 1rem !important;
+    height: 60px !important;
+  }
+
+  .site-logo span {
+    font-size: clamp(1.2rem, 5.5vw, 1.45rem) !important;
+  }
+
+  .cart-button {
+    padding: 0.45rem 0.85rem !important;
+    font-size: 0.75rem !important;
+    gap: 0.3rem !important;
+  }
+
+  .cart-badge {
+    padding: 0.1rem 0.35rem !important;
+    font-size: 0.7rem !important;
+  }
+
+  .account-button {
+    gap: 0.25rem !important;
+  }
+
+  .account-button div {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Mobile menu drawer styling and placement */
+  .mobile-menu-panel {
+    left: 12px !important;
+    right: 12px !important;
+    width: calc(100% - 24px) !important;
+    max-width: 420px !important;
+    margin: 0 auto !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--border-color) !important;
+    padding: 1.25rem !important;
+    max-height: calc(100vh - 90px) !important;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    height: auto !important;
+    min-height: 520px !important;
+    padding: 5rem 0 3.5rem !important;
+  }
+
+  .hero-content {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .hero-heading {
+    font-size: clamp(30px, 9vw, 48px) !important;
+    line-height: 1.1 !important;
+    margin-bottom: 1.25rem !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+
+  .hero-subheading {
+    font-size: clamp(0.9rem, 3.5vw, 1.05rem) !important;
+    margin-bottom: 2rem !important;
+    padding: 0 0.5rem !important;
+  }
+
+  .hero-buttons {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.85rem !important;
+  }
+
+  .hero-buttons a, 
+  .hero-buttons button {
+    width: 100% !important;
+    max-width: 320px !important;
+    justify-content: center !important;
+    padding: 0.85rem 1.5rem !important;
+  }
+
+  /* Grids & Columns */
+  .trust-grid,
+  .why-grid,
+  .favorites-grid,
+  .timeline-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)) !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Ritual Section */
+  .ritual-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .ritual-showcase {
+    padding: 1.5rem !important;
+  }
+
+  .ritual-showcase div[style*="height: 300px"] {
+    height: 200px !important;
+  }
+
+  /* Lab Section */
+  .lab-container {
+    padding: 2rem 1.25rem !important;
+    border-radius: 20px !important;
+  }
+
+  .lab-container div[style*="display: grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+  }
+
+  .lab-comparison {
+    padding: 1.5rem !important;
+  }
+
+  /* Testimonial Section */
+  .testimonial-card {
+    padding: 2rem 1.25rem !important;
+  }
+
+  .testimonial-card p {
+    font-size: clamp(1.05rem, 4vw, 1.2rem) !important;
+  }
+
+  /* Brand Story Section */
+  .story-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .story-grid div[style*="height: 400px"] {
+    height: 250px !important;
+  }
+
+  /* Final CTA Card */
+  .cta-card {
+    padding: 3rem 1.25rem !important;
+    border-radius: 20px !important;
+  }
+
+  /* Footer responsiveness */
+  footer {
+    padding-top: 3rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  footer div[style*="display: grid"] {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)) !important;
+    gap: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  footer div[style*="justify-content: space-between"] {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    text-align: center !important;
+  }
+
+  /* Forms (Login, Register, Forgot Password, Checkout forms) */
+  form,
+  .form-container,
+  .auth-form {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .auth-split-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .auth-image-panel {
+    display: none !important;
+  }
+
+  /* Inputs and fields spacing */
+  input, textarea, select {
+    padding: 0.7rem 0.85rem !important;
+    font-size: 0.88rem !important;
+  }
+
+  /* Checkout layouts */
+  .checkout-form {
+    grid-template-columns: 1fr !important;
+    gap: 1.75rem !important;
+  }
+
+  .checkout-grid {
+    grid-template-columns: 1fr !important; /* Stack columns on mobile */
+    gap: 1rem !important;
+  }
+
+  /* Shop & Product Details Overrides */
+  .shop-hero {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+    padding: 3rem 1.25rem !important;
+  }
+
+  .product-detail-layout {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .filter-toolbar {
+    padding: 1rem !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* Extra small mobile screen refinements (< 360px) */
+@media (max-width: 359px) {
+  .site-logo span {
+    font-size: 1.1rem !important;
+  }
+
+  .cart-button {
+    padding: 0.4rem 0.6rem !important;
+  }
+
+  .header-container {
+    gap: 0.35rem !important;
+  }
+
+  .hero-heading {
+    font-size: 28px !important;
+  }
+}
+

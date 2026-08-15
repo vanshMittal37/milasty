@@ -253,7 +253,7 @@ export default function Contact() {
 
       {/* 3. MAIN CONTACT SECTION + 4. FORM */}
       <section style={{ maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '5rem', alignItems: 'start' }}>
+        <div className="story-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '5rem', alignItems: 'start' }}>
           
           {/* Left Column: Business Details */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

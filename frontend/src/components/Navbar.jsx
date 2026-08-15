@@ -60,11 +60,12 @@ export default function Navbar() {
     <>
       {/* Top Announcement Bar */}
       <div 
+        className="announcement-bar"
         style={{ 
           backgroundColor: isHome ? 'transparent' : '#1A0C05', 
           color: '#FCFAF6', 
           fontSize: '0.82rem', 
-          padding: '0.55rem 0', 
+          padding: '0.55rem 1rem', 
           textAlign: 'center', 
           fontWeight: '500', 
           letterSpacing: '0.05em', 
@@ -79,8 +80,31 @@ export default function Navbar() {
         <span> for 10% OFF</span>
       </div>
 
+      {/* Mobile Menu Overlay */}
+      <div 
+        onClick={() => setMobileMenuOpen(false)}
+        className="mobile-menu-overlay"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(26, 12, 5, 0.45)',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
+          zIndex: 98,
+          opacity: mobileMenuOpen ? 1 : 0,
+          pointerEvents: mobileMenuOpen ? 'auto' : 'none',
+          visibility: mobileMenuOpen ? 'visible' : 'hidden',
+          transition: 'opacity 250ms ease, visibility 250ms step-end',
+          overflow: 'hidden'
+        }}
+      />
+
       {/* Main Sticky 100% Full-Width Navbar Container */}
       <div 
+        className="sticky-navbar"
         style={{
           position: 'sticky',
           top: 0,
@@ -91,6 +115,7 @@ export default function Navbar() {
         }}
       >
         <header
+          className="site-header"
           style={{
             width: '100%',
             maxWidth: '100%',
@@ -104,10 +129,10 @@ export default function Navbar() {
             transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: scrolled || !isHome ? '64px' : '76px', maxWidth: '100%', padding: '0 2.5rem', transition: 'height 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+          <div className="container header-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: scrolled || !isHome ? '64px' : '76px', maxWidth: '100%', padding: '0 2.5rem', transition: 'height 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}>
             
             {/* Logo */}
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', transition: 'opacity 0.2s' }} className="hover-scale">
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', transition: 'opacity 0.2s' }} className="hover-scale site-logo">
               <span style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: textThemeColor, letterSpacing: '0.08em', transition: 'color 0.35s ease' }}>
                 MILASTY<span style={{ color: 'var(--accent-gold)' }}>.</span>
               </span>
@@ -180,7 +205,7 @@ export default function Navbar() {
               {/* Cart Button */}
               <button 
                 onClick={toggleCart} 
-                className="btn-primary" 
+                className="btn-primary cart-button" 
                 style={{ 
                   padding: '0.55rem 1.25rem', 
                   fontSize: '0.8rem', 
@@ -197,8 +222,9 @@ export default function Navbar() {
                 }}
               >
                 <ShoppingBag size={16} />
-                <span>Cart</span>
+                <span className="desktop-links">Cart</span>
                 <span 
+                  className="cart-badge"
                   style={{ 
                     backgroundColor: '#241209', 
                     color: '#c89b3c', 
@@ -214,9 +240,10 @@ export default function Navbar() {
               </button>
 
               {/* Account Dropdown Toggle */}
-              <div style={{ position: 'relative' }} ref={accountMenuRef}>
+              <div style={{ position: 'relative' }} ref={accountMenuRef} className="account-menu-wrapper">
                 <button
                   onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                  className="account-button"
                   style={{ 
                     background: 'none', 
                     display: 'flex', 
@@ -268,7 +295,9 @@ export default function Navbar() {
                   <span className="desktop-links" style={{ fontSize: '0.82rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     {isAuthenticated ? user?.name?.split(' ')[0] : 'Account'}
                   </span>
-                  <ChevronDown size={14} />
+                  <span className="desktop-links" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <ChevronDown size={14} />
+                  </span>
                 </button>
 
                 {accountMenuOpen && (
@@ -337,7 +366,7 @@ export default function Navbar() {
             {/* Mobile Hamburger Toggle */}
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-              className="mobile-toggle" 
+              className="mobile-toggle mobile-toggle-btn" 
               style={{ 
                 background: 'none', 
                 color: textThemeColor, 
@@ -353,79 +382,82 @@ export default function Navbar() {
         </header>
 
         {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div 
-            className="animate-slide-down-mobile"
-            style={{ 
-              backgroundColor: '#FFFFFF', 
-              border: '1.5px solid var(--border-color)', 
-              boxShadow: 'var(--shadow-lg)',
-              position: 'absolute',
-              top: 'calc(100% + 4px)',
-              left: '1.5rem',
-              right: '1.5rem',
-              zIndex: 99,
-              padding: '1.5rem',
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: '1rem',
-              borderRadius: '20px',
-              maxHeight: 'calc(100vh - 120px)',
-              overflowY: 'auto'
-            }}
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              {navLinks.map((link) => {
-                const isActive = location.pathname === link.path;
-                return (
-                  <Link 
-                    key={link.path} 
-                    to={link.path} 
-                    onClick={() => setMobileMenuOpen(false)} 
-                    style={{ 
-                      fontSize: '1.05rem', 
-                      fontWeight: isActive ? '700' : '500', 
-                      color: isActive ? 'var(--primary-dark)' : 'var(--text-muted)',
-                      padding: '0.75rem 0',
-                      borderBottom: '1px solid var(--border-color)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <span>{link.name}</span>
-                    {isActive && <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />}
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Mobile Account / Auth links */}
-            <div style={{ marginTop: '0.5rem', backgroundColor: 'var(--bg-subtle)', padding: '1rem', borderRadius: 'var(--radius-md)' }}>
-              {isAuthenticated ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Logged in as: <strong style={{ color: 'var(--primary-dark)' }}>{user?.name}</strong></div>
-                  <Link to="/account" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--primary-dark)', fontWeight: '600' }}>My Dashboard</Link>
-                  <Link to="/account/orders" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--primary-dark)', fontWeight: '600' }}>My Orders</Link>
-                  {isAdmin && <Link to="/admin/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--accent-olive)', fontWeight: '700' }}>★ Admin Panel</Link>}
-                  <button 
-                    onClick={() => { logout(); setMobileMenuOpen(false); }} 
-                    style={{ background: 'none', color: 'var(--accent-terracotta)', fontSize: '0.9rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.5rem 0 0', borderTop: '1px solid var(--border-color)', width: '100%', cursor: 'pointer' }}
-                  >
-                    <LogOut size={15} />
-                    <span>Logout</span>
-                  </button>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <Link to="/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '0.95rem 0', fontSize: '0.95rem', color: 'var(--primary-dark)', fontWeight: '700' }}>Customer Login</Link>
-                  <Link to="/register" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '0.9rem 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Create New Account</Link>
-                  <Link to="/admin/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '0.85rem 0', fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: '700', borderTop: '1px solid var(--border-color)', paddingTop: '0.5rem', marginTop: '0.25rem' }}>Admin Portal Login</Link>
-                </div>
-              )}
-            </div>
+        <div 
+          className={`mobile-menu-panel ${mobileMenuOpen ? 'open' : ''}`}
+          style={{ 
+            backgroundColor: '#FFFFFF', 
+            border: '1.5px solid var(--border-color)', 
+            boxShadow: 'var(--shadow-lg)',
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: '1.5rem',
+            right: '1.5rem',
+            zIndex: 99,
+            padding: '1.5rem',
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '1rem',
+            borderRadius: '20px',
+            maxHeight: 'calc(100vh - 120px)',
+            overflowY: 'auto',
+            opacity: mobileMenuOpen ? 1 : 0,
+            transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(-10px)',
+            pointerEvents: mobileMenuOpen ? 'auto' : 'none',
+            visibility: mobileMenuOpen ? 'visible' : 'hidden',
+            transition: 'opacity 250ms ease, transform 250ms cubic-bezier(0.16, 1, 0.3, 1), visibility 250ms step-end'
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.path;
+              return (
+                <Link 
+                  key={link.path} 
+                  to={link.path} 
+                  onClick={() => setMobileMenuOpen(false)} 
+                  style={{ 
+                    fontSize: '1.05rem', 
+                    fontWeight: isActive ? '700' : '500', 
+                    color: isActive ? 'var(--primary-dark)' : 'var(--text-muted)',
+                    padding: '0.75rem 0',
+                    borderBottom: '1px solid var(--border-color)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <span>{link.name}</span>
+                  {isActive && <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />}
+                </Link>
+              );
+            })}
           </div>
-        )}
+
+          {/* Mobile Account / Auth links */}
+          <div style={{ marginTop: '0.5rem', backgroundColor: 'var(--bg-subtle)', padding: '1rem', borderRadius: 'var(--radius-md)' }}>
+            {isAuthenticated ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Logged in as: <strong style={{ color: 'var(--primary-dark)' }}>{user?.name}</strong></div>
+                <Link to="/account" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--primary-dark)', fontWeight: '600' }}>My Dashboard</Link>
+                <Link to="/account/orders" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--primary-dark)', fontWeight: '600' }}>My Orders</Link>
+                {isAdmin && <Link to="/admin/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--accent-olive)', fontWeight: '700' }}>★ Admin Panel</Link>}
+                <button 
+                  onClick={() => { logout(); setMobileMenuOpen(false); }} 
+                  style={{ background: 'none', color: 'var(--accent-terracotta)', fontSize: '0.9rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.5rem 0 0', borderTop: '1px solid var(--border-color)', width: '100%', cursor: 'pointer' }}
+                >
+                  <LogOut size={15} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '0.95rem 0', fontSize: '0.95rem', color: 'var(--primary-dark)', fontWeight: '700' }}>Customer Login</Link>
+                <Link to="/register" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '0.9rem 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Create New Account</Link>
+                <Link to="/admin/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '0.85rem 0', fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: '700', borderTop: '1px solid var(--border-color)', paddingTop: '0.5rem', marginTop: '0.25rem' }}>Admin Portal Login</Link>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </>
   );

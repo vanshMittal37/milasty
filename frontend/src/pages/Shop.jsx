@@ -80,6 +80,7 @@ export default function Shop() {
       
       {/* 1. HERO SECTION */}
       <section 
+        className="shop-hero"
         style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
@@ -207,6 +208,7 @@ export default function Shop() {
           
           {/* Redesigned Compact Premium Filter Toolbar */}
           <div 
+            className="filter-toolbar"
             style={{ 
               display: 'flex', 
               justifyContent: 'space-between', 

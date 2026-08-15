@@ -185,6 +185,7 @@ export default function Home() {
 
       {/* 1. CINEMATIC VIDEO HERO SECTION */}
       <section
+        className="hero-section"
         style={{
           position: 'relative',
           height: '92vh',
@@ -198,7 +199,7 @@ export default function Home() {
       >
         {/* Floating Transparent Content */}
         <div 
-          className="container" 
+          className="container hero-content" 
           style={{ 
             position: 'relative', 
             zIndex: 3, 
@@ -231,6 +232,7 @@ export default function Home() {
           </span>
 
           <h1
+            className="hero-heading"
             style={{
               fontSize: 'clamp(2.4rem, 6vw, 4.2rem)',
               lineHeight: '1.12',
@@ -247,6 +249,7 @@ export default function Home() {
           </h1>
 
           <p
+            className="hero-subheading"
             style={{
               fontSize: 'clamp(1rem, 2vw, 1.2rem)',
               color: '#FFFFFF',
@@ -259,7 +262,7 @@ export default function Home() {
             Wholesome millet cookies, slow-baked in <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>pure Desi Ghee</span> and naturally sweetened with <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>organic jaggery</span>.
           </p>
 
-          <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="hero-buttons" style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
             <Link to="/shop" className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '0.95rem', backgroundColor: '#c89b3c', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
               <span>Explore Fresh Bakes</span>
               <ArrowRight size={18} />
@@ -324,9 +327,9 @@ export default function Home() {
       </section>
 
       {/* 2. TRUST / BRAND PROMISE SECTION (Transparent tiles with white text and borders) */}
-      <section ref={trustRef} className="reveal-fade-up" style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section ref={trustRef} className="reveal-fade-up trust-section" style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem' }}>
+          <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem' }}>
             <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', backgroundColor: 'transparent', border: '1px solid #FFFFFF', borderRadius: '16px', backdropFilter: 'none', WebkitBackdropFilter: 'none' }} className="trust-card">
               <div style={{ fontSize: '2.8rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '750', marginBottom: '0.5rem' }}>100%</div>
               <h4 style={{ fontSize: '1.05rem', color: '#FFFFFF', marginBottom: '0.25rem', fontWeight: '800' }}>Pure Desi Ghee</h4>
@@ -352,14 +355,14 @@ export default function Home() {
       </section>
 
       {/* 3. "WHY MILASTY" SECTION (Transparent tiles with white text and borders) */}
-      <section id="why-milasty" ref={whyRef} className="reveal-fade-up" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4.5rem' }}>
             <span className="badge-pill" style={{ marginBottom: '0.75rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>Core Philosophy</span>
             <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
+          <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
             <div style={{ padding: '2.5rem 2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <Award size={36} strokeWidth={1.5} />
@@ -396,7 +399,7 @@ export default function Home() {
       </section>
 
       {/* 4. SIGNATURE PRODUCTS SECTION */}
-      <section ref={favRef} className="reveal-fade-up" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section ref={favRef} className="reveal-fade-up favorites-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4rem' }}>
             <span className="badge-pill" style={{ marginBottom: '0.75rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>Our Favorites</span>
@@ -404,7 +407,7 @@ export default function Home() {
             <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1.05rem', fontWeight: '500' }}>Four wholesome bakes. One better way to snack.</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '2rem' }}>
+          <div className="favorites-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '2rem' }}>
             {dbProducts.map((product) => {
               const selectedVariant = product.variants?.[0];
               const isWishlisted = wishlistItems && wishlistItems.some((item) => (item._id || item.slug) === (product._id || product.slug));
@@ -500,14 +503,14 @@ export default function Home() {
       </section>
 
       {/* 5. INTERACTIVE MILLET RITUAL SECTION */}
-      <section ref={ritualRef} className="reveal-fade-up" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section ref={ritualRef} className="reveal-fade-up ritual-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4rem' }}>
             <span className="badge-pill" style={{ marginBottom: '0.75rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>Interactive Selection</span>
             <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>Discover Your Perfect <span style={{ color: 'var(--accent-gold)' }}>Millet Ritual</span></h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3.5rem', alignItems: 'center' }}>
+          <div className="ritual-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3.5rem', alignItems: 'center' }}>
             {/* Left Side: Numbered Selector */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {ritualProducts.map((item, idx) => {
@@ -551,6 +554,7 @@ export default function Home() {
 
             {/* Right Side: Showcase Card */}
             <div
+              className="ritual-showcase"
               style={{
                 padding: '2.5rem',
                 backgroundColor: 'transparent',
@@ -602,7 +606,7 @@ export default function Home() {
       </section>
 
       {/* 6. MILASTY SNACK RITUAL */}
-      <section ref={timelineRef} className="reveal-fade-up" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section ref={timelineRef} className="reveal-fade-up timeline-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 4.5rem' }}>
             <span className="badge-pill" style={{ marginBottom: '0.5rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>Mindful Eating</span>
@@ -610,7 +614,7 @@ export default function Home() {
             <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1.02rem', fontWeight: '500' }}>Turn your everyday snack break into a moment worth slowing down for.</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem' }}>
+          <div className="timeline-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem' }}>
             <div style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>01</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAUSE</h4>
@@ -639,10 +643,10 @@ export default function Home() {
       </section>
 
       {/* 7. LAB TEST / TRUST SECTION */}
-      <section ref={labRef} className="reveal-fade-up" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section ref={labRef} className="reveal-fade-up lab-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div style={{ padding: '4.5rem 3.5rem', backgroundColor: 'transparent', color: '#FFFFFF', borderRadius: '30px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          <div className="lab-container" style={{ padding: '4.5rem 3.5rem', backgroundColor: 'transparent', color: '#FFFFFF', borderRadius: '30px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '4rem', alignItems: 'center' }}>
               <div>
                 <span className="badge-pill" style={{ backgroundColor: 'transparent', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', marginBottom: '1.25rem' }}>
                   <Award size={14} />
@@ -664,7 +668,7 @@ export default function Home() {
               </div>
 
               {/* Comparison Box */}
-              <div style={{ backgroundColor: 'transparent', padding: '2.25rem', borderRadius: '20px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+              <div className="lab-comparison" style={{ backgroundColor: 'transparent', padding: '2.25rem', borderRadius: '20px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
                 <h4 style={{ color: 'var(--accent-gold)', fontSize: '1.15rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>MILASTY vs Conventional Biscuits</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.92rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
@@ -691,7 +695,7 @@ export default function Home() {
       </section>
 
       {/* 8. TESTIMONIAL SECTION */}
-      <section ref={reviewRef} className="reveal-fade-up" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section ref={reviewRef} className="reveal-fade-up reviews-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 4rem' }}>
             <span className="badge-pill" style={{ marginBottom: '0.5rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>Customer Stories</span>
@@ -699,7 +703,7 @@ export default function Home() {
           </div>
 
           <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center', position: 'relative' }}>
-            <div style={{ padding: '3.5rem 2.5rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div className="testimonial-card" style={{ padding: '3.5rem 2.5rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 {[...Array(reviews[activeReviewIdx].rating)].map((_, i) => (
                   <Star key={i} size={20} fill="var(--accent-gold)" color="var(--accent-gold)" />
@@ -737,9 +741,9 @@ export default function Home() {
       </section>
 
       {/* 9. BRAND STORY SECTION */}
-      <section ref={storyRef} className="reveal-fade-up" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section ref={storyRef} className="reveal-fade-up story-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          <div className="story-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
             <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid #FFFFFF' }}>
               <img 
                 src="https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=800&q=80" 
@@ -766,9 +770,10 @@ export default function Home() {
       </section>
 
       {/* 10. FINAL CTA SECTION */}
-      <section ref={finalCtaRef} className="reveal-fade-up" style={{ padding: '5rem 0 7rem', backgroundColor: 'transparent' }}>
+      <section ref={finalCtaRef} className="reveal-fade-up cta-section" style={{ padding: '5rem 0 7rem', backgroundColor: 'transparent' }}>
         <div className="container">
           <div
+            className="cta-card"
             style={{
               padding: '5rem 2rem',
               textAlign: 'center',

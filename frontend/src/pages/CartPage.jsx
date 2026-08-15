@@ -59,7 +59,7 @@ export default function CartPage() {
             </Link>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem', alignItems: 'flex-start' }}>
+          <div className="checkout-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem', alignItems: 'flex-start' }}>
             {/* Left: Items List */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {/* Free Ship Banner */}

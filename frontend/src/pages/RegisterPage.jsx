@@ -187,7 +187,7 @@ export default function RegisterPage() {
           )}
 
           {/* Registration Form */}
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+          <form onSubmit={handleSubmit} className="auth-form" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
             
             {/* Full Name */}
             <div>

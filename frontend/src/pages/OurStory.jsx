@@ -8,6 +8,7 @@ export default function OurStory() {
       
       {/* 1. STORYTELLING HERO SECTION */}
       <section 
+        className="shop-hero"
         style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
@@ -134,6 +135,7 @@ export default function OurStory() {
       {/* 2. EDITORIAL FOUNDER STORY SECTION */}
       <section style={{ backgroundColor: '#FFFFFF', padding: '6rem 0', borderTop: '1.5px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
         <div 
+          className="story-grid"
           style={{ 
             maxWidth: '1200px', 
             margin: '0 auto', 

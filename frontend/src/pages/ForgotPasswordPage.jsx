@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
               <Link to="/login" className="btn-primary">Back to Login</Link>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleSubmit} className="auth-form" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
                 <label style={{ fontSize: '0.85rem', fontWeight: '700', color: '#4A3525', display: 'block', marginBottom: '0.35rem' }}>Registered Email</label>
                 <div style={{ position: 'relative' }}>

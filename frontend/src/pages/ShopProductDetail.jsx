@@ -112,6 +112,7 @@ export default function ShopProductDetail() {
 
         {/* Main Details layout */}
         <div 
+          className="product-detail-layout"
           style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
