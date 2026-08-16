@@ -641,13 +641,13 @@ export default function Home() {
                         style={{
                           fontSize: '1.25rem',
                           fontFamily: "var(--font-serif)",
-                          fontWeight: '900',
+                          fontWeight: '700',
                           color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.6)',
                         }}
                       >
                         0{idx + 1}
                       </span>
-                      <h3 style={{ fontSize: '1.15rem', color: '#FFFFFF', fontWeight: '800' }}>{item.title}</h3>
+                      <h3 style={{ fontSize: '1.15rem', color: '#FFFFFF', fontWeight: '600' }}>{item.title}</h3>
                     </div>
                     <ArrowRight size={18} style={{ color: '#FFFFFF', transform: isSelected ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s' }} />
                   </div>

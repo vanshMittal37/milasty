@@ -734,19 +734,19 @@ body, p, span, li, a {
 }
 
 /* Announcement Marquee CSS */
-@keyframes marquee-ltr {
+@keyframes marquee-rtl {
   0% {
-    transform: translate3d(-50%, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
 .announcement-marquee-track {
   display: inline-flex;
   width: max-content;
-  animation: marquee-ltr 32s linear infinite !important;
+  animation: marquee-rtl 32s linear infinite !important;
   will-change: transform;
 }
 
@@ -778,6 +778,26 @@ body, p, span, li, a {
 .home-page .btn-primary, .home-page .btn-secondary {
   font-weight: 850 !important;
 }
+
+/* Inherit typography for spans inside headings to prevent them from looking small or mismatched */
+.home-page h1 span,
+.home-page h2 span,
+.home-page h3 span,
+.home-page h4 span {
+  font-family: inherit !important;
+  font-weight: inherit !important;
+  font-size: inherit !important;
+}
+
+/* Scale up the gold/yellow section sub-badges to be more visible and attractive */
+.home-page span[style*="uppercase"],
+.home-page span[style*="letter-spacing"] {
+  font-size: 1.05rem !important;
+  letter-spacing: 0.12em !important;
+  font-weight: 800 !important;
+  margin-bottom: 1rem !important;
+}
+
 
 /* Premium Glassmorphic Cards & Borders for Home Page */
 .home-page .trust-card,
