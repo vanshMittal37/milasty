@@ -19,6 +19,7 @@ export default function Home() {
   const [activeReviewIdx, setActiveReviewIdx] = useState(0);
   const [activeRitualIdx, setActiveRitualIdx] = useState(0);
   const [scrollY, setScrollY] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
 
   const videoRef = useRef(null);
   
@@ -36,6 +37,11 @@ export default function Home() {
   const [videoPoster, setVideoPoster] = useState('');
 
   useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+    window.addEventListener('resize', handleResize);
+
     const width = window.innerWidth;
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     const isSlowConnection = connection && (connection.saveData || (connection.effectiveType && ['slow-2g', '2g', '3g'].includes(connection.effectiveType)));
@@ -61,11 +67,44 @@ export default function Home() {
     } else {
       setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1786811749/milasty/videos/milasty-cookie.jpg");
     }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
+
+  // Control playback states based on isMobile mode
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isMobile) {
+      video.loop = true;
+      video.play().catch(err => console.log("Video autoplay failed:", err));
+    } else {
+      video.loop = false;
+      video.pause();
+      // Instantly sync time on desktop/tablet layout switch
+      const docHeight = document.documentElement.scrollHeight;
+      const viewHeight = window.innerHeight;
+      const maxScroll = docHeight - viewHeight;
+      maxScrollRef.current = maxScroll > 0 ? maxScroll : 0;
+      const progress = maxScrollRef.current > 0 ? window.scrollY / maxScrollRef.current : 0;
+      const clampedProgress = Math.max(0, Math.min(1, progress));
+      const initialTargetTime = clampedProgress * video.duration;
+
+      targetTimeRef.current = initialTargetTime;
+      currentTimeRef.current = initialTargetTime;
+      try {
+        video.currentTime = initialTargetTime;
+      } catch (e) {}
+    }
+  }, [isMobile, videoSrc]);
 
   // Silky-Smooth Scroll-Driven Video Scrubbing (Forward & Backward)
   useEffect(() => {
     const updateScrollMetrics = () => {
+      if (isMobile) return;
       const docHeight = document.documentElement.scrollHeight;
       const viewHeight = window.innerHeight;
       const maxScroll = docHeight - viewHeight;
@@ -82,6 +121,8 @@ export default function Home() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setScrollY(currentScrollY);
+
+      if (isMobile) return;
 
       const video = videoRef.current;
       if (!video) return;
@@ -102,20 +143,13 @@ export default function Home() {
       
       // Update target time ref
       targetTimeRef.current = clampedProgress * duration;
-
-      // Temporarily log scrubbing metrics for debugging/verification
-      // console.log({
-      //   scrollY: currentScrollY,
-      //   documentHeight: docHeight,
-      //   viewportHeight: viewHeight,
-      //   maxScroll: activeMaxScroll,
-      //   progress: clampedProgress,
-      //   videoDuration: duration,
-      //   targetTime: targetTimeRef.current
-      // });
     };
 
     const smoothScrubLoop = () => {
+      if (isMobile) {
+        animationFrameRef.current = requestAnimationFrame(smoothScrubLoop);
+        return;
+      }
       const video = videoRef.current;
       if (video && video.duration && !isNaN(video.duration)) {
         // Calculate raw difference
@@ -176,11 +210,16 @@ export default function Home() {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, []);
+  }, [isMobile]);
 
   const handleLoadedMetadata = () => {
     const video = videoRef.current;
     if (video) {
+      if (isMobile) {
+        video.loop = true;
+        video.play().catch(err => console.log("Video autoplay failed:", err));
+        return;
+      }
       video.pause();
       
       // Force recalculate scrollable range on metadata loaded
@@ -279,6 +318,8 @@ export default function Home() {
           ref={videoRef}
           muted
           playsInline
+          autoPlay={isMobile}
+          loop={isMobile}
           preload="auto"
           onLoadedMetadata={handleLoadedMetadata}
           onError={() => setVideoPlayError(true)}
