@@ -414,12 +414,13 @@ export default function Home() {
               marginBottom: '1.5rem',
               letterSpacing: '-0.01em',
               fontFamily: 'var(--font-serif)',
-              fontWeight: '700',
+              fontWeight: '900',
               textShadow: '0 4px 16px rgba(0, 0, 0, 0.5)',
               maxWidth: '850px'
             }}
           >
-            <span style={{ color: 'var(--accent-gold)' }}>Goodness of Millets.</span><br />Baked Into Every Bite.
+            <span style={{ color: 'var(--accent-gold)', fontSize: 'inherit', fontWeight: 'inherit', display: 'inline-block' }}>Goodness of Millets.</span><br />
+            <span style={{ color: '#FFFFFF', fontSize: 'inherit', fontWeight: 'inherit', display: 'inline-block' }}>Baked Into Every Bite.</span>
           </h1>
 
           <p

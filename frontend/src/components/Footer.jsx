@@ -11,15 +11,15 @@ export default function Footer() {
       style={{
         position: 'relative',
         zIndex: 5,
-        backgroundColor: isHome ? 'transparent' : '#241209',
-        backdropFilter: isHome ? 'blur(20px)' : 'none',
-        WebkitBackdropFilter: isHome ? 'blur(20px)' : 'none',
+        backgroundColor: isHome ? 'rgba(35, 21, 13, 0.60)' : '#241209',
+        backdropFilter: isHome ? 'blur(24px)' : 'none',
+        WebkitBackdropFilter: isHome ? 'blur(24px)' : 'none',
         color: '#FCFAF6',
         paddingTop: '5rem',
         paddingBottom: '2.5rem',
         marginTop: '0rem',
         borderTop: '1px solid rgba(255, 255, 255, 0.15)',
-        transition: 'background-color 0.35s ease',
+        transition: 'all 0.35s ease',
       }}
     >
       <div className="container">
