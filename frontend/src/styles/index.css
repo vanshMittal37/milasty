@@ -925,3 +925,138 @@ body, p, span, li, a {
   }
 }
 
+/* ==========================================================================
+   MOBILE RESPONSIVENESS FIXES FOR PORTFOLIO PAGES
+   (RITUALS / PRODUCTS, NUTRITION, CONTACT)
+   ========================================================================== */
+
+/* 1. Global Safety & Table Fixes */
+.desktop-only-table {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.desktop-only-table table {
+  min-width: 768px !important;
+}
+
+/* 2. RITUALS (PRODUCTS) PAGE RESPONSIVENESS */
+@media (max-width: 1024px) {
+  .products-page > section:nth-of-type(1) {
+    grid-template-columns: 1fr !important;
+    gap: 3rem !important;
+    padding: 4rem 1.5rem !important;
+  }
+  .products-featured-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+    padding: 2rem !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .products-page > section {
+    padding: 3rem 1rem !important;
+  }
+  .products-page > section:nth-of-type(1) {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+    gap: 2rem !important;
+  }
+  .products-page > section:nth-of-type(1) img {
+    height: 300px !important;
+  }
+  .products-trust-strip {
+    gap: 1rem !important;
+    padding: 1.5rem 1rem !important;
+  }
+  .products-featured-grid {
+    padding: 1.25rem !important;
+    gap: 1.5rem !important;
+  }
+  .products-featured-grid img {
+    height: 220px !important;
+  }
+  .products-main-grid {
+    gap: 1.5rem !important;
+  }
+  .products-ritual-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  .products-ritual-grid > div {
+    padding: 1.25rem 0.75rem !important;
+  }
+}
+
+/* 3. NUTRITION PAGE RESPONSIVENESS */
+@media (max-width: 767px) {
+  .nutrition-page > section {
+    padding: 3rem 1rem !important;
+  }
+  .nutrition-page > section:nth-of-type(1) {
+    padding-top: 4rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+  .nutrition-page > section:nth-of-type(2) > div {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  .nutrition-page > section:nth-of-type(2) .glass-card {
+    padding: 1.25rem 0.75rem !important;
+  }
+  .nutrition-page > section:nth-of-type(4) > div {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+  .nutrition-page > section:nth-of-type(4) img {
+    height: 240px !important;
+  }
+  .nutrition-page > section:nth-of-type(5) > div {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  .nutrition-page > section:nth-of-type(5) .glass-card {
+    padding: 1.5rem 1.25rem !important;
+  }
+  .nutrition-page > section:nth-of-type(6) > div:last-child {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem !important;
+  }
+}
+
+/* 4. CONTACT PAGE RESPONSIVENESS */
+@media (max-width: 767px) {
+  .contact-page > section {
+    padding: 3rem 1rem !important;
+  }
+  .contact-page > section:nth-of-type(1) {
+    padding-top: 4rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+  .contact-page > section:nth-of-type(2) > div {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  .contact-page > section:nth-of-type(2) .glass-card {
+    padding: 1.5rem 1.25rem !important;
+  }
+  .contact-page > section:nth-of-type(3) > div {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+  }
+  .contact-page #contact-inquiry-form {
+    padding: 2rem 1.25rem !important;
+  }
+  .contact-page > section:nth-of-type(4) > div {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  .contact-page > section:nth-of-type(4) .glass-card {
+    padding: 1.25rem 0.75rem !important;
+  }
+}
+
+

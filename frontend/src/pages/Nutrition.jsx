@@ -10,7 +10,7 @@ export default function Nutrition() {
   const dailyProducts = initialProducts.filter((p) => p.category === 'daily');
 
   return (
-    <div style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '0 0 6rem' }}>
+    <div className="nutrition-page" style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '0 0 6rem', width: '100%', maxWidth: '100%', overflowX: 'hidden', boxSizing: 'border-box' }}>
       
       {/* 1. HERO SECTION */}
       <section 
