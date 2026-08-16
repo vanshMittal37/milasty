@@ -769,6 +769,9 @@ body, p, span, li, a {
 .home-page h3, .home-page h4 {
   font-weight: 800 !important;
 }
+.home-page h3.ritual-item-title {
+  font-weight: 600 !important;
+}
 .home-page p, .home-page span, .home-page li {
   font-weight: 550 !important;
 }
