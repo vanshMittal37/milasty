@@ -647,7 +647,7 @@ export default function Home() {
                       >
                         0{idx + 1}
                       </span>
-                      <h3 className="ritual-item-title" style={{ fontSize: '1.15rem', color: '#FFFFFF', fontWeight: '600' }}>{item.title}</h3>
+                      <h3 className="ritual-item-title" style={{ fontSize: '1.15rem', color: '#FFFFFF', fontWeight: '500' }}>{item.title}</h3>
                     </div>
                     <ArrowRight size={18} style={{ color: '#FFFFFF', transform: isSelected ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s' }} />
                   </div>
