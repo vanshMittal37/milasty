@@ -216,7 +216,7 @@ export default function ProductCard({ product }) {
                       transition: 'all 0.2s',
                       backgroundColor: selectedVariantIndex === idx ? 'var(--primary-dark)' : '#FCFAF6',
                       color: selectedVariantIndex === idx ? '#FFFFFF' : 'var(--primary-dark)',
-                      border: selectedVariantIndex === idx ? '1px solid var(--primary-dark)' : '1px solid var(--border-color)',
+                      border: selectedVariantIndex === idx ? '1.5px solid var(--primary-dark)' : '1.5px solid rgba(36, 18, 9, 0.25)',
                     }}
                   >
                     {variant.weight}

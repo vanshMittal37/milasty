@@ -396,8 +396,8 @@ body, p, span, li, a {
   .mobile-menu-panel {
     position: absolute !important;
     top: 100% !important;
-    right: 16px !important;
-    left: auto !important;
+    left: 16px !important;
+    right: auto !important;
     width: min(420px, calc(100vw - 32px)) !important;
     max-height: calc(100vh - 100px) !important;
     overflow-y: auto !important;
