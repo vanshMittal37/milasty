@@ -1036,12 +1036,19 @@ body, p, span, li, a {
     padding-top: 4rem !important;
     padding-bottom: 2.5rem !important;
   }
+  /* Force Quick Contact cards into a 2-column grid instead of 1x1 stack */
   .contact-page > section:nth-of-type(2) > div {
-    grid-template-columns: 1fr !important;
-    gap: 1rem !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
   }
   .contact-page > section:nth-of-type(2) .glass-card {
-    padding: 1.5rem 1.25rem !important;
+    padding: 1.25rem 0.75rem !important;
+  }
+  .contact-page > section:nth-of-type(2) h3 {
+    font-size: 0.92rem !important;
+  }
+  .contact-page > section:nth-of-type(2) p {
+    font-size: 0.75rem !important;
   }
   .contact-page > section:nth-of-type(3) > div {
     grid-template-columns: 1fr !important;
@@ -1059,4 +1066,30 @@ body, p, span, li, a {
   }
 }
 
+/* 5. SHOP PAGE RESPONSIVENESS */
+@media (max-width: 767px) {
+  /* Force Shop page product listings into 2-column grid instead of 1x1 stack */
+  .shop-featured-grid,
+  .shop-main-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+}
+/* Mobile Navigation Row hover/active slide effects */
+.mobile-nav-row {
+  position: relative;
+  transition: padding-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+}
 
+.mobile-nav-row:active,
+.mobile-nav-row:hover {
+  padding-left: 6px !important;
+  color: var(--accent-gold) !important;
+}
+
+.mobile-nav-row:active .arrow-indicator,
+.mobile-nav-row:hover .arrow-indicator {
+  transform: translateX(6px) !important;
+  opacity: 0.95 !important;
+  color: var(--accent-gold) !important;
+}

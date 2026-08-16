@@ -108,9 +108,9 @@ export default function Navbar() {
           left: 0,
           width: '100%',
           height: '100vh',
-          backgroundColor: 'rgba(26, 12, 5, 0.45)',
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(4px)',
+          backgroundColor: 'rgba(20, 10, 5, 0.55)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
           zIndex: 98,
           opacity: mobileMenuOpen ? 1 : 0,
           pointerEvents: mobileMenuOpen ? 'auto' : 'none',
@@ -403,49 +403,95 @@ export default function Navbar() {
         <div 
           className={`mobile-menu-panel ${mobileMenuOpen ? 'open' : ''}`}
           style={{ 
-            backgroundColor: '#FFFFFF', 
-            border: '1.5px solid var(--border-color)', 
-            boxShadow: 'var(--shadow-lg)',
+            backgroundColor: 'rgba(35, 21, 13, 0.97)', /* Deep Warm Chocolate */
+            backgroundImage: 'linear-gradient(135deg, rgba(35, 21, 13, 0.98) 0%, rgba(20, 10, 5, 0.99) 100%)',
+            border: '1.5px solid rgba(200, 155, 60, 0.28)', /* Thin Muted Gold Border */
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.55)',
             position: 'absolute',
-            top: 'calc(100% + 4px)',
-            left: '1.5rem',
-            right: '1.5rem',
+            top: 'calc(100% + 8px)',
+            left: '12px',
+            right: '12px',
+            width: 'calc(100% - 24px)',
+            margin: '0 auto',
             zIndex: 99,
-            padding: '1.5rem',
+            padding: '1.75rem 1.5rem',
             display: 'flex', 
             flexDirection: 'column', 
-            gap: '1rem',
-            borderRadius: '20px',
+            gap: '1.5rem',
+            borderRadius: '24px',
             maxHeight: 'calc(100vh - 120px)',
             overflowY: 'auto',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
             opacity: mobileMenuOpen ? 1 : 0,
-            transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(-10px)',
+            transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(-12px)',
             pointerEvents: mobileMenuOpen ? 'auto' : 'none',
             visibility: mobileMenuOpen ? 'visible' : 'hidden',
-            transition: 'opacity 250ms ease, transform 250ms cubic-bezier(0.16, 1, 0.3, 1), visibility 250ms step-end'
+            transition: 'opacity 300ms ease, transform 300ms cubic-bezier(0.16, 1, 0.3, 1), visibility 300ms step-end'
           }}
         >
+          {/* Header Inside Menu */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.10)', paddingBottom: '1rem' }}>
+            <span style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: '#FFFFFF', letterSpacing: '0.08em' }}>
+              MILASTY<span style={{ color: 'var(--accent-gold)' }}>.</span>
+            </span>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'rgba(255, 255, 255, 0.8)',
+                width: '44px',
+                height: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                padding: 0
+              }}
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Navigation Items */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            {navLinks.map((link) => {
+            {navLinks.map((link, idx) => {
               const isActive = location.pathname === link.path;
+              const formattedIdx = String(idx + 1).padStart(2, '0');
               return (
                 <Link 
                   key={link.path} 
                   to={link.path} 
                   onClick={() => setMobileMenuOpen(false)} 
                   style={{ 
-                    fontSize: '1.05rem', 
-                    fontWeight: isActive ? '700' : '500', 
-                    color: isActive ? 'var(--primary-dark)' : 'var(--text-muted)',
-                    padding: '0.75rem 0',
-                    borderBottom: '1px solid var(--border-color)',
+                    fontSize: '1.2rem', 
+                    fontFamily: 'var(--font-serif)',
+                    fontWeight: '800', 
+                    color: isActive ? 'var(--accent-gold)' : '#FCFAF6',
+                    padding: '0.85rem 0',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    textDecoration: 'none',
+                    transition: 'all 0.25s ease'
                   }}
+                  className="mobile-nav-row"
                 >
-                  <span>{link.name}</span>
-                  {isActive && <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)', opacity: 0.75, fontFamily: 'var(--font-sans)', fontWeight: '700' }}>
+                      {formattedIdx}
+                    </span>
+                    <span>{link.name.toUpperCase()}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {isActive ? (
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />
+                    ) : (
+                      <span className="arrow-indicator" style={{ fontSize: '1rem', opacity: 0.4, transition: 'transform 0.2s ease', color: '#FFFFFF' }}>→</span>
+                    )}
+                  </div>
                 </Link>
               );
             })}
@@ -455,55 +501,73 @@ export default function Navbar() {
               to="/wishlist" 
               onClick={() => setMobileMenuOpen(false)} 
               style={{ 
-                fontSize: '1.05rem', 
-                fontWeight: location.pathname === '/wishlist' ? '700' : '500', 
-                color: location.pathname === '/wishlist' ? 'var(--primary-dark)' : 'var(--text-muted)',
-                padding: '0.75rem 0',
-                borderBottom: '1px solid var(--border-color)',
+                fontSize: '1.2rem', 
+                fontFamily: 'var(--font-serif)',
+                fontWeight: '800', 
+                color: location.pathname === '/wishlist' ? 'var(--accent-gold)' : '#FCFAF6',
+                padding: '0.85rem 0',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                textDecoration: 'none',
+                transition: 'all 0.25s ease'
               }}
+              className="mobile-nav-row"
             >
-              <span>Wishlist</span>
-              {wishlistCount > 0 && (
-                <span 
-                  style={{ 
-                    backgroundColor: 'var(--accent-gold)', 
-                    color: 'var(--primary-dark)', 
-                    padding: '0.15rem 0.45rem', 
-                    borderRadius: '999px', 
-                    fontSize: '0.75rem', 
-                    fontWeight: '900' 
-                  }}
-                >
-                  {wishlistCount}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)', opacity: 0.75, fontFamily: 'var(--font-sans)', fontWeight: '700' }}>
+                  07
                 </span>
-              )}
+                <span>WISHLIST</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {location.pathname === '/wishlist' ? (
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />
+                ) : wishlistCount > 0 ? (
+                  <span 
+                    style={{ 
+                      backgroundColor: 'var(--accent-gold)', 
+                      color: 'var(--primary-dark)', 
+                      padding: '0.15rem 0.45rem', 
+                      borderRadius: '999px', 
+                      fontSize: '0.72rem', 
+                      fontWeight: '900' 
+                    }}
+                  >
+                    {wishlistCount}
+                  </span>
+                ) : (
+                  <span className="arrow-indicator" style={{ fontSize: '1rem', opacity: 0.4, color: '#FFFFFF' }}>→</span>
+                )}
+              </div>
             </Link>
           </div>
 
           {/* Mobile Account / Auth links */}
-          <div style={{ marginTop: '0.5rem', backgroundColor: 'var(--bg-subtle)', padding: '1rem', borderRadius: 'var(--radius-md)' }}>
+          <div style={{ marginTop: '0.5rem', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)', padding: '1.25rem', borderRadius: '18px' }}>
+            <span style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '0.1em', color: 'var(--accent-gold)', textTransform: 'uppercase', marginBottom: '0.85rem' }}>
+              CUSTOMER ACCOUNT
+            </span>
             {isAuthenticated ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Logged in as: <strong style={{ color: 'var(--primary-dark)' }}>{user?.name}</strong></div>
-                <Link to="/account" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--primary-dark)', fontWeight: '600' }}>My Dashboard</Link>
-                <Link to="/account/orders" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--primary-dark)', fontWeight: '600' }}>My Orders</Link>
-                {isAdmin && <Link to="/admin/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--accent-olive)', fontWeight: '700' }}>★ Admin Panel</Link>}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div style={{ fontSize: '0.82rem', color: 'rgba(252, 250, 246, 0.7)' }}>Logged in as: <strong style={{ color: '#FFFFFF' }}>{user?.name}</strong></div>
+                <Link to="/account" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: '#FFFFFF', fontWeight: '700', textDecoration: 'none' }}>My Dashboard</Link>
+                <Link to="/account/orders" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: '#FFFFFF', fontWeight: '700', textDecoration: 'none' }}>My Orders</Link>
+                {isAdmin && <Link to="/admin/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--accent-gold)', fontWeight: '800', textDecoration: 'none' }}>★ Admin Panel</Link>}
                 <button 
                   onClick={() => { logout(); setMobileMenuOpen(false); }} 
-                  style={{ background: 'none', color: 'var(--accent-terracotta)', fontSize: '0.9rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.5rem 0 0', borderTop: '1px solid var(--border-color)', width: '100%', cursor: 'pointer' }}
+                  style={{ background: 'none', color: '#c8503c', fontSize: '0.9rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.75rem 0 0', borderTop: '1px solid rgba(255, 255, 255, 0.08)', width: '100%', cursor: 'pointer', borderLeft: 'none', borderRight: 'none', borderBottom: 'none' }}
                 >
                   <LogOut size={15} />
                   <span>Logout</span>
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '0.95rem 0', fontSize: '0.95rem', color: 'var(--primary-dark)', fontWeight: '700' }}>Customer Login</Link>
-                <Link to="/register" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '0.9rem 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Create New Account</Link>
-                <Link to="/admin/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', padding: '0.85rem 0', fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: '700', borderTop: '1px solid var(--border-color)', paddingTop: '0.5rem', marginTop: '0.25rem' }}>Admin Portal Login</Link>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', fontSize: '0.9rem', color: '#FFFFFF', fontWeight: '750', textDecoration: 'none' }}>Sign In</Link>
+                <Link to="/register" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', fontSize: '0.9rem', color: 'rgba(252, 250, 246, 0.75)', fontWeight: '600', textDecoration: 'none' }}>Create New Account</Link>
+                <Link to="/admin/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: '800', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.75rem', marginTop: '0.25rem', textDecoration: 'none' }}>Admin Portal Login</Link>
               </div>
             )}
           </div>

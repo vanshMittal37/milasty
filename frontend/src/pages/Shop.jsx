@@ -76,7 +76,7 @@ export default function Shop() {
   const featuredStripProducts = products.slice(0, 3);
 
   return (
-    <div style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '0 0 5rem' }}>
+    <div className="shop-page" style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '0 0 5rem', width: '100%', maxWidth: '100%', overflowX: 'hidden', boxSizing: 'border-box' }}>
       
       {/* 1. HERO SECTION */}
       <section 
@@ -193,7 +193,7 @@ export default function Shop() {
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+            <div className="shop-featured-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
               {featuredStripProducts.map((product) => (
                 <ProductCard key={`featured-${product._id || product.slug}`} product={product} />
               ))}
@@ -377,6 +377,7 @@ export default function Shop() {
             </div>
           ) : (
             <div
+              className="shop-main-grid"
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
