@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ShieldCheck, MapPin, Phone, MessageSquare, Heart } from 'lucide-react';
+import Logo from './Logo';
 
 export default function Footer() {
   const location = useLocation();
@@ -34,17 +35,7 @@ export default function Footer() {
         >
           {/* Column 1: Brand Info */}
           <div>
-            <h2
-              style={{
-                fontSize: '1.8rem',
-                fontFamily: "var(--font-serif)",
-                color: 'var(--bg-main)',
-                letterSpacing: '0.06em',
-                marginBottom: '1rem',
-              }}
-            >
-              MILASTY<span style={{ color: 'var(--accent-gold)' }}>.</span>
-            </h2>
+            <Logo variant="emblem" style={{ height: '80px', width: 'auto', marginBottom: '1.25rem' }} />
             <p style={{ fontSize: '0.88rem', color: 'rgba(252, 250, 246, 0.75)', marginBottom: '1.5rem', lineHeight: '1.75' }}>
               Where millets meet great taste. Healthy snacks baked in pure Desi Ghee and sweetened with organic Jaggery.
             </p>

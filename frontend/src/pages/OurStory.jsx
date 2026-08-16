@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Sparkles, ShieldCheck, Award, Leaf, Flame, Compass, ChevronRight, MessageSquare, Info } from 'lucide-react';
+import Logo from '../components/Logo';
 
 export default function OurStory() {
   return (
@@ -545,9 +546,7 @@ export default function OurStory() {
             gap: '1.5rem'
           }}
         >
-          <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(56, 20, 35, 0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)' }}>
-            <Heart size={28} fill="var(--accent-gold)" />
-          </div>
+          <Logo variant="emblem" style={{ height: '70px', width: 'auto', marginBottom: '0.25rem' }} />
           <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>
             Made With the Same Care We'd Give Our Family.
           </h2>

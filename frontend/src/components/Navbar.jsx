@@ -4,6 +4,7 @@ import { ShoppingBag, Heart, User, Menu, X, ChevronDown, LogOut } from 'lucide-r
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
+import Logo from './Logo';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -151,9 +152,7 @@ export default function Navbar() {
             
             {/* Logo */}
             <Link to="/" style={{ display: 'flex', alignItems: 'center', transition: 'opacity 0.2s' }} className="hover-scale site-logo">
-              <span style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: textThemeColor, letterSpacing: '0.08em', transition: 'color 0.35s ease' }}>
-                MILASTY<span style={{ color: 'var(--accent-gold)' }}>.</span>
-              </span>
+              <Logo variant="primary" style={{ height: '36px', width: 'auto' }} className="mobile-logo-adjust" />
             </Link>
 
             {/* Navigation Links - Center */}
@@ -432,9 +431,7 @@ export default function Navbar() {
         >
           {/* Header Inside Menu */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.10)', paddingBottom: '1rem' }}>
-            <span style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: '#FFFFFF', letterSpacing: '0.08em' }}>
-              MILASTY<span style={{ color: 'var(--accent-gold)' }}>.</span>
-            </span>
+            <Logo variant="primary" style={{ height: '30px', width: 'auto' }} />
             <button
               onClick={() => setMobileMenuOpen(false)}
               style={{
