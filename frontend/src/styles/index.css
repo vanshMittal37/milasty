@@ -664,6 +664,54 @@ body, p, span, li, a {
     justify-content: center !important;
     padding: 0.85rem 1.5rem !important;
   }
+
+  /* Force 2x2 Grid Layout for All Mobile Card Containers */
+  .trust-grid,
+  .why-grid,
+  .favorites-grid,
+  .timeline-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Mobile Padding & Text Scaling for Grids to fit 2x2 beautifully */
+  .home-page .trust-card {
+    padding: 1rem 0.5rem !important;
+  }
+  .home-page .why-grid > div,
+  .home-page .timeline-grid > div {
+    padding: 1.25rem 0.75rem !important;
+  }
+  .home-page .why-grid h3,
+  .home-page .timeline-grid h4 {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+  .home-page .why-grid p,
+  .home-page .timeline-grid p {
+    font-size: 0.78rem !important;
+    line-height: 1.45 !important;
+  }
+
+  /* Product Card Mobile Responsive Tweaks */
+  .favorites-grid > div > div:last-child {
+    padding: 0.85rem !important;
+  }
+  .favorites-grid h3 {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+  .favorites-grid p {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  .favorites-grid span[style*="font-size: 1.3rem"] {
+    font-size: 0.95rem !important;
+  }
+  .favorites-grid .btn-primary {
+    padding: 0.45rem 0.75rem !important;
+    font-size: 0.7rem !important;
+  }
 }
 
 /* Extra small mobile screen refinements (< 360px) */

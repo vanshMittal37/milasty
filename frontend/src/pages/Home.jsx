@@ -501,49 +501,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. "WHY MILASTY" SECTION (Transparent tiles with white text and borders) */}
-      <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4.5rem' }}>
-            <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Core Philosophy</span>
-            <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
-          </div>
 
-          <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
-            <div style={{ padding: '2.5rem 2rem' }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                <Award size={36} strokeWidth={1.5} />
-              </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>PURE DESI GHEE</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
-            </div>
-
-            <div style={{ padding: '2.5rem 2rem' }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                <Sparkles size={36} strokeWidth={1.5} />
-              </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>WHOLESOME MILLETS</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
-            </div>
-
-            <div style={{ padding: '2.5rem 2rem' }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                <ShieldCheck size={36} strokeWidth={1.5} />
-              </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>NATURALLY SWEET</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
-            </div>
-
-            <div style={{ padding: '2.5rem 2rem' }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                <FileText size={36} strokeWidth={1.5} />
-              </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>NOTHING UNNECESSARY</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* 4. SIGNATURE PRODUCTS SECTION */}
       <section ref={favRef} className="reveal-fade-up favorites-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
@@ -904,6 +862,50 @@ export default function Home() {
                 <span>Discover Our Story</span>
                 <ArrowRight size={16} />
               </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. "WHY MILASTY" SECTION (Transparent tiles with white text and borders) */}
+      <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4.5rem' }}>
+            <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Core Philosophy</span>
+            <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
+          </div>
+
+          <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
+            <div style={{ padding: '2.5rem 2rem' }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
+                <Award size={36} strokeWidth={1.5} />
+              </div>
+              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>PURE DESI GHEE</h3>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
+            </div>
+
+            <div style={{ padding: '2.5rem 2rem' }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
+                <Sparkles size={36} strokeWidth={1.5} />
+              </div>
+              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>WHOLESOME MILLETS</h3>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
+            </div>
+
+            <div style={{ padding: '2.5rem 2rem' }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
+                <ShieldCheck size={36} strokeWidth={1.5} />
+              </div>
+              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>NATURALLY SWEET</h3>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
+            </div>
+
+            <div style={{ padding: '2.5rem 2rem' }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
+                <FileText size={36} strokeWidth={1.5} />
+              </div>
+              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>NOTHING UNNECESSARY</h3>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
             </div>
           </div>
         </div>
