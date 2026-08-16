@@ -1065,17 +1065,85 @@ body, p, span, li, a {
     padding: 1.25rem 0.75rem !important;
   }
 }
-
-/* 5. SHOP PAGE RESPONSIVENESS */
+/* 5. SHOP & RITUALS PAGE RESPONSIVENESS (2x2 GRID FOR PRODUCTS) */
 @media (max-width: 767px) {
-  /* Force Shop page product listings into 2-column grid instead of 1x1 stack */
+  /* Force 2-column layout on mobile viewports for product listings */
+  .products-main-grid,
   .shop-featured-grid,
   .shop-main-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 0.75rem !important;
   }
+
+  /* Compact padding inside product cards to prevent clipping */
+  .products-main-grid .glass-card > div:last-child,
+  .shop-featured-grid .glass-card > div:last-child,
+  .shop-main-grid .glass-card > div:last-child {
+    padding: 0.75rem !important;
+  }
+
+  /* Scale down header typography inside product cards */
+  .products-main-grid .glass-card h3,
+  .shop-featured-grid .glass-card h3,
+  .shop-main-grid .glass-card h3 {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  /* Scale down subtitle typography and description lines */
+  .products-main-grid .glass-card p,
+  .shop-featured-grid .glass-card p,
+  .shop-main-grid .glass-card p {
+    font-size: 0.75rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Scale down variant buttons and selectors */
+  .products-main-grid .glass-card div[style*="Select Pack Size"],
+  .shop-featured-grid .glass-card div[style*="Select Pack Size"],
+  .shop-main-grid .glass-card div[style*="Select Pack Size"] {
+    font-size: 0.62rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  .products-main-grid .glass-card div[style*="Select Pack Size"] + div,
+  .shop-featured-grid .glass-card div[style*="Select Pack Size"] + div,
+  .shop-main-grid .glass-card div[style*="Select Pack Size"] + div {
+    gap: 4px !important;
+  }
+
+  .products-main-grid .glass-card div[style*="Select Pack Size"] + div button,
+  .shop-featured-grid .glass-card div[style*="Select Pack Size"] + div button,
+  .shop-main-grid .glass-card div[style*="Select Pack Size"] + div button {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.7rem !important;
+    border-radius: 6px !important;
+  }
+
+  /* Stack main action buttons vertically so they don't squash side-by-side */
+  .products-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"],
+  .shop-featured-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"],
+  .shop-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.4rem !important;
+  }
+
+  .products-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] a,
+  .products-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] button,
+  .shop-featured-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] a,
+  .shop-featured-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] button,
+  .shop-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] a,
+  .shop-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] button {
+    width: 100% !important;
+    min-height: 36px !important;
+    padding: 0.45rem 0 !important;
+    font-size: 0.75rem !important;
+  }
 }
-/* Mobile Navigation Row hover/active slide effects */
+
+/* 6. MOBILE NAVIGATION ROW HOVER EFFECTS */
 .mobile-nav-row {
   position: relative;
   transition: padding-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
