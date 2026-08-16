@@ -392,17 +392,14 @@ export default function Home() {
           }}
         >
           <span 
-            className="badge-pill" 
             style={{ 
               marginBottom: '1.75rem', 
-              padding: '0.5rem 1.25rem', 
-              fontSize: '0.8rem',
-              letterSpacing: '0.08em',
+              fontSize: '0.85rem',
+              letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              backgroundColor: 'transparent',
-              border: '1px solid var(--accent-gold)',
               color: 'var(--accent-gold)',
-              fontWeight: '700'
+              fontWeight: '800',
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.4)'
             }}
           >
             ✦ Handcrafted Millet Bakes
@@ -507,22 +504,22 @@ export default function Home() {
       <section ref={trustRef} className="reveal-fade-up trust-section" style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem' }}>
-            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', backgroundColor: 'transparent', border: '1px solid #FFFFFF', borderRadius: '16px', backdropFilter: 'none', WebkitBackdropFilter: 'none' }} className="trust-card">
+            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', borderRadius: '16px' }} className="trust-card">
               <div style={{ fontSize: '2.8rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '750', marginBottom: '0.5rem' }}>100%</div>
               <h4 style={{ fontSize: '1.05rem', color: '#FFFFFF', marginBottom: '0.25rem', fontWeight: '800' }}>Pure Desi Ghee</h4>
               <p style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.85)' }}>Baked cleanly with authentic cow ghee</p>
             </div>
-            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', backgroundColor: 'transparent', border: '1px solid #FFFFFF', borderRadius: '16px', backdropFilter: 'none', WebkitBackdropFilter: 'none' }} className="trust-card">
+            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', borderRadius: '16px' }} className="trust-card">
               <div style={{ fontSize: '2.8rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '750', marginBottom: '0.5rem' }}>100%</div>
               <h4 style={{ fontSize: '1.05rem', color: '#FFFFFF', marginBottom: '0.25rem', fontWeight: '800' }}>Wholesome Grains</h4>
               <p style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.85)' }}>Finger millet, sorghum, and pearl millet</p>
             </div>
-            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', backgroundColor: 'transparent', border: '1px solid #FFFFFF', borderRadius: '16px', backdropFilter: 'none', WebkitBackdropFilter: 'none' }} className="trust-card">
+            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', borderRadius: '16px' }} className="trust-card">
               <div style={{ fontSize: '2.8rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '750', marginBottom: '0.5rem' }}>10,000+</div>
               <h4 style={{ fontSize: '1.05rem', color: '#FFFFFF', marginBottom: '0.25rem', fontWeight: '800' }}>Happy Families</h4>
               <p style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.85)' }}>Snacking consciously across India</p>
             </div>
-            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', backgroundColor: 'transparent', border: '1px solid #FFFFFF', borderRadius: '16px', backdropFilter: 'none', WebkitBackdropFilter: 'none' }} className="trust-card">
+            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', borderRadius: '16px' }} className="trust-card">
               <div style={{ fontSize: '2.8rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '750', marginBottom: '0.5rem' }}>NABL</div>
               <h4 style={{ fontSize: '1.05rem', color: '#FFFFFF', marginBottom: '0.25rem', fontWeight: '800' }}>Verified Transparency</h4>
               <p style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.85)' }}>Certified nutritional lab analysis</p>
@@ -535,41 +532,41 @@ export default function Home() {
       <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4.5rem' }}>
-            <span className="badge-pill" style={{ marginBottom: '0.75rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>Core Philosophy</span>
+            <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Core Philosophy</span>
             <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
           </div>
 
           <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
-            <div style={{ padding: '2.5rem 2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div style={{ padding: '2.5rem 2rem' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <Award size={36} strokeWidth={1.5} />
               </div>
               <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>PURE DESI GHEE</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.6', fontWeight: '500' }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
             </div>
 
-            <div style={{ padding: '2.5rem 2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div style={{ padding: '2.5rem 2rem' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <Sparkles size={36} strokeWidth={1.5} />
               </div>
               <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>WHOLESOME MILLETS</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.6', fontWeight: '500' }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
             </div>
 
-            <div style={{ padding: '2.5rem 2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div style={{ padding: '2.5rem 2rem' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <ShieldCheck size={36} strokeWidth={1.5} />
               </div>
               <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>NATURALLY SWEET</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.6', fontWeight: '500' }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
             </div>
 
-            <div style={{ padding: '2.5rem 2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div style={{ padding: '2.5rem 2rem' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <FileText size={36} strokeWidth={1.5} />
               </div>
               <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>NOTHING UNNECESSARY</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.6', fontWeight: '500' }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
             </div>
           </div>
         </div>
@@ -579,11 +576,11 @@ export default function Home() {
       <section ref={favRef} className="reveal-fade-up favorites-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4rem' }}>
-            <span className="badge-pill" style={{ marginBottom: '0.75rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>Our Favorites</span>
+            <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Our Favorites</span>
             <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>Meet the <span style={{ color: 'var(--accent-gold)' }}>MILASTY</span> Favourites</h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1.05rem', fontWeight: '500' }}>Four wholesome bakes. One better way to snack.</p>
+            <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1.05rem', fontWeight: '500' }}>Four wholesome bakes. One better way to snack.</p>
           </div>
-
+ 
           <div className="favorites-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '2rem' }}>
             {dbProducts.map((product) => {
               const selectedVariant = product.variants?.[0];
@@ -591,16 +588,13 @@ export default function Home() {
               return (
                 <div 
                   key={product._id || product.slug}
+                  className="glass-card"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
                     borderRadius: '24px',
                     overflow: 'hidden',
-                    backgroundColor: 'transparent',
-                    border: '1px solid #FFFFFF',
                     position: 'relative',
-                    backdropFilter: 'none',
-                    WebkitBackdropFilter: 'none'
                   }}
                 >
                   <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '80%', backgroundColor: 'transparent' }}>
@@ -652,12 +646,12 @@ export default function Home() {
                         {[...Array(5)].map((_, i) => (
                           <Star key={i} size={14} fill={i < Math.floor(product.rating || 5) ? 'var(--accent-gold)' : 'none'} color="var(--accent-gold)" />
                         ))}
-                        <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.85)', marginLeft: '0.25rem', fontWeight: '600' }}>({product.reviewCount || 10})</span>
+                        <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.9)', marginLeft: '0.25rem', fontWeight: '600' }}>({product.reviewCount || 10})</span>
                       </div>
                       <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>
                         <Link to={`/product/${product.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{product.title}</Link>
                       </h3>
-                      <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.85)', marginBottom: '1.25rem', lineHeight: '1.5', fontWeight: '500' }}>{product.subtitle || product.description}</p>
+                      <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '1.25rem', lineHeight: '1.5', fontWeight: '500' }}>{product.subtitle || product.description}</p>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.25)' }}>
@@ -683,10 +677,10 @@ export default function Home() {
       <section ref={ritualRef} className="reveal-fade-up ritual-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4rem' }}>
-            <span className="badge-pill" style={{ marginBottom: '0.75rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>Interactive Selection</span>
+            <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Interactive Selection</span>
             <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>Discover Your Perfect <span style={{ color: 'var(--accent-gold)' }}>Millet Ritual</span></h2>
           </div>
-
+ 
           <div className="ritual-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3.5rem', alignItems: 'center' }}>
             {/* Left Side: Numbered Selector */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -706,8 +700,6 @@ export default function Home() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      backdropFilter: 'none',
-                      WebkitBackdropFilter: 'none'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
@@ -728,17 +720,12 @@ export default function Home() {
                 );
               })}
             </div>
-
+ 
             {/* Right Side: Showcase Card */}
             <div
               className="ritual-showcase"
               style={{
                 padding: '2.5rem',
-                backgroundColor: 'transparent',
-                borderRadius: '24px',
-                border: '1px solid #FFFFFF',
-                backdropFilter: 'none',
-                WebkitBackdropFilter: 'none'
               }}
             >
               <div style={{ position: 'relative', height: '300px', borderRadius: '16px', overflow: 'hidden', marginBottom: '1.75rem', backgroundColor: 'transparent' }}>
@@ -786,34 +773,34 @@ export default function Home() {
       <section ref={timelineRef} className="reveal-fade-up timeline-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 4.5rem' }}>
-            <span className="badge-pill" style={{ marginBottom: '0.5rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>Mindful Eating</span>
+            <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Mindful Eating</span>
             <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>The MILASTY <span style={{ color: 'var(--accent-gold)' }}>Snack Ritual</span></h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1.02rem', fontWeight: '500' }}>Turn your everyday snack break into a moment worth slowing down for.</p>
+            <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1.02rem', fontWeight: '500' }}>Turn your everyday snack break into a moment worth slowing down for.</p>
           </div>
 
           <div className="timeline-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem' }}>
-            <div style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div style={{ padding: '2rem' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>01</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAUSE</h4>
-              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.6', fontWeight: '500' }}>Step away from screens and digital chatter for five mindful minutes.</p>
+              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Step away from screens and digital chatter for five mindful minutes.</p>
             </div>
 
-            <div style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div style={{ padding: '2rem' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>02</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTICE</h4>
-              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.6', fontWeight: '500' }}>Take in the warm, nostalgic aroma of slow-baked millets and pure Cow Ghee.</p>
+              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Take in the warm, nostalgic aroma of slow-baked millets and pure Cow Ghee.</p>
             </div>
 
-            <div style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div style={{ padding: '2rem' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>03</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>BITE SLOWLY</h4>
-              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.6', fontWeight: '500' }}>Enjoy the wholesome crumbly texture and balanced sweetness of unrefined jaggery.</p>
+              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Enjoy the wholesome crumbly texture and balanced sweetness of unrefined jaggery.</p>
             </div>
 
-            <div style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div style={{ padding: '2rem' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>04</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAIR & ENJOY</h4>
-              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.6', fontWeight: '500' }}>Pair with a cup of warm ginger chai, filter coffee, or green tea.</p>
+              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Pair with a cup of warm ginger chai, filter coffee, or green tea.</p>
             </div>
           </div>
         </div>
@@ -822,46 +809,46 @@ export default function Home() {
       {/* 7. LAB TEST / TRUST SECTION */}
       <section ref={labRef} className="reveal-fade-up lab-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div className="lab-container" style={{ padding: '4.5rem 3.5rem', backgroundColor: 'transparent', color: '#FFFFFF', borderRadius: '30px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+          <div className="lab-container" style={{ padding: '4.5rem 3.5rem', color: '#FFFFFF' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '4rem', alignItems: 'center' }}>
               <div>
-                <span className="badge-pill" style={{ backgroundColor: 'transparent', color: 'var(--accent-gold)', border: '1px solid var(--accent-gold)', marginBottom: '1.25rem' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.25rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>
                   <Award size={14} />
                   <span>Lab Tested Transparency</span>
                 </span>
-
+ 
                 <h2 style={{ fontSize: '2.5rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2' }}>
                   Know What Goes Into <span style={{ color: 'var(--accent-gold)' }}>Every Bite.</span>
                 </h2>
-
-                <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1rem', lineHeight: '1.7', marginBottom: '2.25rem', fontWeight: '500' }}>
+ 
+                <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1rem', lineHeight: '1.7', marginBottom: '2.25rem', fontWeight: '500' }}>
                   We publish comprehensive nutritional and chemical reports so you can make informed choices. Absolutely no hidden sugars or synthetic preservatives.
                 </p>
-
+ 
                 <Link to="/nutrition" className="btn-primary" style={{ backgroundColor: '#c89b3c', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', padding: '0.85rem 2rem', borderRadius: '999px', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                   <FileText size={18} />
                   <span>View Nutritional Specs →</span>
                 </Link>
               </div>
-
+ 
               {/* Comparison Box */}
-              <div className="lab-comparison" style={{ backgroundColor: 'transparent', padding: '2.25rem', borderRadius: '20px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+              <div className="lab-comparison" style={{ padding: '2.25rem' }}>
                 <h4 style={{ color: 'var(--accent-gold)', fontSize: '1.15rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>MILASTY vs Conventional Biscuits</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.92rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
-                    <span style={{ opacity: 0.85, fontWeight: '500' }}>Fat Source:</span>
+                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Fat Source:</span>
                     <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>100% Pure Cow Ghee</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
-                    <span style={{ opacity: 0.85, fontWeight: '500' }}>Sweetener:</span>
+                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Sweetener:</span>
                     <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Organic Jaggery</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
-                    <span style={{ opacity: 0.85, fontWeight: '500' }}>Flour Base:</span>
+                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Flour Base:</span>
                     <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Bajra, Jowar, Ragi (No Maida)</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.25rem' }}>
-                    <span style={{ opacity: 0.85, fontWeight: '500' }}>Preservatives:</span>
+                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Preservatives:</span>
                     <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Zero Synthetic Chemicals</strong>
                   </div>
                 </div>
@@ -875,12 +862,12 @@ export default function Home() {
       <section ref={reviewRef} className="reveal-fade-up reviews-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 4rem' }}>
-            <span className="badge-pill" style={{ marginBottom: '0.5rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>Customer Stories</span>
+            <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Customer Stories</span>
             <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>Loved by <span style={{ color: 'var(--accent-gold)' }}>Health-Conscious</span> Homes</h2>
           </div>
 
           <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center', position: 'relative' }}>
-            <div className="testimonial-card" style={{ padding: '3.5rem 2.5rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid #FFFFFF', backdropFilter: 'none', WebkitBackdropFilter: 'none' }}>
+            <div className="testimonial-card" style={{ padding: '3.5rem 2.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 {[...Array(reviews[activeReviewIdx].rating)].map((_, i) => (
                   <Star key={i} size={20} fill="var(--accent-gold)" color="var(--accent-gold)" />
@@ -893,7 +880,7 @@ export default function Home() {
 
               <div>
                 <strong style={{ fontSize: '1.1rem', color: '#FFFFFF', display: 'block', marginBottom: '0.25rem', fontWeight: '800' }}>{reviews[activeReviewIdx].name}</strong>
-                <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.85)', fontWeight: '600' }}>
+                <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>
                   {reviews[activeReviewIdx].role} • {reviews[activeReviewIdx].location}
                 </span>
               </div>
@@ -928,13 +915,13 @@ export default function Home() {
                 style={{ width: '100%', height: '400px', objectFit: 'cover', display: 'block' }}
               />
             </div>
-            <div>
-              <span className="badge-pill" style={{ marginBottom: '1rem', backgroundColor: 'transparent', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)' }}>The Milasty Story</span>
+            <div className="glass-card" style={{ padding: '2.5rem', borderRadius: '24px' }}>
+              <span style={{ display: 'inline-block', marginBottom: '1rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>The Milasty Story</span>
               <h2 style={{ fontSize: '2.5rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '1.25rem', lineHeight: '1.2' }}>From Ancient Grains to <span style={{ color: 'var(--accent-gold)' }}>Modern Snack Rituals.</span></h2>
-              <p style={{ color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.75', marginBottom: '1.5rem', fontWeight: '500' }}>
+              <p style={{ color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.75', marginBottom: '1.5rem', fontWeight: '500' }}>
                 We believe that snacking shouldn't require compromising on health or heritage. Our journey began with a simple mission: to reintroduce traditional Indian super-grains like Bajra, Jowar, and Ragi back into modern diets.
               </p>
-              <p style={{ color: 'rgba(255, 255, 255, 0.85)', lineHeight: '1.75', marginBottom: '2.25rem', fontWeight: '500' }}>
+              <p style={{ color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.75', marginBottom: '2.25rem', fontWeight: '500' }}>
                 Each batch is handcrafted in small quantities, baked in pure Desi Cow Ghee, and sweetened with organic jaggery. Clean labels, honest ingredients, and exceptional taste.
               </p>
               <Link to="/our-story" className="btn-primary" style={{ backgroundColor: '#c89b3c', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', padding: '0.85rem 2.25rem', borderRadius: '999px', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -954,27 +941,22 @@ export default function Home() {
             style={{
               padding: '5rem 2rem',
               textAlign: 'center',
-              backgroundColor: 'transparent',
               color: '#FFFFFF',
-              borderRadius: '30px',
-              border: '1px solid #FFFFFF',
               position: 'relative',
               overflow: 'hidden',
-              backdropFilter: 'none',
-              WebkitBackdropFilter: 'none'
             }}
           >
             <h2 style={{ fontSize: '2.8rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>
               Ready to Upgrade Your <span style={{ color: 'var(--accent-gold)' }}>Everyday Snack?</span>
             </h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1.1rem', maxWidth: '580px', margin: '0 auto 2.5rem', lineHeight: '1.7', fontWeight: '500' }}>
+            <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1.1rem', maxWidth: '580px', margin: '0 auto 2.5rem', lineHeight: '1.7', fontWeight: '500' }}>
               Discover freshly baked millet cookies made with pure Desi Ghee and organic jaggery. Delivered fresh all across India.
             </p>
             <Link to="/shop" className="btn-primary" style={{ padding: '1.1rem 2.75rem', fontSize: '1.05rem', backgroundColor: '#c89b3c', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', borderRadius: '999px' }}>
               <span>Shop All Fresh Bakes →</span>
             </Link>
             
-            <div style={{ marginTop: '2rem', fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)', letterSpacing: '0.05em', fontWeight: '700' }}>
+            <div style={{ marginTop: '2rem', fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.8)', letterSpacing: '0.05em', fontWeight: '700' }}>
               PAN-INDIA SHIPPING • FRESHLY BAKED ON ORDER
             </div>
           </div>

@@ -685,6 +685,52 @@ body, p, span, li, a {
   }
 }
 
+/* Announcement Marquee CSS */
+@keyframes marquee-ltr {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.announcement-marquee-track {
+  display: inline-flex;
+  width: max-content;
+  animation: marquee-ltr 32s linear infinite !important;
+  will-change: transform;
+}
+
+.announcement-marquee-content {
+  display: inline-flex;
+  align-items: center;
+  padding-right: 4.5rem;
+}
+
+/* Home Page Typography Hierarchy - Noticeably Bolder & Highly Readable */
+.home-page {
+  font-weight: 550; /* Medium-to-bold baseline body */
+}
+.home-page h1 {
+  font-weight: 900 !important;
+}
+.home-page h2 {
+  font-weight: 850 !important;
+}
+.home-page h3, .home-page h4 {
+  font-weight: 800 !important;
+}
+.home-page p, .home-page span, .home-page li {
+  font-weight: 550 !important;
+}
+.home-page strong, .home-page b {
+  font-weight: 800 !important;
+}
+.home-page .btn-primary, .home-page .btn-secondary {
+  font-weight: 850 !important;
+}
+
 /* Premium Glassmorphic Cards & Borders for Home Page */
 .home-page .trust-card,
 .home-page .why-grid > div,
@@ -693,20 +739,22 @@ body, p, span, li, a {
 .home-page .lab-comparison,
 .home-page .testimonial-card,
 .home-page .cta-card,
+.home-page .ritual-showcase,
 .home-page .glass-card {
   position: relative !important;
-  background: rgba(20, 12, 8, 0.18) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  background: rgba(35, 21, 13, 0.90) !important; /* Rich Dark Chocolate Translucent */
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
   border-radius: 18px !important;
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
   transition: all 250ms ease !important;
 }
 
 /* Specific radius overrides as per item 4 & 6 */
 .home-page .lab-container,
 .home-page .cta-card,
+.home-page .ritual-showcase,
 .home-page .glass-card {
   border-radius: 24px !important;
 }
@@ -720,10 +768,11 @@ body, p, span, li, a {
   .home-page .lab-comparison:hover,
   .home-page .testimonial-card:hover,
   .home-page .cta-card:hover,
+  .home-page .ritual-showcase:hover,
   .home-page .glass-card:hover {
-    border: 1px solid rgba(218, 169, 61, 0.55) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(200, 155, 60, 0.65) !important;
+    transform: translateY(-4px) !important;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5) !important;
   }
 }
 
@@ -736,8 +785,9 @@ body, p, span, li, a {
   .home-page .lab-comparison,
   .home-page .testimonial-card,
   .home-page .cta-card,
+  .home-page .ritual-showcase,
   .home-page .glass-card {
-    border: 1px solid rgba(255, 255, 255, 0.24) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
   }
 }
 
@@ -749,8 +799,9 @@ body, p, span, li, a {
   .home-page .lab-comparison,
   .home-page .testimonial-card,
   .home-page .cta-card,
+  .home-page .ritual-showcase,
   .home-page .glass-card {
-    border: 1px solid rgba(255, 255, 255, 0.26) !important;
+    border: 1px solid rgba(255, 255, 255, 0.24) !important;
   }
 }
 
