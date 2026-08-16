@@ -470,34 +470,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '2.5rem',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 4,
-            color: '#FFFFFF',
-            fontSize: '0.75rem',
-            letterSpacing: '0.12em',
-            fontWeight: '700',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.5rem',
-            opacity: Math.max(0, 1 - scrollY / 300),
-            transition: 'opacity 0.15s ease-out'
-          }}
-        >
-          <span>SCROLL TO EXPLORE</span>
-          <div style={{ animation: 'bounce 1.5s infinite', display: 'flex', alignItems: 'center' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <polyline points="19 12 12 19 5 12"></polyline>
-            </svg>
-          </div>
-        </div>
       </section>
 
       {/* 2. TRUST / BRAND PROMISE SECTION (Transparent tiles with white text and borders) */}
@@ -693,13 +665,16 @@ export default function Home() {
                     style={{
                       padding: '1.25rem 1.5rem',
                       borderRadius: '16px',
-                      backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-                      border: isSelected ? '1.5px solid #FFFFFF' : '1px solid rgba(255, 255, 255, 0.65)',
+                      backgroundColor: isSelected ? 'rgba(35, 21, 13, 0.82)' : 'rgba(35, 21, 13, 0.50)',
+                      border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.12)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
                       cursor: 'pointer',
                       transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>

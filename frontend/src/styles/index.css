@@ -742,12 +742,12 @@ body, p, span, li, a {
 .home-page .ritual-showcase,
 .home-page .glass-card {
   position: relative !important;
-  background: rgba(35, 21, 13, 0.90) !important; /* Rich Dark Chocolate Translucent */
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+  background: rgba(35, 21, 13, 0.60) !important; /* Translucent Warm Chocolate */
+  backdrop-filter: blur(24px) !important; /* Strong blur like image 2 */
+  -webkit-backdrop-filter: blur(24px) !important;
   border-radius: 18px !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
   transition: all 250ms ease !important;
 }
 
