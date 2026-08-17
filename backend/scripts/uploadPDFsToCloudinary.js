@@ -55,7 +55,7 @@ for (const pdf of pdfs) {
   try {
     let result;
     const options = {
-      resource_type: 'raw',
+      resource_type: 'image',
       public_id: pdf.name.replace('.pdf', ''),
       folder: 'milasty/reports',
     };

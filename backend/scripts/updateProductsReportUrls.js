@@ -20,15 +20,15 @@ if (!mongoUri) {
 const updates = [
   {
     slug: 'cardamom-bajra-cookies',
-    labReportUrl: 'https://res.cloudinary.com/dmm8lfc3x/raw/upload/v1786967857/milasty/reports/Cardamom_Bajra.pdf'
+    labReportUrl: 'https://res.cloudinary.com/dmm8lfc3x/image/upload/fl_attachment/v1786968822/milasty/reports/Cardamom_Bajra.pdf'
   },
   {
     slug: 'coconut-jowar-cookies',
-    labReportUrl: 'https://res.cloudinary.com/dmm8lfc3x/raw/upload/v1786967895/milasty/reports/Coconut_Jowar.pdf'
+    labReportUrl: 'https://res.cloudinary.com/dmm8lfc3x/image/upload/fl_attachment/v1786968862/milasty/reports/Coconut_Jowar.pdf'
   },
   {
     slug: 'cocoa-ragi-cookies',
-    labReportUrl: 'https://res.cloudinary.com/dmm8lfc3x/raw/upload/v1786967875/milasty/reports/Cocoa_Ragi.pdf'
+    labReportUrl: 'https://res.cloudinary.com/dmm8lfc3x/image/upload/fl_attachment/v1786968841/milasty/reports/Cocoa_Ragi.pdf'
   }
 ];
 
