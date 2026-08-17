@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ShieldCheck, Download, Award, FileText, Sparkles, CheckCircle2, 
   Sprout, Heart, BookOpen, Layers, Check, ChevronRight, Activity, Flame, Wheat
 } from 'lucide-react';
+import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 
 export default function Nutrition() {
-  const dailyProducts = initialProducts.filter((p) => p.category === 'daily');
+  const [products, setProducts] = useState(initialProducts);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get('/products?limit=100');
+        if (res.data && res.data.products) {
+          setProducts(res.data.products);
+        }
+      } catch (err) {
+        console.error('Error fetching products from database, using seed fallback:', err);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const dailyProducts = products.filter((p) => p.category === 'daily');
 
   return (
     <div className="nutrition-page" style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '0 0 6rem', width: '100%', maxWidth: '100%', overflowX: 'hidden', boxSizing: 'border-box' }}>

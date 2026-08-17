@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "upload-video": "node scripts/uploadToCloudinary.js"
+    "upload-video": "node scripts/uploadToCloudinary.js",
+    "upload-pdfs": "node scripts/uploadPDFsToCloudinary.js",
+    "update-db-pdfs": "node scripts/updateProductsReportUrls.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
