@@ -2,7 +2,7 @@
 // Node 18+ has built-in global fetch.
 
 async function check() {
-  const url = 'https://res.cloudinary.com/dmm8lfc3x/raw/upload/v1786967857/milasty/reports/Cardamom_Bajra.pdf';
+  const url = 'https://res.cloudinary.com/dmm8lfc3x/image/upload/v1786968822/milasty/reports/Cardamom_Bajra.pdf';
   try {
     const res = await fetch(url);
     console.log('Status Code:', res.status);

@@ -38,7 +38,4 @@ build/
 *.webm
 *.ogg
 
-# Local PDF Lab Reports (uploaded to Cloudinary)
-/public/Cardamom_Bajra.pdf
-/public/Cocoa_Ragi.pdf
-/public/Coconut_Jowar.pdf
+
