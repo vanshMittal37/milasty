@@ -26,6 +26,24 @@ export default function Nutrition() {
 
   const dailyProducts = products.filter((p) => p.category === 'daily');
 
+  const handleDownload = async (url, filename) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', filename || 'report.pdf');
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download failed, opening in new tab:', error);
+      window.open(url, '_blank');
+    }
+  };
+
   return (
     <div className="nutrition-page" style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '0 0 6rem', width: '100%', maxWidth: '100%', overflowX: 'hidden', boxSizing: 'border-box' }}>
       
@@ -356,10 +374,8 @@ export default function Nutrition() {
                 {dailyProducts.map((p, idx) => (
                   <td key={idx} style={{ padding: '1.5rem 1.5rem' }}>
                     {p.labReportUrl ? (
-                      <a
-                        href={p.labReportUrl}
-                        target="_blank"
-                        rel="noreferrer"
+                      <button
+                        onClick={() => handleDownload(p.labReportUrl, `${p.title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
                         className="btn-secondary"
                         style={{ 
                           padding: '0.5rem 1rem', 
@@ -373,12 +389,13 @@ export default function Nutrition() {
                           gap: '0.35rem',
                           textDecoration: 'none',
                           backgroundColor: '#FFFFFF',
-                          transition: 'all 0.2s'
+                          transition: 'all 0.2s',
+                          cursor: 'pointer'
                         }}
                       >
                         <Download size={13} />
                         <span>Download Lab Report</span>
-                      </a>
+                      </button>
                     ) : (
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600' }}>Unavailable</span>
                     )}
@@ -439,10 +456,8 @@ export default function Nutrition() {
 
                 <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border-color)', marginTop: '0.5rem' }}>
                   {p.labReportUrl ? (
-                    <a
-                      href={p.labReportUrl}
-                      target="_blank"
-                      rel="noreferrer"
+                    <button
+                      onClick={() => handleDownload(p.labReportUrl, `${p.title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
                       className="btn-secondary"
                       style={{ 
                         padding: '0.65rem 0', 
@@ -457,12 +472,13 @@ export default function Nutrition() {
                         gap: '0.35rem',
                         textDecoration: 'none',
                         backgroundColor: '#FFFFFF',
-                        width: '100%'
+                        width: '100%',
+                        cursor: 'pointer'
                       }}
                     >
                       <Download size={14} />
                       <span>Download Lab Report</span>
-                    </a>
+                    </button>
                   ) : (
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '700', textAlign: 'center', display: 'block' }}>Report Unavailable</span>
                   )}
