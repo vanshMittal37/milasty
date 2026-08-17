@@ -55,8 +55,8 @@ for (const pdf of pdfs) {
   try {
     let result;
     const options = {
-      resource_type: 'image',
-      public_id: pdf.name.replace('.pdf', ''),
+      resource_type: 'raw',
+      public_id: pdf.name,
       folder: 'milasty/reports',
     };
 
@@ -83,7 +83,8 @@ for (const pdf of pdfs) {
 
     console.log(`\n--- ${pdf.name} Upload Successful! ---`);
     console.log(`Public ID : ${result.public_id}`);
-    console.log(`Secure URL: ${result.secure_url}\n`);
+    const downloadUrl = result.secure_url.replace('/upload/', '/upload/fl_attachment/');
+    console.log(`Secure URL: ${downloadUrl}\n`);
   } catch (error) {
     console.error(`\n[Fatal Error] Failed to upload ${pdf.name}:`, error);
   }
