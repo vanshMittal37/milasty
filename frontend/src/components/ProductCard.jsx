@@ -180,6 +180,9 @@ export default function ProductCard({ product }) {
               fontWeight: '500'
             }}
           >
+            {product.subtitle || product.description}
+          </p>
+
           {/* Pack Size Selector Removed */}
         </div>
 
