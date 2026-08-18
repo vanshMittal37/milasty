@@ -212,10 +212,10 @@ export default function AdminDashboardMain() {
             className="glass-card" 
             style={{ 
               padding: '1.5rem', 
-              backgroundColor: '#FFFFFF', 
+              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
               borderRadius: '16px', 
-              border: '1.5px solid var(--border-color)',
-              boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)',
+              border: '1px solid rgba(245, 235, 221, 0.25)',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -224,26 +224,26 @@ export default function AdminDashboardMain() {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(56, 20, 35, 0.02)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(56, 20, 35, 0.01)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Revenue</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--primary-dark)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--text-light)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   ₹{stats?.totalRevenue || 0}
                 </div>
               </div>
-              <div style={{ padding: '0.45rem', borderRadius: '10px', backgroundColor: 'rgba(39, 76, 55, 0.06)', color: 'var(--accent-olive)' }}>
+              <div style={{ padding: '0.45rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--accent-gold)' }}>
                 <DollarSign size={16} />
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '0.65rem' }}>
-              <span style={{ fontSize: '0.74rem', color: 'var(--accent-olive)', fontWeight: '750' }}>Captured sales</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '0.65rem' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--accent-gold)', fontWeight: '750' }}>Captured sales</span>
               <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: '600' }}>Current period</span>
             </div>
           </div>
@@ -253,10 +253,10 @@ export default function AdminDashboardMain() {
             className="glass-card" 
             style={{ 
               padding: '1.5rem', 
-              backgroundColor: '#FFFFFF', 
+              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
               borderRadius: '16px', 
-              border: '1.5px solid var(--border-color)',
-              boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)',
+              border: '1px solid rgba(245, 235, 221, 0.25)',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -265,26 +265,26 @@ export default function AdminDashboardMain() {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(56, 20, 35, 0.02)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(56, 20, 35, 0.01)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Orders</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--primary-dark)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--text-light)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   {stats?.totalOrders || 0}
                 </div>
               </div>
-              <div style={{ padding: '0.45rem', borderRadius: '10px', backgroundColor: 'rgba(197, 160, 89, 0.08)', color: 'var(--accent-gold)' }}>
+              <div style={{ padding: '0.45rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--accent-gold)' }}>
                 <ShoppingBag size={16} />
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '0.65rem' }}>
-              <span style={{ fontSize: '0.74rem', color: 'var(--primary-dark)', fontWeight: '750' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '0.65rem' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-light)', fontWeight: '750' }}>
                 {stats?.pendingOrders || 0} Pending
               </span>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '750' }}>
@@ -298,10 +298,10 @@ export default function AdminDashboardMain() {
             className="glass-card" 
             style={{ 
               padding: '1.5rem', 
-              backgroundColor: '#FFFFFF', 
+              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
               borderRadius: '16px', 
-              border: '1.5px solid var(--border-color)',
-              boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)',
+              border: '1px solid rgba(245, 235, 221, 0.25)',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -310,17 +310,17 @@ export default function AdminDashboardMain() {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(56, 20, 35, 0.02)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(56, 20, 35, 0.01)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Low Stock Alert</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: (stats?.lowStockProducts || 0) > 0 ? 'var(--accent-terracotta)' : 'var(--primary-dark)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: (stats?.lowStockProducts || 0) > 0 ? 'var(--accent-terracotta)' : 'var(--text-light)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   {stats?.lowStockProducts || 0}
                 </div>
               </div>
@@ -328,9 +328,9 @@ export default function AdminDashboardMain() {
                 <AlertTriangle size={16} />
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '0.65rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '0.65rem' }}>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '750' }}>Stock threshold ≤ 5</span>
-              <span style={{ fontSize: '0.68rem', color: (stats?.lowStockProducts || 0) > 0 ? 'var(--accent-terracotta)' : 'var(--accent-olive)', fontWeight: '800' }}>
+              <span style={{ fontSize: '0.68rem', color: (stats?.lowStockProducts || 0) > 0 ? 'var(--accent-terracotta)' : 'var(--accent-gold)', fontWeight: '800' }}>
                 {(stats?.lowStockProducts || 0) > 0 ? 'Restock' : 'Healthy'}
               </span>
             </div>
@@ -341,10 +341,10 @@ export default function AdminDashboardMain() {
             className="glass-card" 
             style={{ 
               padding: '1.5rem', 
-              backgroundColor: '#FFFFFF', 
+              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
               borderRadius: '16px', 
-              border: '1.5px solid var(--border-color)',
-              boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)',
+              border: '1px solid rgba(245, 235, 221, 0.25)',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -353,25 +353,25 @@ export default function AdminDashboardMain() {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(56, 20, 35, 0.02)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(56, 20, 35, 0.01)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Customers</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--primary-dark)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--text-light)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   {stats?.totalCustomers || 0}
                 </div>
               </div>
-              <div style={{ padding: '0.45rem', borderRadius: '10px', backgroundColor: 'rgba(56, 20, 35, 0.04)', color: 'var(--primary-dark)' }}>
+              <div style={{ padding: '0.45rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}>
                 <Users size={16} />
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '0.65rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '0.65rem' }}>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '750' }}>Registered users</span>
               <span style={{ fontSize: '0.68rem', color: 'var(--accent-gold)', fontWeight: '800' }}>Live registry</span>
             </div>
@@ -404,27 +404,27 @@ export default function AdminDashboardMain() {
           className="glass-card" 
           style={{ 
             padding: '2rem', 
-            backgroundColor: '#FFFFFF', 
+            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
             borderRadius: '16px', 
-            border: '1.5px solid var(--border-color)',
-            boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)'
+            border: '1px solid rgba(245, 235, 221, 0.25)',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>Sales Overview</h3>
+              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>Sales Overview</h3>
               <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: '0.15rem 0 0 0', fontWeight: '500' }}>Revenue performance over time</p>
             </div>
             
-            <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: 'rgba(56,20,35,0.03)', padding: '0.25rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: 'rgba(255,255,255,0.03)', padding: '0.25rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.15)' }}>
               {['7 Days', '30 Days', '3 Months', '1 Year'].map(range => (
                 <button 
                   key={range} 
                   onClick={() => setActiveRange(range)}
                   style={{ 
                     border: 'none', 
-                    background: range === activeRange ? '#FFFFFF' : 'none', 
-                    color: range === activeRange ? 'var(--primary-dark)' : 'var(--text-muted)', 
+                    background: range === activeRange ? 'rgba(255, 255, 255, 0.05)' : 'none', 
+                    color: range === activeRange ? 'var(--accent-gold)' : 'var(--text-muted)', 
                     fontSize: '0.7rem', 
                     padding: '0.35rem 0.75rem', 
                     borderRadius: '6px', 
@@ -445,14 +445,14 @@ export default function AdminDashboardMain() {
               <svg viewBox="0 0 500 200" width="100%" height="100%" style={{ overflow: 'visible' }}>
                 <defs>
                   <linearGradient id="chartGradPlum" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#381423" stopOpacity="0.15" />
-                    <stop offset="100%" stopColor="#381423" stopOpacity="0.0" />
+                    <stop offset="0%" stopColor="var(--accent-gold)" stopOpacity="0.15" />
+                    <stop offset="100%" stopColor="var(--accent-gold)" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
                 
                 {/* Horizontal Grid lines */}
                 {[0, 50, 100, 150].map((yVal) => (
-                  <line key={yVal} x1="0" y1={yVal} x2="500" y2={yVal} stroke="var(--border-color)" strokeWidth="1" strokeDasharray="4 4" />
+                  <line key={yVal} x1="0" y1={yVal} x2="500" y2={yVal} stroke="rgba(245, 235, 221, 0.1)" strokeWidth="1" strokeDasharray="4 4" />
                 ))}
 
                 {/* Line Path */}
@@ -463,7 +463,7 @@ export default function AdminDashboardMain() {
                     return acc + `${idx === 0 ? 'M' : 'L'} ${xCoord} ${yCoord}`;
                   }, '')}
                   fill="none"
-                  stroke="#381423" // MILASTY brand plum line
+                  stroke="var(--accent-gold)" 
                   strokeWidth="3.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -489,8 +489,8 @@ export default function AdminDashboardMain() {
                       cx={xCoord} 
                       cy={yCoord} 
                       r="4.5" 
-                      fill="#FFFFFF" 
-                      stroke="#381423" 
+                      fill="#24130D" 
+                      stroke="var(--accent-gold)" 
                       strokeWidth="2.5" 
                       style={{ cursor: 'pointer' }}
                     >
@@ -501,9 +501,9 @@ export default function AdminDashboardMain() {
               </svg>
             </div>
           ) : (
-            <div style={{ height: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.45rem', border: '1.5px dashed var(--border-color)', borderRadius: '12px', backgroundColor: '#FCFAF6' }}>
+            <div style={{ height: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.45rem', border: '1px dashed rgba(245, 235, 221, 0.25)', borderRadius: '12px', backgroundColor: 'rgba(255, 255, 255, 0.03)' }}>
               <TrendingUp size={24} color="var(--text-muted)" />
-              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--primary-dark)' }}>No sales data yet</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-light)' }}>No sales data yet</span>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '500' }}>Your sales performance will appear here once completed orders are recorded.</span>
             </div>
           )}
@@ -514,26 +514,26 @@ export default function AdminDashboardMain() {
           className="glass-card" 
           style={{ 
             padding: '2rem', 
-            backgroundColor: '#FFFFFF', 
+            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
             borderRadius: '16px', 
-            border: '1.5px solid var(--border-color)', 
-            boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)',
+            border: '1px solid rgba(245, 235, 221, 0.25)', 
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
         >
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>Low Stock Alert</h3>
+            <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>Low Stock Alert</h3>
             <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: '0.15rem 0 1.5rem 0', fontWeight: '500' }}>Inventory requiring attention</p>
             
             {lowStockItems.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {lowStockItems.slice(0, 3).map((p) => (
-                  <div key={p._id || p.slug} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-                    <img src={p.image} alt={p.title} style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
+                  <div key={p._id || p.slug} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.75rem' }}>
+                    <img src={p.image} alt={p.title} style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.15)' }} />
                     <div style={{ flexGrow: 1 }}>
-                      <div style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--primary-dark)', lineHeight: '1.25' }}>{p.title}</div>
+                      <div style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--text-light)', lineHeight: '1.25' }}>{p.title}</div>
                       <div style={{ fontSize: '0.72rem', color: 'var(--accent-terracotta)', fontWeight: '750', marginTop: '0.15rem' }}>
                         {p.stock !== undefined ? p.stock : 0} units left
                       </div>
@@ -543,8 +543,8 @@ export default function AdminDashboardMain() {
               </div>
             ) : (
               <div style={{ padding: '2.5rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(39, 76, 55, 0.02)', borderRadius: '12px', border: '1.5px dashed rgba(39, 76, 55, 0.15)' }}>
-                <CheckCircle size={28} color="var(--accent-olive)" />
-                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--primary-dark)' }}>✓ Inventory looks healthy</span>
+                <CheckCircle size={28} color="var(--accent-gold)" />
+                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-light)' }}>✓ Inventory looks healthy</span>
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '500' }}>No products currently need restocking.</span>
               </div>
             )}
@@ -562,7 +562,7 @@ export default function AdminDashboardMain() {
               color: 'var(--accent-gold)', 
               textDecoration: 'none',
               marginTop: '1.5rem',
-              borderTop: '1px solid var(--border-color)',
+              borderTop: '1px solid rgba(245, 235, 221, 0.15)',
               paddingTop: '1rem'
             }}
           >
@@ -574,11 +574,10 @@ export default function AdminDashboardMain() {
 
       {/* ==================================================
           4. RECENT ORDERS TABLE
-         ================================================== */}
-      <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px solid var(--border-color)', boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)' }}>
+         ========================================      <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
-            <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>Recent Orders</h3>
+            <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>Recent Orders</h3>
             <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: '0.15rem 0 0 0', fontWeight: '500' }}>Latest store checkout activities</p>
           </div>
           
@@ -592,7 +591,7 @@ export default function AdminDashboardMain() {
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.86rem', textAlign: 'left' }}>
               <thead>
-                <tr style={{ borderBottom: '1.5px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <tr style={{ borderBottom: '1.5px solid rgba(245, 235, 221, 0.15)', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Order ID</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Customer</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Total</th>
@@ -604,13 +603,13 @@ export default function AdminDashboardMain() {
               </thead>
               <tbody>
                 {stats.recentOrders.slice(0, 5).map((o) => (
-                  <tr key={o.orderId} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '1rem', fontWeight: '800', color: 'var(--primary-dark)' }}>{o.orderId}</td>
+                  <tr key={o.orderId} style={{ borderBottom: '1px solid rgba(245, 235, 221, 0.15)' }}>
+                    <td style={{ padding: '1rem', fontWeight: '800', color: 'var(--text-light)' }}>{o.orderId}</td>
                     <td style={{ padding: '1rem' }}>
-                      <div style={{ fontWeight: '750', color: 'var(--primary-dark)' }}>{o.customerName}</div>
+                      <div style={{ fontWeight: '750', color: 'var(--text-light)' }}>{o.customerName}</div>
                       <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{o.phone}</div>
                     </td>
-                    <td style={{ padding: '1rem', fontWeight: '800', color: 'var(--primary-dark)' }}>₹{o.totalAmount}</td>
+                    <td style={{ padding: '1rem', fontWeight: '800', color: 'var(--text-light)' }}>₹{o.totalAmount}</td>
                     <td style={{ padding: '1rem' }}>
                       <span 
                         style={{ 
@@ -619,7 +618,7 @@ export default function AdminDashboardMain() {
                           textTransform: 'uppercase',
                           letterSpacing: '0.04em',
                           backgroundColor: o.paymentStatus === 'Paid' ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', 
-                          color: o.paymentStatus === 'Paid' ? 'var(--accent-olive)' : 'var(--accent-terracotta)',
+                          color: o.paymentStatus === 'Paid' ? 'var(--accent-gold)' : 'var(--accent-terracotta)',
                           padding: '0.25rem 0.6rem',
                           borderRadius: '6px'
                         }}
@@ -679,7 +678,7 @@ export default function AdminDashboardMain() {
           5. QUICK ACTIONS
          ================================================== */}
       <div>
-        <h3 style={{ fontSize: '1rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--primary-dark)', marginBottom: '1rem', marginTop: 0 }}>
+        <h3 style={{ fontSize: '1rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-light)', marginBottom: '1rem', marginTop: 0 }}>
           Quick Actions
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
@@ -695,38 +694,39 @@ export default function AdminDashboardMain() {
                 key={act.label} 
                 to={act.path}
                 style={{ 
-                  backgroundColor: '#FFFFFF', 
+                  backgroundColor: 'rgba(50, 26, 18, 0.60)', 
                   borderRadius: '16px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   padding: '1.5rem',
                   textDecoration: 'none',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.65rem',
                   transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)'
+                  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
                 }}
                 className="admin-action-card"
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(56, 20, 35, 0.03)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(56, 20, 35, 0.01)';
+                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
                 }}
               >
-                <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'rgba(56, 20, 35, 0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-dark)' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)' }}>
                   <Icon size={16} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--primary-dark)', margin: '0.25rem 0 0.15rem 0' }}>{act.label}</h4>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-light)', margin: '0.25rem 0 0.15rem 0' }}>{act.label}</h4>
                   <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0, fontWeight: '500', lineHeight: '1.3' }}>{act.desc}</p>
                 </div>
               </Link>
             );
           })}
         </div>
+      </div>      </div>
       </div>
 
       {/* ==================================================
@@ -754,24 +754,24 @@ export default function AdminDashboardMain() {
           className="glass-card" 
           style={{ 
             padding: '2rem', 
-            backgroundColor: '#FFFFFF', 
+            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
             borderRadius: '16px', 
-            border: '1.5px solid var(--border-color)',
-            boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)'
+            border: '1px solid rgba(245, 235, 221, 0.25)',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
           }}
         >
-          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.25rem', marginTop: 0 }}>Recent Activity</h3>
+          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.25rem', marginTop: 0 }}>Recent Activity</h3>
           <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: '0 0 1.5rem 0', fontWeight: '500' }}>Live store event history log</p>
 
           {activityEvents.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {activityEvents.map((act, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '0.75rem', borderBottom: idx !== activityEvents.length - 1 ? '1px solid var(--border-color)' : 'none', paddingBottom: '0.75rem' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(56, 20, 35, 0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-dark)', flexShrink: 0 }}>
+                <div key={idx} style={{ display: 'flex', gap: '0.75rem', borderBottom: idx !== activityEvents.length - 1 ? '1px solid rgba(245, 235, 221, 0.15)' : 'none', paddingBottom: '0.75rem' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', flexShrink: 0 }}>
                     <Activity size={12} />
                   </div>
                   <div style={{ flexGrow: 1 }}>
-                    <div style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--primary-dark)' }}>{act.title}</div>
+                    <div style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--text-light)' }}>{act.title}</div>
                     <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.15rem', fontWeight: '500' }}>{act.desc}</div>
                   </div>
                   <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600', flexShrink: 0 }}>{act.time}</span>
@@ -790,42 +790,42 @@ export default function AdminDashboardMain() {
           className="glass-card" 
           style={{ 
             padding: '2rem', 
-            backgroundColor: '#FFFFFF', 
+            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
             borderRadius: '16px', 
-            border: '1.5px solid var(--border-color)',
-            boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)'
+            border: '1px solid rgba(245, 235, 221, 0.25)',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
           }}
         >
-          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.25rem', marginTop: 0 }}>Store Health</h3>
+          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.25rem', marginTop: 0 }}>Store Health</h3>
           <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: '0 0 1.5rem 0', fontWeight: '500' }}>Database connection and component status</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Package size={15} color="var(--text-muted)" />
-                <span style={{ fontSize: '0.82rem', fontWeight: '750', color: 'var(--primary-dark)' }}>Product Catalog Status</span>
+                <span style={{ fontSize: '0.82rem', fontWeight: '750', color: 'var(--text-light)' }}>Product Catalog Status</span>
               </div>
-              <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: isCatalogConnected ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', color: isCatalogConnected ? 'var(--accent-olive)' : 'var(--accent-terracotta)', padding: '0.25rem 0.6rem', borderRadius: '6px' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: isCatalogConnected ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', color: isCatalogConnected ? 'var(--accent-gold)' : 'var(--accent-terracotta)', padding: '0.25rem 0.6rem', borderRadius: '6px' }}>
                 {isCatalogConnected ? 'Active' : 'Offline'}
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Users size={15} color="var(--text-muted)" />
-                <span style={{ fontSize: '0.82rem', fontWeight: '750', color: 'var(--primary-dark)' }}>Customer Accounts Registry</span>
+                <span style={{ fontSize: '0.82rem', fontWeight: '750', color: 'var(--text-light)' }}>Customer Accounts Registry</span>
               </div>
-              <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: isCustomersConnected ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', color: isCustomersConnected ? 'var(--accent-olive)' : 'var(--accent-terracotta)', padding: '0.25rem 0.6rem', borderRadius: '6px' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: isCustomersConnected ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', color: isCustomersConnected ? 'var(--accent-gold)' : 'var(--accent-terracotta)', padding: '0.25rem 0.6rem', borderRadius: '6px' }}>
                 {isCustomersConnected ? 'Connected' : 'Offline'}
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <ShoppingBag size={15} color="var(--text-muted)" />
-                <span style={{ fontSize: '0.82rem', fontWeight: '750', color: 'var(--primary-dark)' }}>Order Fulfillment Gateway</span>
+                <span style={{ fontSize: '0.82rem', fontWeight: '750', color: 'var(--text-light)' }}>Order Fulfillment Gateway</span>
               </div>
-              <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: isOrdersConnected ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', color: isOrdersConnected ? 'var(--accent-olive)' : 'var(--accent-terracotta)', padding: '0.25rem 0.6rem', borderRadius: '6px' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: isOrdersConnected ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', color: isOrdersConnected ? 'var(--accent-gold)' : 'var(--accent-terracotta)', padding: '0.25rem 0.6rem', borderRadius: '6px' }}>
                 {isOrdersConnected ? 'Connected' : 'Offline'}
               </span>
             </div>
@@ -833,9 +833,9 @@ export default function AdminDashboardMain() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '0.25rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <MessageSquare size={15} color="var(--text-muted)" />
-                <span style={{ fontSize: '0.82rem', fontWeight: '750', color: 'var(--primary-dark)' }}>Review Moderation Gateway</span>
+                <span style={{ fontSize: '0.82rem', fontWeight: '750', color: 'var(--text-light)' }}>Review Moderation Gateway</span>
               </div>
-              <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: isReviewsConnected ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', color: isReviewsConnected ? 'var(--accent-olive)' : 'var(--accent-terracotta)', padding: '0.25rem 0.6rem', borderRadius: '6px' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: isReviewsConnected ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', color: isReviewsConnected ? 'var(--accent-gold)' : 'var(--accent-terracotta)', padding: '0.25rem 0.6rem', borderRadius: '6px' }}>
                 {isReviewsConnected ? 'Active' : 'Offline'}
               </span>
             </div>
