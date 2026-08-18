@@ -1423,3 +1423,33 @@ textarea::placeholder {
   backdrop-filter: blur(24px) !important;
   -webkit-backdrop-filter: blur(24px) !important;
 }
+
+/* ==================================================
+   CENTER CARDS IN ALL AUTO-FIT GRIDS SITE-WIDE
+   Fixes left-alignment when fewer cards than columns
+   ================================================== */
+
+/* Any grid using auto-fit — center the track */
+[style*="auto-fit"] {
+  justify-content: center !important;
+}
+
+/* Specific glass-card grids that use flex layout */
+.shop-page .glass-card,
+.nutrition-page .glass-card,
+.contact-page .glass-card,
+.our-story-page .glass-card,
+.products-page .glass-card {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Flex-based card rows: center when fewer items */
+.wishlist-page [style*="display: flex"][style*="flex-wrap"],
+.shop-page [style*="display: flex"][style*="flex-wrap"],
+.nutrition-page [style*="display: flex"][style*="flex-wrap"],
+.our-story-page [style*="display: flex"][style*="flex-wrap"],
+.products-page [style*="display: flex"][style*="flex-wrap"],
+.contact-page [style*="display: flex"][style*="flex-wrap"] {
+  justify-content: center !important;
+}

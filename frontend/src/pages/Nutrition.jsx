@@ -608,34 +608,34 @@ export default function Nutrition() {
                 We work directly with domestic farming sources to identify wholesome ancient millets. We never refine, strip, or dilute our baking ingredients.
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '0.5rem' }}>
-                <div>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    <span style={{ color: 'var(--accent-gold)' }}>01</span>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '0.5rem' }}>
+                <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span>01</span>
                     <span>Ancient Grains</span>
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Sourced native Bajra, Jowar, and Ragi flour.</p>
+                  <p style={{ fontSize: '0.8rem', color: 'rgba(245,235,218,0.80)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Sourced native Bajra, Jowar, and Ragi flour.</p>
                 </div>
-                <div>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    <span style={{ color: 'var(--accent-gold)' }}>02</span>
+                <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span>02</span>
                     <span>Selected Ingredients</span>
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Pure cow Desi Ghee & unrefined organic jaggery.</p>
+                  <p style={{ fontSize: '0.8rem', color: 'rgba(245,235,218,0.80)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Pure cow Desi Ghee & unrefined organic jaggery.</p>
                 </div>
-                <div>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    <span style={{ color: 'var(--accent-gold)' }}>03</span>
+                <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span>03</span>
                     <span>Slow Baking</span>
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Slow-baked in temperature-controlled oven bakes.</p>
+                  <p style={{ fontSize: '0.8rem', color: 'rgba(245,235,218,0.80)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Slow-baked in temperature-controlled oven bakes.</p>
                 </div>
-                <div>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    <span style={{ color: 'var(--accent-gold)' }}>04</span>
+                <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span>04</span>
                     <span>Finished Bake</span>
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>A crumbly, delicious, clean millet cookie.</p>
+                  <p style={{ fontSize: '0.8rem', color: 'rgba(245,235,218,0.80)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>A crumbly, delicious, clean millet cookie.</p>
                 </div>
               </div>
             </div>
@@ -730,22 +730,22 @@ export default function Nutrition() {
             Every ingredient has a place. Every number has a source.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '2rem', textAlign: 'left' }}>
-            <div>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: 'var(--text-light)', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ingredient Transparency</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Clear ingredient information on every pack.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem', textAlign: 'left' }}>
+            <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '18px' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: 'var(--accent-gold)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ingredient Transparency</h4>
+              <p style={{ fontSize: '0.8rem', color: 'rgba(245,235,218,0.80)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Clear ingredient information on every pack.</p>
             </div>
-            <div>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: 'var(--text-light)', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Nutritional Info</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Per 100g nutritional values clearly listed.</p>
+            <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '18px' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: 'var(--accent-gold)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Nutritional Info</h4>
+              <p style={{ fontSize: '0.8rem', color: 'rgba(245,235,218,0.80)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Per 100g nutritional values clearly listed.</p>
             </div>
-            <div>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: 'var(--text-light)', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Product Specific Data</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Specific calculations shown for individual bakes.</p>
+            <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '18px' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: 'var(--accent-gold)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Product Specific Data</h4>
+              <p style={{ fontSize: '0.8rem', color: 'rgba(245,235,218,0.80)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Specific calculations shown for individual bakes.</p>
             </div>
-            <div>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: 'var(--text-light)', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Lab Reports</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Downloadable certified reports available.</p>
+            <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '18px' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: 'var(--accent-gold)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Lab Reports</h4>
+              <p style={{ fontSize: '0.8rem', color: 'rgba(245,235,218,0.80)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Downloadable certified reports available.</p>
             </div>
           </div>
         </div>

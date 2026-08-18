@@ -606,128 +606,60 @@ export default function OurStory() {
         </div>
       </section>
 
-      {/* 8. EMOTIONAL BRAND STATEMENT SECTION */}
-      <section 
-        style={{ 
-          backgroundColor: 'var(--primary-dark)', 
-          color: '#FFFFFF', 
-          padding: '6.5rem 1.5rem', 
-          textAlign: 'center', 
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-      >
-        <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
-          <h2 
-            style={{ 
-              fontSize: 'clamp(2rem, 5vw, 3rem)', 
-              fontFamily: 'var(--font-serif)', 
-              lineHeight: '1.2', 
-              color: '#FDFBF7', 
-              marginBottom: '1.5rem',
-              fontWeight: '700' 
-            }}
-          >
-            Better Ingredients. Thoughtful Baking.<br />A More Meaningful Snack.
-          </h2>
-          <p 
-            style={{ 
-              fontSize: '1.1rem', 
-              color: 'rgba(253, 251, 247, 0.85)', 
-              lineHeight: '1.7', 
-              marginBottom: '2.75rem',
-              maxWidth: '560px',
-              margin: '0 auto 2.75rem' 
-            }}
-          >
-            Because what we choose to eat every day deserves a little more intention and traditional care.
-          </p>
-          <Link 
-            to="/shop" 
-            className="btn-primary" 
-            style={{ padding: '1rem 2.5rem', fontSize: '0.95rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', fontWeight: '800', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-          >
-            <span>Explore MILASTY Bakes</span>
-            <ChevronRight size={16} />
-          </Link>
-        </div>
-      </section>
+
 
       {/* 9. TRUST & TRANSPARENCY SECTION */}
-      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0', borderBottom: '1px solid var(--border-color)' }}>
-        <div style={{ maxWidth: '750px', margin: '0 auto', textAlign: 'center', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(197, 160, 89, 0.08)', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-            <Info size={22} />
+      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0', borderBottom: '1px solid rgba(245,220,180,0.15)' }}>
+        <div style={{ maxWidth: '750px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
+          <div className="glass-card" style={{ padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(197, 160, 89, 0.15)', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+              <Info size={22} />
+            </div>
+            <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: '#F5EBDA', fontWeight: '800', marginBottom: '1rem' }}>
+              Know What Goes Into Your Food.
+            </h2>
+            <p style={{ fontSize: '0.95rem', color: 'rgba(245,235,218,0.80)', lineHeight: '1.65', marginBottom: '2.5rem', fontWeight: '500' }}>
+              We maintain 100% transparency in recipe designs, nutritional parameters, and batch-test laboratory reports.
+            </p>
+            <Link
+              to="/nutrition"
+              className="btn-primary"
+              style={{ padding: '0.9rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '800' }}
+            >
+              Explore Nutrition & Lab Reports
+            </Link>
           </div>
-          <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1rem' }}>
-            Know What Goes Into Your Food.
-          </h2>
-          <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: '1.65', marginBottom: '2.5rem', fontWeight: '500' }}>
-            We maintain 100% transparency in recipe designs, nutritional parameters, and batch-test laboratory reports.
-          </p>
-          <Link 
-            to="/nutrition" 
-            className="btn-primary" 
-            style={{ padding: '0.9rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '800' }}
-          >
-            Explore Nutrition & Lab Reports
-          </Link>
         </div>
       </section>
 
-      {/* 10. FOUNDER CLOSING PERSONAL MESSAGE */}
-      <section style={{ padding: '6.5rem 0', backgroundColor: 'transparent' }}>
-        <div 
-          style={{ 
-            maxWidth: '900px', 
-            margin: '0 auto', 
-            paddingLeft: '1.5rem', 
-            paddingRight: '1.5rem',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '1.5rem'
-          }}
-        >
-          <Logo variant="emblem" style={{ height: '70px', width: 'auto', marginBottom: '0.25rem' }} />
-          <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
-            Made With the Same Care We'd Give Our Family.
-          </h2>
-          <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', lineHeight: '1.8', maxWidth: '640px', margin: 0, fontWeight: '500', fontStyle: 'italic' }}>
-            "Every recipe at MILASTY starts inside my kitchen. I wanted simple, guilt-free treats for my family that genuinely support wellness. Our promise is to maintain that same small-batch baking care as we grow."
-          </p>
-          <div style={{ marginTop: '1.25rem' }}>
-            <div style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800' }}>— The MILASTY Team</div>
-            <span style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginTop: '0.2rem' }}>Kitchens of Greater Noida</span>
-          </div>
-        </div>
-      </section>
+
 
       {/* 11. FINAL BRAND CONVERSION CTA */}
       <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
-            Ready to Make Snacking a Ritual?
-          </h2>
-          <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.65', marginBottom: '2.5rem', maxWidth: '520px', margin: '0.5rem auto 2.5rem', fontWeight: '500' }}>
-            Explore fresh, handcrafted millet bakes made with jaggery, Desi Ghee, and plenty of traditional care.
-          </p>
-          <div style={{ display: 'flex', gap: '1.1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link 
-              to="/shop" 
-              className="btn-primary" 
-              style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850' }}
-            >
-              Shop Fresh Bakes
-            </Link>
-            <Link 
-              to="/products" 
-              className="btn-secondary" 
-              style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', borderColor: 'var(--accent-gold)', color: 'var(--accent-gold)', borderRadius: '999px', textDecoration: 'none', fontWeight: '850', backgroundColor: 'transparent' }}
-            >
-              Discover Our Rituals
-            </Link>
+        <div style={{ maxWidth: '800px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
+          <div className="glass-card" style={{ padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: '#F5EBDA', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
+              Ready to Make Snacking a Ritual?
+            </h2>
+            <p style={{ fontSize: '1rem', color: 'rgba(245,235,218,0.80)', lineHeight: '1.65', maxWidth: '520px', margin: '0 auto 2.5rem', fontWeight: '500' }}>
+              Explore fresh, handcrafted millet bakes made with jaggery, Desi Ghee, and plenty of traditional care.
+            </p>
+            <div style={{ display: 'flex', gap: '1.1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link
+                to="/shop"
+                className="btn-primary"
+                style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850' }}
+              >
+                Shop Fresh Bakes
+              </Link>
+              <Link
+                to="/products"
+                className="btn-secondary"
+                style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', borderColor: 'var(--accent-gold)', color: 'var(--accent-gold)', borderRadius: '999px', textDecoration: 'none', fontWeight: '850', backgroundColor: 'transparent' }}
+              >
+                Discover Our Rituals
+              </Link>
+            </div>
           </div>
         </div>
       </section>

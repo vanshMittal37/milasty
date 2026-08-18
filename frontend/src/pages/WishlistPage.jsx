@@ -172,10 +172,10 @@ function WishlistProductCard({ product }) {
             <Link
               to={`/product/${product.slug}`}
               className="btn-secondary"
+              title="View Details"
               style={{
                 flex: 1,
-                padding: '0.7rem 0.5rem',
-                fontSize: '0.76rem',
+                padding: '0.7rem',
                 borderRadius: '12px',
                 fontWeight: '800',
                 textAlign: 'center',
@@ -186,18 +186,20 @@ function WishlistProductCard({ product }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'transparent',
-                minHeight: '40px'
+                minHeight: '40px',
+                gap: '0.35rem'
               }}
             >
-              View Details
+              <Eye size={16} />
+              <span style={{ fontSize: '0.76rem' }}>Details</span>
             </Link>
 
             <button
               onClick={handleAddToCart}
               className="btn-primary"
+              title="Add to Cart"
               style={{
-                padding: '0.7rem',
-                fontSize: '0.76rem',
+                padding: '0.7rem 1rem',
                 borderRadius: '12px',
                 backgroundColor: 'var(--accent-gold)',
                 color: '#24130D',
@@ -206,14 +208,14 @@ function WishlistProductCard({ product }) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '0.25rem',
+                gap: '0.35rem',
                 cursor: 'pointer',
                 minHeight: '40px',
-                minWidth: '40px'
+                flex: 1
               }}
             >
-              <ShoppingBag size={13} />
-              <span className="cart-btn-text" style={{ marginLeft: '4px' }}>{btnText}</span>
+              <ShoppingBag size={15} />
+              <span style={{ fontSize: '0.76rem' }}>Cart</span>
             </button>
           </div>
         </div>
