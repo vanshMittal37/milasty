@@ -399,19 +399,19 @@ export default function Products() {
               textAlign: 'center',
             }}
           >
-            <div style={{ backgroundColor: 'rgba(255,255,255,0.04)', padding: '2rem 1.5rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="glass-card" style={{ padding: '2rem 1.5rem', borderRadius: '20px' }}>
               <div style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: '900', marginBottom: '0.75rem' }}>01 / PAUSE</div>
               <p style={{ fontSize: '0.86rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>Step away from screens and notifications for 5 minutes.</p>
             </div>
-            <div style={{ backgroundColor: 'rgba(255,255,255,0.04)', padding: '2rem 1.5rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="glass-card" style={{ padding: '2rem 1.5rem', borderRadius: '20px' }}>
               <div style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: '900', marginBottom: '0.75rem' }}>02 / NOTICE</div>
               <p style={{ fontSize: '0.86rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>Take in the rich aroma of slow-baked millets and pure cow Desi Ghee.</p>
             </div>
-            <div style={{ backgroundColor: 'rgba(255,255,255,0.04)', padding: '2rem 1.5rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="glass-card" style={{ padding: '2rem 1.5rem', borderRadius: '20px' }}>
               <div style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: '900', marginBottom: '0.75rem' }}>03 / BITE SLOWLY</div>
               <p style={{ fontSize: '0.86rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>Enjoy the wholesome crumble and honest texture of natural grains.</p>
             </div>
-            <div style={{ backgroundColor: 'rgba(255,255,255,0.04)', padding: '2rem 1.5rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="glass-card" style={{ padding: '2rem 1.5rem', borderRadius: '20px' }}>
               <div style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: '900', marginBottom: '0.75rem' }}>04 / PAIR & ENJOY</div>
               <p style={{ fontSize: '0.86rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>Pair with your favorite warm ginger tea, milk, or brew of choice.</p>
             </div>
