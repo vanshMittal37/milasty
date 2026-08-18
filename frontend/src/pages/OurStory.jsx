@@ -37,9 +37,9 @@ export default function OurStory() {
     >
       {/* Dark overlay for readability */}
       <div style={{
-        position: 'fixed',
+        position: 'absolute',
         inset: 0,
-        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.45) 0%, rgba(36, 19, 13, 0.35) 100%)',
+        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.30) 0%, rgba(36, 19, 13, 0.22) 100%)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
