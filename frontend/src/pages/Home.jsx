@@ -14,6 +14,21 @@ export default function Home() {
   const { addToCart } = useCart();
   const { wishlistItems, toggleWishlist } = useWishlist();
   
+  const snackRitualRef = useRef(null);
+  const whyDiffRef = useRef(null);
+
+  const scrollLeft = (ref) => {
+    if (ref.current) {
+      ref.current.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = (ref) => {
+    if (ref.current) {
+      ref.current.scrollBy({ left: 320, behavior: 'smooth' });
+    }
+  };
+  
   // Real product data state
   const [dbProducts, setDbProducts] = useState([]);
   const [activeReviewIdx, setActiveReviewIdx] = useState(0);
@@ -706,32 +721,58 @@ export default function Home() {
       {/* 6. MILASTY SNACK RITUAL */}
       <section ref={timelineRef} className="reveal-fade-up timeline-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 4.5rem' }}>
-            <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Mindful Eating</span>
-            <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>The MILASTY <span style={{ color: 'var(--accent-gold)' }}>Snack Ritual</span></h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1.02rem', fontWeight: '500' }}>Turn your everyday snack break into a moment worth slowing down for.</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4.5rem' }}>
+            <div>
+              <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Mindful Eating</span>
+              <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0 }}>The MILASTY <span style={{ color: 'var(--accent-gold)' }}>Snack Ritual</span></h2>
+              <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1.02rem', fontWeight: '500', margin: '0.5rem 0 0' }}>Turn your everyday snack break into a moment worth slowing down for.</p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button 
+                onClick={() => scrollLeft(snackRitualRef)} 
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button 
+                onClick={() => scrollRight(snackRitualRef)} 
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
 
-          <div className="timeline-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem' }}>
-            <div style={{ padding: '2rem' }}>
+          <div 
+            ref={snackRitualRef}
+            className="horizontal-scroll-container" 
+            style={{ 
+              display: 'flex', 
+              gap: '2rem', 
+              overflowX: 'auto', 
+              scrollBehavior: 'smooth',
+              paddingBottom: '1.5rem'
+            }}
+          >
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>01</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAUSE</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Step away from screens and digital chatter for five mindful minutes.</p>
             </div>
 
-            <div style={{ padding: '2rem' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>02</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTICE</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Take in the warm, nostalgic aroma of slow-baked millets and pure Cow Ghee.</p>
             </div>
 
-            <div style={{ padding: '2rem' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>03</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>BITE SLOWLY</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Enjoy the wholesome crumbly texture and balanced sweetness of unrefined jaggery.</p>
             </div>
 
-            <div style={{ padding: '2rem' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>04</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAIR & ENJOY</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Pair with a cup of warm ginger chai, filter coffee, or green tea.</p>
@@ -870,13 +911,39 @@ export default function Home() {
       {/* 3. "WHY MILASTY" SECTION (Transparent tiles with white text and borders) */}
       <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4.5rem' }}>
-            <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Core Philosophy</span>
-            <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4.5rem' }}>
+            <div>
+              <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Core Philosophy</span>
+              <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0 }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button 
+                onClick={() => scrollLeft(whyDiffRef)} 
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button 
+                onClick={() => scrollRight(whyDiffRef)} 
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
 
-          <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
-            <div style={{ padding: '2.5rem 2rem' }}>
+          <div 
+            ref={whyDiffRef}
+            className="horizontal-scroll-container" 
+            style={{ 
+              display: 'flex', 
+              gap: '2rem', 
+              overflowX: 'auto', 
+              scrollBehavior: 'smooth',
+              paddingBottom: '1.5rem'
+            }}
+          >
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <Award size={36} strokeWidth={1.5} />
               </div>
@@ -884,7 +951,7 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
             </div>
 
-            <div style={{ padding: '2.5rem 2rem' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <Sparkles size={36} strokeWidth={1.5} />
               </div>
@@ -892,7 +959,7 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
             </div>
 
-            <div style={{ padding: '2.5rem 2rem' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <ShieldCheck size={36} strokeWidth={1.5} />
               </div>
@@ -900,7 +967,7 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
             </div>
 
-            <div style={{ padding: '2.5rem 2rem' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <FileText size={36} strokeWidth={1.5} />
               </div>
@@ -942,6 +1009,18 @@ export default function Home() {
       </section>
 
       </div> {/* Close home-content */}
+
+      {/* CSS style overrides for horizontal scroll containers */}
+      <style>{`
+        .horizontal-scroll-container::-webkit-scrollbar {
+          display: none !important;
+        }
+        .horizontal-scroll-container {
+          -ms-overflow-style: none !important;
+          scrollbar-width: none !important;
+        }
+      `}</style>
+
     </div>
   );
 }

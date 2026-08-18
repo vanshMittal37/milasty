@@ -24,7 +24,7 @@ export default function OrderSuccessPage() {
   };
 
   return (
-    <div style={{ backgroundColor: '#FCFAF6', minHeight: '90vh', padding: '5rem 0 6rem', display: 'flex', alignItems: 'center' }}>
+    <div style={{ backgroundColor: 'var(--bg-main)', minHeight: '90vh', padding: '5rem 0 6rem', display: 'flex', alignItems: 'center' }}>
       <div className="container" style={{ maxWidth: '640px' }}>
         
         {/* Step Indicator Header */}
@@ -38,17 +38,17 @@ export default function OrderSuccessPage() {
               fontWeight: '700', 
               textTransform: 'uppercase', 
               letterSpacing: '0.08em',
-              backgroundColor: 'rgba(56, 20, 35, 0.03)',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
               padding: '0.5rem 1.25rem',
               borderRadius: '999px',
-              border: '1px solid var(--border-color)'
+              border: '1px solid rgba(245, 235, 221, 0.15)'
             }}
           >
-            <span style={{ color: 'var(--accent-olive)' }}>✓ Cart</span>
+            <span style={{ color: 'var(--accent-gold)' }}>✓ Cart</span>
             <span style={{ color: 'var(--text-muted)' }}>•</span>
-            <span style={{ color: 'var(--accent-olive)' }}>✓ Delivery & Payment</span>
+            <span style={{ color: 'var(--accent-gold)' }}>✓ Delivery & Payment</span>
             <span style={{ color: 'var(--text-muted)' }}>•</span>
-            <span style={{ color: 'var(--primary-dark)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <span style={{ color: 'var(--text-light)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />
               Confirmation
             </span>
@@ -61,9 +61,9 @@ export default function OrderSuccessPage() {
           style={{ 
             padding: '3.5rem 2.5rem', 
             textAlign: 'center', 
-            backgroundColor: '#FFFFFF',
+            backgroundColor: 'rgba(50, 26, 18, 0.60)',
             borderRadius: '24px',
-            border: '1.5px solid var(--border-color)',
+            border: '1px solid rgba(245, 235, 221, 0.25)',
             boxShadow: 'var(--shadow-md)',
             position: 'relative',
             overflow: 'hidden'
@@ -79,20 +79,20 @@ export default function OrderSuccessPage() {
               width: '80px', 
               height: '80px', 
               borderRadius: '50%', 
-              backgroundColor: 'rgba(39, 76, 55, 0.08)', 
-              color: 'var(--accent-olive)', 
+              backgroundColor: 'rgba(197, 160, 89, 0.08)', 
+              color: 'var(--accent-gold)', 
               display: 'inline-flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
               marginBottom: '1.75rem',
-              border: '2px solid rgba(39, 76, 55, 0.15)',
-              boxShadow: '0 4px 12px rgba(39, 76, 55, 0.05)'
+              border: '2px solid rgba(197, 160, 89, 0.15)',
+              boxShadow: '0 4px 12px rgba(197, 160, 89, 0.05)'
             }}
           >
             <CheckCircle2 size={44} strokeWidth={1.5} />
           </div>
 
-          <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.75rem', letterSpacing: '-0.01em' }}>
+          <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.75rem', letterSpacing: '-0.01em' }}>
             Order Confirmed
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.98rem', lineHeight: '1.6', marginBottom: '2.25rem', maxWidth: '480px', margin: '0 auto 2.25rem' }}>
@@ -106,32 +106,32 @@ export default function OrderSuccessPage() {
             order && (
               <div 
                 style={{ 
-                  backgroundColor: 'var(--bg-subtle)', 
+                  backgroundColor: 'rgba(255, 255, 255, 0.03)', 
                   padding: '1.5rem', 
                   borderRadius: '16px', 
                   textAlign: 'left', 
                   marginBottom: '2.5rem', 
-                  border: '1.5px solid var(--border-color)' 
+                  border: '1px solid rgba(245, 235, 221, 0.15)' 
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.85rem', marginBottom: '0.85rem', fontSize: '0.9rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.85rem', marginBottom: '0.85rem', fontSize: '0.9rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Order ID:</span>
-                  <span style={{ fontWeight: '800', color: 'var(--primary-dark)' }}>#{order.orderId}</span>
+                  <span style={{ fontWeight: '800', color: 'var(--text-light)' }}>#{order.orderId}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.85rem', marginBottom: '0.85rem', fontSize: '0.9rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.85rem', marginBottom: '0.85rem', fontSize: '0.9rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Payment Status:</span>
-                  <span style={{ fontWeight: '800', color: 'var(--accent-olive)', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <span style={{ fontWeight: '800', color: 'var(--accent-gold)', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                     <ShieldCheck size={14} />
                     {order.paymentStatus === 'Paid' ? 'PAID SUCCESSFULLY' : order.paymentStatus.toUpperCase()}
                   </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.85rem', marginBottom: '0.85rem', fontSize: '0.9rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.85rem', marginBottom: '0.85rem', fontSize: '0.9rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Delivery Address:</span>
-                  <span style={{ fontWeight: '700', color: 'var(--primary-dark)', textAlign: 'right', maxWidth: '280px', fontSize: '0.85rem' }}>
+                  <span style={{ fontWeight: '700', color: 'var(--text-light)', textAlign: 'right', maxWidth: '280px', fontSize: '0.85rem' }}>
                     {order.shippingAddress.addressLine}, {order.shippingAddress.city}, {order.shippingAddress.pincode}
                   </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.4rem', fontSize: '1.1rem', fontWeight: '900', color: 'var(--primary-dark)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.4rem', fontSize: '1.1rem', fontWeight: '900', color: 'var(--text-light)' }}>
                   <span>Total Amount Paid:</span>
                   <span>₹{order.totalAmount}</span>
                 </div>
@@ -146,8 +146,8 @@ export default function OrderSuccessPage() {
               className="btn-primary" 
               style={{ 
                 padding: '0.85rem 1.75rem', 
-                backgroundColor: 'var(--primary-dark)', 
-                color: 'var(--bg-main)',
+                backgroundColor: 'var(--accent-gold)', 
+                color: '#24130D',
                 border: 'none',
                 borderRadius: '12px',
                 fontWeight: '800',
@@ -165,14 +165,15 @@ export default function OrderSuccessPage() {
               className="btn-secondary" 
               style={{ 
                 padding: '0.85rem 1.75rem',
-                borderColor: 'var(--primary-dark)',
-                color: 'var(--primary-dark)',
+                borderColor: 'rgba(245, 235, 221, 0.25)',
+                color: 'var(--accent-gold)',
                 borderRadius: '12px',
                 fontWeight: '800',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                fontSize: '0.88rem'
+                fontSize: '0.88rem',
+                backgroundColor: 'transparent'
               }}
             >
               <span>Continue Shopping</span>

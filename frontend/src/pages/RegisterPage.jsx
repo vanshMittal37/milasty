@@ -34,7 +34,7 @@ export default function RegisterPage() {
         minHeight: '100vh', 
         display: 'grid', 
         gridTemplateColumns: '1fr', 
-        backgroundColor: '#FBF8F2' 
+        backgroundColor: 'var(--bg-main)' 
       }}
       className="auth-split-layout"
     >
@@ -152,7 +152,7 @@ export default function RegisterPage() {
                 }
               }
             `}</style>
-            <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '900', margin: 0 }}>MILASTY</h2>
+            <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '900', margin: 0 }}>MILASTY</h2>
             <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '800' }}>Where Millets Meet Great Taste</span>
           </div>
 
@@ -174,7 +174,7 @@ export default function RegisterPage() {
             >
               Customer Portal
             </span>
-            <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.5rem 0' }}>Create Your Account</h1>
+            <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.5rem 0' }}>Create Your Account</h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>Sign up to enjoy personalized millet bakery orders and tracking.</p>
           </div>
 
@@ -191,7 +191,7 @@ export default function RegisterPage() {
             
             {/* Full Name */}
             <div>
-              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Full Name *</label>
+              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Full Name *</label>
               <div style={{ position: 'relative' }}>
                 <User size={16} color="var(--text-muted)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
                 <input
@@ -208,11 +208,11 @@ export default function RegisterPage() {
                     border: '1.5px solid var(--border-color)', 
                     fontSize: '0.9rem',
                     outline: 'none',
-                    backgroundColor: '#FCFAF6',
-                    color: 'var(--primary-dark)',
+                    backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                    color: 'var(--text-light)',
                     transition: 'border-color 0.2s'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--primary-dark)'}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-gold)'}
                   onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                 />
               </div>
@@ -220,7 +220,7 @@ export default function RegisterPage() {
 
             {/* Email Address */}
             <div>
-              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Address *</label>
+              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Address *</label>
               <div style={{ position: 'relative' }}>
                 <Mail size={16} color="var(--text-muted)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
                 <input
@@ -237,11 +237,11 @@ export default function RegisterPage() {
                     border: '1.5px solid var(--border-color)', 
                     fontSize: '0.9rem',
                     outline: 'none',
-                    backgroundColor: '#FCFAF6',
-                    color: 'var(--primary-dark)',
+                    backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                    color: 'var(--text-light)',
                     transition: 'border-color 0.2s'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--primary-dark)'}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-gold)'}
                   onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                 />
               </div>
@@ -249,7 +249,7 @@ export default function RegisterPage() {
 
             {/* Mobile Number */}
             <div>
-              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Mobile Number</label>
+              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Mobile Number</label>
               <div style={{ position: 'relative' }}>
                 <Phone size={16} color="var(--text-muted)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
                 <input
@@ -265,11 +265,11 @@ export default function RegisterPage() {
                     border: '1.5px solid var(--border-color)', 
                     fontSize: '0.9rem',
                     outline: 'none',
-                    backgroundColor: '#FCFAF6',
-                    color: 'var(--primary-dark)',
+                    backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                    color: 'var(--text-light)',
                     transition: 'border-color 0.2s'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--primary-dark)'}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-gold)'}
                   onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                 />
               </div>
@@ -277,7 +277,7 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div>
-              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Password *</label>
+              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Password *</label>
               <div style={{ position: 'relative' }}>
                 <Lock size={16} color="var(--text-muted)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
                 <input
@@ -294,11 +294,11 @@ export default function RegisterPage() {
                     border: '1.5px solid var(--border-color)', 
                     fontSize: '0.9rem',
                     outline: 'none',
-                    backgroundColor: '#FCFAF6',
-                    color: 'var(--primary-dark)',
+                    backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                    color: 'var(--text-light)',
                     transition: 'border-color 0.2s'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--primary-dark)'}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-gold)'}
                   onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                 />
                 <button
@@ -334,8 +334,8 @@ export default function RegisterPage() {
                 justifyContent: 'center', 
                 padding: '0.85rem', 
                 marginTop: '0.75rem',
-                backgroundColor: 'var(--primary-dark)',
-                color: '#FFFFFF',
+                backgroundColor: 'var(--accent-gold)',
+                color: '#24130D',
                 borderRadius: '12px',
                 border: 'none',
                 fontWeight: '800',
@@ -352,7 +352,7 @@ export default function RegisterPage() {
 
           {/* Redirect to Login link */}
           <div style={{ textAlign: 'center', fontSize: '0.86rem', color: 'var(--text-muted)', fontWeight: '600' }}>
-            Already have an account? <Link to="/login" style={{ color: 'var(--primary-dark)', fontWeight: '800', textDecoration: 'none' }}>Login here</Link>
+            Already have an account? <Link to="/login" style={{ color: 'var(--accent-gold)', fontWeight: '800', textDecoration: 'none' }}>Login here</Link>
           </div>
         </div>
       </div>

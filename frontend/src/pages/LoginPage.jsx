@@ -36,7 +36,7 @@ export default function LoginPage() {
         minHeight: '100vh', 
         display: 'grid', 
         gridTemplateColumns: '1fr', 
-        backgroundColor: '#FBF8F2' 
+        backgroundColor: 'var(--bg-main)' 
       }}
       className="auth-split-layout"
     >
@@ -154,7 +154,7 @@ export default function LoginPage() {
                 }
               }
             `}</style>
-            <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '900', margin: 0 }}>MILASTY</h2>
+            <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '900', margin: 0 }}>MILASTY</h2>
             <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '800' }}>Where Millets Meet Great Taste</span>
           </div>
 
@@ -176,7 +176,7 @@ export default function LoginPage() {
             >
               Customer Portal
             </span>
-            <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.5rem 0' }}>Welcome Back</h1>
+            <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.5rem 0' }}>Welcome Back</h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>Sign in to manage your orders, addresses, and wishlist.</p>
           </div>
 
@@ -192,7 +192,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="auth-form" style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
             {/* Email field */}
             <div>
-              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Address</label>
+              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Address</label>
               <div style={{ position: 'relative' }}>
                 <Mail size={16} color="var(--text-muted)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
                 <input
@@ -209,11 +209,11 @@ export default function LoginPage() {
                     border: '1.5px solid var(--border-color)', 
                     fontSize: '0.9rem',
                     outline: 'none',
-                    backgroundColor: '#FCFAF6',
-                    color: 'var(--primary-dark)',
+                    backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                    color: 'var(--text-light)',
                     transition: 'border-color 0.2s'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--primary-dark)'}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-gold)'}
                   onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                 />
               </div>
@@ -222,7 +222,7 @@ export default function LoginPage() {
             {/* Password field */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
-                <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--primary-dark)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Password</label>
+                <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Password</label>
                 <Link to="/forgot-password" style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: '800', textDecoration: 'none' }}>Forgot password?</Link>
               </div>
               <div style={{ position: 'relative' }}>
@@ -241,11 +241,11 @@ export default function LoginPage() {
                     border: '1.5px solid var(--border-color)', 
                     fontSize: '0.9rem',
                     outline: 'none',
-                    backgroundColor: '#FCFAF6',
-                    color: 'var(--primary-dark)',
+                    backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                    color: 'var(--text-light)',
                     transition: 'border-color 0.2s'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--primary-dark)'}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-gold)'}
                   onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                 />
                 <button
@@ -281,8 +281,8 @@ export default function LoginPage() {
                 justifyContent: 'center', 
                 padding: '0.85rem', 
                 marginTop: '0.75rem',
-                backgroundColor: 'var(--primary-dark)',
-                color: '#FFFFFF',
+                backgroundColor: 'var(--accent-gold)',
+                color: '#24130D',
                 borderRadius: '12px',
                 border: 'none',
                 fontWeight: '800',
@@ -299,7 +299,7 @@ export default function LoginPage() {
 
           {/* Redirect to Register link */}
           <div style={{ textAlign: 'center', fontSize: '0.86rem', color: 'var(--text-muted)', fontWeight: '600' }}>
-            Don't have an account? <Link to="/register" style={{ color: 'var(--primary-dark)', fontWeight: '800', textDecoration: 'none' }}>Create one here</Link>
+            Don't have an account? <Link to="/register" style={{ color: 'var(--accent-gold)', fontWeight: '800', textDecoration: 'none' }}>Create one here</Link>
           </div>
         </div>
       </div>

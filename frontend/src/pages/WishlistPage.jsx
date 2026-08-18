@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, ShoppingBag, Trash2, ArrowRight, Star, ChevronRight, Eye, Sparkles } from 'lucide-react';
+import { Heart, ShoppingBag, Trash2, ArrowRight, Star, ChevronRight, Eye, Sparkles, ChevronLeft } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { initialProducts } from '../data/seedData';
@@ -226,6 +226,19 @@ export default function WishlistPage() {
   const { wishlistItems, toggleWishlist } = useWishlist();
   const { addToCart, showToast } = useCart();
   const [sortBy, setSortBy] = useState('recent');
+  const recRef = useRef(null);
+
+  const scrollLeft = (ref) => {
+    if (ref.current) {
+      ref.current.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = (ref) => {
+    if (ref.current) {
+      ref.current.scrollBy({ left: 320, behavior: 'smooth' });
+    }
+  };
 
   const handleQuickRemove = (product) => {
     toggleWishlist(product);
@@ -388,20 +401,47 @@ export default function WishlistPage() {
             </div>
 
             {/* 8. RECOMMENDED PRODUCTS */}
-            <section style={{ borderTop: '1.5px solid var(--border-color)', paddingTop: '5rem' }}>
-              <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-                <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Recommendations</span>
-                <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>
-                  You May Also Love
-                </h2>
+            <section style={{ borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
+                <div>
+                  <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Recommendations</span>
+                  <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
+                    You May Also Love
+                  </h2>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button 
+                    onClick={() => scrollLeft(recRef)} 
+                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button 
+                    onClick={() => scrollRight(recRef)} 
+                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
               </div>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2rem' }}>
+              <div 
+                ref={recRef}
+                className="horizontal-scroll-container"
+                style={{ 
+                  display: 'flex', 
+                  gap: '1.5rem', 
+                  overflowX: 'auto', 
+                  scrollBehavior: 'smooth',
+                  paddingBottom: '1rem'
+                }}
+              >
                 {recommendations.map((p) => (
-                  <WishlistProductCard 
-                    key={`rec-${p._id || p.slug}`} 
-                    product={p} 
-                  />
+                  <div key={`rec-${p._id || p.slug}`} style={{ flexShrink: 0, width: '280px' }}>
+                    <WishlistProductCard 
+                      product={p} 
+                    />
+                  </div>
                 ))}
               </div>
             </section>
@@ -418,15 +458,17 @@ export default function WishlistPage() {
                 gap: '1.25rem', 
                 marginBottom: '2.5rem', 
                 flexWrap: 'wrap',
-                backgroundColor: '#FFFFFF',
+                backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                backdropFilter: 'blur(14px)',
+                WebkitBackdropFilter: 'blur(14px)',
                 padding: '1.1rem 1.75rem',
                 borderRadius: '20px',
-                border: '1.5px solid var(--border-color)',
-                boxShadow: '0 8px 30px rgba(56, 20, 35, 0.01)'
+                border: '1px solid rgba(245, 235, 221, 0.25)',
+                boxShadow: 'var(--shadow-md)'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.98rem', fontWeight: '850', color: 'var(--primary-dark)' }}>Your Saved Bakes</span>
+                <span style={{ fontSize: '0.98rem', fontWeight: '850', color: 'var(--text-light)' }}>Your Saved Bakes</span>
                 <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)', fontWeight: '700' }}>({wishlistItems.length} items)</span>
               </div>
 
@@ -439,11 +481,11 @@ export default function WishlistPage() {
                   style={{
                     padding: '0.65rem 1rem',
                     borderRadius: '12px',
-                    border: '1.5px solid var(--border-color)',
+                    border: '1px solid var(--border-color)',
                     fontSize: '0.8rem',
-                    color: 'var(--primary-dark)',
+                    color: 'var(--text-light)',
                     fontWeight: '800',
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: 'var(--bg-subtle)',
                     outline: 'none',
                     cursor: 'pointer',
                     minHeight: '38px'
@@ -463,8 +505,8 @@ export default function WishlistPage() {
                     padding: '0.65rem 1.25rem',
                     fontSize: '0.8rem',
                     borderRadius: '12px',
-                    backgroundColor: 'var(--primary-dark)',
-                    color: '#FFFFFF',
+                    backgroundColor: 'var(--accent-gold)',
+                    color: '#24130D',
                     border: 'none',
                     fontWeight: '850',
                     cursor: 'pointer',
@@ -499,8 +541,8 @@ export default function WishlistPage() {
             </div>
 
             {/* 9. STILL EXPLORING CTA */}
-            <section style={{ borderTop: '1.5px solid var(--border-color)', paddingTop: '6rem', textAlign: 'center' }}>
-              <h2 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.75rem', margin: 0 }}>
+            <section style={{ borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '6rem', textAlign: 'center' }}>
+              <h2 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.75rem', margin: 0 }}>
                 Still Exploring?
               </h2>
               <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.65', marginBottom: '2.25rem', fontWeight: '500', marginTop: '0.5rem' }}>
@@ -512,8 +554,8 @@ export default function WishlistPage() {
                 style={{ 
                   padding: '0.95rem 2.25rem', 
                   fontSize: '0.9rem', 
-                  backgroundColor: 'var(--primary-dark)', 
-                  color: '#FFFFFF', 
+                  backgroundColor: 'var(--accent-gold)', 
+                  color: '#24130D', 
                   border: 'none', 
                   borderRadius: '999px', 
                   fontWeight: '800',
@@ -528,6 +570,18 @@ export default function WishlistPage() {
         )}
 
       </div>
+
+      {/* Hidden scrollbar styles */}
+      <style>{`
+        .horizontal-scroll-container::-webkit-scrollbar {
+          display: none !important;
+        }
+        .horizontal-scroll-container {
+          -ms-overflow-style: none !important;
+          scrollbar-width: none !important;
+        }
+      `}</style>
+
     </div>
   );
 }

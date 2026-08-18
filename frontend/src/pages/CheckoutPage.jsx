@@ -41,12 +41,12 @@ export default function CheckoutPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div style={{ padding: '6rem 0', textAlign: 'center', backgroundColor: '#FCFAF6', minHeight: '80vh' }}>
+      <div style={{ padding: '6rem 0', textAlign: 'center', backgroundColor: 'var(--bg-main)', minHeight: '80vh' }}>
         <div style={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem' }}>
           <ShoppingBag size={48} color="var(--accent-gold)" />
-          <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontSize: '1.8rem', fontWeight: '800' }}>Your cart is empty</h2>
+          <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontSize: '1.8rem', fontWeight: '800' }}>Your cart is empty</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Add some premium millet bakes to your basket to proceed.</p>
-          <button onClick={() => navigate('/shop')} className="btn-primary" style={{ padding: '0.85rem 2rem', backgroundColor: 'var(--primary-dark)', border: 'none', borderRadius: '999px', cursor: 'pointer' }}>
+          <button onClick={() => navigate('/shop')} className="btn-primary" style={{ padding: '0.85rem 2rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', cursor: 'pointer', fontWeight: '700' }}>
             Back to Shop
           </button>
         </div>
@@ -229,12 +229,12 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div style={{ backgroundColor: '#FCFAF6', minHeight: '100vh', padding: '2.5rem 0 5rem' }}>
+    <div style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '2.5rem 0 5rem' }}>
       <div className="container" style={{ maxWidth: '1200px' }}>
         
         {/* Step Indicator Header */}
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.25rem' }}>
+          <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.25rem' }}>
             Checkout
           </h1>
           <div 
@@ -246,15 +246,15 @@ export default function CheckoutPage() {
               fontWeight: '700', 
               textTransform: 'uppercase', 
               letterSpacing: '0.08em',
-              backgroundColor: 'rgba(56, 20, 35, 0.03)',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
               padding: '0.5rem 1.25rem',
               borderRadius: '999px',
-              border: '1px solid var(--border-color)'
+              border: '1px solid rgba(245, 235, 221, 0.15)'
             }}
           >
-            <span style={{ color: 'var(--accent-olive)' }}>✓ Cart</span>
+            <span style={{ color: 'var(--accent-gold)' }}>✓ Cart</span>
             <span style={{ color: 'var(--text-muted)' }}>•</span>
-            <span style={{ color: 'var(--primary-dark)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <span style={{ color: 'var(--text-light)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />
               Delivery & Payment
             </span>
@@ -270,8 +270,8 @@ export default function CheckoutPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             
             {/* Delivery address details card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
-              <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: 'var(--shadow-sm)' }}>
+              <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                 <Truck size={20} color="var(--accent-gold)" />
                 <span>1. Shipping Details</span>
               </h2>
@@ -280,7 +280,7 @@ export default function CheckoutPage() {
                 
                 {/* Full name input */}
                 <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Full Name *</label>
+                  <label style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Full Name *</label>
                   <input 
                     type="text" 
                     required 
@@ -288,7 +288,7 @@ export default function CheckoutPage() {
                     value={formData.customerName} 
                     onChange={handleInputChange} 
                     placeholder="Ananya Sharma" 
-                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '10px', border: fieldErrors.customerName ? '1.5px solid var(--accent-terracotta)' : '1.5px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'var(--bg-subtle)' }} 
+                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '10px', border: fieldErrors.customerName ? '1.5px solid var(--accent-terracotta)' : '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
                   />
                   {fieldErrors.customerName && <span style={{ fontSize: '0.75rem', color: 'var(--accent-terracotta)', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.customerName}</span>}
                 </div>
@@ -296,18 +296,18 @@ export default function CheckoutPage() {
                 {/* Email and Phone grid */}
                 <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div>
-                    <label style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Address</label>
+                    <label style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Address</label>
                     <input 
                       type="email" 
                       name="email" 
                       value={formData.email} 
                       onChange={handleInputChange} 
                       placeholder="ananya@gmail.com" 
-                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '10px', border: '1.5px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'var(--bg-subtle)' }} 
+                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Phone Number *</label>
+                    <label style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Phone Number *</label>
                     <input 
                       type="tel" 
                       required 
@@ -315,7 +315,7 @@ export default function CheckoutPage() {
                       value={formData.phone} 
                       onChange={handleInputChange} 
                       placeholder="9876543210" 
-                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '10px', border: fieldErrors.phone ? '1.5px solid var(--accent-terracotta)' : '1.5px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'var(--bg-subtle)' }} 
+                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '10px', border: fieldErrors.phone ? '1.5px solid var(--accent-terracotta)' : '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
                     />
                     {fieldErrors.phone && <span style={{ fontSize: '0.75rem', color: 'var(--accent-terracotta)', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.phone}</span>}
                   </div>
@@ -323,20 +323,20 @@ export default function CheckoutPage() {
 
                 {/* Building / House Details */}
                 <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Flat / House / Building Details</label>
+                  <label style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Flat / House / Building Details</label>
                   <input 
                     type="text" 
                     name="building" 
                     value={formData.building} 
                     onChange={handleInputChange} 
                     placeholder="Flat 402, B Block, Royal Palm Apartments" 
-                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '10px', border: '1.5px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'var(--bg-subtle)' }} 
+                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
                   />
                 </div>
 
                 {/* Street address details textarea */}
                 <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Street Address *</label>
+                  <label style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Street Address *</label>
                   <textarea 
                     rows={2} 
                     required 
@@ -344,7 +344,7 @@ export default function CheckoutPage() {
                     value={formData.addressLine} 
                     onChange={handleInputChange} 
                     placeholder="Main Street, Sector 62, Near Landmark Park" 
-                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '10px', border: fieldErrors.addressLine ? '1.5px solid var(--accent-terracotta)' : '1.5px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'var(--bg-subtle)', resize: 'none' }} 
+                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '10px', border: fieldErrors.addressLine ? '1.5px solid var(--accent-terracotta)' : '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)', resize: 'none' }} 
                   />
                   {fieldErrors.addressLine && <span style={{ fontSize: '0.75rem', color: 'var(--accent-terracotta)', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.addressLine}</span>}
                 </div>
@@ -352,7 +352,7 @@ export default function CheckoutPage() {
                 {/* City, State, Pincode grid */}
                 <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>City *</label>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>City *</label>
                     <input 
                       type="text" 
                       required 
@@ -360,12 +360,12 @@ export default function CheckoutPage() {
                       value={formData.city} 
                       onChange={handleInputChange} 
                       placeholder="City" 
-                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '10px', border: fieldErrors.city ? '1.5px solid var(--accent-terracotta)' : '1.5px solid var(--border-color)', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'var(--bg-subtle)' }} 
+                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '10px', border: fieldErrors.city ? '1.5px solid var(--accent-terracotta)' : '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
                     />
                     {fieldErrors.city && <span style={{ fontSize: '0.72rem', color: 'var(--accent-terracotta)', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.city}</span>}
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>State *</label>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>State *</label>
                     <input 
                       type="text" 
                       required 
@@ -373,12 +373,12 @@ export default function CheckoutPage() {
                       value={formData.state} 
                       onChange={handleInputChange} 
                       placeholder="State" 
-                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '10px', border: fieldErrors.state ? '1.5px solid var(--accent-terracotta)' : '1.5px solid var(--border-color)', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'var(--bg-subtle)' }} 
+                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '10px', border: fieldErrors.state ? '1.5px solid var(--accent-terracotta)' : '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
                     />
                     {fieldErrors.state && <span style={{ fontSize: '0.72rem', color: 'var(--accent-terracotta)', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.state}</span>}
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pincode *</label>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pincode *</label>
                     <input 
                       type="text" 
                       required 
@@ -386,7 +386,7 @@ export default function CheckoutPage() {
                       value={formData.pincode} 
                       onChange={handleInputChange} 
                       placeholder="201306" 
-                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '10px', border: fieldErrors.pincode ? '1.5px solid var(--accent-terracotta)' : '1.5px solid var(--border-color)', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'var(--bg-subtle)' }} 
+                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '10px', border: fieldErrors.pincode ? '1.5px solid var(--accent-terracotta)' : '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
                     />
                     {fieldErrors.pincode && <span style={{ fontSize: '0.72rem', color: 'var(--accent-terracotta)', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.pincode}</span>}
                   </div>
@@ -395,8 +395,8 @@ export default function CheckoutPage() {
             </div>
 
             {/* Payment method selection card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
-              <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: 'var(--shadow-sm)' }}>
+              <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                 <CreditCard size={20} color="var(--accent-gold)" />
                 <span>2. Payment Option</span>
               </h2>
@@ -412,8 +412,8 @@ export default function CheckoutPage() {
                     gap: '0.75rem', 
                     padding: '1.1rem', 
                     borderRadius: '14px', 
-                    border: paymentMethod === 'Razorpay' ? '2.5px solid var(--primary-dark)' : '1.5px solid var(--border-color)', 
-                    backgroundColor: paymentMethod === 'Razorpay' ? 'rgba(56, 20, 35, 0.02)' : '#FFFFFF', 
+                    border: paymentMethod === 'Razorpay' ? '2.5px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.15)', 
+                    backgroundColor: paymentMethod === 'Razorpay' ? 'rgba(197, 160, 89, 0.08)' : 'transparent', 
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
@@ -424,10 +424,10 @@ export default function CheckoutPage() {
                     value="Razorpay" 
                     checked={paymentMethod === 'Razorpay'} 
                     onChange={() => setPaymentMethod('Razorpay')} 
-                    style={{ accentColor: 'var(--primary-dark)', width: '17px', height: '17px' }}
+                    style={{ accentColor: 'var(--accent-gold)', width: '17px', height: '17px' }}
                   />
                   <div>
-                    <div style={{ fontWeight: '800', color: 'var(--primary-dark)', fontSize: '0.95rem' }}>Secure Online Checkout (Razorpay)</div>
+                    <div style={{ fontWeight: '800', color: 'var(--text-light)', fontSize: '0.95rem' }}>Secure Online Checkout (Razorpay)</div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>Pay instantly using UPI, Cards, Netbanking, or Wallets</div>
                   </div>
                 </label>
@@ -441,8 +441,8 @@ export default function CheckoutPage() {
                     gap: '0.75rem', 
                     padding: '1.1rem', 
                     borderRadius: '14px', 
-                    border: paymentMethod === 'COD' ? '2.5px solid var(--primary-dark)' : '1.5px solid var(--border-color)', 
-                    backgroundColor: paymentMethod === 'COD' ? 'rgba(56, 20, 35, 0.02)' : '#FFFFFF', 
+                    border: paymentMethod === 'COD' ? '2.5px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.15)', 
+                    backgroundColor: paymentMethod === 'COD' ? 'rgba(197, 160, 89, 0.08)' : 'transparent', 
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
@@ -453,10 +453,10 @@ export default function CheckoutPage() {
                     value="COD" 
                     checked={paymentMethod === 'COD'} 
                     onChange={() => setPaymentMethod('COD')} 
-                    style={{ accentColor: 'var(--primary-dark)', width: '17px', height: '17px' }}
+                    style={{ accentColor: 'var(--accent-gold)', width: '17px', height: '17px' }}
                   />
                   <div>
-                    <div style={{ fontWeight: '800', color: 'var(--primary-dark)', fontSize: '0.95rem' }}>Cash on Delivery (COD)</div>
+                    <div style={{ fontWeight: '800', color: 'var(--text-light)', fontSize: '0.95rem' }}>Cash on Delivery (COD)</div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>Pay in cash at your doorstep when products arrive</div>
                   </div>
                 </label>
@@ -466,27 +466,27 @@ export default function CheckoutPage() {
 
           {/* RIGHT: Order Summary details */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', position: 'sticky', top: '100px' }}>
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
-              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.5rem', margin: 0 }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: 'var(--shadow-sm)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem', margin: 0 }}>
                 Order Summary
               </h3>
 
               {/* Items listing */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingBottom: '1.5rem', borderBottom: '1.5px solid var(--border-color)', marginTop: '1.25rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', marginTop: '1.25rem' }}>
                 {cartItems.map((item) => (
                   <div key={item.key} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <img 
                       src={item.image} 
                       alt={item.title} 
-                      style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(56,20,35,0.06)' }} 
+                      style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.15)' }} 
                     />
                     <div style={{ flexGrow: 1 }}>
-                      <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--primary-dark)', margin: '0 0 0.15rem 0', lineHeight: '1.25' }}>{item.title}</h4>
+                      <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--text-light)', margin: '0 0 0.15rem 0', lineHeight: '1.25' }}>{item.title}</h4>
                       <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block' }}>
                         Qty: {item.quantity} • {item.variantName} ({item.weight})
                       </span>
                     </div>
-                    <span style={{ fontWeight: '800', color: 'var(--primary-dark)', fontSize: '0.95rem' }}>
+                    <span style={{ fontWeight: '800', color: 'var(--text-light)', fontSize: '0.95rem' }}>
                       ₹{item.totalPrice}
                     </span>
                   </div>
@@ -494,20 +494,20 @@ export default function CheckoutPage() {
               </div>
 
               {/* Cost Summary calculations */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', padding: '1.5rem 0', borderBottom: '1.5px solid var(--border-color)', fontSize: '0.88rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', padding: '1.5rem 0', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                   <span>Subtotal</span>
-                  <span style={{ fontWeight: '700', color: 'var(--primary-dark)' }}>₹{subtotal}</span>
+                  <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>₹{subtotal}</span>
                 </div>
                 {couponDiscountAmount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-olive)', fontWeight: '700' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-gold)', fontWeight: '700' }}>
                     <span>Coupon Discount</span>
                     <span>-₹{couponDiscountAmount}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                   <span>Pan-India Delivery</span>
-                  <span style={{ fontWeight: '700', color: deliveryFee === 0 ? 'var(--accent-olive)' : 'var(--primary-dark)' }}>
+                  <span style={{ fontWeight: '700', color: deliveryFee === 0 ? 'var(--accent-gold)' : 'var(--text-light)' }}>
                     {deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}
                   </span>
                 </div>
@@ -515,8 +515,8 @@ export default function CheckoutPage() {
 
               {/* Grand Total */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 0 1rem', marginBottom: '1.5rem' }}>
-                <span style={{ fontSize: '1.05rem', fontWeight: '850', color: 'var(--primary-dark)' }}>Total to Pay</span>
-                <span style={{ fontSize: '1.4rem', fontWeight: '900', color: 'var(--primary-dark)' }}>₹{grandTotal}</span>
+                <span style={{ fontSize: '1.05rem', fontWeight: '850', color: 'var(--text-light)' }}>Total to Pay</span>
+                <span style={{ fontSize: '1.4rem', fontWeight: '900', color: 'var(--text-light)' }}>₹{grandTotal}</span>
               </div>
 
               {errorMessage && (
@@ -535,11 +535,11 @@ export default function CheckoutPage() {
                   justifyContent: 'center', 
                   padding: '1rem', 
                   fontSize: '0.95rem', 
-                  backgroundColor: 'var(--primary-dark)', 
+                  backgroundColor: 'var(--accent-gold)', 
                   border: 'none',
                   borderRadius: '12px',
                   fontWeight: '800',
-                  color: '#FFFFFF',
+                  color: '#24130D',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -566,7 +566,7 @@ export default function CheckoutPage() {
               </button>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', color: 'var(--text-muted)', fontSize: '0.72rem', fontWeight: '600', marginTop: '1rem' }}>
-                <ShieldCheck size={14} color="var(--accent-olive)" />
+                <ShieldCheck size={14} color="var(--accent-gold)" />
                 <span>Encrypted 256-bit SSL secure checkout payment</span>
               </div>
 
@@ -578,13 +578,13 @@ export default function CheckoutPage() {
 
       {/* Simulated Payment Modal */}
       {showSimulatedPaymentModal && simulatePaymentData && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(56, 20, 35, 0.4)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.7)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div 
             className="glass-card" 
             style={{ 
-              backgroundColor: '#FFFFFF', 
+              backgroundColor: 'rgba(50, 26, 18, 0.95)', 
               borderRadius: '24px', 
-              border: '1.5px solid var(--border-color)', 
+              border: '1px solid rgba(245, 235, 221, 0.25)', 
               width: '100%', 
               maxWidth: '460px', 
               padding: '2.5rem',
@@ -593,42 +593,42 @@ export default function CheckoutPage() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-              <Lock size={18} color="var(--primary-dark)" />
+              <Lock size={18} color="var(--accent-gold)" />
               <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '800' }}>MILASTY SECURE PAYMENT</span>
             </div>
-            <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>
+            <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>
               Razorpay Sandbox Simulator
             </h3>
             
-            <div style={{ backgroundColor: '#FCFAF6', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
+            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(245, 235, 221, 0.15)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Customer Name</span>
-                <span style={{ fontWeight: '700', color: 'var(--primary-dark)' }}>{simulatePaymentData.customerName}</span>
+                <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>{simulatePaymentData.customerName}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Order ID</span>
-                <span style={{ fontWeight: '700', color: 'var(--primary-dark)' }}>{simulatePaymentData.orderId}</span>
+                <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>{simulatePaymentData.orderId}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Amount to Pay</span>
-                <span style={{ fontWeight: '850', color: 'var(--primary-dark)', fontSize: '1.05rem' }}>₹{simulatePaymentData.amount / 100}</span>
+                <span style={{ fontWeight: '850', color: 'var(--text-light)', fontSize: '1.05rem' }}>₹{simulatePaymentData.amount / 100}</span>
               </div>
             </div>
 
             {/* Simulated Payment Card Fields */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.75rem' }}>
               <div>
-                <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Card Number</label>
-                <input type="text" readOnly value="4111 1111 1111 1111" style={{ width: '100%', height: '42px', padding: '0 0.75rem', borderRadius: '8px', border: '1.5px solid var(--border-color)', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FCFAF6', color: 'var(--primary-dark)', letterSpacing: '0.05em' }} />
+                <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Card Number</label>
+                <input type="text" readOnly value="4111 1111 1111 1111" style={{ width: '100%', height: '42px', padding: '0 0.75rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)', letterSpacing: '0.05em' }} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Expiry</label>
-                  <input type="text" readOnly value="12/29" style={{ width: '100%', height: '42px', padding: '0 0.75rem', borderRadius: '8px', border: '1.5px solid var(--border-color)', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FCFAF6', color: 'var(--primary-dark)' }} />
+                  <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Expiry</label>
+                  <input type="text" readOnly value="12/29" style={{ width: '100%', height: '42px', padding: '0 0.75rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>CVV</label>
-                  <input type="password" readOnly value="•••" style={{ width: '100%', height: '42px', padding: '0 0.75rem', borderRadius: '8px', border: '1.5px solid var(--border-color)', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FCFAF6', color: 'var(--primary-dark)' }} />
+                  <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>CVV</label>
+                  <input type="password" readOnly value="•••" style={{ width: '100%', height: '42px', padding: '0 0.75rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
                 </div>
               </div>
             </div>
@@ -646,7 +646,7 @@ export default function CheckoutPage() {
                   await simulatePaymentData.options.handler(response);
                 }}
                 className="btn-primary"
-                style={{ width: '100%', height: '48px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--accent-olive)', border: 'none', color: '#FFFFFF', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
+                style={{ width: '100%', height: '48px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--accent-gold)', border: 'none', color: '#24130D', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
               >
                 Simulate Success Payment
               </button>
@@ -673,7 +673,7 @@ export default function CheckoutPage() {
                   simulatePaymentData.options.modal.ondismiss();
                 }}
                 className="btn-secondary"
-                style={{ width: '100%', height: '44px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderColor: 'var(--border-color)', color: 'var(--primary-dark)', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '800' }}
+                style={{ width: '100%', height: '44px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '800' }}
               >
                 Cancel / Close
               </button>
