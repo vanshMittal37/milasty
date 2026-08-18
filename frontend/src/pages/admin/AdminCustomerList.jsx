@@ -35,7 +35,7 @@ export default function AdminCustomerList() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
-        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
           Customer Registry
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0, fontWeight: '500' }}>
@@ -43,17 +43,17 @@ export default function AdminCustomerList() {
         </p>
       </div>
 
-      <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px solid var(--border-color)', boxShadow: '0 4px 20px rgba(56, 20, 35, 0.01)' }}>
+      <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' }}>
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', gap: '1rem' }}>
-            <RefreshCw size={20} className="animate-spin" color="var(--primary-dark)" />
+            <RefreshCw size={20} className="animate-spin" color="var(--accent-gold)" />
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Loading customer accounts...</span>
           </div>
         ) : customers.length > 0 ? (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.86rem', textAlign: 'left' }}>
               <thead>
-                <tr style={{ borderBottom: '1.5px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <tr style={{ borderBottom: '1px solid rgba(245, 235, 221, 0.15)', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Customer</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Email & Phone</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Total Orders</th>
@@ -64,14 +64,14 @@ export default function AdminCustomerList() {
               </thead>
               <tbody>
                 {customers.map((c) => (
-                  <tr key={c._id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '1rem', fontWeight: '800', color: 'var(--primary-dark)' }}>{c.name}</td>
+                  <tr key={c._id} style={{ borderBottom: '1px solid rgba(245, 235, 221, 0.15)' }}>
+                    <td style={{ padding: '1rem', fontWeight: '800', color: 'var(--text-light)' }}>{c.name}</td>
                     <td style={{ padding: '1rem' }}>
-                      <div style={{ fontWeight: '750', color: 'var(--primary-dark)' }}>{c.email}</div>
+                      <div style={{ fontWeight: '750', color: 'var(--text-light)' }}>{c.email}</div>
                       <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{c.phone || 'N/A'}</div>
                     </td>
-                    <td style={{ padding: '1rem', fontWeight: '850', color: 'var(--primary-dark)' }}>{c.orderCount || 0}</td>
-                    <td style={{ padding: '1rem', fontWeight: '850', color: 'var(--primary-dark)' }}>₹{c.totalSpent || 0}</td>
+                    <td style={{ padding: '1rem', fontWeight: '850', color: 'var(--text-light)' }}>{c.orderCount || 0}</td>
+                    <td style={{ padding: '1rem', fontWeight: '850', color: 'var(--text-light)' }}>₹{c.totalSpent || 0}</td>
                     <td style={{ padding: '1rem' }}>
                       <span 
                         style={{ 
@@ -80,9 +80,10 @@ export default function AdminCustomerList() {
                           textTransform: 'uppercase',
                           letterSpacing: '0.04em',
                           backgroundColor: c.status === 'active' ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', 
-                          color: c.status === 'active' ? 'var(--accent-olive)' : 'var(--accent-terracotta)',
+                          color: c.status === 'active' ? 'var(--accent-gold)' : 'var(--accent-terracotta)',
                           padding: '0.25rem 0.6rem',
-                          borderRadius: '6px'
+                          borderRadius: '6px',
+                          border: c.status === 'active' ? '1px solid rgba(201, 154, 50, 0.25)' : '1px solid rgba(217, 83, 79, 0.25)'
                         }}
                       >
                         {c.status || 'active'}
@@ -97,9 +98,9 @@ export default function AdminCustomerList() {
                           fontSize: '0.78rem', 
                           borderRadius: '8px',
                           fontWeight: '800',
-                          borderColor: c.status === 'active' ? 'rgba(217, 83, 79, 0.2)' : 'rgba(39, 76, 55, 0.2)',
-                          color: c.status === 'active' ? 'var(--accent-terracotta)' : 'var(--accent-olive)',
-                          backgroundColor: c.status === 'active' ? 'rgba(217, 83, 79, 0.02)' : 'rgba(39, 76, 55, 0.02)',
+                          borderColor: c.status === 'active' ? 'rgba(217, 83, 79, 0.2)' : 'rgba(201, 154, 50, 0.2)',
+                          color: c.status === 'active' ? 'var(--accent-terracotta)' : 'var(--accent-gold)',
+                          backgroundColor: 'transparent',
                           cursor: 'pointer'
                         }}
                       >

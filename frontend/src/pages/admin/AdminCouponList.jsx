@@ -79,18 +79,18 @@ export default function AdminCouponList() {
           className="glass-card" 
           style={{ 
             padding: '2rem', 
-            backgroundColor: '#FFFFFF', 
+            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
             borderRadius: '16px', 
-            border: '1.5px solid var(--border-color)', 
-            boxShadow: '0 4px 20px rgba(56, 20, 35, 0.01)' 
+            border: '1px solid rgba(245, 235, 221, 0.25)', 
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' 
           }}
         >
-          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.5rem', marginTop: 0 }}>
+          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem', marginTop: 0 }}>
             Create New Coupon
           </h3>
           <form onSubmit={handleCreateCoupon} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Coupon Code *
               </label>
               <input 
@@ -104,12 +104,12 @@ export default function AdminCouponList() {
                   height: '46px', 
                   padding: '0 0.95rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)',
+                  color: 'var(--text-light)',
                   textTransform: 'uppercase'
                 }} 
               />
@@ -117,7 +117,7 @@ export default function AdminCouponList() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Discount Type
                 </label>
                 <select 
@@ -128,20 +128,20 @@ export default function AdminCouponList() {
                     height: '46px', 
                     padding: '0 0.75rem', 
                     borderRadius: '10px', 
-                    border: '1.5px solid var(--border-color)', 
+                    border: '1px solid rgba(245, 235, 221, 0.25)', 
                     fontSize: '0.88rem',
                     outline: 'none',
-                    backgroundColor: '#FCFAF6',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     fontFamily: 'inherit',
-                    color: 'var(--primary-dark)'
+                    color: 'var(--text-light)'
                   }}
                 >
-                  <option value="percentage">Percentage (%)</option>
-                  <option value="fixed">Fixed Flat (₹)</option>
+                  <option value="percentage" style={{ backgroundColor: '#24130D', color: '#FFF' }}>Percentage (%)</option>
+                  <option value="fixed" style={{ backgroundColor: '#24130D', color: '#FFF' }}>Fixed Flat (₹)</option>
                 </select>
               </div>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Discount Value *
                 </label>
                 <input 
@@ -154,12 +154,12 @@ export default function AdminCouponList() {
                     height: '46px', 
                     padding: '0 0.95rem', 
                     borderRadius: '10px', 
-                    border: '1.5px solid var(--border-color)', 
+                    border: '1px solid rgba(245, 235, 221, 0.25)', 
                     fontSize: '0.88rem',
                     outline: 'none',
-                    backgroundColor: '#FCFAF6',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     fontFamily: 'inherit',
-                    color: 'var(--primary-dark)'
+                    color: 'var(--text-light)'
                   }} 
                 />
               </div>
@@ -167,7 +167,7 @@ export default function AdminCouponList() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Min Order (₹)
                 </label>
                 <input 
@@ -179,17 +179,17 @@ export default function AdminCouponList() {
                     height: '46px', 
                     padding: '0 0.95rem', 
                     borderRadius: '10px', 
-                    border: '1.5px solid var(--border-color)', 
+                    border: '1px solid rgba(245, 235, 221, 0.25)', 
                     fontSize: '0.88rem',
                     outline: 'none',
-                    backgroundColor: '#FCFAF6',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     fontFamily: 'inherit',
-                    color: 'var(--primary-dark)'
+                    color: 'var(--text-light)'
                   }} 
                 />
               </div>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Max Cap (₹)
                 </label>
                 <input 
@@ -201,12 +201,12 @@ export default function AdminCouponList() {
                     height: '46px', 
                     padding: '0 0.95rem', 
                     borderRadius: '10px', 
-                    border: '1.5px solid var(--border-color)', 
+                    border: '1px solid rgba(245, 235, 221, 0.25)', 
                     fontSize: '0.88rem',
                     outline: 'none',
-                    backgroundColor: '#FCFAF6',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     fontFamily: 'inherit',
-                    color: 'var(--primary-dark)'
+                    color: 'var(--text-light)'
                   }} 
                 />
               </div>
@@ -220,10 +220,10 @@ export default function AdminCouponList() {
                 width: '100%', 
                 height: '48px', 
                 justifyContent: 'center', 
-                backgroundColor: 'var(--primary-dark)', 
+                backgroundColor: 'var(--accent-gold)', 
                 border: 'none', 
                 borderRadius: '10px', 
-                color: '#FFFFFF',
+                color: '#24130D',
                 fontWeight: '800',
                 fontSize: '0.88rem',
                 display: 'flex',
@@ -244,19 +244,19 @@ export default function AdminCouponList() {
           className="glass-card" 
           style={{ 
             padding: '2rem', 
-            backgroundColor: '#FFFFFF', 
+            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
             borderRadius: '16px', 
-            border: '1.5px solid var(--border-color)', 
-            boxShadow: '0 4px 20px rgba(56, 20, 35, 0.01)' 
+            border: '1px solid rgba(245, 235, 221, 0.25)', 
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' 
           }}
         >
-          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.5rem', marginTop: 0 }}>
+          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem', marginTop: 0 }}>
             Active Promotional Coupons
           </h3>
           
           {loading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 0', gap: '0.5rem' }}>
-              <RefreshCw size={18} className="animate-spin" color="var(--primary-dark)" />
+              <RefreshCw size={18} className="animate-spin" color="var(--accent-gold)" />
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600' }}>Fetching coupons...</span>
             </div>
           ) : coupons.length > 0 ? (
@@ -269,18 +269,18 @@ export default function AdminCouponList() {
                     justifyContent: 'space-between', 
                     alignItems: 'center', 
                     padding: '0.95rem 1.25rem', 
-                    backgroundColor: '#FCFAF6', 
+                    backgroundColor: 'rgba(255, 255, 255, 0.03)', 
                     borderRadius: '12px', 
-                    border: '1px solid var(--border-color)'
+                    border: '1px solid rgba(245, 235, 221, 0.15)'
                   }}
                   className="admin-coupon-row"
                 >
                   <div>
-                    <div style={{ fontWeight: '850', color: 'var(--primary-dark)', fontSize: '0.92rem', letterSpacing: '0.04em' }}>{c.code}</div>
+                    <div style={{ fontWeight: '850', color: 'var(--text-light)', fontSize: '0.92rem', letterSpacing: '0.04em' }}>{c.code}</div>
                     <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: '600', marginTop: '0.15rem' }}>
                       {c.discountType === 'percentage' ? `${c.discountValue}% OFF` : `₹${c.discountValue} OFF`} (Min order ₹{c.minOrderAmount})
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--accent-olive)', fontWeight: '750', marginTop: '0.25rem' }}>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--accent-gold)', fontWeight: '750', marginTop: '0.25rem' }}>
                       Used: {c.usedCount || 0} times
                     </div>
                   </div>

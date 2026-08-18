@@ -97,10 +97,8 @@ export default function OrderHistoryPage() {
     );
   };
 
-  if (!isAuthenticated) return null;
-
-  return (
-    <div style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '2.5rem 0 5rem' }}>
+  if (!isAuthenticated) return null;  return (
+    <div style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '2.5rem 0 5rem' }}>
       <div className="container" style={{ maxWidth: '1150px' }}>
         
         {/* Breadcrumbs */}
@@ -109,12 +107,12 @@ export default function OrderHistoryPage() {
           <span style={{ margin: '0 0.5rem' }}>/</span>
           <Link to="/account" style={{ color: 'inherit', textDecoration: 'none' }}>My Account</Link>
           <span style={{ margin: '0 0.5rem' }}>/</span>
-          <span style={{ color: 'var(--primary-dark)' }}>Orders</span>
+          <span style={{ color: 'var(--accent-gold)' }}>Orders</span>
         </div>
 
         {/* Page Header */}
         <div style={{ marginBottom: '2.5rem' }}>
-          <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.45rem', letterSpacing: '-0.01em' }}>
+          <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.45rem', letterSpacing: '-0.01em' }}>
             My Orders
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', margin: 0, fontWeight: '500' }}>
@@ -124,33 +122,33 @@ export default function OrderHistoryPage() {
 
         {/* Statistics Widgets */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
-          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(56, 20, 35, 0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-dark)' }}>
+          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)' }}>
               <Package size={20} />
             </div>
             <div>
               <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', fontWeight: '700', display: 'block' }}>Total Orders</span>
-              <span style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--primary-dark)', lineHeight: 1.1 }}>{loading ? '...' : totalOrders}</span>
+              <span style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--text-light)', lineHeight: 1.1 }}>{loading ? '...' : totalOrders}</span>
             </div>
           </div>
 
-          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(197, 160, 89, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)' }}>
+          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)' }}>
               <Clock size={20} />
             </div>
             <div>
               <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', fontWeight: '700', display: 'block' }}>Active Orders</span>
-              <span style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--primary-dark)', lineHeight: 1.1 }}>{loading ? '...' : activeOrders}</span>
+              <span style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--text-light)', lineHeight: 1.1 }}>{loading ? '...' : activeOrders}</span>
             </div>
           </div>
 
-          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)' }}>
-            <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(39, 76, 55, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-olive)' }}>
+          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)' }}>
               <Truck size={20} />
             </div>
             <div>
               <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', fontWeight: '700', display: 'block' }}>Delivered</span>
-              <span style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--primary-dark)', lineHeight: 1.1 }}>{loading ? '...' : deliveredOrders}</span>
+              <span style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--text-light)', lineHeight: 1.1 }}>{loading ? '...' : deliveredOrders}</span>
             </div>
           </div>
         </div>
@@ -175,13 +173,13 @@ export default function OrderHistoryPage() {
                 style={{
                   padding: '0.45rem 1rem',
                   fontSize: '0.78rem',
-                  fontWeight: '700',
+                  fontWeight: '750',
                   borderRadius: '999px',
                   cursor: 'pointer',
-                  border: '1.5px solid',
-                  borderColor: selectedFilter === filter ? 'var(--primary-dark)' : 'var(--border-color)',
-                  backgroundColor: selectedFilter === filter ? 'var(--primary-dark)' : '#FFFFFF',
-                  color: selectedFilter === filter ? '#FFFFFF' : 'var(--primary-dark)',
+                  border: '1px solid',
+                  borderColor: selectedFilter === filter ? 'var(--accent-gold)' : 'rgba(245, 235, 221, 0.25)',
+                  backgroundColor: selectedFilter === filter ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.05)',
+                  color: selectedFilter === filter ? '#24130D' : 'var(--text-light)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                   transition: 'all 0.2s'
@@ -204,12 +202,12 @@ export default function OrderHistoryPage() {
                 width: '100%',
                 padding: '0.65rem 1rem 0.65rem 2.25rem',
                 borderRadius: '10px',
-                border: '1.5px solid var(--border-color)',
+                border: '1px solid rgba(245, 235, 221, 0.25)',
                 fontSize: '0.85rem',
                 outline: 'none',
                 fontFamily: 'inherit',
-                backgroundColor: '#FFFFFF',
-                color: 'var(--primary-dark)'
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                color: 'var(--text-light)'
               }}
             />
           </div>
@@ -224,24 +222,24 @@ export default function OrderHistoryPage() {
                 className="glass-card" 
                 style={{ 
                   padding: '2rem', 
-                  backgroundColor: '#FFFFFF', 
+                  backgroundColor: 'rgba(50, 26, 18, 0.60)', 
                   borderRadius: '24px', 
-                  border: '1.5px solid var(--border-color)',
+                  border: '1px solid rgba(245, 235, 221, 0.25)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '1rem',
                   opacity: 0.7
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid #F5EFE6', paddingBottom: '1rem' }}>
-                  <div style={{ height: '16px', width: '120px', backgroundColor: '#E2D7C7', borderRadius: '4px' }}></div>
-                  <div style={{ height: '16px', width: '80px', backgroundColor: '#E2D7C7', borderRadius: '4px' }}></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '1rem' }}>
+                  <div style={{ height: '16px', width: '120px', backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px' }}></div>
+                  <div style={{ height: '16px', width: '80px', backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px' }}></div>
                 </div>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                  <div style={{ height: '60px', width: '60px', backgroundColor: '#E2D7C7', borderRadius: '8px' }}></div>
+                  <div style={{ height: '60px', width: '60px', backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}></div>
                   <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <div style={{ height: '12px', width: '180px', backgroundColor: '#E2D7C7', borderRadius: '4px' }}></div>
-                    <div style={{ height: '10px', width: '100px', backgroundColor: '#E2D7C7', borderRadius: '4px' }}></div>
+                    <div style={{ height: '12px', width: '180px', backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px' }}></div>
+                    <div style={{ height: '10px', width: '100px', backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px' }}></div>
                   </div>
                 </div>
               </div>
@@ -251,11 +249,11 @@ export default function OrderHistoryPage() {
 
         {/* ERROR STATE */}
         {!loading && error && (
-          <div className="glass-card" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="glass-card" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: 'var(--shadow-sm)' }}>
             <AlertCircle size={44} color="var(--accent-terracotta)" style={{ margin: '0 auto 1.25rem' }} />
-            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>Unable to Load Your Orders</h3>
+            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>Unable to Load Your Orders</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>We encountered an error connecting to our server. Please try again.</p>
-            <button onClick={fetchMyOrders} className="btn-primary" style={{ padding: '0.8rem 2rem', backgroundColor: 'var(--primary-dark)', border: 'none', borderRadius: '999px', color: '#FFFFFF', cursor: 'pointer', fontWeight: '750' }}>
+            <button onClick={fetchMyOrders} className="btn-primary" style={{ padding: '0.8rem 2rem', backgroundColor: 'var(--accent-gold)', border: 'none', borderRadius: '999px', color: '#24130D', cursor: 'pointer', fontWeight: '800' }}>
               Try Again
             </button>
           </div>
@@ -263,11 +261,11 @@ export default function OrderHistoryPage() {
 
         {/* EMPTY STATE */}
         {!loading && !error && filteredOrders.length === 0 && (
-          <div className="glass-card" style={{ padding: '5rem 2rem', textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="glass-card" style={{ padding: '5rem 2rem', textAlign: 'center', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: 'var(--shadow-sm)' }}>
             <ShoppingBag size={48} color="var(--accent-gold)" style={{ margin: '0 auto 1.25rem' }} />
-            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>No Orders Found</h3>
+            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>No Orders Found</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', maxWidth: '300px', margin: '0.5rem auto 1.75rem' }}>Your next wholesome snack is waiting. Discover MILASTY's handcrafted bakes.</p>
-            <Link to="/shop" className="btn-primary" style={{ padding: '0.85rem 2rem', backgroundColor: 'var(--primary-dark)', border: 'none', borderRadius: '999px', color: '#FFFFFF', textDecoration: 'none', fontWeight: '850', fontSize: '0.9rem' }}>
+            <Link to="/shop" className="btn-primary" style={{ padding: '0.85rem 2rem', backgroundColor: 'var(--accent-gold)', border: 'none', borderRadius: '999px', color: '#24130D', textDecoration: 'none', fontWeight: '850', fontSize: '0.9rem' }}>
               Explore Fresh Bakes →
             </Link>
           </div>
@@ -289,10 +287,10 @@ export default function OrderHistoryPage() {
                   className="glass-card" 
                   style={{ 
                     padding: '2rem', 
-                    backgroundColor: '#FFFFFF', 
+                    backgroundColor: 'rgba(50, 26, 18, 0.60)', 
                     borderRadius: '24px', 
-                    border: '1.5px solid var(--border-color)',
-                    boxShadow: '0 8px 30px rgba(56, 20, 35, 0.01)',
+                    border: '1px solid rgba(245, 235, 221, 0.25)',
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
                     transition: 'transform 0.2s',
                   }}
                   onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
@@ -300,18 +298,18 @@ export default function OrderHistoryPage() {
                 >
                   
                   {/* Order Card Top Bar */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1.5px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
                     <div>
                       <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.15rem' }}>Order Number</span>
-                      <span style={{ fontSize: '1.2rem', fontWeight: '850', color: 'var(--primary-dark)' }}>#{order.orderId}</span>
+                      <span style={{ fontSize: '1.2rem', fontWeight: '850', color: 'var(--text-light)' }}>#{order.orderId}</span>
                     </div>
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                       <span 
                         className="badge-pill" 
                         style={{ 
                           backgroundColor: isCancelled ? 'rgba(217, 83, 79, 0.08)' : 'rgba(39, 76, 55, 0.08)', 
-                          color: isCancelled ? 'var(--accent-terracotta)' : 'var(--accent-olive)',
-                          border: isCancelled ? '1px solid rgba(217, 83, 79, 0.15)' : '1px solid rgba(39, 76, 55, 0.15)',
+                          color: isCancelled ? 'var(--accent-terracotta)' : 'var(--accent-gold)',
+                          border: isCancelled ? '1px solid rgba(217, 83, 79, 0.15)' : '1px solid rgba(245, 235, 221, 0.25)',
                           fontSize: '0.72rem',
                           fontWeight: '800',
                           textTransform: 'uppercase',
@@ -335,10 +333,10 @@ export default function OrderHistoryPage() {
                       <img 
                         src={firstItemImage} 
                         alt="Product preview" 
-                        style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '10px', border: '1px solid rgba(56,20,35,0.05)' }} 
+                        style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.15)' }} 
                       />
                       <div>
-                        <div style={{ fontSize: '0.92rem', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.15rem' }}>
+                        <div style={{ fontSize: '0.92rem', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.15rem' }}>
                           {order.items?.[0]?.title || 'Millet Bakery Item'}
                         </div>
                         <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: '600' }}>
@@ -351,7 +349,7 @@ export default function OrderHistoryPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                       <div style={{ textAlign: 'right' }}>
                         <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: '700', display: 'block', marginBottom: '0.15rem' }}>Total Amount</span>
-                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--primary-dark)' }}>₹{order.totalAmount}</div>
+                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--text-light)' }}>₹{order.totalAmount}</div>
                       </div>
                       
                       <Link 
@@ -361,8 +359,8 @@ export default function OrderHistoryPage() {
                           padding: '0.65rem 1.15rem', 
                           fontSize: '0.82rem',
                           borderRadius: '10px',
-                          border: '1.5px solid var(--border-color)',
-                          color: 'var(--primary-dark)',
+                          border: '1px solid rgba(245, 235, 221, 0.25)',
+                          color: 'var(--accent-gold)',
                           fontWeight: '800',
                           display: 'inline-flex',
                           alignItems: 'center',
@@ -377,7 +375,7 @@ export default function OrderHistoryPage() {
                   </div>
 
                   {/* Compact Timeline display in card */}
-                  <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
+                  <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(245, 235, 221, 0.15)' }}>
                     {renderCompactTimeline(order.orderStatus)}
                   </div>
 
@@ -389,5 +387,6 @@ export default function OrderHistoryPage() {
 
       </div>
     </div>
+  );>
   );
 }

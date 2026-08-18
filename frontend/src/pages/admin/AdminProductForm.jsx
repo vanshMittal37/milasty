@@ -143,14 +143,12 @@ export default function AdminProductForm() {
           display: 'inline-flex', 
           alignItems: 'center', 
           gap: '0.45rem', 
-          color: 'var(--primary-dark)', 
+          color: 'var(--accent-gold)', 
           fontWeight: '800', 
           fontSize: '0.85rem',
           textDecoration: 'none',
           transition: 'color 0.2s'
         }}
-        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-gold)'}
-        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--primary-dark)'}
       >
         <ArrowLeft size={16} />
         <span>Back to Product Listing</span>
@@ -160,13 +158,13 @@ export default function AdminProductForm() {
         className="glass-card" 
         style={{ 
           padding: '2.5rem', 
-          backgroundColor: '#FFFFFF', 
+          backgroundColor: 'rgba(50, 26, 18, 0.60)', 
           borderRadius: '16px', 
-          border: '1.5px solid var(--border-color)', 
-          boxShadow: '0 4px 20px rgba(56, 20, 35, 0.01)' 
+          border: '1px solid rgba(245, 235, 221, 0.25)', 
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' 
         }}
       >
-        <h2 style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '2rem', marginTop: 0 }}>
+        <h2 style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '2rem', marginTop: 0 }}>
           {isEdit ? 'Edit Catalog Product' : 'Add New Product'}
         </h2>
 
@@ -175,7 +173,7 @@ export default function AdminProductForm() {
           {/* Title & Slug */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Product Title *
               </label>
               <input
@@ -189,17 +187,17 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.95rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 URL Slug *
               </label>
               <input
@@ -213,12 +211,12 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.95rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
@@ -227,7 +225,7 @@ export default function AdminProductForm() {
           {/* Category & Subtitle */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Category *
               </label>
               <select
@@ -238,22 +236,22 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.75rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)',
+                  color: 'var(--text-light)',
                   cursor: 'pointer'
                 }}
               >
                 {categories.map((cat) => (
-                  <option key={cat._id || cat.slug} value={cat.slug}>{cat.name}</option>
+                  <option key={cat._id || cat.slug} value={cat.slug} style={{ backgroundColor: '#24130D', color: '#FFF' }}>{cat.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Subtitle / Tagline
               </label>
               <input
@@ -266,12 +264,12 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.95rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
@@ -280,10 +278,10 @@ export default function AdminProductForm() {
           {/* Pricing Auto Calculator Box */}
           <div 
             style={{ 
-              backgroundColor: '#FCFAF6', 
+              backgroundColor: 'rgba(255, 255, 255, 0.03)', 
               padding: '1.5rem', 
               borderRadius: '14px', 
-              border: '1.5px solid var(--border-color)',
+              border: '1px solid rgba(245, 235, 221, 0.15)',
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
               gap: '1.25rem',
@@ -291,7 +289,7 @@ export default function AdminProductForm() {
             }}
           >
             <div>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.4', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Base Price (₹) *
               </label>
               <input
@@ -304,17 +302,17 @@ export default function AdminProductForm() {
                   height: '42px', 
                   padding: '0 0.75rem', 
                   borderRadius: '8px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.4', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Discount Type
               </label>
               <select
@@ -325,22 +323,22 @@ export default function AdminProductForm() {
                   height: '42px', 
                   padding: '0 0.65rem', 
                   borderRadius: '8px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)',
+                  color: 'var(--text-light)',
                   cursor: 'pointer'
                 }}
               >
-                <option value="none">No Discount</option>
-                <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Flat (₹)</option>
+                <option value="none" style={{ backgroundColor: '#24130D', color: '#FFF' }}>No Discount</option>
+                <option value="percentage" style={{ backgroundColor: '#24130D', color: '#FFF' }}>Percentage (%)</option>
+                <option value="fixed" style={{ backgroundColor: '#24130D', color: '#FFF' }}>Fixed Flat (₹)</option>
               </select>
             </div>
             <div>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.4', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Discount Value
               </label>
               <input
@@ -352,34 +350,34 @@ export default function AdminProductForm() {
                   height: '42px', 
                   padding: '0 0.75rem', 
                   borderRadius: '8px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
             <div 
               style={{ 
-                backgroundColor: '#FFFFFF', 
+                backgroundColor: 'rgba(255, 255, 255, 0.05)', 
                 padding: '0.85rem 1rem', 
                 borderRadius: '10px', 
-                border: '1px solid var(--border-color)', 
+                border: '1px solid rgba(245, 235, 221, 0.15)', 
                 textAlign: 'center',
                 boxShadow: 'var(--shadow-sm)' 
               }}
             >
               <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.15rem' }}>Auto Final Price:</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--accent-olive)' }}>₹{calculatedFinalPrice}</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--accent-gold)' }}>₹{calculatedFinalPrice}</div>
             </div>
           </div>
 
           {/* Stock, SKU, Status */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Total Stock *
               </label>
               <input
@@ -392,17 +390,17 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.95rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 SKU Code
               </label>
               <input
@@ -415,17 +413,17 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.95rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Catalog Status
               </label>
               <select
@@ -436,24 +434,24 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.75rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)',
+                  color: 'var(--text-light)',
                   cursor: 'pointer'
                 }}
               >
-                <option value="active">Active (Visible)</option>
-                <option value="inactive">Inactive (Hidden)</option>
+                <option value="active" style={{ backgroundColor: '#24130D', color: '#FFF' }}>Active (Visible)</option>
+                <option value="inactive" style={{ backgroundColor: '#24130D', color: '#FFF' }}>Inactive (Hidden)</option>
               </select>
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Product Description *
             </label>
             <textarea
@@ -466,12 +464,12 @@ export default function AdminProductForm() {
                 width: '100%', 
                 padding: '0.75rem 0.95rem', 
                 borderRadius: '10px', 
-                border: '1.5px solid var(--border-color)', 
+                border: '1px solid rgba(245, 235, 221, 0.25)', 
                 fontSize: '0.88rem',
                 outline: 'none',
-                backgroundColor: '#FCFAF6',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 fontFamily: 'inherit',
-                color: 'var(--primary-dark)',
+                color: 'var(--text-light)',
                 resize: 'none'
               }}
             />
@@ -480,7 +478,7 @@ export default function AdminProductForm() {
           {/* Image URLs */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Main Product Image URL *
               </label>
               <input
@@ -493,17 +491,17 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.95rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Secondary Image URL
               </label>
               <input
@@ -516,12 +514,12 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.95rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
@@ -530,7 +528,7 @@ export default function AdminProductForm() {
           {/* Badges & Ingredients */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Badges (comma separated)
               </label>
               <input
@@ -543,17 +541,17 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.95rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Ingredients (comma separated)
               </label>
               <input
@@ -566,12 +564,12 @@ export default function AdminProductForm() {
                   height: '46px', 
                   padding: '0 0.95rem', 
                   borderRadius: '10px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   fontSize: '0.88rem',
                   outline: 'none',
-                  backgroundColor: '#FCFAF6',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   fontFamily: 'inherit',
-                  color: 'var(--primary-dark)'
+                  color: 'var(--text-light)'
                 }}
               />
             </div>
@@ -586,10 +584,10 @@ export default function AdminProductForm() {
               width: '100%', 
               height: '52px', 
               justifyContent: 'center', 
-              backgroundColor: 'var(--primary-dark)',
+              backgroundColor: 'var(--accent-gold)',
               border: 'none',
               borderRadius: '12px',
-              color: '#FFFFFF',
+              color: '#24130D',
               fontWeight: '800',
               fontSize: '0.92rem',
               display: 'flex',
@@ -605,7 +603,7 @@ export default function AdminProductForm() {
             <span>{loading ? 'Saving Changes...' : (isEdit ? 'Update Product Details' : 'Save & Publish Product')}</span>
           </button>
         </form>
-      </div>
+      </div></div>
     </div>
   );
 }

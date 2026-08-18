@@ -25,7 +25,7 @@ export default function AdminReviewList() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
-        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
           Customer Review Moderation
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0, fontWeight: '500' }}>
@@ -35,7 +35,7 @@ export default function AdminReviewList() {
 
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '30vh', gap: '1rem' }}>
-          <RefreshCw size={20} className="animate-spin" color="var(--primary-dark)" />
+          <RefreshCw size={20} className="animate-spin" color="var(--accent-gold)" />
           <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Loading client reviews...</span>
         </div>
       ) : reviews.length > 0 ? (
@@ -46,10 +46,10 @@ export default function AdminReviewList() {
               className="glass-card" 
               style={{ 
                 padding: '1.75rem', 
-                backgroundColor: '#FFFFFF', 
+                backgroundColor: 'rgba(50, 26, 18, 0.60)', 
                 borderRadius: '16px', 
-                border: '1.5px solid var(--border-color)', 
-                boxShadow: '0 4px 20px rgba(56, 20, 35, 0.01)',
+                border: '1px solid rgba(245, 235, 221, 0.25)', 
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
                 display: 'flex', 
                 flexDirection: 'column', 
                 justifyContent: 'space-between',
@@ -62,14 +62,14 @@ export default function AdminReviewList() {
                     <Star key={i} size={14} fill="var(--accent-gold)" color="var(--accent-gold)" />
                   ))}
                 </div>
-                <p style={{ fontSize: '0.9rem', color: 'var(--primary-dark)', fontStyle: 'italic', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', fontStyle: 'italic', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>
                   "{r.comment}"
                 </p>
               </div>
 
-              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <div style={{ fontWeight: '800', fontSize: '0.86rem', color: 'var(--primary-dark)' }}>{r.name}</div>
+                  <div style={{ fontWeight: '800', fontSize: '0.86rem', color: 'var(--text-light)' }}>{r.name}</div>
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600', marginTop: '0.15rem' }}>
                     {r.productName || 'Verified Purchase'}
                   </div>
@@ -81,10 +81,11 @@ export default function AdminReviewList() {
                     fontWeight: '800',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
-                    backgroundColor: 'rgba(39, 76, 55, 0.08)',
-                    color: 'var(--accent-olive)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    color: 'var(--accent-gold)',
                     padding: '0.25rem 0.6rem',
-                    borderRadius: '6px'
+                    borderRadius: '6px',
+                    border: '1px solid rgba(201, 154, 50, 0.25)'
                   }}
                 >
                   Approved
@@ -94,7 +95,7 @@ export default function AdminReviewList() {
           ))}
         </div>
       ) : (
-        <div className="glass-card" style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600', border: '1.5px solid var(--border-color)', borderRadius: '16px', backgroundColor: '#FFFFFF' }}>
+        <div className="glass-card" style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600', border: '1px solid rgba(245, 235, 221, 0.25)', borderRadius: '16px', backgroundColor: 'rgba(50, 26, 18, 0.60)' }}>
           No customer reviews submitted yet.
         </div>
       )}

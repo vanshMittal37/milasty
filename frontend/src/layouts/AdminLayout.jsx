@@ -189,7 +189,7 @@ export default function AdminLayout() {
   );
 
   return (
-    <div style={{ backgroundColor: '#F8F5F0', minHeight: '100vh', display: 'flex' }}>
+    <div style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', display: 'flex' }}>
       
       {/* ==================================================
           DESKTOP SIDEBAR (Fixed Left)
@@ -276,9 +276,9 @@ export default function AdminLayout() {
             position: 'sticky', 
             top: 0, 
             zIndex: 80, 
-            backgroundColor: 'rgba(248, 245, 240, 0.96)', 
+            backgroundColor: 'rgba(36, 19, 13, 0.96)', 
             backdropFilter: 'blur(10px)',
-            borderBottom: '1.5px solid var(--border-color)', 
+            borderBottom: '1px solid rgba(245, 235, 221, 0.15)', 
             padding: '1rem 1.5rem',
             display: 'flex',
             alignItems: 'center',
@@ -293,7 +293,7 @@ export default function AdminLayout() {
               style={{
                 background: 'none',
                 border: 'none',
-                color: 'var(--primary-dark)',
+                color: 'var(--accent-gold)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -316,7 +316,7 @@ export default function AdminLayout() {
               <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>
                 {pageBreadcrumb}
               </span>
-              <h1 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>
+              <h1 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
                 {pageTitle}
               </h1>
             </div>
@@ -336,10 +336,10 @@ export default function AdminLayout() {
                 textDecoration: 'none',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                backgroundColor: 'rgba(56, 20, 35, 0.03)',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 padding: '0.45rem 0.95rem',
                 borderRadius: '8px',
-                border: '1px solid var(--border-color)'
+                border: '1px solid rgba(245, 235, 221, 0.15)'
               }}
               className="desktop-links hover-scale"
             >
@@ -362,7 +362,7 @@ export default function AdminLayout() {
                 transition: 'background-color 0.2s'
               }}
               className="hover-scale"
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(56, 20, 35, 0.03)'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               title="Notifications"
             >
@@ -375,8 +375,8 @@ export default function AdminLayout() {
                   width: '34px', 
                   height: '34px', 
                   borderRadius: '50%', 
-                  backgroundColor: 'var(--primary-dark)', 
-                  color: '#FFFFFF', 
+                  backgroundColor: 'var(--accent-gold)', 
+                  color: '#24130D', 
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
@@ -388,7 +388,7 @@ export default function AdminLayout() {
                 M
               </div>
               <div className="desktop-links" style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--primary-dark)', lineHeight: '1.2' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--text-light)', lineHeight: '1.2' }}>
                   Milasty Admin
                 </span>
                 <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: '600' }}>

@@ -113,7 +113,7 @@ export default function CustomerOrderDetailPage() {
   if (!isAuthenticated) return null;
 
   return (
-    <div style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '2.5rem 0 5rem' }}>
+    <div style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '2.5rem 0 5rem' }}>
       <div className="container" style={{ maxWidth: '1150px' }}>
         
         {/* Breadcrumb navigation */}
@@ -124,7 +124,7 @@ export default function CustomerOrderDetailPage() {
           <span style={{ margin: '0 0.5rem' }}>/</span>
           <Link to="/account/orders" style={{ color: 'inherit', textDecoration: 'none' }}>Orders</Link>
           <span style={{ margin: '0 0.5rem' }}>/</span>
-          <span style={{ color: 'var(--primary-dark)' }}>Order #{order.orderId}</span>
+          <span style={{ color: 'var(--accent-gold)' }}>Order #{order.orderId}</span>
         </div>
 
         {/* Back Link */}
@@ -134,7 +134,7 @@ export default function CustomerOrderDetailPage() {
             display: 'inline-flex', 
             alignItems: 'center', 
             gap: '0.4rem', 
-            color: 'var(--primary-dark)', 
+            color: 'var(--accent-gold)', 
             fontWeight: '800', 
             marginBottom: '2rem', 
             fontSize: '0.85rem',
@@ -150,23 +150,23 @@ export default function CustomerOrderDetailPage() {
           className="glass-card" 
           style={{ 
             padding: '2.25rem 2.5rem', 
-            backgroundColor: '#FFFFFF', 
+            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
             marginBottom: '2.5rem', 
             borderRadius: '24px', 
-            border: '1.5px solid var(--border-color)',
-            boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)'
+            border: '1px solid rgba(245, 235, 221, 0.25)',
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)'
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
             <div>
               <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Order Details</span>
-              <h1 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h1 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 #{order.orderId}
                 <button 
                   onClick={handleCopyOrderNumber} 
                   style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.2rem', display: 'flex', alignItems: 'center', transition: 'color 0.2s' }}
                   title="Copy Order ID"
-                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary-dark)'}
+                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--accent-gold)'}
                   onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
                 >
                   <Copy size={16} />
@@ -179,15 +179,15 @@ export default function CustomerOrderDetailPage() {
             
             <div style={{ textAlign: 'right' }}>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600', display: 'block', marginBottom: '0.25rem' }}>Grand Total</span>
-              <div style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--primary-dark)', lineHeight: 1 }}>₹{order.totalAmount}</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--text-light)', lineHeight: 1 }}>₹{order.totalAmount}</div>
               <span 
                 className="badge-pill" 
                 style={{ 
                   marginTop: '0.65rem',
                   display: 'inline-block',
-                  backgroundColor: isCancelled ? 'rgba(217, 83, 79, 0.08)' : 'rgba(39, 76, 55, 0.08)', 
-                  color: isCancelled ? 'var(--accent-terracotta)' : 'var(--accent-olive)',
-                  border: isCancelled ? '1px solid rgba(217, 83, 79, 0.15)' : '1px solid rgba(39, 76, 55, 0.15)',
+                  backgroundColor: isCancelled ? 'rgba(217, 83, 79, 0.08)' : 'rgba(197, 160, 89, 0.08)', 
+                  color: isCancelled ? 'var(--accent-terracotta)' : 'var(--accent-gold)',
+                  border: isCancelled ? '1px solid rgba(217, 83, 79, 0.15)' : '1px solid rgba(245, 235, 221, 0.25)',
                   fontSize: '0.78rem',
                   fontWeight: '800',
                   textTransform: 'uppercase',
@@ -206,15 +206,15 @@ export default function CustomerOrderDetailPage() {
             className="glass-card" 
             style={{ 
               padding: '2.5rem', 
-              backgroundColor: '#FFFFFF', 
+              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
               marginBottom: '2.5rem',
               borderRadius: '24px',
-              border: '1.5px solid var(--border-color)',
-              boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)'
+              border: '1px solid rgba(245, 235, 221, 0.25)',
+              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)'
             }}
           >
             <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <PackageCheck size={20} color="var(--accent-gold)" />
                 <span>Your Order Journey</span>
               </h3>
@@ -233,7 +233,7 @@ export default function CustomerOrderDetailPage() {
                   left: '60px', 
                   right: '60px', 
                   height: '3px', 
-                  backgroundColor: 'rgba(56, 20, 35, 0.08)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   zIndex: 1 
                 }} 
               />
@@ -246,7 +246,7 @@ export default function CustomerOrderDetailPage() {
                     left: '60px', 
                     width: `${(currentStageIndex / (STATUS_STAGES.length - 1)) * 88}%`,
                     height: '3px', 
-                    backgroundColor: 'var(--accent-olive)',
+                    backgroundColor: 'var(--accent-gold)',
                     zIndex: 1,
                     transition: 'width 0.5s ease-out'
                   }} 
@@ -263,21 +263,21 @@ export default function CustomerOrderDetailPage() {
                         width: '32px',
                         height: '32px',
                         borderRadius: '50%',
-                        backgroundColor: isPassed ? 'var(--accent-olive)' : '#E2D7C7',
-                        color: '#FFFFFF',
+                        backgroundColor: isPassed ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.05)',
+                        color: isPassed ? '#24130D' : 'var(--text-muted)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '0.85rem',
                         fontWeight: '800',
                         marginBottom: '0.75rem',
-                        boxShadow: isCurrent ? '0 0 0 4px rgba(39, 76, 55, 0.15), 0 4px 10px rgba(39, 76, 55, 0.2)' : 'none',
+                        boxShadow: isCurrent ? '0 0 0 4px rgba(201, 154, 50, 0.15), 0 4px 10px rgba(201, 154, 50, 0.2)' : 'none',
                         transition: 'all 0.3s ease'
                       }}
                     >
                       {isPassed ? <Check size={15} strokeWidth={3} /> : idx + 1}
                     </div>
-                    <span style={{ fontSize: '0.76rem', fontWeight: isPassed ? '800' : '600', color: isPassed ? 'var(--primary-dark)' : 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span style={{ fontSize: '0.76rem', fontWeight: isPassed ? '800' : '650', color: isPassed ? 'var(--text-light)' : 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       {stage}
                     </span>
                   </div>
@@ -286,7 +286,7 @@ export default function CustomerOrderDetailPage() {
             </div>
 
             {/* Mobile Vertical Timeline */}
-            <div className="mobile-toggle" style={{ display: 'none', flexDirection: 'column', gap: '1.25rem', position: 'relative', paddingLeft: '1.5rem', borderLeft: '2px solid rgba(56, 20, 35, 0.08)' }}>
+            <div className="mobile-toggle" style={{ display: 'none', flexDirection: 'column', gap: '1.25rem', position: 'relative', paddingLeft: '1.5rem', borderLeft: '2px solid rgba(255, 255, 255, 0.05)' }}>
               {STATUS_STAGES.map((stage, idx) => {
                 const isPassed = idx <= currentStageIndex;
                 const isCurrent = idx === currentStageIndex;
@@ -300,19 +300,19 @@ export default function CustomerOrderDetailPage() {
                         width: '24px',
                         height: '24px',
                         borderRadius: '50%',
-                        backgroundColor: isPassed ? 'var(--accent-olive)' : '#E2D7C7',
-                        color: '#FFFFFF',
+                        backgroundColor: isPassed ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.05)',
+                        color: isPassed ? '#24130D' : 'var(--text-muted)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '0.7rem',
                         fontWeight: '800',
-                        boxShadow: isCurrent ? '0 0 0 3px rgba(39, 76, 55, 0.15)' : 'none',
+                        boxShadow: isCurrent ? '0 0 0 3px rgba(201, 154, 50, 0.15)' : 'none',
                       }}
                     >
                       {isPassed ? <Check size={11} strokeWidth={3} /> : idx + 1}
                     </div>
-                    <span style={{ fontSize: '0.88rem', fontWeight: isPassed ? '800' : '600', color: isPassed ? 'var(--primary-dark)' : 'var(--text-muted)' }}>
+                    <span style={{ fontSize: '0.88rem', fontWeight: isPassed ? '800' : '660', color: isPassed ? 'var(--text-light)' : 'var(--text-muted)' }}>
                       {stage}
                     </span>
                   </div>
@@ -325,17 +325,17 @@ export default function CustomerOrderDetailPage() {
               style={{ 
                 marginTop: '2rem', 
                 padding: '1.1rem 1.5rem', 
-                backgroundColor: 'rgba(39, 76, 55, 0.05)', 
+                backgroundColor: 'rgba(255, 255, 255, 0.03)', 
                 borderRadius: '14px', 
-                borderLeft: '4.5px solid var(--accent-olive)', 
+                borderLeft: '4.5px solid var(--accent-gold)', 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '0.75rem' 
               }}
             >
-              <CheckCircle2 size={20} color="var(--accent-olive)" />
-              <div style={{ fontSize: '0.86rem', color: 'var(--primary-dark)', fontWeight: '650' }}>
-                <span style={{ textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '800', marginRight: '0.4rem', color: 'var(--accent-olive)' }}>
+              <CheckCircle2 size={20} color="var(--accent-gold)" />
+              <div style={{ fontSize: '0.86rem', color: 'var(--text-light)', fontWeight: '650' }}>
+                <span style={{ textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '800', marginRight: '0.4rem', color: 'var(--accent-gold)' }}>
                   {order.orderStatus}:
                 </span>
                 {getStatusDescriptionMessage(order.orderStatus)}
@@ -363,8 +363,8 @@ export default function CustomerOrderDetailPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             
             {/* Items Ordered Card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)', boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)' }}>
-              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.5rem', margin: 0 }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
+              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem', margin: 0 }}>
                 Items in Your Order
               </h3>
 
@@ -372,19 +372,19 @@ export default function CustomerOrderDetailPage() {
                 {order.items?.map((item, idx) => {
                   const imageSrc = item.productId?.image || item.image || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=250&q=80';
                   return (
-                    <div key={idx} style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', paddingBottom: '1rem', borderBottom: '1px solid var(--border-color)' }}>
+                    <div key={idx} style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', paddingBottom: '1rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)' }}>
                       <img 
                         src={imageSrc} 
                         alt={item.title} 
-                        style={{ width: '76px', height: '76px', objectFit: 'cover', borderRadius: '12px', border: '1px solid rgba(56,20,35,0.06)' }} 
+                        style={{ width: '76px', height: '76px', objectFit: 'cover', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)' }} 
                       />
                       <div style={{ flexGrow: 1 }}>
-                        <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--primary-dark)', margin: '0 0 0.2rem 0', lineHeight: '1.25' }}>{item.title}</h4>
+                        <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--text-light)', margin: '0 0 0.2rem 0', lineHeight: '1.25' }}>{item.title}</h4>
                         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600' }}>
                           {item.variantName} ({item.weight}) • Qty {item.quantity}
                         </span>
                       </div>
-                      <div style={{ fontWeight: '850', color: 'var(--primary-dark)', fontSize: '1.05rem' }}>
+                      <div style={{ fontWeight: '850', color: 'var(--text-light)', fontSize: '1.05rem' }}>
                         ₹{item.totalPrice}
                       </div>
                     </div>
@@ -394,31 +394,31 @@ export default function CustomerOrderDetailPage() {
             </div>
 
             {/* Pricing Summary Card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)', boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)' }}>
-              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
+              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>
                 Order Summary
               </h3>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', padding: '1rem 0', borderBottom: '1px solid var(--border-color)', fontSize: '0.88rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', padding: '1rem 0', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                   <span>Subtotal</span>
-                  <span style={{ fontWeight: '700', color: 'var(--primary-dark)' }}>₹{order.subtotal}</span>
+                  <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>₹{order.subtotal}</span>
                 </div>
                 {order.couponDiscount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-olive)', fontWeight: '700' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-gold)', fontWeight: '700' }}>
                     <span>Coupon Discount</span>
                     <span>-₹{order.couponDiscount}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                   <span>Pan-India Delivery</span>
-                  <span style={{ fontWeight: '700', color: order.deliveryFee === 0 ? 'var(--accent-olive)' : 'var(--primary-dark)' }}>
+                  <span style={{ fontWeight: '700', color: order.deliveryFee === 0 ? 'var(--accent-gold)' : 'var(--text-light)' }}>
                     {order.deliveryFee === 0 ? 'FREE' : `₹${order.deliveryFee}`}
                   </span>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.25rem', fontSize: '1.1rem', fontWeight: '850', color: 'var(--primary-dark)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.25rem', fontSize: '1.1rem', fontWeight: '850', color: 'var(--text-light)' }}>
                 <span>Total Paid</span>
                 <span style={{ fontSize: '1.45rem', fontWeight: '900' }}>₹{order.totalAmount}</span>
               </div>
@@ -429,36 +429,36 @@ export default function CustomerOrderDetailPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             
             {/* Delivery Details Home Card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)', boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)' }}>
-              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
+              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                 <MapPin size={18} color="var(--accent-gold)" />
                 <span>Delivering To</span>
               </h3>
               
-              <div style={{ fontSize: '0.9rem', color: 'var(--primary-dark)', lineHeight: '1.6', marginTop: '1.25rem' }}>
-                <strong style={{ fontSize: '1rem', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.45rem' }}>{order.customerName}</strong>
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: '1.6', marginTop: '1.25rem' }}>
+                <strong style={{ fontSize: '1rem', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem' }}>{order.customerName}</strong>
                 <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>
                   {order.shippingAddress?.building && `${order.shippingAddress.building}, `}
                   {order.shippingAddress?.addressLine}<br />
                   {order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.pincode}
                 </span>
                 
-                <div style={{ marginTop: '1.1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                  Mobile / WhatsApp: <strong style={{ color: 'var(--primary-dark)' }}>+91 {order.phone}</strong>
+                <div style={{ marginTop: '1.1rem', paddingTop: '1rem', borderTop: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  Mobile / WhatsApp: <strong style={{ color: 'var(--text-light)' }}>+91 {order.phone}</strong>
                 </div>
               </div>
             </div>
 
             {/* Payment Details Card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)', boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)' }}>
-              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
+              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>
                 Payment
               </h3>
 
               <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.88rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                   <span>Method</span>
-                  <span style={{ fontWeight: '750', color: 'var(--primary-dark)' }}>{order.paymentMethod}</span>
+                  <span style={{ fontWeight: '750', color: 'var(--text-light)' }}>{order.paymentMethod}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Status</span>
@@ -466,8 +466,8 @@ export default function CustomerOrderDetailPage() {
                     className="badge-pill" 
                     style={{ 
                       backgroundColor: order.paymentStatus === 'Paid' ? 'rgba(39, 76, 55, 0.08)' : 'rgba(197, 160, 89, 0.08)',
-                      color: order.paymentStatus === 'Paid' ? 'var(--accent-olive)' : 'var(--accent-gold)',
-                      border: order.paymentStatus === 'Paid' ? '1px solid rgba(39, 76, 55, 0.15)' : '1px solid rgba(197, 160, 89, 0.15)',
+                      color: order.paymentStatus === 'Paid' ? 'var(--accent-gold)' : 'var(--accent-gold)',
+                      border: order.paymentStatus === 'Paid' ? '1px solid rgba(245, 235, 221, 0.25)' : '1px solid rgba(245, 235, 221, 0.25)',
                       fontSize: '0.72rem',
                       fontWeight: '800',
                       textTransform: 'uppercase',
@@ -481,8 +481,8 @@ export default function CustomerOrderDetailPage() {
             </div>
 
             {/* Need Help Card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)', boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)' }}>
-              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
+              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>
                 Need Help?
               </h3>
               <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', margin: '0 0 1.25rem 0', fontWeight: '500' }}>
@@ -495,7 +495,7 @@ export default function CustomerOrderDetailPage() {
                   target="_blank"
                   rel="noreferrer"
                   className="btn-secondary" 
-                  style={{ justifyContent: 'center', padding: '0.75rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.35rem', borderRadius: '12px', border: '1.5px solid var(--primary-dark)', color: 'var(--primary-dark)', textDecoration: 'none', fontWeight: '800' }}
+                  style={{ justifyContent: 'center', padding: '0.75rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.35rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', textDecoration: 'none', fontWeight: '800' }}
                 >
                   <MessageCircle size={15} />
                   <span>WhatsApp Support</span>
@@ -503,7 +503,7 @@ export default function CustomerOrderDetailPage() {
                 <Link 
                   to="/contact" 
                   className="btn-secondary" 
-                  style={{ justifyContent: 'center', padding: '0.75rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.35rem', borderRadius: '12px', border: '1.5px solid var(--border-color)', color: 'var(--primary-dark)', textDecoration: 'none', fontWeight: '800' }}
+                  style={{ justifyContent: 'center', padding: '0.75rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.35rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', textDecoration: 'none', fontWeight: '800' }}
                 >
                   <HelpCircle size={15} />
                   <span>Contact Page</span>
@@ -519,7 +519,7 @@ export default function CustomerOrderDetailPage() {
                   padding: '1.5rem 1.75rem', 
                   backgroundColor: 'rgba(217, 83, 79, 0.04)', 
                   borderRadius: '20px', 
-                  border: '1.5px dashed var(--accent-terracotta)' 
+                  border: '1px solid rgba(217, 83, 79, 0.25)' 
                 }}
               >
                 <h4 style={{ color: 'var(--accent-terracotta)', marginBottom: '0.35rem', fontSize: '0.98rem', fontWeight: '800', margin: 0 }}>Cancel Order</h4>
@@ -534,7 +534,7 @@ export default function CustomerOrderDetailPage() {
                     placeholder="Reason for cancelling"
                     value={cancelReason}
                     onChange={(e) => setCancelReason(e.target.value)}
-                    style={{ flexGrow: 1, padding: '0.6rem 0.85rem', borderRadius: '10px', border: '1.5px solid var(--border-color)', fontSize: '0.82rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF' }}
+                    style={{ flexGrow: 1, padding: '0.6rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.25)', fontSize: '0.82rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
                   />
                   <button 
                     type="submit" 
@@ -566,12 +566,12 @@ export default function CustomerOrderDetailPage() {
               bottom: '24px', 
               left: '50%', 
               transform: 'translateX(-50%)', 
-              backgroundColor: 'var(--primary-dark)', 
-              color: '#FFFFFF', 
+              backgroundColor: 'var(--accent-gold)', 
+              color: '#24130D', 
               padding: '0.65rem 1.25rem', 
               borderRadius: '999px', 
               fontSize: '0.82rem', 
-              fontWeight: '700', 
+              fontWeight: '800', 
               zIndex: 300,
               boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
               display: 'flex',
@@ -580,7 +580,7 @@ export default function CustomerOrderDetailPage() {
             }}
             className="animate-slide-up"
           >
-            <Check size={14} color="var(--accent-gold)" />
+            <Check size={14} color="#24130D" />
             <span>Order ID copied to clipboard</span>
           </div>
         )}
@@ -592,8 +592,8 @@ export default function CustomerOrderDetailPage() {
             className="btn-primary" 
             style={{ 
               padding: '0.95rem 2.25rem', 
-              backgroundColor: 'var(--primary-dark)', 
-              color: 'var(--bg-main)', 
+              backgroundColor: 'var(--accent-gold)', 
+              color: '#24130D', 
               borderRadius: '999px',
               fontWeight: '800',
               textDecoration: 'none',

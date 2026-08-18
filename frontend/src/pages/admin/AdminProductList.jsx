@@ -85,11 +85,11 @@ export default function AdminProductList() {
               height: '44px', 
               padding: '0 1rem 0 2.5rem', 
               borderRadius: '10px', 
-              border: '1.5px solid var(--border-color)', 
+              border: '1px solid rgba(245, 235, 221, 0.25)', 
               fontSize: '0.88rem',
               outline: 'none',
-              backgroundColor: '#FFFFFF',
-              color: 'var(--primary-dark)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              color: 'var(--text-light)',
               fontFamily: 'inherit'
             }} 
           />
@@ -97,17 +97,17 @@ export default function AdminProductList() {
       </div>
 
       {/* Main product management card table */}
-      <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px solid var(--border-color)', boxShadow: '0 4px 20px rgba(56, 20, 35, 0.01)' }}>
+      <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' }}>
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', gap: '1rem' }}>
-            <RefreshCw size={20} className="animate-spin" color="var(--primary-dark)" />
+            <RefreshCw size={20} className="animate-spin" color="var(--accent-gold)" />
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Fetching products listing...</span>
           </div>
         ) : products.length > 0 ? (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.86rem', textAlign: 'left' }}>
               <thead>
-                <tr style={{ borderBottom: '1.5px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <tr style={{ borderBottom: '1px solid rgba(245, 235, 221, 0.15)', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Product</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Category</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>SKU</th>
@@ -122,17 +122,17 @@ export default function AdminProductList() {
                   const stockLevel = p.stock !== undefined ? p.stock : 50;
                   const isLowStock = stockLevel <= 5;
                   return (
-                    <tr key={p._id || p.slug} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                    <tr key={p._id || p.slug} style={{ borderBottom: '1px solid rgba(245, 235, 221, 0.15)' }}>
                       <td style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                        <img src={p.image} alt={p.title} style={{ width: '46px', height: '46px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
+                        <img src={p.image} alt={p.title} style={{ width: '46px', height: '46px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.15)' }} />
                         <div>
-                          <div style={{ fontWeight: '800', color: 'var(--primary-dark)', fontSize: '0.88rem' }}>{p.title}</div>
+                          <div style={{ fontWeight: '800', color: 'var(--text-light)', fontSize: '0.88rem' }}>{p.title}</div>
                           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600', marginTop: '0.15rem' }}>{p.subtitle || p.slug}</div>
                         </div>
                       </td>
-                      <td style={{ padding: '1rem', textTransform: 'capitalize', fontWeight: '700', color: 'var(--primary-dark)' }}>{p.category}</td>
+                      <td style={{ padding: '1rem', textTransform: 'capitalize', fontWeight: '700', color: 'var(--text-light)' }}>{p.category}</td>
                       <td style={{ padding: '1rem', fontFamily: 'monospace', color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: '600' }}>{p.sku || 'MLS-PRD'}</td>
-                      <td style={{ padding: '1rem', fontWeight: '850', color: 'var(--primary-dark)' }}>₹{p.price || p.variants?.[0]?.price}</td>
+                      <td style={{ padding: '1rem', fontWeight: '850', color: 'var(--text-light)' }}>₹{p.price || p.variants?.[0]?.price}</td>
                       <td style={{ padding: '1rem' }}>
                         <span 
                           style={{ 
@@ -141,7 +141,7 @@ export default function AdminProductList() {
                             textTransform: 'uppercase',
                             letterSpacing: '0.04em',
                             backgroundColor: isLowStock ? 'rgba(217, 83, 79, 0.08)' : 'rgba(39, 76, 55, 0.08)', 
-                            color: isLowStock ? 'var(--accent-terracotta)' : 'var(--accent-olive)',
+                            color: isLowStock ? 'var(--accent-terracotta)' : 'var(--accent-gold)',
                             padding: '0.25rem 0.6rem',
                             borderRadius: '6px'
                           }}
@@ -156,7 +156,7 @@ export default function AdminProductList() {
                             fontWeight: '800',
                             textTransform: 'uppercase',
                             letterSpacing: '0.04em',
-                            backgroundColor: 'rgba(197, 160, 89, 0.08)',
+                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
                             color: 'var(--accent-gold)',
                             padding: '0.25rem 0.6rem',
                             borderRadius: '6px'
@@ -172,9 +172,9 @@ export default function AdminProductList() {
                             style={{ 
                               padding: '0.45rem', 
                               borderRadius: '8px', 
-                              backgroundColor: 'rgba(56, 20, 35, 0.03)', 
-                              color: 'var(--primary-dark)',
-                              border: '1px solid var(--border-color)',
+                              backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+                              color: 'var(--accent-gold)',
+                              border: '1px solid rgba(245, 235, 221, 0.15)',
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -191,7 +191,7 @@ export default function AdminProductList() {
                               borderRadius: '8px', 
                               backgroundColor: 'rgba(217, 83, 79, 0.03)', 
                               color: 'var(--accent-terracotta)', 
-                              border: '1px solid rgba(217, 83, 79, 0.1)',
+                              border: '1px solid rgba(217, 83, 79, 0.15)',
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',

@@ -73,14 +73,14 @@ export default function AdminOrderList() {
       {/* Filter and Search Bar */}
       <div 
         style={{ 
-          backgroundColor: '#FFFFFF', 
+          backgroundColor: 'rgba(50, 26, 18, 0.60)', 
           padding: '1.25rem', 
           borderRadius: '16px', 
-          border: '1.5px solid var(--border-color)', 
+          border: '1px solid rgba(245, 235, 221, 0.25)', 
           display: 'flex', 
           gap: '1rem', 
           flexWrap: 'wrap',
-          boxShadow: '0 4px 15px rgba(56, 20, 35, 0.01)'
+          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
         }}
       >
         <div style={{ position: 'relative', flexGrow: 1, minWidth: '260px' }}>
@@ -95,11 +95,11 @@ export default function AdminOrderList() {
               height: '44px',
               padding: '0 1rem 0 2.5rem', 
               borderRadius: '10px', 
-              border: '1.5px solid var(--border-color)', 
+              border: '1px solid rgba(245, 235, 221, 0.25)', 
               fontSize: '0.88rem',
               outline: 'none',
-              backgroundColor: '#FCFAF6',
-              color: 'var(--primary-dark)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              color: 'var(--text-light)',
               fontFamily: 'inherit'
             }}
           />
@@ -112,35 +112,35 @@ export default function AdminOrderList() {
             height: '44px',
             padding: '0 1rem', 
             borderRadius: '10px', 
-            border: '1.5px solid var(--border-color)', 
+            border: '1px solid rgba(245, 235, 221, 0.25)', 
             fontSize: '0.88rem', 
             fontWeight: '750', 
-            color: 'var(--primary-dark)',
+            color: 'var(--text-light)',
             outline: 'none',
-            backgroundColor: '#FCFAF6',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
             cursor: 'pointer',
             fontFamily: 'inherit'
           }}
         >
-          <option value="">All Statuses</option>
+          <option value="" style={{ backgroundColor: '#24130D', color: '#FFF' }}>All Statuses</option>
           {STAGES.map((s) => (
-            <option key={s} value={s}>{s}</option>
+            <option key={s} value={s} style={{ backgroundColor: '#24130D', color: '#FFF' }}>{s}</option>
           ))}
         </select>
       </div>
 
       {/* Orders Table Log */}
-      <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px solid var(--border-color)', boxShadow: '0 4px 20px rgba(56, 20, 35, 0.01)' }}>
+      <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' }}>
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', gap: '1rem' }}>
-            <RefreshCw size={20} className="animate-spin" color="var(--primary-dark)" />
+            <RefreshCw size={20} className="animate-spin" color="var(--accent-gold)" />
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Fetching orders log...</span>
           </div>
         ) : orders.length > 0 ? (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.86rem', textAlign: 'left' }}>
               <thead>
-                <tr style={{ borderBottom: '1.5px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <tr style={{ borderBottom: '1px solid rgba(245, 235, 221, 0.15)', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Order ID</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Customer</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Purchased Items</th>
@@ -151,16 +151,16 @@ export default function AdminOrderList() {
               </thead>
               <tbody>
                 {orders.map((o) => (
-                  <tr key={o._id || o.orderId} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '1.1rem 1rem', fontWeight: '800', color: 'var(--primary-dark)' }}>{o.orderId}</td>
+                  <tr key={o._id || o.orderId} style={{ borderBottom: '1px solid rgba(245, 235, 221, 0.15)' }}>
+                    <td style={{ padding: '1.1rem 1rem', fontWeight: '800', color: 'var(--text-light)' }}>{o.orderId}</td>
                     <td style={{ padding: '1.1rem 1rem' }}>
-                      <div style={{ fontWeight: '750', color: 'var(--primary-dark)' }}>{o.customerName}</div>
+                      <div style={{ fontWeight: '750', color: 'var(--text-light)' }}>{o.customerName}</div>
                       <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600' }}>{o.phone}</div>
                     </td>
                     <td style={{ padding: '1.1rem 1rem', color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: '600', maxWidth: '240px', lineHeight: '1.3' }}>
                       {o.items?.map((i) => `${i.title} (x${i.quantity})`).join(', ')}
                     </td>
-                    <td style={{ padding: '1.1rem 1rem', fontWeight: '850', color: 'var(--primary-dark)' }}>₹{o.totalAmount}</td>
+                    <td style={{ padding: '1.1rem 1rem', fontWeight: '850', color: 'var(--text-light)' }}>₹{o.totalAmount}</td>
                     <td style={{ padding: '1.1rem 1rem' }}>
                       <span 
                         style={{ 
@@ -169,9 +169,10 @@ export default function AdminOrderList() {
                           textTransform: 'uppercase',
                           letterSpacing: '0.04em',
                           backgroundColor: o.paymentStatus === 'Paid' ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', 
-                          color: o.paymentStatus === 'Paid' ? 'var(--accent-olive)' : 'var(--accent-terracotta)',
+                          color: o.paymentStatus === 'Paid' ? 'var(--accent-gold)' : 'var(--accent-terracotta)',
                           padding: '0.25rem 0.6rem',
-                          borderRadius: '6px'
+                          borderRadius: '6px',
+                          border: o.paymentStatus === 'Paid' ? '1px solid rgba(201, 154, 50, 0.25)' : '1px solid rgba(217, 83, 79, 0.25)'
                         }}
                       >
                         {o.paymentMethod}: {o.paymentStatus}
@@ -184,18 +185,18 @@ export default function AdminOrderList() {
                         style={{ 
                           padding: '0.45rem 0.75rem', 
                           borderRadius: '8px', 
-                          border: '1.5px solid var(--border-color)', 
+                          border: '1px solid rgba(245, 235, 221, 0.25)', 
                           fontWeight: '800', 
                           fontSize: '0.8rem', 
-                          backgroundColor: '#FCFAF6',
-                          color: 'var(--primary-dark)',
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          color: 'var(--text-light)',
                           outline: 'none',
                           cursor: 'pointer',
                           fontFamily: 'inherit'
                         }}
                       >
                         {STAGES.map((s) => (
-                          <option key={s} value={s}>{s}</option>
+                          <option key={s} value={s} style={{ backgroundColor: '#24130D', color: '#FFF' }}>{s}</option>
                         ))}
                       </select>
                     </td>
