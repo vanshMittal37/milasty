@@ -514,7 +514,9 @@ export default function Contact() {
                 style={{ 
                   borderRadius: '16px', 
                   overflow: 'hidden',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
+                  width: '100%',
+                  alignSelf: 'stretch'
                 }}
               >
                 <button
