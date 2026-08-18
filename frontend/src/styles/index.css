@@ -4,21 +4,22 @@
   --bg-subtle: #321A12; /* Dark cocoa */
   --bg-sand: #4A281B; /* Cocoa */
   
-  --primary-dark: #C99A32; /* Milasty Gold */
+  --primary-dark: #b9cd94; /* Milasty Sage Green */
   --primary-brown: #E8DCCB; /* Soft cream */
   --primary-light: #6B4030; /* Warm brown */
   
-  --accent-terracotta: #C99A32; /* Milasty Gold */
-  --accent-gold: #C99A32; /* Milasty Gold */
+  --accent-terracotta: #b9cd94; 
+  --accent-gold: #b9cd94; /* Text Light Green */
+  --accent-btn-bg: #244f21; /* Button Dark Green */
   --accent-olive: #3E4D3C; 
-  --accent-amber: #D8B45A; /* Light gold */
+  --accent-amber: #b9cd94; 
   
   --text-dark: #F5EBDD; /* Cream text */
   --text-muted: #E8DCCB; /* Soft cream */
   --text-light: #FDFBF7; /* White */
   
   --border-color: rgba(245, 235, 221, 0.25); /* Translucent cream border */
-  --border-gold: rgba(201, 154, 50, 0.40); /* Translucent gold border */
+  --border-gold: rgba(185, 205, 148, 0.40); /* Translucent green border */
   
   --shadow-sm: 0 10px 35px rgba(0, 0, 0, 0.18);
   --shadow-md: 0 12px 35px rgba(0, 0, 0, 0.20);
@@ -123,8 +124,8 @@ button {
 
 /* Buttons */
 .btn-primary {
-  background-color: #c89b3c;
-  color: #FFFFFF;
+  background-color: #244f21 !important;
+  color: #FFFFFF !important;
   padding: 0.85rem 1.75rem;
   border-radius: var(--radius-full);
   font-weight: 750;
@@ -137,16 +138,16 @@ button {
 }
 
 .btn-primary:hover {
-  background-color: #B2872F;
-  color: #FFFFFF;
+  background-color: #1b3d19 !important;
+  color: #FFFFFF !important;
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
-  background-color: rgba(200, 155, 60, 0.12);
-  color: #c89b3c;
-  border: 1.5px solid #c89b3c;
+  background-color: rgba(36, 79, 33, 0.25) !important;
+  color: #b9cd94 !important;
+  border: 1.5px solid #b9cd94 !important;
   padding: 0.8rem 1.6rem;
   border-radius: var(--radius-full);
   font-weight: 750;
@@ -158,8 +159,9 @@ button {
 }
 
 .btn-secondary:hover {
-  background-color: #c89b3c;
-  color: #FFFFFF;
+  background-color: #244f21 !important;
+  color: #FFFFFF !important;
+  border-color: #244f21 !important;
   transform: translateY(-1px);
 }
 
@@ -1453,3 +1455,66 @@ textarea::placeholder {
 .contact-page [style*="display: flex"][style*="flex-wrap"] {
   justify-content: center !important;
 }
+
+/* ==================================================
+   EXPLICIT GREEN COLOR PALETTE OVERRIDES
+   Button Background: #244f21
+   Accent / Yellow Text Replace: #b9cd94
+   ================================================== */
+
+/* All primary buttons & inline background-color buttons */
+button.btn-primary,
+a.btn-primary,
+.btn-primary,
+[style*="background-color: var(--accent-gold)"],
+[style*="backgroundColor: var(--accent-gold)"],
+[style*="background-color: #c89b3c"],
+[style*="background-color: #C99A32"],
+[style*="backgroundColor: #c89b3c"],
+[style*="backgroundColor: #C99A32"],
+.badge-gold {
+  background-color: #244f21 !important;
+  color: #FFFFFF !important;
+}
+
+button.btn-primary:hover,
+a.btn-primary:hover,
+.btn-primary:hover {
+  background-color: #1b3d19 !important;
+  color: #FFFFFF !important;
+}
+
+/* Secondary outline buttons */
+button.btn-secondary,
+a.btn-secondary,
+.btn-secondary {
+  background-color: rgba(36, 79, 33, 0.25) !important;
+  color: #b9cd94 !important;
+  border-color: #b9cd94 !important;
+}
+
+button.btn-secondary:hover,
+a.btn-secondary:hover,
+.btn-secondary:hover {
+  background-color: #244f21 !important;
+  color: #FFFFFF !important;
+  border-color: #244f21 !important;
+}
+
+/* Force replacement of yellow/gold text & icons to #b9cd94 across all pages */
+[style*="color: var(--accent-gold)"],
+[style*="color: #C99A32"],
+[style*="color: #c89b3c"],
+[style*="color: #D8B45A"],
+[style*="color: rgb(201, 154, 50)"],
+[style*="color: rgb(200, 155, 60)"] {
+  color: #b9cd94 !important;
+}
+
+[style*="border-color: var(--accent-gold)"],
+[style*="borderColor: var(--accent-gold)"],
+[style*="border-color: #C99A32"],
+[style*="border-color: #c89b3c"] {
+  border-color: #b9cd94 !important;
+}
+
