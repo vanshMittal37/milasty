@@ -603,7 +603,7 @@ export default function AdminProductForm() {
             <span>{loading ? 'Saving Changes...' : (isEdit ? 'Update Product Details' : 'Save & Publish Product')}</span>
           </button>
         </form>
-      </div></div>
+      </div>
     </div>
   );
 }
