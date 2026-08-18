@@ -112,19 +112,19 @@ export default function OurStory() {
               position: 'absolute', 
               bottom: '24px', 
               right: '24px',
-              backgroundColor: '#FFFFFF',
+              backgroundColor: 'rgba(50, 26, 18, 0.70)',
               padding: '0.55rem 1.15rem',
               borderRadius: '999px',
-              boxShadow: 'var(--shadow-md)',
-              border: '1px solid var(--border-color)',
+              border: '1px solid rgba(245, 235, 221, 0.20)',
               fontSize: '0.75rem',
               fontWeight: '800',
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
-              color: 'var(--primary-dark)',
+              color: 'var(--text-light)',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.35rem'
+              gap: '0.35rem',
+              pointerEvents: 'none'
             }}
           >
             <Sparkles size={13} color="var(--accent-gold)" />
@@ -134,7 +134,7 @@ export default function OurStory() {
       </section>
 
       {/* 2. EDITORIAL FOUNDER STORY SECTION */}
-      <section style={{ backgroundColor: '#FFFFFF', padding: '6rem 0', borderTop: '1.5px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
+      <section style={{ backgroundColor: 'transparent', padding: '6rem 0', borderTop: '1.5px solid var(--border-color)', borderBottom: '1.5px solid var(--border-color)' }}>
         <div 
           className="story-grid"
           style={{ 
@@ -409,11 +409,11 @@ export default function OurStory() {
       </section>
 
       {/* 7. MILASTY DIFFERENCE COMPARISON SECTION */}
-      <section style={{ backgroundColor: '#FBF8F2', padding: '6rem 0', borderTop: '1.5px solid var(--border-color)', borderBottom: '1.5px solid var(--border-color)' }}>
+      <section style={{ backgroundColor: 'transparent', padding: '6rem 0', borderTop: '1.5px solid var(--border-color)', borderBottom: '1.5px solid var(--border-color)' }}>
         <div style={{ maxWidth: '850px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
           
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.5rem' }}>
+            <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.5rem' }}>
               Why MILASTY Feels Different
             </h2>
             <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: '600' }}>Comparing mindful everyday baking with mass-produced alternatives.</p>
@@ -421,14 +421,16 @@ export default function OurStory() {
 
           <div 
             style={{ 
-              backgroundColor: '#FFFFFF', 
+              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
               borderRadius: '24px', 
-              border: '1.5px solid var(--border-color)', 
-              boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)',
-              overflow: 'hidden'
+              border: '1px solid rgba(245, 235, 221, 0.25)', 
+              boxShadow: 'var(--shadow-md)',
+              overflow: 'hidden',
+              backdropFilter: 'blur(14px)',
+              WebkitBackdropFilter: 'blur(14px)'
             }}
           >
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', backgroundColor: 'var(--primary-dark)', color: 'var(--bg-main)', padding: '1rem 1.75rem', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', backgroundColor: '#24130D', color: '#FFFFFF', padding: '1.25rem 1.75rem', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               <span>Mindful Snacking (MILASTY)</span>
               <span>Standard Supermarket Biscuits</span>
             </div>
@@ -447,12 +449,12 @@ export default function OurStory() {
                     gridTemplateColumns: '1fr 1fr', 
                     padding: '1.25rem 1.75rem', 
                     fontSize: '0.9rem', 
-                    borderBottom: idx < 3 ? '1px solid var(--border-color)' : 'none',
+                    borderBottom: idx < 3 ? '1px solid rgba(245, 235, 221, 0.15)' : 'none',
                     fontWeight: '600',
-                    color: 'var(--primary-dark)'
+                    color: 'var(--text-light)'
                   }}
                 >
-                  <span style={{ color: 'var(--accent-olive)' }}>✓ {row.milasty}</span>
+                  <span style={{ color: 'var(--accent-gold)' }}>✓ {row.milasty}</span>
                   <span style={{ color: 'var(--text-muted)' }}>✕ {row.standard}</span>
                 </div>
               ))}
@@ -501,7 +503,7 @@ export default function OurStory() {
           <Link 
             to="/shop" 
             className="btn-primary" 
-            style={{ padding: '1rem 2.5rem', fontSize: '0.95rem', backgroundColor: '#FFFFFF', color: 'var(--primary-dark)', border: 'none', borderRadius: '999px', fontWeight: '800', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+            style={{ padding: '1rem 2.5rem', fontSize: '0.95rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', fontWeight: '800', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
           >
             <span>Explore MILASTY Bakes</span>
             <ChevronRight size={16} />
@@ -510,12 +512,12 @@ export default function OurStory() {
       </section>
 
       {/* 9. TRUST & TRANSPARENCY SECTION */}
-      <section style={{ backgroundColor: '#FFFFFF', padding: '6.5rem 0', borderBottom: '1px solid var(--border-color)' }}>
+      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0', borderBottom: '1px solid var(--border-color)' }}>
         <div style={{ maxWidth: '750px', margin: '0 auto', textAlign: 'center', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
           <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(197, 160, 89, 0.08)', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
             <Info size={22} />
           </div>
-          <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1rem' }}>
             Know What Goes Into Your Food.
           </h2>
           <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: '1.65', marginBottom: '2.5rem', fontWeight: '500' }}>
@@ -524,7 +526,7 @@ export default function OurStory() {
           <Link 
             to="/nutrition" 
             className="btn-primary" 
-            style={{ padding: '0.9rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--primary-dark)', color: 'var(--bg-main)', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '800' }}
+            style={{ padding: '0.9rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '800' }}
           >
             Explore Nutrition & Lab Reports
           </Link>
@@ -532,7 +534,7 @@ export default function OurStory() {
       </section>
 
       {/* 10. FOUNDER CLOSING PERSONAL MESSAGE */}
-      <section style={{ padding: '6.5rem 0', backgroundColor: '#FBF8F2' }}>
+      <section style={{ padding: '6.5rem 0', backgroundColor: 'transparent' }}>
         <div 
           style={{ 
             maxWidth: '900px', 
@@ -547,23 +549,23 @@ export default function OurStory() {
           }}
         >
           <Logo variant="emblem" style={{ height: '70px', width: 'auto', marginBottom: '0.25rem' }} />
-          <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>
+          <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
             Made With the Same Care We'd Give Our Family.
           </h2>
           <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', lineHeight: '1.8', maxWidth: '640px', margin: 0, fontWeight: '500', fontStyle: 'italic' }}>
             "Every recipe at MILASTY starts inside my kitchen. I wanted simple, guilt-free treats for my family that genuinely support wellness. Our promise is to maintain that same small-batch baking care as we grow."
           </p>
           <div style={{ marginTop: '1.25rem' }}>
-            <div style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800' }}>— The MILASTY Team</div>
+            <div style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800' }}>— The MILASTY Team</div>
             <span style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginTop: '0.2rem' }}>Kitchens of Greater Noida</span>
           </div>
         </div>
       </section>
 
       {/* 11. FINAL BRAND CONVERSION CTA */}
-      <section style={{ backgroundColor: '#FFFFFF', padding: '6.5rem 0', borderTop: '1.5px solid var(--border-color)' }}>
+      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0', borderTop: '1.5px solid var(--border-color)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
+          <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
             Ready to Make Snacking a Ritual?
           </h2>
           <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.65', marginBottom: '2.5rem', maxWidth: '520px', margin: '0.5rem auto 2.5rem', fontWeight: '500' }}>
@@ -573,14 +575,14 @@ export default function OurStory() {
             <Link 
               to="/shop" 
               className="btn-primary" 
-              style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--primary-dark)', color: 'var(--bg-main)', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850' }}
+              style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850' }}
             >
               Shop Fresh Bakes
             </Link>
             <Link 
               to="/products" 
               className="btn-secondary" 
-              style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', borderColor: 'var(--primary-dark)', color: 'var(--primary-dark)', borderRadius: '999px', textDecoration: 'none', fontWeight: '850' }}
+              style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', borderColor: 'var(--accent-gold)', color: 'var(--accent-gold)', borderRadius: '999px', textDecoration: 'none', fontWeight: '850', backgroundColor: 'transparent' }}
             >
               Discover Our Rituals
             </Link>
