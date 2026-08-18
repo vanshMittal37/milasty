@@ -1362,3 +1362,109 @@ textarea::placeholder {
   color: rgba(232, 220, 203, 0.65) !important;
   opacity: 1;
 }
+
+/* ==================================================
+   BLUR GLASS CARDS — ALL NON-HOME PAGES
+   Cards get a dark translucent blur-glass effect
+   so they look premium over any background image
+   ================================================== */
+
+/* Pages with background images: fix mobile scroll */
+.shop-page,
+.nutrition-page,
+.contact-page,
+.our-story-page,
+.products-page {
+  background-attachment: scroll !important; /* mobile fallback */
+}
+@media (min-width: 768px) {
+  .shop-page,
+  .nutrition-page,
+  .contact-page,
+  .our-story-page,
+  .products-page {
+    background-attachment: fixed !important;
+  }
+}
+
+/* Glass card base — applies to every .glass-card NOT inside .home-page */
+body:not(.home-page-body) div:not(.home-page) .glass-card,
+.shop-page .glass-card,
+.nutrition-page .glass-card,
+.contact-page .glass-card,
+.our-story-page .glass-card,
+.products-page .glass-card,
+.account-dashboard-page .glass-card,
+.wishlist-page .glass-card,
+.cart-page .glass-card,
+.checkout-page .glass-card,
+.login-page .glass-card,
+.register-page .glass-card {
+  background: rgba(30, 14, 7, 0.55) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border: 1px solid rgba(245, 220, 180, 0.14) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Headings inside these glass cards — bright cream */
+.shop-page .glass-card h1,
+.shop-page .glass-card h2,
+.shop-page .glass-card h3,
+.shop-page .glass-card h4,
+.shop-page .glass-card h5,
+.nutrition-page .glass-card h1,
+.nutrition-page .glass-card h2,
+.nutrition-page .glass-card h3,
+.nutrition-page .glass-card h4,
+.nutrition-page .glass-card h5,
+.contact-page .glass-card h1,
+.contact-page .glass-card h2,
+.contact-page .glass-card h3,
+.contact-page .glass-card h4,
+.contact-page .glass-card h5,
+.our-story-page .glass-card h1,
+.our-story-page .glass-card h2,
+.our-story-page .glass-card h3,
+.our-story-page .glass-card h4,
+.our-story-page .glass-card h5,
+.products-page .glass-card h1,
+.products-page .glass-card h2,
+.products-page .glass-card h3,
+.products-page .glass-card h4,
+.products-page .glass-card h5,
+.account-dashboard-page .glass-card h1,
+.account-dashboard-page .glass-card h2,
+.account-dashboard-page .glass-card h3,
+.account-dashboard-page .glass-card h4,
+.account-dashboard-page .glass-card h5,
+.wishlist-page .glass-card h1,
+.wishlist-page .glass-card h2,
+.wishlist-page .glass-card h3,
+.wishlist-page .glass-card h4,
+.wishlist-page .glass-card h5 {
+  color: #F5EBDA !important;
+}
+
+/* Body text inside glass cards — soft warm light */
+.shop-page .glass-card p,
+.shop-page .glass-card span,
+.shop-page .glass-card li,
+.nutrition-page .glass-card p,
+.nutrition-page .glass-card span,
+.nutrition-page .glass-card li,
+.contact-page .glass-card p,
+.contact-page .glass-card span,
+.contact-page .glass-card li,
+.our-story-page .glass-card p,
+.our-story-page .glass-card span,
+.our-story-page .glass-card li,
+.products-page .glass-card p,
+.products-page .glass-card span,
+.products-page .glass-card li,
+.account-dashboard-page .glass-card p,
+.account-dashboard-page .glass-card span,
+.wishlist-page .glass-card p,
+.wishlist-page .glass-card span {
+  color: rgba(245, 235, 218, 0.82) !important;
+}
