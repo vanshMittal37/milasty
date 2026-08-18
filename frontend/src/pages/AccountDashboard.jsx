@@ -155,7 +155,7 @@ export default function AccountDashboard() {
   const recommendedProducts = initialProducts.slice(0, 3);
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '2.5rem 0 6.5rem' }}>
+    <div className="account-dashboard-page" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '2.5rem 0 6.5rem' }}>
       <div className="container" style={{ maxWidth: '1150px' }}>
         
         {/* Navigation Tabs (Horizontal Bar) */}

@@ -98,7 +98,7 @@ export default function OrderHistoryPage() {
   };
 
   if (!isAuthenticated) return null;  return (
-    <div style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '2.5rem 0 5rem' }}>
+    <div className="account-dashboard-page" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '2.5rem 0 5rem' }}>
       <div className="container" style={{ maxWidth: '1150px' }}>
         
         {/* Breadcrumbs */}
