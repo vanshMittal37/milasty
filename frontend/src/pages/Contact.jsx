@@ -354,12 +354,12 @@ export default function Contact() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Enter your name"
-                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1.5px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', backgroundColor: '#FCFAF6', color: 'var(--primary-dark)' }}
+                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--bg-subtle)', color: 'var(--text-light)' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Email Address *
                   </label>
                   <input
@@ -368,12 +368,12 @@ export default function Contact() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="name@example.com"
-                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1.5px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', backgroundColor: '#FCFAF6', color: 'var(--primary-dark)' }}
+                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--bg-subtle)', color: 'var(--text-light)' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     WhatsApp / Phone Number
                   </label>
                   <input
@@ -381,12 +381,12 @@ export default function Contact() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+91 98765 43210"
-                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1.5px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', backgroundColor: '#FCFAF6', color: 'var(--primary-dark)' }}
+                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--bg-subtle)', color: 'var(--text-light)' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--primary-dark)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Message / Inquiry *
                   </label>
                   <textarea
@@ -395,7 +395,7 @@ export default function Contact() {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     placeholder="How can we help you?"
-                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1.5px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: '#FCFAF6', color: 'var(--primary-dark)', lineHeight: '1.5' }}
+                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: 'var(--bg-subtle)', color: 'var(--text-light)', lineHeight: '1.5' }}
                   />
                 </div>
 
@@ -407,8 +407,8 @@ export default function Contact() {
                     height: '52px',
                     justifyContent: 'center', 
                     marginTop: '0.5rem',
-                    backgroundColor: 'var(--primary-dark)',
-                    color: '#FFFFFF',
+                    backgroundColor: 'var(--accent-gold)',
+                    color: '#24130D',
                     border: 'none',
                     borderRadius: '12px',
                     fontWeight: '800',
@@ -416,7 +416,8 @@ export default function Contact() {
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.45rem'
+                    gap: '0.45rem',
+                    width: '100%'
                   }}
                 >
                   <Send size={16} />
@@ -500,9 +501,9 @@ export default function Contact() {
               <div 
                 key={idx} 
                 style={{ 
-                  backgroundColor: '#FFFFFF', 
+                  backgroundColor: 'rgba(50, 26, 18, 0.60)', 
                   borderRadius: '16px', 
-                  border: '1.5px solid var(--border-color)', 
+                  border: '1px solid rgba(245, 235, 221, 0.25)', 
                   overflow: 'hidden' 
                 }}
               >
@@ -521,7 +522,7 @@ export default function Contact() {
                     outline: 'none'
                   }}
                 >
-                  <span style={{ fontSize: '0.92rem', fontWeight: '850', color: 'var(--primary-dark)' }}>{faq.q}</span>
+                  <span style={{ fontSize: '0.92rem', fontWeight: '850', color: 'var(--text-light)' }}>{faq.q}</span>
                   <ChevronDown 
                     size={16} 
                     style={{ 
@@ -550,10 +551,10 @@ export default function Contact() {
           style={{ 
             padding: '5rem 2rem', 
             textAlign: 'center', 
-            backgroundColor: 'var(--primary-dark)', 
+            backgroundColor: 'rgba(50, 26, 18, 0.85)', 
             color: '#FFFFFF', 
             borderRadius: '30px', 
-            border: 'none',
+            border: '1px solid rgba(245, 235, 221, 0.25)',
             position: 'relative',
             overflow: 'hidden'
           }}
@@ -585,7 +586,7 @@ export default function Contact() {
                 padding: '0.95rem 2.25rem', 
                 fontSize: '0.9rem', 
                 backgroundColor: 'var(--accent-gold)', 
-                color: 'var(--primary-dark)', 
+                color: '#24130D', 
                 border: 'none', 
                 borderRadius: '999px', 
                 fontWeight: '850', 
@@ -600,12 +601,12 @@ export default function Contact() {
               style={{ 
                 padding: '0.95rem 2.25rem', 
                 fontSize: '0.9rem', 
-                borderColor: '#FFFFFF', 
-                color: '#FFFFFF', 
+                borderColor: 'var(--accent-gold)', 
+                color: 'var(--accent-gold)', 
                 borderRadius: '999px', 
                 fontWeight: '850', 
                 textDecoration: 'none',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                backgroundColor: 'transparent'
               }}
             >
               Explore Bakes

@@ -1142,7 +1142,7 @@ body, p, span, li, a {
   .favorites-grid .glass-card,
   .wishlist-page .glass-card {
     height: auto !important;
-    max-height: 380px !important;
+    max-height: none !important;
   }
 
   .products-main-grid .glass-card > div:last-child,
@@ -1353,4 +1353,12 @@ select option {
 .cart-drawer button:hover {
   background-color: var(--accent-gold);
   color: #24130D;
+}
+
+/* Placeholder styling override */
+::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: rgba(232, 220, 203, 0.65) !important;
+  opacity: 1;
 }

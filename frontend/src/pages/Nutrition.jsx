@@ -259,10 +259,11 @@ export default function Nutrition() {
         </div>
 
         {/* DESKTOP TABLE VIEW */}
-        <div className="desktop-only-table" style={{ borderRadius: '24px', overflow: 'hidden', border: '1.5px solid var(--border-color)', backgroundColor: '#FFFFFF', boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)' }}>
+        {/* DESKTOP TABLE VIEW */}
+        <div className="desktop-only-table" style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(245, 235, 221, 0.25)', backgroundColor: 'rgba(50, 26, 18, 0.60)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', boxShadow: 'var(--shadow-md)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
-              <tr style={{ backgroundColor: 'var(--primary-dark)', color: '#FFFFFF' }}>
+              <tr style={{ backgroundColor: '#24130D', color: '#FFFFFF' }}>
                 <th style={{ padding: '2rem 1.5rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '800', width: '22%' }}>Metric</th>
                 {dailyProducts.map((p, idx) => (
                   <th key={idx} style={{ padding: '2rem 1.5rem', verticalAlign: 'top', width: '26%' }}>
@@ -280,92 +281,92 @@ export default function Nutrition() {
               </tr>
             </thead>
             <tbody>
-              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: '#FCFAF6' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--primary-dark)', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--text-light)', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                     <Flame size={15} color="var(--accent-gold)" />
                     <span>Energy (kcal)</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--primary-dark)', fontSize: '0.9rem' }}>
+                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--text-light)', fontSize: '0.9rem' }}>
                     {p.nutritionFacts.energyKcal} <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>per 100g</span>
                   </td>
                 ))}
               </tr>
 
-              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: '#FFFFFF' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--primary-dark)', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'transparent' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--text-light)', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                     <Activity size={15} color="var(--accent-gold)" />
                     <span>Protein (g)</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--primary-dark)', fontSize: '0.9rem' }}>
+                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--text-light)', fontSize: '0.9rem' }}>
                     {p.nutritionFacts.proteinG}g
                   </td>
                 ))}
               </tr>
 
-              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: '#FCFAF6' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--primary-dark)', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--text-light)', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                     <Wheat size={15} color="var(--accent-gold)" />
                     <span>Carbohydrates (g)</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--primary-dark)', fontSize: '0.9rem' }}>
+                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--text-light)', fontSize: '0.9rem' }}>
                     {p.nutritionFacts.carbohydrateG}g
                   </td>
                 ))}
               </tr>
 
-              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: '#FFFFFF' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--primary-dark)', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'transparent' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--text-light)', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <CheckCircle2 size={15} color="var(--accent-olive)" />
+                    <CheckCircle2 size={15} color="var(--accent-gold)" />
                     <span>Added Refined Sugar</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--accent-olive)', fontSize: '0.85rem' }}>
+                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--accent-gold)', fontSize: '0.85rem' }}>
                     0g (100% Unrefined Jaggery)
                   </td>
                 ))}
               </tr>
 
-              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: '#FCFAF6' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--primary-dark)', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--text-light)', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <CheckCircle2 size={15} color="var(--accent-olive)" />
+                    <CheckCircle2 size={15} color="var(--accent-gold)" />
                     <span>Fat Type</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--accent-olive)', fontSize: '0.85rem' }}>
+                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--accent-gold)', fontSize: '0.85rem' }}>
                     100% Pure Desi Ghee (0% Palm Oil)
                   </td>
                 ))}
               </tr>
 
-              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: '#FFFFFF' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--primary-dark)', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'transparent' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: 'var(--text-light)', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                     <Sprout size={15} color="var(--accent-gold)" />
                     <span>Dietary Fiber (g)</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--primary-dark)', fontSize: '0.9rem' }}>
+                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: 'var(--text-light)', fontSize: '0.9rem' }}>
                     {p.nutritionFacts.dietaryFiberG}g
                   </td>
                 ))}
               </tr>
 
-              <tr style={{ backgroundColor: '#FCFAF6' }}>
-                <td style={{ padding: '1.5rem 1.5rem', fontWeight: '850', color: 'var(--primary-dark)', fontSize: '0.88rem' }}>
+              <tr style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
+                <td style={{ padding: '1.5rem 1.5rem', fontWeight: '850', color: 'var(--text-light)', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                     <FileText size={15} color="var(--accent-gold)" />
                     <span>Official Lab Report</span>
@@ -376,19 +377,18 @@ export default function Nutrition() {
                     {p.labReportUrl ? (
                       <button
                         onClick={() => handleDownload(p.labReportUrl, `${p.title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
-                        className="btn-secondary"
+                        className="btn-primary"
                         style={{ 
                           padding: '0.5rem 1rem', 
                           fontSize: '0.8rem', 
                           fontWeight: '800', 
-                          borderColor: 'var(--border-color)', 
-                          color: 'var(--primary-dark)',
+                          backgroundColor: 'var(--accent-gold)', 
+                          color: '#24130D',
                           borderRadius: '10px',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '0.35rem',
                           textDecoration: 'none',
-                          backgroundColor: '#FFFFFF',
                           transition: 'all 0.2s',
                           cursor: 'pointer'
                         }}
@@ -413,17 +413,17 @@ export default function Nutrition() {
               key={idx} 
               className="glass-card" 
               style={{ 
-                backgroundColor: '#FFFFFF', 
+                backgroundColor: 'rgba(50, 26, 18, 0.60)', 
                 borderRadius: '24px', 
-                border: '1.5px solid var(--border-color)', 
+                border: '1px solid rgba(245, 235, 221, 0.25)', 
                 overflow: 'hidden',
                 boxShadow: 'var(--shadow-sm)'
               }}
             >
-              <div style={{ padding: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', borderBottom: '1.5px solid var(--border-color)' }}>
+              <div style={{ padding: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', borderBottom: '1px solid rgba(245, 235, 221, 0.25)' }}>
                 <img src={p.image} alt={p.title} style={{ width: '70px', height: '70px', borderRadius: '10px', objectFit: 'cover' }} />
                 <div>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: '850', color: 'var(--primary-dark)', margin: '0 0 0.15rem 0' }}>{p.title}</h3>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: '850', color: 'var(--text-light)', margin: '0 0 0.15rem 0' }}>{p.title}</h3>
                   <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0, fontWeight: '500' }}>{p.subtitle || p.description}</p>
                 </div>
               </div>
@@ -431,47 +431,46 @@ export default function Nutrition() {
               <div style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '700' }}>Energy</span>
-                  <span style={{ color: 'var(--primary-dark)', fontWeight: '900' }}>{p.nutritionFacts.energyKcal} kcal</span>
+                  <span style={{ color: 'var(--text-light)', fontWeight: '900' }}>{p.nutritionFacts.energyKcal} kcal</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '700' }}>Protein</span>
-                  <span style={{ color: 'var(--primary-dark)', fontWeight: '900' }}>{p.nutritionFacts.proteinG}g</span>
+                  <span style={{ color: 'var(--text-light)', fontWeight: '900' }}>{p.nutritionFacts.proteinG}g</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '700' }}>Carbohydrates</span>
-                  <span style={{ color: 'var(--primary-dark)', fontWeight: '900' }}>{p.nutritionFacts.carbohydrateG}g</span>
+                  <span style={{ color: 'var(--text-light)', fontWeight: '900' }}>{p.nutritionFacts.carbohydrateG}g</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '700' }}>Added Sugar</span>
-                  <span style={{ color: 'var(--accent-olive)', fontWeight: '900' }}>0g (100% Jaggery)</span>
+                  <span style={{ color: 'var(--accent-gold)', fontWeight: '900' }}>0g (100% Jaggery)</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '700' }}>Fat Type</span>
-                  <span style={{ color: 'var(--accent-olive)', fontWeight: '900' }}>100% Desi Ghee</span>
+                  <span style={{ color: 'var(--accent-gold)', fontWeight: '900' }}>100% Desi Ghee</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '700' }}>Dietary Fiber</span>
-                  <span style={{ color: 'var(--primary-dark)', fontWeight: '900' }}>{p.nutritionFacts.dietaryFiberG}g</span>
+                  <span style={{ color: 'var(--text-light)', fontWeight: '900' }}>{p.nutritionFacts.dietaryFiberG}g</span>
                 </div>
 
-                <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border-color)', marginTop: '0.5rem' }}>
+                <div style={{ paddingTop: '1rem', borderTop: '1px solid rgba(245, 235, 221, 0.25)', marginTop: '0.5rem' }}>
                   {p.labReportUrl ? (
                     <button
                       onClick={() => handleDownload(p.labReportUrl, `${p.title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
-                      className="btn-secondary"
+                      className="btn-primary"
                       style={{ 
                         padding: '0.65rem 0', 
                         fontSize: '0.8rem', 
                         fontWeight: '800', 
-                        borderColor: 'var(--border-color)', 
-                        color: 'var(--primary-dark)',
+                        backgroundColor: 'var(--accent-gold)', 
+                        color: '#24130D',
                         borderRadius: '12px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '0.35rem',
                         textDecoration: 'none',
-                        backgroundColor: '#FFFFFF',
                         width: '100%',
                         cursor: 'pointer'
                       }}

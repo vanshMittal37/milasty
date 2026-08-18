@@ -5,7 +5,7 @@ import Logo from '../components/Logo';
 
 export default function OurStory() {
   return (
-    <div style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '0 0 5rem' }}>
+    <div className="our-story-page" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '0 0 5rem' }}>
       
       {/* 1. STORYTELLING HERO SECTION */}
       <section 

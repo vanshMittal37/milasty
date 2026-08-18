@@ -216,11 +216,13 @@ export default function Shop() {
               gap: '1.5rem', 
               marginBottom: '1rem', 
               flexWrap: 'wrap',
-              backgroundColor: '#FCFAF6',
+              backgroundColor: 'rgba(50, 26, 18, 0.60)',
+              backdropFilter: 'blur(14px)',
+              WebkitBackdropFilter: 'blur(14px)',
               padding: '1.25rem 2rem',
               borderRadius: '24px',
-              border: '1.5px solid var(--border-color)',
-              boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)'
+              border: '1px solid rgba(245, 235, 221, 0.25)',
+              boxShadow: 'var(--shadow-md)'
             }}
           >
             {/* Search Input Left with Icon */}
@@ -238,12 +240,12 @@ export default function Shop() {
                   width: '100%',
                   padding: '0.75rem 1rem 0.75rem 2.5rem',
                   borderRadius: '14px',
-                  border: '1.5px solid var(--border-color)',
+                  border: '1px solid var(--border-color)',
                   fontSize: '0.88rem',
                   outline: 'none',
                   fontFamily: 'inherit',
-                  backgroundColor: '#FFFFFF',
-                  color: 'var(--primary-dark)',
+                  backgroundColor: 'var(--bg-subtle)',
+                  color: 'var(--text-light)',
                   transition: 'border-color 0.2s',
                 }}
               />
@@ -264,11 +266,11 @@ export default function Shop() {
                   style={{
                     padding: '0.7rem 1rem 0.7rem 2.2rem',
                     borderRadius: '14px',
-                    border: '1.5px solid var(--border-color)',
+                    border: '1px solid var(--border-color)',
                     fontSize: '0.82rem',
-                    color: 'var(--primary-dark)',
+                    color: 'var(--text-light)',
                     fontWeight: '800',
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: 'var(--bg-subtle)',
                     outline: 'none',
                     cursor: 'pointer',
                     minWidth: '160px',
@@ -295,11 +297,11 @@ export default function Shop() {
                   style={{
                     padding: '0.7rem 1rem 0.7rem 2.2rem',
                     borderRadius: '14px',
-                    border: '1.5px solid var(--border-color)',
+                    border: '1px solid var(--border-color)',
                     fontSize: '0.82rem',
-                    color: 'var(--primary-dark)',
+                    color: 'var(--text-light)',
                     fontWeight: '800',
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: 'var(--bg-subtle)',
                     outline: 'none',
                     cursor: 'pointer',
                     minWidth: '180px',

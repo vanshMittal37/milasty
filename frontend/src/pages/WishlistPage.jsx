@@ -274,7 +274,7 @@ export default function WishlistPage() {
   const recommendations = initialProducts.slice(0, 4);
 
   return (
-    <div style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '0 0 6.5rem' }}>
+    <div className="wishlist-page" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '0 0 6.5rem' }}>
       
       {/* 1. HERO SECTION */}
       <section 
