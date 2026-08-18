@@ -38,7 +38,7 @@ export default function ProductCard({ product }) {
       }}
       onMouseOver={(e) => {
         e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+        e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.4)';
       }}
       onMouseOut={(e) => {
         e.currentTarget.style.transform = 'none';
@@ -68,56 +68,69 @@ export default function ProductCard({ product }) {
         {/* Wishlist Heart Icon overlay */}
         <button
           onClick={() => toggleWishlist(product)}
+          aria-label="Toggle Wishlist"
           style={{
             position: 'absolute',
-            top: '16px',
-            right: '16px',
+            top: '14px',
+            right: '14px',
             width: '36px',
             height: '36px',
             borderRadius: '50%',
-            backgroundColor: 'var(--bg-subtle)',
-            border: '1px solid var(--border-color)',
+            backgroundColor: 'rgba(20, 10, 5, 0.65)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: 'var(--shadow-sm)',
-            color: wishlisted ? 'var(--accent-gold)' : 'var(--text-muted)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            color: wishlisted ? '#b9cd94' : '#FFFDF9',
             transition: 'all 0.2s',
             zIndex: 10
           }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-sand)')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-subtle)')}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(36, 79, 33, 0.85)';
+            e.currentTarget.style.transform = 'scale(1.08)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(20, 10, 5, 0.65)';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
         >
-          <Heart size={16} fill={wishlisted ? 'var(--accent-terracotta)' : 'none'} />
+          <Heart size={16} fill={wishlisted ? '#b9cd94' : 'none'} color={wishlisted ? '#b9cd94' : '#FFFDF9'} />
         </button>
 
-        {/* Dynamic Badges */}
+        {/* Dynamic Badges (Informational Labels, non-clickable) */}
         {product.badges && product.badges.length > 0 && (
           <div
             style={{
               position: 'absolute',
-              top: '16px',
-              left: '16px',
+              top: '14px',
+              left: '14px',
               display: 'flex',
               flexWrap: 'wrap',
               gap: '6px',
-              zIndex: 10
+              zIndex: 10,
+              pointerEvents: 'none'
             }}
           >
             {product.badges.slice(0, 1).map((badge, idx) => (
               <span 
                 key={idx} 
                 style={{
-                  fontSize: '0.65rem',
-                  fontWeight: '800',
+                  fontSize: '0.66rem',
+                  fontWeight: '850',
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
-                  color: '#24130D',
-                  backgroundColor: 'var(--accent-gold)',
-                  padding: '0.3rem 0.65rem',
+                  color: '#b9cd94',
+                  backgroundColor: 'rgba(36, 79, 33, 0.85)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(185, 205, 148, 0.4)',
+                  padding: '0.35rem 0.7rem',
                   borderRadius: '999px',
-                  boxShadow: 'var(--shadow-sm)'
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
                 }}
               >
                 {badge}
@@ -139,13 +152,13 @@ export default function ProductCard({ product }) {
       >
         <div>
           {/* Rating stars */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.6rem' }}>
-            <div style={{ display: 'flex', color: 'var(--accent-gold)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.6rem' }}>
+            <div style={{ display: 'flex', color: '#b9cd94' }}>
               {[...Array(5)].map((_, i) => (
-                <Star key={i} size={12} fill="var(--accent-gold)" color="var(--accent-gold)" />
+                <Star key={i} size={12} fill="#b9cd94" color="#b9cd94" />
               ))}
             </div>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: '700' }}>
+            <span style={{ fontSize: '0.78rem', color: '#F5EBDD', fontWeight: '750' }}>
               {product.rating} ({product.reviewCount || 12})
             </span>
           </div>
@@ -153,12 +166,12 @@ export default function ProductCard({ product }) {
           {/* Title */}
           <h3
             style={{
-              fontSize: '1.15rem',
+              fontSize: '1.18rem',
               fontFamily: 'var(--font-serif)',
-              fontWeight: '800',
+              fontWeight: '850',
               lineHeight: '1.3',
               marginBottom: '0.45rem',
-              color: 'var(--primary-dark)',
+              color: '#FFFDF9',
             }}
           >
             <Link to={`/product/${product.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -169,9 +182,9 @@ export default function ProductCard({ product }) {
           {/* Subtitle / Description */}
           <p
             style={{
-              fontSize: '0.85rem',
-              color: 'var(--text-muted)',
-              lineHeight: '1.5',
+              fontSize: '0.86rem',
+              color: '#F5EBDD',
+              lineHeight: '1.55',
               marginBottom: '1.25rem',
               display: '-webkit-box',
               WebkitLineClamp: 2,
@@ -182,21 +195,19 @@ export default function ProductCard({ product }) {
           >
             {product.subtitle || product.description}
           </p>
-
-          {/* Pack Size Selector Removed */}
         </div>
 
-        {/* Pricing & Actions */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+        {/* Pricing & Actions Bottom Divider */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '700' }}>Price</span>
-            <div style={{ fontSize: '1.25rem', fontWeight: '900', color: 'var(--accent-gold)' }}>
+            <span style={{ fontSize: '0.7rem', color: '#F5EBDD', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '800' }}>Price</span>
+            <div style={{ fontSize: '1.28rem', fontWeight: '900', color: '#b9cd94' }}>
               ₹{selectedVariant.price}
               {selectedVariant.originalPrice && (
                 <span
                   style={{
-                    fontSize: '0.8rem',
-                    color: 'var(--text-muted)',
+                    fontSize: '0.82rem',
+                    color: 'rgba(245, 235, 221, 0.65)',
                     textDecoration: 'line-through',
                     marginLeft: '0.45rem',
                     fontWeight: '500',
@@ -215,17 +226,17 @@ export default function ProductCard({ product }) {
               style={{
                 flex: 1,
                 padding: '0.75rem 0.5rem',
-                fontSize: '0.78rem',
+                fontSize: '0.8rem',
                 borderRadius: '12px',
-                fontWeight: '800',
+                fontWeight: '850',
                 textAlign: 'center',
-                borderColor: 'var(--accent-gold)',
-                color: 'var(--accent-gold)',
+                borderColor: '#b9cd94',
+                color: '#b9cd94',
                 textDecoration: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: 'transparent',
+                backgroundColor: 'rgba(36, 79, 33, 0.25)',
                 transition: 'all 0.2s',
                 minHeight: '40px'
               }}
@@ -238,12 +249,12 @@ export default function ProductCard({ product }) {
               className="btn-primary"
               style={{
                 padding: '0.75rem',
-                fontSize: '0.78rem',
+                fontSize: '0.8rem',
                 borderRadius: '12px',
-                backgroundColor: 'var(--accent-gold)',
-                color: '#24130D',
+                backgroundColor: '#244f21',
+                color: '#FFFFFF',
                 border: 'none',
-                fontWeight: '800',
+                fontWeight: '850',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -254,7 +265,7 @@ export default function ProductCard({ product }) {
                 minWidth: '40px'
               }}
             >
-              <ShoppingBag size={13} />
+              <ShoppingBag size={14} />
               <span className="cart-btn-text" style={{ marginLeft: '4px' }}>{btnText}</span>
             </button>
           </div>
@@ -263,3 +274,4 @@ export default function ProductCard({ product }) {
     </div>
   );
 }
+

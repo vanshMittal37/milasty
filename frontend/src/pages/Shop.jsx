@@ -96,7 +96,7 @@ export default function Shop() {
       <div style={{
         position: 'absolute',
         inset: 0,
-        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.30) 0%, rgba(36, 19, 13, 0.22) 100%)',
+        background: 'linear-gradient(135deg, rgba(15, 8, 4, 0.40) 0%, rgba(28, 14, 9, 0.30) 100%)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
@@ -121,15 +121,15 @@ export default function Shop() {
           <span 
             style={{ 
               alignSelf: 'flex-start',
-              fontSize: '0.78rem', 
+              fontSize: '0.8rem', 
               textTransform: 'uppercase', 
-              letterSpacing: '0.12em', 
-              color: 'var(--accent-gold)', 
-              fontWeight: '800',
-              backgroundColor: 'rgba(197, 160, 89, 0.08)',
-              padding: '0.35rem 0.85rem',
+              letterSpacing: '0.14em', 
+              color: '#b9cd94', 
+              fontWeight: '850',
+              backgroundColor: 'rgba(36, 79, 33, 0.35)',
+              padding: '0.4rem 0.95rem',
               borderRadius: '999px',
-              border: '1px solid rgba(197, 160, 89, 0.15)'
+              border: '1.5px solid rgba(185, 205, 148, 0.4)'
             }}
           >
             Organic Millet Bakery
@@ -138,11 +138,12 @@ export default function Shop() {
             style={{ 
               fontSize: 'clamp(2.5rem, 5.5vw, 3.8rem)', 
               fontFamily: 'var(--font-serif)', 
-              color: 'var(--primary-dark)', 
-              fontWeight: '800', 
+              color: '#FFFDF9', 
+              fontWeight: '850', 
               lineHeight: '1.15',
               letterSpacing: '-0.02em',
-              margin: 0
+              margin: 0,
+              textShadow: '0 2px 10px rgba(0,0,0,0.5)'
             }}
           >
             Explore Our<br />Handcrafted Bakes.
@@ -150,10 +151,11 @@ export default function Shop() {
           <p 
             style={{ 
               fontSize: '1.15rem', 
-              color: 'var(--text-muted)', 
-              lineHeight: '1.7', 
+              color: '#F5EBDD', 
+              lineHeight: '1.75', 
               maxWidth: '540px',
-              margin: '0.5rem 0 1.5rem'
+              margin: '0.5rem 0 1.5rem',
+              fontWeight: '550'
             }}
           >
             Slow-crafted with wholesome millets, pure Desi Ghee and thoughtful ingredients for everyday indulgence.
@@ -162,7 +164,7 @@ export default function Shop() {
             <button 
               onClick={handleScrollToGrid}
               className="btn-primary" 
-              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', backgroundColor: 'var(--primary-dark)', color: 'var(--bg-main)', border: 'none', borderRadius: '999px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', fontWeight: '850', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
             >
               <span>Explore Bestsellers</span>
               <ChevronRight size={16} />
@@ -170,7 +172,7 @@ export default function Shop() {
             <Link 
               to="/products" 
               className="btn-secondary" 
-              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', borderColor: 'var(--primary-dark)', color: 'var(--primary-dark)', borderRadius: '999px', fontWeight: '800', textDecoration: 'none' }}
+              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', borderColor: '#b9cd94', color: '#b9cd94', backgroundColor: 'rgba(36, 79, 33, 0.25)', borderRadius: '999px', fontWeight: '850', textDecoration: 'none' }}
             >
               <span>Discover Our Rituals</span>
             </Link>
@@ -184,8 +186,8 @@ export default function Shop() {
               position: 'relative', 
               overflow: 'hidden', 
               borderRadius: '24px', 
-              boxShadow: '0 20px 40px rgba(56,20,35,0.06)',
-              border: '1px solid rgba(245, 220, 180, 0.18)'
+              boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
             }}
           >
             <img
@@ -205,19 +207,19 @@ export default function Shop() {
 
       {/* 2. FEATURED PRODUCTS STRIP ("Made For Your Everyday Ritual") */}
       {featuredStripProducts.length > 0 && (
-        <section style={{ backgroundColor: 'rgba(20, 10, 5, 0.55)', padding: '5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
+        <section style={{ backgroundColor: 'transparent', padding: '5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
             <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-              <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Daily Favorites</span>
-              <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.45rem 0' }}>
+              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Daily Favorites</span>
+              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.45rem 0', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
                 Made For Your Everyday Ritual
               </h2>
-              <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', margin: 0, fontWeight: '500' }}>
+              <p style={{ fontSize: '0.98rem', color: '#F5EBDD', margin: 0, fontWeight: '550' }}>
                 Discover the bakes our MILASTY family reaches for again and again.
               </p>
             </div>
 
-            <div className="shop-featured-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+            <div className="shop-featured-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2rem' }}>
               {featuredStripProducts.map((product) => (
                 <ProductCard key={`featured-${product._id || product.slug}`} product={product} />
               ))}
@@ -240,18 +242,18 @@ export default function Shop() {
               gap: '1.5rem', 
               marginBottom: '1rem', 
               flexWrap: 'wrap',
-              backgroundColor: 'transparent',
-              backdropFilter: 'blur(14px)',
-              WebkitBackdropFilter: 'blur(14px)',
+              backgroundColor: 'rgba(35, 21, 13, 0.70)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
               padding: '1.25rem 2rem',
               borderRadius: '24px',
-              border: '1px solid rgba(245, 235, 221, 0.25)',
-              boxShadow: 'var(--shadow-md)'
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              boxShadow: '0 12px 36px rgba(0,0,0,0.35)'
             }}
           >
             {/* Search Input Left with Icon */}
             <div style={{ position: 'relative', width: '100%', maxWidth: '440px' }}>
-              <Search size={16} color="var(--text-muted)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Search size={16} color="#b9cd94" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
                 placeholder="Search bakes, ingredients, or rituals..."
@@ -264,12 +266,12 @@ export default function Shop() {
                   width: '100%',
                   padding: '0.75rem 1rem 0.75rem 2.5rem',
                   borderRadius: '14px',
-                  border: '1px solid var(--border-color)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
                   fontSize: '0.88rem',
                   outline: 'none',
                   fontFamily: 'inherit',
-                  backgroundColor: 'var(--bg-subtle)',
-                  color: 'var(--text-light)',
+                  backgroundColor: 'rgba(20, 10, 5, 0.65)',
+                  color: '#FFFDF9',
                   transition: 'border-color 0.2s',
                 }}
               />
@@ -280,7 +282,7 @@ export default function Shop() {
               
               {/* Category selector */}
               <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-                <Filter size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }} />
+                <Filter size={14} color="#b9cd94" style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }} />
                 <select
                   value={selectedCategory}
                   onChange={(e) => {
@@ -290,11 +292,11 @@ export default function Shop() {
                   style={{
                     padding: '0.7rem 1rem 0.7rem 2.2rem',
                     borderRadius: '14px',
-                    border: '1px solid var(--border-color)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     fontSize: '0.82rem',
-                    color: 'var(--text-light)',
+                    color: '#FFFDF9',
                     fontWeight: '800',
-                    backgroundColor: 'var(--bg-subtle)',
+                    backgroundColor: 'rgba(20, 10, 5, 0.65)',
                     outline: 'none',
                     cursor: 'pointer',
                     minWidth: '160px',
@@ -309,23 +311,23 @@ export default function Shop() {
                     </option>
                   ))}
                 </select>
-                <span style={{ position: 'absolute', right: '14px', pointerEvents: 'none', fontSize: '0.6rem', color: 'var(--text-muted)' }}>▼</span>
+                <span style={{ position: 'absolute', right: '14px', pointerEvents: 'none', fontSize: '0.6rem', color: '#b9cd94' }}>▼</span>
               </div>
 
               {/* Sort selector */}
               <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-                <ArrowUpDown size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }} />
+                <ArrowUpDown size={14} color="#b9cd94" style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }} />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   style={{
                     padding: '0.7rem 1rem 0.7rem 2.2rem',
                     borderRadius: '14px',
-                    border: '1px solid var(--border-color)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     fontSize: '0.82rem',
-                    color: 'var(--text-light)',
+                    color: '#FFFDF9',
                     fontWeight: '800',
-                    backgroundColor: 'var(--bg-subtle)',
+                    backgroundColor: 'rgba(20, 10, 5, 0.65)',
                     outline: 'none',
                     cursor: 'pointer',
                     minWidth: '180px',
@@ -339,7 +341,7 @@ export default function Shop() {
                   <option value="popular">Most Popular</option>
                   <option value="discount">Highest Discount</option>
                 </select>
-                <span style={{ position: 'absolute', right: '14px', pointerEvents: 'none', fontSize: '0.6rem', color: 'var(--text-muted)' }}>▼</span>
+                <span style={{ position: 'absolute', right: '14px', pointerEvents: 'none', fontSize: '0.6rem', color: '#b9cd94' }}>▼</span>
               </div>
             </div>
           </div>
@@ -355,13 +357,13 @@ export default function Shop() {
                     alignItems: 'center',
                     gap: '0.4rem',
                     fontSize: '0.76rem',
-                    fontWeight: '800',
-                    backgroundColor: 'rgba(56, 20, 35, 0.04)',
-                    color: 'var(--primary-dark)',
+                    fontWeight: '850',
+                    backgroundColor: 'rgba(36, 79, 33, 0.35)',
+                    color: '#b9cd94',
                     padding: '0.35rem 0.85rem',
                     borderRadius: '999px',
                     cursor: 'pointer',
-                    border: '1px solid rgba(245, 220, 180, 0.18)',
+                    border: '1px solid rgba(185, 205, 148, 0.4)',
                     transition: 'all 0.2s',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em'
@@ -372,23 +374,23 @@ export default function Shop() {
               )}
             </div>
             
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ fontSize: '0.85rem', color: '#F5EBDD', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Showing {products.length} handcrafted {products.length === 1 ? 'bake' : 'bakes'}
             </span>
           </div>
 
-          {/* Grid View (using responsive auto-fill minmax 260px which naturally wraps from 4 to 3 to 2 to 1 columns) */}
+          {/* Grid View */}
           {loading ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2.5rem' }}>
               {[1, 2, 3].map((i) => (
-                <div key={i} className="glass-card" style={{ height: '440px', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 220, 180, 0.18)', opacity: 0.6 }} />
+                <div key={i} className="glass-card" style={{ height: '440px', borderRadius: '24px', opacity: 0.6 }} />
               ))}
             </div>
           ) : products.length === 0 ? (
-            <div className="glass-card" style={{ padding: '5rem 2rem', textAlign: 'center', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 220, 180, 0.18)' }}>
-              <ShoppingBag size={48} color="var(--accent-gold)" style={{ margin: '0 auto 1.25rem' }} />
-              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', marginBottom: '0.5rem', margin: 0 }}>No bakes found</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Try another search query or explore all our handcrafted products.</p>
+            <div className="glass-card" style={{ padding: '5rem 2rem', textAlign: 'center', borderRadius: '24px' }}>
+              <ShoppingBag size={48} color="#b9cd94" style={{ margin: '0 auto 1.25rem' }} />
+              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', marginBottom: '0.5rem', margin: 0 }}>No bakes found</h3>
+              <p style={{ color: '#F5EBDD', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Try another search query or explore all our handcrafted products.</p>
               <button
                 onClick={() => {
                   setSearch('');
@@ -396,7 +398,7 @@ export default function Shop() {
                   setSortBy('newest');
                 }}
                 className="btn-primary"
-                style={{ padding: '0.75rem 2.25rem', borderRadius: '999px', border: 'none', backgroundColor: 'var(--primary-dark)', color: '#FFFFFF', cursor: 'pointer', fontWeight: '800' }}
+                style={{ padding: '0.75rem 2.25rem', borderRadius: '999px', border: 'none', backgroundColor: '#244f21', color: '#FFFFFF', cursor: 'pointer', fontWeight: '850' }}
               >
                 View All Products
               </button>
@@ -423,19 +425,19 @@ export default function Shop() {
                 disabled={page === 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 className="btn-secondary"
-                style={{ padding: '0.6rem 1.25rem', borderColor: 'var(--border-color)', color: 'var(--primary-dark)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: '800', opacity: page === 1 ? 0.5 : 1, cursor: page === 1 ? 'default' : 'pointer' }}
+                style={{ padding: '0.6rem 1.25rem', borderColor: 'rgba(255,255,255,0.2)', color: '#FFFDF9', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: '850', opacity: page === 1 ? 0.5 : 1, cursor: page === 1 ? 'default' : 'pointer' }}
               >
                 <ChevronLeft size={16} />
                 <span>Previous</span>
               </button>
-              <span style={{ fontSize: '0.86rem', color: 'var(--primary-dark)', fontWeight: '800' }}>
+              <span style={{ fontSize: '0.88rem', color: '#FFFDF9', fontWeight: '850' }}>
                 Page {page} of {totalPages}
               </span>
               <button
                 disabled={page === totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 className="btn-secondary"
-                style={{ padding: '0.6rem 1.25rem', borderColor: 'var(--border-color)', color: 'var(--primary-dark)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: '800', opacity: page === totalPages ? 0.5 : 1, cursor: page === totalPages ? 'default' : 'pointer' }}
+                style={{ padding: '0.6rem 1.25rem', borderColor: 'rgba(255,255,255,0.2)', color: '#FFFDF9', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: '850', opacity: page === totalPages ? 0.5 : 1, cursor: page === totalPages ? 'default' : 'pointer' }}
               >
                 <span>Next</span>
                 <ChevronRight size={16} />
@@ -446,23 +448,23 @@ export default function Shop() {
         </div>
       </section>
 
-      {/* 4. SHOP TRUST SECTION STRIP */}
-      <section style={{ backgroundColor: 'rgba(20, 10, 5, 0.55)', padding: '3rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
+      {/* 4. SHOP TRUST SECTION STRIP (Benefit Text + Icon, non-button layout) */}
+      <section style={{ backgroundColor: 'transparent', padding: '3.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Leaf size={16} color="var(--accent-gold)" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <Leaf size={18} color="#b9cd94" />
             <span>Pure Desi Ghee</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Sparkles size={16} color="var(--accent-gold)" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <Sparkles size={18} color="#b9cd94" />
             <span>Wholesome Millets</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Shield size={16} color="var(--accent-gold)" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <Shield size={18} color="#b9cd94" />
             <span>Thoughtful Ingredients</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Award size={16} color="var(--accent-gold)" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <Award size={18} color="#b9cd94" />
             <span>Handcrafted Baking</span>
           </div>
         </div>
@@ -471,16 +473,16 @@ export default function Shop() {
       {/* 5. FINAL SHOP CTA */}
       <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
+          <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '1rem', letterSpacing: '-0.01em', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
             Your Next Ritual Starts With A Bite.
           </h2>
-          <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.65', marginBottom: '2.5rem', maxWidth: '520px', margin: '0.5rem auto 2.5rem', fontWeight: '500' }}>
+          <p style={{ fontSize: '1.02rem', color: '#F5EBDD', lineHeight: '1.7', marginBottom: '2.5rem', maxWidth: '520px', margin: '0.5rem auto 2.5rem', fontWeight: '550' }}>
             Find a bake that makes your everyday pause a little more special and nourishing.
           </p>
           <button 
             onClick={handleScrollToGrid}
             className="btn-primary" 
-            style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--primary-dark)', color: 'var(--bg-main)', border: 'none', borderRadius: '999px', fontWeight: '850', cursor: 'pointer' }}
+            style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', fontWeight: '850', cursor: 'pointer' }}
           >
             Explore All Bakes
           </button>

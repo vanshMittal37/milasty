@@ -1134,8 +1134,8 @@ body, p, span, li, a {
   .shop-main-grid,
   .favorites-grid,
   .wishlist-page .container > div[style*="gridTemplateColumns"] {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.75rem !important;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)) !important;
+    gap: 1.5rem !important;
   }
 
   /* Compact padding inside product cards to prevent clipping and keep height at approx 2/3 */
@@ -1430,17 +1430,17 @@ textarea::placeholder {
 /* Ensure bright, clear, readable text on About and Shop pages over background images */
 .shop-page h1, .shop-page h2, .shop-page h3, .shop-page h4, .shop-page h5,
 .our-story-page h1, .our-story-page h2, .our-story-page h3, .our-story-page h4, .our-story-page h5 {
-  color: #FFFFFF !important;
+  color: #FFFDF9 !important;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 }
 
-.shop-page p, .shop-page span, .shop-page li,
-.our-story-page p, .our-story-page span, .our-story-page li {
-  color: #F5EBDD !important;
+.shop-page p, .shop-page span:not([style*="color: #b9cd94"]):not([style*="color:#b9cd94"]), .shop-page li,
+.our-story-page p, .our-story-page span:not([style*="color: #b9cd94"]):not([style*="color:#b9cd94"]), .our-story-page li {
+  color: #F5EBDD;
 }
 
 .shop-page .glass-card p, .our-story-page .glass-card p {
-  color: rgba(253, 251, 247, 0.92) !important;
+  color: rgba(253, 251, 247, 0.92);
 }
 
 /* ==================================================
