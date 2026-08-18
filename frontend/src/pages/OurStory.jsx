@@ -323,7 +323,6 @@ export default function OurStory() {
                 key={milestone.step}
                 className="glass-card"
                 style={{
-                  backgroundColor: 'transparent',
                   padding: '1.75rem',
                   borderRadius: '20px',
                   border: '1px solid rgba(245, 235, 221, 0.25)',
@@ -398,7 +397,6 @@ export default function OurStory() {
                 className="glass-card"
                 style={{ 
                   padding: '2.5rem 2rem', 
-                  backgroundColor: 'transparent', 
                   borderRadius: '24px', 
                   border: '1px solid rgba(245, 235, 221, 0.25)',
                   boxShadow: 'var(--shadow-sm)',
@@ -461,7 +459,7 @@ export default function OurStory() {
             }}
           >
             
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
+            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
               <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.75rem' }}>01</span>
               <h3 style={{ fontSize: '1.15rem', fontWeight: '850', color: 'var(--text-light)', marginBottom: '0.75rem', margin: 0 }}>Zero Palm Oil</h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
@@ -469,7 +467,7 @@ export default function OurStory() {
               </p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
+            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
               <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.75rem' }}>02</span>
               <h3 style={{ fontSize: '1.15rem', fontWeight: '850', color: 'var(--text-light)', marginBottom: '0.75rem', margin: 0 }}>Unrefined Jaggery</h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
@@ -477,7 +475,7 @@ export default function OurStory() {
               </p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
+            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
               <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.75rem' }}>03</span>
               <h3 style={{ fontSize: '1.15rem', fontWeight: '850', color: 'var(--text-light)', marginBottom: '0.75rem', margin: 0 }}>Zero Preservatives</h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
