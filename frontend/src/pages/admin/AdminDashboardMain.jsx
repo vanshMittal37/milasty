@@ -726,7 +726,6 @@ export default function AdminDashboardMain() {
             );
           })}
         </div>
-      </div>      </div>
       </div>
 
       {/* ==================================================
