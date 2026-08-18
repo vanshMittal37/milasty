@@ -1405,12 +1405,12 @@ textarea::placeholder {
 .register-page .glass-card,
 .order-history-page .glass-card,
 .order-detail-page .glass-card {
-  background-color: rgba(255, 255, 255, 0.06) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
+  background-color: rgba(46, 26, 17, 0.85) !important;
+  background: linear-gradient(145deg, rgba(54, 30, 20, 0.88) 0%, rgba(38, 21, 14, 0.84) 100%) !important;
+  backdrop-filter: blur(16px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
+  border: 1px solid rgba(245, 235, 221, 0.18) !important;
+  box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.35) !important;
 }
 
 /* Also target any div with glass-card class inside these pages */
@@ -1421,10 +1421,47 @@ textarea::placeholder {
 .products-page [class*="glass-card"],
 .account-dashboard-page [class*="glass-card"],
 .wishlist-page [class*="glass-card"] {
-  background-color: rgba(255, 255, 255, 0.06) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  background-color: rgba(46, 26, 17, 0.85) !important;
+  background: linear-gradient(145deg, rgba(54, 30, 20, 0.88) 0%, rgba(38, 21, 14, 0.84) 100%) !important;
+  backdrop-filter: blur(16px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
+}
+
+/* Text and icon contrast rules inside inner page cards */
+.shop-page .glass-card h1,
+.shop-page .glass-card h2,
+.shop-page .glass-card h3,
+.shop-page .glass-card h4,
+.nutrition-page .glass-card h1,
+.nutrition-page .glass-card h2,
+.nutrition-page .glass-card h3,
+.nutrition-page .glass-card h4,
+.contact-page .glass-card h1,
+.contact-page .glass-card h2,
+.contact-page .glass-card h3,
+.contact-page .glass-card h4,
+.our-story-page .glass-card h1,
+.our-story-page .glass-card h2,
+.our-story-page .glass-card h3,
+.our-story-page .glass-card h4,
+.products-page .glass-card h1,
+.products-page .glass-card h2,
+.products-page .glass-card h3,
+.products-page .glass-card h4,
+.wishlist-page .glass-card h1,
+.wishlist-page .glass-card h2,
+.wishlist-page .glass-card h3,
+.wishlist-page .glass-card h4 {
+  color: #FDFBF7 !important;
+}
+
+.shop-page .glass-card p,
+.nutrition-page .glass-card p,
+.contact-page .glass-card p,
+.our-story-page .glass-card p,
+.products-page .glass-card p,
+.wishlist-page .glass-card p {
+  color: rgba(245, 235, 221, 0.88) !important;
 }
 
 /* ==================================================
