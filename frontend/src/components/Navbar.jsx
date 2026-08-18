@@ -421,7 +421,6 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
-              </div>
             </div>
 
             {/* Mobile Hamburger Toggle */}
