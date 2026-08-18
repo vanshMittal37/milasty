@@ -351,7 +351,7 @@ export default function WishlistPage() {
               style={{ 
                 padding: '4rem 2rem', 
                 textAlign: 'center', 
-                backgroundColor: '#FFFFFF', 
+                backgroundColor: 'transparent', 
                 borderRadius: '24px', 
                 border: '1.5px solid var(--border-color)',
                 maxWidth: '620px',
@@ -458,7 +458,7 @@ export default function WishlistPage() {
                 gap: '1.25rem', 
                 marginBottom: '2.5rem', 
                 flexWrap: 'wrap',
-                backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                backgroundColor: 'transparent',
                 backdropFilter: 'blur(14px)',
                 WebkitBackdropFilter: 'blur(14px)',
                 padding: '1.1rem 1.75rem',

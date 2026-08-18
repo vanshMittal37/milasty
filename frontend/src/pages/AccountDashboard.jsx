@@ -183,7 +183,7 @@ export default function AccountDashboard() {
           className="glass-card" 
           style={{ 
             padding: '3rem 2.5rem', 
-            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+            backgroundColor: 'transparent', 
             borderRadius: '24px', 
             border: '1px solid rgba(245, 235, 221, 0.25)',
             boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
@@ -261,7 +261,7 @@ export default function AccountDashboard() {
           <div 
             onClick={() => navigate('/account/orders')}
             className="glass-card" 
-            style={{ padding: '1.75rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
+            style={{ padding: '1.75rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
             onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
           >
@@ -277,7 +277,7 @@ export default function AccountDashboard() {
           <div 
             onClick={() => navigate('/wishlist')}
             className="glass-card" 
-            style={{ padding: '1.75rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
+            style={{ padding: '1.75rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
             onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
           >
@@ -293,7 +293,7 @@ export default function AccountDashboard() {
           <div 
             onClick={() => handleScrollToSection('saved-addresses-dashboard')}
             className="glass-card" 
-            style={{ padding: '1.75rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
+            style={{ padding: '1.75rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
             onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
           >
@@ -309,7 +309,7 @@ export default function AccountDashboard() {
           <div 
             onClick={() => setIsCartOpen(true)}
             className="glass-card" 
-            style={{ padding: '1.75rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
+            style={{ padding: '1.75rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
             onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
           >
@@ -334,7 +334,7 @@ export default function AccountDashboard() {
               
               <Link 
                 to="/account/orders" 
-                style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
+                style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
                 onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-gold)'}
                 onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(245, 235, 221, 0.25)'}
               >
@@ -350,7 +350,7 @@ export default function AccountDashboard() {
 
               <Link 
                 to="/wishlist" 
-                style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
+                style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
                 onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-gold)'}
                 onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(245, 235, 221, 0.25)'}
               >
@@ -366,7 +366,7 @@ export default function AccountDashboard() {
 
               <div 
                 onClick={() => handleScrollToSection('saved-addresses-dashboard')}
-                style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
+                style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
                 onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-gold)'}
                 onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(245, 235, 221, 0.25)'}
               >
@@ -382,7 +382,7 @@ export default function AccountDashboard() {
 
               <Link 
                 to="/shop" 
-                style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
+                style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
                 onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-gold)'}
                 onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(245, 235, 221, 0.25)'}
               >
@@ -407,7 +407,7 @@ export default function AccountDashboard() {
             </div>
 
             {loadingOrders ? (
-              <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', color: 'var(--text-muted)', fontSize: '0.88rem', fontWeight: '700' }}>Loading orders...</div>
+              <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', color: 'var(--text-muted)', fontSize: '0.88rem', fontWeight: '700' }}>Loading orders...</div>
             ) : orders.length === 0 ? (
               /* Empty orders state */
               <div 
@@ -415,7 +415,7 @@ export default function AccountDashboard() {
                 style={{ 
                   padding: '3rem 2rem', 
                   textAlign: 'center', 
-                  backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+                  backgroundColor: 'transparent', 
                   borderRadius: '24px', 
                   border: '1px solid rgba(245, 235, 221, 0.25)',
                   boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)'
@@ -445,7 +445,7 @@ export default function AccountDashboard() {
                     <div 
                       key={order._id}
                       style={{ 
-                        backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+                        backgroundColor: 'transparent', 
                         borderRadius: '20px', 
                         border: '1px solid rgba(245, 235, 221, 0.25)', 
                         padding: '1.5rem',
@@ -507,7 +507,7 @@ export default function AccountDashboard() {
         </section>
 
         {/* 7. SAVED DELIVERY ADDRESSES SECTION */}
-        <section id="saved-addresses-dashboard" className="glass-card" style={{ padding: '3rem 2.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)', marginBottom: '5rem' }}>
+        <section id="saved-addresses-dashboard" className="glass-card" style={{ padding: '3rem 2.5rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)', marginBottom: '5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h2 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.25rem 0' }}>Saved Delivery Locations</h2>
@@ -637,7 +637,7 @@ export default function AccountDashboard() {
                     flexDirection: 'column',
                     borderRadius: '24px',
                     overflow: 'hidden',
-                    backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                    backgroundColor: 'transparent',
                     border: '1px solid rgba(245, 235, 221, 0.25)',
                     position: 'relative'
                   }}

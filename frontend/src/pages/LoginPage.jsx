@@ -209,7 +209,7 @@ export default function LoginPage() {
                     border: '1.5px solid var(--border-color)', 
                     fontSize: '0.9rem',
                     outline: 'none',
-                    backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                    backgroundColor: 'transparent',
                     color: 'var(--text-light)',
                     transition: 'border-color 0.2s'
                   }}
@@ -241,7 +241,7 @@ export default function LoginPage() {
                     border: '1.5px solid var(--border-color)', 
                     fontSize: '0.9rem',
                     outline: 'none',
-                    backgroundColor: 'rgba(50, 26, 18, 0.60)',
+                    backgroundColor: 'transparent',
                     color: 'var(--text-light)',
                     transition: 'border-color 0.2s'
                   }}

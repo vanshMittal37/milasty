@@ -150,7 +150,7 @@ export default function CustomerOrderDetailPage() {
           className="glass-card" 
           style={{ 
             padding: '2.25rem 2.5rem', 
-            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+            backgroundColor: 'transparent', 
             marginBottom: '2.5rem', 
             borderRadius: '24px', 
             border: '1px solid rgba(245, 235, 221, 0.25)',
@@ -206,7 +206,7 @@ export default function CustomerOrderDetailPage() {
             className="glass-card" 
             style={{ 
               padding: '2.5rem', 
-              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+              backgroundColor: 'transparent', 
               marginBottom: '2.5rem',
               borderRadius: '24px',
               border: '1px solid rgba(245, 235, 221, 0.25)',
@@ -363,7 +363,7 @@ export default function CustomerOrderDetailPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             
             {/* Items Ordered Card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
               <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem', margin: 0 }}>
                 Items in Your Order
               </h3>
@@ -394,7 +394,7 @@ export default function CustomerOrderDetailPage() {
             </div>
 
             {/* Pricing Summary Card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
               <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>
                 Order Summary
               </h3>
@@ -429,7 +429,7 @@ export default function CustomerOrderDetailPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             
             {/* Delivery Details Home Card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
               <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                 <MapPin size={18} color="var(--accent-gold)" />
                 <span>Delivering To</span>
@@ -450,7 +450,7 @@ export default function CustomerOrderDetailPage() {
             </div>
 
             {/* Payment Details Card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
               <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>
                 Payment
               </h3>
@@ -481,7 +481,7 @@ export default function CustomerOrderDetailPage() {
             </div>
 
             {/* Need Help Card */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)' }}>
               <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>
                 Need Help?
               </h3>

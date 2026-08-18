@@ -149,9 +149,9 @@ export default function Contact() {
             className="glass-card" 
             style={{ 
               padding: '2.5rem 2rem', 
-              backgroundColor: '#FFFFFF', 
+              backgroundColor: 'transparent', 
               borderRadius: '24px', 
-              border: '1.5px solid var(--border-color)',
+              border: '1px solid rgba(245, 220, 180, 0.18)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -193,9 +193,9 @@ export default function Contact() {
             className="glass-card" 
             style={{ 
               padding: '2.5rem 2rem', 
-              backgroundColor: '#FFFFFF', 
+              backgroundColor: 'transparent', 
               borderRadius: '24px', 
-              border: '1.5px solid var(--border-color)',
+              border: '1px solid rgba(245, 220, 180, 0.18)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -235,9 +235,9 @@ export default function Contact() {
             className="glass-card" 
             style={{ 
               padding: '2.5rem 2rem', 
-              backgroundColor: '#FFFFFF', 
+              backgroundColor: 'transparent', 
               borderRadius: '24px', 
-              border: '1.5px solid var(--border-color)',
+              border: '1px solid rgba(245, 220, 180, 0.18)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -292,7 +292,7 @@ export default function Contact() {
               
               {/* Address block */}
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#FFFFFF', border: '1.5px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', flexShrink: 0 }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: 'rgba(20, 10, 5, 0.55)', border: '1px solid rgba(245, 220, 180, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', flexShrink: 0 }}>
                   <MapPin size={18} />
                 </div>
                 <div>
@@ -307,7 +307,7 @@ export default function Contact() {
 
               {/* WhatsApp block */}
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#FFFFFF', border: '1.5px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', flexShrink: 0 }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: 'rgba(20, 10, 5, 0.55)', border: '1px solid rgba(245, 220, 180, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', flexShrink: 0 }}>
                   <MessageSquare size={18} />
                 </div>
                 <div>
@@ -325,7 +325,7 @@ export default function Contact() {
 
               {/* Email block */}
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#FFFFFF', border: '1.5px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', flexShrink: 0 }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: 'rgba(20, 10, 5, 0.55)', border: '1px solid rgba(245, 220, 180, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', flexShrink: 0 }}>
                   <Mail size={18} />
                 </div>
                 <div>
@@ -341,7 +341,7 @@ export default function Contact() {
 
               {/* License block */}
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#FFFFFF', border: '1.5px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-olive)', flexShrink: 0 }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: 'rgba(20, 10, 5, 0.55)', border: '1px solid rgba(245, 220, 180, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-olive)', flexShrink: 0 }}>
                   <ShieldCheck size={18} />
                 </div>
                 <div>
@@ -356,7 +356,7 @@ export default function Contact() {
           </div>
 
           {/* Right Column: Custom Message Form */}
-          <div id="contact-inquiry-form" className="glass-card" style={{ padding: '3rem 2.5rem', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)', boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)' }}>
+          <div id="contact-inquiry-form" className="glass-card" style={{ padding: '3rem 2.5rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 220, 180, 0.18)', boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)' }}>
             <h3 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.25rem 0' }}>Send Us a Message</h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '2rem', fontWeight: '500' }}>We usually respond as soon as possible.</p>
 
@@ -466,7 +466,7 @@ export default function Contact() {
           <div 
             onClick={() => handleSelectReason("Questions about an existing order")}
             className="glass-card" 
-            style={{ padding: '2rem 1.5rem', backgroundColor: '#FFFFFF', borderRadius: '20px', border: '1.5px solid var(--border-color)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}
+            style={{ padding: '2rem 1.5rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 220, 180, 0.18)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--primary-dark)'}
             onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border-color)'}
           >
@@ -477,7 +477,7 @@ export default function Contact() {
           <div 
             onClick={() => handleSelectReason("Ingredients, pack sizes or product information")}
             className="glass-card" 
-            style={{ padding: '2rem 1.5rem', backgroundColor: '#FFFFFF', borderRadius: '20px', border: '1.5px solid var(--border-color)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}
+            style={{ padding: '2rem 1.5rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 220, 180, 0.18)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--primary-dark)'}
             onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border-color)'}
           >
@@ -488,7 +488,7 @@ export default function Contact() {
           <div 
             onClick={() => handleSelectReason("Corporate, festive or celebration gifting")}
             className="glass-card" 
-            style={{ padding: '2rem 1.5rem', backgroundColor: '#FFFFFF', borderRadius: '20px', border: '1.5px solid var(--border-color)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}
+            style={{ padding: '2rem 1.5rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 220, 180, 0.18)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--primary-dark)'}
             onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border-color)'}
           >
@@ -499,7 +499,7 @@ export default function Contact() {
           <div 
             onClick={() => handleSelectReason("General enquiry")}
             className="glass-card" 
-            style={{ padding: '2rem 1.5rem', backgroundColor: '#FFFFFF', borderRadius: '20px', border: '1.5px solid var(--border-color)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}
+            style={{ padding: '2rem 1.5rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 220, 180, 0.18)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}
             onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--primary-dark)'}
             onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border-color)'}
           >
@@ -525,7 +525,7 @@ export default function Contact() {
               <div 
                 key={idx} 
                 style={{ 
-                  backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+                  backgroundColor: 'transparent', 
                   borderRadius: '16px', 
                   border: '1px solid rgba(245, 235, 221, 0.25)', 
                   overflow: 'hidden' 
@@ -575,7 +575,7 @@ export default function Contact() {
           style={{ 
             padding: '5rem 2rem', 
             textAlign: 'center', 
-            backgroundColor: 'rgba(50, 26, 18, 0.85)', 
+            backgroundColor: 'transparent', 
             color: '#FFFFFF', 
             borderRadius: '30px', 
             border: '1px solid rgba(245, 235, 221, 0.25)',

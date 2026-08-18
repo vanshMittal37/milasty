@@ -207,7 +207,7 @@ export default function Nutrition() {
             className="glass-card" 
             style={{ 
               padding: '2rem 1.75rem', 
-              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+              backgroundColor: 'transparent', 
               borderRadius: '20px', 
               border: '1px solid rgba(245, 235, 221, 0.25)',
               transition: 'all 0.25s ease',
@@ -237,7 +237,7 @@ export default function Nutrition() {
             className="glass-card" 
             style={{ 
               padding: '2rem 1.75rem', 
-              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+              backgroundColor: 'transparent', 
               borderRadius: '20px', 
               border: '1px solid rgba(245, 235, 221, 0.25)',
               transition: 'all 0.25s ease',
@@ -267,7 +267,7 @@ export default function Nutrition() {
             className="glass-card" 
             style={{ 
               padding: '2rem 1.75rem', 
-              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+              backgroundColor: 'transparent', 
               borderRadius: '20px', 
               border: '1px solid rgba(245, 235, 221, 0.25)',
               transition: 'all 0.25s ease',
@@ -297,7 +297,7 @@ export default function Nutrition() {
             className="glass-card" 
             style={{ 
               padding: '2rem 1.75rem', 
-              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+              backgroundColor: 'transparent', 
               borderRadius: '20px', 
               border: '1px solid rgba(245, 235, 221, 0.25)',
               transition: 'all 0.25s ease',
@@ -339,7 +339,7 @@ export default function Nutrition() {
 
         {/* DESKTOP TABLE VIEW */}
         {/* DESKTOP TABLE VIEW */}
-        <div className="desktop-only-table" style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(245, 235, 221, 0.25)', backgroundColor: 'rgba(50, 26, 18, 0.60)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', boxShadow: 'var(--shadow-md)' }}>
+        <div className="desktop-only-table" style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(245, 235, 221, 0.25)', backgroundColor: 'transparent', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', boxShadow: 'var(--shadow-md)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ backgroundColor: '#24130D', color: '#FFFFFF' }}>
@@ -502,7 +502,7 @@ export default function Nutrition() {
               key={idx} 
               className="glass-card" 
               style={{ 
-                backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+                backgroundColor: 'transparent', 
                 borderRadius: '24px', 
                 border: '1px solid rgba(245, 235, 221, 0.25)', 
                 overflow: 'hidden',
@@ -581,12 +581,12 @@ export default function Nutrition() {
       </section>
 
       {/* 4. VISUAL STORYTELLING (From Grain To Bake) */}
-      <section style={{ backgroundColor: '#FFFFFF', padding: '6.5rem 0', borderTop: '1.5px solid var(--border-color)', borderBottom: '1.5px solid var(--border-color)', marginBottom: '6.5rem' }}>
+      <section style={{ backgroundColor: 'rgba(20, 10, 5, 0.55)', padding: '6.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)', marginBottom: '6.5rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
             
             {/* Left Column: Image */}
-            <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1.5px solid var(--border-color)' }}>
+            <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(245, 220, 180, 0.18)' }}>
               <img
                 src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=800&q=80"
                 alt="Slow baked millet cookies pile"
@@ -684,7 +684,7 @@ export default function Nutrition() {
           }}
         >
           
-          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '340px' }}>
+          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '340px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '900' }}>01</span>
               <Sparkles size={28} color="var(--accent-gold)" />
@@ -695,7 +695,7 @@ export default function Nutrition() {
             </p>
           </div>
 
-          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '340px' }}>
+          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '340px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '900' }}>02</span>
               <Award size={28} color="var(--accent-gold)" />
@@ -706,7 +706,7 @@ export default function Nutrition() {
             </p>
           </div>
 
-          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '340px' }}>
+          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '340px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '900' }}>03</span>
               <ShieldCheck size={28} color="var(--accent-gold)" />

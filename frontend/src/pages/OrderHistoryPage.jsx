@@ -122,7 +122,7 @@ export default function OrderHistoryPage() {
 
         {/* Statistics Widgets */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
-          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
             <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)' }}>
               <Package size={20} />
             </div>
@@ -132,7 +132,7 @@ export default function OrderHistoryPage() {
             </div>
           </div>
 
-          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
             <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)' }}>
               <Clock size={20} />
             </div>
@@ -142,7 +142,7 @@ export default function OrderHistoryPage() {
             </div>
           </div>
 
-          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+          <div className="glass-card" style={{ padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', display: 'flex', alignItems: 'center', gap: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
             <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)' }}>
               <Truck size={20} />
             </div>
@@ -222,7 +222,7 @@ export default function OrderHistoryPage() {
                 className="glass-card" 
                 style={{ 
                   padding: '2rem', 
-                  backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+                  backgroundColor: 'transparent', 
                   borderRadius: '24px', 
                   border: '1px solid rgba(245, 235, 221, 0.25)',
                   display: 'flex',
@@ -249,7 +249,7 @@ export default function OrderHistoryPage() {
 
         {/* ERROR STATE */}
         {!loading && error && (
-          <div className="glass-card" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="glass-card" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: 'var(--shadow-sm)' }}>
             <AlertCircle size={44} color="var(--accent-terracotta)" style={{ margin: '0 auto 1.25rem' }} />
             <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>Unable to Load Your Orders</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>We encountered an error connecting to our server. Please try again.</p>
@@ -261,7 +261,7 @@ export default function OrderHistoryPage() {
 
         {/* EMPTY STATE */}
         {!loading && !error && filteredOrders.length === 0 && (
-          <div className="glass-card" style={{ padding: '5rem 2rem', textAlign: 'center', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="glass-card" style={{ padding: '5rem 2rem', textAlign: 'center', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: 'var(--shadow-sm)' }}>
             <ShoppingBag size={48} color="var(--accent-gold)" style={{ margin: '0 auto 1.25rem' }} />
             <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>No Orders Found</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', maxWidth: '300px', margin: '0.5rem auto 1.75rem' }}>Your next wholesome snack is waiting. Discover MILASTY's handcrafted bakes.</p>
@@ -287,7 +287,7 @@ export default function OrderHistoryPage() {
                   className="glass-card" 
                   style={{ 
                     padding: '2rem', 
-                    backgroundColor: 'rgba(50, 26, 18, 0.60)', 
+                    backgroundColor: 'transparent', 
                     borderRadius: '24px', 
                     border: '1px solid rgba(245, 235, 221, 0.25)',
                     boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',

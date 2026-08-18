@@ -185,7 +185,7 @@ export default function Shop() {
               overflow: 'hidden', 
               borderRadius: '24px', 
               boxShadow: '0 20px 40px rgba(56,20,35,0.06)',
-              border: '1.5px solid var(--border-color)'
+              border: '1px solid rgba(245, 220, 180, 0.18)'
             }}
           >
             <img
@@ -205,7 +205,7 @@ export default function Shop() {
 
       {/* 2. FEATURED PRODUCTS STRIP ("Made For Your Everyday Ritual") */}
       {featuredStripProducts.length > 0 && (
-        <section style={{ backgroundColor: '#FFFFFF', padding: '5rem 0', borderTop: '1.5px solid var(--border-color)', borderBottom: '1.5px solid var(--border-color)' }}>
+        <section style={{ backgroundColor: 'rgba(20, 10, 5, 0.55)', padding: '5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
             <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
               <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Daily Favorites</span>
@@ -240,7 +240,7 @@ export default function Shop() {
               gap: '1.5rem', 
               marginBottom: '1rem', 
               flexWrap: 'wrap',
-              backgroundColor: 'rgba(50, 26, 18, 0.60)',
+              backgroundColor: 'transparent',
               backdropFilter: 'blur(14px)',
               WebkitBackdropFilter: 'blur(14px)',
               padding: '1.25rem 2rem',
@@ -361,7 +361,7 @@ export default function Shop() {
                     padding: '0.35rem 0.85rem',
                     borderRadius: '999px',
                     cursor: 'pointer',
-                    border: '1.5px solid var(--border-color)',
+                    border: '1px solid rgba(245, 220, 180, 0.18)',
                     transition: 'all 0.2s',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em'
@@ -381,11 +381,11 @@ export default function Shop() {
           {loading ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2.5rem' }}>
               {[1, 2, 3].map((i) => (
-                <div key={i} className="glass-card" style={{ height: '440px', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)', opacity: 0.6 }} />
+                <div key={i} className="glass-card" style={{ height: '440px', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 220, 180, 0.18)', opacity: 0.6 }} />
               ))}
             </div>
           ) : products.length === 0 ? (
-            <div className="glass-card" style={{ padding: '5rem 2rem', textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)' }}>
+            <div className="glass-card" style={{ padding: '5rem 2rem', textAlign: 'center', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 220, 180, 0.18)' }}>
               <ShoppingBag size={48} color="var(--accent-gold)" style={{ margin: '0 auto 1.25rem' }} />
               <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', marginBottom: '0.5rem', margin: 0 }}>No bakes found</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Try another search query or explore all our handcrafted products.</p>
@@ -447,7 +447,7 @@ export default function Shop() {
       </section>
 
       {/* 4. SHOP TRUST SECTION STRIP */}
-      <section style={{ backgroundColor: '#FFFFFF', padding: '3rem 0', borderTop: '1.5px solid var(--border-color)', borderBottom: '1.5px solid var(--border-color)' }}>
+      <section style={{ backgroundColor: 'rgba(20, 10, 5, 0.55)', padding: '3rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             <Leaf size={16} color="var(--accent-gold)" />
@@ -469,7 +469,7 @@ export default function Shop() {
       </section>
 
       {/* 5. FINAL SHOP CTA */}
-      <section style={{ backgroundColor: '#FBF8F2', padding: '6.5rem 0' }}>
+      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
           <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
             Your Next Ritual Starts With A Bite.

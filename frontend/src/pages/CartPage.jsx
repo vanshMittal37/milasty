@@ -40,7 +40,7 @@ export default function CartPage() {
           style={{
             padding: '2.5rem 2rem',
             textAlign: 'center',
-            backgroundColor: '#F5EFE6',
+            backgroundColor: 'transparent',
             marginBottom: '3rem',
             border: '1px solid #E2D7C7',
           }}
@@ -87,7 +87,7 @@ export default function CartPage() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '1.25rem',
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: 'transparent',
                   }}
                 >
                   <img src={item.image} alt={item.title} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px' }} />
@@ -134,7 +134,7 @@ export default function CartPage() {
             </div>
 
             {/* Right: Coupon & Summary Box */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: '#F5EFE6' }}>
+            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'transparent' }}>
               <h3 style={{ fontSize: '1.25rem', color: '#4A3525', marginBottom: '1.25rem' }}>Order Summary</h3>
 
               {/* Coupon Input */}
