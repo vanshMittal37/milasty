@@ -387,6 +387,5 @@ export default function OrderHistoryPage() {
 
       </div>
     </div>
-  );>
   );
 }
