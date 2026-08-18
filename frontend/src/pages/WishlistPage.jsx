@@ -38,6 +38,8 @@ function WishlistProductCard({ product }) {
         'success'
       );
     }
+  };
+
   return (
     <div 
       className="glass-card" 
