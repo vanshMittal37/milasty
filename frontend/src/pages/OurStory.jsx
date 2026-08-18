@@ -39,7 +39,7 @@ export default function OurStory() {
       <div style={{
         position: 'absolute',
         inset: 0,
-        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.30) 0%, rgba(36, 19, 13, 0.22) 100%)',
+        background: 'linear-gradient(135deg, rgba(15, 8, 4, 0.42) 0%, rgba(28, 14, 9, 0.32) 100%)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
@@ -64,15 +64,15 @@ export default function OurStory() {
           <span 
             style={{ 
               alignSelf: 'flex-start',
-              fontSize: '0.78rem', 
+              fontSize: '0.8rem', 
               textTransform: 'uppercase', 
-              letterSpacing: '0.12em', 
-              color: 'var(--accent-gold)', 
-              fontWeight: '800',
-              backgroundColor: 'rgba(197, 160, 89, 0.08)',
-              padding: '0.35rem 0.85rem',
+              letterSpacing: '0.14em', 
+              color: '#b9cd94', 
+              fontWeight: '850',
+              backgroundColor: 'rgba(36, 79, 33, 0.35)',
+              padding: '0.4rem 0.95rem',
               borderRadius: '999px',
-              border: '1px solid rgba(197, 160, 89, 0.15)'
+              border: '1.5px solid rgba(185, 205, 148, 0.4)'
             }}
           >
             Our Story
@@ -81,11 +81,12 @@ export default function OurStory() {
             style={{ 
               fontSize: 'clamp(2.5rem, 5.5vw, 3.8rem)', 
               fontFamily: 'var(--font-serif)', 
-              color: 'var(--primary-dark)', 
-              fontWeight: '800', 
+              color: '#FFFDF9', 
+              fontWeight: '850', 
               lineHeight: '1.15',
               letterSpacing: '-0.02em',
-              margin: 0
+              margin: 0,
+              textShadow: '0 2px 10px rgba(0,0,0,0.5)'
             }}
           >
             Born From a Mother's Search<br />for Better Snacking.
@@ -93,10 +94,11 @@ export default function OurStory() {
           <p 
             style={{ 
               fontSize: '1.15rem', 
-              color: 'var(--text-muted)', 
-              lineHeight: '1.7', 
+              color: '#F5EBDD', 
+              lineHeight: '1.75', 
               maxWidth: '540px',
-              margin: '0.5rem 0 1.5rem'
+              margin: '0.5rem 0 1.5rem',
+              fontWeight: '550'
             }}
           >
             Milasty began with a simple question: Can everyday snacking be wholesome, honest, and genuinely delicious?
@@ -105,7 +107,7 @@ export default function OurStory() {
             <Link 
               to="/products" 
               className="btn-primary" 
-              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', backgroundColor: 'var(--primary-dark)', color: 'var(--bg-main)', border: 'none', borderRadius: '999px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', fontWeight: '850', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
             >
               <span>Discover Our Rituals</span>
               <ChevronRight size={16} />
@@ -113,7 +115,7 @@ export default function OurStory() {
             <Link 
               to="/shop" 
               className="btn-secondary" 
-              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', borderColor: 'var(--primary-dark)', color: 'var(--primary-dark)', borderRadius: '999px', fontWeight: '800' }}
+              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', borderColor: '#b9cd94', color: '#b9cd94', backgroundColor: 'rgba(36, 79, 33, 0.25)', borderRadius: '999px', fontWeight: '850' }}
             >
               <span>Explore Our Bakes</span>
             </Link>
@@ -127,8 +129,8 @@ export default function OurStory() {
               position: 'relative', 
               overflow: 'hidden', 
               borderRadius: '24px', 
-              boxShadow: '0 20px 40px rgba(56,20,35,0.06)',
-              border: '1px solid rgba(245, 220, 180, 0.18)'
+              boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
             }}
           >
             <img
@@ -150,22 +152,22 @@ export default function OurStory() {
               position: 'absolute', 
               bottom: '24px', 
               right: '24px',
-              backgroundColor: 'transparent',
+              backgroundColor: 'rgba(28, 14, 9, 0.85)',
               padding: '0.55rem 1.15rem',
               borderRadius: '999px',
-              border: '1px solid rgba(245, 235, 221, 0.20)',
-              fontSize: '0.75rem',
-              fontWeight: '800',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              fontSize: '0.78rem',
+              fontWeight: '850',
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: 'var(--text-light)',
+              letterSpacing: '0.06em',
+              color: '#FFFDF9',
               display: 'flex',
               alignItems: 'center',
               gap: '0.35rem',
               pointerEvents: 'none'
             }}
           >
-            <Sparkles size={13} color="var(--accent-gold)" />
+            <Sparkles size={13} color="#b9cd94" />
             <span>Handcrafted with intention</span>
           </div>
         </div>
@@ -192,8 +194,8 @@ export default function OurStory() {
               style={{ 
                 borderRadius: '24px', 
                 overflow: 'hidden', 
-                border: '1px solid rgba(245, 220, 180, 0.18)',
-                boxShadow: '0 20px 40px rgba(56,20,35,0.04)'
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.35)'
               }}
             >
               <img 
@@ -208,15 +210,15 @@ export default function OurStory() {
                 position: 'absolute', 
                 top: '24px', 
                 left: '24px', 
-                backgroundColor: 'var(--primary-dark)', 
-                color: 'var(--bg-main)', 
+                backgroundColor: '#244f21', 
+                color: '#FFFFFF', 
                 padding: '0.65rem 1.25rem', 
                 borderRadius: '12px',
                 fontSize: '0.78rem',
-                fontWeight: '750',
+                fontWeight: '850',
                 textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                boxShadow: 'var(--shadow-md)'
+                letterSpacing: '0.05em',
+                boxShadow: '0 8px 20px rgba(0,0,0,0.3)'
               }}
             >
               Where It All Began
@@ -227,46 +229,48 @@ export default function OurStory() {
           <div>
             <h2 
               style={{ 
-                fontSize: 'clamp(1.5rem, 3.5vw, 2.1rem)', 
+                fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', 
                 fontFamily: 'var(--font-serif)', 
-                color: 'var(--primary-dark)', 
+                color: '#FFFDF9', 
                 marginBottom: '1.75rem', 
                 lineHeight: '1.3',
-                fontStyle: 'italic'
+                fontStyle: 'italic',
+                fontWeight: '850',
+                textShadow: '0 2px 8px rgba(0,0,0,0.4)'
               }}
             >
               "Snacking should nourish your soul, not burden your conscience."
             </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: '#2C221E', lineHeight: '1.8', fontSize: '1.02rem', fontWeight: '500' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: '#F5EBDD', lineHeight: '1.85', fontSize: '1.02rem', fontWeight: '550' }}>
               <p>
-                MILASTY was founded by <strong style={{ color: 'var(--primary-dark)' }}>Anwesha</strong> in Greater Noida after realizing that almost every commercial snack labeled "digestive", "sugar-free", or "oats" on supermarket shelves was packed with hidden palm oil, refined maida flour, and synthetic preservatives.
+                MILASTY was founded by <strong style={{ color: '#b9cd94', fontWeight: '800' }}>Anwesha</strong> in Greater Noida after realizing that almost every commercial snack labeled "digestive", "sugar-free", or "oats" on supermarket shelves was packed with hidden palm oil, refined maida flour, and synthetic preservatives.
               </p>
               <p>
-                We set out to revive India's rich heritage of <strong style={{ color: 'var(--accent-gold)' }}>millet baking</strong>. By pairing Pearl Millet (<strong style={{ color: 'var(--primary-dark)' }}>Bajra</strong>), Sorghum (<strong style={{ color: 'var(--primary-dark)' }}>Jowar</strong>), and Finger Millet (<strong style={{ color: 'var(--primary-dark)' }}>Ragi</strong>) with 100% pure <strong style={{ color: 'var(--primary-dark)' }}>Desi Ghee</strong> and organic <strong style={{ color: 'var(--primary-dark)' }}>jaggery</strong>, we proved that healthy, <strong style={{ color: 'var(--accent-gold)' }}>clean</strong> snacks can taste truly extraordinary.
+                We set out to revive India's rich heritage of <strong style={{ color: '#b9cd94', fontWeight: '800' }}>millet baking</strong>. By pairing Pearl Millet (<strong style={{ color: '#b9cd94', fontWeight: '800' }}>Bajra</strong>), Sorghum (<strong style={{ color: '#b9cd94', fontWeight: '800' }}>Jowar</strong>), and Finger Millet (<strong style={{ color: '#b9cd94', fontWeight: '800' }}>Ragi</strong>) with 100% pure <strong style={{ color: '#b9cd94', fontWeight: '800' }}>Desi Ghee</strong> and organic <strong style={{ color: '#b9cd94', fontWeight: '800' }}>jaggery</strong>, we proved that healthy, <strong style={{ color: '#b9cd94', fontWeight: '800' }}>clean</strong> snacks can taste truly extraordinary.
               </p>
             </div>
 
             <blockquote 
               style={{ 
-                borderLeft: '4px solid var(--accent-gold)', 
+                borderLeft: '4px solid #b9cd94', 
                 paddingLeft: '1.25rem', 
                 margin: '2rem 0 2rem 0',
                 fontFamily: 'var(--font-serif)',
-                color: 'var(--primary-dark)',
-                fontWeight: '700',
-                fontSize: '1.1rem'
+                color: '#FFFDF9',
+                fontWeight: '800',
+                fontSize: '1.15rem'
               }}
             >
               "From a mother's kitchen to mindful, guilt-free homes across India."
             </blockquote>
 
             <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', marginTop: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '800', color: 'var(--primary-dark)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                <ShieldCheck size={18} color="var(--accent-gold)" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <ShieldCheck size={18} color="#b9cd94" />
                 <span>Small Batch Crafted</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '800', color: 'var(--primary-dark)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                <Award size={18} color="var(--accent-gold)" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <Award size={18} color="#b9cd94" />
                 <span>Zero Compromise</span>
               </div>
             </div>
@@ -280,21 +284,21 @@ export default function OurStory() {
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
             <div>
-              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>Milestones</span>
-              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
+              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>Milestones</span>
+              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
                 The MILASTY Journey
               </h2>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 onClick={() => scrollLeft(journeyRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronLeft size={16} />
               </button>
               <button 
                 onClick={() => scrollRight(journeyRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronRight size={16} />
               </button>
@@ -325,8 +329,8 @@ export default function OurStory() {
                 style={{
                   padding: '1.75rem',
                   borderRadius: '20px',
-                  border: '1px solid rgba(245, 235, 221, 0.25)',
-                  boxShadow: 'var(--shadow-sm)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 12px 36px rgba(0, 0, 0, 0.35)',
                   transition: 'transform 0.2s',
                   position: 'relative',
                   flexShrink: 0,
@@ -336,11 +340,11 @@ export default function OurStory() {
                 onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--accent-gold)' }}>{milestone.step}</span>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />
+                  <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#b9cd94' }}>{milestone.step}</span>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#b9cd94' }} />
                 </div>
-                <h4 style={{ fontSize: '1rem', fontWeight: '850', color: 'var(--text-light)', margin: '0 0 0.5rem 0' }}>{milestone.title}</h4>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>{milestone.desc}</p>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.5rem 0' }}>{milestone.title}</h4>
+                <p style={{ fontSize: '0.88rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>{milestone.desc}</p>
               </div>
             ))}
           </div>
@@ -353,23 +357,23 @@ export default function OurStory() {
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
             <div style={{ maxWidth: '600px' }}>
-              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.75rem', margin: 0 }}>
+              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.75rem', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
                 Food Should Be Simple.
               </h2>
-              <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.6', fontWeight: '500', margin: '0.5rem 0 0 0' }}>
+              <p style={{ fontSize: '1rem', color: '#F5EBDD', lineHeight: '1.65', fontWeight: '550', margin: '0.5rem 0 0 0' }}>
                 We believe great food doesn't need a long list of complex additives. It just needs the right, wholesome ingredients.
               </p>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 onClick={() => scrollLeft(simpleRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronLeft size={16} />
               </button>
               <button 
                 onClick={() => scrollRight(simpleRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronRight size={16} />
               </button>
@@ -398,8 +402,8 @@ export default function OurStory() {
                 style={{ 
                   padding: '2.5rem 2rem', 
                   borderRadius: '24px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)',
-                  boxShadow: 'var(--shadow-sm)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 12px 36px rgba(0, 0, 0, 0.35)',
                   transition: 'transform 0.25s',
                   position: 'relative',
                   flexShrink: 0,
@@ -408,12 +412,12 @@ export default function OurStory() {
                 onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                 onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
               >
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(245, 235, 221, 0.15)' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.4)', color: '#b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(185, 205, 148, 0.35)' }}>
                   {card.icon}
                 </div>
-                <span style={{ position: 'absolute', top: '2rem', right: '2rem', fontSize: '1.25rem', fontWeight: '900', color: 'rgba(245, 235, 221, 0.15)' }}>{card.num}</span>
-                <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.75rem', margin: 0 }}>{card.title}</h3>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>{card.desc}</p>
+                <span style={{ position: 'absolute', top: '2rem', right: '2rem', fontSize: '1.25rem', fontWeight: '900', color: 'rgba(185, 205, 148, 0.4)' }}>{card.num}</span>
+                <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.75rem', margin: 0 }}>{card.title}</h3>
+                <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>{card.desc}</p>
               </div>
             ))}
           </div>
@@ -427,20 +431,20 @@ export default function OurStory() {
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
             <div>
-              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>Our Principles</span>
-              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>Our Non-Negotiables</h2>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: '600', margin: '0.5rem 0 0 0' }}>The guidelines behind every single MILASTY bake.</p>
+              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>Our Principles</span>
+              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>Our Non-Negotiables</h2>
+              <p style={{ fontSize: '0.95rem', color: '#F5EBDD', fontWeight: '600', margin: '0.5rem 0 0 0' }}>The guidelines behind every single MILASTY bake.</p>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 onClick={() => scrollLeft(nonNegotiablesRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronLeft size={16} />
               </button>
               <button 
                 onClick={() => scrollRight(nonNegotiablesRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronRight size={16} />
               </button>
@@ -459,26 +463,26 @@ export default function OurStory() {
             }}
           >
             
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
-              <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.75rem' }}>01</span>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: '850', color: 'var(--text-light)', marginBottom: '0.75rem', margin: 0 }}>Zero Palm Oil</h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
+              <span style={{ fontSize: '0.85rem', fontWeight: '850', color: '#b9cd94', display: 'block', marginBottom: '0.75rem' }}>01</span>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.75rem', margin: 0 }}>Zero Palm Oil</h3>
+              <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>
                 We exclusively bake with 100% pure Cow Desi Ghee. No cheap vegetable fats, trans fats, or hydrogenated oils ever enter our bakery.
               </p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
-              <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.75rem' }}>02</span>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: '850', color: 'var(--text-light)', marginBottom: '0.75rem', margin: 0 }}>Unrefined Jaggery</h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
+              <span style={{ fontSize: '0.85rem', fontWeight: '850', color: '#b9cd94', display: 'block', marginBottom: '0.75rem' }}>02</span>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.75rem', margin: 0 }}>Unrefined Jaggery</h3>
+              <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>
                 Naturally sweetened using organic jaggery rich in iron and essential minerals. Zero refined white sugar or artificial sweeteners.
               </p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
-              <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.75rem' }}>03</span>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: '850', color: 'var(--text-light)', marginBottom: '0.75rem', margin: 0 }}>Zero Preservatives</h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
+              <span style={{ fontSize: '0.85rem', fontWeight: '850', color: '#b9cd94', display: 'block', marginBottom: '0.75rem' }}>03</span>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.75rem', margin: 0 }}>Zero Preservatives</h3>
+              <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>
                 No artificial food coloring, chemical preservatives, or synthetic shelf-life extenders. Just honest, wholesome, fresh baking.
               </p>
             </div>
@@ -494,21 +498,21 @@ export default function OurStory() {
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
             <div>
-              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>Honest Baking</span>
-              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
+              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>Honest Baking</span>
+              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
                 What Goes Into Every Bake
               </h2>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 onClick={() => scrollLeft(ingredientsRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronLeft size={16} />
               </button>
               <button 
                 onClick={() => scrollRight(ingredientsRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronRight size={16} />
               </button>
@@ -536,11 +540,11 @@ export default function OurStory() {
                 <img 
                   src={ingredient.img} 
                   alt={ingredient.name} 
-                  style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(245, 235, 221, 0.25)', margin: '0 auto 1.25rem', display: 'block', boxShadow: 'var(--shadow-sm)' }} 
+                  style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(185, 205, 148, 0.4)', margin: '0 auto 1.25rem', display: 'block', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }} 
                 />
-                <h4 style={{ fontSize: '0.98rem', fontWeight: '850', color: 'var(--text-light)', margin: '0 0 0.15rem 0' }}>{ingredient.name}</h4>
-                <span style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{ingredient.type}</span>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.5', marginTop: '0.45rem', padding: '0 0.5rem', fontWeight: '500' }}>{ingredient.desc}</p>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.2rem 0' }}>{ingredient.name}</h4>
+                <span style={{ fontSize: '0.8rem', color: '#b9cd94', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{ingredient.type}</span>
+                <p style={{ fontSize: '0.85rem', color: '#F5EBDD', lineHeight: '1.55', marginTop: '0.45rem', padding: '0 0.5rem', fontWeight: '550' }}>{ingredient.desc}</p>
               </div>
             ))}
           </div>
@@ -553,24 +557,24 @@ export default function OurStory() {
         <div style={{ maxWidth: '850px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
           
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.5rem' }}>
+            <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.5rem', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
               Why MILASTY Feels Different
             </h2>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: '600' }}>Comparing mindful everyday baking with mass-produced alternatives.</p>
+            <p style={{ fontSize: '0.98rem', color: '#F5EBDD', fontWeight: '600' }}>Comparing mindful everyday baking with mass-produced alternatives.</p>
           </div>
 
           <div 
             style={{ 
-              backgroundColor: 'transparent', 
+              backgroundColor: 'rgba(28, 14, 9, 0.88)', 
               borderRadius: '24px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)', 
-              boxShadow: 'var(--shadow-md)',
+              border: '1px solid rgba(255, 255, 255, 0.2)', 
+              boxShadow: '0 16px 48px rgba(0,0,0,0.4)',
               overflow: 'hidden',
-              backdropFilter: 'blur(14px)',
-              WebkitBackdropFilter: 'blur(14px)'
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)'
             }}
           >
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', backgroundColor: '#24130D', color: '#FFFFFF', padding: '1.25rem 1.75rem', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', backgroundColor: '#244f21', color: '#FFFFFF', padding: '1.25rem 1.75rem', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               <span>Mindful Snacking (MILASTY)</span>
               <span>Standard Supermarket Biscuits</span>
             </div>
@@ -588,14 +592,14 @@ export default function OurStory() {
                     display: 'grid', 
                     gridTemplateColumns: '1fr 1fr', 
                     padding: '1.25rem 1.75rem', 
-                    fontSize: '0.9rem', 
-                    borderBottom: idx < 3 ? '1px solid rgba(245, 235, 221, 0.15)' : 'none',
+                    fontSize: '0.95rem', 
+                    borderBottom: idx < 3 ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
                     fontWeight: '600',
-                    color: 'var(--text-light)'
+                    color: '#FFFDF9'
                   }}
                 >
-                  <span style={{ color: 'var(--accent-gold)' }}>✓ {row.milasty}</span>
-                  <span style={{ color: 'var(--text-muted)' }}>✕ {row.standard}</span>
+                  <span style={{ color: '#b9cd94', fontWeight: '850' }}>✓ {row.milasty}</span>
+                  <span style={{ color: '#F5EBDD', opacity: 0.9 }}>✕ {row.standard}</span>
                 </div>
               ))}
             </div>
@@ -604,25 +608,23 @@ export default function OurStory() {
         </div>
       </section>
 
-
-
       {/* 9. TRUST & TRANSPARENCY SECTION */}
       <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0', borderBottom: '1px solid rgba(245,220,180,0.15)' }}>
         <div style={{ maxWidth: '750px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
           <div className="glass-card" style={{ padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(197, 160, 89, 0.15)', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-              <Info size={22} />
+            <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.4)', color: '#b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid rgba(185, 205, 148, 0.35)' }}>
+              <Info size={24} />
             </div>
-            <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: '#F5EBDA', fontWeight: '800', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '1rem' }}>
               Know What Goes Into Your Food.
             </h2>
-            <p style={{ fontSize: '0.95rem', color: 'rgba(245,235,218,0.80)', lineHeight: '1.65', marginBottom: '2.5rem', fontWeight: '500' }}>
+            <p style={{ fontSize: '1rem', color: '#F5EBDD', lineHeight: '1.7', marginBottom: '2.5rem', fontWeight: '550' }}>
               We maintain 100% transparency in recipe designs, nutritional parameters, and batch-test laboratory reports.
             </p>
             <Link
               to="/nutrition"
               className="btn-primary"
-              style={{ padding: '0.9rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '800' }}
+              style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850' }}
             >
               Explore Nutrition & Lab Reports
             </Link>
@@ -630,30 +632,28 @@ export default function OurStory() {
         </div>
       </section>
 
-
-
       {/* 11. FINAL BRAND CONVERSION CTA */}
       <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
           <div className="glass-card" style={{ padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: '#F5EBDA', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
+            <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
               Ready to Make Snacking a Ritual?
             </h2>
-            <p style={{ fontSize: '1rem', color: 'rgba(245,235,218,0.80)', lineHeight: '1.65', maxWidth: '520px', margin: '0 auto 2.5rem', fontWeight: '500' }}>
+            <p style={{ fontSize: '1.02rem', color: '#F5EBDD', lineHeight: '1.7', maxWidth: '520px', margin: '0 auto 2.5rem', fontWeight: '550' }}>
               Explore fresh, handcrafted millet bakes made with jaggery, Desi Ghee, and plenty of traditional care.
             </p>
             <div style={{ display: 'flex', gap: '1.1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link
                 to="/shop"
                 className="btn-primary"
-                style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--accent-gold)', color: '#24130D', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850' }}
+                style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850' }}
               >
                 Shop Fresh Bakes
               </Link>
               <Link
                 to="/products"
                 className="btn-secondary"
-                style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', borderColor: 'var(--accent-gold)', color: 'var(--accent-gold)', borderRadius: '999px', textDecoration: 'none', fontWeight: '850', backgroundColor: 'transparent' }}
+                style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', borderColor: '#b9cd94', color: '#b9cd94', borderRadius: '999px', textDecoration: 'none', fontWeight: '850', backgroundColor: 'rgba(36, 79, 33, 0.25)' }}
               >
                 Discover Our Rituals
               </Link>
