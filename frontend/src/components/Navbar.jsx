@@ -299,7 +299,7 @@ export default function Navbar() {
                   </span>
                 </button>
 
-              {/* Account Dropdown Toggle */}
+                {/* Account Dropdown Toggle */}
               <div style={{ position: 'relative' }} ref={accountMenuRef} className="account-menu-wrapper">
                 <button
                   onClick={() => setAccountMenuOpen(!accountMenuOpen)}
@@ -420,6 +420,7 @@ export default function Navbar() {
                     )}
                   </div>
                 )}
+              </div>
               </div>
             </div>
 
