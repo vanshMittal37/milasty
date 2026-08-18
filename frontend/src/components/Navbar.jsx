@@ -439,6 +439,7 @@ export default function Navbar() {
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
+        </div>
         </header>
 
         {/* Mobile Navigation Drawer */}
