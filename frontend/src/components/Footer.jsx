@@ -12,14 +12,14 @@ export default function Footer() {
       style={{
         position: 'relative',
         zIndex: 5,
-        backgroundColor: 'rgba(30, 15, 8, 0.40)',
+        backgroundColor: 'rgba(20, 10, 5, 0.75)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
-        color: '#FCFAF6',
+        color: '#FFFDF9',
         paddingTop: '5rem',
         paddingBottom: '2.5rem',
         marginTop: '0rem',
-        borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+        borderTop: '1px solid rgba(245, 220, 180, 0.18)',
         transition: 'all 0.35s ease',
       }}
     >
