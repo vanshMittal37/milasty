@@ -82,7 +82,7 @@ export default function Nutrition() {
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.72) 0%, rgba(36, 19, 13, 0.65) 100%)',
+        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.45) 0%, rgba(36, 19, 13, 0.35) 100%)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
