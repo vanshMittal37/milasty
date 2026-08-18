@@ -34,23 +34,19 @@ export default function ProductCard({ product }) {
         height: '100%',
         overflow: 'hidden',
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-        backgroundColor: '#FFFFFF',
-        borderRadius: '24px',
-        border: '1.5px solid var(--border-color)',
-        boxShadow: '0 8px 30px rgba(56, 20, 35, 0.01)',
         position: 'relative'
       }}
       onMouseOver={(e) => {
         e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = '0 12px 35px rgba(56, 20, 35, 0.04)';
+        e.currentTarget.style.boxShadow = 'var(--shadow-md)';
       }}
       onMouseOut={(e) => {
         e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.boxShadow = '0 8px 30px rgba(56, 20, 35, 0.01)';
+        e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
       }}
     >
       {/* Image Area with Badge & Wishlist Button */}
-      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '80%', backgroundColor: '#FCFAF6' }}>
+      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '80%', backgroundColor: 'transparent' }}>
         <Link to={`/product/${product.slug}`}>
           <img
             src={product.image}
@@ -79,19 +75,19 @@ export default function ProductCard({ product }) {
             width: '36px',
             height: '36px',
             borderRadius: '50%',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: 'var(--bg-subtle)',
             border: '1px solid var(--border-color)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
             boxShadow: 'var(--shadow-sm)',
-            color: wishlisted ? 'var(--accent-terracotta)' : 'var(--text-muted)',
+            color: wishlisted ? 'var(--accent-gold)' : 'var(--text-muted)',
             transition: 'all 0.2s',
             zIndex: 10
           }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#FCFAF6')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-sand)')}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-subtle)')}
         >
           <Heart size={16} fill={wishlisted ? 'var(--accent-terracotta)' : 'none'} />
         </button>
@@ -109,7 +105,7 @@ export default function ProductCard({ product }) {
               zIndex: 10
             }}
           >
-            {product.badges.slice(0, 2).map((badge, idx) => (
+            {product.badges.slice(0, 1).map((badge, idx) => (
               <span 
                 key={idx} 
                 style={{
@@ -117,7 +113,7 @@ export default function ProductCard({ product }) {
                   fontWeight: '800',
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
-                  color: 'var(--primary-dark)',
+                  color: '#24130D',
                   backgroundColor: 'var(--accent-gold)',
                   padding: '0.3rem 0.65rem',
                   borderRadius: '999px',
@@ -184,54 +180,14 @@ export default function ProductCard({ product }) {
               fontWeight: '500'
             }}
           >
-            {product.subtitle || product.description}
-          </p>
-
-          {/* Pack Size Selector */}
-          {product.variants && product.variants.length > 1 && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <div
-                style={{
-                  fontSize: '0.7rem',
-                  fontWeight: '800',
-                  color: 'var(--primary-dark)',
-                  marginBottom: '0.5rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                }}
-              >
-                Select Pack Size
-              </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {product.variants.map((variant, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedVariantIndex(idx)}
-                    style={{
-                      padding: '0.35rem 0.75rem',
-                      fontSize: '0.76rem',
-                      fontWeight: '800',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      backgroundColor: selectedVariantIndex === idx ? 'var(--primary-dark)' : '#FCFAF6',
-                      color: selectedVariantIndex === idx ? '#FFFFFF' : 'var(--primary-dark)',
-                      border: selectedVariantIndex === idx ? '1.5px solid var(--primary-dark)' : '1.5px solid rgba(36, 18, 9, 0.25)',
-                    }}
-                  >
-                    {variant.weight}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Pack Size Selector Removed */}
         </div>
 
         {/* Pricing & Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '700' }}>Price</span>
-            <div style={{ fontSize: '1.25rem', fontWeight: '900', color: 'var(--primary-dark)' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: '900', color: 'var(--accent-gold)' }}>
               ₹{selectedVariant.price}
               {selectedVariant.originalPrice && (
                 <span
@@ -249,23 +205,24 @@ export default function ProductCard({ product }) {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', width: '100%', alignItems: 'center' }}>
             <Link
               to={`/product/${product.slug}`}
               className="btn-secondary"
               style={{
+                flex: 1,
                 padding: '0.75rem 0.5rem',
                 fontSize: '0.78rem',
                 borderRadius: '12px',
                 fontWeight: '800',
                 textAlign: 'center',
-                borderColor: 'var(--border-color)',
-                color: 'var(--primary-dark)',
+                borderColor: 'var(--accent-gold)',
+                color: 'var(--accent-gold)',
                 textDecoration: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#FCFAF6',
+                backgroundColor: 'transparent',
                 transition: 'all 0.2s',
                 minHeight: '40px'
               }}
@@ -277,11 +234,11 @@ export default function ProductCard({ product }) {
               onClick={handleAddToCart}
               className="btn-primary"
               style={{
-                padding: '0.75rem 0.5rem',
+                padding: '0.75rem',
                 fontSize: '0.78rem',
                 borderRadius: '12px',
-                backgroundColor: 'var(--primary-dark)',
-                color: 'var(--bg-main)',
+                backgroundColor: 'var(--accent-gold)',
+                color: '#24130D',
                 border: 'none',
                 fontWeight: '800',
                 display: 'inline-flex',
@@ -290,11 +247,12 @@ export default function ProductCard({ product }) {
                 gap: '0.25rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
-                minHeight: '40px'
+                minHeight: '40px',
+                minWidth: '40px'
               }}
             >
               <ShoppingBag size={13} />
-              <span>{btnText}</span>
+              <span className="cart-btn-text" style={{ marginLeft: '4px' }}>{btnText}</span>
             </button>
           </div>
         </div>

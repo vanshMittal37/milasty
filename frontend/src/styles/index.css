@@ -1,32 +1,34 @@
 :root {
-  --bg-main: #FCFAF6;
-  --bg-card: #FFFFFF;
-  --bg-subtle: #F5EFE4;
-  --bg-sand: #EFE8DC;
+  --bg-main: #24130D; /* Deep chocolate */
+  --bg-card: rgba(50, 26, 18, 0.60); /* Translucent cocoa */
+  --bg-subtle: #321A12; /* Dark cocoa */
+  --bg-sand: #4A281B; /* Cocoa */
   
-  --primary-dark: #241209; /* Rich Warm Chocolate (was plum/maroon) */
-  --primary-brown: #4A2B18; /* Deep chocolate brown */
-  --primary-light: #6E442B;
+  --primary-dark: #C99A32; /* Milasty Gold */
+  --primary-brown: #E8DCCB; /* Soft cream */
+  --primary-light: #6B4030; /* Warm brown */
   
-  --accent-terracotta: #B95C3C; /* Terracotta */
-  --accent-gold: #c89b3c; /* Soft Gold #c89b3c */
-  --accent-olive: #3E4D3C; /* Sage/olive */
-  --accent-amber: #c89b3c;
+  --accent-terracotta: #C99A32; /* Milasty Gold */
+  --accent-gold: #C99A32; /* Milasty Gold */
+  --accent-olive: #3E4D3C; 
+  --accent-amber: #D8B45A; /* Light gold */
   
-  --text-dark: #000000; /* Rich pure black */
-  --text-muted: #333333; /* Dark charcoal */
-  --text-light: #FDFBF7;
+  --text-dark: #F5EBDD; /* Cream text */
+  --text-muted: #E8DCCB; /* Soft cream */
+  --text-light: #FDFBF7; /* White */
   
-  --border-color: #241209; /* Chocolate border */
-  --shadow-sm: 0 4px 12px rgba(36, 18, 9, 0.05);
-  --shadow-md: 0 12px 32px rgba(36, 18, 9, 0.09);
-  --shadow-lg: 0 24px 50px rgba(36, 18, 9, 0.15);
+  --border-color: rgba(245, 235, 221, 0.25); /* Translucent cream border */
+  --border-gold: rgba(201, 154, 50, 0.40); /* Translucent gold border */
+  
+  --shadow-sm: 0 10px 35px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 12px 35px rgba(0, 0, 0, 0.20);
+  --shadow-lg: 0 24px 50px rgba(0, 0, 0, 0.30);
   
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-md: 24px;
+  --radius-lg: 28px;
   --radius-full: 9999px;
   
   --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -40,18 +42,48 @@
 }
 
 body {
-  background-color: var(--bg-main);
-  color: var(--text-dark);
+  background-color: var(--bg-main) !important;
+  color: var(--text-dark) !important;
   font-family: var(--font-sans);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
+/* Universal Page & Section Background Overrides for Cocoa Theme */
+.products-page, 
+.shop-page, 
+.contact-page, 
+.nutrition-page, 
+.our-story-page, 
+.cart-page, 
+.checkout-page, 
+.wishlist-page, 
+.login-page, 
+.register-page, 
+.account-dashboard-page,
+main {
+  background-color: var(--bg-main) !important;
+  color: var(--text-dark) !important;
+}
+
+main section, 
+section,
+.products-trust-strip,
+.checkout-form,
+.checkout-grid {
+  background-color: transparent !important;
+  color: var(--text-dark) !important;
+}
+
 h1, h2, h3, h4, h5, .font-serif {
   font-family: var(--font-serif);
-  font-weight: 600;
-  color: var(--primary-dark);
+  font-weight: 700;
+  color: var(--text-light) !important;
+}
+
+p, span, li, label, td, th {
+  color: var(--text-muted);
 }
 
 a {
@@ -74,15 +106,18 @@ button {
 
 /* Glassmorphism Cards */
 .glass-card {
-  background: #FFFFFF;
-  border: 1.5px solid var(--border-color);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  background: rgba(50, 26, 18, 0.60) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(245, 235, 221, 0.25) !important;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18) !important;
+  border-radius: var(--radius-md) !important;
   transition: all var(--transition-normal);
 }
 
 .glass-card:hover {
-  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(201, 154, 50, 0.40) !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25) !important;
   transform: translateY(-4px);
 }
 
@@ -1093,77 +1128,55 @@ body, p, span, li, a {
   /* Force 2-column layout on mobile viewports for product listings */
   .products-main-grid,
   .shop-featured-grid,
-  .shop-main-grid {
+  .shop-main-grid,
+  .favorites-grid,
+  .wishlist-page .container > div[style*="gridTemplateColumns"] {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 0.75rem !important;
   }
 
-  /* Compact padding inside product cards to prevent clipping */
+  /* Compact padding inside product cards to prevent clipping and keep height at approx 2/3 */
+  .products-main-grid .glass-card,
+  .shop-featured-grid .glass-card,
+  .shop-main-grid .glass-card,
+  .favorites-grid .glass-card,
+  .wishlist-page .glass-card {
+    height: auto !important;
+    max-height: 380px !important;
+  }
+
   .products-main-grid .glass-card > div:last-child,
   .shop-featured-grid .glass-card > div:last-child,
-  .shop-main-grid .glass-card > div:last-child {
-    padding: 0.75rem !important;
+  .shop-main-grid .glass-card > div:last-child,
+  .favorites-grid .glass-card > div:last-child,
+  .wishlist-page .glass-card > div:last-child {
+    padding: 0.75rem 0.55rem !important;
   }
 
   /* Scale down header typography inside product cards */
   .products-main-grid .glass-card h3,
   .shop-featured-grid .glass-card h3,
-  .shop-main-grid .glass-card h3 {
-    font-size: 0.95rem !important;
-    margin-bottom: 0.25rem !important;
+  .shop-main-grid .glass-card h3,
+  .favorites-grid .glass-card h3,
+  .wishlist-page .glass-card h3 {
+    font-size: 0.90rem !important;
+    margin-bottom: 0.2rem !important;
   }
 
   /* Scale down subtitle typography and description lines */
   .products-main-grid .glass-card p,
   .shop-featured-grid .glass-card p,
-  .shop-main-grid .glass-card p {
-    font-size: 0.75rem !important;
-    line-height: 1.4 !important;
-    margin-bottom: 0.5rem !important;
+  .shop-main-grid .glass-card p,
+  .favorites-grid .glass-card p,
+  .wishlist-page .glass-card p {
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 0.45rem !important;
   }
 
-  /* Scale down variant buttons and selectors */
-  .products-main-grid .glass-card div[style*="Select Pack Size"],
-  .shop-featured-grid .glass-card div[style*="Select Pack Size"],
-  .shop-main-grid .glass-card div[style*="Select Pack Size"] {
-    font-size: 0.62rem !important;
-    margin-bottom: 0.35rem !important;
-  }
-
-  .products-main-grid .glass-card div[style*="Select Pack Size"] + div,
-  .shop-featured-grid .glass-card div[style*="Select Pack Size"] + div,
-  .shop-main-grid .glass-card div[style*="Select Pack Size"] + div {
-    gap: 4px !important;
-  }
-
-  .products-main-grid .glass-card div[style*="Select Pack Size"] + div button,
-  .shop-featured-grid .glass-card div[style*="Select Pack Size"] + div button,
-  .shop-main-grid .glass-card div[style*="Select Pack Size"] + div button {
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.7rem !important;
-    border-radius: 4px !important;
-    border: 1px solid rgba(36, 18, 9, 0.22) !important;
-  }
-
-  /* Stack main action buttons vertically so they don't squash side-by-side */
-  .products-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"],
-  .shop-featured-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"],
-  .shop-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0.4rem !important;
-  }
-
-  .products-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] a,
-  .products-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] button,
-  .shop-featured-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] a,
-  .shop-featured-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] button,
-  .shop-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] a,
-  .shop-main-grid .glass-card div[style*="grid-template-columns: 1fr 1fr"] button {
-    width: 100% !important;
-    min-height: 36px !important;
-    padding: 0.45rem 0 !important;
-    font-size: 0.75rem !important;
+  /* Hide cart text in mobile view to display only the icon */
+  .cart-btn-text {
+    display: none !important;
   }
 }
 
@@ -1284,3 +1297,60 @@ body, p, span, li, a {
   }
 }
 
+/* Additional premium theme helper overrides */
+.cart-page, .checkout-page {
+  background-color: var(--bg-main) !important;
+}
+
+.auth-form input,
+.form-container input,
+.checkout-form input,
+.checkout-form select,
+.checkout-form textarea {
+  background-color: var(--bg-subtle) !important;
+  color: var(--text-light) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.auth-form input:focus,
+.form-container input:focus,
+.checkout-form input:focus,
+.checkout-form select:focus,
+.checkout-form textarea:focus {
+  border-color: var(--accent-gold) !important;
+  outline: none !important;
+}
+
+.nutrition-page table {
+  background: rgba(50, 26, 18, 0.75) !important;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color) !important;
+}
+
+.nutrition-page th,
+.nutrition-page td {
+  color: var(--text-light) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.nutrition-page th {
+  background-color: rgba(50, 26, 18, 0.90) !important;
+}
+
+select option {
+  background-color: var(--bg-subtle) !important;
+  color: var(--text-light) !important;
+}
+
+.cart-page button,
+.cart-drawer button {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-light);
+}
+
+.cart-page button:hover,
+.cart-drawer button:hover {
+  background-color: var(--accent-gold);
+  color: #24130D;
+}

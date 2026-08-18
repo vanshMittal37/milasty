@@ -38,18 +38,13 @@ function WishlistProductCard({ product }) {
         'success'
       );
     }
-  };
-
   return (
     <div 
       className="glass-card" 
       style={{ 
         display: 'flex', 
         flexDirection: 'column', 
-        borderRadius: '24px', 
         overflow: 'hidden', 
-        backgroundColor: '#FFFFFF', 
-        border: '1.5px solid var(--border-color)',
         position: 'relative',
         transition: 'transform 0.2s',
         height: '100%'
@@ -58,7 +53,7 @@ function WishlistProductCard({ product }) {
       onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
     >
       {/* Top Image area */}
-      <div style={{ position: 'relative', paddingTop: '80%', overflow: 'hidden', backgroundColor: '#FCFAF6' }}>
+      <div style={{ position: 'relative', paddingTop: '80%', overflow: 'hidden', backgroundColor: 'transparent' }}>
         <Link to={`/product/${product.slug}`}>
           <img 
             src={product.image} 
@@ -88,7 +83,7 @@ function WishlistProductCard({ product }) {
               fontWeight: '800',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
-              color: 'var(--primary-dark)',
+              color: '#24130D',
               backgroundColor: 'var(--accent-gold)',
               padding: '0.3rem 0.65rem',
               borderRadius: '999px',
@@ -109,19 +104,21 @@ function WishlistProductCard({ product }) {
             width: '36px',
             height: '36px',
             borderRadius: '50%',
-            backgroundColor: '#FFFFFF',
-            border: 'none',
+            backgroundColor: 'var(--bg-subtle)',
+            border: '1px solid var(--border-color)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
             boxShadow: 'var(--shadow-sm)',
-            color: isAdded ? 'var(--accent-terracotta)' : 'var(--text-muted)',
+            color: isAdded ? 'var(--accent-gold)' : 'var(--text-muted)',
             zIndex: 5
           }}
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-sand)')}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-subtle)')}
           title={isAdded ? "Remove from Wishlist" : "Add to Wishlist"}
         >
-          <Heart size={16} fill={isAdded ? "var(--accent-terracotta)" : "none"} color={isAdded ? "var(--accent-terracotta)" : "currentColor"} />
+          <Heart size={16} fill={isAdded ? "var(--accent-gold)" : "none"} color={isAdded ? "var(--accent-gold)" : "currentColor"} />
         </button>
       </div>
 
@@ -141,7 +138,7 @@ function WishlistProductCard({ product }) {
           </div>
 
           {/* Title */}
-          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
             <Link to={`/product/${product.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
               {product.title}
             </Link>
@@ -152,40 +149,14 @@ function WishlistProductCard({ product }) {
             {product.subtitle || product.description}
           </p>
 
-          {/* Variant Selectors */}
-          {product.variants && product.variants.length > 1 && (
-            <div style={{ marginBottom: '1.25rem' }}>
-              <div style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--primary-dark)', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pack Size</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {product.variants.map((v, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedVariantIdx(index)}
-                    style={{
-                      padding: '0.3rem 0.65rem',
-                      fontSize: '0.74rem',
-                      fontWeight: '800',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      backgroundColor: selectedVariantIdx === index ? 'var(--primary-dark)' : '#FCFAF6',
-                      color: selectedVariantIdx === index ? '#FFFFFF' : 'var(--primary-dark)',
-                      border: selectedVariantIdx === index ? '1px solid var(--primary-dark)' : '1px solid var(--border-color)',
-                    }}
-                  >
-                    {v.weight}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Variant Selectors Removed */}
         </div>
 
         {/* Pricing & Actions bottom container */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '700' }}>Price</span>
-            <div style={{ fontSize: '1.2rem', fontWeight: '900', color: 'var(--primary-dark)' }}>
+            <div style={{ fontSize: '1.2rem', fontWeight: '900', color: 'var(--accent-gold)' }}>
               ₹{unitPrice}
               {selectedVariant.originalPrice && (
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textDecoration: 'line-through', marginLeft: '0.4rem', fontWeight: '500' }}>
@@ -195,23 +166,24 @@ function WishlistProductCard({ product }) {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', width: '100%', alignItems: 'center' }}>
             <Link
               to={`/product/${product.slug}`}
               className="btn-secondary"
               style={{
+                flex: 1,
                 padding: '0.7rem 0.5rem',
                 fontSize: '0.76rem',
                 borderRadius: '12px',
                 fontWeight: '800',
                 textAlign: 'center',
-                borderColor: 'var(--border-color)',
-                color: 'var(--primary-dark)',
+                borderColor: 'var(--accent-gold)',
+                color: 'var(--accent-gold)',
                 textDecoration: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#FCFAF6',
+                backgroundColor: 'transparent',
                 minHeight: '40px'
               }}
             >
@@ -222,11 +194,11 @@ function WishlistProductCard({ product }) {
               onClick={handleAddToCart}
               className="btn-primary"
               style={{
-                padding: '0.7rem 0.5rem',
+                padding: '0.7rem',
                 fontSize: '0.76rem',
                 borderRadius: '12px',
-                backgroundColor: 'var(--primary-dark)',
-                color: 'var(--bg-main)',
+                backgroundColor: 'var(--accent-gold)',
+                color: '#24130D',
                 border: 'none',
                 fontWeight: '800',
                 display: 'inline-flex',
@@ -234,11 +206,12 @@ function WishlistProductCard({ product }) {
                 justifyContent: 'center',
                 gap: '0.25rem',
                 cursor: 'pointer',
-                minHeight: '40px'
+                minHeight: '40px',
+                minWidth: '40px'
               }}
             >
               <ShoppingBag size={13} />
-              <span>{btnText}</span>
+              <span className="cart-btn-text" style={{ marginLeft: '4px' }}>{btnText}</span>
             </button>
           </div>
         </div>
