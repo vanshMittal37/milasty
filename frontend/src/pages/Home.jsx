@@ -67,20 +67,20 @@ export default function Home() {
       setVideoPlayError(true);
     } else {
       if (width <= 767) {
-        setVideoSrc("https://res.cloudinary.com/dmm8lfc3x/video/upload/c_scale,w_480,q_auto:eco,f_auto/v1786811749/milasty/videos/milasty-cookie.mp4");
+        setVideoSrc("https://res.cloudinary.com/dmm8lfc3x/video/upload/c_scale,w_480,q_auto:eco,f_auto/v1787068808/cookie_video.mp4");
       } else if (width <= 1024) {
-        setVideoSrc("https://res.cloudinary.com/dmm8lfc3x/video/upload/c_scale,w_800,q_auto,f_auto/v1786811749/milasty/videos/milasty-cookie.mp4");
+        setVideoSrc("https://res.cloudinary.com/dmm8lfc3x/video/upload/c_scale,w_800,q_auto,f_auto/v1787068808/cookie_video.mp4");
       } else {
-        setVideoSrc("https://res.cloudinary.com/dmm8lfc3x/video/upload/q_auto,f_auto/v1786811749/milasty/videos/milasty-cookie.mp4");
+        setVideoSrc("https://res.cloudinary.com/dmm8lfc3x/video/upload/q_auto,f_auto/v1787068808/cookie_video.mp4");
       }
     }
 
     if (width <= 767) {
-      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,c_scale,w_480,q_auto:eco/v1786811749/milasty/videos/milasty-cookie.jpg");
+      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,c_scale,w_480,q_auto:eco/v1787068808/cookie_video.jpg");
     } else if (width <= 1024) {
-      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,c_scale,w_800,q_auto/v1786811749/milasty/videos/milasty-cookie.jpg");
+      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,c_scale,w_800,q_auto/v1787068808/cookie_video.jpg");
     } else {
-      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1786811749/milasty/videos/milasty-cookie.jpg");
+      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1787068808/cookie_video.jpg");
     }
 
     return () => {
