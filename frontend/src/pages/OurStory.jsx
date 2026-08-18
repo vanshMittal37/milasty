@@ -22,7 +22,28 @@ export default function OurStory() {
   };
 
   return (
-    <div className="our-story-page" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '0 0 5rem' }}>
+    <div
+      className="our-story-page"
+      style={{
+        minHeight: '100vh',
+        padding: '0 0 5rem',
+        position: 'relative',
+        backgroundImage: 'url(/images/about_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Dark overlay for readability */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.72) 0%, rgba(36, 19, 13, 0.65) 100%)',
+        zIndex: 0,
+        pointerEvents: 'none',
+      }} />
+      <div style={{ position: 'relative', zIndex: 1 }}>
       
       {/* 1. STORYTELLING HERO SECTION */}
       <section 
@@ -721,6 +742,7 @@ export default function OurStory() {
           scrollbar-width: none !important;
         }
       `}</style>
+      </div>
     </div>
   );
 }

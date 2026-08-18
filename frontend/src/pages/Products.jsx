@@ -59,7 +59,32 @@ export default function Products() {
   };
 
   return (
-    <div className="products-page" style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '0 0 5rem', width: '100%', maxWidth: '100%', overflowX: 'hidden', boxSizing: 'border-box' }}>
+    <div
+      className="products-page"
+      style={{
+        minHeight: '100vh',
+        padding: '0 0 5rem',
+        width: '100%',
+        maxWidth: '100%',
+        overflowX: 'hidden',
+        boxSizing: 'border-box',
+        position: 'relative',
+        backgroundImage: 'url(/images/ritiual_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Dark overlay for readability */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.72) 0%, rgba(36, 19, 13, 0.65) 100%)',
+        zIndex: 0,
+        pointerEvents: 'none',
+      }} />
+      <div style={{ position: 'relative', zIndex: 1 }}>
       
       {/* 1. EDITORIAL HERO SECTION */}
       <section 
@@ -413,6 +438,7 @@ export default function Products() {
         </div>
       </section>
 
+      </div>
     </div>
   );
 }
