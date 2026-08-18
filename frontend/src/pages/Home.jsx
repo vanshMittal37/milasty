@@ -95,9 +95,13 @@ export default function Home() {
 
     if (isMobile) {
       video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.playbackRate = 1.0;
       video.play().catch(err => console.log("Video autoplay failed:", err));
     } else {
       video.loop = false;
+      video.playbackRate = 1.0;
       video.pause();
       // Instantly sync time on desktop/tablet layout switch
       const docHeight = document.documentElement.scrollHeight;
@@ -161,38 +165,37 @@ export default function Home() {
     };
 
     const smoothScrubLoop = () => {
-      if (isMobile) {
-        animationFrameRef.current = requestAnimationFrame(smoothScrubLoop);
-        return;
-      }
-      const video = videoRef.current;
-      if (video && video.duration && !isNaN(video.duration)) {
-        // Calculate raw difference
-        const difference = targetTimeRef.current - currentTimeRef.current;
+      if (!isMobile) {
+        const video = videoRef.current;
+        if (video && video.duration && !isNaN(video.duration)) {
+          // Smooth lerp — 0.12 gives snappy but fluid motion
+          const difference = targetTimeRef.current - currentTimeRef.current;
+          const lerpedStep = difference * 0.12;
 
-        // Apply smooth interpolation (lerp factor of 0.06 as requested)
-        const lerpedStep = difference * 0.06;
+          // Cap max jump per frame to avoid aggressive seeking on fast swipes
+          const maxStep = 0.08;
+          const clampedStep = Math.max(-maxStep, Math.min(maxStep, lerpedStep));
 
-        // Limit the maximum frame time change to prevent aggressive jumping on fast scroll swipes
-        const maxStep = 0.15;
-        const clampedStep = Math.max(-maxStep, Math.min(maxStep, lerpedStep));
+          currentTimeRef.current += clampedStep;
 
-        currentTimeRef.current += clampedStep;
+          // Keep within bounds
+          if (currentTimeRef.current < 0) currentTimeRef.current = 0;
+          if (currentTimeRef.current > video.duration) currentTimeRef.current = video.duration;
 
-        // Keep current time within bounds
-        if (currentTimeRef.current < 0) currentTimeRef.current = 0;
-        if (currentTimeRef.current > video.duration) currentTimeRef.current = video.duration;
-
-        // Perform seeks only if change exceeds the 0.03 threshold, and player isn't busy
-        const delta = Math.abs(video.currentTime - currentTimeRef.current);
-        if (delta > 0.03 && !video.seeking && !isSeekingRef.current) {
-          isSeekingRef.current = true;
-          try {
-            video.currentTime = currentTimeRef.current;
-          } catch (e) {
-            // safe fallback
+          // Only seek if delta meaningful AND video is NOT already seeking
+          const delta = Math.abs(video.currentTime - currentTimeRef.current);
+          if (delta > 0.015 && !video.seeking && !isSeekingRef.current) {
+            isSeekingRef.current = true;
+            try {
+              video.currentTime = currentTimeRef.current;
+            } catch (e) {}
+            // Release seek lock only after browser confirms seek is done
+            const releaseLock = () => {
+              isSeekingRef.current = false;
+              video.removeEventListener('seeked', releaseLock);
+            };
+            video.addEventListener('seeked', releaseLock, { once: true });
           }
-          isSeekingRef.current = false;
         }
       }
       animationFrameRef.current = requestAnimationFrame(smoothScrubLoop);
@@ -349,9 +352,11 @@ export default function Home() {
             height: '100%',
             objectFit: 'cover',
             objectPosition: 'center center',
-            willChange: 'transform',
-            transform: 'translateZ(0)',
+            willChange: 'contents',
+            transform: 'translate3d(0,0,0)',
             backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            imageRendering: 'auto',
             display: videoPlayError ? 'none' : 'block'
           }}
         >
