@@ -63,7 +63,7 @@ export default function Navbar() {
       <div 
         className="announcement-bar"
         style={{ 
-          backgroundColor: isHome ? 'transparent' : '#1A0C05', 
+          backgroundColor: '#1A0C05', 
           color: '#FCFAF6', 
           fontSize: '0.82rem', 
           padding: '0.55rem 0', 
@@ -78,22 +78,22 @@ export default function Navbar() {
         <div className="announcement-marquee-track">
           <div className="announcement-marquee-content">
             <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
-            <strong style={{ color: 'var(--accent-gold)' }}>WELCOME10</strong>
+            <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
             <span>&nbsp;for 10% OFF</span>
           </div>
           <div className="announcement-marquee-content">
             <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
-            <strong style={{ color: 'var(--accent-gold)' }}>WELCOME10</strong>
+            <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
             <span>&nbsp;for 10% OFF</span>
           </div>
           <div className="announcement-marquee-content">
             <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
-            <strong style={{ color: 'var(--accent-gold)' }}>WELCOME10</strong>
+            <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
             <span>&nbsp;for 10% OFF</span>
           </div>
           <div className="announcement-marquee-content">
             <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
-            <strong style={{ color: 'var(--accent-gold)' }}>WELCOME10</strong>
+            <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
             <span>&nbsp;for 10% OFF</span>
           </div>
         </div>
@@ -140,121 +140,164 @@ export default function Navbar() {
             maxWidth: '100%',
             margin: 0,
             borderRadius: 0,
-            backgroundColor: !isHome || scrolled ? '#241209' : 'transparent',
-            backdropFilter: !isHome || scrolled ? 'blur(12px)' : 'none',
-            WebkitBackdropFilter: !isHome || scrolled ? 'blur(12px)' : 'none',
+            backgroundColor: '#241209',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
-            boxShadow: !isHome || scrolled ? '0 10px 30px rgba(0, 0, 0, 0.35)' : 'none',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.35)',
             transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          <div className="container header-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: scrolled || !isHome ? '64px' : '76px', maxWidth: '100%', padding: '0 2.5rem', transition: 'height 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+          <div className="container header-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: scrolled ? '70px' : '82px', maxWidth: '100%', padding: '0 2.5rem', transition: 'height 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}>
             
-            {/* Logo */}
+            {/* Logo Left */}
             <Link to="/" style={{ display: 'flex', alignItems: 'center', transition: 'opacity 0.2s' }} className="hover-scale site-logo">
-              <Logo variant="primary" style={{ height: '36px', width: 'auto' }} className="mobile-logo-adjust" />
+              <Logo variant="primary" style={{ height: '46px', width: 'auto' }} className="mobile-logo-adjust" />
             </Link>
 
-            {/* Navigation Links - Center */}
-            <nav className="desktop-links" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-              {navLinks.map((link) => {
-                const isActive = location.pathname === link.path;
-                const isRitual = link.name === 'Rituals';
-                return (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    style={{
-                      fontSize: isRitual ? '0.78rem' : '0.82rem',
-                      fontWeight: '700',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                      color: isActive ? 'var(--accent-gold)' : textMutedThemeColor,
-                      position: 'relative',
-                      padding: '0.4rem 0',
-                      transition: 'color 0.35s ease',
-                    }}
-                    className="nav-hover-link"
-                  >
-                    {link.name}
-                    {isActive && (
-                      <span
-                        style={{
-                          position: 'absolute',
-                          bottom: 0,
-                          left: 0,
-                          width: '100%',
-                          height: '2px',
-                          backgroundColor: 'var(--accent-gold)',
-                          borderRadius: '2px',
-                          transition: 'background-color 0.35s ease',
-                        }}
-                      />
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
+            {/* Right Container holding Nav Links & Action Dock */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
 
-            {/* Action Dock - Right */}
-            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-              
-              {/* Wishlist Link */}
-              <Link 
-                to="/wishlist" 
-                style={{ 
-                  fontSize: '0.82rem', 
-                  fontWeight: '700', 
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  color: textThemeColor, 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.4rem',
-                  transition: 'color 0.35s ease' 
-                }} 
-                className="desktop-links hover-scale"
-              >
-                <Heart size={18} strokeWidth={2} />
-                <span>Wishlist ({wishlistCount})</span>
-              </Link>
+              {/* Navigation Links - Shifted Right */}
+              <nav className="desktop-links" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                {navLinks.map((link) => {
+                  const isActive = location.pathname === link.path;
+                  const isRitual = link.name === 'Rituals';
+                  return (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      style={{
+                        fontSize: isRitual ? '0.82rem' : '0.86rem',
+                        fontWeight: '800',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em',
+                        color: isActive ? '#b9cd94' : textMutedThemeColor,
+                        position: 'relative',
+                        padding: '0.4rem 0',
+                        transition: 'color 0.35s ease',
+                      }}
+                      className="nav-hover-link"
+                    >
+                      {link.name}
+                      {isActive && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '2px',
+                            backgroundColor: '#b9cd94',
+                            borderRadius: '2px',
+                            transition: 'background-color 0.35s ease',
+                          }}
+                        />
+                      )}
+                    </Link>
+                  );
+                })}
+              </nav>
 
-              {/* Cart Button */}
-              <button 
-                onClick={toggleCart} 
-                className="btn-primary cart-button" 
-                style={{ 
-                  padding: '0.55rem 1.25rem', 
-                  fontSize: '0.8rem', 
-                  textTransform: 'uppercase', 
-                  letterSpacing: '0.05em', 
-                  backgroundColor: '#c89b3c', 
-                  color: '#FFFFFF',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.4rem',
-                  border: 'none',
-                  fontWeight: '800',
-                  transition: 'all 0.35s ease'
-                }}
-              >
-                <ShoppingBag size={16} />
-                <span className="desktop-links">Cart</span>
-                <span 
-                  className="cart-badge"
+              {/* Action Dock - Right */}
+              <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                
+                {/* Wishlist Link - Icon Only with Badge */}
+                <Link 
+                  to="/wishlist" 
+                  aria-label="Wishlist"
                   style={{ 
-                    backgroundColor: '#241209', 
-                    color: '#c89b3c', 
-                    padding: '0.15rem 0.45rem', 
-                    borderRadius: '999px', 
-                    fontSize: '0.75rem', 
-                    fontWeight: '900',
-                    transition: 'all 0.35s ease'
+                    position: 'relative',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: textThemeColor, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    transition: 'all 0.25s ease' 
+                  }} 
+                  className="desktop-links hover-scale"
+                >
+                  <Heart size={19} strokeWidth={2.2} />
+                  {wishlistCount > 0 && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '-2px',
+                        right: '-2px',
+                        fontSize: '0.65rem',
+                        lineHeight: 1,
+                        minWidth: '16px',
+                        height: '16px',
+                        padding: '0 4px',
+                        borderRadius: '999px',
+                        backgroundColor: '#244f21',
+                        color: '#FFFDF9',
+                        border: '1.5px solid #b9cd94',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: '900',
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.4)',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      {wishlistCount}
+                    </span>
+                  )}
+                </Link>
+
+                {/* Cart Button - Icon Only with Badge */}
+                <button 
+                  onClick={toggleCart} 
+                  aria-label="Shopping Cart"
+                  className="btn-primary cart-button" 
+                  style={{ 
+                    position: 'relative',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    padding: 0,
+                    backgroundColor: '#244f21', 
+                    color: '#FFFFFF',
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    border: '1px solid #b9cd94',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease'
                   }}
                 >
-                  {cartCount}
-                </span>
-              </button>
+                  <ShoppingBag size={19} strokeWidth={2.2} />
+                  <span 
+                    className="cart-badge"
+                    style={{ 
+                      position: 'absolute',
+                      top: '-2px',
+                      right: '-2px',
+                      fontSize: '0.65rem',
+                      lineHeight: 1,
+                      minWidth: '16px',
+                      height: '16px',
+                      padding: '0 4px',
+                      borderRadius: '999px',
+                      backgroundColor: '#244f21',
+                      color: '#FFFDF9',
+                      border: '1.5px solid #b9cd94',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: '900',
+                      boxShadow: '0 2px 5px rgba(0,0,0,0.4)',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    {cartCount}
+                  </span>
+                </button>
 
               {/* Account Dropdown Toggle */}
               <div style={{ position: 'relative' }} ref={accountMenuRef} className="account-menu-wrapper">
