@@ -205,29 +205,6 @@ export default function Shop() {
         </div>
       </section>
 
-      {/* 2. FEATURED PRODUCTS STRIP ("Made For Your Everyday Ritual") */}
-      {featuredStripProducts.length > 0 && (
-        <section style={{ backgroundColor: 'transparent', padding: '5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-            <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Daily Favorites</span>
-              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.45rem 0', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-                Made For Your Everyday Ritual
-              </h2>
-              <p style={{ fontSize: '0.98rem', color: '#F5EBDD', margin: 0, fontWeight: '550' }}>
-                Discover the bakes our MILASTY family reaches for again and again.
-              </p>
-            </div>
-
-            <div className="shop-featured-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2rem' }}>
-              {featuredStripProducts.map((product) => (
-                <ProductCard key={`featured-${product._id || product.slug}`} product={product} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* 3. MAIN SHOP LISTINGS SECTION WITH SEARCH & FILTER */}
       <section id="shop-listings-section" style={{ padding: '6rem 0' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>

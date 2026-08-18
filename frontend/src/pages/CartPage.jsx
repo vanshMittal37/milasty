@@ -32,115 +32,170 @@ export default function CartPage() {
   const amountNeededForFreeShip = Math.max(0, 499 - subtotal);
 
   return (
-    <div style={{ padding: '3rem 0 5rem' }}>
-      <div className="container">
-        {/* Banner */}
-        <div
-          className="glass-card"
-          style={{
-            padding: '2.5rem 2rem',
-            textAlign: 'center',
-            backgroundColor: 'transparent',
-            marginBottom: '3rem',
-            border: '1px solid #E2D7C7',
-          }}
-        >
-          <h1 style={{ fontSize: '2.2rem', color: '#4A3525', marginBottom: '0.5rem' }}>Your Shopping Cart</h1>
-          <p style={{ color: '#6B5B52', fontSize: '0.95rem' }}>Review your selected millet bakery items, apply discount coupons, and proceed to checkout.</p>
+    <div style={{
+      minHeight: '100vh',
+      backgroundImage: 'url(/images/cart_background_image.jpeg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      padding: '3rem 0 5rem',
+    }}>
+      <div className="container" style={{ maxWidth: '1100px' }}>
+
+        {/* Page Banner */}
+        <div style={{
+          padding: '2.75rem 2rem',
+          textAlign: 'center',
+          backgroundColor: 'rgba(255, 250, 242, 0.78)',
+          backdropFilter: 'blur(18px)',
+          WebkitBackdropFilter: 'blur(18px)',
+          marginBottom: '2.5rem',
+          borderRadius: '24px',
+          border: '1px solid rgba(100, 65, 35, 0.15)',
+          boxShadow: '0 8px 32px rgba(80, 45, 15, 0.12)',
+        }}>
+          <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#244f21', fontWeight: '800', display: 'block', marginBottom: '0.4rem' }}>
+            Your Ritual Basket
+          </span>
+          <h1 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: '#24130D', marginBottom: '0.5rem', fontWeight: '800', margin: '0 0 0.5rem' }}>
+            Shopping Cart
+          </h1>
+          <p style={{ color: '#5C3D20', fontSize: '0.95rem', margin: 0, fontWeight: '500' }}>
+            Review your handcrafted millet bakery items, apply discount coupons, and proceed to checkout.
+          </p>
         </div>
 
         {cartItems.length === 0 ? (
-          <div className="glass-card" style={{ padding: '4rem 2rem', textAlign: 'center', color: '#6B5B52' }}>
-            <ShoppingBag size={56} color="#D9CBB7" style={{ margin: '0 auto 1rem' }} />
-            <h3 style={{ fontSize: '1.4rem', color: '#5C4028', marginBottom: '0.5rem' }}>Your cart is currently empty</h3>
-            <p style={{ fontSize: '0.95rem', marginBottom: '1.5rem' }}>Discover our healthy millet cookies baked in pure Desi Ghee & Jaggery.</p>
-            <Link to="/shop" className="btn-primary">
+          /* Empty State */
+          <div style={{
+            padding: '4.5rem 2rem',
+            textAlign: 'center',
+            backgroundColor: 'rgba(255, 250, 242, 0.80)',
+            backdropFilter: 'blur(18px)',
+            WebkitBackdropFilter: 'blur(18px)',
+            borderRadius: '24px',
+            border: '1px solid rgba(100, 65, 35, 0.15)',
+            boxShadow: '0 8px 32px rgba(80, 45, 15, 0.10)',
+          }}>
+            <div style={{ width: '72px', height: '72px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+              <ShoppingBag size={30} color="#244f21" />
+            </div>
+            <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#24130D', marginBottom: '0.5rem', fontWeight: '800' }}>
+              Your cart is currently empty
+            </h3>
+            <p style={{ fontSize: '0.96rem', color: '#5C3D20', marginBottom: '2rem', lineHeight: '1.6' }}>
+              Discover our healthy millet cookies baked in pure Desi Ghee &amp; Jaggery.
+            </p>
+            <Link to="/shop" style={{ backgroundColor: '#244f21', color: '#FFFFFF', padding: '0.9rem 2.25rem', borderRadius: '999px', fontWeight: '800', textDecoration: 'none', display: 'inline-block', fontSize: '0.95rem' }}>
               Continue Shopping
             </Link>
           </div>
         ) : (
           <div className="checkout-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem', alignItems: 'flex-start' }}>
-            {/* Left: Items List */}
+
+            {/* ── Left: Items List ── */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {/* Free Ship Banner */}
-              <div style={{ backgroundColor: '#E8DEC8', padding: '0.85rem 1.25rem', borderRadius: '12px', color: '#4A3525', fontSize: '0.88rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', marginBottom: '0.35rem' }}>
-                  <Truck size={18} color="#274C37" />
+
+              {/* Free Shipping Progress Banner */}
+              <div style={{
+                backgroundColor: 'rgba(36, 79, 33, 0.09)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                padding: '0.9rem 1.25rem',
+                borderRadius: '14px',
+                border: '1px solid rgba(36, 79, 33, 0.20)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', marginBottom: '0.4rem', color: '#1a3d18', fontSize: '0.88rem' }}>
+                  <Truck size={18} color="#244f21" />
                   <span>
                     {amountNeededForFreeShip === 0
                       ? '🎉 Complimentary Free Pan-India Shipping Unlocked!'
                       : `Add ₹${amountNeededForFreeShip} more to qualify for FREE Shipping!`}
                   </span>
                 </div>
-                <div style={{ height: '6px', backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${Math.min(100, (subtotal / 499) * 100)}%`, backgroundColor: '#274C37' }}></div>
+                <div style={{ height: '6px', backgroundColor: 'rgba(36,79,33,0.15)', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${Math.min(100, (subtotal / 499) * 100)}%`, backgroundColor: '#244f21', borderRadius: '3px', transition: 'width 0.4s ease' }}></div>
                 </div>
               </div>
 
-              {/* Items Cards */}
+              {/* Item Cards */}
               {cartItems.map((item) => (
                 <div
                   key={item.key}
-                  className="glass-card"
                   style={{
                     padding: '1.25rem',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '1.25rem',
-                    backgroundColor: 'transparent',
+                    backgroundColor: 'rgba(255, 250, 242, 0.80)',
+                    backdropFilter: 'blur(14px)',
+                    WebkitBackdropFilter: 'blur(14px)',
+                    borderRadius: '18px',
+                    border: '1px solid rgba(100, 65, 35, 0.14)',
+                    boxShadow: '0 4px 16px rgba(80, 45, 15, 0.08)',
                   }}
                 >
-                  <img src={item.image} alt={item.title} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '10px' }} />
+                  <img src={item.image} alt={item.title} style={{ width: '84px', height: '84px', objectFit: 'cover', borderRadius: '12px', flexShrink: 0 }} />
 
                   <div style={{ flexGrow: 1 }}>
-                    <h4 style={{ fontSize: '1.05rem', color: '#4A3525', marginBottom: '0.2rem' }}>
-                      <Link to={`/shop/product/${item.slug}`} style={{ color: 'inherit' }}>{item.title}</Link>
+                    <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#24130D', marginBottom: '0.2rem', fontWeight: '700' }}>
+                      <Link to={`/shop/product/${item.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{item.title}</Link>
                     </h4>
-                    <div style={{ fontSize: '0.82rem', color: '#6B5B52', marginBottom: '0.5rem' }}>
-                      Pack: <strong>{item.variantName} ({item.weight})</strong>
+                    <div style={{ fontSize: '0.82rem', color: '#7A5535', marginBottom: '0.55rem', fontWeight: '500' }}>
+                      Pack: <strong style={{ color: '#4A2C10' }}>{item.variantName} ({item.weight})</strong>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid #E2D7C7', borderRadius: '8px', backgroundColor: '#F5EFE6' }}>
-                        <button onClick={() => updateQuantity(item.key, -1)} style={{ padding: '0.25rem 0.5rem', background: 'none', color: '#4A3525', fontWeight: '700' }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', border: '1.5px solid rgba(100, 65, 35, 0.25)', borderRadius: '10px', backgroundColor: 'rgba(245, 235, 220, 0.55)' }}>
+                        <button onClick={() => updateQuantity(item.key, -1)} style={{ padding: '0.3rem 0.55rem', background: 'none', color: '#4A2C10', fontWeight: '700', cursor: 'pointer', border: 'none' }}>
                           <Minus size={13} />
                         </button>
-                        <span style={{ padding: '0 0.6rem', fontSize: '0.88rem', fontWeight: '800' }}>{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.key, 1)} style={{ padding: '0.25rem 0.5rem', background: 'none', color: '#4A3525', fontWeight: '700' }}>
+                        <span style={{ padding: '0 0.6rem', fontSize: '0.9rem', fontWeight: '800', color: '#24130D' }}>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.key, 1)} style={{ padding: '0.3rem 0.55rem', background: 'none', color: '#4A2C10', fontWeight: '700', cursor: 'pointer', border: 'none' }}>
                           <Plus size={13} />
                         </button>
                       </div>
 
-                      <button onClick={() => removeFromCart(item.key)} style={{ background: 'none', color: '#99887A', padding: '0.25rem' }} title="Remove item">
+                      <button onClick={() => removeFromCart(item.key)} style={{ background: 'none', color: '#b85c3a', padding: '0.3rem', cursor: 'pointer', border: 'none' }} title="Remove item">
                         <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
 
-                  <div style={{ textAlign: 'right', fontWeight: '800', fontSize: '1.15rem', color: '#4A3525' }}>
+                  <div style={{ textAlign: 'right', fontWeight: '900', fontSize: '1.2rem', color: '#24130D', flexShrink: 0 }}>
                     ₹{item.totalPrice}
                   </div>
                 </div>
               ))}
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem' }}>
-                <button onClick={clearCart} style={{ background: 'none', color: '#D9534F', fontSize: '0.88rem', fontWeight: '600' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.25rem' }}>
+                <button onClick={clearCart} style={{ background: 'none', color: '#b85c3a', fontSize: '0.88rem', fontWeight: '700', cursor: 'pointer', border: 'none' }}>
                   Clear Cart
                 </button>
-                <Link to="/shop" style={{ color: '#5C4028', fontWeight: '600', fontSize: '0.88rem' }}>
+                <Link to="/shop" style={{ color: '#244f21', fontWeight: '700', fontSize: '0.88rem', textDecoration: 'none' }}>
                   ← Continue Shopping
                 </Link>
               </div>
             </div>
 
-            {/* Right: Coupon & Summary Box */}
-            <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'transparent' }}>
-              <h3 style={{ fontSize: '1.25rem', color: '#4A3525', marginBottom: '1.25rem' }}>Order Summary</h3>
+            {/* ── Right: Order Summary ── */}
+            <div style={{
+              padding: '2rem',
+              backgroundColor: 'rgba(255, 250, 242, 0.84)',
+              backdropFilter: 'blur(18px)',
+              WebkitBackdropFilter: 'blur(18px)',
+              borderRadius: '22px',
+              border: '1px solid rgba(100, 65, 35, 0.15)',
+              boxShadow: '0 8px 32px rgba(80, 45, 15, 0.10)',
+            }}>
+              <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#24130D', marginBottom: '1.25rem', fontWeight: '800' }}>
+                Order Summary
+              </h3>
 
-              {/* Coupon Input */}
-              <form onSubmit={handleApplyCoupon} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+              {/* Coupon */}
+              <form onSubmit={handleApplyCoupon} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
                 <div style={{ position: 'relative', flexGrow: 1 }}>
-                  <Tag size={16} color="#6B5B52" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <Tag size={16} color="#7A5535" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type="text"
                     placeholder="Coupon Code (e.g. WELCOME10)"
@@ -148,54 +203,62 @@ export default function CartPage() {
                     onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
                     style={{
                       width: '100%',
-                      padding: '0.65rem 0.75rem 0.65rem 2.2rem',
-                      borderRadius: '8px',
-                      border: '1px solid #E2D7C7',
+                      padding: '0.65rem 0.75rem 0.65rem 2.25rem',
+                      borderRadius: '10px',
+                      border: '1.5px solid rgba(100, 65, 35, 0.22)',
                       fontSize: '0.85rem',
                       fontFamily: 'inherit',
                       textTransform: 'uppercase',
+                      backgroundColor: 'rgba(245, 235, 220, 0.55)',
+                      color: '#24130D',
+                      outline: 'none',
+                      boxSizing: 'border-box',
                     }}
                   />
                 </div>
-                <button type="submit" className="btn-secondary" style={{ padding: '0.65rem 1rem', fontSize: '0.85rem' }}>
+                <button type="submit" style={{ padding: '0.65rem 1.1rem', fontSize: '0.85rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '10px', fontWeight: '800', cursor: 'pointer', flexShrink: 0 }}>
                   Apply
                 </button>
               </form>
 
               {appliedCoupon && (
-                <div style={{ backgroundColor: 'rgba(39, 76, 55, 0.12)', padding: '0.65rem 0.85rem', borderRadius: '8px', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: '#274C37', fontWeight: '700' }}>
+                <div style={{ backgroundColor: 'rgba(36, 79, 33, 0.10)', padding: '0.65rem 0.9rem', borderRadius: '10px', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: '#1a3d18', fontWeight: '700', border: '1px solid rgba(36,79,33,0.18)' }}>
                   <span>Code '{appliedCoupon.code}' Applied!</span>
-                  <button onClick={removeCoupon} style={{ background: 'none', color: '#D9534F', fontWeight: '700' }}>Remove</button>
+                  <button onClick={removeCoupon} style={{ background: 'none', color: '#b85c3a', fontWeight: '700', border: 'none', cursor: 'pointer' }}>Remove</button>
                 </div>
               )}
 
-              {/* Price Calculation Table */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.92rem', color: '#6B5B52', borderBottom: '1px solid #E2D7C7', paddingBottom: '1rem', marginBottom: '1rem' }}>
+              {/* Price Rows */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.93rem', color: '#5C3D20', borderBottom: '1.5px solid rgba(100, 65, 35, 0.15)', paddingBottom: '1rem', marginBottom: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Subtotal</span>
-                  <span>₹{subtotal}</span>
+                  <span style={{ fontWeight: '700', color: '#24130D' }}>₹{subtotal}</span>
                 </div>
                 {couponDiscountAmount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#274C37', fontWeight: '600' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#244f21', fontWeight: '700' }}>
                     <span>Coupon Discount</span>
                     <span>-₹{couponDiscountAmount}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Estimated Shipping</span>
-                  <span>{deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}</span>
+                  <span style={{ fontWeight: '700', color: deliveryFee === 0 ? '#244f21' : '#24130D' }}>{deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}</span>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '1.3rem', color: '#4A3525', marginBottom: '1.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '1.35rem', color: '#24130D', marginBottom: '1.5rem' }}>
                 <span>Grand Total</span>
                 <span>₹{grandTotal}</span>
               </div>
 
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(36, 79, 33, 0.07)', padding: '0.65rem 0.9rem', borderRadius: '10px', marginBottom: '1.25rem', fontSize: '0.82rem', color: '#1a3d18', fontWeight: '600' }}>
+                <ShieldCheck size={16} color="#244f21" />
+                <span>100% Secure Checkout • SSL Encrypted</span>
+              </div>
+
               <button
                 onClick={() => navigate('/checkout')}
-                className="btn-primary"
-                style={{ width: '100%', justifyContent: 'center', padding: '0.9rem', fontSize: '1.05rem' }}
+                style={{ width: '100%', justifyContent: 'center', padding: '0.95rem', fontSize: '1.05rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '14px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s ease' }}
               >
                 <span>Proceed to Checkout</span>
                 <ArrowRight size={18} />

@@ -289,57 +289,75 @@ export default function WishlistPage() {
   const recommendations = initialProducts.slice(0, 4);
 
   return (
-    <div className="wishlist-page" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '0 0 6.5rem' }}>
-      
+    <div className="wishlist-page" style={{
+      backgroundImage: 'url(/images/wishlist_background_color.jpeg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      minHeight: '100vh',
+      padding: '0 0 6.5rem'
+    }}>
+
       {/* 1. HERO SECTION */}
-      <section 
-        style={{ 
-          padding: '5rem 0 3.5rem', 
-          textAlign: 'center', 
-          maxWidth: '800px', 
+      <section
+        style={{
+          padding: '5rem 1.5rem 3.5rem',
+          textAlign: 'center',
+          maxWidth: '800px',
           margin: '0 auto',
-          paddingLeft: '1.5rem',
-          paddingRight: '1.5rem'
         }}
       >
-        <span 
-          style={{ 
-            fontSize: '0.74rem', 
-            textTransform: 'uppercase', 
-            letterSpacing: '0.12em', 
-            color: 'var(--accent-gold)', 
-            fontWeight: '800',
-            backgroundColor: 'rgba(197, 160, 89, 0.08)',
-            padding: '0.35rem 0.85rem',
-            borderRadius: '999px',
-            border: '1px solid rgba(197, 160, 89, 0.15)',
-            display: 'inline-block',
-            marginBottom: '1rem'
-          }}
-        >
-          Saved For Later
-        </span>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-          <Heart size={24} color="var(--primary-dark)" fill="var(--primary-dark)" />
-          <h1 
-            style={{ 
-              fontSize: '2.5rem', 
-              fontFamily: 'var(--font-serif)', 
-              color: 'var(--primary-dark)', 
+        <div style={{
+          backgroundColor: 'rgba(255, 250, 242, 0.78)',
+          backdropFilter: 'blur(18px)',
+          WebkitBackdropFilter: 'blur(18px)',
+          borderRadius: '28px',
+          border: '1px solid rgba(100, 65, 35, 0.14)',
+          boxShadow: '0 8px 32px rgba(80, 45, 15, 0.12)',
+          padding: '2.75rem 2rem 2.25rem',
+          display: 'inline-block',
+          width: '100%',
+          boxSizing: 'border-box',
+        }}>
+          <span
+            style={{
+              fontSize: '0.74rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              color: '#244f21',
               fontWeight: '800',
-              margin: 0,
-              letterSpacing: '-0.01em'
+              backgroundColor: 'rgba(36, 79, 33, 0.08)',
+              padding: '0.35rem 0.85rem',
+              borderRadius: '999px',
+              border: '1px solid rgba(36, 79, 33, 0.15)',
+              display: 'inline-block',
+              marginBottom: '1rem'
             }}
           >
-            My Wishlist
-          </h1>
+            Saved For Later
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+            <Heart size={24} color="#8B2020" fill="#8B2020" />
+            <h1
+              style={{
+                fontSize: '2.5rem',
+                fontFamily: 'var(--font-serif)',
+                color: '#24130D',
+                fontWeight: '800',
+                margin: 0,
+                letterSpacing: '-0.01em'
+              }}
+            >
+              My Wishlist
+            </h1>
+          </div>
+          <p style={{ fontSize: '1rem', color: '#5C3D20', lineHeight: '1.6', margin: '0 0 0.5rem 0', fontWeight: '500' }}>
+            Keep your favourite MILASTY bakes close and discover them whenever you're ready.
+          </p>
+          <span style={{ fontSize: '0.8rem', color: '#244f21', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            {wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'} saved
+          </span>
         </div>
-        <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.6', margin: '0 0 0.5rem 0', fontWeight: '500' }}>
-          Keep your favourite MILASTY bakes close and discover them whenever you're ready.
-        </p>
-        <span style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          {wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'} saved
-        </span>
       </section>
 
       {/* Main container */}
@@ -348,50 +366,51 @@ export default function WishlistPage() {
         {wishlistItems.length === 0 ? (
           /* 7. EMPTY WISHLIST STATE */
           <div style={{ display: 'flex', flexDirection: 'column', gap: '5rem' }}>
-            <div 
-              className="glass-card" 
-              style={{ 
-                padding: '4rem 2rem', 
-                textAlign: 'center', 
-                backgroundColor: 'transparent', 
-                borderRadius: '24px', 
-                border: '1.5px solid var(--border-color)',
+            <div
+              style={{
+                padding: '4rem 2rem',
+                textAlign: 'center',
+                backgroundColor: 'rgba(255, 250, 242, 0.80)',
+                backdropFilter: 'blur(18px)',
+                WebkitBackdropFilter: 'blur(18px)',
+                borderRadius: '24px',
+                border: '1px solid rgba(100, 65, 35, 0.14)',
                 maxWidth: '620px',
                 margin: '0 auto',
-                boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)'
+                boxShadow: '0 8px 30px rgba(80, 45, 15, 0.10)'
               }}
             >
-              <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(56, 20, 35, 0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-gold)', margin: '0 auto 1.5rem' }}>
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(139, 32, 32, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B2020', margin: '0 auto 1.5rem' }}>
                 <Heart size={28} />
               </div>
-              <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>Nothing saved yet.</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: '1.6', marginBottom: '2rem', marginTop: '0.5rem', fontWeight: '500' }}>
+              <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', margin: '0 0 0.5rem' }}>Nothing saved yet.</h3>
+              <p style={{ color: '#5C3D20', fontSize: '0.92rem', lineHeight: '1.6', marginBottom: '2rem', marginTop: '0.5rem', fontWeight: '500' }}>
                 Your favourite MILASTY bakes will appear here when you tap the heart icon.
               </p>
-              
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', alignItems: 'center' }}>
-                <Link 
-                  to="/shop" 
-                  className="btn-primary" 
-                  style={{ 
-                    padding: '0.9rem 2.25rem', 
-                    fontSize: '0.9rem', 
-                    backgroundColor: 'var(--primary-dark)', 
-                    color: '#FFFFFF', 
-                    border: 'none', 
-                    borderRadius: '999px', 
+                <Link
+                  to="/shop"
+                  style={{
+                    padding: '0.9rem 2.25rem',
+                    fontSize: '0.9rem',
+                    backgroundColor: '#24130D',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '999px',
                     fontWeight: '800',
-                    textDecoration: 'none'
+                    textDecoration: 'none',
+                    display: 'inline-block'
                   }}
                 >
                   Explore Our Bakes
                 </Link>
-                <Link 
-                  to="/products" 
-                  style={{ 
-                    fontSize: '0.84rem', 
-                    color: 'var(--accent-gold)', 
-                    fontWeight: '800', 
+                <Link
+                  to="/products"
+                  style={{
+                    fontSize: '0.84rem',
+                    color: '#244f21',
+                    fontWeight: '800',
                     textDecoration: 'none',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em'
@@ -403,24 +422,24 @@ export default function WishlistPage() {
             </div>
 
             {/* 8. RECOMMENDED PRODUCTS */}
-            <section style={{ borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '5rem' }}>
+            <section style={{ borderTop: '1px solid rgba(100, 65, 35, 0.18)', paddingTop: '5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
                 <div>
-                  <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Recommendations</span>
-                  <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
+                  <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#244f21', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Recommendations</span>
+                  <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', margin: 0 }}>
                     You May Also Love
                   </h2>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button 
-                    onClick={() => scrollLeft(recRef)} 
-                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  <button
+                    onClick={() => scrollLeft(recRef)}
+                    style={{ backgroundColor: 'rgba(255, 250, 242, 0.65)', border: '1px solid rgba(100,65,35,0.20)', color: '#24130D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
                     <ChevronLeft size={16} />
                   </button>
-                  <button 
-                    onClick={() => scrollRight(recRef)} 
-                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  <button
+                    onClick={() => scrollRight(recRef)}
+                    style={{ backgroundColor: 'rgba(255, 250, 242, 0.65)', border: '1px solid rgba(100,65,35,0.20)', color: '#24130D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
                     <ChevronRight size={16} />
                   </button>
@@ -452,30 +471,30 @@ export default function WishlistPage() {
           /* WISHLIST HAS PRODUCTS */
           <div>
             {/* 6. WISHLIST TOOLBAR */}
-            <div 
-              style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                gap: '1.25rem', 
-                marginBottom: '2.5rem', 
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '1.25rem',
+                marginBottom: '2.5rem',
                 flexWrap: 'wrap',
-                backgroundColor: 'transparent',
-                backdropFilter: 'blur(14px)',
-                WebkitBackdropFilter: 'blur(14px)',
+                backgroundColor: 'rgba(255, 250, 242, 0.78)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
                 padding: '1.1rem 1.75rem',
                 borderRadius: '20px',
-                border: '1px solid rgba(245, 235, 221, 0.25)',
-                boxShadow: 'var(--shadow-md)'
+                border: '1px solid rgba(100, 65, 35, 0.15)',
+                boxShadow: '0 4px 20px rgba(80, 45, 15, 0.09)'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.98rem', fontWeight: '850', color: 'var(--text-light)' }}>Your Saved Bakes</span>
-                <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)', fontWeight: '700' }}>({wishlistItems.length} items)</span>
+                <span style={{ fontSize: '0.98rem', fontWeight: '850', color: '#24130D' }}>Your Saved Bakes</span>
+                <span style={{ fontSize: '0.84rem', color: '#7A5535', fontWeight: '700' }}>({wishlistItems.length} items)</span>
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                
+
                 {/* Sort selector */}
                 <select
                   value={sortBy}
@@ -483,11 +502,11 @@ export default function WishlistPage() {
                   style={{
                     padding: '0.65rem 1rem',
                     borderRadius: '12px',
-                    border: '1px solid var(--border-color)',
+                    border: '1.5px solid rgba(100, 65, 35, 0.22)',
                     fontSize: '0.8rem',
-                    color: 'var(--text-light)',
-                    fontWeight: '800',
-                    backgroundColor: 'var(--bg-subtle)',
+                    color: '#24130D',
+                    fontWeight: '700',
+                    backgroundColor: 'rgba(245, 235, 220, 0.55)',
                     outline: 'none',
                     cursor: 'pointer',
                     minHeight: '38px'
@@ -502,15 +521,14 @@ export default function WishlistPage() {
                 {/* Add all to cart */}
                 <button
                   onClick={handleAddAllToCart}
-                  className="btn-primary"
                   style={{
                     padding: '0.65rem 1.25rem',
                     fontSize: '0.8rem',
                     borderRadius: '12px',
-                    backgroundColor: 'var(--accent-gold)',
-                    color: '#24130D',
+                    backgroundColor: '#24130D',
+                    color: '#FFFFFF',
                     border: 'none',
-                    fontWeight: '850',
+                    fontWeight: '800',
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -543,30 +561,39 @@ export default function WishlistPage() {
             </div>
 
             {/* 9. STILL EXPLORING CTA */}
-            <section style={{ borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '6rem', textAlign: 'center' }}>
-              <h2 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.75rem', margin: 0 }}>
-                Still Exploring?
-              </h2>
-              <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.65', marginBottom: '2.25rem', fontWeight: '500', marginTop: '0.5rem' }}>
-                Discover more handcrafted MILASTY bakes made for your everyday rituals.
-              </p>
-              <Link 
-                to="/shop" 
-                className="btn-primary" 
-                style={{ 
-                  padding: '0.95rem 2.25rem', 
-                  fontSize: '0.9rem', 
-                  backgroundColor: 'var(--accent-gold)', 
-                  color: '#24130D', 
-                  border: 'none', 
-                  borderRadius: '999px', 
-                  fontWeight: '800',
-                  textDecoration: 'none',
-                  display: 'inline-block'
-                }}
-              >
-                Explore All Bakes →
-              </Link>
+            <section style={{ borderTop: '1px solid rgba(100, 65, 35, 0.18)', paddingTop: '6rem', textAlign: 'center' }}>
+              <div style={{
+                backgroundColor: 'rgba(255, 250, 242, 0.78)',
+                backdropFilter: 'blur(18px)',
+                WebkitBackdropFilter: 'blur(18px)',
+                borderRadius: '24px',
+                border: '1px solid rgba(100, 65, 35, 0.14)',
+                boxShadow: '0 8px 32px rgba(80, 45, 15, 0.10)',
+                padding: '3.5rem 2rem',
+              }}>
+                <h2 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', marginBottom: '0.75rem', margin: '0 0 0.75rem' }}>
+                  Still Exploring?
+                </h2>
+                <p style={{ fontSize: '1rem', color: '#5C3D20', lineHeight: '1.65', marginBottom: '2.25rem', fontWeight: '500', marginTop: '0.5rem' }}>
+                  Discover more handcrafted MILASTY bakes made for your everyday rituals.
+                </p>
+                <Link
+                  to="/shop"
+                  style={{
+                    padding: '0.95rem 2.25rem',
+                    fontSize: '0.9rem',
+                    backgroundColor: '#244f21',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '999px',
+                    fontWeight: '800',
+                    textDecoration: 'none',
+                    display: 'inline-block'
+                  }}
+                >
+                  Explore All Bakes →
+                </Link>
+              </div>
             </section>
           </div>
         )}

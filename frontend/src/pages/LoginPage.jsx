@@ -3,6 +3,32 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Lock, Mail, ArrowRight, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+// Shared input style for the warm beige background
+const inputStyle = {
+  width: '100%',
+  height: '52px',
+  padding: '0 1rem 0 2.75rem',
+  borderRadius: '12px',
+  border: '1.5px solid rgba(100, 65, 35, 0.28)',
+  fontSize: '0.92rem',
+  outline: 'none',
+  backgroundColor: 'rgba(255, 252, 245, 0.70)',
+  color: '#24130D',
+  transition: 'border-color 0.2s, box-shadow 0.2s',
+  fontFamily: 'inherit',
+  boxSizing: 'border-box',
+};
+
+const labelStyle = {
+  fontSize: '0.74rem',
+  fontWeight: '800',
+  color: '#4A2C10',
+  display: 'block',
+  marginBottom: '0.45rem',
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+};
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -31,276 +57,186 @@ export default function LoginPage() {
   };
 
   return (
-    <div 
-      style={{ 
-        minHeight: '100vh', 
-        display: 'grid', 
-        gridTemplateColumns: '1fr', 
-        backgroundColor: 'var(--bg-main)' 
+    <div
+      className="light-bg-page"
+      style={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/images/register_login_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '5rem 1.5rem 3rem',
       }}
-      className="auth-split-layout"
     >
-      <style>{`
-        @media (min-width: 768px) {
-          .auth-split-layout {
-            grid-template-columns: 40% 60% !important;
-          }
-        }
-        @media (min-width: 1024px) {
-          .auth-split-layout {
-            grid-template-columns: 50% 50% !important;
-          }
-        }
-      `}</style>
-
-      {/* ==================================================
-          LEFT SIDE: BRAND IMAGE PANEL (Desktop / Tablet)
-         ================================================== */}
-      <div 
-        style={{ 
-          position: 'relative', 
-          height: '100%', 
-          minHeight: '100vh',
-          display: 'none',
+      {/* Central frosted glass card */}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '480px',
+          backgroundColor: 'rgba(255, 252, 245, 0.88)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderRadius: '28px',
+          border: '1px solid rgba(100, 65, 35, 0.18)',
+          boxShadow: '0 20px 60px rgba(50, 28, 10, 0.20)',
+          padding: '2.75rem 2.5rem 2.5rem',
+          display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: '3rem',
-          backgroundImage: "linear-gradient(rgba(56, 20, 35, 0.45), rgba(56, 20, 35, 0.45)), url('https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=1000&q=80')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          color: '#FFFFFF'
+          gap: '1.75rem',
         }}
-        className="auth-image-panel"
       >
-        <style>{`
-          @media (min-width: 768px) {
-            .auth-image-panel {
-              display: flex !important;
-            }
-          }
-        `}</style>
-        
-        {/* Top Header Badge */}
-        <div>
-          <span 
-            style={{ 
-              fontSize: '0.68rem', 
-              fontWeight: '800', 
-              textTransform: 'uppercase', 
-              letterSpacing: '0.08em', 
-              backgroundColor: 'rgba(255, 255, 255, 0.25)', 
-              color: '#FFFFFF',
-              border: '1.5px solid rgba(255, 255, 255, 0.4)',
-              padding: '0.35rem 0.85rem', 
+        {/* Brand Header */}
+        <div style={{ textAlign: 'center', borderBottom: '1px solid rgba(100, 65, 35, 0.12)', paddingBottom: '1.5rem' }}>
+          <span
+            style={{
+              fontSize: '0.68rem',
+              fontWeight: '800',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              color: '#244f21',
+              backgroundColor: 'rgba(36, 79, 33, 0.08)',
+              padding: '0.3rem 0.8rem',
               borderRadius: '999px',
-              backdropFilter: 'blur(4px)'
+              border: '1px solid rgba(36, 79, 33, 0.15)',
+              display: 'inline-block',
+              marginBottom: '0.85rem',
             }}
           >
-            100% Clean Label
+            Customer Portal
           </span>
-        </div>
-
-        {/* Bottom Editorial Content */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '440px' }}>
-          <span style={{ fontSize: '1.5rem', color: 'var(--accent-gold)' }}>✦</span>
-          <h2 style={{ fontSize: '3rem', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0, letterSpacing: '-0.02em', lineHeight: '1' }}>
-            MILASTY.
-          </h2>
-          <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', fontWeight: '500', margin: 0, color: 'var(--accent-gold)' }}>
-            Where Millets Meet Great Taste.
-          </h3>
-          <p style={{ fontSize: '0.96rem', lineHeight: '1.6', margin: '0.5rem 0 0 0', opacity: 0.9, fontWeight: '500' }}>
-            Handcrafted millet bakes made with pure Desi Ghee and organic Jaggery.
+          <h1
+            style={{
+              fontSize: '2rem',
+              fontFamily: 'var(--font-serif)',
+              color: '#24130D',
+              fontWeight: '800',
+              margin: '0 0 0.35rem',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Welcome Back
+          </h1>
+          <p style={{ color: '#5C3D20', fontSize: '0.9rem', margin: 0, fontWeight: '500', lineHeight: '1.5' }}>
+            Sign in to manage your orders, addresses, and wishlist.
           </p>
         </div>
-      </div>
 
-      {/* ==================================================
-          RIGHT SIDE: AUTHENTICATION FORM
-         ================================================== */}
-      <div 
-        style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          padding: '2.5rem 1.5rem',
-          minHeight: '100vh'
-        }}
-      >
-        <div 
-          style={{ 
-            width: '100%', 
-            maxWidth: '440px', 
-            display: 'flex', 
-            flexDirection: 'column',
-            gap: '2.25rem' 
-          }}
-        >
-          {/* Mobile Brand Logo Header */}
-          <div 
-            style={{ 
-              textAlign: 'center', 
-              display: 'none',
-              flexDirection: 'column',
+        {/* Error Banner */}
+        {error && (
+          <div
+            style={{
+              backgroundColor: 'rgba(184, 50, 30, 0.08)',
+              border: '1.5px solid rgba(184, 50, 30, 0.35)',
+              color: '#8B2020',
+              padding: '0.85rem 1rem',
+              borderRadius: '12px',
+              fontSize: '0.85rem',
+              display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem'
+              gap: '0.5rem',
+              fontWeight: '600',
             }}
-            className="auth-mobile-logo"
           >
-            <style>{`
-              @media (max-width: 767px) {
-                .auth-mobile-logo {
-                  display: flex !important;
-                }
-              }
-            `}</style>
-            <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '900', margin: 0 }}>MILASTY</h2>
-            <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '800' }}>Where Millets Meet Great Taste</span>
+            <ShieldAlert size={16} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Login Form */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+
+          {/* Email */}
+          <div>
+            <label style={labelStyle}>Email Address</label>
+            <div style={{ position: 'relative' }}>
+              <Mail size={16} color="#7A5535" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                style={inputStyle}
+                onFocus={(e) => { e.target.style.borderColor = '#244f21'; e.target.style.boxShadow = '0 0 0 3px rgba(36,79,33,0.10)'; }}
+                onBlur={(e) => { e.target.style.borderColor = 'rgba(100, 65, 35, 0.28)'; e.target.style.boxShadow = 'none'; }}
+              />
+            </div>
           </div>
 
-          {/* Form Header */}
-          <div style={{ textAlign: 'left' }}>
-            <span 
-              style={{ 
-                fontSize: '0.68rem', 
-                fontWeight: '800', 
-                textTransform: 'uppercase', 
-                letterSpacing: '0.08em', 
-                color: 'var(--accent-gold)',
-                backgroundColor: 'rgba(197, 160, 89, 0.08)',
-                padding: '0.3rem 0.65rem',
-                borderRadius: '6px',
-                display: 'inline-block',
-                marginBottom: '0.75rem'
-              }}
-            >
-              Customer Portal
-            </span>
-            <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.5rem 0' }}>Welcome Back</h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>Sign in to manage your orders, addresses, and wishlist.</p>
+          {/* Password */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+              <label style={{ ...labelStyle, marginBottom: 0 }}>Password</label>
+              <Link to="/forgot-password" style={{ fontSize: '0.78rem', color: '#244f21', fontWeight: '800', textDecoration: 'none' }}>
+                Forgot password?
+              </Link>
+            </div>
+            <div style={{ position: 'relative' }}>
+              <Lock size={16} color="#7A5535" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{ ...inputStyle, padding: '0 3rem 0 2.75rem' }}
+                onFocus={(e) => { e.target.style.borderColor = '#244f21'; e.target.style.boxShadow = '0 0 0 3px rgba(36,79,33,0.10)'; }}
+                onBlur={(e) => { e.target.style.borderColor = 'rgba(100, 65, 35, 0.28)'; e.target.style.boxShadow = 'none'; }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#7A5535', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
+              >
+                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+              </button>
+            </div>
           </div>
 
-          {/* Error Banner */}
-          {error && (
-            <div style={{ backgroundColor: 'rgba(217, 83, 79, 0.08)', border: '1.5px solid var(--accent-terracotta)', color: 'var(--accent-terracotta)', padding: '0.85rem 1rem', borderRadius: '12px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '600' }}>
-              <ShieldAlert size={16} />
-              <span>{error}</span>
-            </div>
-          )}
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: '100%',
+              height: '52px',
+              marginTop: '0.5rem',
+              backgroundColor: '#244f21',
+              color: '#FFFFFF',
+              borderRadius: '14px',
+              border: 'none',
+              fontWeight: '800',
+              fontSize: '0.95rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.75 : 1,
+              transition: 'all 0.2s ease',
+              fontFamily: 'inherit',
+            }}
+          >
+            {loading ? <span>Signing in...</span> : <><span>Login to Account</span><ArrowRight size={17} /></>}
+          </button>
+        </form>
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} className="auth-form" style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
-            {/* Email field */}
-            <div>
-              <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Address</label>
-              <div style={{ position: 'relative' }}>
-                <Mail size={16} color="var(--text-muted)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  style={{ 
-                    width: '100%', 
-                    height: '52px', 
-                    padding: '0 1rem 0 2.75rem', 
-                    borderRadius: '12px', 
-                    border: '1.5px solid var(--border-color)', 
-                    fontSize: '0.9rem',
-                    outline: 'none',
-                    backgroundColor: 'transparent',
-                    color: 'var(--text-light)',
-                    transition: 'border-color 0.2s'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-gold)'}
-                  onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
-                />
-              </div>
-            </div>
+        {/* Footer link */}
+        <div style={{ textAlign: 'center', fontSize: '0.88rem', color: '#5C3D20', fontWeight: '600', paddingTop: '0.25rem' }}>
+          Don't have an account?{' '}
+          <Link to="/register" style={{ color: '#244f21', fontWeight: '800', textDecoration: 'none' }}>
+            Create one here
+          </Link>
+        </div>
 
-            {/* Password field */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
-                <label style={{ fontSize: '0.76rem', fontWeight: '800', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Password</label>
-                <Link to="/forgot-password" style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: '800', textDecoration: 'none' }}>Forgot password?</Link>
-              </div>
-              <div style={{ position: 'relative' }}>
-                <Lock size={16} color="var(--text-muted)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  style={{ 
-                    width: '100%', 
-                    height: '52px', 
-                    padding: '0 3rem 0 2.75rem', 
-                    borderRadius: '12px', 
-                    border: '1.5px solid var(--border-color)', 
-                    fontSize: '0.9rem',
-                    outline: 'none',
-                    backgroundColor: 'transparent',
-                    color: 'var(--text-light)',
-                    transition: 'border-color 0.2s'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = 'var(--accent-gold)'}
-                  onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '16px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--text-muted)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: 0
-                  }}
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Login button */}
-            <button 
-              type="submit" 
-              disabled={loading} 
-              className="btn-primary" 
-              style={{ 
-                width: '100%', 
-                height: '52px', 
-                justifyContent: 'center', 
-                padding: '0.85rem', 
-                marginTop: '0.75rem',
-                backgroundColor: 'var(--accent-gold)',
-                color: '#24130D',
-                borderRadius: '12px',
-                border: 'none',
-                fontWeight: '800',
-                fontSize: '0.92rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                cursor: 'pointer'
-              }}
-            >
-              {loading ? <span>Signing in...</span> : <><span>Login to Account</span><ArrowRight size={16} /></>}
-            </button>
-          </form>
-
-          {/* Redirect to Register link */}
-          <div style={{ textAlign: 'center', fontSize: '0.86rem', color: 'var(--text-muted)', fontWeight: '600' }}>
-            Don't have an account? <Link to="/register" style={{ color: 'var(--accent-gold)', fontWeight: '800', textDecoration: 'none' }}>Create one here</Link>
-          </div>
+        {/* Trust badges */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', paddingTop: '0.25rem', borderTop: '1px solid rgba(100, 65, 35, 0.10)' }}>
+          {['🔒 SSL Secured', '🌿 100% Natural', '🚚 Pan-India Delivery'].map((badge) => (
+            <span key={badge} style={{ fontSize: '0.7rem', color: '#7A5535', fontWeight: '600' }}>{badge}</span>
+          ))}
         </div>
       </div>
     </div>

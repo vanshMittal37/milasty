@@ -87,6 +87,22 @@ p, span, li, label, td, th {
   color: var(--text-muted);
 }
 
+/* ── Light-background page overrides ──
+   Pages with warm beige backgrounds need dark text.
+   These selectors override the global dark-theme rules above. */
+.light-bg-page h1,
+.light-bg-page h2,
+.light-bg-page h3,
+.light-bg-page h4,
+.light-bg-page h5 {
+  color: #24130D !important;
+}
+.light-bg-page p,
+.light-bg-page span:not(.badge-pill),
+.light-bg-page label {
+  color: #5C3D20 !important;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -251,6 +267,11 @@ button {
   }
   .mobile-toggle {
     display: block !important;
+  }
+  /* Logo size on mobile */
+  .mobile-logo-adjust {
+    height: 44px !important;
+    width: auto !important;
   }
 }
 @media (min-width: 769px) {

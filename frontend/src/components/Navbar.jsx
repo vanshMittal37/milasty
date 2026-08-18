@@ -152,7 +152,7 @@ export default function Navbar() {
             
             {/* Logo Left */}
             <Link to="/" style={{ display: 'flex', alignItems: 'center', transition: 'opacity 0.2s' }} className="hover-scale site-logo">
-              <Logo variant="primary" style={{ height: '46px', width: 'auto' }} className="mobile-logo-adjust" />
+              <Logo variant="primary" style={{ height: '54px', width: 'auto' }} className="mobile-logo-adjust" />
             </Link>
 
             {/* Right Container holding Nav Links & Action Dock */}
