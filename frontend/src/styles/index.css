@@ -107,11 +107,12 @@ button {
 
 /* Glassmorphism Cards */
 .glass-card {
-  background: rgba(35, 21, 13, 0.60) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.30) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
   border-radius: var(--radius-md) !important;
   transition: all var(--transition-normal);
 }
@@ -1404,15 +1405,15 @@ textarea::placeholder {
 .register-page .glass-card,
 .order-history-page .glass-card,
 .order-detail-page .glass-card {
-  background-color: rgba(35, 21, 13, 0.60) !important;
-  background: rgba(35, 21, 13, 0.60) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.30) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
 }
 
-/* Also target any div with glass-card class inside these pages (catches inline style overrides) */
+/* Also target any div with glass-card class inside these pages */
 .shop-page [class*="glass-card"],
 .nutrition-page [class*="glass-card"],
 .contact-page [class*="glass-card"],
@@ -1420,10 +1421,10 @@ textarea::placeholder {
 .products-page [class*="glass-card"],
 .account-dashboard-page [class*="glass-card"],
 .wishlist-page [class*="glass-card"] {
-  background-color: rgba(35, 21, 13, 0.60) !important;
-  background: rgba(35, 21, 13, 0.60) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
 }
 
 /* ==================================================

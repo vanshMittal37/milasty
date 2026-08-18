@@ -759,25 +759,25 @@ export default function Home() {
               paddingBottom: '1.5rem'
             }}
           >
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>01</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAUSE</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Step away from screens and digital chatter for five mindful minutes.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>02</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTICE</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Take in the warm, nostalgic aroma of slow-baked millets and pure Cow Ghee.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>03</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>BITE SLOWLY</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Enjoy the wholesome crumbly texture and balanced sweetness of unrefined jaggery.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>04</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAIR & ENJOY</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Pair with a cup of warm ginger chai, filter coffee, or green tea.</p>
@@ -948,7 +948,7 @@ export default function Home() {
               paddingBottom: '1.5rem'
             }}
           >
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <Award size={36} strokeWidth={1.5} />
               </div>
@@ -956,7 +956,7 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <Sparkles size={36} strokeWidth={1.5} />
               </div>
@@ -964,7 +964,7 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <ShieldCheck size={36} strokeWidth={1.5} />
               </div>
@@ -972,7 +972,7 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <FileText size={36} strokeWidth={1.5} />
               </div>
