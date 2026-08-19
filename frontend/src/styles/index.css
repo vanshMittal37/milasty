@@ -427,21 +427,25 @@ body, p, span, li, a {
   }
 
   .header-container {
-    padding: 12px 24px !important;
-    height: 64px !important;
+    padding: 8px 16px !important;
+    height: 70px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 12px !important;
+    gap: 10px !important;
   }
 
   .site-logo {
     flex-shrink: 1 !important;
-    max-width: 220px !important;
+    max-width: 250px !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   .mobile-logo-adjust {
-    height: 40px !important;
+    height: 58px !important;
+    max-height: 58px !important;
+    width: auto !important;
   }
 
   /* Actions Container */
