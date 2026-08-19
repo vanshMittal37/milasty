@@ -176,7 +176,7 @@ export default function Nutrition() {
           <h2 style={{ fontSize: 'clamp(1.35rem, 3.2vw, 1.8rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0 }}>
             What's Inside Every Bite
           </h2>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
             <button 
               onClick={() => scrollLeft(insideBiteRef)} 
               aria-label="Scroll left"
@@ -196,15 +196,7 @@ export default function Nutrition() {
 
         <div 
           ref={insideBiteRef}
-          className="horizontal-scroll-container"
-          style={{ 
-            display: 'flex', 
-            gap: '1.5rem', 
-            overflowX: 'auto', 
-            scrollBehavior: 'smooth',
-            paddingBottom: '1rem',
-            maxWidth: '100%'
-          }}
+          className="horizontal-scroll-container fitted-cards-container-4"
         >
           <div 
             className="glass-card" 
@@ -212,8 +204,6 @@ export default function Nutrition() {
               padding: '2rem 1.75rem', 
               borderRadius: '20px', 
               transition: 'all 0.25s ease',
-              flexShrink: 0,
-              width: 'min(280px, 80vw)',
               boxSizing: 'border-box'
             }}
           >
@@ -233,8 +223,6 @@ export default function Nutrition() {
               padding: '2rem 1.75rem', 
               borderRadius: '20px', 
               transition: 'all 0.25s ease',
-              flexShrink: 0,
-              width: 'min(280px, 80vw)',
               boxSizing: 'border-box'
             }}
           >
@@ -254,8 +242,6 @@ export default function Nutrition() {
               padding: '2rem 1.75rem', 
               borderRadius: '20px', 
               transition: 'all 0.25s ease',
-              flexShrink: 0,
-              width: 'min(280px, 80vw)',
               boxSizing: 'border-box'
             }}
           >
@@ -275,8 +261,6 @@ export default function Nutrition() {
               padding: '2rem 1.75rem', 
               borderRadius: '20px', 
               transition: 'all 0.25s ease',
-              flexShrink: 0,
-              width: 'min(280px, 80vw)',
               boxSizing: 'border-box'
             }}
           >
@@ -621,7 +605,7 @@ export default function Nutrition() {
               We believe transparency starts with understanding what goes into your food.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
             <button 
               onClick={() => scrollLeft(ingredientsRef)} 
               aria-label="Scroll left"
@@ -641,17 +625,9 @@ export default function Nutrition() {
 
         <div 
           ref={ingredientsRef}
-          className="horizontal-scroll-container"
-          style={{ 
-            display: 'flex', 
-            gap: '2.5rem', 
-            overflowX: 'auto', 
-            scrollBehavior: 'smooth',
-            paddingBottom: '1.5rem',
-            maxWidth: '100%'
-          }}
+          className="horizontal-scroll-container fitted-cards-container-3"
         >
-          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', flexShrink: 0, width: 'min(340px, 85vw)', boxSizing: 'border-box' }}>
+          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>01</span>
               <Sparkles size={28} color="#b9cd94" />
@@ -662,7 +638,7 @@ export default function Nutrition() {
             </p>
           </div>
 
-          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', flexShrink: 0, width: 'min(340px, 85vw)', boxSizing: 'border-box' }}>
+          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>02</span>
               <Award size={28} color="#b9cd94" />
@@ -673,7 +649,7 @@ export default function Nutrition() {
             </p>
           </div>
 
-          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', flexShrink: 0, width: 'min(340px, 85vw)', boxSizing: 'border-box' }}>
+          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>03</span>
               <ShieldCheck size={28} color="#b9cd94" />

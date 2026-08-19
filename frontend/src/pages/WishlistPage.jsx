@@ -289,14 +289,32 @@ export default function WishlistPage() {
   const recommendations = initialProducts.slice(0, 4);
 
   return (
-    <div className="wishlist-page" style={{
-      backgroundImage: 'url(/images/wishlist_background_color.jpeg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-      minHeight: '100vh',
-      padding: '0 0 6.5rem'
-    }}>
+    <div
+      className="wishlist-page"
+      style={{
+        minHeight: '100vh',
+        padding: '0 0 6.5rem',
+        width: '100%',
+        maxWidth: '100%',
+        overflowX: 'hidden',
+        boxSizing: 'border-box',
+        position: 'relative',
+        backgroundImage: 'url(/images/ritiual_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Dark overlay for readability */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.30) 0%, rgba(36, 19, 13, 0.22) 100%)',
+        zIndex: 0,
+        pointerEvents: 'none',
+      }} />
+      <div style={{ position: 'relative', zIndex: 1 }}>
 
       {/* 1. HERO SECTION */}
       <section
@@ -307,29 +325,32 @@ export default function WishlistPage() {
           margin: '0 auto',
         }}
       >
-        <div style={{
-          backgroundColor: 'rgba(255, 250, 242, 0.78)',
-          backdropFilter: 'blur(18px)',
-          WebkitBackdropFilter: 'blur(18px)',
-          borderRadius: '28px',
-          border: '1px solid rgba(100, 65, 35, 0.14)',
-          boxShadow: '0 8px 32px rgba(80, 45, 15, 0.12)',
-          padding: '2.75rem 2rem 2.25rem',
-          display: 'inline-block',
-          width: '100%',
-          boxSizing: 'border-box',
-        }}>
+        <div 
+          className="glass-card"
+          style={{
+            backgroundColor: 'rgba(20, 10, 5, 0.18)',
+            backdropFilter: 'blur(15px) saturate(140%)',
+            WebkitBackdropFilter: 'blur(15px) saturate(140%)',
+            borderRadius: '28px',
+            border: '1px solid rgba(255, 255, 255, 0.20)',
+            boxShadow: '0 12px 36px rgba(0, 0, 0, 0.25)',
+            padding: '2.75rem 2rem 2.25rem',
+            display: 'inline-block',
+            width: '100%',
+            boxSizing: 'border-box',
+          }}
+        >
           <span
             style={{
               fontSize: '0.74rem',
               textTransform: 'uppercase',
               letterSpacing: '0.12em',
-              color: '#244f21',
-              fontWeight: '800',
-              backgroundColor: 'rgba(36, 79, 33, 0.10)',
-              padding: '0.35rem 0.85rem',
+              color: '#b9cd94',
+              fontWeight: '850',
+              backgroundColor: 'rgba(36, 79, 33, 0.35)',
+              padding: '0.4rem 0.95rem',
               borderRadius: '999px',
-              border: '1px solid rgba(36, 79, 33, 0.20)',
+              border: '1.5px solid rgba(185, 205, 148, 0.4)',
               display: 'inline-block',
               marginBottom: '1rem'
             }}
@@ -337,24 +358,25 @@ export default function WishlistPage() {
             Saved For Later
           </span>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <Heart size={26} color="#8B2020" fill="#8B2020" />
+            <Heart size={26} color="#b9cd94" fill="#b9cd94" />
             <h1
               style={{
                 fontSize: '2.5rem',
                 fontFamily: 'var(--font-serif)',
-                color: '#24130D',
-                fontWeight: '800',
+                color: '#FFFDF9',
+                fontWeight: '850',
                 margin: 0,
-                letterSpacing: '-0.01em'
+                letterSpacing: '-0.01em',
+                textShadow: '0 2px 8px rgba(0,0,0,0.4)'
               }}
             >
               My Wishlist
             </h1>
           </div>
-          <p style={{ fontSize: '1rem', color: '#5C3D20', lineHeight: '1.6', margin: '0 0 0.65rem 0', fontWeight: '500' }}>
+          <p style={{ fontSize: '1rem', color: '#F5EBDD', lineHeight: '1.6', margin: '0 0 0.85rem 0', fontWeight: '550' }}>
             Keep your favourite MILASTY bakes close and discover them whenever you're ready.
           </p>
-          <span style={{ fontSize: '0.82rem', color: '#244f21', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', backgroundColor: 'rgba(36, 79, 33, 0.08)', padding: '0.25rem 0.75rem', borderRadius: '6px', display: 'inline-block' }}>
+          <span style={{ fontSize: '0.82rem', color: '#b9cd94', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em', backgroundColor: 'rgba(36, 79, 33, 0.35)', padding: '0.35rem 0.85rem', borderRadius: '8px', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'inline-block' }}>
             {wishlistItems.length} {wishlistItems.length === 1 ? 'ITEM' : 'ITEMS'} SAVED
           </span>
         </div>
@@ -367,38 +389,40 @@ export default function WishlistPage() {
           /* 7. EMPTY WISHLIST STATE */
           <div style={{ display: 'flex', flexDirection: 'column', gap: '5rem' }}>
             <div
+              className="glass-card"
               style={{
                 padding: '4rem 2rem',
                 textAlign: 'center',
-                backgroundColor: 'rgba(255, 250, 242, 0.80)',
-                backdropFilter: 'blur(18px)',
-                WebkitBackdropFilter: 'blur(18px)',
+                backgroundColor: 'rgba(20, 10, 5, 0.18)',
+                backdropFilter: 'blur(15px) saturate(140%)',
+                WebkitBackdropFilter: 'blur(15px) saturate(140%)',
                 borderRadius: '24px',
-                border: '1px solid rgba(100, 65, 35, 0.14)',
+                border: '1px solid rgba(255, 255, 255, 0.20)',
                 maxWidth: '620px',
                 margin: '0 auto',
-                boxShadow: '0 8px 30px rgba(80, 45, 15, 0.10)'
+                boxShadow: '0 12px 36px rgba(0, 0, 0, 0.25)'
               }}
             >
-              <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(139, 32, 32, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B2020', margin: '0 auto 1.5rem' }}>
-                <Heart size={28} />
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.4)', border: '1px solid rgba(185, 205, 148, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b9cd94', margin: '0 auto 1.5rem' }}>
+                <Heart size={28} color="#b9cd94" />
               </div>
-              <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', margin: '0 0 0.5rem' }}>Nothing saved yet.</h3>
-              <p style={{ color: '#5C3D20', fontSize: '0.92rem', lineHeight: '1.6', marginBottom: '2rem', marginTop: '0.5rem', fontWeight: '500' }}>
+              <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem' }}>Nothing saved yet.</h3>
+              <p style={{ color: '#F5EBDD', fontSize: '0.92rem', lineHeight: '1.6', marginBottom: '2rem', marginTop: '0.5rem', fontWeight: '550' }}>
                 Your favourite MILASTY bakes will appear here when you tap the heart icon.
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', alignItems: 'center' }}>
                 <Link
                   to="/shop"
+                  className="btn-primary"
                   style={{
                     padding: '0.9rem 2.25rem',
                     fontSize: '0.9rem',
-                    backgroundColor: '#24130D',
+                    backgroundColor: '#244f21',
                     color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '999px',
-                    fontWeight: '800',
+                    fontWeight: '850',
                     textDecoration: 'none',
                     display: 'inline-block'
                   }}
@@ -409,8 +433,8 @@ export default function WishlistPage() {
                   to="/products"
                   style={{
                     fontSize: '0.84rem',
-                    color: '#244f21',
-                    fontWeight: '800',
+                    color: '#b9cd94',
+                    fontWeight: '850',
                     textDecoration: 'none',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em'
@@ -422,15 +446,15 @@ export default function WishlistPage() {
             </div>
 
             {/* 8. RECOMMENDED PRODUCTS */}
-            <section style={{ borderTop: '1px solid rgba(100, 65, 35, 0.18)', paddingTop: '5rem' }}>
+            <section style={{ borderTop: '1px solid rgba(255, 255, 255, 0.15)', paddingTop: '5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
                 <div>
-                  <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#244f21', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Recommendations</span>
-                  <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', margin: 0 }}>
+                  <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Recommendations</span>
+                  <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
                     You May Also Love
                   </h2>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
                   <button
                     onClick={() => scrollLeft(recRef)}
                     style={{ backgroundColor: 'rgba(255, 250, 242, 0.65)', border: '1px solid rgba(100,65,35,0.20)', color: '#24130D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -611,6 +635,7 @@ export default function WishlistPage() {
         }
       `}</style>
 
+      </div>
     </div>
   );
 }

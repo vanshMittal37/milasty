@@ -5,7 +5,6 @@ import Logo from '../components/Logo';
 
 export default function OurStory() {
   const journeyRef = useRef(null);
-  const simpleRef = useRef(null);
   const nonNegotiablesRef = useRef(null);
   const ingredientsRef = useRef(null);
 
@@ -289,7 +288,7 @@ export default function OurStory() {
                 The MILASTY Journey
               </h2>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 onClick={() => scrollLeft(journeyRef)} 
                 style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -307,14 +306,7 @@ export default function OurStory() {
 
           <div 
             ref={journeyRef}
-            className="horizontal-scroll-container"
-            style={{ 
-              display: 'flex', 
-              gap: '1.5rem', 
-              overflowX: 'auto', 
-              scrollBehavior: 'smooth',
-              paddingBottom: '1rem'
-            }}
+            className="horizontal-scroll-container fitted-cards-container-5"
           >
             {[
               { step: '01', title: 'The Question', desc: 'Can everyday bakery snacks be healthy, clean, and genuinely delicious?' },
@@ -333,8 +325,6 @@ export default function OurStory() {
                   boxShadow: '0 12px 36px rgba(0, 0, 0, 0.35)',
                   transition: 'transform 0.2s',
                   position: 'relative',
-                  flexShrink: 0,
-                  width: '280px'
                 }}
                 onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
@@ -351,79 +341,7 @@ export default function OurStory() {
         </div>
       </section>
 
-      {/* 4. PHILOSOPHY SECTION */}
-      <section style={{ backgroundColor: 'transparent', padding: '6rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
-            <div style={{ maxWidth: '600px' }}>
-              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.75rem', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-                Food Should Be Simple.
-              </h2>
-              <p style={{ fontSize: '1rem', color: '#F5EBDD', lineHeight: '1.65', fontWeight: '550', margin: '0.5rem 0 0 0' }}>
-                We believe great food doesn't need a long list of complex additives. It just needs the right, wholesome ingredients.
-              </p>
-            </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button 
-                onClick={() => scrollLeft(simpleRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button 
-                onClick={() => scrollRight(simpleRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
 
-          <div 
-            ref={simpleRef}
-            className="horizontal-scroll-container"
-            style={{ 
-              display: 'flex', 
-              gap: '1.5rem', 
-              overflowX: 'auto', 
-              scrollBehavior: 'smooth',
-              paddingBottom: '1rem'
-            }}
-          >
-            {[
-              { num: '01', title: 'Real Grains', desc: '100% wholesome millet-based ingredients (Bajra, Jowar, Ragi) crafted for healthy everyday snacking.', icon: <Leaf size={24} /> },
-              { num: '02', title: 'Honest Sweetness', desc: 'Naturally sweetened with premium organic jaggery rich in iron, containing zero refined white sugar.', icon: <Flame size={24} /> },
-              { num: '03', title: 'Tradition, Reimagined', desc: 'Heritage grains and familiar Indian flavors, crafted to match modern, busy lifestyles.', icon: <Compass size={24} /> },
-            ].map((card) => (
-              <div 
-                key={card.num} 
-                className="glass-card"
-                style={{ 
-                  padding: '2.5rem 2rem', 
-                  borderRadius: '24px', 
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  boxShadow: '0 12px 36px rgba(0, 0, 0, 0.35)',
-                  transition: 'transform 0.25s',
-                  position: 'relative',
-                  flexShrink: 0,
-                  width: '320px'
-                }}
-                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
-              >
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.4)', color: '#b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(185, 205, 148, 0.35)' }}>
-                  {card.icon}
-                </div>
-                <span style={{ position: 'absolute', top: '2rem', right: '2rem', fontSize: '1.25rem', fontWeight: '900', color: 'rgba(185, 205, 148, 0.4)' }}>{card.num}</span>
-                <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.75rem', margin: 0 }}>{card.title}</h3>
-                <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>{card.desc}</p>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
 
       {/* 5. REDESIGNED PILLARS SECTION */}
       <section style={{ backgroundColor: 'transparent', padding: '6rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
@@ -435,7 +353,7 @@ export default function OurStory() {
               <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>Our Non-Negotiables</h2>
               <p style={{ fontSize: '0.95rem', color: '#F5EBDD', fontWeight: '600', margin: '0.5rem 0 0 0' }}>The guidelines behind every single MILASTY bake.</p>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 onClick={() => scrollLeft(nonNegotiablesRef)} 
                 style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -453,17 +371,10 @@ export default function OurStory() {
 
           <div 
             ref={nonNegotiablesRef}
-            className="horizontal-scroll-container"
-            style={{ 
-              display: 'flex', 
-              gap: '1.5rem', 
-              overflowX: 'auto', 
-              scrollBehavior: 'smooth',
-              paddingBottom: '1rem'
-            }}
+            className="horizontal-scroll-container fitted-cards-container-3"
           >
             
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
+            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
               <span style={{ fontSize: '0.85rem', fontWeight: '850', color: '#b9cd94', display: 'block', marginBottom: '0.75rem' }}>01</span>
               <h3 style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.75rem', margin: 0 }}>Zero Palm Oil</h3>
               <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>
@@ -471,7 +382,7 @@ export default function OurStory() {
               </p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
+            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
               <span style={{ fontSize: '0.85rem', fontWeight: '850', color: '#b9cd94', display: 'block', marginBottom: '0.75rem' }}>02</span>
               <h3 style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.75rem', margin: 0 }}>Unrefined Jaggery</h3>
               <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>
@@ -479,7 +390,7 @@ export default function OurStory() {
               </p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s', flexShrink: 0, width: '320px' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
+            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
               <span style={{ fontSize: '0.85rem', fontWeight: '850', color: '#b9cd94', display: 'block', marginBottom: '0.75rem' }}>03</span>
               <h3 style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.75rem', margin: 0 }}>Zero Preservatives</h3>
               <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>
@@ -503,7 +414,7 @@ export default function OurStory() {
                 What Goes Into Every Bake
               </h2>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 onClick={() => scrollLeft(ingredientsRef)} 
                 style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -521,14 +432,7 @@ export default function OurStory() {
 
           <div 
             ref={ingredientsRef}
-            className="horizontal-scroll-container"
-            style={{ 
-              display: 'flex', 
-              gap: '2rem', 
-              overflowX: 'auto', 
-              scrollBehavior: 'smooth',
-              paddingBottom: '1.5rem'
-            }}
+            className="horizontal-scroll-container fitted-cards-container-4"
           >
             {[
               { name: 'BAJRA', type: 'Pearl Millet', desc: 'Powerhouse of fiber, magnesium, and essential nutrients.', img: '/images/bajra.jpeg' },
@@ -536,11 +440,11 @@ export default function OurStory() {
               { name: 'RAGI', type: 'Finger Millet', desc: 'Calcium-rich grain that builds bone strength naturally.', img: '/images/ragi.jpeg' },
               { name: 'DESI GHEE', type: 'Pure Cow Ghee', desc: 'Rich in A2 fats, vitamins, providing aroma and crisp texture.', img: '/images/ghee.jpeg' },
             ].map((ingredient) => (
-              <div key={ingredient.name} style={{ textAlign: 'center', flexShrink: 0, width: '220px' }}>
+              <div key={ingredient.name} style={{ textAlign: 'center', width: '100%' }}>
                 <img 
                   src={ingredient.img} 
                   alt={ingredient.name} 
-                  style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(185, 205, 148, 0.4)', margin: '0 auto 1.25rem', display: 'block', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }} 
+                  style={{ width: '130px', height: '130px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(185, 205, 148, 0.4)', margin: '0 auto 1.25rem', display: 'block', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }} 
                 />
                 <h4 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.2rem 0' }}>{ingredient.name}</h4>
                 <span style={{ fontSize: '0.8rem', color: '#b9cd94', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{ingredient.type}</span>
@@ -564,17 +468,15 @@ export default function OurStory() {
           </div>
 
           <div 
+            className="glass-card about-comparison-card"
             style={{ 
-              backgroundColor: 'rgba(28, 14, 9, 0.88)', 
               borderRadius: '24px', 
               border: '1px solid rgba(255, 255, 255, 0.2)', 
-              boxShadow: '0 16px 48px rgba(0,0,0,0.4)',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.3)',
               overflow: 'hidden',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)'
             }}
           >
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', backgroundColor: '#244f21', color: '#FFFFFF', padding: '1.25rem 1.75rem', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', backgroundColor: 'rgba(36, 79, 33, 0.45)', color: '#FFFFFF', padding: '1.25rem 1.75rem', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
               <span>Mindful Snacking (MILASTY)</span>
               <span>Standard Supermarket Biscuits</span>
             </div>
@@ -632,37 +534,9 @@ export default function OurStory() {
         </div>
       </section>
 
-      {/* 11. FINAL BRAND CONVERSION CTA */}
-      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          <div className="glass-card" style={{ padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
-              Ready to Make Snacking a Ritual?
-            </h2>
-            <p style={{ fontSize: '1.02rem', color: '#F5EBDD', lineHeight: '1.7', maxWidth: '520px', margin: '0 auto 2.5rem', fontWeight: '550' }}>
-              Explore fresh, handcrafted millet bakes made with jaggery, Desi Ghee, and plenty of traditional care.
-            </p>
-            <div style={{ display: 'flex', gap: '1.1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link
-                to="/shop"
-                className="btn-primary"
-                style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850' }}
-              >
-                Shop Fresh Bakes
-              </Link>
-              <Link
-                to="/products"
-                className="btn-secondary"
-                style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', borderColor: '#b9cd94', color: '#b9cd94', borderRadius: '999px', textDecoration: 'none', fontWeight: '850', backgroundColor: 'rgba(36, 79, 33, 0.25)' }}
-              >
-                Discover Our Rituals
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* CSS style overrides for horizontal scroll containers */}
+
+      {/* CSS style overrides for horizontal scroll containers, fitted card grids, and transparent blurred card styles */}
       <style>{`
         .horizontal-scroll-container::-webkit-scrollbar {
           display: none !important;
@@ -670,6 +544,96 @@ export default function OurStory() {
         .horizontal-scroll-container {
           -ms-overflow-style: none !important;
           scrollbar-width: none !important;
+        }
+        .our-story-page .glass-card {
+          background: rgba(28, 14, 9, 0.18) !important;
+          background-color: rgba(28, 14, 9, 0.18) !important;
+          backdrop-filter: blur(15px) saturate(140%) !important;
+          -webkit-backdrop-filter: blur(15px) saturate(140%) !important;
+          border: 1px solid rgba(255, 255, 255, 0.20) !important;
+          box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25) !important;
+          transition: all 0.3s ease !important;
+        }
+        .our-story-page .glass-card:hover {
+          background: rgba(36, 79, 33, 0.25) !important;
+          border: 1px solid rgba(185, 205, 148, 0.45) !important;
+          transform: translateY(-3px) !important;
+        }
+        .fitted-cards-container-5 {
+          display: grid !important;
+          grid-template-columns: repeat(5, 1fr) !important;
+          gap: 1.25rem !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        .fitted-cards-container-4 {
+          display: grid !important;
+          grid-template-columns: repeat(4, 1fr) !important;
+          gap: 2rem !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        .fitted-cards-container-3 {
+          display: grid !important;
+          grid-template-columns: repeat(3, 1fr) !important;
+          gap: 1.5rem !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        .fitted-cards-container-5 .glass-card,
+        .fitted-cards-container-4 .glass-card,
+        .fitted-cards-container-3 .glass-card {
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 0 !important;
+          box-sizing: border-box !important;
+          flex: none !important;
+        }
+        @media (min-width: 1025px) {
+          .section-scroll-buttons {
+            display: none !important;
+          }
+        }
+        @media (max-width: 1024px) {
+          .fitted-cards-container-5 {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem !important;
+          }
+          .fitted-cards-container-4 {
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 1.5rem !important;
+          }
+          .fitted-cards-container-3 {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .fitted-cards-container-5,
+          .fitted-cards-container-4,
+          .fitted-cards-container-3 {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .fitted-cards-container-5,
+          .fitted-cards-container-3 {
+            display: flex !important;
+            grid-template-columns: none !important;
+            overflow-x: auto !important;
+            scroll-behavior: smooth !important;
+            padding-bottom: 1.25rem !important;
+            gap: 1rem !important;
+            -webkit-overflow-scrolling: touch;
+          }
+          .fitted-cards-container-5 .glass-card,
+          .fitted-cards-container-3 .glass-card {
+            flex: 0 0 270px !important;
+            width: 270px !important;
+            max-width: 270px !important;
+            min-width: 270px !important;
+          }
         }
       `}</style>
       </div>

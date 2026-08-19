@@ -1445,13 +1445,49 @@ textarea::placeholder {
    Uses aggressive specificity to override any inline
    backgroundColor styles React might apply
    ================================================== */
-.shop-page .glass-card,
-.nutrition-page .glass-card,
-.contact-page .glass-card,
-.our-story-page .glass-card,
+/* Dedicated Transparent Blurred Glass for Rituals, Shop, Nutrition, Contact, Wishlist, and About Pages */
 .products-page .glass-card,
-.account-dashboard-page .glass-card,
+.products-page [class*="glass-card"],
+.shop-page .glass-card,
+.shop-page [class*="glass-card"],
+.nutrition-page .glass-card,
+.nutrition-page [class*="glass-card"],
+.contact-page .glass-card,
+.contact-page [class*="glass-card"],
 .wishlist-page .glass-card,
+.wishlist-page [class*="glass-card"],
+.our-story-page .glass-card,
+.our-story-page [class*="glass-card"],
+.our-story-page .about-comparison-card {
+  background-color: rgba(20, 10, 5, 0.18) !important;
+  background: rgba(20, 10, 5, 0.18) !important;
+  backdrop-filter: blur(15px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(15px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.3s ease !important;
+}
+
+.products-page .glass-card:hover,
+.products-page [class*="glass-card"]:hover,
+.shop-page .glass-card:hover,
+.shop-page [class*="glass-card"]:hover,
+.nutrition-page .glass-card:hover,
+.nutrition-page [class*="glass-card"]:hover,
+.contact-page .glass-card:hover,
+.contact-page [class*="glass-card"]:hover,
+.wishlist-page .glass-card:hover,
+.wishlist-page [class*="glass-card"]:hover,
+.our-story-page .glass-card:hover,
+.our-story-page [class*="glass-card"]:hover,
+.our-story-page .about-comparison-card:hover {
+  background-color: rgba(36, 79, 33, 0.25) !important;
+  background: rgba(36, 79, 33, 0.25) !important;
+  border: 1px solid rgba(185, 205, 148, 0.45) !important;
+}
+
+/* Other non-transparent pages (Account, Checkout, Auth) fallback */
+.account-dashboard-page .glass-card,
 .cart-page .glass-card,
 .checkout-page .glass-card,
 .login-page .glass-card,
@@ -1464,20 +1500,6 @@ textarea::placeholder {
   -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
   border: 1px solid rgba(255, 255, 255, 0.18) !important;
   box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.35) !important;
-}
-
-/* Also target any div with glass-card class inside these pages */
-.shop-page [class*="glass-card"],
-.nutrition-page [class*="glass-card"],
-.contact-page [class*="glass-card"],
-.our-story-page [class*="glass-card"],
-.products-page [class*="glass-card"],
-.account-dashboard-page [class*="glass-card"],
-.wishlist-page [class*="glass-card"] {
-  background-color: rgba(35, 21, 13, 0.65) !important;
-  background: rgba(35, 21, 13, 0.65) !important;
-  backdrop-filter: blur(24px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
 }
 
 /* Ensure bright, clear, readable text on About and Shop pages over background images */
@@ -1586,5 +1608,91 @@ a.btn-secondary:hover,
 [style*="border-color: #C99A32"],
 [style*="border-color: #c89b3c"] {
   border-color: #b9cd94 !important;
+}
+
+/* ==================================================
+   FITTED CARDS GRID SYSTEM (4-col & 3-col)
+   ================================================== */
+.fitted-cards-container-4 {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.fitted-cards-container-3 {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 1.5rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.fitted-cards-container-4 .glass-card,
+.fitted-cards-container-3 .glass-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  flex: none !important;
+}
+
+@media (min-width: 1025px) {
+  .section-scroll-buttons {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .fitted-cards-container-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem !important;
+  }
+  .fitted-cards-container-3 {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .fitted-cards-container-4,
+  .fitted-cards-container-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .fitted-cards-container-4,
+  .fitted-cards-container-3 {
+    display: flex !important;
+    grid-template-columns: none !important;
+    overflow-x: auto !important;
+    scroll-behavior: smooth !important;
+    padding-bottom: 1.25rem !important;
+    gap: 1rem !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .fitted-cards-container-4 .glass-card,
+  .fitted-cards-container-3 .glass-card {
+    flex: 0 0 270px !important;
+    width: 270px !important;
+    max-width: 270px !important;
+    min-width: 270px !important;
+  }
+}
+
+/* ==================================================
+   TRANSPARENT & 30px BLURRED FOOTER
+   Applied on About, Rituals, Shop, Nutrition, & Contact pages
+   ================================================== */
+footer.transparent-blurred-footer {
+  background-color: rgba(18, 9, 4, 0.30) !important;
+  background: rgba(18, 9, 4, 0.30) !important;
+  backdrop-filter: blur(30px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(150%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.20) !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25) !important;
 }
 

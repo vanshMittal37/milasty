@@ -83,11 +83,37 @@ function ToastNotification() {
   );
 }
 
+const PAGE_BACKGROUNDS = {
+  '/our-story': '/images/about_background_image.jpeg',
+  '/products': '/images/ritiual_background_image.jpeg',
+  '/shop': '/images/shop_background_image.jpeg',
+  '/nutrition': '/images/nutrition_background_image.jpeg',
+  '/contact': '/images/contact_background_image.jpeg',
+  '/wishlist': '/images/ritiual_background_image.jpeg',
+};
+
 function MainLayout() {
+  const location = useLocation();
+  const currentBg = PAGE_BACKGROUNDS[location.pathname];
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
+      {currentBg && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundImage: `url(${currentBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            zIndex: 0,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
       <Navbar />
-      <main style={{ flexGrow: 1 }}>
+      <main style={{ flexGrow: 1, position: 'relative', zIndex: 1 }}>
         <Routes>
           {/* Company Portfolio Pages (Preserved) */}
           <Route path="/" element={<Home />} />

@@ -5,21 +5,24 @@ import Logo from './Logo';
 
 export default function Footer() {
   const location = useLocation();
-  const isHome = location.pathname === '/';
+  const transparentPages = ['/our-story', '/products', '/shop', '/nutrition', '/contact', '/wishlist'];
+  const isTransparentPage = transparentPages.includes(location.pathname);
 
   return (
     <footer
+      className={isTransparentPage ? 'transparent-blurred-footer' : ''}
       style={{
         position: 'relative',
         zIndex: 5,
-        backgroundColor: 'rgba(20, 10, 5, 0.75)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
+        backgroundColor: isTransparentPage ? 'rgba(18, 9, 4, 0.30)' : 'rgba(20, 10, 5, 0.75)',
+        backdropFilter: isTransparentPage ? 'blur(30px) saturate(150%)' : 'blur(24px)',
+        WebkitBackdropFilter: isTransparentPage ? 'blur(30px) saturate(150%)' : 'blur(24px)',
         color: '#FFFDF9',
         paddingTop: '5rem',
         paddingBottom: '2.5rem',
         marginTop: '0rem',
-        borderTop: '1px solid rgba(245, 220, 180, 0.18)',
+        borderTop: isTransparentPage ? '1px solid rgba(255, 255, 255, 0.20)' : '1px solid rgba(245, 220, 180, 0.18)',
+        boxShadow: isTransparentPage ? '0 -10px 40px rgba(0, 0, 0, 0.25)' : 'none',
         transition: 'all 0.35s ease',
       }}
     >

@@ -781,34 +781,27 @@ export default function Home() {
 
           <div 
             ref={snackRitualRef}
-            className="horizontal-scroll-container" 
-            style={{ 
-              display: 'flex', 
-              gap: '2rem', 
-              overflowX: 'auto', 
-              scrollBehavior: 'smooth',
-              paddingBottom: '1.5rem'
-            }}
+            className="horizontal-scroll-container fitted-cards-container" 
           >
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>01</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAUSE</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Step away from screens and digital chatter for five mindful minutes.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>02</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTICE</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Take in the warm, nostalgic aroma of slow-baked millets and pure Cow Ghee.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>03</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>BITE SLOWLY</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Enjoy the wholesome crumbly texture and balanced sweetness of unrefined jaggery.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
               <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>04</div>
               <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAIR & ENJOY</h4>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Pair with a cup of warm ginger chai, filter coffee, or green tea.</p>
@@ -995,16 +988,9 @@ export default function Home() {
 
           <div 
             ref={whyDiffRef}
-            className="horizontal-scroll-container" 
-            style={{ 
-              display: 'flex', 
-              gap: '2rem', 
-              overflowX: 'auto', 
-              scrollBehavior: 'smooth',
-              paddingBottom: '1.5rem'
-            }}
+            className="horizontal-scroll-container fitted-cards-container" 
           >
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <Award size={36} strokeWidth={1.5} />
               </div>
@@ -1012,7 +998,7 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <Sparkles size={36} strokeWidth={1.5} />
               </div>
@@ -1020,7 +1006,7 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <ShieldCheck size={36} strokeWidth={1.5} />
               </div>
@@ -1028,7 +1014,7 @@ export default function Home() {
               <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', flexShrink: 0, width: '280px' }}>
+            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
               <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 <FileText size={36} strokeWidth={1.5} />
               </div>
@@ -1071,7 +1057,7 @@ export default function Home() {
 
       </div> {/* Close home-content */}
 
-      {/* CSS style overrides for horizontal scroll containers */}
+      {/* CSS style overrides for horizontal scroll containers and fitted card grids */}
       <style>{`
         .horizontal-scroll-container::-webkit-scrollbar {
           display: none !important;
@@ -1079,6 +1065,48 @@ export default function Home() {
         .horizontal-scroll-container {
           -ms-overflow-style: none !important;
           scrollbar-width: none !important;
+        }
+        .fitted-cards-container {
+          display: grid !important;
+          grid-template-columns: repeat(4, 1fr) !important;
+          gap: 1.5rem !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        .fitted-cards-container .glass-card {
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 0 !important;
+          box-sizing: border-box !important;
+          flex: none !important;
+        }
+        @media (min-width: 1025px) {
+          .section-scroll-buttons {
+            display: none !important;
+          }
+        }
+        @media (max-width: 1024px) {
+          .fitted-cards-container {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1.25rem !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .fitted-cards-container {
+            display: flex !important;
+            grid-template-columns: none !important;
+            overflow-x: auto !important;
+            scroll-behavior: smooth !important;
+            padding-bottom: 1.25rem !important;
+            gap: 1rem !important;
+            -webkit-overflow-scrolling: touch;
+          }
+          .fitted-cards-container .glass-card {
+            flex: 0 0 270px !important;
+            width: 270px !important;
+            max-width: 270px !important;
+            min-width: 270px !important;
+          }
         }
       `}</style>
 
