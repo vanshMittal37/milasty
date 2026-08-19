@@ -494,15 +494,140 @@ body, p, span, li, a {
   }
 
   /* Grids & Columns */
-  .trust-grid,
   .why-grid,
-  .favorites-grid,
   .timeline-grid {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)) !important;
     gap: 1.5rem !important;
   }
 
-  /* Ritual Section */
+  .favorites-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.85rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .home-product-card {
+    border-radius: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .home-product-card .card-rating-row {
+    display: none !important;
+  }
+
+  .home-product-card .card-body {
+    padding: 0.75rem 0.65rem !important;
+  }
+
+  .home-product-card .card-title {
+    font-size: 0.92rem !important;
+    margin-bottom: 0.15rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .home-product-card .card-subtitle {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.65rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .home-product-card .card-footer {
+    padding-top: 0.5rem !important;
+  }
+
+  .home-product-card .card-price {
+    font-size: 1rem !important;
+  }
+
+  .home-product-card .add-cart-btn {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.72rem !important;
+    gap: 0.2rem !important;
+  }
+
+  .home-product-card .add-cart-btn span {
+    font-size: 0.72rem !important;
+  }
+
+  .home-product-card .card-wishlist-btn {
+    width: 28px !important;
+    height: 28px !important;
+    top: 8px !important;
+    right: 8px !important;
+  }
+
+  .trust-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.85rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .trust-card {
+    padding: 1.25rem 0.65rem !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+/* Ritual Section Grid & Card Rules */
+.products-hero-section {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 3.5rem !important;
+  align-items: center !important;
+  padding: 4.5rem 1.5rem 5.5rem !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 768px) {
+  .products-page section {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .products-hero-section {
+    padding-top: 2rem !important;
+    padding-bottom: 2.5rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+    gap: 2rem !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .products-hero-section h1 {
+    font-size: clamp(2rem, 7.5vw, 2.75rem) !important;
+    line-height: 1.18 !important;
+  }
+
+  .products-hero-section p {
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .products-hero-image-wrap img {
+    height: 260px !important;
+  }
+
+  .products-featured-grid {
+    padding: 1.5rem 1.25rem !important;
+    gap: 1.75rem !important;
+    border-radius: 20px !important;
+  }
+}
+
   .ritual-grid {
     grid-template-columns: 1fr !important;
     gap: 2rem !important;
@@ -1526,6 +1651,22 @@ textarea::placeholder {
    CENTER CARDS IN ALL AUTO-FIT GRIDS SITE-WIDE
    Fixes left-alignment when fewer cards than columns
    ================================================== */
+
+/* Favorites Section Strict 4-Col Desktop & 2x2 Mobile Grid */
+.favorites-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 1024px) {
+  .favorites-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.85rem !important;
+  }
+}
 
 /* Any grid using auto-fit — center the track */
 [style*="auto-fit"] {

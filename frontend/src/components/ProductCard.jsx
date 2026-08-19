@@ -25,9 +25,8 @@ export default function ProductCard({ product }) {
     }
   };
 
-  return (
-    <div
-      className="glass-card"
+  return (    <div
+      className="glass-card home-product-card"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -46,7 +45,7 @@ export default function ProductCard({ product }) {
       }}
     >
       {/* Image Area with Badge & Wishlist Button */}
-      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '80%', backgroundColor: 'transparent' }}>
+      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: 'transparent' }} className="card-image-wrap">
         <Link to={`/product/${product.slug}`}>
           <img
             src={product.image}
@@ -60,7 +59,7 @@ export default function ProductCard({ product }) {
               objectFit: 'cover',
               transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
-            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
+            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.04)')}
             onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           />
         </Link>
@@ -69,12 +68,13 @@ export default function ProductCard({ product }) {
         <button
           onClick={() => toggleWishlist(product)}
           aria-label="Toggle Wishlist"
+          className="card-wishlist-btn"
           style={{
             position: 'absolute',
-            top: '14px',
-            right: '14px',
-            width: '36px',
-            height: '36px',
+            top: '12px',
+            right: '12px',
+            width: '34px',
+            height: '34px',
             borderRadius: '50%',
             backgroundColor: 'rgba(20, 10, 5, 0.65)',
             backdropFilter: 'blur(8px)',
@@ -98,16 +98,17 @@ export default function ProductCard({ product }) {
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          <Heart size={16} fill={wishlisted ? '#b9cd94' : 'none'} color={wishlisted ? '#b9cd94' : '#FFFDF9'} />
+          <Heart size={15} fill={wishlisted ? '#b9cd94' : 'none'} color={wishlisted ? '#b9cd94' : '#FFFDF9'} />
         </button>
 
         {/* Dynamic Badges (Informational Labels, non-clickable) */}
         {product.badges && product.badges.length > 0 && (
           <div
+            className="card-badge-wrap"
             style={{
               position: 'absolute',
-              top: '14px',
-              left: '14px',
+              top: '12px',
+              left: '12px',
               display: 'flex',
               flexWrap: 'wrap',
               gap: '6px',
@@ -119,7 +120,7 @@ export default function ProductCard({ product }) {
               <span 
                 key={idx} 
                 style={{
-                  fontSize: '0.66rem',
+                  fontSize: '0.64rem',
                   fontWeight: '850',
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
@@ -128,7 +129,7 @@ export default function ProductCard({ product }) {
                   backdropFilter: 'blur(8px)',
                   WebkitBackdropFilter: 'blur(8px)',
                   border: '1px solid rgba(185, 205, 148, 0.4)',
-                  padding: '0.35rem 0.7rem',
+                  padding: '0.3rem 0.65rem',
                   borderRadius: '999px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
                 }}
@@ -142,8 +143,9 @@ export default function ProductCard({ product }) {
 
       {/* Card Details */}
       <div
+        className="card-body"
         style={{
-          padding: '1.5rem',
+          padding: '1.25rem 1.15rem',
           display: 'flex',
           flexDirection: 'column',
           flexGrow: 1,
@@ -152,7 +154,7 @@ export default function ProductCard({ product }) {
       >
         <div>
           {/* Rating stars */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.6rem' }}>
+          <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.5rem' }}>
             <div style={{ display: 'flex', color: '#b9cd94' }}>
               {[...Array(5)].map((_, i) => (
                 <Star key={i} size={12} fill="#b9cd94" color="#b9cd94" />
@@ -165,12 +167,13 @@ export default function ProductCard({ product }) {
 
           {/* Title */}
           <h3
+            className="card-title"
             style={{
-              fontSize: '1.18rem',
+              fontSize: '1.12rem',
               fontFamily: 'var(--font-serif)',
               fontWeight: '850',
               lineHeight: '1.3',
-              marginBottom: '0.45rem',
+              marginBottom: '0.35rem',
               color: '#FFFDF9',
             }}
           >
@@ -181,15 +184,12 @@ export default function ProductCard({ product }) {
 
           {/* Subtitle / Description */}
           <p
+            className="card-subtitle"
             style={{
-              fontSize: '0.86rem',
+              fontSize: '0.84rem',
               color: '#F5EBDD',
-              lineHeight: '1.55',
-              marginBottom: '1.25rem',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
+              lineHeight: '1.45',
+              marginBottom: '1rem',
               fontWeight: '500'
             }}
           >
@@ -198,18 +198,19 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Pricing & Actions Bottom Divider */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
+        <div className="card-footer" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.7rem', color: '#F5EBDD', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '800' }}>Price</span>
-            <div style={{ fontSize: '1.28rem', fontWeight: '900', color: '#b9cd94' }}>
+            <span className="price-label" style={{ fontSize: '0.7rem', color: '#F5EBDD', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '800' }}>Price</span>
+            <div className="card-price" style={{ fontSize: '1.18rem', fontWeight: '900', color: '#b9cd94' }}>
               ₹{selectedVariant.price}
               {selectedVariant.originalPrice && (
                 <span
+                  className="original-price"
                   style={{
-                    fontSize: '0.82rem',
+                    fontSize: '0.78rem',
                     color: 'rgba(245, 235, 221, 0.65)',
                     textDecoration: 'line-through',
-                    marginLeft: '0.45rem',
+                    marginLeft: '0.35rem',
                     fontWeight: '500',
                   }}
                 >
@@ -222,12 +223,12 @@ export default function ProductCard({ product }) {
           <div style={{ display: 'flex', gap: '0.5rem', width: '100%', alignItems: 'center' }}>
             <Link
               to={`/product/${product.slug}`}
-              className="btn-secondary"
+              className="btn-secondary view-details-btn"
               style={{
                 flex: 1,
-                padding: '0.75rem 0.5rem',
-                fontSize: '0.8rem',
-                borderRadius: '12px',
+                padding: '0.65rem 0.4rem',
+                fontSize: '0.78rem',
+                borderRadius: '10px',
                 fontWeight: '850',
                 textAlign: 'center',
                 borderColor: '#b9cd94',
@@ -238,7 +239,7 @@ export default function ProductCard({ product }) {
                 justifyContent: 'center',
                 backgroundColor: 'rgba(36, 79, 33, 0.25)',
                 transition: 'all 0.2s',
-                minHeight: '40px'
+                minHeight: '36px'
               }}
             >
               View Details
@@ -246,11 +247,12 @@ export default function ProductCard({ product }) {
 
             <button
               onClick={handleAddToCart}
-              className="btn-primary"
+              className="btn-primary add-cart-btn"
               style={{
-                padding: '0.75rem',
-                fontSize: '0.8rem',
-                borderRadius: '12px',
+                flex: 1,
+                padding: '0.65rem 0.4rem',
+                fontSize: '0.78rem',
+                borderRadius: '10px',
                 backgroundColor: '#244f21',
                 color: '#FFFFFF',
                 border: 'none',
@@ -258,15 +260,14 @@ export default function ProductCard({ product }) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '0.25rem',
+                gap: '0.2rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
-                minHeight: '40px',
-                minWidth: '40px'
+                minHeight: '36px'
               }}
             >
               <ShoppingBag size={14} />
-              <span className="cart-btn-text" style={{ marginLeft: '4px' }}>{btnText}</span>
+              <span className="cart-btn-text">{btnText}</span>
             </button>
           </div>
         </div>

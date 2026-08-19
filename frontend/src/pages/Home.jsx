@@ -527,27 +527,39 @@ export default function Home() {
       {/* 2. TRUST / BRAND PROMISE SECTION (Transparent tiles with white text and borders) */}
       <section ref={trustRef} className="reveal-fade-up trust-section" style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem' }}>
-            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', borderRadius: '16px' }} className="trust-card">
-              <div style={{ fontSize: '2.8rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '750', marginBottom: '0.5rem' }}>100%</div>
-              <h4 style={{ fontSize: '1.05rem', color: '#FFFFFF', marginBottom: '0.25rem', fontWeight: '800' }}>Pure Desi Ghee</h4>
-              <p style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.85)' }}>Baked cleanly with authentic cow ghee</p>
-            </div>
-            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', borderRadius: '16px' }} className="trust-card">
-              <div style={{ fontSize: '2.8rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '750', marginBottom: '0.5rem' }}>100%</div>
-              <h4 style={{ fontSize: '1.05rem', color: '#FFFFFF', marginBottom: '0.25rem', fontWeight: '800' }}>Wholesome Grains</h4>
-              <p style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.85)' }}>Finger millet, sorghum, and pearl millet</p>
-            </div>
-            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', borderRadius: '16px' }} className="trust-card">
-              <div style={{ fontSize: '2.8rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '750', marginBottom: '0.5rem' }}>10,000+</div>
-              <h4 style={{ fontSize: '1.05rem', color: '#FFFFFF', marginBottom: '0.25rem', fontWeight: '800' }}>Happy Families</h4>
-              <p style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.85)' }}>Snacking consciously across India</p>
-            </div>
-            <div style={{ textAlign: 'center', padding: '1.75rem 1.5rem', borderRadius: '16px' }} className="trust-card">
-              <div style={{ fontSize: '2.8rem', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', fontWeight: '750', marginBottom: '0.5rem' }}>NABL</div>
-              <h4 style={{ fontSize: '1.05rem', color: '#FFFFFF', marginBottom: '0.25rem', fontWeight: '800' }}>Verified Transparency</h4>
-              <p style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.85)' }}>Certified nutritional lab analysis</p>
-            </div>
+          <div className="trust-grid fitted-cards-container-4">
+            {[
+              { stat: '100%', title: 'Pure Desi Ghee', desc: 'Baked cleanly with authentic cow ghee' },
+              { stat: '100%', title: 'Wholesome Grains', desc: 'Finger millet, sorghum, and pearl millet' },
+              { stat: '10,000+', title: 'Happy Families', desc: 'Snacking consciously across India' },
+              { stat: 'NABL', title: 'Verified Transparency', desc: 'Certified nutritional lab analysis' }
+            ].map((item, idx) => (
+              <div 
+                key={idx} 
+                className="glass-card trust-card"
+                style={{ 
+                  textAlign: 'center', 
+                  padding: '1.75rem 1rem', 
+                  borderRadius: '20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <div style={{ fontSize: 'clamp(2rem, 5vw, 2.8rem)', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '850', marginBottom: '0.4rem', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+                  {item.stat}
+                </div>
+                <h4 style={{ fontSize: 'clamp(0.92rem, 3vw, 1.05rem)', color: '#FFFDF9', marginBottom: '0.35rem', fontWeight: '850', lineHeight: '1.3' }}>
+                  {item.title}
+                </h4>
+                <p style={{ fontSize: 'clamp(0.78rem, 2.5vw, 0.85rem)', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '550' }}>
+                  {item.desc}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -563,23 +575,25 @@ export default function Home() {
             <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1.05rem', fontWeight: '500' }}>Four wholesome bakes. One better way to snack.</p>
           </div>
  
-          <div className="favorites-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '2rem' }}>
-            {dbProducts.map((product) => {
+          <div className="favorites-grid fitted-cards-container-4">
+            {dbProducts.slice(0, 4).map((product) => {
               const selectedVariant = product.variants?.[0];
               const isWishlisted = wishlistItems && wishlistItems.some((item) => (item._id || item.slug) === (product._id || product.slug));
               return (
                 <div 
                   key={product._id || product.slug}
-                  className="glass-card"
+                  className="glass-card home-product-card"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    borderRadius: '24px',
+                    borderRadius: '20px',
                     overflow: 'hidden',
                     position: 'relative',
+                    boxSizing: 'border-box',
+                    width: '100%',
                   }}
                 >
-                  <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '80%', backgroundColor: 'transparent' }}>
+                  <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: 'transparent' }} className="card-image-wrap">
                     <Link to={`/product/${product.slug}`}>
                       <img 
                         src={product.image} 
@@ -593,58 +607,59 @@ export default function Home() {
                           objectFit: 'cover',
                           transition: 'transform 0.4s ease'
                         }}
-                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.04)'}
                         onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                       />
                     </Link>
                     
                     <button
                       onClick={() => toggleWishlist(product)}
+                      className="card-wishlist-btn"
                       style={{
                         position: 'absolute',
-                        top: '12px',
-                        right: '12px',
-                        backgroundColor: '#FFFFFF',
+                        top: '10px',
+                        right: '10px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.90)',
                         border: 'none',
-                        width: '34px',
-                        height: '34px',
+                        width: '32px',
+                        height: '32px',
                         borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: 'var(--shadow-sm)',
-                        color: isWishlisted ? 'var(--accent-terracotta)' : 'var(--text-muted)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        color: isWishlisted ? 'var(--accent-terracotta)' : '#333333',
                         cursor: 'pointer',
                         zIndex: 5
                       }}
                     >
-                      <Heart size={16} fill={isWishlisted ? 'var(--accent-terracotta)' : 'none'} />
+                      <Heart size={15} fill={isWishlisted ? 'var(--accent-terracotta)' : 'none'} />
                     </button>
                   </div>
 
-                  <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
+                  <div className="card-body" style={{ padding: '1.25rem 1.15rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.5rem' }}>
+                      <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.4rem' }}>
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={14} fill={i < Math.floor(product.rating || 5) ? 'var(--accent-gold)' : 'none'} color="var(--accent-gold)" />
+                          <Star key={i} size={13} fill={i < Math.floor(product.rating || 5) ? 'var(--accent-gold)' : 'none'} color="var(--accent-gold)" />
                         ))}
-                        <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.9)', marginLeft: '0.25rem', fontWeight: '600' }}>({product.reviewCount || 10})</span>
+                        <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.85)', marginLeft: '0.25rem', fontWeight: '600' }}>({product.reviewCount || 10})</span>
                       </div>
-                      <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>
+                      <h3 className="card-title" style={{ fontSize: '1.1rem', color: '#FFFDF9', marginBottom: '0.35rem', fontFamily: 'var(--font-serif)', fontWeight: '850', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         <Link to={`/product/${product.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{product.title}</Link>
                       </h3>
-                      <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '1.25rem', lineHeight: '1.5', fontWeight: '500' }}>{product.subtitle || product.description}</p>
+                      <p className="card-subtitle" style={{ fontSize: '0.82rem', color: '#F5EBDD', marginBottom: '1rem', lineHeight: '1.4', fontWeight: '550', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.subtitle || product.description}</p>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.25)' }}>
-                      <span style={{ fontSize: '1.3rem', fontWeight: '900', color: '#FFFFFF' }}>₹{selectedVariant?.price || 139}</span>
+                    <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
+                      <span className="card-price" style={{ fontSize: '1.15rem', fontWeight: '900', color: '#FFFDF9' }}>₹{selectedVariant?.price || 139}</span>
                       <button 
                         onClick={() => addToCart(product, selectedVariant)}
-                        className="btn-primary" 
-                        style={{ padding: '0.6rem 1.15rem', fontSize: '0.82rem', gap: '0.35rem', backgroundColor: '#c89b3c', color: '#FFFFFF', fontWeight: '800' }}
+                        className="btn-primary add-cart-btn" 
+                        style={{ padding: '0.5rem 0.9rem', fontSize: '0.8rem', gap: '0.3rem', backgroundColor: '#244f21', color: '#FFFFFF', fontWeight: '850', borderRadius: '999px', border: 'none' }}
                       >
-                        <ShoppingBag size={15} />
-                        <span>Add to Cart</span>
+                        <ShoppingBag size={14} />
+                        <span>Add</span>
                       </button>
                     </div>
                   </div>

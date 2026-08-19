@@ -88,16 +88,16 @@ export default function Products() {
       
       {/* 1. EDITORIAL HERO SECTION */}
       <section 
+        className="products-hero-section"
         style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
-          gap: '4rem', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+          gap: '3.5rem', 
           alignItems: 'center', 
-          padding: '5rem 0 6rem',
+          padding: '4.5rem 1.5rem 5.5rem',
           maxWidth: '1200px',
           margin: '0 auto',
-          paddingLeft: '1.5rem',
-          paddingRight: '1.5rem'
+          boxSizing: 'border-box'
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -119,7 +119,7 @@ export default function Products() {
           </span>
           <h1 
             style={{ 
-              fontSize: 'clamp(2.5rem, 5.5vw, 3.8rem)', 
+              fontSize: 'clamp(2.2rem, 5.5vw, 3.8rem)', 
               fontFamily: 'var(--font-serif)', 
               color: 'var(--primary-dark)', 
               fontWeight: '800', 
@@ -128,7 +128,7 @@ export default function Products() {
               margin: 0
             }}
           >
-            Discover Your<br />Daily MILASTY Ritual.
+            Discover Your Daily MILASTY Ritual.
           </h1>
           <p 
             style={{ 
@@ -163,6 +163,7 @@ export default function Products() {
         {/* Hero image with rounded corners */}
         <div style={{ position: 'relative' }}>
           <div 
+            className="products-hero-image-wrap"
             style={{ 
               position: 'relative', 
               overflow: 'hidden', 
@@ -264,8 +265,8 @@ export default function Products() {
                 <h3 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>
                   {featuredProduct.title}
                 </h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '1.02rem', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
-                  {featuredProduct.description || featuredProduct.subtitle}
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.96rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
+                  {featuredProduct.subtitle || "Experience all 3 signature millet bakes in one curated luxury ritual box."}
                 </p>
                 <div style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--primary-dark)' }}>
                   ₹{featuredProduct.variants?.[0]?.price || 599}
