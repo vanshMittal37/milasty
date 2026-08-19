@@ -5,8 +5,8 @@ export const initialProducts = [
     subtitle: 'The Perfect MILASTY Starter Favorite',
     description: 'Experience all three signature millet bakes in one curated luxury ritual box. Slow baked in pure Desi Ghee and naturally sweetened with organic Jaggery. Includes Cardamom Bajra, Coconut Jowar, and Cocoa Ragi.',
     category: 'starter',
-    image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=800&q=80',
-    secondaryImage: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=800&q=80',
+    image: '/images/image1.jpeg',
+    secondaryImage: '/images/image2.jpeg',
     badges: ['Best Seller', 'Starter Box', 'Pure Desi Ghee', '100% Organic Jaggery'],
     variants: [
       {
@@ -56,8 +56,8 @@ export const initialProducts = [
     subtitle: 'Warming Pearl Millet with Aromatic Green Cardamom',
     description: 'Crisp, earthy, and lightly spiced with crushed green cardamom pods. Crafted with roasted Bajra (Pearl Millet) and pure Desi Ghee to deliver a nostalgic, wholesome tea companion.',
     category: 'daily',
-    image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=800&q=80',
-    secondaryImage: 'https://images.unsplash.com/photo-1548365328-8c6db4b6315f?auto=format&fit=crop&w=800&q=80',
+    image: '/images/bajra.jpeg',
+    secondaryImage: '/images/ghee.jpeg',
     badges: ['High Fiber', 'Iron Rich', 'Desi Ghee', 'No Maida'],
     variants: [
       { name: 'Trial Pack', weight: '70g', price: 99, originalPrice: 120, inStock: true },
@@ -101,8 +101,8 @@ export const initialProducts = [
     subtitle: 'Light Sorghum Grains Infused with Toasted Coconut',
     description: 'Melt-in-your-mouth lightness of Sorghum (Jowar) flour combined with freshly toasted shredded coconut flakes and slow-churned pure Ghee.',
     category: 'daily',
-    image: 'https://images.unsplash.com/photo-1557089706-68d02dbda277?auto=format&fit=crop&w=800&q=80',
-    secondaryImage: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80',
+    image: '/images/jowar.jpeg',
+    secondaryImage: '/images/image3.jpeg',
     badges: ['Gluten-Friendly', 'Toasted Coconut', 'Pure Ghee', 'Gut Friendly'],
     variants: [
       { name: 'Trial Pack', weight: '70g', price: 99, originalPrice: 120, inStock: true },
@@ -144,8 +144,8 @@ export const initialProducts = [
     subtitle: 'Calcium-Rich Finger Millet Blended with Rich Dutch Cocoa',
     description: 'Decadent, deep chocolate notes harmonized with nutrient-dense Finger Millet (Ragi). Satisfies sweet chocolate cravings while feeding your body essential Calcium and Iron.',
     category: 'daily',
-    image: 'https://images.unsplash.com/photo-1607920591413-4ec007e70023?auto=format&fit=crop&w=800&q=80',
-    secondaryImage: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=800&q=80',
+    image: '/images/ragi.jpeg',
+    secondaryImage: '/images/image1.jpeg',
     badges: ['High Calcium', 'Dutch Cocoa', 'Kid Favorite', 'Zero Palm Oil'],
     variants: [
       { name: 'Trial Pack', weight: '70g', price: 99, originalPrice: 120, inStock: true },
@@ -187,8 +187,8 @@ export const initialProducts = [
     subtitle: 'Royal Festive & Wedding Celebration Gift Box',
     description: 'An exquisite hand-crafted heritage box featuring all 3 signature cookie packs in premium tin packaging, accompanied by artisan herbal tea blends and personalized message cards.',
     category: 'gifts',
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80',
-    secondaryImage: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80',
+    image: '/images/image2.jpeg',
+    secondaryImage: '/images/image3.jpeg',
     badges: ['Royal Gift', 'Festive Packaging', 'Custom Card', 'Free Pan-India Delivery'],
     variants: [
       {
@@ -210,7 +210,7 @@ export const initialProducts = [
       totalSugarsG: '17.5g',
       addedSugarsG: '0g',
       totalFatG: '21.5g',
-      dietaryFiberG: '8.0g',
+      dietaryFiberG: '21.5g',
       sodiumMg: '38mg',
     },
     labReportUrl: '/reports/Imperial-Hamper-Report.pdf',
@@ -224,8 +224,8 @@ export const initialProducts = [
     subtitle: 'Thoughtful Artisanal Gift Box for Mindful Occasions',
     description: 'A beautifully balanced gift box containing 2 full-sized millet cookie packs of your choice, golden brass tea strainer, and a handwritten greeting card.',
     category: 'gifts',
-    image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80',
-    secondaryImage: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80',
+    image: '/images/image3.jpeg',
+    secondaryImage: '/images/image1.jpeg',
     badges: ['Artisanal Box', 'Includes Strainer', 'Handwritten Card'],
     variants: [
       {

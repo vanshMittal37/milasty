@@ -326,10 +326,10 @@ export default function WishlistPage() {
               letterSpacing: '0.12em',
               color: '#244f21',
               fontWeight: '800',
-              backgroundColor: 'rgba(36, 79, 33, 0.08)',
+              backgroundColor: 'rgba(36, 79, 33, 0.10)',
               padding: '0.35rem 0.85rem',
               borderRadius: '999px',
-              border: '1px solid rgba(36, 79, 33, 0.15)',
+              border: '1px solid rgba(36, 79, 33, 0.20)',
               display: 'inline-block',
               marginBottom: '1rem'
             }}
@@ -337,7 +337,7 @@ export default function WishlistPage() {
             Saved For Later
           </span>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <Heart size={24} color="#8B2020" fill="#8B2020" />
+            <Heart size={26} color="#8B2020" fill="#8B2020" />
             <h1
               style={{
                 fontSize: '2.5rem',
@@ -351,11 +351,11 @@ export default function WishlistPage() {
               My Wishlist
             </h1>
           </div>
-          <p style={{ fontSize: '1rem', color: '#5C3D20', lineHeight: '1.6', margin: '0 0 0.5rem 0', fontWeight: '500' }}>
+          <p style={{ fontSize: '1rem', color: '#5C3D20', lineHeight: '1.6', margin: '0 0 0.65rem 0', fontWeight: '500' }}>
             Keep your favourite MILASTY bakes close and discover them whenever you're ready.
           </p>
-          <span style={{ fontSize: '0.8rem', color: '#244f21', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            {wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'} saved
+          <span style={{ fontSize: '0.82rem', color: '#244f21', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', backgroundColor: 'rgba(36, 79, 33, 0.08)', padding: '0.25rem 0.75rem', borderRadius: '6px', display: 'inline-block' }}>
+            {wishlistItems.length} {wishlistItems.length === 1 ? 'ITEM' : 'ITEMS'} SAVED
           </span>
         </div>
       </section>

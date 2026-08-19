@@ -150,7 +150,7 @@ export default function CheckoutPage() {
         currency,
         name: 'MILASTY Foods',
         description: `Order #${orderId}`,
-        image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=200&q=80',
+        image: '/images/image3.jpeg',
         order_id: razorpayOrderId,
         handler: async function (response) {
           console.log("Razorpay payment response captured", response);

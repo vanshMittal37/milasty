@@ -282,29 +282,60 @@ export default function Home() {
       });
   }, []);
 
+  const [isTestimonialHovered, setIsTestimonialHovered] = useState(false);
+
   const reviews = [
     {
-      quote: "MILASTY's Cardamom Bajra cookies have completely replaced refined biscuits in our home. Melt-in-mouth texture with authentic Desi Ghee aroma!",
-      name: "Ananya Sharma",
-      location: "New Delhi",
-      role: "Verified Health Coach",
+      quote: "Its one of the best healthy snacks I have eaten. Its very crunchy and tasty.",
+      name: "Harshit Kumar",
+      location: "Verified Buyer",
+      role: "Customer Review",
       rating: 5,
     },
     {
-      quote: "Finding snacks that are truly 100% Maida-free and Palm Oil-free is so rare. The Cocoa Ragi is rich, crunchy, and my kids love it!",
-      name: "Rohan & Priya Mehta",
-      location: "Mumbai",
-      role: "Conscious Parents",
+      quote: "I tried all 3 types of cookies that they make. Personal favourite are cardamom bajra and coconut jowar. I have reordered it multiple times. Taste is amazing. Goes very well with evening coffee.",
+      name: "Lokesh Gujral",
+      location: "Verified Buyer",
+      role: "Repeat Customer",
       rating: 5,
     },
     {
-      quote: "The lab test reports on their website gave me total confidence. Pure ingredients baked with genuine care.",
-      name: "Dr. Sunita Rao",
-      location: "Bengaluru",
-      role: "Clinical Nutritionist",
+      quote: "Really good quality millet cookies with nice packaging. They taste healthy and the sweetness is well balanced. The coconut one is especially very good. I really liked them.",
+      name: "Souvik Mitra",
+      location: "Verified Buyer",
+      role: "Customer Review",
+      rating: 5,
+    },
+    {
+      quote: "Got my best healthy biscuit ever. Best was cardamom flavour. It’s not a kind of snack, it’s a meal. Eat 3-4 biscuits and you are done.",
+      name: "Mahesh Gupta",
+      location: "Verified Buyer",
+      role: "Customer Review",
+      rating: 5,
+    },
+    {
+      quote: "I tried bajra cookies and taste was awesome, the aroma of cardamom and homely feel in biscuits was worth appreciating..😍 …",
+      name: "Harshita Mishra",
+      location: "Verified Buyer",
+      role: "Customer Review",
+      rating: 5,
+    },
+    {
+      quote: "These cookies are absolutely delicious and perfectly baked. They are soft, Every bite tastes fresh and amazing! 🍪👌😋😋.",
+      name: "Sounik Ghosh",
+      location: "Verified Buyer",
+      role: "Customer Review",
       rating: 5,
     },
   ];
+
+  useEffect(() => {
+    if (isTestimonialHovered) return;
+    const timer = setInterval(() => {
+      setActiveReviewIdx((prev) => (prev + 1) % reviews.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [isTestimonialHovered, reviews.length]);
 
   // Selected ritual product
   const ritualProducts = dbProducts.length > 0 ? dbProducts : initialProducts.slice(0, 4);
@@ -846,7 +877,11 @@ export default function Home() {
             <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>Loved by <span style={{ color: 'var(--accent-gold)' }}>Health-Conscious</span> Homes</h2>
           </div>
 
-          <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center', position: 'relative' }}>
+          <div 
+            style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center', position: 'relative' }}
+            onMouseEnter={() => setIsTestimonialHovered(true)}
+            onMouseLeave={() => setIsTestimonialHovered(false)}
+          >
             <div className="testimonial-card" style={{ padding: '3.5rem 2.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
                 {[...Array(reviews[activeReviewIdx].rating)].map((_, i) => (
@@ -865,16 +900,37 @@ export default function Home() {
                 </span>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2.5rem' }}>
+              {/* Dots indicator for auto-rotation feedback */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.5rem' }}>
+                {reviews.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveReviewIdx(idx)}
+                    style={{
+                      width: activeReviewIdx === idx ? '24px' : '8px',
+                      height: '8px',
+                      borderRadius: '4px',
+                      backgroundColor: activeReviewIdx === idx ? '#b9cd94' : 'rgba(255, 255, 255, 0.3)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      padding: 0
+                    }}
+                    title={`Go to story ${idx + 1}`}
+                  />
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1.75rem' }}>
                 <button
                   onClick={() => setActiveReviewIdx((activeReviewIdx - 1 + reviews.length) % reviews.length)}
-                  style={{ width: '44px', height: '44px', borderRadius: '50%', border: '1.5px solid #c89b3c', backgroundColor: '#c89b3c', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                  style={{ width: '44px', height: '44px', borderRadius: '50%', border: '1.5px solid #244f21', backgroundColor: '#244f21', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
                 >
                   <ChevronLeft size={22} />
                 </button>
                 <button
                   onClick={() => setActiveReviewIdx((activeReviewIdx + 1) % reviews.length)}
-                  style={{ width: '44px', height: '44px', borderRadius: '50%', border: '1.5px solid #c89b3c', backgroundColor: '#c89b3c', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                  style={{ width: '44px', height: '44px', borderRadius: '50%', border: '1.5px solid #244f21', backgroundColor: '#244f21', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
                 >
                   <ChevronRight size={22} />
                 </button>
@@ -890,7 +946,7 @@ export default function Home() {
           <div className="story-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
             <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid #FFFFFF' }}>
               <img 
-                src="https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=800&q=80" 
+                src="/images/image1.jpeg" 
                 alt="Our baking process"
                 style={{ width: '100%', height: '400px', objectFit: 'cover', display: 'block' }}
               />

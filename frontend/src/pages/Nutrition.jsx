@@ -553,7 +553,7 @@ export default function Nutrition() {
             {/* Left Column: Image */}
             <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.18)' }}>
               <img
-                src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=800&q=80"
+                src="/images/image1.jpeg"
                 alt="Slow baked millet cookies pile"
                 style={{ width: '100%', height: 'auto', minHeight: '280px', maxHeight: '420px', objectFit: 'cover', display: 'block', transition: 'transform 0.4s' }}
                 onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}

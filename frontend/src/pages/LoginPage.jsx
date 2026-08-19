@@ -209,7 +209,7 @@ export default function LoginPage() {
               borderRadius: '14px',
               border: 'none',
               fontWeight: '800',
-              fontSize: '0.95rem',
+              fontSize: '0.98rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -220,7 +220,7 @@ export default function LoginPage() {
               fontFamily: 'inherit',
             }}
           >
-            {loading ? <span>Signing in...</span> : <><span>Login to Account</span><ArrowRight size={17} /></>}
+            {loading ? <span style={{ color: '#FFFFFF', fontWeight: '800' }}>Signing in...</span> : <><span style={{ color: '#FFFFFF', fontWeight: '800' }}>Sign In to Account</span><ArrowRight size={18} color="#FFFFFF" /></>}
           </button>
         </form>
 

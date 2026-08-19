@@ -362,36 +362,42 @@ export default function Navbar() {
 
                 {accountMenuOpen && (
                   <div
-                    className="glass-card animate-slide-up"
+                    className="account-dropdown-menu animate-slide-up"
                     style={{
                       position: 'absolute',
                       right: 0,
                       top: 'calc(100% + 12px)',
-                      width: '220px',
-                      backgroundColor: '#FFFFFF',
-                      padding: '0.75rem 0',
-                      zIndex: 200,
-                      boxShadow: 'var(--shadow-lg)',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1.5px solid var(--border-color)',
-                      textAlign: 'left'
+                      width: 'min(240px, calc(100vw - 24px))',
+                      backgroundColor: 'rgba(28, 14, 9, 0.95)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      padding: '0.65rem 0',
+                      zIndex: 9999,
+                      boxShadow: '0 16px 40px rgba(0, 0, 0, 0.50)',
+                      borderRadius: '16px',
+                      border: '1px solid rgba(245, 220, 180, 0.22)',
+                      textAlign: 'left',
+                      boxSizing: 'border-box',
                     }}
                   >
                     {isAuthenticated ? (
                       <>
-                        <div style={{ padding: '0.5rem 1.25rem 0.75rem', borderBottom: '1px solid var(--border-color)' }}>
-                          <div style={{ fontWeight: '700', fontSize: '0.88rem', color: 'var(--primary-dark)' }}>{user?.name}</div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{user?.email}</div>
+                        <div style={{ padding: '0.65rem 1.1rem 0.65rem', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
+                          <div style={{ fontWeight: '800', fontSize: '0.9rem', color: '#FFFDF9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#b9cd94', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '0.1rem' }}>{user?.email}</div>
                         </div>
-                        <Link to="/account" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.6rem 1.25rem', fontSize: '0.88rem', color: 'var(--primary-dark)' }}>
-                          My Dashboard & Addresses
+                        <Link to="/account" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#F5EBDD', fontWeight: '500', transition: 'all 0.2s' }}>
+                          My Dashboard &amp; Addresses
                         </Link>
-                        <Link to="/account/orders" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.6rem 1.25rem', fontSize: '0.88rem', color: 'var(--primary-dark)' }}>
-                          My Orders & Tracking
+                        <Link to="/account/orders" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#F5EBDD', fontWeight: '500', transition: 'all 0.2s' }}>
+                          My Orders &amp; Tracking
+                        </Link>
+                        <Link to="/wishlist" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#F5EBDD', fontWeight: '500', transition: 'all 0.2s' }}>
+                          My Wishlist
                         </Link>
                         {isAdmin && (
-                          <Link to="/admin/dashboard" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.6rem 1.25rem', fontSize: '0.88rem', color: 'var(--accent-olive)', fontWeight: '700' }}>
-                            ★ Admin Management Panel
+                          <Link to="/admin/dashboard" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#b9cd94', fontWeight: '800' }}>
+                            ★ Admin Panel
                           </Link>
                         )}
                         <button
@@ -399,7 +405,7 @@ export default function Navbar() {
                             logout();
                             setAccountMenuOpen(false);
                           }}
-                          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', textAlign: 'left', padding: '0.6rem 1.25rem', fontSize: '0.88rem', color: 'var(--accent-terracotta)', background: 'none', borderTop: '1px solid var(--border-color)', marginTop: '0.35rem', fontWeight: '700', cursor: 'pointer' }}
+                          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', textAlign: 'left', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#e57373', background: 'none', border: 'none', borderTop: '1px solid rgba(245, 220, 180, 0.15)', marginTop: '0.35rem', fontWeight: '700', cursor: 'pointer' }}
                         >
                           <LogOut size={14} />
                           <span>Logout</span>
@@ -407,13 +413,13 @@ export default function Navbar() {
                       </>
                     ) : (
                       <>
-                        <Link to="/login" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.25rem', fontSize: '0.88rem', color: 'var(--primary-dark)', fontWeight: '600' }}>
+                        <Link to="/login" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.7rem 1.1rem', fontSize: '0.88rem', color: '#FFFDF9', fontWeight: '700' }}>
                           Customer Login
                         </Link>
-                        <Link to="/register" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.25rem', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+                        <Link to="/register" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.7rem 1.1rem', fontSize: '0.88rem', color: '#b9cd94', fontWeight: '600' }}>
                           Create New Account
                         </Link>
-                        <Link to="/admin/login" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.25rem', fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: '700', borderTop: '1px solid var(--border-color)', marginTop: '0.35rem' }}>
+                        <Link to="/admin/login" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.82rem', color: '#E8DCCB', fontWeight: '700', borderTop: '1px solid rgba(245, 220, 180, 0.15)', marginTop: '0.35rem' }}>
                           Admin Portal Login
                         </Link>
                       </>

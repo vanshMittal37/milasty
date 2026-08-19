@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Star, ShieldCheck, Heart, ChevronRight, CheckCircle, Plus, Minus, MessageCircle, HelpCircle } from 'lucide-react';
+import { ShoppingBag, Star, ShieldCheck, Heart, ChevronRight, CheckCircle, Plus, Minus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 
 export default function ShopProductDetail() {
-  const { id } = useParams(); // It's named 'id' in parameters but could be slug or ID
+  const { id } = useParams();
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -37,7 +37,6 @@ export default function ShopProductDetail() {
       if (found) {
         setProduct(found);
         setSelectedImage(found.image);
-        // Find local related
         setRelatedProducts(initialProducts.filter(p => p.category === found.category && p.slug !== found.slug).slice(0, 3));
       }
     } finally {
@@ -51,17 +50,37 @@ export default function ShopProductDetail() {
       if (res.data && res.data.products) {
         setRelatedProducts(res.data.products.filter((p) => p.slug !== id && p._id !== id).slice(0, 3));
       }
-    } catch (e) {
-      // Continue
-    }
+    } catch (e) {}
   };
 
   if (loading) {
     return (
-      <div style={{ padding: '6rem 0', textAlign: 'center', backgroundColor: '#FBF8F2', minHeight: '80vh' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.85rem' }}>
-          <ShoppingBag size={32} color="var(--accent-gold)" className="animate-float" />
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', fontWeight: '700' }}>Gathering product details...</p>
+      <div style={{
+        backgroundImage: 'url(/images/cart_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        minHeight: '100vh',
+        padding: '6rem 0',
+        textAlign: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          backgroundColor: 'rgba(255, 250, 242, 0.82)',
+          backdropFilter: 'blur(18px)',
+          WebkitBackdropFilter: 'blur(18px)',
+          padding: '3rem 2.5rem',
+          borderRadius: '24px',
+          border: '1px solid rgba(100, 65, 35, 0.15)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '0.85rem'
+        }}>
+          <ShoppingBag size={36} color="#244f21" className="animate-float" />
+          <p style={{ color: '#24130D', fontSize: '1rem', fontWeight: '800', margin: 0 }}>Gathering product details...</p>
         </div>
       </div>
     );
@@ -69,10 +88,34 @@ export default function ShopProductDetail() {
 
   if (!product) {
     return (
-      <div style={{ padding: '6rem 0', textAlign: 'center', backgroundColor: '#FBF8F2', minHeight: '80vh' }}>
-        <div style={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-          <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontSize: '1.8rem', fontWeight: '800' }}>Product Not Found</h2>
-          <Link to="/shop" className="btn-primary" style={{ padding: '0.8rem 2rem', textDecoration: 'none', borderRadius: '999px', backgroundColor: 'var(--primary-dark)', color: '#FFFFFF', fontWeight: '750' }}>
+      <div style={{
+        backgroundImage: 'url(/images/cart_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        minHeight: '100vh',
+        padding: '6rem 0',
+        textAlign: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          backgroundColor: 'rgba(255, 250, 242, 0.85)',
+          backdropFilter: 'blur(18px)',
+          WebkitBackdropFilter: 'blur(18px)',
+          maxWidth: '440px',
+          margin: '0 auto',
+          padding: '3rem 2rem',
+          borderRadius: '24px',
+          border: '1px solid rgba(100, 65, 35, 0.15)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1.25rem'
+        }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', color: '#24130D', fontSize: '1.8rem', fontWeight: '800', margin: 0 }}>Product Not Found</h2>
+          <Link to="/shop" style={{ padding: '0.85rem 2.25rem', textDecoration: 'none', borderRadius: '999px', backgroundColor: '#244f21', color: '#FFFFFF', fontWeight: '800', fontSize: '0.9rem' }}>
             Back to Shop
           </Link>
         </div>
@@ -98,275 +141,327 @@ export default function ShopProductDetail() {
   };
 
   return (
-    <div style={{ backgroundColor: '#FBF8F2', minHeight: '100vh', padding: '2.5rem 0 5rem' }}>
+    <div className="light-bg-page" style={{
+      backgroundImage: 'url(/images/cart_background_image.jpeg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      minHeight: '100vh',
+      padding: '2.5rem 0 5rem'
+    }}>
       <div className="container" style={{ maxWidth: '1150px' }}>
         
         {/* Breadcrumb */}
-        <div style={{ fontSize: '0.78rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: '2rem' }}>
-          <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
-          <span style={{ margin: '0 0.5rem' }}>/</span>
-          <Link to="/shop" style={{ color: 'inherit', textDecoration: 'none' }}>Shop</Link>
-          <span style={{ margin: '0 0.5rem' }}>/</span>
-          <span style={{ color: 'var(--primary-dark)' }}>{product.title}</span>
+        <div style={{
+          fontSize: '0.78rem',
+          fontWeight: '700',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          color: '#5C3D20',
+          marginBottom: '2rem',
+          backgroundColor: 'rgba(255, 250, 242, 0.75)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          padding: '0.6rem 1.2rem',
+          borderRadius: '999px',
+          display: 'inline-flex',
+          alignItems: 'center',
+          border: '1px solid rgba(100, 65, 35, 0.12)'
+        }}>
+          <Link to="/" style={{ color: '#5C3D20', textDecoration: 'none' }}>Home</Link>
+          <span style={{ margin: '0 0.5rem', color: '#7A5535' }}>/</span>
+          <Link to="/shop" style={{ color: '#5C3D20', textDecoration: 'none' }}>Shop</Link>
+          <span style={{ margin: '0 0.5rem', color: '#7A5535' }}>/</span>
+          <span style={{ color: '#244f21', fontWeight: '800' }}>{product.title}</span>
         </div>
 
-        {/* Main Details layout */}
-        <div 
-          className="product-detail-layout"
-          style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
-            gap: '4rem', 
-            alignItems: 'start',
-            marginBottom: '4.5rem'
+        {/* Main Details Panel */}
+        <div
+          style={{
+            backgroundColor: 'rgba(255, 250, 242, 0.82)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '28px',
+            border: '1px solid rgba(100, 65, 35, 0.16)',
+            boxShadow: '0 12px 40px rgba(80, 45, 15, 0.12)',
+            padding: '2.5rem',
+            marginBottom: '3.5rem'
           }}
         >
-          {/* Left Column: Image gallery */}
-          <div>
-            <div 
-              style={{ 
-                borderRadius: '24px', 
-                overflow: 'hidden', 
-                backgroundColor: '#FFFFFF', 
-                border: '1.5px solid var(--border-color)',
-                boxShadow: '0 8px 30px rgba(56, 20, 35, 0.02)',
-                position: 'relative'
-              }}
-            >
-              <img 
-                src={selectedImage} 
-                alt={product.title} 
-                style={{ width: '100%', height: '440px', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} 
-                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-              />
-            </div>
-            
-            {/* Gallery Thumbnails */}
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
-              <img
-                src={product.image}
-                alt="Thumbnail primary"
-                onClick={() => setSelectedImage(product.image)}
-                style={{
-                  width: '74px',
-                  height: '74px',
-                  objectFit: 'cover',
-                  borderRadius: '12px',
-                  cursor: 'pointer',
-                  border: selectedImage === product.image ? '2px solid var(--accent-gold)' : '1px solid var(--border-color)',
-                  boxShadow: 'var(--shadow-sm)'
+          <div 
+            className="product-detail-layout"
+            style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+              gap: '3.5rem', 
+              alignItems: 'start'
+            }}
+          >
+            {/* Left Column: Image gallery */}
+            <div>
+              <div 
+                style={{ 
+                  borderRadius: '20px', 
+                  overflow: 'hidden', 
+                  backgroundColor: '#FFFFFF', 
+                  border: '1.5px solid rgba(100, 65, 35, 0.15)',
+                  boxShadow: '0 8px 24px rgba(80, 45, 15, 0.08)',
+                  position: 'relative'
                 }}
-              />
-              {product.secondaryImage && (
+              >
+                <img 
+                  src={selectedImage} 
+                  alt={product.title} 
+                  style={{ width: '100%', height: '440px', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} 
+                  onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                />
+              </div>
+              
+              {/* Gallery Thumbnails */}
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
                 <img
-                  src={product.secondaryImage}
-                  alt="Thumbnail secondary"
-                  onClick={() => setSelectedImage(product.secondaryImage)}
+                  src={product.image}
+                  alt="Thumbnail primary"
+                  onClick={() => setSelectedImage(product.image)}
                   style={{
                     width: '74px',
                     height: '74px',
                     objectFit: 'cover',
                     borderRadius: '12px',
                     cursor: 'pointer',
-                    border: selectedImage === product.secondaryImage ? '2px solid var(--accent-gold)' : '1px solid var(--border-color)',
-                    boxShadow: 'var(--shadow-sm)'
+                    border: selectedImage === product.image ? '2.5px solid #244f21' : '1.5px solid rgba(100, 65, 35, 0.2)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
                   }}
                 />
-              )}
+                {product.secondaryImage && (
+                  <img
+                    src={product.secondaryImage}
+                    alt="Thumbnail secondary"
+                    onClick={() => setSelectedImage(product.secondaryImage)}
+                    style={{
+                      width: '74px',
+                      height: '74px',
+                      objectFit: 'cover',
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      border: selectedImage === product.secondaryImage ? '2.5px solid #244f21' : '1.5px solid rgba(100, 65, 35, 0.2)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+                    }}
+                  />
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Right Column: Details & Actions */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            
-            {/* Badges / Stock */}
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-              {product.badges?.map((badge, idx) => (
+            {/* Right Column: Details & Actions */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+              
+              {/* Badges / Stock */}
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                {product.badges?.map((badge, idx) => (
+                  <span 
+                    key={idx} 
+                    style={{
+                      fontSize: '0.68rem',
+                      fontWeight: '800',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      color: '#1a3d18',
+                      backgroundColor: 'rgba(36, 79, 33, 0.12)',
+                      border: '1px solid rgba(36, 79, 33, 0.22)',
+                      padding: '0.3rem 0.75rem',
+                      borderRadius: '999px',
+                    }}
+                  >
+                    {badge}
+                  </span>
+                ))}
                 <span 
-                  key={idx} 
-                  style={{
-                    fontSize: '0.65rem',
+                  style={{ 
+                    fontSize: '0.68rem',
                     fontWeight: '800',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    color: 'var(--primary-dark)',
-                    backgroundColor: 'var(--accent-gold)',
-                    padding: '0.3rem 0.65rem',
-                    borderRadius: '999px',
+                    letterSpacing: '0.04em',
+                    backgroundColor: currentStock > 5 ? 'rgba(36, 79, 33, 0.10)' : 'rgba(184, 50, 30, 0.10)', 
+                    color: currentStock > 5 ? '#244f21' : '#b85c3a',
+                    border: currentStock > 5 ? '1px solid rgba(36, 79, 33, 0.20)' : '1px solid rgba(184, 50, 30, 0.20)',
+                    padding: '0.3rem 0.75rem',
+                    borderRadius: '999px'
                   }}
                 >
-                  {badge}
+                  {currentStock > 5 ? 'In Stock' : 'Low Stock'}
                 </span>
-              ))}
-              <span 
-                style={{ 
-                  fontSize: '0.68rem',
-                  fontWeight: '800',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
-                  backgroundColor: currentStock > 5 ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', 
-                  color: currentStock > 5 ? 'var(--accent-olive)' : 'var(--accent-terracotta)',
-                  padding: '0.3rem 0.65rem',
-                  borderRadius: '999px'
-                }}
-              >
-                {currentStock > 5 ? 'In Stock' : 'Low Stock'}
-              </span>
-            </div>
-
-            {/* Title & Description */}
-            <div>
-              <h1 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.5rem 0' }}>{product.title}</h1>
-              <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
-                {product.subtitle || product.description}
-              </p>
-            </div>
-
-            {/* Ratings & reviews */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.84rem', color: 'var(--text-muted)', fontWeight: '600' }}>
-              <div style={{ display: 'flex', color: 'var(--accent-gold)' }}>
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} fill="var(--accent-gold)" color="var(--accent-gold)" />
-                ))}
               </div>
-              <span style={{ color: 'var(--primary-dark)', fontWeight: '800' }}>{product.rating}</span>
-              <span>({product.reviewCount || 24} customer reviews)</span>
-              <span style={{ color: 'var(--border-color)' }}>|</span>
-              <span>SKU: {product.sku || 'MLS-001'}</span>
-            </div>
 
-            {/* Price section */}
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-              <span style={{ fontSize: '2.1rem', fontWeight: '900', color: 'var(--primary-dark)' }}>₹{unitPrice}</span>
-              {selectedVariant.originalPrice && (
-                <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '1.1rem', fontWeight: '500' }}>
-                  ₹{selectedVariant.originalPrice}
-                </span>
-              )}
-            </div>
+              {/* Title & Description */}
+              <div>
+                <h1 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', margin: '0 0 0.5rem 0' }}>{product.title}</h1>
+                <p style={{ fontSize: '1.05rem', color: '#5C3D20', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+                  {product.subtitle || product.description}
+                </p>
+              </div>
 
-            {/* Pack Size Selectors */}
-            {product.variants && product.variants.length > 1 && (
-              <div style={{ padding: '0.5rem 0' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--primary-dark)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.65rem' }}>Select Pack Size</span>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {product.variants.map((v, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedVariantIndex(idx)}
-                      style={{
-                        padding: '0.6rem 1.1rem',
-                        borderRadius: '10px',
-                        fontWeight: '800',
-                        fontSize: '0.85rem',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        backgroundColor: selectedVariantIndex === idx ? 'var(--primary-dark)' : '#FFFFFF',
-                        color: selectedVariantIndex === idx ? '#FFFFFF' : 'var(--primary-dark)',
-                        border: selectedVariantIndex === idx ? '1.5px solid var(--primary-dark)' : '1.5px solid var(--border-color)',
-                      }}
-                    >
-                      {v.name} ({v.weight}) • ₹{v.price}
-                    </button>
+              {/* Ratings & reviews */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#7A5535', fontWeight: '600' }}>
+                <div style={{ display: 'flex', color: '#244f21' }}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={15} fill="#244f21" color="#244f21" />
                   ))}
                 </div>
-              </div>
-            )}
-
-            {/* Quantity Selector & Main Buttons */}
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', paddingTop: '0.5rem' }}>
-              {/* Qty count */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', border: '1.5px solid var(--border-color)', borderRadius: '999px', backgroundColor: '#FFFFFF', padding: '0.35rem 0.75rem' }}>
-                <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} style={{ padding: '0.2rem 0.5rem', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}><Minus size={14} /></button>
-                <span style={{ padding: '0 0.85rem', fontWeight: '900', color: 'var(--primary-dark)', fontSize: '0.92rem' }}>{quantity}</span>
-                <button onClick={() => setQuantity((q) => Math.min(currentStock, q + 1))} style={{ padding: '0.2rem 0.5rem', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}><Plus size={14} /></button>
+                <span style={{ color: '#24130D', fontWeight: '800' }}>{product.rating}</span>
+                <span style={{ color: '#5C3D20' }}>({product.reviewCount || 24} customer reviews)</span>
+                <span style={{ color: 'rgba(100, 65, 35, 0.25)' }}>|</span>
+                <span style={{ color: '#5C3D20' }}>SKU: {product.sku || 'MLS-001'}</span>
               </div>
 
-              {/* Add to cart */}
-              <button
-                onClick={handleAddToCart}
-                className="btn-primary"
-                style={{
-                  padding: '0.9rem 2.25rem',
-                  fontSize: '0.9rem',
-                  backgroundColor: 'var(--primary-dark)',
-                  color: 'var(--bg-main)',
-                  border: 'none',
-                  borderRadius: '999px',
-                  fontWeight: '800',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  cursor: 'pointer',
-                  boxShadow: 'var(--shadow-sm)'
-                }}
-              >
-                <ShoppingBag size={16} />
-                <span>{btnText}</span>
-              </button>
+              {/* Price section */}
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.65rem' }}>
+                <span style={{ fontSize: '2.2rem', fontWeight: '900', color: '#24130D' }}>₹{unitPrice}</span>
+                {selectedVariant.originalPrice && (
+                  <span style={{ textDecoration: 'line-through', color: '#7A5535', fontSize: '1.15rem', fontWeight: '500' }}>
+                    ₹{selectedVariant.originalPrice}
+                  </span>
+                )}
+              </div>
 
-              {/* Wishlist toggle */}
-              <button
-                onClick={() => toggleWishlist(product)}
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '50%',
-                  backgroundColor: '#FFFFFF',
-                  border: '1.5px solid var(--border-color)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: wishlisted ? 'var(--accent-terracotta)' : 'var(--text-muted)',
-                  transition: 'all 0.2s'
-                }}
-                title="Add to Wishlist"
-              >
-                <Heart size={18} fill={wishlisted ? 'var(--accent-terracotta)' : 'none'} />
-              </button>
+              {/* Pack Size Selectors */}
+              {product.variants && product.variants.length > 1 && (
+                <div style={{ padding: '0.35rem 0' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#24130D', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.65rem' }}>Select Pack Size</span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {product.variants.map((v, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedVariantIndex(idx)}
+                        style={{
+                          padding: '0.65rem 1.15rem',
+                          borderRadius: '12px',
+                          fontWeight: '800',
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          backgroundColor: selectedVariantIndex === idx ? '#244f21' : 'rgba(255, 252, 245, 0.70)',
+                          color: selectedVariantIndex === idx ? '#FFFFFF' : '#24130D',
+                          border: selectedVariantIndex === idx ? '1.5px solid #244f21' : '1.5px solid rgba(100, 65, 35, 0.25)',
+                          boxShadow: selectedVariantIndex === idx ? '0 4px 12px rgba(36, 79, 33, 0.25)' : 'none',
+                        }}
+                      >
+                        {v.name} ({v.weight}) • ₹{v.price}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quantity Selector & Main Buttons */}
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', paddingTop: '0.5rem' }}>
+                {/* Qty count */}
+                <div style={{ display: 'inline-flex', alignItems: 'center', border: '1.5px solid rgba(100, 65, 35, 0.25)', borderRadius: '999px', backgroundColor: 'rgba(255, 252, 245, 0.70)', padding: '0.35rem 0.75rem' }}>
+                  <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} style={{ padding: '0.2rem 0.55rem', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#24130D' }}><Minus size={14} /></button>
+                  <span style={{ padding: '0 0.85rem', fontWeight: '900', color: '#24130D', fontSize: '0.95rem' }}>{quantity}</span>
+                  <button onClick={() => setQuantity((q) => Math.min(currentStock, q + 1))} style={{ padding: '0.2rem 0.55rem', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#24130D' }}><Plus size={14} /></button>
+                </div>
+
+                {/* Add to cart */}
+                <button
+                  onClick={handleAddToCart}
+                  style={{
+                    padding: '0.9rem 2.25rem',
+                    fontSize: '0.92rem',
+                    backgroundColor: '#244f21',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '999px',
+                    fontWeight: '800',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 16px rgba(36, 79, 33, 0.25)'
+                  }}
+                >
+                  <ShoppingBag size={16} color="#FFFFFF" />
+                  <span>{btnText}</span>
+                </button>
+
+                {/* Wishlist toggle */}
+                <button
+                  onClick={() => toggleWishlist(product)}
+                  style={{
+                    width: '46px',
+                    height: '46px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 252, 245, 0.80)',
+                    border: '1.5px solid rgba(100, 65, 35, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: wishlisted ? '#b85c3a' : '#7A5535',
+                    transition: 'all 0.2s'
+                  }}
+                  title="Add to Wishlist"
+                >
+                  <Heart size={18} fill={wishlisted ? '#b85c3a' : 'none'} color={wishlisted ? '#b85c3a' : '#7A5535'} />
+                </button>
+              </div>
+
+              {/* Custom Brand Trust bullet strip */}
+              <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1.5px solid rgba(100, 65, 35, 0.14)', paddingTop: '1.25rem', fontSize: '0.88rem', color: '#5C3D20' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: '600' }}>
+                  <ShieldCheck size={17} color="#244f21" />
+                  <span>100% Maida-Free &amp; Palm-Oil Free</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: '600' }}>
+                  <ShieldCheck size={17} color="#244f21" />
+                  <span>Baked in pure Cow Desi Ghee &amp; sweetened with Jaggery</span>
+                </div>
+              </div>
+
             </div>
-
-            {/* Custom Brand Trust bullet strip */}
-            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: '600' }}>
-                <ShieldCheck size={16} color="var(--accent-olive)" />
-                <span>100% Maida-Free & Palm-Oil Free</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: '600' }}>
-                <ShieldCheck size={16} color="var(--accent-olive)" />
-                <span>Baked in pure Cow Desi Ghee & sweetened with Jaggery</span>
-              </div>
-            </div>
-
           </div>
         </div>
 
         {/* Section 2: Nutrition Facts & Ingredients tables */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem', marginBottom: '5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem', marginBottom: '4.5rem' }}>
           
-          <div className="glass-card" style={{ padding: '2.25rem 2rem', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)' }}>
-            <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>Ingredients & Allergens</h3>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '1.25rem 0 0 0', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          <div style={{
+            padding: '2.25rem 2rem',
+            backgroundColor: 'rgba(255, 250, 242, 0.82)',
+            backdropFilter: 'blur(18px)',
+            WebkitBackdropFilter: 'blur(18px)',
+            borderRadius: '24px',
+            border: '1px solid rgba(100, 65, 35, 0.16)',
+            boxShadow: '0 8px 30px rgba(80, 45, 15, 0.10)'
+          }}>
+            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>Ingredients &amp; Allergens</h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '1.25rem 0 0 0', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {product.ingredients?.map((ing, idx) => (
-                <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.92rem', color: 'var(--primary-dark)', fontWeight: '600' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />
+                <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.94rem', color: '#24130D', fontWeight: '600' }}>
+                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#244f21', flexShrink: 0 }} />
                   <span>{ing}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="glass-card" style={{ padding: '2.25rem 2rem', backgroundColor: '#FFFFFF', borderRadius: '24px', border: '1.5px solid var(--border-color)' }}>
-            <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>Accredited Nutritional Facts</h3>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', marginTop: '1.25rem' }}>
+          <div style={{
+            padding: '2.25rem 2rem',
+            backgroundColor: 'rgba(255, 250, 242, 0.82)',
+            backdropFilter: 'blur(18px)',
+            WebkitBackdropFilter: 'blur(18px)',
+            borderRadius: '24px',
+            border: '1px solid rgba(100, 65, 35, 0.16)',
+            boxShadow: '0 8px 30px rgba(80, 45, 15, 0.10)'
+          }}>
+            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>Accredited Nutritional Facts</h3>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', marginTop: '1.25rem' }}>
               <tbody>
                 {product.nutritionFacts &&
                   Object.entries(product.nutritionFacts).map(([k, v], idx) => (
-                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: idx % 2 === 0 ? '#FCFAF6' : '#FFFFFF' }}>
-                      <td style={{ padding: '0.65rem', fontWeight: '750', color: 'var(--primary-dark)', textTransform: 'capitalize' }}>{k.replace(/([A-Z])/g, ' $1')}</td>
-                      <td style={{ padding: '0.65rem', fontWeight: '900', textAlign: 'right', color: 'var(--primary-dark)' }}>{v}</td>
+                    <tr key={idx} style={{ borderBottom: '1px solid rgba(100, 65, 35, 0.12)', backgroundColor: idx % 2 === 0 ? 'rgba(245, 235, 220, 0.50)' : 'transparent' }}>
+                      <td style={{ padding: '0.7rem 0.65rem', fontWeight: '700', color: '#5C3D20', textTransform: 'capitalize' }}>{k.replace(/([A-Z])/g, ' $1')}</td>
+                      <td style={{ padding: '0.7rem 0.65rem', fontWeight: '900', textAlign: 'right', color: '#24130D' }}>{v}</td>
                     </tr>
                   ))}
               </tbody>
@@ -376,9 +471,10 @@ export default function ShopProductDetail() {
 
         {/* Section 3: Related Products recommendations */}
         {relatedProducts.length > 0 && (
-          <section style={{ borderTop: '1.5px solid var(--border-color)', paddingTop: '5rem' }}>
-            <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-              <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>
+          <section style={{ borderTop: '1px solid rgba(100, 65, 35, 0.18)', paddingTop: '4.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#244f21', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Discover More</span>
+              <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', margin: 0 }}>
                 You May Also Like
               </h2>
             </div>
@@ -386,11 +482,19 @@ export default function ShopProductDetail() {
               {relatedProducts.map((p) => (
                 <div key={`related-${p._id || p.slug}`} style={{ display: 'flex', flexDirection: 'column', gap: '0.50rem' }}>
                   <Link to={`/product/${p.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <div style={{ borderRadius: '20px', overflow: 'hidden', border: '1.5px solid var(--border-color)' }}>
+                    <div style={{
+                      borderRadius: '20px',
+                      overflow: 'hidden',
+                      border: '1px solid rgba(100, 65, 35, 0.15)',
+                      backgroundColor: 'rgba(255, 250, 242, 0.80)',
+                      backdropFilter: 'blur(14px)',
+                      WebkitBackdropFilter: 'blur(14px)',
+                      boxShadow: '0 4px 16px rgba(80, 45, 15, 0.08)'
+                    }}>
                       <img src={p.image} alt={p.title} style={{ width: '100%', height: '240px', objectFit: 'cover', display: 'block', transition: 'transform 0.4s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'} />
                     </div>
-                    <h4 style={{ fontSize: '1rem', fontWeight: '850', color: 'var(--primary-dark)', marginTop: '0.75rem', marginBottom: '0.2rem' }}>{p.title}</h4>
-                    <span style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--accent-gold)' }}>₹{p.variants?.[0]?.price || p.price}</span>
+                    <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', fontWeight: '800', color: '#24130D', marginTop: '0.85rem', marginBottom: '0.2rem' }}>{p.title}</h4>
+                    <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#244f21' }}>₹{p.variants?.[0]?.price || p.price}</span>
                   </Link>
                 </div>
               ))}

@@ -279,7 +279,7 @@ export default function OrderHistoryPage() {
               const isCancelled = order.orderStatus === 'Cancelled';
               
               // Get first item image preview
-              const firstItemImage = order.items?.[0]?.productId?.image || order.items?.[0]?.image || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=150&q=80';
+              const firstItemImage = order.items?.[0]?.productId?.image || order.items?.[0]?.image || '/images/image1.jpeg';
 
               return (
                 <div 

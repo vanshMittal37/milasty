@@ -172,7 +172,7 @@ export default function Products() {
             }}
           >
             <img
-              src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=800&q=80"
+              src="/images/image3.jpeg"
               alt="Handcrafted millet cookies pile"
               style={{
                 width: '100%',
@@ -314,7 +314,7 @@ export default function Products() {
             </div>
 
             {/* Horizontal Category selector */}
-            <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem', width: '100%', maxWidth: 'none', flexWrap: 'wrap' }} className="mobile-scroll-container">
+            <div style={{ display: 'flex', gap: '0.65rem', overflowX: 'auto', paddingBottom: '0.25rem', width: '100%', maxWidth: 'none', flexWrap: 'wrap' }} className="mobile-scroll-container">
               {[
                 { key: 'all', label: 'All Rituals' },
                 { key: 'starter', label: 'Starter Favorites' },
@@ -325,17 +325,18 @@ export default function Products() {
                   key={tab.key}
                   onClick={() => setActiveCategory(tab.key)}
                   style={{
-                    padding: '0.55rem 1.25rem',
+                    padding: '0.6rem 1.35rem',
                     borderRadius: '999px',
                     fontWeight: '800',
                     fontSize: '0.82rem',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
                     cursor: 'pointer',
-                    transition: 'all 0.25s',
-                    backgroundColor: activeCategory === tab.key ? 'var(--primary-dark)' : '#FCFAF6',
-                    color: activeCategory === tab.key ? '#FFFFFF' : 'var(--primary-dark)',
-                    border: activeCategory === tab.key ? '1px solid var(--primary-dark)' : '1px solid var(--border-color)',
+                    transition: 'all 0.25s ease',
+                    backgroundColor: activeCategory === tab.key ? '#244f21' : 'rgba(36, 79, 33, 0.12)',
+                    color: activeCategory === tab.key ? '#FFFFFF' : '#b9cd94',
+                    border: activeCategory === tab.key ? '1.5px solid #244f21' : '1.5px solid rgba(185, 205, 148, 0.35)',
+                    boxShadow: activeCategory === tab.key ? '0 4px 14px rgba(36, 79, 33, 0.35)' : 'none',
                   }}
                 >
                   {tab.label}

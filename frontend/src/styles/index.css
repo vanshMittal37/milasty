@@ -103,6 +103,19 @@ p, span, li, label, td, th {
   color: #5C3D20 !important;
 }
 
+input::placeholder, textarea::placeholder {
+  color: #7A5535 !important;
+  opacity: 0.8 !important;
+  font-weight: 500 !important;
+}
+
+.light-bg-page input::placeholder,
+.light-bg-page textarea::placeholder {
+  color: #7A5535 !important;
+  opacity: 0.85 !important;
+  font-weight: 500 !important;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -272,6 +285,13 @@ button {
   .mobile-logo-adjust {
     height: 44px !important;
     width: auto !important;
+  }
+  /* Responsive Account Dropdown on Mobile */
+  .account-dropdown-menu {
+    right: -8px !important;
+    width: min(280px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px) !important;
+    box-sizing: border-box !important;
   }
 }
 @media (min-width: 769px) {

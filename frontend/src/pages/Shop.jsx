@@ -191,7 +191,7 @@ export default function Shop() {
             }}
           >
             <img
-              src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=800&q=80"
+              src="/images/image2.jpeg"
               alt="Millet bakery cookies pile"
               style={{
                 width: '100%',

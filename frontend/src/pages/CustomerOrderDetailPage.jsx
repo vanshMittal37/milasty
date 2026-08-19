@@ -370,7 +370,7 @@ export default function CustomerOrderDetailPage() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1.25rem' }}>
                 {order.items?.map((item, idx) => {
-                  const imageSrc = item.productId?.image || item.image || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=250&q=80';
+                  const imageSrc = item.productId?.image || item.image || '/images/image2.jpeg';
                   return (
                     <div key={idx} style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', paddingBottom: '1rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)' }}>
                       <img 

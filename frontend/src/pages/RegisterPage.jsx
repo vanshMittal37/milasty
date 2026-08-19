@@ -245,7 +245,7 @@ export default function RegisterPage() {
               borderRadius: '14px',
               border: 'none',
               fontWeight: '800',
-              fontSize: '0.95rem',
+              fontSize: '0.98rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -256,7 +256,7 @@ export default function RegisterPage() {
               fontFamily: 'inherit',
             }}
           >
-            {loading ? <span>Creating Account...</span> : <><span>Create Account</span><ArrowRight size={17} /></>}
+            {loading ? <span style={{ color: '#FFFFFF', fontWeight: '800' }}>Creating Account...</span> : <><span style={{ color: '#FFFFFF', fontWeight: '800' }}>Create Account</span><ArrowRight size={18} color="#FFFFFF" /></>}
           </button>
         </form>
 
