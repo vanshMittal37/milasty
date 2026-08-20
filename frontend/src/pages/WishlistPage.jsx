@@ -430,7 +430,7 @@ export default function WishlistPage() {
                   Explore Our Bakes
                 </Link>
                 <Link
-                  to="/products"
+                  to="/shop"
                   style={{
                     fontSize: '0.84rem',
                     color: '#b9cd94',

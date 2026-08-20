@@ -104,11 +104,11 @@ export default function OurStory() {
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <Link 
-              to="/products" 
+              to="/shop" 
               className="btn-primary" 
               style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', fontWeight: '850', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
             >
-              <span>Discover Our Rituals</span>
+              <span>Discover Our Bakes</span>
               <ChevronRight size={16} />
             </Link>
             <Link 

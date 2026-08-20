@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   MessageSquare, MapPin, ShieldCheck, Mail, Send, CheckCircle2, 
-  HelpCircle, Package, ArrowRight, ChevronDown, Sparkles 
+  Package, ArrowRight, ChevronDown 
 } from 'lucide-react';
 
 export default function Contact() {
@@ -58,9 +58,19 @@ export default function Contact() {
     }
   ];
 
+  const shopCardStyle = {
+    backgroundColor: 'rgba(36, 19, 13, 0.65)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    borderRadius: '24px',
+    border: '1px solid rgba(185, 205, 148, 0.25)',
+    boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
+    color: '#FFFDF9',
+  };
+
   return (
     <div
-      className="contact-page"
+      className="contact-page shop-theme-page"
       style={{
         minHeight: '100vh',
         padding: '0 0 6rem',
@@ -69,23 +79,24 @@ export default function Contact() {
         overflowX: 'hidden',
         boxSizing: 'border-box',
         position: 'relative',
-        backgroundImage: 'url(/images/contact_background_image.jpeg)',
+        backgroundImage: 'url(/images/shop_background_image.jpeg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
         backgroundRepeat: 'no-repeat',
       }}
     >
+      {/* Dark overlay matching Old Shop theme */}
       <div style={{
         position: 'absolute',
         inset: 0,
-        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.40) 0%, rgba(36, 19, 13, 0.30) 100%)',
+        background: 'linear-gradient(135deg, rgba(15, 8, 4, 0.40) 0%, rgba(28, 14, 9, 0.30) 100%)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
       
-      {/* 1. HERO SECTION */}
+      {/* 1. HERO SECTION (OLD SHOP THEME STYLING) */}
       <section 
         style={{ 
           padding: '6.5rem 1.5rem 4.5rem', 
@@ -140,16 +151,15 @@ export default function Contact() {
         </p>
       </section>
 
-      {/* 2. QUICK CONTACT OPTIONS */}
+      {/* 2. QUICK CONTACT OPTIONS (OLD SHOP CARD STYLING) */}
       <section style={{ width: '100%', maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
           
           {/* Card 1: WhatsApp */}
           <div 
-            className="glass-card" 
             style={{ 
+              ...shopCardStyle,
               padding: '2.5rem 2rem', 
-              borderRadius: '24px', 
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -188,10 +198,9 @@ export default function Contact() {
 
           {/* Card 2: Email */}
           <div 
-            className="glass-card" 
             style={{ 
+              ...shopCardStyle,
               padding: '2.5rem 2rem', 
-              borderRadius: '24px', 
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -228,10 +237,9 @@ export default function Contact() {
 
           {/* Card 3: Orders */}
           <div 
-            className="glass-card" 
             style={{ 
+              ...shopCardStyle,
               padding: '2.5rem 2rem', 
-              borderRadius: '24px', 
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
@@ -269,7 +277,7 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* 3. MAIN CONTACT SECTION + 4. FORM */}
+      {/* 3. MAIN CONTACT SECTION + 4. RESPONSIVE CONTACT FORM (OLD SHOP THEME) */}
       <section style={{ width: '100%', maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div className="story-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '3.5rem', alignItems: 'start' }}>
           
@@ -349,8 +357,18 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Right Column: Custom Message Form */}
-          <div id="contact-inquiry-form" className="glass-card" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)', borderRadius: '24px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+          {/* Right Column: Custom Message Form (OLD SHOP THEME & RESPONSIVE) */}
+          <div 
+            id="contact-inquiry-form" 
+            style={{ 
+              ...shopCardStyle,
+              padding: 'clamp(1.5rem, 4vw, 2.5rem)', 
+              width: 'calc(100% - 0px)', 
+              maxWidth: '100%', 
+              margin: '0 auto',
+              boxSizing: 'border-box' 
+            }}
+          >
             <h3 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.25rem 0' }}>Send Us a Message</h3>
             <p style={{ fontSize: '0.88rem', color: '#F5EBDD', marginBottom: '2rem', fontWeight: '550' }}>We usually respond as soon as possible.</p>
 
@@ -372,7 +390,7 @@ export default function Contact() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Enter your name"
-                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.2)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
+                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
                   />
                 </div>
 
@@ -386,7 +404,7 @@ export default function Contact() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="name@example.com"
-                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.2)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
+                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
                   />
                 </div>
 
@@ -399,7 +417,7 @@ export default function Contact() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+91 98765 43210"
-                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.2)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
+                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
                   />
                 </div>
 
@@ -413,7 +431,7 @@ export default function Contact() {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     placeholder="How can we help you?"
-                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.2)', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', lineHeight: '1.5', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', lineHeight: '1.5', boxSizing: 'border-box' }}
                   />
                 </div>
 
@@ -448,7 +466,7 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* 5. CONTACT REASONS (Interactive inquiry populators) */}
+      {/* 5. CONTACT REASONS (Interactive inquiry populators - OLD SHOP THEME) */}
       <section style={{ width: '100%', maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
@@ -459,8 +477,7 @@ export default function Contact() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1.5rem' }}>
           <div 
             onClick={() => handleSelectReason("Questions about an existing order")}
-            className="glass-card" 
-            style={{ padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
+            style={{ ...shopCardStyle, padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
           >
             <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Order Support</h4>
             <p style={{ fontSize: '0.85rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Questions about an existing order.</p>
@@ -468,8 +485,7 @@ export default function Contact() {
 
           <div 
             onClick={() => handleSelectReason("Ingredients, pack sizes or product information")}
-            className="glass-card" 
-            style={{ padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
+            style={{ ...shopCardStyle, padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
           >
             <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Product Questions</h4>
             <p style={{ fontSize: '0.85rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Ingredients, pack sizes or product info.</p>
@@ -477,8 +493,7 @@ export default function Contact() {
 
           <div 
             onClick={() => handleSelectReason("Corporate, festive or celebration gifting")}
-            className="glass-card" 
-            style={{ padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
+            style={{ ...shopCardStyle, padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
           >
             <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Gifting & Bulk</h4>
             <p style={{ fontSize: '0.85rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Corporate, festive or celebration gifting.</p>
@@ -486,8 +501,7 @@ export default function Contact() {
 
           <div 
             onClick={() => handleSelectReason("General enquiry")}
-            className="glass-card" 
-            style={{ padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
+            style={{ ...shopCardStyle, padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
           >
             <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>General Enquiry</h4>
             <p style={{ fontSize: '0.85rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Anything else you'd like to ask.</p>
@@ -495,7 +509,7 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* 6. FAQ SECTION */}
+      {/* 6. FAQ SECTION (OLD SHOP CARD STYLING) */}
       <section style={{ width: '100%', maxWidth: '800px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Help Center</span>
@@ -510,8 +524,8 @@ export default function Contact() {
             return (
               <div 
                 key={idx} 
-                className="glass-card"
                 style={{ 
+                  ...shopCardStyle,
                   borderRadius: '16px', 
                   overflow: 'hidden',
                   boxSizing: 'border-box',
@@ -561,11 +575,10 @@ export default function Contact() {
       {/* 7. BRAND STORY CTA */}
       <section style={{ width: '100%', maxWidth: '1150px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div 
-          className="glass-card" 
           style={{ 
+            ...shopCardStyle,
             padding: 'clamp(2.5rem, 6vw, 5rem) 1.5rem', 
             textAlign: 'center', 
-            color: '#FFFFFF', 
             borderRadius: '30px', 
             position: 'relative',
             overflow: 'hidden',
@@ -619,4 +632,3 @@ export default function Contact() {
     </div>
   );
 }
-

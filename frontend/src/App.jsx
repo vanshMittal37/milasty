@@ -1,15 +1,8 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { WishlistProvider } from './context/WishlistContext';
-import { CartProvider, useCart } from './context/CartContext';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import CartDrawer from './components/CartDrawer';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 // Portfolio & Original Pages
 import Home from './pages/Home';
-import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import Nutrition from './pages/Nutrition';
 import OurStory from './pages/OurStory';
@@ -85,10 +78,9 @@ function ToastNotification() {
 
 const PAGE_BACKGROUNDS = {
   '/our-story': '/images/about_background_image.jpeg',
-  '/products': '/images/ritiual_background_image.jpeg',
-  '/shop': '/images/shop_background_image.jpeg',
+  '/shop': '/images/ritiual_background_image.jpeg',
   '/nutrition': '/images/nutrition_background_image.jpeg',
-  '/contact': '/images/contact_background_image.jpeg',
+  '/contact': '/images/shop_background_image.jpeg',
   '/wishlist': '/images/ritiual_background_image.jpeg',
 };
 
@@ -115,9 +107,9 @@ function MainLayout() {
       <Navbar />
       <main style={{ flexGrow: 1, position: 'relative', zIndex: 1 }}>
         <Routes>
-          {/* Company Portfolio Pages (Preserved) */}
+          {/* Company Portfolio Pages */}
           <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
+          <Route path="/products" element={<Navigate to="/shop" replace />} />
           <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/nutrition" element={<Nutrition />} />
           <Route path="/our-story" element={<OurStory />} />

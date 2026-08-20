@@ -60,8 +60,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/products" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
-                  Bakery Products
+                <Link to="/shop" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
+                  Shop All Bakes
                 </Link>
               </li>
               <li>

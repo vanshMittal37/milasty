@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ChevronLeft, ChevronRight, ShoppingBag, Leaf, Sparkles, Shield, Award, Filter, ArrowUpDown } from 'lucide-react';
+import { 
+  Search, ChevronRight, ShoppingBag, Leaf, Sparkles, 
+  Shield, Award, ArrowUpDown, Eye 
+} from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
+import { useCart } from '../context/CartContext';
 
 export default function Shop() {
+  const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,6 +21,7 @@ export default function Shop() {
   const [sortBy, setSortBy] = useState('newest');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [featuredBtnText, setFeaturedBtnText] = useState('Add to Cart');
 
   useEffect(() => {
     fetchCategories();
@@ -72,12 +78,26 @@ export default function Shop() {
     }
   };
 
-  const activeCatName = categories.find(c => c.slug === selectedCategory)?.name || selectedCategory;
-  const featuredStripProducts = products.slice(0, 3);
+  // Find featured product (starter box or first item)
+  const featuredProduct = products.find(p => p.category === 'starter') || products[0];
+
+  const handleAddFeaturedToCart = async () => {
+    if (!featuredProduct) return;
+    setFeaturedBtnText('Adding...');
+    try {
+      const selectedVariant = featuredProduct.variants?.[0] || { name: 'Standard Pack', weight: 'Trial Pack', price: 599 };
+      await addToCart(featuredProduct, selectedVariant);
+      setFeaturedBtnText('✓ Added');
+      setTimeout(() => setFeaturedBtnText('Add to Cart'), 1500);
+    } catch (e) {
+      setFeaturedBtnText('Unable to add');
+      setTimeout(() => setFeaturedBtnText('Add to Cart'), 2000);
+    }
+  };
 
   return (
     <div
-      className="shop-page"
+      className="shop-page products-page"
       style={{
         minHeight: '100vh',
         padding: '0 0 5rem',
@@ -86,113 +106,112 @@ export default function Shop() {
         overflowX: 'hidden',
         boxSizing: 'border-box',
         position: 'relative',
-        backgroundImage: 'url(/images/shop_background_image.jpeg)',
+        backgroundImage: 'url(/images/ritiual_background_image.jpeg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
         backgroundRepeat: 'no-repeat',
       }}
     >
+      {/* Dark overlay for readability */}
       <div style={{
         position: 'absolute',
         inset: 0,
-        background: 'linear-gradient(135deg, rgba(15, 8, 4, 0.40) 0%, rgba(28, 14, 9, 0.30) 100%)',
+        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.30) 0%, rgba(36, 19, 13, 0.22) 100%)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
-      
-      {/* 1. HERO SECTION */}
+
+      {/* 1. EDITORIAL HERO SECTION */}
       <section 
-        className="shop-hero"
+        className="products-hero-section"
         style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
-          gap: '4rem', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', 
+          gap: '3.5rem', 
           alignItems: 'center', 
-          padding: '5rem 0 6rem',
+          padding: '4.5rem 1.5rem 5.5rem',
           maxWidth: '1200px',
           margin: '0 auto',
-          paddingLeft: '1.5rem',
-          paddingRight: '1.5rem'
+          boxSizing: 'border-box'
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', minWidth: 0 }}>
           <span 
             style={{ 
               alignSelf: 'flex-start',
-              fontSize: '0.8rem', 
+              fontSize: '0.78rem', 
               textTransform: 'uppercase', 
-              letterSpacing: '0.14em', 
-              color: '#b9cd94', 
-              fontWeight: '850',
-              backgroundColor: 'rgba(36, 79, 33, 0.35)',
-              padding: '0.4rem 0.95rem',
+              letterSpacing: '0.12em', 
+              color: 'var(--accent-gold)', 
+              fontWeight: '800',
+              backgroundColor: 'rgba(197, 160, 89, 0.08)',
+              padding: '0.35rem 0.85rem',
               borderRadius: '999px',
-              border: '1.5px solid rgba(185, 205, 148, 0.4)'
+              border: '1px solid rgba(197, 160, 89, 0.15)'
             }}
           >
-            Organic Millet Bakery
+            Handcrafted Millet Bakery
           </span>
           <h1 
             style={{ 
-              fontSize: 'clamp(2.5rem, 5.5vw, 3.8rem)', 
+              fontSize: 'clamp(2.2rem, 5.5vw, 3.8rem)', 
               fontFamily: 'var(--font-serif)', 
-              color: '#FFFDF9', 
-              fontWeight: '850', 
+              color: 'var(--primary-dark)', 
+              fontWeight: '800', 
               lineHeight: '1.15',
               letterSpacing: '-0.02em',
-              margin: 0,
-              textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+              margin: 0
             }}
           >
-            Explore Our<br />Handcrafted Bakes.
+            Discover Your Daily MILASTY Ritual.
           </h1>
           <p 
             style={{ 
               fontSize: '1.15rem', 
-              color: '#F5EBDD', 
-              lineHeight: '1.75', 
+              color: 'var(--text-muted)', 
+              lineHeight: '1.7', 
               maxWidth: '540px',
-              margin: '0.5rem 0 1.5rem',
-              fontWeight: '550'
+              margin: '0.5rem 0 1.5rem'
             }}
           >
-            Slow-crafted with wholesome millets, pure Desi Ghee and thoughtful ingredients for everyday indulgence.
+            Wholesome millet bakes, slow-crafted with pure Desi Ghee and thoughtful ingredients for everyday moments of joy.
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <button 
               onClick={handleScrollToGrid}
               className="btn-primary" 
-              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', fontWeight: '850', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', backgroundColor: 'var(--primary-dark)', color: 'var(--bg-main)', border: 'none', borderRadius: '999px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
             >
-              <span>Explore Bestsellers</span>
+              <span>Shop All Bakes</span>
               <ChevronRight size={16} />
             </button>
-            <Link 
-              to="/products" 
+            <button 
+              onClick={handleScrollToGrid}
               className="btn-secondary" 
-              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', borderColor: '#b9cd94', color: '#b9cd94', backgroundColor: 'rgba(36, 79, 33, 0.25)', borderRadius: '999px', fontWeight: '850', textDecoration: 'none' }}
+              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', borderColor: 'var(--primary-dark)', color: 'var(--primary-dark)', borderRadius: '999px', fontWeight: '800', cursor: 'pointer', backgroundColor: 'transparent' }}
             >
-              <span>Discover Our Rituals</span>
-            </Link>
+              Explore Collection
+            </button>
           </div>
         </div>
 
-        {/* Hero image */}
-        <div style={{ position: 'relative' }}>
+        {/* Hero image with rounded corners */}
+        <div style={{ position: 'relative', minWidth: 0 }}>
           <div 
+            className="products-hero-image-wrap"
             style={{ 
               position: 'relative', 
               overflow: 'hidden', 
               borderRadius: '24px', 
-              boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-              border: '1px solid rgba(255, 255, 255, 0.2)'
+              boxShadow: '0 20px 40px rgba(56,20,35,0.06)',
+              border: '1px solid rgba(245, 220, 180, 0.18)'
             }}
           >
             <img
-              src="/images/image2.jpeg"
-              alt="Millet bakery cookies pile"
+              src="/images/image3.jpeg"
+              alt="Handcrafted millet cookies pile"
               style={{
                 width: '100%',
                 display: 'block',
@@ -205,187 +224,264 @@ export default function Shop() {
         </div>
       </section>
 
-      {/* 3. MAIN SHOP LISTINGS SECTION WITH SEARCH & FILTER */}
-      <section id="shop-listings-section" style={{ padding: '6rem 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          
-          {/* Redesigned Compact Premium Filter Toolbar */}
-          <div 
-            className="filter-toolbar"
-            style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              gap: '1.5rem', 
-              marginBottom: '1rem', 
-              flexWrap: 'wrap',
-              backgroundColor: 'rgba(35, 21, 13, 0.70)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
-              padding: '1.25rem 2rem',
-              borderRadius: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.18)',
-              boxShadow: '0 12px 36px rgba(0,0,0,0.35)'
-            }}
-          >
-            {/* Search Input Left with Icon */}
-            <div style={{ position: 'relative', width: '100%', maxWidth: '440px' }}>
-              <Search size={16} color="#b9cd94" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
-              <input
-                type="text"
-                placeholder="Search bakes, ingredients, or rituals..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem 0.75rem 2.5rem',
-                  borderRadius: '14px',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  fontFamily: 'inherit',
-                  backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                  color: '#FFFDF9',
-                  transition: 'border-color 0.2s',
-                }}
-              />
+      {/* 2. TRUST STRIP */}
+      <section className="products-trust-strip" style={{ backgroundColor: 'rgba(20, 10, 5, 0.55)', padding: '2.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid var(--border-color)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Leaf size={16} color="var(--accent-gold)" />
+            <span>100% Pure Desi Ghee</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Sparkles size={16} color="var(--accent-gold)" />
+            <span>Wholesome Millets</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Shield size={16} color="var(--accent-gold)" />
+            <span>No Palm Oil</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Award size={16} color="var(--accent-gold)" />
+            <span>Thoughtful Ingredients</span>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. FEATURED COLLECTION SECTION */}
+      {featuredProduct && (
+        <section style={{ padding: '6rem 0', backgroundColor: 'transparent' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
+            
+            <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>Bestselling Starter</span>
+              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>
+                Start With Something Special
+              </h2>
             </div>
 
-            {/* Dropdown Filters Right with Icons */}
-            <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', flexGrow: 1 }}>
-              
-              {/* Category selector */}
-              <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-                <Filter size={14} color="#b9cd94" style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }} />
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => {
-                    setSelectedCategory(e.target.value);
-                    setPage(1);
-                  }}
-                  style={{
-                    padding: '0.7rem 1rem 0.7rem 2.2rem',
-                    borderRadius: '14px',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    fontSize: '0.82rem',
-                    color: '#FFFDF9',
-                    fontWeight: '800',
-                    backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                    outline: 'none',
-                    cursor: 'pointer',
-                    minWidth: '160px',
-                    appearance: 'none',
-                    WebkitAppearance: 'none'
+            <div 
+              className="glass-card animate-slide-up products-featured-grid"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+                gap: '3.5rem',
+                alignItems: 'center',
+                backgroundColor: 'rgba(20, 10, 5, 0.55)',
+                padding: 'clamp(1.5rem, 4vw, 3rem)',
+                borderRadius: '30px',
+                border: '1px solid rgba(245, 220, 180, 0.18)',
+                boxShadow: '0 12px 40px rgba(56, 20, 35, 0.02)',
+                boxSizing: 'border-box'
+              }}
+            >
+              {/* Featured Image */}
+              <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '20px', border: '1px solid var(--border-color)', minWidth: 0 }}>
+                <img 
+                  src={featuredProduct.image} 
+                  alt={featuredProduct.title} 
+                  style={{ width: '100%', height: '360px', objectFit: 'cover', display: 'block' }} 
+                />
+                <span 
+                  style={{ 
+                    position: 'absolute', 
+                    top: '20px', 
+                    left: '20px', 
+                    fontSize: '0.7rem', 
+                    fontWeight: '800', 
+                    color: '#FFFFFF', 
+                    backgroundColor: 'var(--accent-olive)', 
+                    padding: '0.35rem 0.85rem', 
+                    borderRadius: '999px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em'
                   }}
                 >
-                  <option value="all">Category: All</option>
-                  {categories.map((c) => (
-                    <option key={c.slug} value={c.slug}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-                <span style={{ position: 'absolute', right: '14px', pointerEvents: 'none', fontSize: '0.6rem', color: '#b9cd94' }}>▼</span>
+                  Best Seller
+                </span>
+              </div>
+
+              {/* Featured Details */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', minWidth: 0 }}>
+                <h3 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>
+                  {featuredProduct.title}
+                </h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.96rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
+                  {featuredProduct.subtitle || "Experience all signature millet bakes in one curated luxury ritual box."}
+                </p>
+                <div style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--primary-dark)' }}>
+                  ₹{featuredProduct.variants?.[0]?.price || 599}
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600', marginLeft: '0.45rem' }}>
+                    for {featuredProduct.variants?.[0]?.weight || 'Trio Pack'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                  <button 
+                    onClick={handleAddFeaturedToCart}
+                    className="btn-primary" 
+                    style={{ padding: '0.9rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--primary-dark)', color: 'var(--bg-main)', border: 'none', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                  >
+                    <ShoppingBag size={15} />
+                    <span>{featuredBtnText}</span>
+                  </button>
+                  <Link 
+                    to={`/shop/product/${featuredProduct._id || featuredProduct.slug}`} 
+                    className="btn-secondary" 
+                    style={{ padding: '0.9rem 2.25rem', fontSize: '0.9rem', borderColor: 'var(--border-color)', color: 'var(--primary-dark)', borderRadius: '12px', fontWeight: '800', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                  >
+                    <Eye size={15} />
+                    <span>View Details</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 4. MAIN PRODUCTS & FILTERS SECTION */}
+      <section id="shop-listings-section" style={{ padding: '6rem 0', backgroundColor: 'rgba(20, 10, 5, 0.55)', borderTop: '1px solid rgba(245, 220, 180, 0.15)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
+          
+          {/* Section Heading */}
+          <div style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.35rem', margin: 0 }}>
+              Explore Our Collection
+            </h2>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              {products.length} handcrafted {products.length === 1 ? 'bake' : 'bakes'} available
+            </span>
+          </div>
+
+          {/* Search, Category Filter & Sort Controls Toolbar */}
+          <div 
+            style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '1.25rem', 
+              marginBottom: '3rem',
+              backgroundColor: 'rgba(20, 10, 5, 0.4)',
+              padding: '1.5rem',
+              borderRadius: '20px',
+              border: '1px solid rgba(245, 220, 180, 0.15)',
+              boxSizing: 'border-box'
+            }}
+          >
+            {/* Search Bar & Sort Dropdown Row */}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', width: '100%', alignItems: 'center', justifyContent: 'space-between' }}>
+              {/* Search Bar */}
+              <div style={{ position: 'relative', flex: '1 1 280px', minWidth: 0 }}>
+                <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)' }} />
+                <input
+                  type="text"
+                  placeholder="Search millet cookies, hampers, crackers..."
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem 0.75rem 2.8rem',
+                    borderRadius: '999px',
+                    backgroundColor: 'rgba(20, 10, 5, 0.65)',
+                    border: '1px solid rgba(197, 160, 89, 0.3)',
+                    color: 'var(--primary-dark)',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
               </div>
 
               {/* Sort selector */}
-              <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-                <ArrowUpDown size={14} color="#b9cd94" style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+                <ArrowUpDown size={16} color="var(--accent-gold)" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   style={{
-                    padding: '0.7rem 1rem 0.7rem 2.2rem',
-                    borderRadius: '14px',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    fontSize: '0.82rem',
-                    color: '#FFFDF9',
-                    fontWeight: '800',
+                    padding: '0.7rem 1.25rem',
+                    borderRadius: '999px',
                     backgroundColor: 'rgba(20, 10, 5, 0.65)',
+                    border: '1px solid rgba(197, 160, 89, 0.3)',
+                    color: 'var(--primary-dark)',
+                    fontSize: '0.85rem',
+                    fontWeight: '700',
                     outline: 'none',
-                    cursor: 'pointer',
-                    minWidth: '180px',
-                    appearance: 'none',
-                    WebkitAppearance: 'none'
+                    cursor: 'pointer'
                   }}
                 >
-                  <option value="newest">Sort: Newest First</option>
-                  <option value="price_low_high">Price: Low to High</option>
-                  <option value="price_high_low">Price: High to Low</option>
-                  <option value="popular">Most Popular</option>
-                  <option value="discount">Highest Discount</option>
+                  <option value="newest" style={{ backgroundColor: '#241209', color: '#FFF' }}>Newest First</option>
+                  <option value="price_asc" style={{ backgroundColor: '#241209', color: '#FFF' }}>Price: Low to High</option>
+                  <option value="price_desc" style={{ backgroundColor: '#241209', color: '#FFF' }}>Price: High to Low</option>
+                  <option value="popular" style={{ backgroundColor: '#241209', color: '#FFF' }}>Most Popular</option>
                 </select>
-                <span style={{ position: 'absolute', right: '14px', pointerEvents: 'none', fontSize: '0.6rem', color: '#b9cd94' }}>▼</span>
               </div>
             </div>
-          </div>
 
-          {/* Category Removable Chip & Dynamic Count Row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '2.5rem', minHeight: '32px' }}>
-            <div>
-              {selectedCategory !== 'all' && (
-                <button 
-                  onClick={() => setSelectedCategory('all')}
+            {/* Category Filter Pills */}
+            <div style={{ display: 'flex', gap: '0.65rem', overflowX: 'auto', paddingBottom: '0.25rem', width: '100%', flexWrap: 'wrap' }} className="mobile-scroll-container">
+              <button
+                onClick={() => { setSelectedCategory('all'); setPage(1); }}
+                style={{
+                  padding: '0.55rem 1.25rem',
+                  borderRadius: '999px',
+                  fontWeight: '800',
+                  fontSize: '0.8rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s ease',
+                  backgroundColor: selectedCategory === 'all' ? '#244f21' : 'rgba(36, 79, 33, 0.12)',
+                  color: selectedCategory === 'all' ? '#FFFFFF' : '#b9cd94',
+                  border: selectedCategory === 'all' ? '1.5px solid #244f21' : '1.5px solid rgba(185, 205, 148, 0.35)',
+                  boxShadow: selectedCategory === 'all' ? '0 4px 14px rgba(36, 79, 33, 0.35)' : 'none',
+                }}
+              >
+                All Bakes
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat.slug || cat._id}
+                  onClick={() => { setSelectedCategory(cat.slug || cat.name); setPage(1); }}
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                    fontSize: '0.76rem',
-                    fontWeight: '850',
-                    backgroundColor: 'rgba(36, 79, 33, 0.35)',
-                    color: '#b9cd94',
-                    padding: '0.35rem 0.85rem',
+                    padding: '0.55rem 1.25rem',
                     borderRadius: '999px',
-                    cursor: 'pointer',
-                    border: '1px solid rgba(185, 205, 148, 0.4)',
-                    transition: 'all 0.2s',
+                    fontWeight: '800',
+                    fontSize: '0.8rem',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.04em'
+                    letterSpacing: '0.04em',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease',
+                    backgroundColor: selectedCategory === (cat.slug || cat.name) ? '#244f21' : 'rgba(36, 79, 33, 0.12)',
+                    color: selectedCategory === (cat.slug || cat.name) ? '#FFFFFF' : '#b9cd94',
+                    border: selectedCategory === (cat.slug || cat.name) ? '1.5px solid #244f21' : '1.5px solid rgba(185, 205, 148, 0.35)',
+                    boxShadow: selectedCategory === (cat.slug || cat.name) ? '0 4px 14px rgba(36, 79, 33, 0.35)' : 'none',
                   }}
                 >
-                  ✕ {activeCatName}
+                  {cat.name}
                 </button>
-              )}
+              ))}
             </div>
-            
-            <span style={{ fontSize: '0.85rem', color: '#F5EBDD', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Showing {products.length} handcrafted {products.length === 1 ? 'bake' : 'bakes'}
-            </span>
           </div>
 
-          {/* Grid View */}
+          {/* Product Grid */}
           {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2.5rem' }}>
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="glass-card" style={{ height: '440px', borderRadius: '24px', opacity: 0.6 }} />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))', gap: '2.25rem' }}>
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="glass-card" style={{ height: '420px', backgroundColor: 'rgba(20,10,5,0.4)', borderRadius: '24px', opacity: 0.6 }} />
               ))}
             </div>
           ) : products.length === 0 ? (
-            <div className="glass-card" style={{ padding: '5rem 2rem', textAlign: 'center', borderRadius: '24px' }}>
-              <ShoppingBag size={48} color="#b9cd94" style={{ margin: '0 auto 1.25rem' }} />
-              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', marginBottom: '0.5rem', margin: 0 }}>No bakes found</h3>
-              <p style={{ color: '#F5EBDD', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Try another search query or explore all our handcrafted products.</p>
-              <button
-                onClick={() => {
-                  setSearch('');
-                  setSelectedCategory('all');
-                  setSortBy('newest');
-                }}
-                className="btn-primary"
-                style={{ padding: '0.75rem 2.25rem', borderRadius: '999px', border: 'none', backgroundColor: '#244f21', color: '#FFFFFF', cursor: 'pointer', fontWeight: '850' }}
-              >
-                View All Products
+            <div style={{ padding: '4rem 1.5rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', marginBottom: '0.5rem' }}>No bakes found matching your search.</h3>
+              <button onClick={() => { setSearch(''); setSelectedCategory('all'); }} className="btn-primary" style={{ padding: '0.65rem 1.5rem', fontSize: '0.85rem', marginTop: '1rem' }}>
+                Reset Filters
               </button>
             </div>
           ) : (
             <div
-              className="shop-main-grid"
+              className="products-main-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))',
                 gap: '2.5rem',
               }}
             >
@@ -395,29 +491,45 @@ export default function Shop() {
             </div>
           )}
 
-          {/* Pagination Controls */}
-          {!loading && totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', marginTop: '4rem' }}>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '3.5rem', alignItems: 'center' }}>
               <button
                 disabled={page === 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="btn-secondary"
-                style={{ padding: '0.6rem 1.25rem', borderColor: 'rgba(255,255,255,0.2)', color: '#FFFDF9', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: '850', opacity: page === 1 ? 0.5 : 1, cursor: page === 1 ? 'default' : 'pointer' }}
+                onClick={() => setPage(page - 1)}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '999px',
+                  backgroundColor: 'rgba(20, 10, 5, 0.65)',
+                  border: '1px solid rgba(197, 160, 89, 0.3)',
+                  color: 'var(--primary-dark)',
+                  cursor: page === 1 ? 'not-allowed' : 'pointer',
+                  opacity: page === 1 ? 0.5 : 1,
+                  fontWeight: '700',
+                  fontSize: '0.85rem'
+                }}
               >
-                <ChevronLeft size={16} />
-                <span>Previous</span>
+                Previous
               </button>
-              <span style={{ fontSize: '0.88rem', color: '#FFFDF9', fontWeight: '850' }}>
+              <span style={{ fontSize: '0.9rem', color: 'var(--primary-dark)', fontWeight: '700', padding: '0 0.75rem' }}>
                 Page {page} of {totalPages}
               </span>
               <button
                 disabled={page === totalPages}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="btn-secondary"
-                style={{ padding: '0.6rem 1.25rem', borderColor: 'rgba(255,255,255,0.2)', color: '#FFFDF9', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: '850', opacity: page === totalPages ? 0.5 : 1, cursor: page === totalPages ? 'default' : 'pointer' }}
+                onClick={() => setPage(page + 1)}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '999px',
+                  backgroundColor: 'rgba(20, 10, 5, 0.65)',
+                  border: '1px solid rgba(197, 160, 89, 0.3)',
+                  color: 'var(--primary-dark)',
+                  cursor: page === totalPages ? 'not-allowed' : 'pointer',
+                  opacity: page === totalPages ? 0.5 : 1,
+                  fontWeight: '700',
+                  fontSize: '0.85rem'
+                }}
               >
-                <span>Next</span>
-                <ChevronRight size={16} />
+                Next
               </button>
             </div>
           )}
@@ -425,43 +537,64 @@ export default function Shop() {
         </div>
       </section>
 
-      {/* 4. SHOP TRUST SECTION STRIP (Benefit Text + Icon, non-button layout) */}
-      <section style={{ backgroundColor: 'transparent', padding: '3.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            <Leaf size={18} color="#b9cd94" />
-            <span>Pure Desi Ghee</span>
+      {/* 5. THE MILASTY TEA RITUAL SECTION */}
+      <section style={{ backgroundColor: 'var(--primary-dark)', color: '#FFFFFF', padding: '6.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
+          
+          <div style={{ textAlign: 'center', marginBottom: '4.5rem' }}>
+            <Sparkles size={28} color="var(--accent-gold)" style={{ margin: '0 auto 1.25rem' }} />
+            <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FDFBF7', fontWeight: '800', marginBottom: '0.5rem', margin: 0 }}>
+              The MILASTY Tea Ritual
+            </h2>
+            <p style={{ color: 'rgba(253,251,247,0.85)', maxWidth: '520px', margin: '0.5rem auto 0', fontSize: '0.98rem', fontWeight: '500' }}>
+              Turn an everyday snack break into a moment of pause.
+            </p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            <Sparkles size={18} color="#b9cd94" />
-            <span>Wholesome Millets</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            <Shield size={18} color="#b9cd94" />
-            <span>Thoughtful Ingredients</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            <Award size={18} color="#b9cd94" />
-            <span>Handcrafted Baking</span>
+
+          <div
+            className="products-ritual-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
+              gap: '2rem',
+              textAlign: 'center',
+            }}
+          >
+            <div className="glass-card" style={{ padding: '2rem 1.5rem', borderRadius: '20px' }}>
+              <div style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: '900', marginBottom: '0.75rem' }}>01 / PAUSE</div>
+              <p style={{ fontSize: '0.86rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>Step away from screens and notifications for 5 minutes.</p>
+            </div>
+            <div className="glass-card" style={{ padding: '2rem 1.5rem', borderRadius: '20px' }}>
+              <div style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: '900', marginBottom: '0.75rem' }}>02 / NOTICE</div>
+              <p style={{ fontSize: '0.86rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>Take in the rich aroma of slow-baked millets and pure cow Desi Ghee.</p>
+            </div>
+            <div className="glass-card" style={{ padding: '2rem 1.5rem', borderRadius: '20px' }}>
+              <div style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: '900', marginBottom: '0.75rem' }}>03 / BITE SLOWLY</div>
+              <p style={{ fontSize: '0.86rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>Enjoy the wholesome crumble and honest texture of natural grains.</p>
+            </div>
+            <div className="glass-card" style={{ padding: '2rem 1.5rem', borderRadius: '20px' }}>
+              <div style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: '900', marginBottom: '0.75rem' }}>04 / PAIR & ENJOY</div>
+              <p style={{ fontSize: '0.86rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>Pair with your favorite warm ginger tea, milk, or brew of choice.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 5. FINAL SHOP CTA */}
-      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '1rem', letterSpacing: '-0.01em', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-            Your Next Ritual Starts With A Bite.
+      {/* 6. FINAL BRAND CONVERSION CTA */}
+      <section style={{ backgroundColor: 'rgba(20, 10, 5, 0.55)', padding: '6.5rem 0', borderBottom: '1px solid var(--border-color)' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
+          <h2 style={{ fontSize: '2.3rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
+            Make Your Everyday Snack A Little More Meaningful.
           </h2>
-          <p style={{ fontSize: '1.02rem', color: '#F5EBDD', lineHeight: '1.7', marginBottom: '2.5rem', maxWidth: '520px', margin: '0.5rem auto 2.5rem', fontWeight: '550' }}>
-            Find a bake that makes your everyday pause a little more special and nourishing.
+          <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.65', marginBottom: '2.5rem', maxWidth: '540px', margin: '0.5rem auto 2.5rem', fontWeight: '500' }}>
+            Discover handcrafted millet bakes made for mindful everyday moments and healthy guilt-free lifestyles.
           </p>
           <button 
             onClick={handleScrollToGrid}
             className="btn-primary" 
-            style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', fontWeight: '850', cursor: 'pointer' }}
+            style={{ padding: '0.95rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--primary-dark)', color: 'var(--bg-main)', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
           >
-            Explore All Bakes
+            <span>Explore All Bakes →</span>
           </button>
         </div>
       </section>
