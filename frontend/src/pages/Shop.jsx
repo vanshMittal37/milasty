@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Search, ChevronRight, ShoppingBag, Leaf, Sparkles, 
-  Shield, Award, ArrowUpDown, Eye 
+  Award, ArrowUpDown 
 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import api from '../api/axios';
@@ -21,7 +21,6 @@ export default function Shop() {
   const [sortBy, setSortBy] = useState('newest');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [featuredBtnText, setFeaturedBtnText] = useState('Add to Cart');
 
   useEffect(() => {
     fetchCategories();
@@ -245,98 +244,6 @@ export default function Shop() {
           </div>
         </div>
       </section>
-
-      {/* 3. FEATURED COLLECTION SECTION */}
-      {/* {featuredProduct && (
-        <section style={{ padding: '6rem 0', backgroundColor: 'transparent' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
-            
-            <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>Bestselling Starter</span>
-              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>
-                Start With Something Special
-              </h2>
-            </div>
-
-            <div 
-              className="glass-card animate-slide-up products-featured-grid"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
-                gap: '3.5rem',
-                alignItems: 'center',
-                backgroundColor: 'rgba(20, 10, 5, 0.55)',
-                padding: 'clamp(1.5rem, 4vw, 3rem)',
-                borderRadius: '30px',
-                border: '1px solid rgba(245, 220, 180, 0.18)',
-                boxShadow: '0 12px 40px rgba(56, 20, 35, 0.02)',
-                boxSizing: 'border-box'
-              }}
-            >
-              {/* Featured Image */}
-              <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '20px', border: '1px solid var(--border-color)', minWidth: 0 }}>
-                <img 
-                  src={featuredProduct.image} 
-                  alt={featuredProduct.title} 
-                  style={{ width: '100%', height: '360px', objectFit: 'cover', display: 'block' }} 
-                />
-                <span 
-                  style={{ 
-                    position: 'absolute', 
-                    top: '20px', 
-                    left: '20px', 
-                    fontSize: '0.7rem', 
-                    fontWeight: '800', 
-                    color: '#FFFFFF', 
-                    backgroundColor: 'var(--accent-olive)', 
-                    padding: '0.35rem 0.85rem', 
-                    borderRadius: '999px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em'
-                  }}
-                >
-                  Best Seller
-                </span>
-              </div>
-
-              {/* Featured Details */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', minWidth: 0 }}>
-                <h3 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: 0 }}>
-                  {featuredProduct.title}
-                </h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.96rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
-                  {featuredProduct.subtitle || "Experience all signature millet bakes in one curated luxury ritual box."}
-                </p>
-                <div style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--primary-dark)' }}>
-                  ₹{featuredProduct.variants?.[0]?.price || 599}
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600', marginLeft: '0.45rem' }}>
-                    for {featuredProduct.variants?.[0]?.weight || 'Trio Pack'}
-                  </span>
-                </div>
-
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-                  <button 
-                    onClick={handleAddFeaturedToCart}
-                    className="btn-primary" 
-                    style={{ padding: '0.9rem 2.25rem', fontSize: '0.9rem', backgroundColor: 'var(--primary-dark)', color: 'var(--bg-main)', border: 'none', borderRadius: '12px', fontWeight: '800', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-                  >
-                    <ShoppingBag size={15} />
-                    <span>{featuredBtnText}</span>
-                  </button>
-                  <Link 
-                    to={`/shop/product/${featuredProduct._id || featuredProduct.slug}`} 
-                    className="btn-secondary" 
-                    style={{ padding: '0.9rem 2.25rem', fontSize: '0.9rem', borderColor: 'var(--border-color)', color: 'var(--primary-dark)', borderRadius: '12px', fontWeight: '800', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
-                  >
-                    <Eye size={15} />
-                    <span>View Details</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )} */}
 
       {/* 4. MAIN PRODUCTS & FILTERS SECTION */}
       <section id="shop-listings-section" style={{ padding: '6rem 0', backgroundColor: 'rgba(20, 10, 5, 0.55)', borderTop: '1px solid rgba(245, 220, 180, 0.15)' }}>
