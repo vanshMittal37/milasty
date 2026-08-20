@@ -746,7 +746,9 @@ export default function Nutrition() {
             display: none !important;
           }
           .mobile-only-cards {
-            display: flex !important;
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 0.85rem !important;
           }
         }
         .horizontal-scroll-container::-webkit-scrollbar {

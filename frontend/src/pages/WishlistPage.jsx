@@ -472,7 +472,7 @@ export default function WishlistPage() {
               
               <div 
                 ref={recRef}
-                className="horizontal-scroll-container"
+                className="horizontal-scroll-container wishlist-recommendations-grid"
                 style={{ 
                   display: 'flex', 
                   gap: '1.5rem', 
@@ -482,7 +482,7 @@ export default function WishlistPage() {
                 }}
               >
                 {recommendations.map((p) => (
-                  <div key={`rec-${p._id || p.slug}`} style={{ flexShrink: 0, width: '280px' }}>
+                  <div key={`rec-${p._id || p.slug}`} className="wishlist-rec-card-wrapper" style={{ flexShrink: 0, width: '280px' }}>
                     <WishlistProductCard 
                       product={p} 
                     />
@@ -500,22 +500,16 @@ export default function WishlistPage() {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                gap: '1.25rem',
-                marginBottom: '2.5rem',
                 flexWrap: 'wrap',
-                backgroundColor: 'rgba(255, 250, 242, 0.78)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                padding: '1.1rem 1.75rem',
-                borderRadius: '20px',
-                border: '1px solid rgba(100, 65, 35, 0.15)',
-                boxShadow: '0 4px 20px rgba(80, 45, 15, 0.09)'
+                gap: '1rem',
+                marginBottom: '2rem',
+                paddingBottom: '1rem',
+                borderBottom: '1px solid rgba(100, 65, 35, 0.15)'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.98rem', fontWeight: '850', color: '#24130D' }}>Your Saved Bakes</span>
-                <span style={{ fontSize: '0.84rem', color: '#7A5535', fontWeight: '700' }}>({wishlistItems.length} items)</span>
-              </div>
+              <span style={{ fontSize: '0.9rem', color: '#6A564A', fontWeight: '700' }}>
+                Showing {sortedWishlistItems.length} {sortedWishlistItems.length === 1 ? 'saved bake' : 'saved bakes'}
+              </span>
 
               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
 
@@ -569,6 +563,7 @@ export default function WishlistPage() {
 
             {/* 2. WISHLIST PRODUCT GRID */}
             <div
+              className="wishlist-items-grid"
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
