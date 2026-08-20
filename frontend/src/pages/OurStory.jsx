@@ -1,3 +1,8 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { Heart, Sparkles, ShieldCheck, Award, Leaf, Flame, Compass, ChevronRight, MessageSquare, Info, ChevronLeft } from 'lucide-react';
+import Logo from '../components/Logo';
+
 // ========================================================
 // SECTION 1 — ORBIT JOURNEY (Milestones) COMPONENT
 // ========================================================
