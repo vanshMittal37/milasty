@@ -529,31 +529,3 @@ export default function ShopProductDetail() {
     </div>
   );
 }
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
-              {relatedProducts.map((p) => (
-                <div key={`related-${p._id || p.slug}`} style={{ display: 'flex', flexDirection: 'column', gap: '0.50rem' }}>
-                  <Link to={`/product/${p.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <div style={{
-                      borderRadius: '20px',
-                      overflow: 'hidden',
-                      border: '1px solid rgba(100, 65, 35, 0.15)',
-                      backgroundColor: 'rgba(255, 250, 242, 0.80)',
-                      backdropFilter: 'blur(14px)',
-                      WebkitBackdropFilter: 'blur(14px)',
-                      boxShadow: '0 4px 16px rgba(80, 45, 15, 0.08)'
-                    }}>
-                      <img src={p.image} alt={p.title} style={{ width: '100%', height: '240px', objectFit: 'cover', display: 'block', transition: 'transform 0.4s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'} />
-                    </div>
-                    <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', fontWeight: '800', color: '#24130D', marginTop: '0.85rem', marginBottom: '0.2rem' }}>{p.title}</h4>
-                    <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#244f21' }}>₹{p.variants?.[0]?.price || p.price}</span>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-      </div>
-    </div>
-  );
-}
