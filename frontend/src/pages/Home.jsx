@@ -978,9 +978,10 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* 6. MILASTY SNACK RITUAL */}
+      {/* 6. MILASTY SNACK RITUAL */}
       <section ref={timelineRef} className="reveal-fade-up timeline-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: isMobile ? '2.5rem' : '4.5rem' }}>
