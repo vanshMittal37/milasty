@@ -51,10 +51,8 @@ export default function Navbar() {
   const firstLetter = isAuthenticated && user?.name ? user.name.charAt(0).toUpperCase() : 'A';
 
   // Dynamic Theme Styling
-  const isHome = location.pathname === '/';
   const textThemeColor = '#FFFFFF';
   const textMutedThemeColor = 'rgba(255, 255, 255, 0.8)';
-  const borderThemeColor = 'rgba(255, 255, 255, 0.15)';
 
   return (
     <>
@@ -147,133 +145,117 @@ export default function Navbar() {
             transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          <div className="container header-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: scrolled ? '70px' : '82px', maxWidth: '100%', padding: '0 2.5rem', transition: 'height 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+          <div 
+            className="header-container" 
+            style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr auto 1fr',
+              alignItems: 'center', 
+              height: scrolled ? '70px' : '82px', 
+              width: '100%', 
+              maxWidth: '100%',
+              paddingLeft: 'clamp(24px, 4vw, 64px)', 
+              paddingRight: 'clamp(24px, 4vw, 64px)',
+              boxSizing: 'border-box',
+              transition: 'height 0.35s cubic-bezier(0.16, 1, 0.3, 1)' 
+            }}
+          >
             
-            {/* Logo Left */}
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', transition: 'opacity 0.2s' }} className="hover-scale site-logo">
+            {/* LEFT SECTION: Logo */}
+            <Link 
+              to="/" 
+              style={{ 
+                justifySelf: 'start',
+                display: 'flex', 
+                alignItems: 'center', 
+                transition: 'opacity 0.2s' 
+              }} 
+              className="hover-scale site-logo"
+            >
               <Logo variant="primary" style={{ height: scrolled ? '64px' : '76px', width: 'auto', transition: 'height 0.35s ease' }} className="mobile-logo-adjust" />
             </Link>
 
-            {/* Right Container holding Nav Links & Action Dock */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
+            {/* CENTER SECTION: Navigation Links */}
+            <nav 
+              className="desktop-links" 
+              style={{ 
+                justifySelf: 'center',
+                display: 'flex', 
+                gap: '2rem', 
+                alignItems: 'center' 
+              }}
+            >
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.path;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    style={{
+                      fontSize: '0.86rem',
+                      fontWeight: '800',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      color: isActive ? '#b9cd94' : textMutedThemeColor,
+                      position: 'relative',
+                      padding: '0.4rem 0',
+                      transition: 'color 0.35s ease',
+                    }}
+                    className="nav-hover-link"
+                  >
+                    {link.name}
+                    {isActive && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '2px',
+                          backgroundColor: '#b9cd94',
+                          borderRadius: '2px',
+                          transition: 'background-color 0.35s ease',
+                        }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
 
-              {/* Navigation Links - Shifted Right */}
-              <nav className="desktop-links" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-                {navLinks.map((link) => {
-                  const isActive = location.pathname === link.path;
-                  const isRitual = link.name === 'Rituals';
-                  return (
-                    <Link
-                      key={link.path}
-                      to={link.path}
-                      style={{
-                        fontSize: isRitual ? '0.82rem' : '0.86rem',
-                        fontWeight: '800',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.06em',
-                        color: isActive ? '#b9cd94' : textMutedThemeColor,
-                        position: 'relative',
-                        padding: '0.4rem 0',
-                        transition: 'color 0.35s ease',
-                      }}
-                      className="nav-hover-link"
-                    >
-                      {link.name}
-                      {isActive && (
-                        <span
-                          style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '2px',
-                            backgroundColor: '#b9cd94',
-                            borderRadius: '2px',
-                            transition: 'background-color 0.35s ease',
-                          }}
-                        />
-                      )}
-                    </Link>
-                  );
-                })}
-              </nav>
-
-              {/* Action Dock - Right */}
-              <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                
-                {/* Wishlist Link - Icon Only with Badge */}
-                <Link 
-                  to="/wishlist" 
-                  aria-label="Wishlist"
-                  style={{ 
-                    position: 'relative',
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: textThemeColor, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    transition: 'all 0.25s ease' 
-                  }} 
-                  className="desktop-links hover-scale"
-                >
-                  <Heart size={19} strokeWidth={2.2} />
-                  {wishlistCount > 0 && (
-                    <span
-                      style={{
-                        position: 'absolute',
-                        top: '-2px',
-                        right: '-2px',
-                        fontSize: '0.65rem',
-                        lineHeight: 1,
-                        minWidth: '16px',
-                        height: '16px',
-                        padding: '0 4px',
-                        borderRadius: '999px',
-                        backgroundColor: '#244f21',
-                        color: '#FFFDF9',
-                        border: '1.5px solid #b9cd94',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: '900',
-                        boxShadow: '0 2px 5px rgba(0,0,0,0.4)',
-                        boxSizing: 'border-box'
-                      }}
-                    >
-                      {wishlistCount}
-                    </span>
-                  )}
-                </Link>
-
-                {/* Cart Button - Icon Only with Badge */}
-                <button 
-                  onClick={toggleCart} 
-                  aria-label="Shopping Cart"
-                  className="btn-primary cart-button" 
-                  style={{ 
-                    position: 'relative',
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    padding: 0,
-                    backgroundColor: '#244f21', 
-                    color: '#FFFFFF',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    border: '1px solid #b9cd94',
-                    cursor: 'pointer',
-                    transition: 'all 0.25s ease'
-                  }}
-                >
-                  <ShoppingBag size={19} strokeWidth={2.2} />
-                  <span 
-                    className="cart-badge"
-                    style={{ 
+            {/* RIGHT SECTION: Action Dock (Wishlist, Cart, Profile) */}
+            <div 
+              className="header-actions" 
+              style={{ 
+                justifySelf: 'end',
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '1rem' 
+              }}
+            >
+              {/* Wishlist Link - Icon Only with Badge */}
+              <Link 
+                to="/wishlist" 
+                aria-label="Wishlist"
+                style={{ 
+                  position: 'relative',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: textThemeColor, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  transition: 'all 0.25s ease' 
+                }} 
+                className="desktop-links hover-scale"
+              >
+                <Heart size={19} strokeWidth={2.2} />
+                {wishlistCount > 0 && (
+                  <span
+                    style={{
                       position: 'absolute',
                       top: '-2px',
                       right: '-2px',
@@ -294,11 +276,61 @@ export default function Navbar() {
                       boxSizing: 'border-box'
                     }}
                   >
-                    {cartCount}
+                    {wishlistCount}
                   </span>
-                </button>
+                )}
+              </Link>
 
-                {/* Account Dropdown Toggle */}
+              {/* Cart Button - Icon Only with Badge */}
+              <button 
+                onClick={toggleCart} 
+                aria-label="Shopping Cart"
+                className="btn-primary cart-button" 
+                style={{ 
+                  position: 'relative',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  padding: 0,
+                  backgroundColor: '#244f21', 
+                  color: '#FFFFFF',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  border: '1px solid #b9cd94',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s ease'
+                }}
+              >
+                <ShoppingBag size={19} strokeWidth={2.2} />
+                <span 
+                  className="cart-badge"
+                  style={{ 
+                    position: 'absolute',
+                    top: '-2px',
+                    right: '-2px',
+                    fontSize: '0.65rem',
+                    lineHeight: 1,
+                    minWidth: '16px',
+                    height: '16px',
+                    padding: '0 4px',
+                    borderRadius: '999px',
+                    backgroundColor: '#244f21',
+                    color: '#FFFDF9',
+                    border: '1.5px solid #b9cd94',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: '900',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.4)',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  {cartCount}
+                </span>
+              </button>
+
+              {/* Account Dropdown Toggle */}
               <div style={{ position: 'relative' }} ref={accountMenuRef} className="account-menu-wrapper">
                 <button
                   onClick={() => setAccountMenuOpen(!accountMenuOpen)}
@@ -444,179 +476,96 @@ export default function Navbar() {
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
-        </div>
         </header>
 
         {/* Mobile Navigation Drawer */}
         <div 
           className={`mobile-menu-panel ${mobileMenuOpen ? 'open' : ''}`}
           style={{ 
-            backgroundColor: 'rgba(35, 21, 13, 0.97)', /* Deep Warm Chocolate */
+            backgroundColor: 'rgba(35, 21, 13, 0.97)',
             backgroundImage: 'linear-gradient(135deg, rgba(35, 21, 13, 0.98) 0%, rgba(20, 10, 5, 0.99) 100%)',
-            border: '1.5px solid rgba(200, 155, 60, 0.28)', /* Thin Muted Gold Border */
+            border: '1.5px solid rgba(200, 155, 60, 0.28)',
             boxShadow: '0 20px 50px rgba(0, 0, 0, 0.55)',
             position: 'absolute',
             top: 'calc(100% + 8px)',
             left: '12px',
             right: '12px',
-            width: 'calc(100% - 24px)',
-            margin: '0 auto',
-            zIndex: 99,
-            padding: '1.75rem 1.5rem',
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '1.5rem',
             borderRadius: '24px',
-            maxHeight: 'calc(100vh - 120px)',
-            overflowY: 'auto',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
+            padding: '1.75rem 1.5rem 2rem',
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem',
+            zIndex: 99,
+            transition: 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease, visibility 300ms step-end',
+            transform: mobileMenuOpen ? 'translateY(0) scale(1)' : 'translateY(-12px) scale(0.97)',
             opacity: mobileMenuOpen ? 1 : 0,
-            transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(-12px)',
-            pointerEvents: mobileMenuOpen ? 'auto' : 'none',
             visibility: mobileMenuOpen ? 'visible' : 'hidden',
-            transition: 'opacity 300ms ease, transform 300ms cubic-bezier(0.16, 1, 0.3, 1), visibility 300ms step-end'
+            pointerEvents: mobileMenuOpen ? 'auto' : 'none'
           }}
         >
-          {/* Header Inside Menu */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.10)', paddingBottom: '1rem' }}>
-            <Logo variant="primary" style={{ height: '30px', width: 'auto' }} />
-            <button
-              onClick={() => setMobileMenuOpen(false)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'rgba(255, 255, 255, 0.8)',
-                width: '44px',
-                height: '44px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                padding: 0
-              }}
-            >
-              <X size={20} />
-            </button>
-          </div>
-
-          {/* Navigation Items */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            {navLinks.map((link, idx) => {
+          {/* Mobile Drawer Content */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', fontWeight: '800', marginBottom: '0.5rem' }}>Navigation</span>
+            {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
-              const formattedIdx = String(idx + 1).padStart(2, '0');
               return (
-                <Link 
-                  key={link.path} 
-                  to={link.path} 
-                  onClick={() => setMobileMenuOpen(false)} 
-                  style={{ 
-                    fontSize: '1.2rem', 
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    fontSize: '1.1rem',
+                    fontWeight: '800',
                     fontFamily: 'var(--font-serif)',
-                    fontWeight: '800', 
-                    color: isActive ? 'var(--accent-gold)' : '#FCFAF6',
-                    padding: '0.85rem 0',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                    color: isActive ? '#b9cd94' : '#FFFDF9',
+                    padding: '0.65rem 0',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     textDecoration: 'none',
-                    transition: 'all 0.25s ease'
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
                   }}
-                  className="mobile-nav-row"
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)', opacity: 0.75, fontFamily: 'var(--font-sans)', fontWeight: '700' }}>
-                      {formattedIdx}
-                    </span>
-                    <span>{link.name.toUpperCase()}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    {isActive ? (
-                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />
-                    ) : (
-                      <span className="arrow-indicator" style={{ fontSize: '1rem', opacity: 0.4, transition: 'transform 0.2s ease', color: '#FFFFFF' }}>→</span>
-                    )}
-                  </div>
+                  <span>{link.name}</span>
+                  {isActive && <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#b9cd94' }} />}
                 </Link>
               );
             })}
+          </div>
 
-            {/* Wishlist Link inside mobile menu */}
+          {/* Quick Account / Wishlist actions in mobile menu */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.12)' }}>
             <Link 
               to="/wishlist" 
-              onClick={() => setMobileMenuOpen(false)} 
-              style={{ 
-                fontSize: '1.2rem', 
-                fontFamily: 'var(--font-serif)',
-                fontWeight: '800', 
-                color: location.pathname === '/wishlist' ? 'var(--accent-gold)' : '#FCFAF6',
-                padding: '0.85rem 0',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                textDecoration: 'none',
-                transition: 'all 0.25s ease'
-              }}
-              className="mobile-nav-row"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#F5EBDD', fontSize: '0.92rem', fontWeight: '700', textDecoration: 'none' }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)', opacity: 0.75, fontFamily: 'var(--font-sans)', fontWeight: '700' }}>
-                  07
-                </span>
-                <span>WISHLIST</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                {location.pathname === '/wishlist' ? (
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />
-                ) : wishlistCount > 0 ? (
-                  <span 
-                    style={{ 
-                      backgroundColor: 'var(--accent-gold)', 
-                      color: 'var(--primary-dark)', 
-                      padding: '0.15rem 0.45rem', 
-                      borderRadius: '999px', 
-                      fontSize: '0.72rem', 
-                      fontWeight: '900' 
-                    }}
-                  >
-                    {wishlistCount}
-                  </span>
-                ) : (
-                  <span className="arrow-indicator" style={{ fontSize: '1rem', opacity: 0.4, color: '#FFFFFF' }}>→</span>
-                )}
-              </div>
+              <Heart size={18} color="#b9cd94" />
+              <span>My Wishlist ({wishlistCount})</span>
             </Link>
-          </div>
-
-          {/* Mobile Account / Auth links */}
-          <div style={{ marginTop: '0.5rem', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)', padding: '1.25rem', borderRadius: '18px' }}>
-            <span style={{ display: 'block', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '0.1em', color: 'var(--accent-gold)', textTransform: 'uppercase', marginBottom: '0.85rem' }}>
-              CUSTOMER ACCOUNT
-            </span>
+            
             {isAuthenticated ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                <div style={{ fontSize: '0.82rem', color: 'rgba(252, 250, 246, 0.7)' }}>Logged in as: <strong style={{ color: '#FFFFFF' }}>{user?.name}</strong></div>
-                <Link to="/account" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: '#FFFFFF', fontWeight: '700', textDecoration: 'none' }}>My Dashboard</Link>
-                <Link to="/account/orders" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: '#FFFFFF', fontWeight: '700', textDecoration: 'none' }}>My Orders</Link>
-                {isAdmin && <Link to="/admin/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.9rem', color: 'var(--accent-gold)', fontWeight: '800', textDecoration: 'none' }}>★ Admin Panel</Link>}
-                <button 
-                  onClick={() => { logout(); setMobileMenuOpen(false); }} 
-                  style={{ background: 'none', color: '#c8503c', fontSize: '0.9rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.75rem 0 0', borderTop: '1px solid rgba(255, 255, 255, 0.08)', width: '100%', cursor: 'pointer', borderLeft: 'none', borderRight: 'none', borderBottom: 'none' }}
-                >
-                  <LogOut size={15} />
-                  <span>Logout</span>
-                </button>
-              </div>
+              <Link 
+                to="/account" 
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#F5EBDD', fontSize: '0.92rem', fontWeight: '700', textDecoration: 'none' }}
+              >
+                <User size={18} color="#b9cd94" />
+                <span>My Dashboard ({user?.name})</span>
+              </Link>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', fontSize: '0.9rem', color: '#FFFFFF', fontWeight: '750', textDecoration: 'none' }}>Sign In</Link>
-                <Link to="/register" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', fontSize: '0.9rem', color: 'rgba(252, 250, 246, 0.75)', fontWeight: '600', textDecoration: 'none' }}>Create New Account</Link>
-                <Link to="/admin/login" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', fontSize: '0.85rem', color: 'var(--accent-gold)', fontWeight: '800', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.75rem', marginTop: '0.25rem', textDecoration: 'none' }}>Admin Portal Login</Link>
-              </div>
+              <Link 
+                to="/login" 
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#b9cd94', fontSize: '0.92rem', fontWeight: '800', textDecoration: 'none' }}
+              >
+                <User size={18} color="#b9cd94" />
+                <span>Sign In / Register</span>
+              </Link>
             )}
           </div>
+
         </div>
       </div>
     </>
