@@ -629,17 +629,21 @@ body, p, span, li, a {
   }
 }
 
-  .ritual-grid {
-    grid-template-columns: 1fr !important;
-    gap: 2rem !important;
+  @media (max-width: 767px) {
+    .desktop-ritual-view {
+      display: none !important;
+    }
+    .mobile-ritual-unified-card {
+      display: block !important;
+    }
   }
-
-  .ritual-showcase {
-    padding: 1.5rem !important;
-  }
-
-  .ritual-showcase div[style*="height: 300px"] {
-    height: 200px !important;
+  @media (min-width: 768px) {
+    .desktop-ritual-view {
+      display: grid !important;
+    }
+    .mobile-ritual-unified-card {
+      display: none !important;
+    }
   }
 
   /* Lab Section */

@@ -719,21 +719,22 @@ export default function Home() {
       </section>
 
       {/* 5. INTERACTIVE MILLET RITUAL SECTION */}
-      <section ref={ritualRef} className="reveal-fade-up ritual-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section ref={ritualRef} className="reveal-fade-up ritual-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4rem' }}>
+          <div style={{ textAlign: 'center', maxWidth: '640px', margin: isMobile ? '0 auto 2.5rem' : '0 auto 4rem' }}>
             <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Interactive Selection</span>
-            <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>Discover Your Perfect <span style={{ color: 'var(--accent-gold)' }}>Millet Ritual</span></h2>
+            <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>Discover Your Perfect <span style={{ color: 'var(--accent-gold)' }}>Millet Ritual</span></h2>
           </div>
- 
-          <div className="ritual-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3.5rem', alignItems: 'center' }}>
+
+          {/* DESKTOP & TABLET VIEW: Two-Column Showcase Layout */}
+          <div className="desktop-ritual-view ritual-grid" style={{ display: isMobile ? 'none' : 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3.5rem', alignItems: 'center' }}>
             {/* Left Side: Numbered Selector */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {ritualProducts.map((item, idx) => {
                 const isSelected = activeRitualIdx === idx;
                 return (
                   <div
-                    key={item._id || item.slug}
+                    key={item._id || item.slug || idx}
                     onClick={() => setActiveRitualIdx(idx)}
                     style={{
                       padding: '1.25rem 1.5rem',
@@ -761,14 +762,14 @@ export default function Home() {
                       >
                         0{idx + 1}
                       </span>
-                      <h3 className="ritual-item-title" style={{ fontSize: '1.15rem', color: '#FFFFFF', fontWeight: '500' }}>{item.title}</h3>
+                      <h3 className="ritual-item-title" style={{ fontSize: '1.15rem', color: '#FFFFFF', fontWeight: '500', margin: 0 }}>{item.title}</h3>
                     </div>
                     <ArrowRight size={18} style={{ color: '#FFFFFF', transform: isSelected ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s' }} />
                   </div>
                 );
               })}
             </div>
- 
+
             {/* Right Side: Showcase Card */}
             <div
               className="ritual-showcase"
@@ -810,6 +811,168 @@ export default function Home() {
                 <Link to={`/product/${activeRitualProduct.slug}`} className="btn-primary" style={{ padding: '0.75rem 1.5rem', fontSize: '0.88rem', backgroundColor: '#c89b3c', color: '#FFFFFF', fontWeight: '800', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
                   <span>Explore Product</span>
                   <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* MOBILE VIEW: Unified Single Product Showcase Card */}
+          <div
+            className="mobile-ritual-unified-card"
+            style={{
+              display: isMobile ? 'block' : 'none',
+              width: 'calc(100% - 32px)',
+              margin: '0 auto',
+              backgroundColor: 'rgba(35, 21, 13, 0.85)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '26px',
+              border: '1px solid rgba(185, 205, 148, 0.25)',
+              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+              padding: '1.25rem',
+              boxSizing: 'border-box'
+            }}
+          >
+            {/* 4 Product Option Rows inside Unified Card */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginBottom: '1.35rem' }}>
+              {ritualProducts.map((item, idx) => {
+                const isSelected = activeRitualIdx === idx;
+                const isLast = idx === ritualProducts.length - 1;
+                return (
+                  <div
+                    key={item._id || item.slug || idx}
+                    onClick={() => setActiveRitualIdx(idx)}
+                    style={{
+                      padding: '0.85rem 1rem',
+                      borderRadius: isSelected ? '12px' : '0px',
+                      backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.35)' : 'transparent',
+                      border: isSelected ? '1px solid rgba(185, 205, 148, 0.4)' : 'none',
+                      borderBottom: (!isSelected && !isLast) ? '1px solid rgba(255, 255, 255, 0.12)' : (isSelected ? '1px solid rgba(185, 205, 148, 0.4)' : 'none'),
+                      cursor: 'pointer',
+                      transition: 'all 0.25s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <span
+                        style={{
+                          fontSize: '1.1rem',
+                          fontFamily: 'var(--font-serif)',
+                          fontWeight: '800',
+                          color: isSelected ? '#b9cd94' : 'rgba(255, 255, 255, 0.55)',
+                          minWidth: '24px'
+                        }}
+                      >
+                        0{idx + 1}
+                      </span>
+                      <h3 
+                        style={{ 
+                          fontSize: '0.95rem', 
+                          color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.85)', 
+                          fontWeight: isSelected ? '750' : '550',
+                          margin: 0
+                        }}
+                      >
+                        {item.title}
+                      </h3>
+                    </div>
+                    <ArrowRight 
+                      size={16} 
+                      style={{ 
+                        color: isSelected ? '#b9cd94' : 'rgba(255, 255, 255, 0.4)', 
+                        transform: isSelected ? 'translateX(3px)' : 'translateX(0)', 
+                        transition: 'transform 0.2s' 
+                      }} 
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Selected Product Image inside Unified Card */}
+            <div 
+              style={{ 
+                position: 'relative', 
+                height: '230px', 
+                borderRadius: '18px', 
+                overflow: 'hidden', 
+                marginBottom: '1.35rem',
+                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.1)'
+              }}
+            >
+              <img 
+                src={activeRitualProduct.image} 
+                alt={activeRitualProduct.title}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                  transition: 'opacity 0.3s ease'
+                }}
+              />
+            </div>
+
+            {/* Selected Product Details inside Unified Card */}
+            <div>
+              <h3 style={{ fontSize: '1.35rem', color: '#FFFDF9', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>
+                {activeRitualProduct.title}
+              </h3>
+              <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '0.88rem', lineHeight: '1.6', marginBottom: '1.25rem', fontWeight: '500' }}>
+                {activeRitualProduct.description}
+              </p>
+
+              {/* Ingredient Tags */}
+              {activeRitualProduct.ingredients && activeRitualProduct.ingredients.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1.35rem' }}>
+                  {activeRitualProduct.ingredients.slice(0, 4).map((ingredient, i) => (
+                    <span 
+                      key={i} 
+                      style={{ 
+                        fontSize: '0.72rem', 
+                        color: 'rgba(255, 255, 255, 0.9)', 
+                        fontWeight: '650', 
+                        padding: '0.25rem 0.6rem', 
+                        borderRadius: '6px', 
+                        border: '1px solid rgba(255, 255, 255, 0.35)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)'
+                      }}
+                    >
+                      {ingredient}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Price & CTA Button */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.7)', display: 'block', fontWeight: '600' }}>From</span>
+                  <span style={{ fontSize: '1.35rem', fontWeight: '850', color: '#FFFDF9' }}>
+                    ₹{activeRitualProduct.variants?.[0]?.price || 139}
+                  </span>
+                </div>
+                <Link 
+                  to={`/product/${activeRitualProduct.slug}`} 
+                  className="btn-primary" 
+                  style={{ 
+                    padding: '0.65rem 1.25rem', 
+                    fontSize: '0.85rem', 
+                    backgroundColor: '#c89b3c', 
+                    color: '#FFFFFF', 
+                    fontWeight: '800', 
+                    textDecoration: 'none', 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '0.35rem',
+                    borderRadius: '999px'
+                  }}
+                >
+                  <span>Explore Product</span>
+                  <ArrowRight size={15} />
                 </Link>
               </div>
             </div>
