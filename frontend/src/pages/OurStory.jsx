@@ -122,7 +122,7 @@ export default function OurStory() {
         </div>
 
         {/* Hero image block with label */}
-        <div style={{ position: 'relative' }}>
+        {/* <div style={{ position: 'relative' }}>
           <div 
             style={{ 
               position: 'relative', 
@@ -169,7 +169,7 @@ export default function OurStory() {
             <Sparkles size={13} color="#b9cd94" />
             <span>Handcrafted with intention</span>
           </div>
-        </div>
+        </div> */}
       </section>
 
       {/* 2. EDITORIAL FOUNDER STORY SECTION */}

@@ -824,6 +824,14 @@ body, p, span, li, a {
    MOBILE SCREEN ONLY OVERRIDES (<= 767px)
    ========================================== */
 @media (max-width: 767px) {
+  /* Instant Visibility for Scroll Reveal on Mobile to prevent layout shifts/blank gaps */
+  .reveal-fade-up,
+  .reveal-scale-in {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
   /* Announcement Bar */
   .announcement-bar {
     font-size: clamp(10px, 3.2vw, 12px) !important;
@@ -842,8 +850,14 @@ body, p, span, li, a {
   /* Hero Section Mobile height */
   .hero-section {
     height: auto !important;
-    min-height: 520px !important;
-    padding: 5rem 0 3.5rem !important;
+    min-height: 100dvh !important;
+    padding: 5.5rem 0 2.5rem !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Section after Hero Mobile Spacing */
+  .trust-section {
+    padding: 2.75rem 0 !important;
   }
 
   /* Hero Mobile Padding */

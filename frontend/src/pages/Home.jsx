@@ -46,10 +46,22 @@ export default function Home() {
   const maxScrollRef = useRef(0);
   const homeRef = useRef(null);
 
+  // Default poster URLs
+  const DEFAULT_MOBILE_POSTER = "https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,c_scale,w_480,q_auto:eco/v1787068808/cookie_video.jpg";
+  const DEFAULT_DESKTOP_POSTER = "https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1787068808/cookie_video.jpg";
+
   // Video optimization states
   const [videoPlayError, setVideoPlayError] = useState(false);
-  const [videoSrc, setVideoSrc] = useState('');
-  const [videoPoster, setVideoPoster] = useState('');
+  const [videoSrc, setVideoSrc] = useState(
+    typeof window !== 'undefined' && window.innerWidth <= 767
+      ? "https://res.cloudinary.com/dmm8lfc3x/video/upload/c_scale,w_480,q_auto:eco,f_auto/v1787068808/cookie_video.mp4"
+      : "https://res.cloudinary.com/dmm8lfc3x/video/upload/q_auto,f_auto/v1787068808/cookie_video.mp4"
+  );
+  const [videoPoster, setVideoPoster] = useState(
+    typeof window !== 'undefined' && window.innerWidth <= 767
+      ? DEFAULT_MOBILE_POSTER
+      : DEFAULT_DESKTOP_POSTER
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -76,11 +88,11 @@ export default function Home() {
     }
 
     if (width <= 767) {
-      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,c_scale,w_480,q_auto:eco/v1787068808/cookie_video.jpg");
+      setVideoPoster(DEFAULT_MOBILE_POSTER);
     } else if (width <= 1024) {
       setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,c_scale,w_800,q_auto/v1787068808/cookie_video.jpg");
     } else {
-      setVideoPoster("https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1787068808/cookie_video.jpg");
+      setVideoPoster(DEFAULT_DESKTOP_POSTER);
     }
 
     return () => {
@@ -393,24 +405,23 @@ export default function Home() {
     <div ref={homeRef} className="home-page" style={{ backgroundColor: 'transparent', position: 'relative' }}>
       
       {/* Background Poster Fallback / Loading Wrapper */}
-      {videoPoster && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundImage: `url(${videoPoster})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-            zIndex: 0,
-          }}
-        />
-      )}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundImage: `url(${videoPoster || DEFAULT_MOBILE_POSTER})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          zIndex: 0,
+          pointerEvents: 'none',
+        }}
+      />
 
       {/* Video Background Layer */}
-      <div className="home-video-layer" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+      <div className="home-video-layer" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
         <video
           ref={videoRef}
           muted
@@ -422,9 +433,9 @@ export default function Home() {
           onError={() => setVideoPlayError(true)}
           disablePictureInPicture
           disableRemotePlayback
-          poster={videoPoster}
+          poster={videoPoster || DEFAULT_MOBILE_POSTER}
           style={{
-            position: 'fixed',
+            position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',
@@ -446,13 +457,14 @@ export default function Home() {
       {/* Dark Cover Overlay */}
       <div
         style={{
-          position: 'absolute',
+          position: 'fixed',
           top: 0,
           left: 0,
           width: '100%',
           height: '100%',
           background: 'rgba(20, 10, 5, 0.20)',
           zIndex: 2,
+          pointerEvents: 'none',
         }}
       />
 
@@ -464,13 +476,14 @@ export default function Home() {
           className="hero-section"
           style={{
             position: 'relative',
-            height: '92vh',
-            minHeight: '600px',
+            height: isMobile ? 'auto' : '92vh',
+            minHeight: isMobile ? '100dvh' : '600px',
             overflow: 'hidden',
             backgroundColor: 'transparent',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            boxSizing: 'border-box',
           }}
         >
         {/* Floating Transparent Content */}
@@ -485,9 +498,9 @@ export default function Home() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            opacity: Math.max(0, 1 - scrollY / 550),
-            transform: `translateY(${-scrollY * 0.12}px)`,
-            transition: 'opacity 0.1s ease-out, transform 0.1s ease-out',
+            opacity: isMobile ? 1 : Math.max(0, 1 - scrollY / 550),
+            transform: isMobile ? 'none' : `translateY(${-scrollY * 0.12}px)`,
+            transition: isMobile ? 'none' : 'opacity 0.1s ease-out, transform 0.1s ease-out',
           }}
         >
           <span 
