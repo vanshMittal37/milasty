@@ -1157,13 +1157,30 @@ body, p, span, li, a {
     border-radius: 999px !important;
   }
 
-  /* Main Shop Products Grid - FORCE 2x2 ON MOBILE */
-  .products-main-grid {
+  /* Main Shop Products Grid - FORCE 2x2 ON MOBILE DEFINITIVELY */
+  .products-main-grid,
+  .shop-product-grid {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 10px !important;
     width: 100% !important;
     box-sizing: border-box !important;
+  }
+
+  .products-main-grid > *,
+  .shop-product-grid > * {
+    min-width: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* HIDE ALL CAROUSEL / ARROW BUTTONS ON MOBILE FOR NUTRITION & WISHLIST */
+  .section-scroll-buttons,
+  .nutrition-carousel-prev,
+  .nutrition-carousel-next,
+  .nutrition-nav-buttons,
+  .wishlist-nav-buttons {
+    display: none !important;
   }
 
   /* Product Card Responsive Adjustments for 2x2 Grid */
