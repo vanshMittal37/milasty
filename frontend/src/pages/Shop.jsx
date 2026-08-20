@@ -260,60 +260,28 @@ export default function Shop() {
           </div>
 
           {/* Search, Category Filter & Sort Controls Toolbar */}
-          <div 
-            style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: '1.25rem', 
-              marginBottom: '3rem',
-              backgroundColor: 'rgba(20, 10, 5, 0.4)',
-              padding: '1.5rem',
-              borderRadius: '20px',
-              border: '1px solid rgba(245, 220, 180, 0.15)',
-              boxSizing: 'border-box'
-            }}
-          >
+          <div className="shop-filter-panel">
             {/* Search Bar & Sort Dropdown Row */}
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', width: '100%', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className="shop-filter-top-row">
               {/* Search Bar */}
-              <div style={{ position: 'relative', flex: '1 1 280px', minWidth: 0 }}>
-                <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-gold)' }} />
+              <div className="shop-search-box">
+                <Search size={18} className="shop-search-icon" color="var(--accent-gold)" />
                 <input
                   type="text"
-                  placeholder="Search millet cookies, hampers, crackers..."
+                  placeholder="Search millet cookies, hampers..."
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem 0.75rem 2.8rem',
-                    borderRadius: '999px',
-                    backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                    border: '1px solid rgba(197, 160, 89, 0.3)',
-                    color: 'var(--primary-dark)',
-                    fontSize: '0.9rem',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
+                  className="shop-search-input"
                 />
               </div>
 
               {/* Sort selector */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+              <div className="shop-sort-wrap">
                 <ArrowUpDown size={16} color="var(--accent-gold)" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  style={{
-                    padding: '0.7rem 1.25rem',
-                    borderRadius: '999px',
-                    backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                    border: '1px solid rgba(197, 160, 89, 0.3)',
-                    color: 'var(--primary-dark)',
-                    fontSize: '0.85rem',
-                    fontWeight: '700',
-                    outline: 'none',
-                    cursor: 'pointer'
-                  }}
+                  className="shop-sort-select"
                 >
                   <option value="newest" style={{ backgroundColor: '#241209', color: '#FFF' }}>Newest First</option>
                   <option value="price_asc" style={{ backgroundColor: '#241209', color: '#FFF' }}>Price: Low to High</option>
@@ -324,48 +292,26 @@ export default function Shop() {
             </div>
 
             {/* Category Filter Pills */}
-            <div style={{ display: 'flex', gap: '0.65rem', overflowX: 'auto', paddingBottom: '0.25rem', width: '100%', flexWrap: 'wrap' }} className="mobile-scroll-container">
+            <div className="shop-categories-list">
               <button
                 onClick={() => { setSelectedCategory('all'); setPage(1); }}
-                style={{
-                  padding: '0.55rem 1.25rem',
-                  borderRadius: '999px',
-                  fontWeight: '800',
-                  fontSize: '0.8rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
-                  cursor: 'pointer',
-                  transition: 'all 0.25s ease',
-                  backgroundColor: selectedCategory === 'all' ? '#244f21' : 'rgba(36, 79, 33, 0.12)',
-                  color: selectedCategory === 'all' ? '#FFFFFF' : '#b9cd94',
-                  border: selectedCategory === 'all' ? '1.5px solid #244f21' : '1.5px solid rgba(185, 205, 148, 0.35)',
-                  boxShadow: selectedCategory === 'all' ? '0 4px 14px rgba(36, 79, 33, 0.35)' : 'none',
-                }}
+                className={`shop-cat-btn ${selectedCategory === 'all' ? 'active' : ''}`}
               >
                 All Bakes
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.slug || cat._id}
-                  onClick={() => { setSelectedCategory(cat.slug || cat.name); setPage(1); }}
-                  style={{
-                    padding: '0.55rem 1.25rem',
-                    borderRadius: '999px',
-                    fontWeight: '800',
-                    fontSize: '0.8rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em',
-                    cursor: 'pointer',
-                    transition: 'all 0.25s ease',
-                    backgroundColor: selectedCategory === (cat.slug || cat.name) ? '#244f21' : 'rgba(36, 79, 33, 0.12)',
-                    color: selectedCategory === (cat.slug || cat.name) ? '#FFFFFF' : '#b9cd94',
-                    border: selectedCategory === (cat.slug || cat.name) ? '1.5px solid #244f21' : '1.5px solid rgba(185, 205, 148, 0.35)',
-                    boxShadow: selectedCategory === (cat.slug || cat.name) ? '0 4px 14px rgba(36, 79, 33, 0.35)' : 'none',
-                  }}
-                >
-                  {cat.name}
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const catVal = cat.slug || cat.name;
+                const isActive = selectedCategory === catVal;
+                return (
+                  <button
+                    key={cat.slug || cat._id}
+                    onClick={() => { setSelectedCategory(catVal); setPage(1); }}
+                    className={`shop-cat-btn ${isActive ? 'active' : ''}`}
+                  >
+                    {cat.name}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
