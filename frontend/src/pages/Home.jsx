@@ -978,7 +978,9 @@ export default function Home() {
               </div>
             </div>
           </div>
-       {/* 6. MILASTY SNACK RITUAL */}
+        </section>
+
+        {/* 6. MILASTY SNACK RITUAL */}
       <section ref={timelineRef} className="reveal-fade-up timeline-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: isMobile ? '2.5rem' : '4.5rem' }}>
@@ -1267,13 +1269,13 @@ export default function Home() {
       <section ref={storyRef} className="reveal-fade-up story-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
           <div className="story-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
-            <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid #FFFFFF' }}>
+            {/* <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid #FFFFFF' }}>
               <img 
                 src="/images/image1.jpeg" 
                 alt="Our baking process"
                 style={{ width: '100%', height: '400px', objectFit: 'cover', display: 'block' }}
               />
-            </div>
+            </div> */}
             <div className="glass-card" style={{ padding: '2.5rem', borderRadius: '24px' }}>
               <span style={{ display: 'inline-block', marginBottom: '1rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>The Milasty Story</span>
               <h2 style={{ fontSize: '2.5rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '1.25rem', lineHeight: '1.2' }}>From Ancient Grains to <span style={{ color: 'var(--accent-gold)' }}>Modern Snack Rituals.</span></h2>
