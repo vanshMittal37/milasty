@@ -639,6 +639,7 @@ export default function Home() {
                     position: 'relative',
                     boxSizing: 'border-box',
                     width: '100%',
+                    minWidth: 0,
                   }}
                 >
                   <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: 'transparent' }} className="card-image-wrap">
@@ -665,12 +666,12 @@ export default function Home() {
                       className="card-wishlist-btn"
                       style={{
                         position: 'absolute',
-                        top: '10px',
-                        right: '10px',
+                        top: '8px',
+                        right: '8px',
                         backgroundColor: 'rgba(255, 255, 255, 0.90)',
                         border: 'none',
-                        width: '32px',
-                        height: '32px',
+                        width: isMobile ? '28px' : '32px',
+                        height: isMobile ? '28px' : '32px',
                         borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
@@ -681,32 +682,32 @@ export default function Home() {
                         zIndex: 5
                       }}
                     >
-                      <Heart size={15} fill={isWishlisted ? 'var(--accent-terracotta)' : 'none'} />
+                      <Heart size={isMobile ? 13 : 15} fill={isWishlisted ? 'var(--accent-terracotta)' : 'none'} />
                     </button>
                   </div>
 
-                  <div className="card-body" style={{ padding: '1.25rem 1.15rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
+                  <div className="card-body" style={{ padding: isMobile ? '0.85rem 0.7rem' : '1.25rem 1.15rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1, minWidth: 0 }}>
                     <div>
-                      <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.4rem' }}>
+                      <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', marginBottom: '0.35rem' }}>
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={13} fill={i < Math.floor(product.rating || 5) ? 'var(--accent-gold)' : 'none'} color="var(--accent-gold)" />
+                          <Star key={i} size={isMobile ? 11 : 13} fill={i < Math.floor(product.rating || 5) ? 'var(--accent-gold)' : 'none'} color="var(--accent-gold)" />
                         ))}
-                        <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.85)', marginLeft: '0.25rem', fontWeight: '600' }}>({product.reviewCount || 10})</span>
+                        <span style={{ fontSize: isMobile ? '0.7rem' : '0.78rem', color: 'rgba(255, 255, 255, 0.85)', marginLeft: '0.2rem', fontWeight: '600' }}>({product.reviewCount || 10})</span>
                       </div>
-                      <h3 className="card-title" style={{ fontSize: '1.1rem', color: '#FFFDF9', marginBottom: '0.35rem', fontFamily: 'var(--font-serif)', fontWeight: '850', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <h3 className="card-title" style={{ fontSize: isMobile ? '0.9rem' : '1.1rem', color: '#FFFDF9', marginBottom: '0.3rem', fontFamily: 'var(--font-serif)', fontWeight: '850', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         <Link to={`/product/${product.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{product.title}</Link>
                       </h3>
-                      <p className="card-subtitle" style={{ fontSize: '0.82rem', color: '#F5EBDD', marginBottom: '1rem', lineHeight: '1.4', fontWeight: '550', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.subtitle || product.description}</p>
+                      <p className="card-subtitle" style={{ fontSize: isMobile ? '0.75rem' : '0.82rem', color: '#F5EBDD', marginBottom: '0.85rem', lineHeight: '1.4', fontWeight: '550', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.subtitle || product.description}</p>
                     </div>
 
-                    <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
-                      <span className="card-price" style={{ fontSize: '1.15rem', fontWeight: '900', color: '#FFFDF9' }}>₹{selectedVariant?.price || 139}</span>
+                    <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.6rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', minWidth: 0 }}>
+                      <span className="card-price" style={{ fontSize: isMobile ? '0.95rem' : '1.15rem', fontWeight: '900', color: '#FFFDF9' }}>₹{selectedVariant?.price || 139}</span>
                       <button 
                         onClick={() => addToCart(product, selectedVariant)}
                         className="btn-primary add-cart-btn" 
-                        style={{ padding: '0.5rem 0.9rem', fontSize: '0.8rem', gap: '0.3rem', backgroundColor: '#244f21', color: '#FFFFFF', fontWeight: '850', borderRadius: '999px', border: 'none' }}
+                        style={{ padding: isMobile ? '0.4rem 0.65rem' : '0.5rem 0.9rem', fontSize: isMobile ? '0.72rem' : '0.8rem', gap: '0.25rem', backgroundColor: '#244f21', color: '#FFFFFF', fontWeight: '850', borderRadius: '999px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
                       >
-                        <ShoppingBag size={14} />
+                        <ShoppingBag size={isMobile ? 12 : 14} />
                         <span>Add</span>
                       </button>
                     </div>
@@ -977,110 +978,131 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* 6. MILASTY SNACK RITUAL */}
-      <section ref={timelineRef} className="reveal-fade-up timeline-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+       {/* 6. MILASTY SNACK RITUAL */}
+      <section ref={timelineRef} className="reveal-fade-up timeline-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: isMobile ? '2.5rem' : '4.5rem' }}>
             <div>
               <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Mindful Eating</span>
-              <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0 }}>The MILASTY <span style={{ color: 'var(--accent-gold)' }}>Snack Ritual</span></h2>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1.02rem', fontWeight: '500', margin: '0.5rem 0 0' }}>Turn your everyday snack break into a moment worth slowing down for.</p>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0 }}>The MILASTY <span style={{ color: 'var(--accent-gold)' }}>Snack Ritual</span></h2>
+              <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: isMobile ? '0.92rem' : '1.02rem', fontWeight: '500', margin: '0.5rem 0 0' }}>Turn your everyday snack break into a moment worth slowing down for.</p>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button 
-                onClick={() => scrollLeft(snackRitualRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button 
-                onClick={() => scrollRight(snackRitualRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
+            {!isMobile && (
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  onClick={() => scrollLeft(snackRitualRef)} 
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button 
+                  onClick={() => scrollRight(snackRitualRef)} 
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
           </div>
 
           <div 
             ref={snackRitualRef}
-            className="horizontal-scroll-container fitted-cards-container" 
+            className="timeline-grid fitted-cards-container-4" 
           >
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
-              <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>01</div>
-              <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAUSE</h4>
-              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Step away from screens and digital chatter for five mindful minutes.</p>
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>01</div>
+              <h4 style={{ fontSize: isMobile ? '1rem' : '1.15rem', color: '#FFFFFF', marginBottom: '0.4rem', fontWeight: '800' }}>PAUSE</h4>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Step away from screens and digital chatter for five mindful minutes.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
-              <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>02</div>
-              <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTICE</h4>
-              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Take in the warm, nostalgic aroma of slow-baked millets and pure Cow Ghee.</p>
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>02</div>
+              <h4 style={{ fontSize: isMobile ? '1rem' : '1.15rem', color: '#FFFFFF', marginBottom: '0.4rem', fontWeight: '800' }}>NOTICE</h4>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Take in the warm, nostalgic aroma of slow-baked millets and pure Cow Ghee.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
-              <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>03</div>
-              <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>BITE SLOWLY</h4>
-              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Enjoy the wholesome crumbly texture and balanced sweetness of unrefined jaggery.</p>
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>03</div>
+              <h4 style={{ fontSize: isMobile ? '1rem' : '1.15rem', color: '#FFFFFF', marginBottom: '0.4rem', fontWeight: '800' }}>BITE SLOWLY</h4>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Enjoy the wholesome crumbly texture and balanced sweetness of unrefined jaggery.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
-              <div style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>04</div>
-              <h4 style={{ fontSize: '1.15rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PAIR & ENJOY</h4>
-              <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Pair with a cup of warm ginger chai, filter coffee, or green tea.</p>
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>04</div>
+              <h4 style={{ fontSize: isMobile ? '1rem' : '1.15rem', color: '#FFFFFF', marginBottom: '0.4rem', fontWeight: '800' }}>PAIR & ENJOY</h4>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Pair with a cup of warm ginger chai, filter coffee, or green tea.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* 7. LAB TEST / TRUST SECTION */}
-      <section ref={labRef} className="reveal-fade-up lab-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section ref={labRef} className="reveal-fade-up lab-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div className="lab-container" style={{ padding: '4.5rem 3.5rem', color: '#FFFFFF' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          <div className="lab-container" style={{ padding: isMobile ? '2rem 1.25rem' : '4.5rem 3.5rem', color: '#FFFFFF', borderRadius: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))', gap: isMobile ? '2.5rem' : '4rem', alignItems: 'center' }}>
               <div>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.25rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>
                   <Award size={14} />
                   <span>Lab Tested Transparency</span>
                 </span>
- 
-                <h2 style={{ fontSize: '2.5rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2' }}>
+
+                <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.5rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2' }}>
                   Know What Goes Into <span style={{ color: 'var(--accent-gold)' }}>Every Bite.</span>
                 </h2>
- 
-                <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1rem', lineHeight: '1.7', marginBottom: '2.25rem', fontWeight: '500' }}>
+
+                <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: isMobile ? '0.92rem' : '1rem', lineHeight: '1.7', marginBottom: '2.25rem', fontWeight: '500' }}>
                   We publish comprehensive nutritional and chemical reports so you can make informed choices. Absolutely no hidden sugars or synthetic preservatives.
                 </p>
- 
+
                 <Link to="/nutrition" className="btn-primary" style={{ backgroundColor: '#c89b3c', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', padding: '0.85rem 2rem', borderRadius: '999px', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                   <FileText size={18} />
                   <span>View Nutritional Specs →</span>
                 </Link>
               </div>
- 
+
               {/* Comparison Box */}
-              <div className="lab-comparison" style={{ padding: '2.25rem' }}>
-                <h4 style={{ color: 'var(--accent-gold)', fontSize: '1.15rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>MILASTY vs Conventional Biscuits</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.92rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
-                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Fat Source:</span>
-                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>100% Pure Cow Ghee</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
-                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Sweetener:</span>
-                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Organic Jaggery</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
-                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Flour Base:</span>
-                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Bajra, Jowar, Ragi (No Maida)</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.25rem' }}>
-                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Preservatives:</span>
-                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Zero Synthetic Chemicals</strong>
-                  </div>
+              <div 
+                className="lab-comparison" 
+                style={{ 
+                  padding: isMobile ? '1.5rem 1.15rem' : '2.25rem', 
+                  borderRadius: '24px',
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <h4 style={{ color: 'var(--accent-gold)', fontSize: isMobile ? '1.05rem' : '1.15rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>
+                  MILASTY vs Conventional Biscuits
+                </h4>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', width: '100%', minWidth: 0 }}>
+                  {[
+                    { label: 'Fat Source:', value: '100% Pure Cow Ghee' },
+                    { label: 'Sweetener:', value: 'Organic Jaggery' },
+                    { label: 'Flour Base:', value: 'Bajra, Jowar, Ragi (No Maida)' },
+                    { label: 'Preservatives:', value: 'Zero Synthetic Chemicals' },
+                  ].map((row, idx, arr) => (
+                    <div 
+                      key={idx}
+                      style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: isMobile ? 'minmax(105px, 0.9fr) minmax(0, 1.1fr)' : '1fr auto', 
+                        gap: '0.75rem', 
+                        alignItems: 'baseline', 
+                        borderBottom: idx < arr.length - 1 ? '1px solid rgba(255, 255, 255, 0.25)' : 'none', 
+                        paddingBottom: '0.75rem',
+                        width: '100%',
+                        minWidth: 0
+                      }}
+                    >
+                      <span style={{ color: '#F5EBDD', opacity: 0.95, fontWeight: '600', fontSize: isMobile ? '0.86rem' : '0.92rem', wordBreak: 'break-word' }}>
+                        {row.label}
+                      </span>
+                      <strong style={{ color: 'var(--accent-gold)', fontWeight: '850', fontSize: isMobile ? '0.88rem' : '0.92rem', textAlign: isMobile ? 'left' : 'right', lineHeight: '1.45', wordBreak: 'break-word' }}>
+                        {row.value}
+                      </strong>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -1271,63 +1293,65 @@ export default function Home() {
       </section>
 
       {/* 3. "WHY MILASTY" SECTION (Transparent tiles with white text and borders) */}
-      <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+      <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: isMobile ? '2.5rem' : '4.5rem' }}>
             <div>
               <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Core Philosophy</span>
-              <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0 }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0 }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button 
-                onClick={() => scrollLeft(whyDiffRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button 
-                onClick={() => scrollRight(whyDiffRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
+            {!isMobile && (
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  onClick={() => scrollLeft(whyDiffRef)} 
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button 
+                  onClick={() => scrollRight(whyDiffRef)} 
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
           </div>
 
           <div 
             ref={whyDiffRef}
-            className="horizontal-scroll-container fitted-cards-container" 
+            className="why-grid fitted-cards-container-4" 
           >
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                <Award size={36} strokeWidth={1.5} />
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
+                <Award size={isMobile ? 28 : 36} strokeWidth={1.5} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>PURE DESI GHEE</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
+              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PURE DESI GHEE</h3>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                <Sparkles size={36} strokeWidth={1.5} />
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
+                <Sparkles size={isMobile ? 28 : 36} strokeWidth={1.5} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>WHOLESOME MILLETS</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
+              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>WHOLESOME MILLETS</h3>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                <ShieldCheck size={36} strokeWidth={1.5} />
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
+                <ShieldCheck size={isMobile ? 28 : 36} strokeWidth={1.5} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>NATURALLY SWEET</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
+              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NATURALLY SWEET</h3>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
             </div>
 
-            <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                <FileText size={36} strokeWidth={1.5} />
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
+                <FileText size={isMobile ? 28 : 36} strokeWidth={1.5} />
               </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.75rem', fontWeight: '800' }}>NOTHING UNNECESSARY</h3>
-              <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.6', fontWeight: '500' }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
+              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTHING UNNECESSARY</h3>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
             </div>
           </div>
         </div>
