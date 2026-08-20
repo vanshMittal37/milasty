@@ -247,7 +247,7 @@ export default function Shop() {
       </section>
 
       {/* 3. FEATURED COLLECTION SECTION */}
-      {featuredProduct && (
+      {/* {featuredProduct && (
         <section style={{ padding: '6rem 0', backgroundColor: 'transparent' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
             
@@ -336,7 +336,7 @@ export default function Shop() {
             </div>
           </div>
         </section>
-      )}
+      )} */}
 
       {/* 4. MAIN PRODUCTS & FILTERS SECTION */}
       <section id="shop-listings-section" style={{ padding: '6rem 0', backgroundColor: 'rgba(20, 10, 5, 0.55)', borderTop: '1px solid rgba(245, 220, 180, 0.15)' }}>

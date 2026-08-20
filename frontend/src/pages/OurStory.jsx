@@ -1,7 +1,692 @@
-import React, { useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { Heart, Sparkles, ShieldCheck, Award, Leaf, Flame, Compass, ChevronRight, MessageSquare, Info, ChevronLeft } from 'lucide-react';
-import Logo from '../components/Logo';
+// ========================================================
+// SECTION 1 — ORBIT JOURNEY (Milestones) COMPONENT
+// ========================================================
+function OrbitJourneySection() {
+  const milestones = [
+    { step: '01', title: 'The Question', desc: 'Can everyday bakery snacks be healthy, clean, and genuinely delicious?' },
+    { step: '02', title: 'The Search', desc: 'Sourcing honest local ingredients, unrefined sweeteners, and traditional grains.' },
+    { step: '03', title: 'The First Bake', desc: 'Experimenting in small home batches with millet, pure Desi Ghee, and organic jaggery.' },
+    { step: '04', title: 'MILASTY is Born', desc: 'A better, mindful way of snacking, establishing our small-batch bakery.' },
+    { step: '05', title: 'Today', desc: 'Bringing handcrafted millet bakes to wellness-focused Indian homes.' },
+  ];
+
+  const [activeIdx, setActiveIdx] = React.useState(0);
+  const [isPaused, setIsPaused] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  React.useEffect(() => {
+    if (isPaused || prefersReducedMotion) return;
+    const timer = setInterval(() => {
+      setActiveIdx((prev) => (prev + 1) % milestones.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [isPaused, prefersReducedMotion, milestones.length]);
+
+  const handlePrev = () => {
+    setIsPaused(true);
+    setActiveIdx((prev) => (prev - 1 + milestones.length) % milestones.length);
+  };
+
+  const handleNext = () => {
+    setIsPaused(true);
+    setActiveIdx((prev) => (prev + 1) % milestones.length);
+  };
+
+  const activeMilestone = milestones[activeIdx];
+
+  const getOrbitStyle = (index) => {
+    const total = milestones.length;
+    const diff = (index - activeIdx + total) % total;
+
+    if (diff === 0) {
+      return {
+        transform: 'translate(-50%, -50%) scale(1)',
+        opacity: 1,
+        zIndex: 10,
+        pointerEvents: 'auto',
+      };
+    }
+
+    const angles = {
+      1: { x: 340, y: -90, scale: 0.82, opacity: 0.7, zIndex: 6 },
+      2: { x: 220, y: 140, scale: 0.75, opacity: 0.5, zIndex: 4 },
+      3: { x: -220, y: 140, scale: 0.75, opacity: 0.5, zIndex: 4 },
+      4: { x: -340, y: -90, scale: 0.82, opacity: 0.7, zIndex: 6 },
+    };
+
+    const pos = angles[diff] || { x: 0, y: 0, scale: 0.7, opacity: 0.4, zIndex: 2 };
+    return {
+      transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px)) scale(${pos.scale})`,
+      opacity: pos.opacity,
+      zIndex: pos.zIndex,
+      pointerEvents: 'auto',
+      filter: 'blur(0.5px)',
+    };
+  };
+
+  return (
+    <section 
+      style={{ 
+        padding: isMobile ? '3.5rem 0' : '6.5rem 0', 
+        backgroundColor: 'transparent',
+        overflow: 'hidden',
+        position: 'relative' 
+      }}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div style={{ maxWidth: '1240px', margin: '0 auto', paddingLeft: '1.25rem', paddingRight: '1.25rem', boxSizing: 'border-box' }}>
+        
+        {/* Header */}
+        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 3rem' }}>
+          <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+            Milestones
+          </span>
+          <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+            The MILASTY Journey
+          </h2>
+          <p style={{ fontSize: '0.95rem', color: '#F5EBDD', fontWeight: '500', marginTop: '0.5rem' }}>
+            From an inspiring question to handcrafted bakes delivered nationwide.
+          </p>
+        </div>
+
+        {/* Orbit Canvas Container */}
+        {!isMobile ? (
+          /* DESKTOP / TABLET ORBIT VIEW */
+          <div 
+            style={{ 
+              position: 'relative', 
+              height: '520px', 
+              width: '100%', 
+              margin: '0 auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {/* Ambient Orbit Ring */}
+            <div 
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '680px',
+                height: '280px',
+                borderRadius: '50%',
+                border: '1.5px dashed rgba(185, 205, 148, 0.25)',
+                pointerEvents: 'none',
+                zIndex: 1,
+              }}
+            />
+
+            {/* Render 5 Milestone Cards in Orbit */}
+            {milestones.map((milestone, idx) => {
+              const isActive = idx === activeIdx;
+              const orbitStyle = getOrbitStyle(idx);
+              return (
+                <div
+                  key={milestone.step}
+                  onClick={() => {
+                    setIsPaused(true);
+                    setActiveIdx(idx);
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    width: isActive ? '450px' : '280px',
+                    padding: isActive ? '2.5rem 2.25rem' : '1.5rem 1.25rem',
+                    borderRadius: isActive ? '26px' : '20px',
+                    backgroundColor: isActive ? 'rgba(35, 21, 13, 0.88)' : 'rgba(35, 21, 13, 0.60)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: isActive ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
+                    boxShadow: isActive ? '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(185, 205, 148, 0.15)' : '0 10px 30px rgba(0,0,0,0.3)',
+                    cursor: 'pointer',
+                    transition: 'all 800ms cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxSizing: 'border-box',
+                    ...orbitStyle
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isActive ? '1rem' : '0.5rem' }}>
+                    <span style={{ fontSize: isActive ? '1.6rem' : '1.2rem', fontWeight: '900', color: '#b9cd94', fontFamily: 'var(--font-serif)' }}>
+                      {milestone.step}
+                    </span>
+                    <span style={{ fontSize: '0.72rem', color: isActive ? '#b9cd94' : 'rgba(255,255,255,0.5)', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                      {isActive ? 'Active Milestone' : `Step 0${idx + 1}`}
+                    </span>
+                  </div>
+
+                  <h3 style={{ fontSize: isActive ? '1.35rem' : '1.05rem', fontWeight: '850', color: '#FFFDF9', marginBottom: isActive ? '0.75rem' : '0.35rem', fontFamily: 'var(--font-serif)' }}>
+                    {milestone.title}
+                  </h3>
+
+                  <p style={{ fontSize: isActive ? '0.95rem' : '0.82rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+                    {milestone.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* MOBILE COMPACT UNIFIED ORBIT VIEW */
+          <div style={{ width: '100%', boxSizing: 'border-box' }}>
+            
+            {/* Numbered Milestone Indicators around top */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+              {milestones.map((m, idx) => {
+                const isActive = idx === activeIdx;
+                return (
+                  <button
+                    key={m.step}
+                    onClick={() => {
+                      setIsPaused(true);
+                      setActiveIdx(idx);
+                    }}
+                    style={{
+                      padding: '0.4rem 0.8rem',
+                      borderRadius: '999px',
+                      backgroundColor: isActive ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
+                      border: isActive ? '1px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
+                      color: isActive ? '#b9cd94' : 'rgba(255, 255, 255, 0.7)',
+                      fontWeight: '800',
+                      fontSize: '0.78rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.3rem'
+                    }}
+                  >
+                    <span>{m.step}</span>
+                    {isActive && <span style={{ fontSize: '0.72rem', color: '#FFFDF9' }}>• {m.title}</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Main Central Active Card */}
+            <div
+              style={{
+                width: 'calc(100% - 8px)',
+                margin: '0 auto',
+                padding: '1.75rem 1.25rem',
+                borderRadius: '22px',
+                backgroundColor: 'rgba(35, 21, 13, 0.88)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1.5px solid #b9cd94',
+                boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(185, 205, 148, 0.12)',
+                boxSizing: 'border-box',
+                textAlign: 'left'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#b9cd94', fontFamily: 'var(--font-serif)' }}>
+                  {activeMilestone.step}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: '#b9cd94', fontWeight: '800', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  {activeIdx + 1} of {milestones.length}
+                </span>
+              </div>
+
+              <h3 style={{ fontSize: '1.25rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.6rem', fontFamily: 'var(--font-serif)' }}>
+                {activeMilestone.title}
+              </h3>
+
+              <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+                {activeMilestone.desc}
+              </p>
+            </div>
+
+          </div>
+        )}
+
+        {/* Controls & Progress bar */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginTop: '2.5rem' }}>
+          <button
+            onClick={handlePrev}
+            aria-label="Previous Milestone"
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '50%',
+              border: '1px solid #b9cd94',
+              backgroundColor: '#244f21',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <ChevronLeft size={20} />
+          </button>
+
+          {/* Stepper Dots */}
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {milestones.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setIsPaused(true);
+                  setActiveIdx(idx);
+                }}
+                style={{
+                  width: idx === activeIdx ? '24px' : '8px',
+                  height: '8px',
+                  borderRadius: '4px',
+                  backgroundColor: idx === activeIdx ? '#b9cd94' : 'rgba(255, 255, 255, 0.25)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  padding: 0
+                }}
+                title={`Go to milestone ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={handleNext}
+            aria-label="Next Milestone"
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '50%',
+              border: '1px solid #b9cd94',
+              backgroundColor: '#244f21',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+// ========================================================
+// SECTION 2 — ORBIT PRINCIPLES (Non-Negotiables) COMPONENT
+// ========================================================
+function OrbitPrinciplesSection() {
+  const principles = [
+    { 
+      step: '01', 
+      title: 'Zero Palm Oil', 
+      desc: 'We exclusively bake with 100% pure Cow Desi Ghee. No cheap vegetable fats, trans fats, or hydrogenated oils ever enter our bakery.',
+      icon: Flame
+    },
+    { 
+      step: '02', 
+      title: 'Unrefined Jaggery', 
+      desc: 'Naturally sweetened using organic jaggery rich in iron and essential minerals. Zero refined white sugar or artificial sweeteners.',
+      icon: Sparkles
+    },
+    { 
+      step: '03', 
+      title: 'Zero Preservatives', 
+      desc: 'No artificial food coloring, chemical preservatives, or synthetic shelf-life extenders. Just honest, wholesome, fresh baking.',
+      icon: ShieldCheck
+    },
+    { 
+      step: '04', 
+      title: 'Wholesome Grains', 
+      desc: 'Native Bajra, Jowar, and Ragi flour instead of refined maida. Nutrient-dense nutrition in every single bite.',
+      icon: Leaf
+    },
+  ];
+
+  const [activeIdx, setActiveIdx] = React.useState(0);
+  const [isPaused, setIsPaused] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  React.useEffect(() => {
+    if (isPaused || prefersReducedMotion) return;
+    const timer = setInterval(() => {
+      setActiveIdx((prev) => (prev + 1) % principles.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [isPaused, prefersReducedMotion, principles.length]);
+
+  const handlePrev = () => {
+    setIsPaused(true);
+    setActiveIdx((prev) => (prev - 1 + principles.length) % principles.length);
+  };
+
+  const handleNext = () => {
+    setIsPaused(true);
+    setActiveIdx((prev) => (prev + 1) % principles.length);
+  };
+
+  const activePrinciple = principles[activeIdx];
+  const ActiveIcon = activePrinciple.icon;
+
+  const getOrbitStyle = (index) => {
+    const total = principles.length;
+    const diff = (index - activeIdx + total) % total;
+
+    if (diff === 0) {
+      return {
+        transform: 'translate(-50%, -50%) scale(1)',
+        opacity: 1,
+        zIndex: 10,
+        pointerEvents: 'auto',
+      };
+    }
+
+    const positions = {
+      1: { x: 350, y: 0, scale: 0.82, opacity: 0.7, zIndex: 6 },
+      2: { x: 0, y: 150, scale: 0.78, opacity: 0.55, zIndex: 4 },
+      3: { x: -350, y: 0, scale: 0.82, opacity: 0.7, zIndex: 6 },
+    };
+
+    const pos = positions[diff] || { x: 0, y: 0, scale: 0.7, opacity: 0.4, zIndex: 2 };
+    return {
+      transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px)) scale(${pos.scale})`,
+      opacity: pos.opacity,
+      zIndex: pos.zIndex,
+      pointerEvents: 'auto',
+      filter: 'blur(0.5px)',
+    };
+  };
+
+  return (
+    <section 
+      style={{ 
+        padding: isMobile ? '3.5rem 0' : '6.5rem 0', 
+        backgroundColor: 'transparent',
+        borderTop: '1px solid rgba(245, 220, 180, 0.15)',
+        borderBottom: '1px solid rgba(245, 220, 180, 0.15)',
+        overflow: 'hidden',
+        position: 'relative'
+      }}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div style={{ maxWidth: '1240px', margin: '0 auto', paddingLeft: '1.25rem', paddingRight: '1.25rem', boxSizing: 'border-box' }}>
+        
+        {/* Header */}
+        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 3rem' }}>
+          <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+            Our Principles
+          </span>
+          <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+            Our Non-Negotiables
+          </h2>
+          <p style={{ fontSize: '0.95rem', color: '#F5EBDD', fontWeight: '500', marginTop: '0.5rem' }}>
+            The guidelines behind every single MILASTY bake.
+          </p>
+        </div>
+
+        {/* Orbit Canvas Container */}
+        {!isMobile ? (
+          /* DESKTOP / TABLET ORBIT VIEW */
+          <div 
+            style={{ 
+              position: 'relative', 
+              height: '480px', 
+              width: '100%', 
+              margin: '0 auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {/* Subtle Orbit Ring */}
+            <div 
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '700px',
+                height: '300px',
+                borderRadius: '50%',
+                border: '1.5px dashed rgba(185, 205, 148, 0.25)',
+                pointerEvents: 'none',
+                zIndex: 1,
+              }}
+            />
+
+            {/* 4 Orbiting Principle Cards */}
+            {principles.map((principle, idx) => {
+              const isActive = idx === activeIdx;
+              const Icon = principle.icon;
+              const orbitStyle = getOrbitStyle(idx);
+              return (
+                <div
+                  key={principle.step}
+                  onClick={() => {
+                    setIsPaused(true);
+                    setActiveIdx(idx);
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    width: isActive ? '460px' : '260px',
+                    padding: isActive ? '2.5rem 2.25rem' : '1.4rem 1.25rem',
+                    borderRadius: isActive ? '26px' : '20px',
+                    backgroundColor: isActive ? 'rgba(35, 21, 13, 0.88)' : 'rgba(35, 21, 13, 0.60)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: isActive ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
+                    boxShadow: isActive ? '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(185, 205, 148, 0.15)' : '0 10px 30px rgba(0,0,0,0.3)',
+                    cursor: 'pointer',
+                    transition: 'all 800ms cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxSizing: 'border-box',
+                    ...orbitStyle
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isActive ? '1.25rem' : '0.4rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <span style={{ fontSize: isActive ? '1.6rem' : '1.15rem', fontWeight: '900', color: '#b9cd94', fontFamily: 'var(--font-serif)' }}>
+                        {principle.step}
+                      </span>
+                      {isActive && <Icon size={22} color="#b9cd94" />}
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: isActive ? '#b9cd94' : 'rgba(255,255,255,0.5)', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                      {isActive ? 'Core Principle' : 'Pillar'}
+                    </span>
+                  </div>
+
+                  <h3 style={{ fontSize: isActive ? '1.4rem' : '1.05rem', fontWeight: '850', color: '#FFFDF9', marginBottom: isActive ? '0.85rem' : '0', fontFamily: 'var(--font-serif)' }}>
+                    {principle.title}
+                  </h3>
+
+                  {isActive && (
+                    <p style={{ fontSize: '0.95rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+                      {principle.desc}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* MOBILE COMPACT UNIFIED ORBIT VIEW */
+          <div style={{ width: '100%', boxSizing: 'border-box' }}>
+            
+            {/* Numbered Principle Indicators */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+              {principles.map((p, idx) => {
+                const isActive = idx === activeIdx;
+                return (
+                  <button
+                    key={p.step}
+                    onClick={() => {
+                      setIsPaused(true);
+                      setActiveIdx(idx);
+                    }}
+                    style={{
+                      padding: '0.4rem 0.8rem',
+                      borderRadius: '999px',
+                      backgroundColor: isActive ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
+                      border: isActive ? '1px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
+                      color: isActive ? '#b9cd94' : 'rgba(255, 255, 255, 0.7)',
+                      fontWeight: '800',
+                      fontSize: '0.78rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.3rem'
+                    }}
+                  >
+                    <span>{p.step}</span>
+                    {isActive && <span style={{ fontSize: '0.72rem', color: '#FFFDF9' }}>• {p.title}</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Main Central Active Card */}
+            <div
+              style={{
+                width: 'calc(100% - 8px)',
+                margin: '0 auto',
+                padding: '1.75rem 1.25rem',
+                borderRadius: '22px',
+                backgroundColor: 'rgba(35, 21, 13, 0.88)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1.5px solid #b9cd94',
+                boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(185, 205, 148, 0.12)',
+                boxSizing: 'border-box',
+                textAlign: 'left'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#b9cd94', fontFamily: 'var(--font-serif)' }}>
+                    {activePrinciple.step}
+                  </span>
+                  <ActiveIcon size={20} color="#b9cd94" />
+                </div>
+                <span style={{ fontSize: '0.75rem', color: '#b9cd94', fontWeight: '850', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  {activeIdx + 1} of {principles.length}
+                </span>
+              </div>
+
+              <h3 style={{ fontSize: '1.3rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.6rem', fontFamily: 'var(--font-serif)' }}>
+                {activePrinciple.title}
+              </h3>
+
+              <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+                {activePrinciple.desc}
+              </p>
+            </div>
+
+          </div>
+        )}
+
+        {/* Controls & Progress bar */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginTop: '2.5rem' }}>
+          <button
+            onClick={handlePrev}
+            aria-label="Previous Principle"
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '50%',
+              border: '1px solid #b9cd94',
+              backgroundColor: '#244f21',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <ChevronLeft size={20} />
+          </button>
+
+          {/* Stepper Dots */}
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {principles.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setIsPaused(true);
+                  setActiveIdx(idx);
+                }}
+                style={{
+                  width: idx === activeIdx ? '24px' : '8px',
+                  height: '8px',
+                  borderRadius: '4px',
+                  backgroundColor: idx === activeIdx ? '#b9cd94' : 'rgba(255, 255, 255, 0.25)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  padding: 0
+                }}
+                title={`Go to principle ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={handleNext}
+            aria-label="Next Principle"
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '50%',
+              border: '1px solid #b9cd94',
+              backgroundColor: '#244f21',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
+
+      </div>
+    </section>
+  );
+}
 
 export default function OurStory() {
   const journeyRef = useRef(null);
@@ -32,6 +717,7 @@ export default function OurStory() {
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
         backgroundRepeat: 'no-repeat',
+        overflowX: 'hidden',
       }}
     >
       {/* Dark overlay for readability */}
@@ -277,131 +963,11 @@ export default function OurStory() {
         </div>
       </section>
 
-      {/* 3. MILESTONES TIMELINE SECTION */}
-      <section style={{ padding: '6rem 0', backgroundColor: 'transparent' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
-            <div>
-              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>Milestones</span>
-              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-                The MILASTY Journey
-              </h2>
-            </div>
-            <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
-              <button 
-                onClick={() => scrollLeft(journeyRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button 
-                onClick={() => scrollRight(journeyRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
+      {/* 3. REDESIGNED ORBIT MILESTONES TIMELINE SECTION */}
+      <OrbitJourneySection />
 
-          <div 
-            ref={journeyRef}
-            className="horizontal-scroll-container fitted-cards-container-5"
-          >
-            {[
-              { step: '01', title: 'The Question', desc: 'Can everyday bakery snacks be healthy, clean, and genuinely delicious?' },
-              { step: '02', title: 'The Search', desc: 'Sourcing honest local ingredients, unrefined sweeteners, and traditional grains.' },
-              { step: '03', title: 'The First Bake', desc: 'Experimenting in small home batches with millet, pure Desi Ghee, and organic jaggery.' },
-              { step: '04', title: 'MILASTY is Born', desc: 'A better, mindful way of snacking, establishing our small-batch bakery.' },
-              { step: '05', title: 'Today', desc: 'Bringing handcrafted millet bakes to wellness-focused Indian homes.' },
-            ].map((milestone) => (
-              <div 
-                key={milestone.step}
-                className="glass-card"
-                style={{
-                  padding: '1.75rem',
-                  borderRadius: '20px',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  boxShadow: '0 12px 36px rgba(0, 0, 0, 0.35)',
-                  transition: 'transform 0.2s',
-                  position: 'relative',
-                }}
-                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#b9cd94' }}>{milestone.step}</span>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#b9cd94' }} />
-                </div>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.5rem 0' }}>{milestone.title}</h4>
-                <p style={{ fontSize: '0.88rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>{milestone.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
-
-      {/* 5. REDESIGNED PILLARS SECTION */}
-      <section style={{ backgroundColor: 'transparent', padding: '6rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
-            <div>
-              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>Our Principles</span>
-              <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>Our Non-Negotiables</h2>
-              <p style={{ fontSize: '0.95rem', color: '#F5EBDD', fontWeight: '600', margin: '0.5rem 0 0 0' }}>The guidelines behind every single MILASTY bake.</p>
-            </div>
-            <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
-              <button 
-                onClick={() => scrollLeft(nonNegotiablesRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button 
-                onClick={() => scrollRight(nonNegotiablesRef)} 
-                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
-
-          <div 
-            ref={nonNegotiablesRef}
-            className="horizontal-scroll-container fitted-cards-container-3"
-          >
-            
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
-              <span style={{ fontSize: '0.85rem', fontWeight: '850', color: '#b9cd94', display: 'block', marginBottom: '0.75rem' }}>01</span>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.75rem', margin: 0 }}>Zero Palm Oil</h3>
-              <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>
-                We exclusively bake with 100% pure Cow Desi Ghee. No cheap vegetable fats, trans fats, or hydrogenated oils ever enter our bakery.
-              </p>
-            </div>
-
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
-              <span style={{ fontSize: '0.85rem', fontWeight: '850', color: '#b9cd94', display: 'block', marginBottom: '0.75rem' }}>02</span>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.75rem', margin: 0 }}>Unrefined Jaggery</h3>
-              <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>
-                Naturally sweetened using organic jaggery rich in iron and essential minerals. Zero refined white sugar or artificial sweeteners.
-              </p>
-            </div>
-
-            <div className="glass-card" style={{ padding: '2.25rem 2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.2)', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'none'}>
-              <span style={{ fontSize: '0.85rem', fontWeight: '850', color: '#b9cd94', display: 'block', marginBottom: '0.75rem' }}>03</span>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.75rem', margin: 0 }}>Zero Preservatives</h3>
-              <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '550' }}>
-                No artificial food coloring, chemical preservatives, or synthetic shelf-life extenders. Just honest, wholesome, fresh baking.
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
+      {/* 5. REDESIGNED ORBIT PRINCIPLES SECTION */}
+      <OrbitPrinciplesSection />
 
       {/* 6. INGREDIENTS LAYOUT SECTION */}
       <section style={{ backgroundColor: 'transparent', padding: '6rem 0' }}>
