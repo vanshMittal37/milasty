@@ -376,12 +376,12 @@ export default function Home() {
     }
   };
 
-  // Auto-play interval: slides every 2.5 seconds (2500ms)
+  // Auto-play interval: slides automatically every 2 seconds (2000ms)
   useEffect(() => {
     if (isTestimonialHovered) return;
     const timer = setInterval(() => {
       handleNextSlide();
-    }, 2500);
+    }, 2000);
     return () => clearInterval(timer);
   }, [isTestimonialHovered, carouselIndex]);
 
@@ -898,112 +898,27 @@ export default function Home() {
                 </Link>
               </div>
  
-              {/* Redesigned Premium Comparison Box */}
-              <div 
-                className="lab-comparison" 
-                style={{ 
-                  backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  padding: 'clamp(1.5rem, 3vw, 2.5rem)',
-                  borderRadius: '24px',
-                  border: '1px solid rgba(185, 205, 148, 0.25)',
-                  boxShadow: '0 20px 50px rgba(0, 0, 0, 0.45)',
-                  width: '100%',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <div style={{ marginBottom: '1.75rem', borderBottom: '1px solid rgba(255, 255, 255, 0.12)', paddingBottom: '1rem' }}>
-                  <h3 style={{ color: '#FFFDF9', fontSize: '1.3rem', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.35rem 0', letterSpacing: '-0.01em' }}>
-                    MILASTY <span style={{ color: '#b9cd94' }}>VS</span> CONVENTIONAL BISCUITS
-                  </h3>
-                  <p style={{ fontSize: '0.84rem', color: 'rgba(252, 250, 246, 0.75)', margin: 0, fontWeight: '500' }}>
-                    Why health-conscious families choose our slow-crafted millet bakes.
-                  </p>
-                </div>
-
-                {/* Desktop 3-Column Table View */}
-                <div className="desktop-comparison-table" style={{ display: isMobile ? 'none' : 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  {/* Table Header Row */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.4fr 1.3fr', gap: '1rem', padding: '0.65rem 1rem', fontSize: '0.78rem', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(252, 250, 246, 0.65)' }}>
-                    <div>Attribute</div>
-                    <div style={{ color: '#b9cd94', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <span>MILASTY BAKERY</span>
-                      <span style={{ fontSize: '0.65rem', backgroundColor: '#244f21', color: '#FFFFFF', padding: '0.15rem 0.55rem', borderRadius: '999px', border: '1px solid #b9cd94' }}>PURE</span>
-                    </div>
-                    <div>CONVENTIONAL</div>
+              {/* Comparison Box */}
+              <div className="lab-comparison" style={{ padding: '2.25rem' }}>
+                <h4 style={{ color: 'var(--accent-gold)', fontSize: '1.15rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>MILASTY vs Conventional Biscuits</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.92rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
+                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Fat Source:</span>
+                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>100% Pure Cow Ghee</strong>
                   </div>
-
-                  {/* Table Rows */}
-                  {[
-                    { attr: 'Fat Source', milasty: '100% Pure Cow Ghee', conv: 'Cheap Palm Oil / Hydrogenated Fats' },
-                    { attr: 'Sweetener', milasty: 'Organic Jaggery', conv: 'Refined White Sugar' },
-                    { attr: 'Flour Base', milasty: 'Bajra, Jowar, Ragi (No Maida)', conv: 'Refined Maida' },
-                    { attr: 'Preservatives', milasty: 'Zero Synthetic Chemicals', conv: 'Artificial Preservatives' },
-                  ].map((row, idx) => (
-                    <div 
-                      key={idx}
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1.1fr 1.4fr 1.3fr',
-                        gap: '1rem',
-                        alignItems: 'center',
-                        padding: '1rem',
-                        borderRadius: '16px',
-                        backgroundColor: 'rgba(20, 10, 5, 0.4)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        transition: 'all 0.2s ease'
-                      }}
-                    >
-                      <div style={{ fontSize: '0.9rem', color: '#F5EBDD', fontWeight: '750' }}>
-                        {row.attr}
-                      </div>
-                      
-                      {/* MILASTY Column (Highlighted with green accent) */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', backgroundColor: 'rgba(36, 79, 33, 0.35)', padding: '0.6rem 0.85rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.4)', boxShadow: '0 4px 14px rgba(36, 79, 33, 0.25)' }}>
-                        <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#244f21', color: '#b9cd94', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Check size={13} strokeWidth={3} />
-                        </div>
-                        <span style={{ fontSize: '0.9rem', color: '#FFFDF9', fontWeight: '850' }}>{row.milasty}</span>
-                      </div>
-
-                      {/* CONVENTIONAL Column (Muted red indicator) */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem 0.85rem' }}>
-                        <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'rgba(229, 115, 115, 0.15)', color: '#e57373', border: '1px solid rgba(229, 115, 115, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <X size={13} strokeWidth={3} />
-                        </div>
-                        <span style={{ fontSize: '0.88rem', color: 'rgba(245, 235, 221, 0.75)', fontWeight: '550' }}>{row.conv}</span>
-                      </div>
-                    </div>
-                  ))}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
+                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Sweetener:</span>
+                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Organic Jaggery</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
+                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Flour Base:</span>
+                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Bajra, Jowar, Ragi (No Maida)</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.25rem' }}>
+                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Preservatives:</span>
+                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Zero Synthetic Chemicals</strong>
+                  </div>
                 </div>
-
-                {/* Mobile Responsive Comparison View */}
-                <div className="mobile-comparison-cards" style={{ display: isMobile ? 'flex' : 'none', flexDirection: 'column', gap: '1rem' }}>
-                  {[
-                    { attr: 'Fat Source', milasty: '100% Pure Cow Ghee', conv: 'Cheap Palm Oil / Hydrogenated Fats' },
-                    { attr: 'Sweetener', milasty: 'Organic Jaggery', conv: 'Refined White Sugar' },
-                    { attr: 'Flour Base', milasty: 'Bajra, Jowar, Ragi (No Maida)', conv: 'Refined Maida' },
-                    { attr: 'Preservatives', milasty: 'Zero Synthetic Chemicals', conv: 'Artificial Preservatives' },
-                  ].map((row, idx) => (
-                    <div key={idx} style={{ backgroundColor: 'rgba(20, 10, 5, 0.5)', padding: '1.15rem', borderRadius: '16px', border: '1px solid rgba(185, 205, 148, 0.25)' }}>
-                      <div style={{ fontSize: '0.8rem', color: '#b9cd94', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.75rem' }}>
-                        {row.attr}
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', backgroundColor: 'rgba(36, 79, 33, 0.35)', padding: '0.65rem 0.85rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.4)', color: '#FFFDF9', fontWeight: '800', fontSize: '0.88rem' }}>
-                          <Check size={15} color="#b9cd94" strokeWidth={3} />
-                          <span>MILASTY: {row.milasty}</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', backgroundColor: 'rgba(255, 255, 255, 0.04)', padding: '0.65rem 0.85rem', borderRadius: '12px', color: 'rgba(252, 250, 246, 0.7)', fontSize: '0.85rem', fontWeight: '500' }}>
-                          <X size={15} color="#e57373" strokeWidth={3} />
-                          <span>Conventional: {row.conv}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
               </div>
             </div>
           </div>
