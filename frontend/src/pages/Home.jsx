@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Sparkles, ShieldCheck, ArrowRight, Award, FileText, CheckCircle2, 
-  Star, ChevronLeft, ChevronRight, Heart, ShoppingBag, Eye 
+  Star, ChevronLeft, ChevronRight, Heart, ShoppingBag, Eye, Check, X 
 } from 'lucide-react';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
@@ -282,7 +282,25 @@ export default function Home() {
       });
   }, []);
 
+  const [cardsToShow, setCardsToShow] = useState(
+    typeof window !== 'undefined'
+      ? window.innerWidth > 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1
+      : 3
+  );
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const [isTestimonialHovered, setIsTestimonialHovered] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width > 1024) setCardsToShow(3);
+      else if (width >= 768) setCardsToShow(2);
+      else setCardsToShow(1);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const reviews = [
     {
@@ -329,13 +347,43 @@ export default function Home() {
     },
   ];
 
+  // Tripled array for seamless continuous infinite carousel
+  const extendedReviews = [...reviews, ...reviews, ...reviews];
+
+  const handleNextSlide = () => {
+    setIsTransitioning(true);
+    setCarouselIndex((prev) => prev + 1);
+  };
+
+  const handlePrevSlide = () => {
+    setIsTransitioning(true);
+    if (carouselIndex === 0) {
+      setIsTransitioning(false);
+      setCarouselIndex(reviews.length);
+      setTimeout(() => {
+        setIsTransitioning(true);
+        setCarouselIndex(reviews.length - 1);
+      }, 20);
+    } else {
+      setCarouselIndex((prev) => prev - 1);
+    }
+  };
+
+  const handleTransitionEnd = () => {
+    if (carouselIndex >= reviews.length) {
+      setIsTransitioning(false);
+      setCarouselIndex(carouselIndex % reviews.length);
+    }
+  };
+
+  // Auto-play interval: slides every 2.5 seconds (2500ms)
   useEffect(() => {
     if (isTestimonialHovered) return;
     const timer = setInterval(() => {
-      setActiveReviewIdx((prev) => (prev + 1) % reviews.length);
-    }, 4000);
+      handleNextSlide();
+    }, 2500);
     return () => clearInterval(timer);
-  }, [isTestimonialHovered, reviews.length]);
+  }, [isTestimonialHovered, carouselIndex]);
 
   // Selected ritual product
   const ritualProducts = dbProducts.length > 0 ? dbProducts : initialProducts.slice(0, 4);
@@ -850,100 +898,267 @@ export default function Home() {
                 </Link>
               </div>
  
-              {/* Comparison Box */}
-              <div className="lab-comparison" style={{ padding: '2.25rem' }}>
-                <h4 style={{ color: 'var(--accent-gold)', fontSize: '1.15rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>MILASTY vs Conventional Biscuits</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.92rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
-                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Fat Source:</span>
-                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>100% Pure Cow Ghee</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
-                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Sweetener:</span>
-                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Organic Jaggery</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '0.75rem' }}>
-                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Flour Base:</span>
-                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Bajra, Jowar, Ragi (No Maida)</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.25rem' }}>
-                    <span style={{ opacity: 0.9, fontWeight: '550' }}>Preservatives:</span>
-                    <strong style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Zero Synthetic Chemicals</strong>
-                  </div>
+              {/* Redesigned Premium Comparison Box */}
+              <div 
+                className="lab-comparison" 
+                style={{ 
+                  backgroundColor: 'rgba(35, 21, 13, 0.75)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  padding: 'clamp(1.5rem, 3vw, 2.5rem)',
+                  borderRadius: '24px',
+                  border: '1px solid rgba(185, 205, 148, 0.25)',
+                  boxShadow: '0 20px 50px rgba(0, 0, 0, 0.45)',
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <div style={{ marginBottom: '1.75rem', borderBottom: '1px solid rgba(255, 255, 255, 0.12)', paddingBottom: '1rem' }}>
+                  <h3 style={{ color: '#FFFDF9', fontSize: '1.3rem', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.35rem 0', letterSpacing: '-0.01em' }}>
+                    MILASTY <span style={{ color: '#b9cd94' }}>VS</span> CONVENTIONAL BISCUITS
+                  </h3>
+                  <p style={{ fontSize: '0.84rem', color: 'rgba(252, 250, 246, 0.75)', margin: 0, fontWeight: '500' }}>
+                    Why health-conscious families choose our slow-crafted millet bakes.
+                  </p>
                 </div>
+
+                {/* Desktop 3-Column Table View */}
+                <div className="desktop-comparison-table" style={{ display: isMobile ? 'none' : 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {/* Table Header Row */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.4fr 1.3fr', gap: '1rem', padding: '0.65rem 1rem', fontSize: '0.78rem', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(252, 250, 246, 0.65)' }}>
+                    <div>Attribute</div>
+                    <div style={{ color: '#b9cd94', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <span>MILASTY BAKERY</span>
+                      <span style={{ fontSize: '0.65rem', backgroundColor: '#244f21', color: '#FFFFFF', padding: '0.15rem 0.55rem', borderRadius: '999px', border: '1px solid #b9cd94' }}>PURE</span>
+                    </div>
+                    <div>CONVENTIONAL</div>
+                  </div>
+
+                  {/* Table Rows */}
+                  {[
+                    { attr: 'Fat Source', milasty: '100% Pure Cow Ghee', conv: 'Cheap Palm Oil / Hydrogenated Fats' },
+                    { attr: 'Sweetener', milasty: 'Organic Jaggery', conv: 'Refined White Sugar' },
+                    { attr: 'Flour Base', milasty: 'Bajra, Jowar, Ragi (No Maida)', conv: 'Refined Maida' },
+                    { attr: 'Preservatives', milasty: 'Zero Synthetic Chemicals', conv: 'Artificial Preservatives' },
+                  ].map((row, idx) => (
+                    <div 
+                      key={idx}
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1.1fr 1.4fr 1.3fr',
+                        gap: '1rem',
+                        alignItems: 'center',
+                        padding: '1rem',
+                        borderRadius: '16px',
+                        backgroundColor: 'rgba(20, 10, 5, 0.4)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <div style={{ fontSize: '0.9rem', color: '#F5EBDD', fontWeight: '750' }}>
+                        {row.attr}
+                      </div>
+                      
+                      {/* MILASTY Column (Highlighted with green accent) */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', backgroundColor: 'rgba(36, 79, 33, 0.35)', padding: '0.6rem 0.85rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.4)', boxShadow: '0 4px 14px rgba(36, 79, 33, 0.25)' }}>
+                        <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#244f21', color: '#b9cd94', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Check size={13} strokeWidth={3} />
+                        </div>
+                        <span style={{ fontSize: '0.9rem', color: '#FFFDF9', fontWeight: '850' }}>{row.milasty}</span>
+                      </div>
+
+                      {/* CONVENTIONAL Column (Muted red indicator) */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem 0.85rem' }}>
+                        <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'rgba(229, 115, 115, 0.15)', color: '#e57373', border: '1px solid rgba(229, 115, 115, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <X size={13} strokeWidth={3} />
+                        </div>
+                        <span style={{ fontSize: '0.88rem', color: 'rgba(245, 235, 221, 0.75)', fontWeight: '550' }}>{row.conv}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mobile Responsive Comparison View */}
+                <div className="mobile-comparison-cards" style={{ display: isMobile ? 'flex' : 'none', flexDirection: 'column', gap: '1rem' }}>
+                  {[
+                    { attr: 'Fat Source', milasty: '100% Pure Cow Ghee', conv: 'Cheap Palm Oil / Hydrogenated Fats' },
+                    { attr: 'Sweetener', milasty: 'Organic Jaggery', conv: 'Refined White Sugar' },
+                    { attr: 'Flour Base', milasty: 'Bajra, Jowar, Ragi (No Maida)', conv: 'Refined Maida' },
+                    { attr: 'Preservatives', milasty: 'Zero Synthetic Chemicals', conv: 'Artificial Preservatives' },
+                  ].map((row, idx) => (
+                    <div key={idx} style={{ backgroundColor: 'rgba(20, 10, 5, 0.5)', padding: '1.15rem', borderRadius: '16px', border: '1px solid rgba(185, 205, 148, 0.25)' }}>
+                      <div style={{ fontSize: '0.8rem', color: '#b9cd94', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.75rem' }}>
+                        {row.attr}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', backgroundColor: 'rgba(36, 79, 33, 0.35)', padding: '0.65rem 0.85rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.4)', color: '#FFFDF9', fontWeight: '800', fontSize: '0.88rem' }}>
+                          <Check size={15} color="#b9cd94" strokeWidth={3} />
+                          <span>MILASTY: {row.milasty}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', backgroundColor: 'rgba(255, 255, 255, 0.04)', padding: '0.65rem 0.85rem', borderRadius: '12px', color: 'rgba(252, 250, 246, 0.7)', fontSize: '0.85rem', fontWeight: '500' }}>
+                          <X size={15} color="#e57373" strokeWidth={3} />
+                          <span>Conventional: {row.conv}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 8. TESTIMONIAL SECTION */}
+      {/* 8. TESTIMONIAL SECTION (3-Card Continuous Sliding Carousel) */}
       <section ref={reviewRef} className="reveal-fade-up reviews-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 4rem' }}>
-            <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Customer Stories</span>
-            <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>Loved by <span style={{ color: 'var(--accent-gold)' }}>Health-Conscious</span> Homes</h2>
+        <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1.5rem' }}>
+          
+          <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 3.5rem' }}>
+            <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Customer Stories</span>
+            <h2 style={{ fontSize: 'clamp(2.1rem, 4.5vw, 2.8rem)', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2', margin: 0 }}>
+              Loved by <span style={{ color: '#b9cd94' }}>Health-Conscious</span> Homes
+            </h2>
           </div>
 
           <div 
-            style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center', position: 'relative' }}
+            style={{ width: '100%', position: 'relative', overflow: 'hidden' }}
             onMouseEnter={() => setIsTestimonialHovered(true)}
             onMouseLeave={() => setIsTestimonialHovered(false)}
           >
-            <div className="testimonial-card" style={{ padding: '3.5rem 2.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                {[...Array(reviews[activeReviewIdx].rating)].map((_, i) => (
-                  <Star key={i} size={20} fill="var(--accent-gold)" color="var(--accent-gold)" />
-                ))}
-              </div>
-
-              <p style={{ fontSize: '1.28rem', fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: '#FFFFFF', lineHeight: '1.65', marginBottom: '2.25rem', fontWeight: '600' }}>
-                "{reviews[activeReviewIdx].quote}"
-              </p>
-
-              <div>
-                <strong style={{ fontSize: '1.1rem', color: '#FFFFFF', display: 'block', marginBottom: '0.25rem', fontWeight: '800' }}>{reviews[activeReviewIdx].name}</strong>
-                <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '600' }}>
-                  {reviews[activeReviewIdx].role} • {reviews[activeReviewIdx].location}
-                </span>
-              </div>
-
-              {/* Dots indicator for auto-rotation feedback */}
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.5rem' }}>
-                {reviews.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveReviewIdx(idx)}
-                    style={{
-                      width: activeReviewIdx === idx ? '24px' : '8px',
-                      height: '8px',
-                      borderRadius: '4px',
-                      backgroundColor: activeReviewIdx === idx ? '#b9cd94' : 'rgba(255, 255, 255, 0.3)',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      padding: 0
+            {/* Sliding Track */}
+            <div 
+              onTransitionEnd={handleTransitionEnd}
+              style={{
+                display: 'flex',
+                gap: '1.5rem',
+                transition: isTransitioning ? 'transform 700ms cubic-bezier(0.25, 1, 0.5, 1)' : 'none',
+                transform: `translateX(calc(-${carouselIndex} * (100% / ${cardsToShow} + ${1.5 / cardsToShow}rem)))`,
+                width: '100%'
+              }}
+            >
+              {extendedReviews.map((rev, idx) => (
+                <div 
+                  key={idx}
+                  style={{
+                    flex: `0 0 calc((100% - ${(cardsToShow - 1) * 1.5}rem) / ${cardsToShow})`,
+                    minWidth: 0,
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <div 
+                    style={{ 
+                      backgroundColor: 'rgba(35, 21, 13, 0.75)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
+                      borderRadius: '24px',
+                      border: '1px solid rgba(185, 205, 148, 0.25)',
+                      boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
+                      padding: '2.25rem 1.75rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      height: '100%',
+                      boxSizing: 'border-box'
                     }}
-                    title={`Go to story ${idx + 1}`}
-                  />
-                ))}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', gap: '4px', color: '#b9cd94', marginBottom: '1.25rem' }}>
+                        {[...Array(rev.rating)].map((_, i) => (
+                          <Star key={i} size={18} fill="#b9cd94" color="#b9cd94" />
+                        ))}
+                      </div>
+
+                      <p style={{ fontSize: '1.02rem', fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: '#FFFDF9', lineHeight: '1.65', marginBottom: '1.75rem', fontWeight: '500' }}>
+                        "{rev.quote}"
+                      </p>
+                    </div>
+
+                    <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1rem' }}>
+                      <strong style={{ fontSize: '1rem', color: '#FFFDF9', display: 'block', marginBottom: '0.25rem', fontWeight: '850' }}>
+                        {rev.name}
+                      </strong>
+                      <span style={{ fontSize: '0.82rem', color: '#b9cd94', fontWeight: '700' }}>
+                        {rev.role} • {rev.location}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Navigation Controls & Indicators */}
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginTop: '3rem' }}>
+              <button
+                onClick={handlePrevSlide}
+                aria-label="Previous Testimonials"
+                style={{ 
+                  width: '46px', 
+                  height: '46px', 
+                  borderRadius: '50%', 
+                  border: '1.5px solid #b9cd94', 
+                  backgroundColor: '#244f21', 
+                  color: '#FFFFFF', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  cursor: 'pointer', 
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+                }}
+              >
+                <ChevronLeft size={22} />
+              </button>
+
+              {/* Indicator Dots */}
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                {reviews.map((_, idx) => {
+                  const active = (carouselIndex % reviews.length) === idx;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setIsTransitioning(true);
+                        setCarouselIndex(idx);
+                      }}
+                      style={{
+                        width: active ? '24px' : '8px',
+                        height: '8px',
+                        borderRadius: '4px',
+                        backgroundColor: active ? '#b9cd94' : 'rgba(255, 255, 255, 0.3)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        padding: 0
+                      }}
+                      title={`Go to story ${idx + 1}`}
+                    />
+                  );
+                })}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1.75rem' }}>
-                <button
-                  onClick={() => setActiveReviewIdx((activeReviewIdx - 1 + reviews.length) % reviews.length)}
-                  style={{ width: '44px', height: '44px', borderRadius: '50%', border: '1.5px solid #244f21', backgroundColor: '#244f21', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
-                >
-                  <ChevronLeft size={22} />
-                </button>
-                <button
-                  onClick={() => setActiveReviewIdx((activeReviewIdx + 1) % reviews.length)}
-                  style={{ width: '44px', height: '44px', borderRadius: '50%', border: '1.5px solid #244f21', backgroundColor: '#244f21', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
-                >
-                  <ChevronRight size={22} />
-                </button>
-              </div>
+              <button
+                onClick={handleNextSlide}
+                aria-label="Next Testimonials"
+                style={{ 
+                  width: '46px', 
+                  height: '46px', 
+                  borderRadius: '50%', 
+                  border: '1.5px solid #b9cd94', 
+                  backgroundColor: '#244f21', 
+                  color: '#FFFFFF', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  cursor: 'pointer', 
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+                }}
+              >
+                <ChevronRight size={22} />
+              </button>
             </div>
+
           </div>
         </div>
       </section>
