@@ -315,22 +315,117 @@ export default function Shop() {
         id="featured-bakes-section" 
         style={{ padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', maxWidth: '1200px', margin: '0 auto', boxSizing: 'border-box' }}
       >
-        <div style={{ textAlign: 'center', maxWidth: '640px', margin: isMobile ? '0 auto 2.25rem' : '0 auto 3.5rem' }}>
-          <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.4rem' }}>
+        <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 2.25rem' : '0 auto 3.5rem' }}>
+          <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
             FEATURED BAKES
           </span>
-          <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.7rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
-            Discover Our <span style={{ color: 'var(--accent-gold)' }}>Favourites</span>
+          <h2 style={{ fontSize: isMobile ? '2.4rem' : '3.3rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
+            Discover Our <span style={{ color: '#b9cd94', fontSize: '1.05em' }}>Favourites</span>
           </h2>
-          <p style={{ fontSize: isMobile ? '0.9rem' : '1.05rem', color: '#F5EBDD', margin: '0.5rem 0 0', fontWeight: '500' }}>
+          <p style={{ fontSize: isMobile ? '0.95rem' : '1.12rem', color: '#F5EBDD', margin: '0.6rem 0 0', fontWeight: '500' }}>
             A few of the MILASTY favourites worth trying first.
           </p>
         </div>
 
-        {/* Product Grid: Strict 2x2 Grid on Mobile (<768px) | 3-4 Columns Desktop */}
-        <div className="favorites-grid fitted-cards-container-4">
+        {/* Circular Featured Products Showcase: 4 Columns on Desktop | 2x2 Grid on Mobile */}
+        <div 
+          style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', 
+            gap: isMobile ? '1.5rem 1rem' : '2.5rem 1.5rem',
+            alignItems: 'start',
+            justifyItems: 'center',
+            maxWidth: '1050px',
+            margin: '0 auto'
+          }}
+        >
           {featuredProducts.slice(0, 4).map((product) => (
-            <ProductCard key={product._id || product.slug} product={product} />
+            <Link
+              key={product._id || product.slug}
+              to={`/product/${product.slug}`}
+              style={{
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                width: '100%',
+                maxWidth: isMobile ? '150px' : '220px',
+                cursor: 'pointer',
+                transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+              onMouseOver={(e) => {
+                const circle = e.currentTarget.querySelector('.featured-circle-wrap');
+                const title = e.currentTarget.querySelector('.featured-circle-title');
+                if (circle) {
+                  circle.style.transform = 'scale(1.06)';
+                  circle.style.borderColor = '#b9cd94';
+                  circle.style.boxShadow = '0 12px 28px rgba(36, 79, 33, 0.45)';
+                }
+                if (title) title.style.color = 'var(--accent-gold)';
+              }}
+              onMouseOut={(e) => {
+                const circle = e.currentTarget.querySelector('.featured-circle-wrap');
+                const title = e.currentTarget.querySelector('.featured-circle-title');
+                if (circle) {
+                  circle.style.transform = 'scale(1)';
+                  circle.style.borderColor = 'rgba(185, 205, 148, 0.45)';
+                  circle.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.35)';
+                }
+                if (title) title.style.color = '#FFFDF9';
+              }}
+            >
+              {/* Circular Product Image Wrap */}
+              <div
+                className="featured-circle-wrap"
+                style={{
+                  width: isMobile ? '135px' : '200px',
+                  height: isMobile ? '135px' : '200px',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  border: '2px solid rgba(185, 205, 148, 0.45)',
+                  backgroundColor: 'rgba(35, 21, 13, 0.75)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  marginBottom: '0.9rem',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block'
+                  }}
+                />
+              </div>
+
+              {/* Product Name Centered Below Circle */}
+              <h3
+                className="featured-circle-title"
+                style={{
+                  fontSize: isMobile ? '0.88rem' : '1.05rem',
+                  color: '#FFFDF9',
+                  fontFamily: 'var(--font-serif)',
+                  fontWeight: '800',
+                  lineHeight: '1.3',
+                  margin: 0,
+                  transition: 'color 0.25s ease',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  wordBreak: 'break-word',
+                  maxWidth: '100%'
+                }}
+              >
+                {product.title}
+              </h3>
+            </Link>
           ))}
         </div>
       </section>
@@ -348,14 +443,14 @@ export default function Shop() {
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto', boxSizing: 'border-box' }}>
-          <div style={{ textAlign: 'center', maxWidth: '640px', margin: isMobile ? '0 auto 1.75rem' : '0 auto 3rem' }}>
-            <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.4rem' }}>
+          <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 1.75rem' : '0 auto 3rem' }}>
+            <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
               EXPLORE BY CATEGORY & SEARCH
             </span>
-            <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.7rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
-              Browse <span style={{ color: 'var(--accent-gold)' }}>MILASTY Collection</span>
+            <h2 style={{ fontSize: isMobile ? '2.4rem' : '3.3rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
+              Browse <span style={{ color: '#b9cd94', fontSize: '1.05em' }}>MILASTY Collection</span>
             </h2>
-            <p style={{ fontSize: isMobile ? '0.88rem' : '1rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>
+            <p style={{ fontSize: isMobile ? '0.95rem' : '1.12rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>
               Showing {displayedProducts.length} bakes {selectedCategory !== 'all' ? `in ${categoryList.find(c => c.id === selectedCategory)?.label || selectedCategory}` : ''}
             </p>
           </div>
@@ -365,13 +460,13 @@ export default function Shop() {
             style={{ 
               display: 'flex', 
               gap: '0.75rem', 
-              maxWidth: '600px', 
+              maxWidth: '620px', 
               margin: '0 auto 2.5rem', 
               alignItems: 'center' 
             }}
           >
             <div style={{ position: 'relative', flexGrow: 1 }}>
-              <Search size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Search size={20} color="var(--accent-gold)" style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 2 }} />
               <input 
                 type="text"
                 placeholder="Search cookies, ingredients, hampers..."
@@ -379,12 +474,12 @@ export default function Shop() {
                 onChange={(e) => setSearch(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '0.75rem 1rem 0.75rem 2.8rem',
+                  padding: '0.85rem 1.25rem 0.85rem 3.4rem',
                   borderRadius: '999px',
-                  backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  backgroundColor: 'rgba(35, 21, 13, 0.85)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.25)',
                   color: '#FFFDF9',
-                  fontSize: '0.9rem',
+                  fontSize: isMobile ? '0.88rem' : '0.95rem',
                   outline: 'none',
                   boxSizing: 'border-box'
                 }}
@@ -394,22 +489,22 @@ export default function Shop() {
             <button
               onClick={() => setFilterModalOpen(true)}
               style={{
-                padding: '0.75rem 1.25rem',
+                padding: '0.85rem 1.35rem',
                 borderRadius: '999px',
-                backgroundColor: 'rgba(36, 79, 33, 0.75)',
+                backgroundColor: 'rgba(36, 79, 33, 0.85)',
                 border: '1.5px solid #b9cd94',
                 color: '#FFFDF9',
-                fontWeight: '800',
-                fontSize: '0.85rem',
+                fontWeight: '850',
+                fontSize: '0.88rem',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.45rem',
                 flexShrink: 0,
-                boxShadow: '0 4px 14px rgba(36, 79, 33, 0.35)'
+                boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
               }}
             >
-              <Filter size={16} color="var(--accent-gold)" />
+              <Filter size={17} color="var(--accent-gold)" />
               <span>Filter</span>
             </button>
           </div>
@@ -712,11 +807,11 @@ export default function Shop() {
         style={{ padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', maxWidth: '900px', margin: '0 auto', boxSizing: 'border-box' }}
       >
         <div style={{ textAlign: 'center', marginBottom: isMobile ? '2rem' : '3.5rem' }}>
-          <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.4rem' }}>
+          <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
             CUSTOMER REVIEWS
           </span>
-          <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.7rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
-            Loved by <span style={{ color: 'var(--accent-gold)' }}>MILASTY Customers</span>
+          <h2 style={{ fontSize: isMobile ? '2.4rem' : '3.3rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
+            Loved by <span style={{ color: '#b9cd94', fontSize: '1.05em' }}>MILASTY Customers</span>
           </h2>
         </div>
 
