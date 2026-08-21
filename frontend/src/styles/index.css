@@ -1097,6 +1097,15 @@ body, p, span, li, a {
 
 /* Mobile Filter & Product Grid Adjustments (< 768px) */
 @media (max-width: 767px) {
+  #shop-listings-section {
+    padding: 3rem 0 !important;
+  }
+
+  .shop-listings-container {
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+  }
+
   .shop-filter-panel {
     padding: 1.15rem 1rem !important;
     gap: 1rem !important;
