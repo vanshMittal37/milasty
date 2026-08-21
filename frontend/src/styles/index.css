@@ -2461,9 +2461,40 @@ a.btn-secondary:hover,
     font-size: 0.72rem !important;
   }
   .home-product-card .card-badge-span {
-    font-size: 0.48rem !important;
-    padding: 0.1rem 0.3rem !important;
+    font-size: 0.54rem !important;
+    padding: 0.2rem 0.45rem !important;
     line-height: 1.15 !important;
+    max-width: 70% !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    letter-spacing: 0.04em !important;
+  }
+  .home-catalogue-categories-strip {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    gap: 0.65rem !important;
+    overflow-x: auto !important;
+    padding: 0 0.5rem 0.4rem !important;
+    margin-bottom: 1.5rem !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .home-catalogue-categories-strip::-webkit-scrollbar {
+    display: none !important;
+  }
+  .home-catalogue-category-pill {
+    padding: 0.5rem 1.15rem !important;
+    height: 44px !important;
+    font-size: 0.82rem !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    border-radius: 999px !important;
   }
 }
 

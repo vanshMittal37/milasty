@@ -1576,12 +1576,13 @@ export default function Home() {
 
             {/* Compact Centered Category Pills Strip */}
             <div 
+              className="home-catalogue-categories-strip"
               style={{ 
                 display: 'flex', 
                 flexWrap: 'wrap',
                 justifyContent: 'center', 
-                gap: '0.45rem', 
-                marginBottom: '2rem',
+                gap: '0.65rem', 
+                marginBottom: '1.75rem',
                 padding: '0 0.25rem'
               }}
             >
@@ -1591,8 +1592,9 @@ export default function Home() {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedHomeCat(cat.id)}
+                    className="home-catalogue-category-pill"
                     style={{
-                      padding: isMobile ? '0.45rem 0.95rem' : '0.65rem 1.35rem',
+                      padding: isMobile ? '0.5rem 1.15rem' : '0.65rem 1.35rem',
                       borderRadius: '999px',
                       backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
                       border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.25)',
