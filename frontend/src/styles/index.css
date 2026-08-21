@@ -1652,7 +1652,7 @@ body, p, span, li, a {
     word-break: break-word !important;
   }
 
-  /* 3. From Grain to Bake (2x2 Grid on Mobile) */
+  /* 3. From Grain to Bake (2x2 Grid on Mobile with nowrap numbers) */
   .nutrition-page .grain-to-bake-grid {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -1668,6 +1668,14 @@ body, p, span, li, a {
   .nutrition-page .grain-to-bake-grid h4 {
     font-size: 0.78rem !important;
     margin-bottom: 0.25rem !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 0.35rem !important;
+  }
+
+  .nutrition-page .grain-to-bake-grid h4 span:first-child {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
 
   .nutrition-page .grain-to-bake-grid p {
@@ -1699,7 +1707,7 @@ body, p, span, li, a {
   }
 }
 
-/* 4. CONTACT PAGE RESPONSIVENESS (16px MOBILE SIDE PADDING) */
+/* 4. CONTACT PAGE RESPONSIVENESS (2x2 GRIDS & 16px MOBILE SIDE PADDING) */
 @media (max-width: 767px) {
   .contact-page,
   .contact-page section,
@@ -1720,11 +1728,11 @@ body, p, span, li, a {
     box-sizing: border-box !important;
   }
 
-  /* Quick Contact Support Cards - Stacked full-width with 16px side padding */
+  /* Upper 3 Contact Support Cards - 2x2 Grid */
   .contact-page > section:nth-of-type(2) > div {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1.25rem !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
@@ -1733,9 +1741,45 @@ body, p, span, li, a {
   .contact-page > section:nth-of-type(2) > div > div {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 1.75rem 1.25rem !important;
+    padding: 1.15rem 0.75rem !important;
     box-sizing: border-box !important;
     min-width: 0 !important;
+  }
+
+  .contact-page > section:nth-of-type(2) h3 {
+    font-size: 0.82rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .contact-page > section:nth-of-type(2) p {
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
+  }
+
+  /* "How Can We Help?" 4 Cards - 2x2 Grid */
+  .contact-page .how-can-we-help-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .contact-page .how-can-we-help-grid > div {
+    padding: 1.15rem 0.75rem !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+  }
+
+  .contact-page .how-can-we-help-grid h4 {
+    font-size: 0.82rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .contact-page .how-can-we-help-grid p {
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
   }
 
   /* Contact Details & Inquiry Form stack */
@@ -1766,6 +1810,85 @@ body, p, span, li, a {
     max-width: 100% !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
+  }
+}
+
+/* 5. WISHLIST PAGE & PRODUCT CARDS MOBILE RESPONSIVENESS */
+@media (max-width: 767px) {
+  .wishlist-page,
+  .wishlist-page section,
+  .wishlist-page > section,
+  .wishlist-hero-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Cart Button Mobile: Icon ONLY (no written text) */
+  .cart-btn-text {
+    display: none !important;
+  }
+
+  .add-cart-btn {
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    padding: 0.65rem 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .view-details-btn {
+    flex: 1 !important;
+    padding: 0.65rem 0.35rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Equal Card Height for 2-column mobile grids */
+  .products-main-grid > *,
+  .shop-featured-grid > *,
+  .shop-main-grid > *,
+  .favorites-grid > *,
+  .wishlist-page [style*="grid"] > * {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .products-main-grid .glass-card,
+  .shop-featured-grid .glass-card,
+  .shop-main-grid .glass-card,
+  .favorites-grid .glass-card,
+  .wishlist-page .glass-card {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+
+  .products-main-grid .card-title,
+  .shop-featured-grid .card-title,
+  .shop-main-grid .card-title,
+  .wishlist-page h3 {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    min-height: 2.5em !important;
+  }
+
+  .products-main-grid .card-subtitle,
+  .shop-featured-grid .card-subtitle,
+  .shop-main-grid .card-subtitle,
+  .wishlist-page p {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    min-height: 2.6em !important;
   }
 }
 /* 5. SHOP & RITUALS PAGE RESPONSIVENESS (2x2 GRID FOR PRODUCTS) */

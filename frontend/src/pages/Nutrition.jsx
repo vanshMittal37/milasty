@@ -601,29 +601,29 @@ export default function Nutrition() {
 
               <div className="grain-to-bake-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
                 <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    <span>01</span>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>01</span>
                     <span>Ancient Grains</span>
                   </h4>
                   <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Sourced native Bajra, Jowar, and Ragi flour.</p>
                 </div>
                 <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    <span>02</span>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>02</span>
                     <span>Selected Ingredients</span>
                   </h4>
                   <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Pure cow Desi Ghee & unrefined organic jaggery.</p>
                 </div>
                 <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    <span>03</span>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>03</span>
                     <span>Slow Baking</span>
                   </h4>
                   <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Slow-baked in temperature-controlled oven bakes.</p>
                 </div>
                 <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    <span>04</span>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>04</span>
                     <span>Finished Bake</span>
                   </h4>
                   <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>A crumbly, delicious, clean millet cookie.</p>

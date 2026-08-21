@@ -196,7 +196,7 @@ function WishlistProductCard({ product }) {
 
             <button
               onClick={handleAddToCart}
-              className="btn-primary"
+              className="btn-primary add-cart-btn"
               title="Add to Cart"
               style={{
                 padding: '0.7rem 1rem',
@@ -215,7 +215,7 @@ function WishlistProductCard({ product }) {
               }}
             >
               <ShoppingBag size={15} />
-              <span style={{ fontSize: '0.76rem' }}>Cart</span>
+              <span className="cart-btn-text" style={{ fontSize: '0.76rem' }}>Cart</span>
             </button>
           </div>
         </div>
@@ -318,11 +318,13 @@ export default function WishlistPage() {
 
       {/* 1. HERO SECTION */}
       <section
+        className="wishlist-hero-section"
         style={{
           padding: '5rem 1.5rem 3.5rem',
           textAlign: 'center',
           maxWidth: '800px',
           margin: '0 auto',
+          boxSizing: 'border-box'
         }}
       >
         <div 

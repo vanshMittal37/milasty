@@ -59,11 +59,11 @@ export default function Contact() {
   ];
 
   const shopCardStyle = {
-    backgroundColor: 'rgba(36, 19, 13, 0.65)',
-    backdropFilter: 'blur(16px)',
-    WebkitBackdropFilter: 'blur(16px)',
+    backgroundColor: 'rgba(18, 9, 4, 0.30)',
+    backdropFilter: 'blur(30px) saturate(150%)',
+    WebkitBackdropFilter: 'blur(30px) saturate(150%)',
     borderRadius: '24px',
-    border: '1px solid rgba(185, 205, 148, 0.25)',
+    border: '1px solid rgba(255, 255, 255, 0.20)',
     boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
     color: '#FFFDF9',
   };
@@ -474,7 +474,7 @@ export default function Contact() {
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1.5rem' }}>
+        <div className="how-can-we-help-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1.5rem' }}>
           <div 
             onClick={() => handleSelectReason("Questions about an existing order")}
             style={{ ...shopCardStyle, padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
