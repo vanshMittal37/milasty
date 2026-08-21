@@ -329,27 +329,14 @@ export default function Shop() {
 
         {/* Product Grid: Strict 2x2 Grid on Mobile (<768px) | 3-4 Columns Desktop */}
         <div className="favorites-grid fitted-cards-container-4">
-          {displayedProducts.length > 0 ? (
-            displayedProducts.map((product) => (
-              <ProductCard key={product._id || product.slug} product={product} />
-            ))
-          ) : (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: '#F5EBDD' }}>
-              <p style={{ fontSize: '1.1rem' }}>No bakes found in this category.</p>
-              <button 
-                onClick={() => setSelectedCategory('all')} 
-                className="btn-primary" 
-                style={{ marginTop: '1rem', padding: '0.6rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
-              >
-                View All Bakes
-              </button>
-            </div>
-          )}
+          {featuredProducts.slice(0, 4).map((product) => (
+            <ProductCard key={product._id || product.slug} product={product} />
+          ))}
         </div>
       </section>
 
       {/* ================================================================== */}
-      {/* 4. CATEGORIES SECTION (Separated with Filter Popup & Search) */}
+      {/* 4. CATEGORIES SECTION (Dedicated Filter & Search Product Cards Grid) */}
       {/* ================================================================== */}
       <section 
         id="shop-categories-section"
@@ -361,13 +348,16 @@ export default function Shop() {
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto', boxSizing: 'border-box' }}>
-          <div style={{ textAlign: 'center', maxWidth: '640px', margin: isMobile ? '0 auto 2rem' : '0 auto 3.5rem' }}>
+          <div style={{ textAlign: 'center', maxWidth: '640px', margin: isMobile ? '0 auto 1.75rem' : '0 auto 3rem' }}>
             <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.4rem' }}>
-              EXPLORE BY CATEGORY
+              EXPLORE BY CATEGORY & SEARCH
             </span>
-            <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.7rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 1rem', lineHeight: '1.2' }}>
-              Find Your Perfect <span style={{ color: 'var(--accent-gold)' }}>MILASTY</span>
+            <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.7rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
+              Browse <span style={{ color: 'var(--accent-gold)' }}>MILASTY Collection</span>
             </h2>
+            <p style={{ fontSize: isMobile ? '0.88rem' : '1rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>
+              Showing {displayedProducts.length} bakes {selectedCategory !== 'all' ? `in ${categoryList.find(c => c.id === selectedCategory)?.label || selectedCategory}` : ''}
+            </p>
           </div>
 
           {/* Search Bar & Category Filter Popup Trigger */}
@@ -384,9 +374,9 @@ export default function Shop() {
               <Search size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
               <input 
                 type="text"
-                placeholder="Search categories or bakes..."
-                value={catSearch}
-                onChange={(e) => setCatSearch(e.target.value)}
+                placeholder="Search cookies, ingredients, hampers..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '0.75rem 1rem 0.75rem 2.8rem',
@@ -424,55 +414,24 @@ export default function Shop() {
             </button>
           </div>
 
-          {/* Separate Category Cards */}
-          <div 
-            style={{ 
-              display: 'grid', 
-              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', 
-              gap: isMobile ? '0.75rem' : '2rem' 
-            }}
-          >
-            {categoryList
-              .filter(c => c.id !== 'all')
-              .filter(c => !catSearch || c.label.toLowerCase().includes(catSearch.toLowerCase()) || c.name.toLowerCase().includes(catSearch.toLowerCase()))
-              .map((cat) => (
-                <div 
-                  key={cat.id}
-                  onClick={() => {
-                    setSelectedCategory(cat.id);
-                    handleScrollToSection('featured-bakes-section');
-                  }}
-                  className="glass-card"
-                  style={{
-                    padding: isMobile ? '1.5rem 1rem' : '2.5rem 2rem',
-                    borderRadius: '20px',
-                    backgroundColor: 'rgba(35, 21, 13, 0.65)',
-                    border: selectedCategory === cat.id ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.18)',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxSizing: 'border-box'
-                  }}
+          {/* Product Cards for Categories Section */}
+          <div className="favorites-grid fitted-cards-container-4">
+            {displayedProducts.length > 0 ? (
+              displayedProducts.map((product) => (
+                <ProductCard key={product._id || product.slug} product={product} />
+              ))
+            ) : (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
+                <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
+                <button 
+                  onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
+                  className="btn-primary" 
+                  style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
                 >
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.45)', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.15rem' }}>
-                    <Sparkles size={22} color="var(--accent-gold)" />
-                  </div>
-                  <h3 style={{ fontSize: isMobile ? '0.95rem' : '1.25rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.35rem' }}>
-                    {cat.label}
-                  </h3>
-                  <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.7)', fontWeight: '600' }}>
-                    {cat.count}
-                  </span>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: '800', marginTop: '1rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                    <span>Browse Category</span>
-                    <ArrowRight size={13} />
-                  </span>
-                </div>
-              ))}
+                  Reset All Filters
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -523,7 +482,7 @@ export default function Shop() {
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
-              {categoryList.filter(c => c.id !== 'all').map((cat) => {
+              {categoryList.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
                 return (
                   <button
@@ -531,7 +490,7 @@ export default function Shop() {
                     onClick={() => {
                       setSelectedCategory(cat.id);
                       setFilterModalOpen(false);
-                      handleScrollToSection('featured-bakes-section');
+                      handleScrollToSection('shop-categories-section');
                     }}
                     style={{
                       padding: '0.85rem 1.25rem',
@@ -549,7 +508,7 @@ export default function Shop() {
                     }}
                   >
                     <span>{cat.label}</span>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: '700' }}>{cat.count}</span>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: '700' }}>{cat.count || 'All'}</span>
                   </button>
                 );
               })}
@@ -558,6 +517,7 @@ export default function Shop() {
             <button
               onClick={() => {
                 setSelectedCategory('all');
+                setSearch('');
                 setFilterModalOpen(false);
               }}
               style={{
@@ -572,7 +532,7 @@ export default function Shop() {
                 cursor: 'pointer'
               }}
             >
-              Reset Filters
+              Reset All Filters
             </button>
           </div>
         </div>
