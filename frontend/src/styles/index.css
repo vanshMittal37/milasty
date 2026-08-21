@@ -1216,28 +1216,27 @@ body, p, span, li, a {
   }
 
   .products-main-grid .card-body {
-    padding: 0.85rem 0.65rem !important;
+    padding: 0.85rem 0.7rem !important;
   }
 
   .products-main-grid .card-title {
-    font-size: 0.88rem !important;
-    line-height: 1.25 !important;
-    margin-bottom: 0.25rem !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
+    font-size: 0.9rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 0.3rem !important;
+    white-space: nowrap !important;
     overflow: hidden !important;
-    min-height: 2.2em !important;
+    text-overflow: ellipsis !important;
+    min-height: auto !important;
   }
 
   .products-main-grid .card-subtitle {
     font-size: 0.75rem !important;
-    line-height: 1.35 !important;
-    margin-bottom: 0.5rem !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0.85rem !important;
+    white-space: nowrap !important;
     overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    min-height: auto !important;
   }
 
   .products-main-grid .card-rating-row {
@@ -1250,23 +1249,25 @@ body, p, span, li, a {
 
   .products-main-grid .card-footer {
     padding-top: 0.6rem !important;
-    gap: 0.5rem !important;
+    gap: 0.25rem !important;
   }
 
   .products-main-grid .card-price {
-    font-size: 0.98rem !important;
+    font-size: 0.95rem !important;
   }
 
   .products-main-grid .original-price {
     font-size: 0.7rem !important;
   }
 
-  .products-main-grid .view-details-btn,
+  .products-main-grid .view-details-btn {
+    display: none !important;
+  }
+
   .products-main-grid .add-cart-btn {
-    padding: 0.5rem 0.2rem !important;
-    font-size: 0.7rem !important;
-    min-height: 34px !important;
-    border-radius: 8px !important;
+    padding: 0.4rem 0.65rem !important;
+    font-size: 0.72rem !important;
+    border-radius: 999px !important;
   }
 
   .products-main-grid .add-cart-btn svg {
@@ -1921,7 +1922,6 @@ body, p, span, li, a {
   }
 
   /* Compact padding inside product cards to prevent clipping and keep height at approx 2/3 */
-  .products-main-grid .glass-card,
   .shop-featured-grid .glass-card,
   .shop-main-grid .glass-card,
   .favorites-grid .glass-card,
@@ -1930,7 +1930,6 @@ body, p, span, li, a {
     max-height: none !important;
   }
 
-  .products-main-grid .glass-card > div:last-child,
   .shop-featured-grid .glass-card > div:last-child,
   .shop-main-grid .glass-card > div:last-child,
   .favorites-grid .glass-card > div:last-child,
@@ -1939,7 +1938,6 @@ body, p, span, li, a {
   }
 
   /* Scale down header typography inside product cards */
-  .products-main-grid .glass-card h3,
   .shop-featured-grid .glass-card h3,
   .shop-main-grid .glass-card h3,
   .favorites-grid .glass-card h3,
@@ -1949,7 +1947,6 @@ body, p, span, li, a {
   }
 
   /* Scale down subtitle typography and description lines */
-  .products-main-grid .glass-card p,
   .shop-featured-grid .glass-card p,
   .shop-main-grid .glass-card p,
   .favorites-grid .glass-card p,

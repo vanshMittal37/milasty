@@ -198,48 +198,43 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Pricing & Actions Bottom Divider */}
-        <div className="card-footer" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span className="price-label" style={{ fontSize: '0.7rem', color: '#F5EBDD', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '800' }}>Price</span>
-            <div className="card-price" style={{ fontSize: '1.18rem', fontWeight: '900', color: '#b9cd94' }}>
-              ₹{selectedVariant.price}
-              {selectedVariant.originalPrice && (
-                <span
-                  className="original-price"
-                  style={{
-                    fontSize: '0.78rem',
-                    color: 'rgba(245, 235, 221, 0.65)',
-                    textDecoration: 'line-through',
-                    marginLeft: '0.35rem',
-                    fontWeight: '500',
-                  }}
-                >
-                  ₹{selectedVariant.originalPrice}
-                </span>
-              )}
-            </div>
+        <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.65rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', minWidth: 0 }}>
+          <div className="card-price" style={{ fontSize: '1.1rem', fontWeight: '900', color: '#b9cd94' }}>
+            ₹{selectedVariant.price}
+            {selectedVariant.originalPrice && (
+              <span
+                className="original-price"
+                style={{
+                  fontSize: '0.75rem',
+                  color: 'rgba(245, 235, 221, 0.65)',
+                  textDecoration: 'line-through',
+                  marginLeft: '0.35rem',
+                  fontWeight: '500',
+                }}
+              >
+                ₹{selectedVariant.originalPrice}
+              </span>
+            )}
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', width: '100%', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
             <Link
               to={`/product/${product.slug}`}
               className="btn-secondary view-details-btn"
               style={{
-                flex: 1,
-                padding: '0.65rem 0.4rem',
-                fontSize: '0.78rem',
-                borderRadius: '10px',
+                padding: '0.45rem 0.65rem',
+                fontSize: '0.75rem',
+                borderRadius: '999px',
                 fontWeight: '850',
                 textAlign: 'center',
                 borderColor: '#b9cd94',
                 color: '#b9cd94',
                 textDecoration: 'none',
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'rgba(36, 79, 33, 0.25)',
                 transition: 'all 0.2s',
-                minHeight: '36px'
               }}
             >
               View Details
@@ -249,10 +244,9 @@ export default function ProductCard({ product }) {
               onClick={handleAddToCart}
               className="btn-primary add-cart-btn"
               style={{
-                flex: 1,
-                padding: '0.65rem 0.4rem',
+                padding: '0.45rem 0.75rem',
                 fontSize: '0.78rem',
-                borderRadius: '10px',
+                borderRadius: '999px',
                 backgroundColor: '#244f21',
                 color: '#FFFFFF',
                 border: 'none',
@@ -260,14 +254,13 @@ export default function ProductCard({ product }) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '0.2rem',
+                gap: '0.25rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
-                minHeight: '36px'
               }}
             >
-              <ShoppingBag size={14} />
-              <span className="cart-btn-text">{btnText}</span>
+              <ShoppingBag size={13} />
+              <span>{btnText === 'Add to Cart' ? 'Add' : btnText}</span>
             </button>
           </div>
         </div>
