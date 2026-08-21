@@ -1101,6 +1101,10 @@ body, p, span, li, a {
     padding: 3rem 0 !important;
   }
 
+  .wishlist-hero-section {
+    padding: 3rem 0.85rem 2rem !important;
+  }
+
   .shop-listings-container,
   .wishlist-main-container {
     padding-left: 0.85rem !important;
