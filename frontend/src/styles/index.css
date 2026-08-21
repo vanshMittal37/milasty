@@ -1901,23 +1901,7 @@ body, p, span, li, a {
     min-height: 2.6em !important;
   }
 
-  /* Wishlist "You May Also Love" horizontal scroll on mobile showing 1 card at a time */
-  .wishlist-recommendations-grid {
-    display: flex !important;
-    flex-direction: row !important;
-    overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
-    gap: 1rem !important;
-    padding-bottom: 0.5rem !important;
-    width: 100% !important;
-  }
 
-  .wishlist-recommendations-grid > * {
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
-    scroll-snap-align: center !important;
-    box-sizing: border-box !important;
-  }
 }
 /* 5. SHOP & RITUALS PAGE RESPONSIVENESS (2x2 GRID FOR PRODUCTS) */
 @media (max-width: 767px) {
