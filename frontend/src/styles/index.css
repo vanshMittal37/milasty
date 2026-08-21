@@ -1575,78 +1575,115 @@ body, p, span, li, a {
   }
 }
 
-/* 3. NUTRITION PAGE RESPONSIVENESS */
+/* 3. NUTRITION PAGE RESPONSIVENESS (16px MOBILE SIDE PADDING) */
 @media (max-width: 767px) {
-  .nutrition-page > section {
-    padding: 3rem 1rem !important;
+  .nutrition-page,
+  .nutrition-page section,
+  .nutrition-page > section,
+  .nutrition-page .nutrition-hero-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
   }
-  .nutrition-page > section:nth-of-type(1) {
-    padding-top: 4rem !important;
-    padding-bottom: 2.5rem !important;
+
+  .nutrition-page section > div,
+  .nutrition-page > section > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
   }
-  .nutrition-page > section:nth-of-type(2) > div {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.75rem !important;
+
+  .nutrition-page .glass-card,
+  .nutrition-page [class*="glass-card"] {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
-  .nutrition-page > section:nth-of-type(2) .glass-card {
-    padding: 1.25rem 0.75rem !important;
-  }
-  .nutrition-page > section:nth-of-type(4) > div {
-    grid-template-columns: 1fr !important;
-    gap: 2rem !important;
-  }
-  .nutrition-page > section:nth-of-type(4) img {
-    height: 240px !important;
-  }
-  .nutrition-page > section:nth-of-type(5) > div {
-    grid-template-columns: 1fr !important;
-    gap: 1rem !important;
-  }
-  .nutrition-page > section:nth-of-type(5) .glass-card {
-    padding: 1.5rem 1.25rem !important;
-  }
-  .nutrition-page > section:nth-of-type(6) > div:last-child {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 1.25rem !important;
+
+  /* Keep 2x2 grid fitting inside 16px page padding */
+  .nutrition-page .fitted-cards-container-4,
+  .nutrition-page .fitted-cards-container-3,
+  .nutrition-page .mobile-only-cards {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 }
 
-/* 4. CONTACT PAGE RESPONSIVENESS */
+/* 4. CONTACT PAGE RESPONSIVENESS (16px MOBILE SIDE PADDING) */
 @media (max-width: 767px) {
+  .contact-page,
+  .contact-page section,
   .contact-page > section {
-    padding: 3rem 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
   }
-  .contact-page > section:nth-of-type(1) {
-    padding-top: 4rem !important;
-    padding-bottom: 2.5rem !important;
+
+  .contact-page section > div,
+  .contact-page > section > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
   }
-  /* Force Quick Contact cards into a 2-column grid instead of 1x1 stack */
+
+  /* Quick Contact Support Cards - Stacked full-width with 16px side padding */
   .contact-page > section:nth-of-type(2) > div {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.75rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
-  .contact-page > section:nth-of-type(2) .glass-card {
-    padding: 1.25rem 0.75rem !important;
+
+  .contact-page > section:nth-of-type(2) > div > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1.75rem 1.25rem !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
   }
-  .contact-page > section:nth-of-type(2) h3 {
-    font-size: 0.92rem !important;
-  }
-  .contact-page > section:nth-of-type(2) p {
-    font-size: 0.75rem !important;
-  }
+
+  /* Contact Details & Inquiry Form stack */
   .contact-page > section:nth-of-type(3) > div {
-    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
     gap: 2.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
+
   .contact-page #contact-inquiry-form {
-    padding: 2rem 1.25rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1.75rem 1.25rem !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
   }
-  .contact-page > section:nth-of-type(4) > div {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.75rem !important;
-  }
-  .contact-page > section:nth-of-type(4) .glass-card {
-    padding: 1.25rem 0.75rem !important;
+
+  /* Prevent text overflow for address and email */
+  .contact-page p,
+  .contact-page a,
+  .contact-page h1,
+  .contact-page h2,
+  .contact-page h3,
+  .contact-page h4 {
+    max-width: 100% !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
   }
 }
 /* 5. SHOP & RITUALS PAGE RESPONSIVENESS (2x2 GRID FOR PRODUCTS) */
