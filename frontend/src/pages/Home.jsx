@@ -33,6 +33,8 @@ export default function Home() {
   const [dbProducts, setDbProducts] = useState([]);
   const [activeReviewIdx, setActiveReviewIdx] = useState(0);
   const [activeRitualIdx, setActiveRitualIdx] = useState(0);
+  const [activeMobileTransparencyIdx, setActiveMobileTransparencyIdx] = useState(0);
+  const [activeMobileVsIdx, setActiveMobileVsIdx] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
 
@@ -760,42 +762,137 @@ export default function Home() {
             )}
           </div>
 
-          <div 
-            ref={whyDiffRef}
-            className="why-grid fitted-cards-container-4" 
-          >
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
-                <Award size={isMobile ? 28 : 36} strokeWidth={1.5} />
+          {isMobile ? (
+            /* MOBILE INTERACTIVE 2x2 SELECTOR VIEW */
+            <div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem', marginBottom: '1.25rem' }}>
+                {[
+                  { icon: Award, title: 'PURE GHEE', num: '01', desc: 'Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.' },
+                  { icon: Sparkles, title: 'MILLETS', num: '02', desc: 'Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.' },
+                  { icon: ShieldCheck, title: 'JAGGERY', num: '03', desc: 'Sweetened with pure organic jaggery instead of refined white sugars.' },
+                  { icon: FileText, title: 'TRANSPARENCY', num: '04', desc: 'Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.' },
+                ].map((item, idx) => {
+                  const isSelected = activeMobileTransparencyIdx === idx;
+                  const IconComp = item.icon;
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => setActiveMobileTransparencyIdx(idx)}
+                      className="glass-card"
+                      style={{
+                        padding: '1rem 0.85rem',
+                        borderRadius: '16px',
+                        backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.40)' : 'rgba(20, 10, 5, 0.40)',
+                        border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.20)',
+                        boxShadow: isSelected ? '0 8px 24px rgba(0, 0, 0, 0.35)' : 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.25s ease',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        height: '120px',
+                        boxSizing: 'border-box',
+                        minWidth: 0,
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <IconComp size={22} color={isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.7)'} strokeWidth={1.8} />
+                        <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)' }}>{item.num}</span>
+                      </div>
+                      <div>
+                        <h4 style={{ fontSize: '0.82rem', color: isSelected ? '#FFFFFF' : '#F5EBDD', fontWeight: '850', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</h4>
+                        <span style={{ fontSize: '0.65rem', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.6)', fontWeight: '600', display: 'block', marginTop: '0.15rem' }}>
+                          {isSelected ? '✓ Selected' : 'Tap to view'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PURE DESI GHEE</h3>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
-            </div>
 
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
-                <Sparkles size={isMobile ? 28 : 36} strokeWidth={1.5} />
+              {/* Detail Panel Below 2x2 Grid */}
+              <div 
+                className="glass-card"
+                style={{
+                  padding: '1.25rem 1.15rem',
+                  borderRadius: '18px',
+                  backgroundColor: 'rgba(20, 10, 5, 0.65)',
+                  border: '1px solid var(--accent-gold)',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                {[
+                  { fullTitle: 'PURE DESI COW GHEE', desc: 'Slow-baked with authentic Desi Cow Ghee for rich aroma, crumbly texture, and wholesome natural nutrition without vegetable oils.' },
+                  { fullTitle: 'WHOLESOME NATIVE MILLETS', desc: 'Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour, giving you complex carbs and dietary fiber.' },
+                  { fullTitle: 'UNREFINED ORGANIC JAGGERY', desc: 'Sweetened with 100% pure organic jaggery instead of refined white sugars, artificial sweeteners, or high-fructose syrups.' },
+                  { fullTitle: '100% CLEAN & TRANSPARENT', desc: 'Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives, artificial colors, or emulsifiers.' },
+                ][activeMobileTransparencyIdx] && (
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: '900', color: 'var(--accent-gold)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        0{activeMobileTransparencyIdx + 1} • HIGHLIGHT
+                      </span>
+                    </div>
+                    <h3 style={{ fontSize: '1.05rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '0.45rem', marginTop: 0 }}>
+                      {[
+                        'PURE DESI COW GHEE',
+                        'WHOLESOME NATIVE MILLETS',
+                        'UNREFINED ORGANIC JAGGERY',
+                        '100% CLEAN & TRANSPARENT'
+                      ][activeMobileTransparencyIdx]}
+                    </h3>
+                    <p style={{ fontSize: '0.84rem', color: '#F5EBDD', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>
+                      {[
+                        'Slow-baked with authentic Desi Cow Ghee for rich aroma, crumbly texture, and wholesome natural nutrition without vegetable oils.',
+                        'Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour, giving you complex carbs and dietary fiber.',
+                        'Sweetened with 100% pure organic jaggery instead of refined white sugars, artificial sweeteners, or high-fructose syrups.',
+                        'Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives, artificial colors, or emulsifiers.'
+                      ][activeMobileTransparencyIdx]}
+                    </p>
+                  </div>
+                )}
               </div>
-              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>WHOLESOME MILLETS</h3>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
             </div>
+          ) : (
+            /* DESKTOP & TABLET ORIGINAL VIEW */
+            <div 
+              ref={whyDiffRef}
+              className="why-grid fitted-cards-container-4" 
+            >
+              <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+                <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
+                  <Award size={36} strokeWidth={1.5} />
+                </div>
+                <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PURE DESI GHEE</h3>
+                <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
+              </div>
 
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
-                <ShieldCheck size={isMobile ? 28 : 36} strokeWidth={1.5} />
+              <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+                <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
+                  <Sparkles size={36} strokeWidth={1.5} />
+                </div>
+                <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>WHOLESOME MILLETS</h3>
+                <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
               </div>
-              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NATURALLY SWEET</h3>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
-            </div>
 
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
-                <FileText size={isMobile ? 28 : 36} strokeWidth={1.5} />
+              <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+                <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
+                  <ShieldCheck size={36} strokeWidth={1.5} />
+                </div>
+                <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NATURALLY SWEET</h3>
+                <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
               </div>
-              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTHING UNNECESSARY</h3>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
+
+              <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+                <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
+                  <FileText size={36} strokeWidth={1.5} />
+                </div>
+                <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTHING UNNECESSARY</h3>
+                <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -1148,45 +1245,180 @@ export default function Home() {
               <div 
                 className="lab-comparison" 
                 style={{ 
-                  padding: isMobile ? '1.5rem 1.15rem' : '2.25rem', 
+                  padding: isMobile ? '1.25rem 1rem' : '2.25rem', 
                   borderRadius: '24px',
                   width: '100%',
                   boxSizing: 'border-box'
                 }}
               >
-                <h4 style={{ color: 'var(--accent-gold)', fontSize: isMobile ? '1.05rem' : '1.15rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>
+                <h4 style={{ color: 'var(--accent-gold)', fontSize: isMobile ? '1.02rem' : '1.15rem', marginBottom: isMobile ? '1rem' : '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>
                   MILASTY vs Conventional Biscuits
                 </h4>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', width: '100%', minWidth: 0 }}>
-                  {[
-                    { label: 'Fat Source:', value: '100% Pure Cow Ghee' },
-                    { label: 'Sweetener:', value: 'Organic Jaggery' },
-                    { label: 'Flour Base:', value: 'Bajra, Jowar, Ragi (No Maida)' },
-                    { label: 'Preservatives:', value: 'Zero Synthetic Chemicals' },
-                  ].map((row, idx, arr) => (
-                    <div 
-                      key={idx}
-                      style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: isMobile ? 'minmax(105px, 0.9fr) minmax(0, 1.1fr)' : '1fr auto', 
-                        gap: '0.75rem', 
-                        alignItems: 'baseline', 
-                        borderBottom: idx < arr.length - 1 ? '1px solid rgba(255, 255, 255, 0.25)' : 'none', 
-                        paddingBottom: '0.75rem',
-                        width: '100%',
-                        minWidth: 0
+                {isMobile ? (
+                  /* MOBILE INTERACTIVE 2x2 COMPARISON SELECTOR */
+                  <div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', marginBottom: '1rem' }}>
+                      {[
+                        { title: 'FAT SOURCE', num: '01', key: 'Fat Source' },
+                        { title: 'SWEETENER', num: '02', key: 'Sweetener' },
+                        { title: 'FLOUR BASE', num: '03', key: 'Flour Base' },
+                        { title: 'PRESERVATIVES', num: '04', key: 'Preservatives' },
+                      ].map((item, idx) => {
+                        const isSelected = activeMobileVsIdx === idx;
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => setActiveMobileVsIdx(idx)}
+                            style={{
+                              padding: '0.85rem 0.75rem',
+                              borderRadius: '14px',
+                              backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.40)' : 'rgba(20, 10, 5, 0.40)',
+                              border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.18)',
+                              boxShadow: isSelected ? '0 6px 18px rgba(0, 0, 0, 0.35)' : 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.25s ease',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'space-between',
+                              height: '100px',
+                              boxSizing: 'border-box',
+                              minWidth: 0,
+                            }}
+                          >
+                            <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)' }}>
+                              {item.num}
+                            </span>
+                            <div>
+                              <h5 style={{ fontSize: '0.78rem', color: isSelected ? '#FFFFFF' : '#F5EBDD', fontWeight: '850', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {item.title}
+                              </h5>
+                              <span style={{ fontSize: '0.62rem', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.55)', fontWeight: '600', display: 'block', marginTop: '0.15rem' }}>
+                                {isSelected ? '✓ Viewing' : 'Tap to compare'}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Expandable Comparison Details Panel */}
+                    <div
+                      style={{
+                        padding: '1rem 0.9rem',
+                        borderRadius: '16px',
+                        backgroundColor: 'rgba(20, 10, 5, 0.65)',
+                        border: '1px solid var(--accent-gold)',
+                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+                        transition: 'all 0.3s ease'
                       }}
                     >
-                      <span style={{ color: '#F5EBDD', opacity: 0.95, fontWeight: '600', fontSize: isMobile ? '0.86rem' : '0.92rem', wordBreak: 'break-word' }}>
-                        {row.label}
-                      </span>
-                      <strong style={{ color: 'var(--accent-gold)', fontWeight: '850', fontSize: isMobile ? '0.88rem' : '0.92rem', textAlign: isMobile ? 'left' : 'right', lineHeight: '1.45', wordBreak: 'break-word' }}>
-                        {row.value}
-                      </strong>
+                      {[
+                        { 
+                          category: 'FAT SOURCE',
+                          milasty: '100% Pure Cow Ghee',
+                          conventional: 'Refined Palm Oil & Hydrogenated Fats',
+                          note: 'No cheap vegetable oils or trans-fats.'
+                        },
+                        { 
+                          category: 'SWEETENER',
+                          milasty: 'Organic Jaggery',
+                          conventional: 'Refined White Sugar & High-Fructose Syrup',
+                          note: 'Natural unrefined sweetness packed with minerals.'
+                        },
+                        { 
+                          category: 'FLOUR BASE',
+                          milasty: 'Bajra, Jowar & Ragi',
+                          conventional: '100% Refined Maida Flour',
+                          note: 'Zero Maida. Rich in dietary fiber and slow-release energy.'
+                        },
+                        { 
+                          category: 'PRESERVATIVES',
+                          milasty: 'Zero Synthetic Chemicals',
+                          conventional: 'BHA, BHT & Artificial Emulsifiers',
+                          note: 'Freshly baked without chemical shelf-life extenders.'
+                        },
+                      ][activeMobileVsIdx] && (
+                        <div>
+                          <div style={{ fontSize: '0.72rem', fontWeight: '900', color: 'var(--accent-gold)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.4rem' }}>
+                            {[
+                              'FAT SOURCE COMPARISON',
+                              'SWEETENER COMPARISON',
+                              'FLOUR BASE COMPARISON',
+                              'PRESERVATIVE COMPARISON'
+                            ][activeMobileVsIdx]}
+                          </div>
+
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(36, 79, 33, 0.35)', padding: '0.55rem 0.75rem', borderRadius: '10px', border: '1px solid rgba(185, 205, 148, 0.3)' }}>
+                              <span style={{ fontSize: '0.78rem', color: '#FFFDF9', fontWeight: '700' }}>MILASTY:</span>
+                              <strong style={{ fontSize: '0.82rem', color: 'var(--accent-gold)', fontWeight: '900' }}>
+                                {[
+                                  '100% Pure Cow Ghee',
+                                  'Organic Jaggery',
+                                  'Bajra, Jowar & Ragi',
+                                  'Zero Synthetic Chemicals'
+                                ][activeMobileVsIdx]}
+                              </strong>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.35)', padding: '0.55rem 0.75rem', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                              <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.65)', fontWeight: '600' }}>Conventional:</span>
+                              <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.75)', fontWeight: '600', textDecoration: 'line-through' }}>
+                                {[
+                                  'Palm Oil & Trans Fats',
+                                  'Refined White Sugar',
+                                  'Refined Maida Flour',
+                                  'BHA, BHT & Chemicals'
+                                ][activeMobileVsIdx]}
+                              </span>
+                            </div>
+
+                            <p style={{ fontSize: '0.75rem', color: '#F5EBDD', opacity: 0.9, lineHeight: '1.45', margin: '0.2rem 0 0', fontWeight: '500' }}>
+                              {[
+                                'No cheap vegetable oils or harmful trans-fats.',
+                                'Natural unrefined sweetness packed with minerals.',
+                                'Zero Maida. Rich in dietary fiber and slow-release energy.',
+                                'Freshly baked without chemical shelf-life extenders.'
+                              ][activeMobileVsIdx]}
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  /* DESKTOP ORIGINAL COMPARISON TABLE */
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', width: '100%', minWidth: 0 }}>
+                    {[
+                      { label: 'Fat Source:', value: '100% Pure Cow Ghee' },
+                      { label: 'Sweetener:', value: 'Organic Jaggery' },
+                      { label: 'Flour Base:', value: 'Bajra, Jowar, Ragi (No Maida)' },
+                      { label: 'Preservatives:', value: 'Zero Synthetic Chemicals' },
+                    ].map((row, idx, arr) => (
+                      <div 
+                        key={idx}
+                        style={{ 
+                          display: 'grid', 
+                          gridTemplateColumns: '1fr auto', 
+                          gap: '0.75rem', 
+                          alignItems: 'baseline', 
+                          borderBottom: idx < arr.length - 1 ? '1px solid rgba(255, 255, 255, 0.25)' : 'none', 
+                          paddingBottom: '0.75rem',
+                          width: '100%',
+                          minWidth: 0
+                        }}
+                      >
+                        <span style={{ color: '#F5EBDD', opacity: 0.95, fontWeight: '600', fontSize: '0.92rem', wordBreak: 'break-word' }}>
+                          {row.label}
+                        </span>
+                        <strong style={{ color: 'var(--accent-gold)', fontWeight: '850', fontSize: '0.92rem', textAlign: 'right', lineHeight: '1.45', wordBreak: 'break-word' }}>
+                          {row.value}
+                        </strong>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
