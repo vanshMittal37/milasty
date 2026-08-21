@@ -1575,8 +1575,25 @@ body, p, span, li, a {
   }
 }
 
-/* 3. NUTRITION PAGE RESPONSIVENESS (16px MOBILE SIDE PADDING) */
+/* 3. NUTRITION PAGE RESPONSIVENESS (MOBILE CAROUSELS & 2x2 GRIDS) */
+.nutrition-glance-mobile-carousel,
+.why-ingredients-mobile-carousel {
+  display: none;
+}
+
 @media (max-width: 767px) {
+  .nutrition-glance-mobile-carousel,
+  .why-ingredients-mobile-carousel {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .nutrition-page .fitted-cards-container-3 {
+    display: none !important;
+  }
+
   .nutrition-page,
   .nutrition-page section,
   .nutrition-page > section,
@@ -1602,18 +1619,83 @@ body, p, span, li, a {
     min-width: 0 !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+    overflow: hidden !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
   }
 
-  /* Keep 2x2 grid fitting inside 16px page padding */
-  .nutrition-page .fitted-cards-container-4,
-  .nutrition-page .fitted-cards-container-3,
-  .nutrition-page .mobile-only-cards {
+  /* 1. What's Inside Every Bite (2x2 Grid with non-overflowing text) */
+  .nutrition-page .fitted-cards-container-4 {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 10px !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+  }
+
+  .nutrition-page .fitted-cards-container-4 > .glass-card {
+    padding: 0.85rem 0.65rem !important;
+  }
+
+  .nutrition-page .fitted-cards-container-4 h3 {
+    font-size: 0.82rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 0.25rem !important;
+    word-break: break-word !important;
+  }
+
+  .nutrition-page .fitted-cards-container-4 p {
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
+    margin: 0 !important;
+    word-break: break-word !important;
+  }
+
+  /* 3. From Grain to Bake (2x2 Grid on Mobile) */
+  .nutrition-page .grain-to-bake-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .nutrition-page .grain-to-bake-grid > .glass-card {
+    padding: 0.85rem 0.65rem !important;
+  }
+
+  .nutrition-page .grain-to-bake-grid h4 {
+    font-size: 0.78rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .nutrition-page .grain-to-bake-grid p {
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
+  }
+
+  /* 5. Know What You Eat (2x2 Grid on Mobile) */
+  .nutrition-page .know-what-you-eat-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .nutrition-page .know-what-you-eat-grid > .glass-card {
+    padding: 0.85rem 0.65rem !important;
+  }
+
+  .nutrition-page .know-what-you-eat-grid h4 {
+    font-size: 0.78rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .nutrition-page .know-what-you-eat-grid p {
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
   }
 }
 

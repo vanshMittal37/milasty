@@ -10,6 +10,8 @@ import { initialProducts } from '../data/seedData';
 
 export default function Nutrition() {
   const [products, setProducts] = useState(initialProducts);
+  const [glanceIndex, setGlanceIndex] = useState(0);
+  const [whyIngredientsIndex, setWhyIngredientsIndex] = useState(0);
   
   const insideBiteRef = useRef(null);
   const glanceRef = useRef(null);
@@ -42,6 +44,41 @@ export default function Nutrition() {
   }, []);
 
   const dailyProducts = products.filter((p) => p.category === 'daily');
+
+  // Auto-rotate Nutrition at a Glance carousel on Mobile (every 2.5s)
+  useEffect(() => {
+    if (!dailyProducts.length) return;
+    const timer = setInterval(() => {
+      setGlanceIndex((prev) => (prev + 1) % dailyProducts.length);
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [dailyProducts.length]);
+
+  // Auto-rotate Why Ingredients Matter carousel on Mobile (every 3.0s)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setWhyIngredientsIndex((prev) => (prev + 1) % 3);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const whyIngredientsData = [
+    {
+      title: "Why Pure Desi Ghee?",
+      icon: <Sparkles size={28} color="#b9cd94" />,
+      desc: "Unlike industrial palm oil and hydrogenated fats used in commercial biscuits, pure Desi Ghee provides butyric acid, supporting gut lining integrity and enhancing bioavailability of fat-soluble vitamins (A, D, E, K)."
+    },
+    {
+      title: "Why Unrefined Organic Jaggery?",
+      icon: <Award size={28} color="#b9cd94" />,
+      desc: "Refined white sugar strips away minerals causing rapid blood glucose spikes. Organic jaggery retains essential trace elements like Iron, Magnesium, and Potassium, ensuring sustained clean energy."
+    },
+    {
+      title: "Why Ancient Millets over Maida?",
+      icon: <ShieldCheck size={28} color="#b9cd94" />,
+      desc: "Refined Maida creates inflammatory mucus in the digestive tract. Millets (Bajra, Jowar, Ragi) deliver rich dietary fiber, naturally slow digestion, and keep you feeling full for longer."
+    }
+  ];
 
   const handleDownload = async (url, filename) => {
     try {
@@ -434,69 +471,57 @@ export default function Nutrition() {
           </table>
         </div>
 
-        {/* MOBILE STACKED CARDS VIEW */}
-        <div 
-          className="mobile-only-cards horizontal-scroll-container" 
-          style={{ 
-            display: 'none', 
-            flexDirection: 'row', 
-            gap: '1.5rem', 
-            overflowX: 'auto', 
-            scrollBehavior: 'smooth', 
-            paddingBottom: '1rem',
-            maxWidth: '100%'
-          }}
-        >
-          {dailyProducts.map((p, idx) => (
+        {/* MOBILE SINGLE CARD AUTO-SCROLLING CAROUSEL (NUTRITION AT A GLANCE) */}
+        <div className="nutrition-glance-mobile-carousel">
+          {dailyProducts[glanceIndex] && (
             <div 
-              key={idx} 
-              className="glass-card" 
+              key={glanceIndex} 
+              className="glass-card animate-fade-in" 
               style={{ 
                 borderRadius: '24px', 
                 overflow: 'hidden',
-                flexShrink: 0,
-                width: 'min(290px, 85vw)',
+                width: '100%',
                 boxSizing: 'border-box'
               }}
             >
-              <div style={{ padding: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-                <img src={p.image} alt={p.title} style={{ width: '65px', height: '65px', borderRadius: '10px', objectFit: 'cover' }} />
+              <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+                <img src={dailyProducts[glanceIndex].image} alt={dailyProducts[glanceIndex].title} style={{ width: '60px', height: '60px', borderRadius: '12px', objectFit: 'cover' }} />
                 <div>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.15rem 0' }}>{p.title}</h3>
-                  <p style={{ fontSize: '0.78rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>{p.subtitle || p.description}</p>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.15rem 0' }}>{dailyProducts[glanceIndex].title}</h3>
+                  <p style={{ fontSize: '0.78rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>{dailyProducts[glanceIndex].subtitle || dailyProducts[glanceIndex].description}</p>
                 </div>
               </div>
 
-              <div style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
+              <div style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                   <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Energy</span>
-                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{p.nutritionFacts.energyKcal} kcal</span>
+                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.energyKcal} kcal</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                   <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Protein</span>
-                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{p.nutritionFacts.proteinG}g</span>
+                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.proteinG}g</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                   <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Carbohydrates</span>
-                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{p.nutritionFacts.carbohydrateG}g</span>
+                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.carbohydrateG}g</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', flexWrap: 'wrap', gap: '0.2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                   <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Added Sugar</span>
                   <span style={{ color: '#b9cd94', fontWeight: '900' }}>0g (100% Jaggery)</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', flexWrap: 'wrap', gap: '0.2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                   <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Fat Type</span>
                   <span style={{ color: '#b9cd94', fontWeight: '900' }}>100% Desi Ghee</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                   <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Dietary Fiber</span>
-                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{p.nutritionFacts.dietaryFiberG}g</span>
+                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.dietaryFiberG}g</span>
                 </div>
 
-                <div style={{ paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', marginTop: '0.5rem' }}>
-                  {p.labReportUrl ? (
+                {dailyProducts[glanceIndex].labReportUrl && (
+                  <div style={{ paddingTop: '0.85rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', marginTop: '0.35rem' }}>
                     <button
-                      onClick={() => handleDownload(p.labReportUrl, `${p.title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
+                      onClick={() => handleDownload(dailyProducts[glanceIndex].labReportUrl, `${dailyProducts[glanceIndex].title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
                       className="btn-primary"
                       style={{ 
                         padding: '0.65rem 0', 
@@ -509,7 +534,6 @@ export default function Nutrition() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '0.35rem',
-                        textDecoration: 'none',
                         width: '100%',
                         border: 'none',
                         cursor: 'pointer'
@@ -518,13 +542,31 @@ export default function Nutrition() {
                       <Download size={14} />
                       <span>Download Lab Report</span>
                     </button>
-                  ) : (
-                    <span style={{ fontSize: '0.8rem', color: '#F5EBDD', fontWeight: '700', textAlign: 'center', display: 'block' }}>Report Unavailable</span>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
-          ))}
+          )}
+
+          {/* Carousel Dots */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.25rem' }}>
+            {dailyProducts.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setGlanceIndex(idx)}
+                style={{
+                  width: glanceIndex === idx ? '24px' : '8px',
+                  height: '8px',
+                  borderRadius: '999px',
+                  backgroundColor: glanceIndex === idx ? '#b9cd94' : 'rgba(255,255,255,0.3)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                aria-label={`Go to card ${idx + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
       </section>
@@ -557,7 +599,7 @@ export default function Nutrition() {
                 We work directly with domestic farming sources to identify wholesome ancient millets. We never refine, strip, or dilute our baking ingredients.
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
+              <div className="grain-to-bake-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
                 <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
                   <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     <span>01</span>
@@ -623,41 +665,62 @@ export default function Nutrition() {
           </div>
         </div>
 
+        {/* DESKTOP 3 CARDS VIEW */}
         <div 
           ref={ingredientsRef}
           className="horizontal-scroll-container fitted-cards-container-3"
         >
-          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>01</span>
-              <Sparkles size={28} color="#b9cd94" />
+          {whyIngredientsData.map((item, idx) => (
+            <div key={idx} className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>0{idx + 1}</span>
+                {item.icon}
+              </div>
+              <h3 style={{ fontSize: '1.25rem', color: '#FFFDF9', marginBottom: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>{item.title}</h3>
+              <p style={{ color: '#F5EBDD', fontSize: '0.92rem', lineHeight: '1.7', margin: 0, fontWeight: '500' }}>
+                {item.desc}
+              </p>
             </div>
-            <h3 style={{ fontSize: '1.25rem', color: '#FFFDF9', marginBottom: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>Why Pure Desi Ghee?</h3>
-            <p style={{ color: '#F5EBDD', fontSize: '0.92rem', lineHeight: '1.7', margin: 0, fontWeight: '500' }}>
-              Unlike industrial palm oil and hydrogenated fats used in commercial biscuits, pure Desi Ghee provides butyric acid, supporting gut lining integrity and enhancing bioavailability of fat-soluble vitamins (A, D, E, K).
-            </p>
-          </div>
+          ))}
+        </div>
 
-          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>02</span>
-              <Award size={28} color="#b9cd94" />
+        {/* MOBILE SINGLE CARD AUTO-SCROLLING CAROUSEL (WHY INGREDIENTS MATTER) */}
+        <div className="why-ingredients-mobile-carousel">
+          {whyIngredientsData[whyIngredientsIndex] && (
+            <div className="glass-card animate-fade-in" style={{ padding: '2rem 1.5rem', borderRadius: '24px', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                <span style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>
+                  0{whyIngredientsIndex + 1}
+                </span>
+                {whyIngredientsData[whyIngredientsIndex].icon}
+              </div>
+              <h3 style={{ fontSize: '1.2rem', color: '#FFFDF9', marginBottom: '0.65rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>
+                {whyIngredientsData[whyIngredientsIndex].title}
+              </h3>
+              <p style={{ color: '#F5EBDD', fontSize: '0.9rem', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+                {whyIngredientsData[whyIngredientsIndex].desc}
+              </p>
             </div>
-            <h3 style={{ fontSize: '1.25rem', color: '#FFFDF9', marginBottom: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>Why Unrefined Organic Jaggery?</h3>
-            <p style={{ color: '#F5EBDD', fontSize: '0.92rem', lineHeight: '1.7', margin: 0, fontWeight: '500' }}>
-              Refined white sugar strips away minerals causing rapid blood glucose spikes. Organic jaggery retains essential trace elements like Iron, Magnesium, and Potassium, ensuring sustained clean energy.
-            </p>
-          </div>
+          )}
 
-          <div className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>03</span>
-              <ShieldCheck size={28} color="#b9cd94" />
-            </div>
-            <h3 style={{ fontSize: '1.25rem', color: '#FFFDF9', marginBottom: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>Why Ancient Millets over Maida?</h3>
-            <p style={{ color: '#F5EBDD', fontSize: '0.92rem', lineHeight: '1.7', margin: 0, fontWeight: '500' }}>
-              Refined Maida creates inflammatory mucus in the digestive tract. Millets (Bajra, Jowar, Ragi) deliver rich dietary fiber, naturally slow digestion, and keep you feeling full for longer.
-            </p>
+          {/* Carousel Dots */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.25rem' }}>
+            {whyIngredientsData.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setWhyIngredientsIndex(idx)}
+                style={{
+                  width: whyIngredientsIndex === idx ? '24px' : '8px',
+                  height: '8px',
+                  borderRadius: '999px',
+                  backgroundColor: whyIngredientsIndex === idx ? '#b9cd94' : 'rgba(255,255,255,0.3)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                aria-label={`Go to ingredient card ${idx + 1}`}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -672,7 +735,7 @@ export default function Nutrition() {
             Every ingredient has a place. Every number has a source.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '1.25rem', textAlign: 'left' }}>
+          <div className="know-what-you-eat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '1.25rem', textAlign: 'left' }}>
             <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '18px' }}>
               <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ingredient Transparency</h4>
               <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Clear ingredient information on every pack.</p>
