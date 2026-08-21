@@ -107,11 +107,11 @@ export default function ProductCard({ product }) {
             className="card-badge-wrap"
             style={{
               position: 'absolute',
-              top: '12px',
-              left: '12px',
+              top: '8px',
+              left: '8px',
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '6px',
+              gap: '4px',
               zIndex: 10,
               pointerEvents: 'none'
             }}
@@ -119,19 +119,20 @@ export default function ProductCard({ product }) {
             {product.badges.slice(0, 1).map((badge, idx) => (
               <span 
                 key={idx} 
+                className="card-badge-span"
                 style={{
-                  fontSize: '0.64rem',
+                  fontSize: '0.58rem',
                   fontWeight: '850',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
+                  letterSpacing: '0.04em',
                   color: '#b9cd94',
-                  backgroundColor: 'rgba(36, 79, 33, 0.85)',
+                  backgroundColor: 'rgba(36, 79, 33, 0.88)',
                   backdropFilter: 'blur(8px)',
                   WebkitBackdropFilter: 'blur(8px)',
                   border: '1px solid rgba(185, 205, 148, 0.4)',
-                  padding: '0.3rem 0.65rem',
+                  padding: '0.2rem 0.45rem',
                   borderRadius: '999px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
                 }}
               >
                 {badge}
@@ -145,7 +146,7 @@ export default function ProductCard({ product }) {
       <div
         className="card-body"
         style={{
-          padding: '1.25rem 1.15rem',
+          padding: '0.85rem 0.75rem',
           display: 'flex',
           flexDirection: 'column',
           flexGrow: 1,
@@ -154,13 +155,13 @@ export default function ProductCard({ product }) {
       >
         <div>
           {/* Rating stars */}
-          <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.5rem' }}>
+          <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.35rem' }}>
             <div style={{ display: 'flex', color: '#b9cd94' }}>
               {[...Array(5)].map((_, i) => (
-                <Star key={i} size={12} fill="#b9cd94" color="#b9cd94" />
+                <Star key={i} size={11} fill="#b9cd94" color="#b9cd94" />
               ))}
             </div>
-            <span style={{ fontSize: '0.78rem', color: '#F5EBDD', fontWeight: '750' }}>
+            <span style={{ fontSize: '0.72rem', color: '#F5EBDD', fontWeight: '750' }}>
               {product.rating} ({product.reviewCount || 12})
             </span>
           </div>
@@ -169,11 +170,11 @@ export default function ProductCard({ product }) {
           <h3
             className="card-title"
             style={{
-              fontSize: '1.12rem',
+              fontSize: '0.95rem',
               fontFamily: 'var(--font-serif)',
               fontWeight: '850',
-              lineHeight: '1.3',
-              marginBottom: '0.35rem',
+              lineHeight: '1.25',
+              marginBottom: '0.25rem',
               color: '#FFFDF9',
             }}
           >
@@ -186,11 +187,15 @@ export default function ProductCard({ product }) {
           <p
             className="card-subtitle"
             style={{
-              fontSize: '0.84rem',
+              fontSize: '0.78rem',
               color: '#F5EBDD',
-              lineHeight: '1.45',
-              marginBottom: '1rem',
-              fontWeight: '500'
+              lineHeight: '1.35',
+              marginBottom: '0.75rem',
+              fontWeight: '500',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden'
             }}
           >
             {product.subtitle || product.description}
@@ -198,17 +203,16 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Pricing & Actions Bottom Divider */}
-        <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.65rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', minWidth: 0 }}>
-          <div className="card-price" style={{ fontSize: '1.1rem', fontWeight: '900', color: '#b9cd94' }}>
-            ₹{selectedVariant.price}
+        <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.55rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', gap: '0.35rem', flexWrap: 'wrap' }}>
+          <div className="card-price" style={{ fontSize: '0.98rem', fontWeight: '900', color: '#b9cd94', display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.25rem', minWidth: 0 }}>
+            <span>₹{selectedVariant.price}</span>
             {selectedVariant.originalPrice && (
               <span
                 className="original-price"
                 style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.7rem',
                   color: 'rgba(245, 235, 221, 0.65)',
                   textDecoration: 'line-through',
-                  marginLeft: '0.35rem',
                   fontWeight: '500',
                 }}
               >
@@ -217,13 +221,13 @@ export default function ProductCard({ product }) {
             )}
           </div>
 
-          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
             <Link
               to={`/product/${product.slug}`}
               className="btn-secondary view-details-btn"
               style={{
-                padding: '0.45rem 0.65rem',
-                fontSize: '0.75rem',
+                padding: '0.35rem 0.5rem',
+                fontSize: '0.7rem',
                 borderRadius: '999px',
                 fontWeight: '850',
                 textAlign: 'center',
@@ -244,8 +248,8 @@ export default function ProductCard({ product }) {
               onClick={handleAddToCart}
               className="btn-primary add-cart-btn"
               style={{
-                padding: '0.45rem 0.75rem',
-                fontSize: '0.78rem',
+                padding: '0.4rem 0.65rem',
+                fontSize: '0.75rem',
                 borderRadius: '999px',
                 backgroundColor: '#244f21',
                 color: '#FFFFFF',
@@ -254,12 +258,13 @@ export default function ProductCard({ product }) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '0.25rem',
+                gap: '0.2rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
+                whiteSpace: 'nowrap'
               }}
             >
-              <ShoppingBag size={13} />
+              <ShoppingBag size={12} />
               <span>{btnText === 'Add to Cart' ? 'Add' : btnText}</span>
             </button>
           </div>

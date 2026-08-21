@@ -170,15 +170,15 @@ export default function CataloguePage() {
       </section>
 
       {/* 2. CATEGORY NAVIGATION TABS / FILTER STRIP */}
-      <section style={{ padding: '2rem 1.25rem 1rem', position: 'sticky', top: '70px', zIndex: 30, backgroundColor: 'rgba(20, 10, 5, 0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}>
-        <div className="container" style={{ maxWidth: '1240px', margin: '0 auto' }}>
+      <section style={{ padding: '1.25rem 0.5rem 0.75rem', position: 'sticky', top: '70px', zIndex: 30, backgroundColor: 'rgba(20, 10, 5, 0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}>
+        <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 0.5rem' }}>
           <div 
             className="category-tab-strip"
             style={{ 
               display: 'flex', 
-              gap: '0.75rem', 
+              gap: '0.45rem', 
               overflowX: 'auto', 
-              paddingBottom: '0.5rem',
+              paddingBottom: '0.35rem',
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
               justifyContent: 'flex-start',
@@ -192,24 +192,24 @@ export default function CataloguePage() {
                   key={cat.id}
                   onClick={() => handleCategorySelect(cat.id)}
                   style={{
-                    padding: '0.65rem 1.35rem',
+                    padding: '0.45rem 0.95rem',
                     borderRadius: '999px',
                     backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
                     border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.2)',
                     color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.85)',
                     fontWeight: isSelected ? '850' : '600',
-                    fontSize: '0.82rem',
-                    letterSpacing: '0.04em',
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.03em',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     transition: 'all 0.25s ease',
                     boxShadow: isSelected ? '0 4px 14px rgba(36, 79, 33, 0.4)' : 'none',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.4rem'
+                    gap: '0.35rem'
                   }}
                 >
-                  {isSelected && <Sparkles size={13} color="#b9cd94" />}
+                  {isSelected && <Sparkles size={11} color="#b9cd94" />}
                   <span>{cat.name}</span>
                 </button>
               );
@@ -219,8 +219,8 @@ export default function CataloguePage() {
       </section>
 
       {/* 3. COMPLETE PRODUCT CATALOGUE GRID */}
-      <section className="catalogue-listings-section" style={{ padding: '2.5rem 1.25rem' }}>
-        <div className="container" style={{ maxWidth: '1240px', margin: '0 auto' }}>
+      <section className="catalogue-listings-section" style={{ padding: '1.75rem 0.5rem' }}>
+        <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 0.5rem' }}>
           
           {/* Active Category Meta Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>

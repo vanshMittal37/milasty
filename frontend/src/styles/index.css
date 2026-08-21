@@ -2425,7 +2425,7 @@ a.btn-secondary:hover,
   .fitted-cards-container-4 {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 0.85rem !important;
+    gap: 0.5rem !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
@@ -2434,7 +2434,7 @@ a.btn-secondary:hover,
   .fitted-cards-container-3 {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 0.85rem !important;
+    gap: 0.5rem !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
@@ -2448,6 +2448,21 @@ a.btn-secondary:hover,
     min-width: 0 !important;
     flex: none !important;
     box-sizing: border-box !important;
+  }
+  /* Hide View Details button on mobile (<768px) so Add to Cart button fits cleanly with prices */
+  .home-product-card .view-details-btn {
+    display: none !important;
+  }
+  .home-product-card .card-footer {
+    padding-top: 0.45rem !important;
+  }
+  .home-product-card .add-cart-btn {
+    padding: 0.35rem 0.6rem !important;
+    font-size: 0.72rem !important;
+  }
+  .home-product-card .card-badge-span {
+    font-size: 0.54rem !important;
+    padding: 0.15rem 0.35rem !important;
   }
 }
 
