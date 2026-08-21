@@ -660,6 +660,8 @@ export default function Home() {
                       <img 
                         src={product.image} 
                         alt={product.title}
+                        loading="eager"
+                        decoding="async"
                         style={{
                           position: 'absolute',
                           top: 0,

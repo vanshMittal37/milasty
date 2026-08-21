@@ -4,11 +4,13 @@ export function useScrollReveal(options = {}) {
   const elementRef = useRef(null);
 
   useEffect(() => {
+    // Immediately ensure element is visible on mount so content is present in DOM right away
+    if (elementRef.current) {
+      elementRef.current.classList.add('is-visible');
+    }
+
     // Respect prefers-reduced-motion
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      if (elementRef.current) {
-        elementRef.current.classList.add('is-visible');
-      }
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
 
@@ -24,8 +26,8 @@ export function useScrollReveal(options = {}) {
         });
       },
       {
-        threshold: options.threshold || 0.15,
-        rootMargin: options.rootMargin || '0px 0px -40px 0px',
+        threshold: options.threshold || 0,
+        rootMargin: options.rootMargin || '300px 0px 300px 0px',
       }
     );
 
