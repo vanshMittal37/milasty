@@ -1097,7 +1097,8 @@ body, p, span, li, a {
 
 /* Mobile Filter & Product Grid Adjustments (< 768px) */
 @media (max-width: 767px) {
-  #shop-listings-section {
+  #shop-listings-section,
+  #products-grid-section {
     padding: 3rem 0 !important;
   }
 
@@ -1106,6 +1107,7 @@ body, p, span, li, a {
   }
 
   .shop-listings-container,
+  .products-grid-container,
   .wishlist-main-container {
     padding-left: 0.85rem !important;
     padding-right: 0.85rem !important;
@@ -1841,25 +1843,27 @@ body, p, span, li, a {
     box-sizing: border-box !important;
   }
 
-  /* Cart Button Mobile: Icon ONLY (no written text) */
+  /* Cart Button Mobile: Show Add button matching Home page */
   .cart-btn-text {
-    display: none !important;
+    display: inline !important;
   }
 
   .add-cart-btn {
-    flex: 0 0 42px !important;
-    width: 42px !important;
-    min-width: 42px !important;
-    padding: 0.65rem 0 !important;
+    padding: 0.4rem 0.65rem !important;
+    font-size: 0.72rem !important;
+    border-radius: 999px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    gap: 0.25rem !important;
+    background-color: #244f21 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    font-weight: 850 !important;
   }
 
   .view-details-btn {
-    flex: 1 !important;
-    padding: 0.65rem 0.35rem !important;
-    font-size: 0.75rem !important;
+    display: none !important;
   }
 
   /* Equal Card Height for 2-column mobile grids */
