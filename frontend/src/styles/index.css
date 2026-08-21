@@ -2461,8 +2461,9 @@ a.btn-secondary:hover,
     font-size: 0.72rem !important;
   }
   .home-product-card .card-badge-span {
-    font-size: 0.54rem !important;
-    padding: 0.15rem 0.35rem !important;
+    font-size: 0.48rem !important;
+    padding: 0.1rem 0.3rem !important;
+    line-height: 1.15 !important;
   }
 }
 

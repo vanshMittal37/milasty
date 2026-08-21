@@ -107,11 +107,11 @@ export default function ProductCard({ product }) {
             className="card-badge-wrap"
             style={{
               position: 'absolute',
-              top: '8px',
-              left: '8px',
+              top: '6px',
+              left: '6px',
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '4px',
+              gap: '3px',
               zIndex: 10,
               pointerEvents: 'none'
             }}
@@ -121,18 +121,19 @@ export default function ProductCard({ product }) {
                 key={idx} 
                 className="card-badge-span"
                 style={{
-                  fontSize: '0.58rem',
+                  fontSize: '0.52rem',
                   fontWeight: '850',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
+                  letterSpacing: '0.03em',
                   color: '#b9cd94',
-                  backgroundColor: 'rgba(36, 79, 33, 0.88)',
+                  backgroundColor: 'rgba(36, 79, 33, 0.90)',
                   backdropFilter: 'blur(8px)',
                   WebkitBackdropFilter: 'blur(8px)',
                   border: '1px solid rgba(185, 205, 148, 0.4)',
-                  padding: '0.2rem 0.45rem',
+                  padding: '0.12rem 0.35rem',
                   borderRadius: '999px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                  lineHeight: '1.2'
                 }}
               >
                 {badge}
