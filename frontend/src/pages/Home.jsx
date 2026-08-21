@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles, ShieldCheck, ArrowRight, Award, FileText, CheckCircle2,
-  Star, ChevronLeft, ChevronRight, Heart, ShoppingBag, Eye, Check, X, Quote
+  Star, ChevronLeft, ChevronRight, Heart, ShoppingBag, Eye, Check, X, Quote, Grid
 } from 'lucide-react';
+import ProductCard from '../components/ProductCard';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 import { useScrollReveal } from '../hooks/useScrollReveal';
@@ -275,6 +276,7 @@ export default function Home() {
   const trustRef = useScrollReveal();
   const whyRef = useScrollReveal();
   const customerTestimonialRef = useScrollReveal();
+  const catalogueRef = useScrollReveal();
   const favRef = useScrollReveal();
   const ritualRef = useScrollReveal();
   const timelineRef = useScrollReveal();
@@ -282,6 +284,16 @@ export default function Home() {
   const reviewRef = useScrollReveal();
   const storyRef = useScrollReveal();
   const finalCtaRef = useScrollReveal();
+
+  /* -------------------------------------------------------------------------- */
+  /* HOME CATALOGUE SECTION STATE (DATA-DRIVEN CATEGORY SELECTION)             */
+  /* -------------------------------------------------------------------------- */
+  const homeCatalogueCategories = [
+    { id: 'starter', number: '01', name: 'STARTER FAVOURITES', subtitle: 'Curated tasting boxes & best sellers' },
+    { id: 'daily', number: '02', name: 'DAILY RITUAL', subtitle: 'Guilt-free everyday tea companions' },
+    { id: 'gifting', number: '03', name: 'GIFTING HAMPERS', subtitle: 'Luxury artisanal gift hampers' },
+  ];
+  const [selectedHomeCat, setSelectedHomeCat] = useState('starter');
 
   /* -------------------------------------------------------------------------- */
   /* FRONTEND DUMMY TESTIMONIAL DATA (PREPARED FOR FUTURE ADMIN API INTEG)     */
@@ -1535,6 +1547,137 @@ export default function Home() {
                 </div>
               </div>
             )}
+          </div>
+        </section>
+
+        {/* ================================================================== */}
+        {/* NEW HOME PAGE PRODUCT CATALOGUE SECTION                            */}
+        {/* ================================================================== */}
+        <section 
+          ref={catalogueRef} 
+          className="reveal-fade-up home-catalogue-section" 
+          style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}
+        >
+          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
+            
+            {/* Header */}
+            <div style={{ textAlign: 'center', maxWidth: '660px', margin: isMobile ? '0 auto 2.25rem' : '0 auto 3.5rem' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.6rem', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>
+                <Grid size={14} color="var(--accent-gold)" />
+                <span>OUR COLLECTION</span>
+              </span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2', margin: '0 0 0.85rem' }}>
+                Explore the <span style={{ color: 'var(--accent-gold)' }}>MILASTY Collection</span>
+              </h2>
+              <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+                Discover wholesome millet bakes made for everyday snacking, mindful moments and thoughtful gifting.
+              </p>
+            </div>
+
+            {/* Category Cards/Tabs Strip */}
+            <div 
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', 
+                gap: '1rem', 
+                marginBottom: '2.5rem' 
+              }}
+            >
+              {homeCatalogueCategories.map((cat) => {
+                const isSelected = selectedHomeCat === cat.id;
+                return (
+                  <div
+                    key={cat.id}
+                    onClick={() => setSelectedHomeCat(cat.id)}
+                    className="glass-card"
+                    style={{
+                      padding: '1.35rem 1.5rem',
+                      borderRadius: '20px',
+                      backgroundColor: isSelected ? 'rgba(35, 21, 13, 0.90)' : 'rgba(35, 21, 13, 0.45)',
+                      border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.15)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      boxShadow: isSelected ? '0 12px 32px rgba(0, 0, 0, 0.4)' : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <div>
+                      <span style={{ fontSize: '0.75rem', letterSpacing: '0.1em', fontWeight: '850', color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.5)', display: 'block', marginBottom: '0.2rem' }}>
+                        {cat.number}
+                      </span>
+                      <h3 style={{ fontSize: '1.05rem', color: '#FFFDF9', margin: 0, fontWeight: '800' }}>
+                        {cat.name}
+                      </h3>
+                      <p style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.75)', margin: '0.25rem 0 0', fontWeight: '500' }}>
+                        {cat.subtitle}
+                      </p>
+                    </div>
+
+                    <ArrowRight 
+                      size={18} 
+                      style={{ 
+                        color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.4)', 
+                        transform: isSelected ? 'translateX(3px)' : 'none', 
+                        transition: 'transform 0.2s ease' 
+                      }} 
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Related 3-4 Products Preview (Compact 2x2 Grid on Mobile | 3-4 Columns on Desktop) */}
+            <div className="catalogue-home-products-grid favorites-grid fitted-cards-container-4" style={{ marginBottom: '2.5rem' }}>
+              {(() => {
+                const allAvail = dbProducts.length > 0 ? dbProducts : initialProducts;
+                let filtered = [];
+                if (selectedHomeCat === 'starter') {
+                  filtered = allAvail.filter(p => p.category === 'starter' || p.isFeatured || p.slug.includes('trio'));
+                } else if (selectedHomeCat === 'daily') {
+                  filtered = allAvail.filter(p => p.category === 'daily' || p.slug.includes('cookie') || p.slug.includes('bajra'));
+                } else if (selectedHomeCat === 'gifting') {
+                  filtered = allAvail.filter(p => p.category === 'gifting' || p.title.toLowerCase().includes('hamper') || p.title.toLowerCase().includes('box'));
+                }
+                if (filtered.length === 0) filtered = allAvail.slice(0, 4);
+                return filtered.slice(0, 4).map((product) => (
+                  <ProductCard key={product._id || product.slug} product={product} />
+                ));
+              })()}
+            </div>
+
+            {/* SEE THE FULL COLLECTION Button */}
+            <div style={{ textAlign: 'center' }}>
+              <Link
+                to={`/catalogue?category=${selectedHomeCat}`}
+                className="btn-primary"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.6rem',
+                  padding: '0.9rem 2.25rem',
+                  backgroundColor: '#244f21',
+                  color: '#FFFFFF',
+                  border: '1.5px solid #b9cd94',
+                  borderRadius: '999px',
+                  fontWeight: '850',
+                  fontSize: '0.9rem',
+                  letterSpacing: '0.05em',
+                  textDecoration: 'none',
+                  boxShadow: '0 8px 24px rgba(36, 79, 33, 0.35)',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <span>SEE THE FULL COLLECTION</span>
+                <ArrowRight size={18} color="#b9cd94" />
+              </Link>
+            </div>
+
           </div>
         </section>
 

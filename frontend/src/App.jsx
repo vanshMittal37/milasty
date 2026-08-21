@@ -17,6 +17,7 @@ import LegalPage from './pages/LegalPage';
 
 // Customer E-commerce Pages
 import Shop from './pages/Shop';
+import CataloguePage from './pages/CataloguePage';
 import ShopProductDetail from './pages/ShopProductDetail';
 import CartPage from './pages/CartPage';
 import WishlistPage from './pages/WishlistPage';
@@ -126,6 +127,7 @@ function MainLayout() {
           <Route path="/terms" element={<LegalPage />} />
 
           {/* Customer E-commerce System */}
+          <Route path="/catalogue" element={<CataloguePage />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/shop/product/:id" element={<ShopProductDetail />} />
           <Route path="/cart" element={<CartPage />} />
