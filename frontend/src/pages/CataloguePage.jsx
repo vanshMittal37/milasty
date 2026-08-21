@@ -64,7 +64,7 @@ export default function CataloguePage() {
     } else if (cat === 'starter') {
       setProducts(initialProducts.filter(p => p.category === 'starter' || p.isFeatured));
     } else if (cat === 'daily') {
-      setProducts(initialProducts.filter(p => p.category === 'daily' || !p.category));
+      setProducts(initialProducts.filter(p => p.category === 'daily'));
     } else if (cat === 'gifting' || cat === 'gifts') {
       setProducts(initialProducts.filter(p => p.category === 'gifting' || p.category === 'gifts' || p.title.toLowerCase().includes('box') || p.title.toLowerCase().includes('hamper')));
     } else {

@@ -1623,16 +1623,15 @@ export default function Home() {
             {/* Related 3-4 Products Preview (Compact 2x2 Grid on Mobile | 3-4 Columns on Desktop) */}
             <div className="catalogue-home-products-grid favorites-grid fitted-cards-container-4" style={{ marginBottom: '2.5rem' }}>
               {(() => {
-                const allAvail = dbProducts.length > 0 ? dbProducts : initialProducts;
                 let filtered = [];
                 if (selectedHomeCat === 'starter') {
-                  filtered = allAvail.filter(p => p.category === 'starter' || p.isFeatured || p.slug.includes('trio'));
+                  filtered = initialProducts.filter(p => p.category === 'starter' || p.isFeatured || p.slug.includes('trio'));
                 } else if (selectedHomeCat === 'daily') {
-                  filtered = allAvail.filter(p => p.category === 'daily' || p.slug.includes('cookie') || p.slug.includes('bajra'));
+                  filtered = initialProducts.filter(p => p.category === 'daily' || p.slug.includes('cookie') || p.slug.includes('bajra'));
                 } else if (selectedHomeCat === 'gifting') {
-                  filtered = allAvail.filter(p => p.category === 'gifting' || p.title.toLowerCase().includes('hamper') || p.title.toLowerCase().includes('box'));
+                  filtered = initialProducts.filter(p => p.category === 'gifts' || p.category === 'gifting' || p.title.toLowerCase().includes('hamper') || p.title.toLowerCase().includes('box'));
                 }
-                if (filtered.length === 0) filtered = allAvail.slice(0, 4);
+                if (filtered.length === 0) filtered = initialProducts.slice(0, 4);
                 return filtered.slice(0, 4).map((product) => (
                   <ProductCard key={product._id || product.slug} product={product} />
                 ));
