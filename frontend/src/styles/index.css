@@ -2498,6 +2498,14 @@ a.btn-secondary:hover,
   }
 }
 
+@media (max-width: 1024px) {
+  .desktop-only-section,
+  .ritual-section,
+  .lab-section {
+    display: none !important;
+  }
+}
+
 /* ==================================================
    TRANSPARENT & 30px BLURRED FOOTER
    Applied on About, Rituals, Shop, Nutrition, & Contact pages

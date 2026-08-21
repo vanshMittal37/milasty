@@ -1668,16 +1668,16 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 5. INTERACTIVE MILLET RITUAL SECTION */}
-        <section ref={ritualRef} className="reveal-fade-up ritual-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+        {/* 5. INTERACTIVE MILLET RITUAL SECTION (Desktop Only) */}
+        <section ref={ritualRef} className="reveal-fade-up ritual-section desktop-only-section" style={{ display: isMobile ? 'none' : 'block', padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
           <div className="container">
-            <div style={{ textAlign: 'center', maxWidth: '640px', margin: isMobile ? '0 auto 2.5rem' : '0 auto 4rem' }}>
+            <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4rem' }}>
               <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Interactive Selection</span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>Discover Your Perfect <span style={{ color: 'var(--accent-gold)' }}>Millet Ritual</span></h2>
+              <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>Discover Your Perfect <span style={{ color: 'var(--accent-gold)' }}>Millet Ritual</span></h2>
             </div>
 
             {/* DESKTOP & TABLET VIEW: Two-Column Showcase Layout */}
-            <div className="desktop-ritual-view ritual-grid" style={{ display: isMobile ? 'none' : 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3.5rem', alignItems: 'center' }}>
+            <div className="desktop-ritual-view ritual-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3.5rem', alignItems: 'center' }}>
               {/* Left Side: Numbered Selector */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {ritualProducts.map((item, idx) => {
@@ -1765,184 +1765,23 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            {/* MOBILE VIEW: Compact 2x2 Grid Selector + Detail Panel */}
-            <div
-              className="mobile-ritual-unified-card"
-              style={{
-                display: isMobile ? 'block' : 'none',
-                width: '100%',
-                margin: '0 auto',
-                boxSizing: 'border-box'
-              }}
-            >
-              {/* 4 Compact 2x2 Product Option Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                {ritualProducts.map((item, idx) => {
-                  const isSelected = activeRitualIdx === idx;
-                  // Assign icon based on index or title (Hampers get gift icon 🎁, Cookies get cookie icon 🍪)
-                  const isHamper = idx < 2 || item.title.toLowerCase().includes('hamper') || item.title.toLowerCase().includes('celebration');
-                  return (
-                    <div
-                      key={item._id || item.slug || idx}
-                      onClick={() => setActiveRitualIdx(idx)}
-                      className="glass-card"
-                      style={{
-                        padding: '0.9rem 0.85rem',
-                        borderRadius: '18px',
-                        backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.45)' : 'rgba(35, 21, 13, 0.70)',
-                        border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.20)',
-                        boxShadow: isSelected ? '0 8px 24px rgba(0, 0, 0, 0.35)' : 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        height: '130px',
-                        boxSizing: 'border-box',
-                        minWidth: 0,
-                        position: 'relative'
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>{isHamper ? '🎁' : '🍪'}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)' }}>0{idx + 1}</span>
-                          <ArrowRight size={13} style={{ color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.3)', transform: isSelected ? 'translateX(2px)' : 'none', transition: 'transform 0.2s' }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 style={{ fontSize: '0.82rem', color: isSelected ? '#FFFFFF' : '#F5EBDD', fontWeight: '850', margin: 0, lineHeight: '1.3', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                          {item.title}
-                        </h4>
-                        <span style={{ fontSize: '0.64rem', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.55)', fontWeight: '600', display: 'block', marginTop: '0.25rem' }}>
-                          {isSelected ? '✓ Selected' : 'Tap to explore'}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Selected Product Detail Panel Below 2x2 Grid */}
-              <div
-                style={{
-                  backgroundColor: 'rgba(35, 21, 13, 0.88)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  borderRadius: '24px',
-                  border: '1.5px solid var(--accent-gold)',
-                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
-                  padding: '1.25rem',
-                  boxSizing: 'border-box',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                {/* Product Image */}
-                <div
-                  style={{
-                    position: 'relative',
-                    height: '210px',
-                    borderRadius: '16px',
-                    overflow: 'hidden',
-                    marginBottom: '1.15rem',
-                    backgroundColor: 'rgba(0, 0, 0, 0.25)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)'
-                  }}
-                >
-                  <img
-                    src={activeRitualProduct.image}
-                    alt={activeRitualProduct.title}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      display: 'block',
-                      transition: 'opacity 0.3s ease'
-                    }}
-                  />
-                </div>
-
-                {/* Product Title & Description */}
-                <div>
-                  <h3 style={{ fontSize: '1.25rem', color: '#FFFDF9', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>
-                    {activeRitualProduct.title}
-                  </h3>
-                  <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: '0.85rem', lineHeight: '1.55', marginBottom: '1.15rem', fontWeight: '500' }}>
-                    {activeRitualProduct.description}
-                  </p>
-
-                  {/* Ingredient Tags */}
-                  {activeRitualProduct.ingredients && activeRitualProduct.ingredients.length > 0 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1.15rem' }}>
-                      {activeRitualProduct.ingredients.slice(0, 4).map((ingredient, i) => (
-                        <span
-                          key={i}
-                          style={{
-                            fontSize: '0.72rem',
-                            color: 'rgba(255, 255, 255, 0.9)',
-                            fontWeight: '650',
-                            padding: '0.25rem 0.6rem',
-                            borderRadius: '6px',
-                            border: '1px solid rgba(255, 255, 255, 0.35)',
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)'
-                          }}
-                        >
-                          {ingredient}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Price & CTA Button */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
-                    <div>
-                      <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.7)', display: 'block', fontWeight: '600' }}>From</span>
-                      <span style={{ fontSize: '1.35rem', fontWeight: '850', color: '#FFFDF9' }}>
-                        ₹{activeRitualProduct.variants?.[0]?.price || 139}
-                      </span>
-                    </div>
-                    <Link
-                      to={`/product/${activeRitualProduct.slug}`}
-                      className="btn-primary"
-                      style={{
-                        padding: '0.65rem 1.25rem',
-                        fontSize: '0.85rem',
-                        backgroundColor: '#c89b3c',
-                        color: '#FFFFFF',
-                        fontWeight: '800',
-                        textDecoration: 'none',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                        borderRadius: '999px'
-                      }}
-                    >
-                      <span>Explore Product</span>
-                      <ArrowRight size={15} />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
-        {/* 7. LAB TEST / TRUST SECTION */}
-        <section ref={labRef} className="reveal-fade-up lab-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+        {/* 7. LAB TEST / TRUST SECTION (Desktop Only) */}
+        <section ref={labRef} className="reveal-fade-up lab-section desktop-only-section" style={{ display: isMobile ? 'none' : 'block', padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
           <div className="container">
-            <div className="lab-container" style={{ padding: isMobile ? '2rem 1.25rem' : '4.5rem 3.5rem', color: '#FFFFFF', borderRadius: '24px', textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
+            <div className="lab-container" style={{ padding: '4.5rem 3.5rem', color: '#FFFFFF', borderRadius: '24px', textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.25rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>
                 <Award size={14} />
                 <span>Lab Tested Transparency</span>
               </span>
 
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2' }}>
+              <h2 style={{ fontSize: '2.8rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2' }}>
                 Know What Goes Into <span style={{ color: 'var(--accent-gold)' }}>Every Bite.</span>
               </h2>
 
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: isMobile ? '0.92rem' : '1.05rem', lineHeight: '1.7', marginBottom: '2.25rem', fontWeight: '500', maxWidth: '640px', margin: '0 auto 2.25rem' }}>
+              <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '2.25rem', fontWeight: '500', maxWidth: '640px', margin: '0 auto 2.25rem' }}>
                 We publish comprehensive nutritional and chemical reports so you can make informed choices. Absolutely no hidden sugars or synthetic preservatives.
               </p>
 
