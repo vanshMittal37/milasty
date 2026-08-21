@@ -386,7 +386,7 @@ export default function WishlistPage() {
       </section>
 
       {/* Main container */}
-      <div className="container" style={{ maxWidth: '1200px' }}>
+      <div className="container wishlist-main-container" style={{ maxWidth: '1200px' }}>
         
         {wishlistItems.length === 0 ? (
           /* 7. EMPTY WISHLIST STATE */
@@ -575,7 +575,7 @@ export default function WishlistPage() {
               }}
             >
               {sortedWishlistItems.map((product) => (
-                <WishlistProductCard 
+                <ProductCard 
                   key={product._id || product.slug} 
                   product={product} 
                 />

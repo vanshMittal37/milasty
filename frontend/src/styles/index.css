@@ -1101,7 +1101,8 @@ body, p, span, li, a {
     padding: 3rem 0 !important;
   }
 
-  .shop-listings-container {
+  .shop-listings-container,
+  .wishlist-main-container {
     padding-left: 0.85rem !important;
     padding-right: 0.85rem !important;
   }
