@@ -1842,6 +1842,8 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </section>
+
         {/* ================================================================== */}
         {/* HELP CENTER / FAQ SECTION (Matching Home Page Transparent Glass Theme) */}
         {/* ================================================================== */}
