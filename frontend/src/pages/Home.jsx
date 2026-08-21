@@ -896,154 +896,73 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 8. TESTIMONIAL SECTION (3-Card Continuous Sliding Carousel) */}
-        <section ref={reviewRef} className="reveal-fade-up reviews-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1.5rem' }}>
+        {/* 8. TESTIMONIAL SECTION (Mobile: Clean Single Card | Desktop: Multi-Card Carousel) */}
+        <section ref={reviewRef} className="reveal-fade-up reviews-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
-                <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Customer Stories</span>
-                <h2 style={{ fontSize: 'clamp(2.1rem, 4.5vw, 2.8rem)', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2', margin: 0 }}>
-                  Loved by <span style={{ color: '#b9cd94' }}>Health-Conscious</span> Homes
-                </h2>
-              </div>
-
-              {/* Header Chevron Navigation Buttons */}
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                <button
-                  onClick={handlePrevSlide}
-                  aria-label="Previous Testimonial"
-                  style={{
-                    backgroundColor: '#244f21',
-                    border: '1.5px solid #b9cd94',
-                    color: '#FFFFFF',
-                    width: '42px',
-                    height: '42px',
-                    borderRadius: '50%',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 4px 12px rgba(36, 79, 33, 0.3)'
-                  }}
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <button
-                  onClick={handleNextSlide}
-                  aria-label="Next Testimonial"
-                  style={{
-                    backgroundColor: '#244f21',
-                    border: '1.5px solid #b9cd94',
-                    color: '#FFFFFF',
-                    width: '42px',
-                    height: '42px',
-                    borderRadius: '50%',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 4px 12px rgba(36, 79, 33, 0.3)'
-                  }}
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </div>
+            <div style={{ textAlign: 'center', maxWidth: '600px', margin: isMobile ? '0 auto 2.25rem' : '0 auto 3.5rem' }}>
+              <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Customer Stories</span>
+              <h2 style={{ fontSize: 'clamp(2rem, 4.5vw, 2.8rem)', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2', margin: 0 }}>
+                Loved by <span style={{ color: '#b9cd94' }}>Health-Conscious</span> Homes
+              </h2>
             </div>
 
-            <div
-              style={{ width: '100%', position: 'relative', overflow: 'hidden' }}
-              onMouseEnter={() => setIsTestimonialHovered(true)}
-              onMouseLeave={() => setIsTestimonialHovered(false)}
-            >
-              {/* Sliding Track */}
-              <div
-                onTransitionEnd={handleTransitionEnd}
-                style={{
-                  display: 'flex',
-                  gap: '1.5rem',
-                  transition: isTransitioning ? 'transform 700ms cubic-bezier(0.25, 1, 0.5, 1)' : 'none',
-                  transform: `translateX(calc(-${carouselIndex} * (100% / ${cardsToShow} + ${1.5 / cardsToShow}rem)))`,
-                  width: '100%'
-                }}
+            {isMobile ? (
+              /* MOBILE SINGLE CARD CAROUSEL VIEW */
+              <div 
+                style={{ width: '100%', boxSizing: 'border-box' }}
+                onMouseEnter={() => setIsTestimonialHovered(true)}
+                onMouseLeave={() => setIsTestimonialHovered(false)}
+                onTouchStart={() => setIsTestimonialHovered(true)}
+                onTouchEnd={() => setTimeout(() => setIsTestimonialHovered(false), 3000)}
               >
-                {extendedReviews.map((rev, idx) => (
+                {/* Single Centered Testimonial Card */}
+                {reviews[carouselIndex % reviews.length] && (
                   <div
-                    key={idx}
                     style={{
-                      flex: `0 0 calc((100% - ${(cardsToShow - 1) * 1.5}rem) / ${cardsToShow})`,
-                      minWidth: 0,
-                      boxSizing: 'border-box'
+                      width: '100%',
+                      maxWidth: '380px',
+                      margin: '0 auto',
+                      backgroundColor: 'rgba(35, 21, 13, 0.85)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
+                      borderRadius: '24px',
+                      border: '1.5px solid rgba(185, 205, 148, 0.3)',
+                      boxShadow: '0 12px 32px rgba(0, 0, 0, 0.4)',
+                      padding: '1.75rem 1.35rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      minHeight: '220px',
+                      boxSizing: 'border-box',
+                      transition: 'all 0.35s ease'
                     }}
                   >
-                    <div
-                      style={{
-                        backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                        backdropFilter: 'blur(16px)',
-                        WebkitBackdropFilter: 'blur(16px)',
-                        borderRadius: '24px',
-                        border: '1px solid rgba(185, 205, 148, 0.25)',
-                        boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
-                        padding: '2.25rem 1.75rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        height: '100%',
-                        boxSizing: 'border-box'
-                      }}
-                    >
-                      <div>
-                        <div style={{ display: 'flex', gap: '4px', color: '#b9cd94', marginBottom: '1.25rem' }}>
-                          {[...Array(rev.rating)].map((_, i) => (
-                            <Star key={i} size={18} fill="#b9cd94" color="#b9cd94" />
-                          ))}
-                        </div>
-
-                        <p style={{ fontSize: '1.02rem', fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: '#FFFDF9', lineHeight: '1.65', marginBottom: '1.75rem', fontWeight: '500' }}>
-                          "{rev.quote}"
-                        </p>
+                    <div>
+                      <div style={{ display: 'flex', gap: '4px', color: '#b9cd94', marginBottom: '1rem' }}>
+                        {[...Array(reviews[carouselIndex % reviews.length].rating)].map((_, i) => (
+                          <Star key={i} size={16} fill="#b9cd94" color="#b9cd94" />
+                        ))}
                       </div>
 
-                      <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1rem' }}>
-                        <strong style={{ fontSize: '1rem', color: '#FFFDF9', display: 'block', marginBottom: '0.25rem', fontWeight: '850' }}>
-                          {rev.name}
-                        </strong>
-                        <span style={{ fontSize: '0.82rem', color: '#b9cd94', fontWeight: '700' }}>
-                          {rev.role} • {rev.location}
-                        </span>
-                      </div>
+                      <p style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: '#FFFDF9', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
+                        "{reviews[carouselIndex % reviews.length].quote}"
+                      </p>
+                    </div>
+
+                    <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.12)', paddingTop: '0.85rem' }}>
+                      <strong style={{ fontSize: '0.95rem', color: '#FFFDF9', display: 'block', marginBottom: '0.2rem', fontWeight: '850' }}>
+                        {reviews[carouselIndex % reviews.length].name}
+                      </strong>
+                      <span style={{ fontSize: '0.78rem', color: '#b9cd94', fontWeight: '700' }}>
+                        {reviews[carouselIndex % reviews.length].role} • {reviews[carouselIndex % reviews.length].location}
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
+                )}
 
-              {/* Navigation Controls & Indicators */}
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginTop: '3rem' }}>
-                <button
-                  onClick={handlePrevSlide}
-                  aria-label="Previous Testimonials"
-                  style={{
-                    width: '46px',
-                    height: '46px',
-                    borderRadius: '50%',
-                    border: '1.5px solid #b9cd94',
-                    backgroundColor: '#244f21',
-                    color: '#FFFFFF',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
-                  }}
-                >
-                  <ChevronLeft size={22} />
-                </button>
-
-                {/* Indicator Dots */}
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                {/* Pagination Dots Directly Below Card */}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.45rem', marginTop: '1.5rem', marginBottom: '1.25rem' }}>
                   {reviews.map((_, idx) => {
                     const active = (carouselIndex % reviews.length) === idx;
                     return (
@@ -1054,7 +973,7 @@ export default function Home() {
                           setCarouselIndex(idx);
                         }}
                         style={{
-                          width: active ? '24px' : '8px',
+                          width: active ? '22px' : '8px',
                           height: '8px',
                           borderRadius: '4px',
                           backgroundColor: active ? '#b9cd94' : 'rgba(255, 255, 255, 0.3)',
@@ -1063,35 +982,198 @@ export default function Home() {
                           transition: 'all 0.3s ease',
                           padding: 0
                         }}
-                        title={`Go to story ${idx + 1}`}
+                        aria-label={`Go to testimonial ${idx + 1}`}
                       />
                     );
                   })}
                 </div>
 
-                <button
-                  onClick={handleNextSlide}
-                  aria-label="Next Testimonials"
+                {/* Navigation Arrows Below Dots */}
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem' }}>
+                  <button
+                    onClick={handlePrevSlide}
+                    aria-label="Previous Testimonial"
+                    style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      border: '1.5px solid #b9cd94',
+                      backgroundColor: '#244f21',
+                      color: '#FFFFFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+                    }}
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+
+                  <button
+                    onClick={handleNextSlide}
+                    aria-label="Next Testimonial"
+                    style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      border: '1.5px solid #b9cd94',
+                      backgroundColor: '#244f21',
+                      color: '#FFFFFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+                    }}
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* DESKTOP MULTI-CARD CONTINUOUS CAROUSEL VIEW */
+              <div
+                style={{ width: '100%', position: 'relative', overflow: 'hidden' }}
+                onMouseEnter={() => setIsTestimonialHovered(true)}
+                onMouseLeave={() => setIsTestimonialHovered(false)}
+              >
+                {/* Sliding Track */}
+                <div
+                  onTransitionEnd={handleTransitionEnd}
                   style={{
-                    width: '46px',
-                    height: '46px',
-                    borderRadius: '50%',
-                    border: '1.5px solid #b9cd94',
-                    backgroundColor: '#244f21',
-                    color: '#FFFFFF',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+                    gap: '1.5rem',
+                    transition: isTransitioning ? 'transform 700ms cubic-bezier(0.25, 1, 0.5, 1)' : 'none',
+                    transform: `translateX(calc(-${carouselIndex} * (100% / ${cardsToShow} + ${1.5 / cardsToShow}rem)))`,
+                    width: '100%'
                   }}
                 >
-                  <ChevronRight size={22} />
-                </button>
-              </div>
+                  {extendedReviews.map((rev, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        flex: `0 0 calc((100% - ${(cardsToShow - 1) * 1.5}rem) / ${cardsToShow})`,
+                        minWidth: 0,
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <div
+                        style={{
+                          backgroundColor: 'rgba(35, 21, 13, 0.75)',
+                          backdropFilter: 'blur(16px)',
+                          WebkitBackdropFilter: 'blur(16px)',
+                          borderRadius: '24px',
+                          border: '1px solid rgba(185, 205, 148, 0.25)',
+                          boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
+                          padding: '2.25rem 1.75rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          height: '100%',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: 'flex', gap: '4px', color: '#b9cd94', marginBottom: '1.25rem' }}>
+                            {[...Array(rev.rating)].map((_, i) => (
+                              <Star key={i} size={18} fill="#b9cd94" color="#b9cd94" />
+                            ))}
+                          </div>
 
-            </div>
+                          <p style={{ fontSize: '1.02rem', fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: '#FFFDF9', lineHeight: '1.65', marginBottom: '1.75rem', fontWeight: '500' }}>
+                            "{rev.quote}"
+                          </p>
+                        </div>
+
+                        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1rem' }}>
+                          <strong style={{ fontSize: '1rem', color: '#FFFDF9', display: 'block', marginBottom: '0.25rem', fontWeight: '850' }}>
+                            {rev.name}
+                          </strong>
+                          <span style={{ fontSize: '0.82rem', color: '#b9cd94', fontWeight: '700' }}>
+                            {rev.role} • {rev.location}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Navigation Controls & Indicators */}
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginTop: '3rem' }}>
+                  <button
+                    onClick={handlePrevSlide}
+                    aria-label="Previous Testimonial"
+                    style={{
+                      width: '46px',
+                      height: '46px',
+                      borderRadius: '50%',
+                      border: '1.5px solid #b9cd94',
+                      backgroundColor: '#244f21',
+                      color: '#FFFFFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+                    }}
+                  >
+                    <ChevronLeft size={22} />
+                  </button>
+
+                  {/* Indicator Dots */}
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    {reviews.map((_, idx) => {
+                      const active = (carouselIndex % reviews.length) === idx;
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setIsTransitioning(true);
+                            setCarouselIndex(idx);
+                          }}
+                          style={{
+                            width: active ? '24px' : '8px',
+                            height: '8px',
+                            borderRadius: '4px',
+                            backgroundColor: active ? '#b9cd94' : 'rgba(255, 255, 255, 0.3)',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            padding: 0
+                          }}
+                          title={`Go to story ${idx + 1}`}
+                        />
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    onClick={handleNextSlide}
+                    aria-label="Next Testimonial"
+                    style={{
+                      width: '46px',
+                      height: '46px',
+                      borderRadius: '50%',
+                      border: '1.5px solid #b9cd94',
+                      backgroundColor: '#244f21',
+                      color: '#FFFFFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+                    }}
+                  >
+                    <ChevronRight size={22} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
