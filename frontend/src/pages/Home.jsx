@@ -283,7 +283,29 @@ export default function Home() {
   const labRef = useScrollReveal();
   const reviewRef = useScrollReveal();
   const storyRef = useScrollReveal();
+  const faqRef = useScrollReveal();
   const finalCtaRef = useScrollReveal();
+
+  const [activeFaq, setActiveFaq] = useState(null);
+
+  const faqs = [
+    {
+      q: "How can I track my order?",
+      a: "You can track your order live from your Account Dashboard. Just navigate to 'My Orders' and click on the specific order to see its journey."
+    },
+    {
+      q: "How can I contact MILASTY?",
+      a: "You can reach us instantly on WhatsApp at +91 89271 42056, or email us at hello@milasty.com."
+    },
+    {
+      q: "Where can I find nutritional information?",
+      a: "Complete nutritional macro breakdowns and official NABL-accredited lab reports are available on our dedicated Nutrition page."
+    },
+    {
+      q: "How can I ask about gifting?",
+      a: "Please drop us a message using our contact form under 'Gifting & Bulk Orders', or text us on WhatsApp, and our team will get back to you with custom catalog options."
+    }
+  ];
 
   /* -------------------------------------------------------------------------- */
   /* HOME CATALOGUE SECTION STATE (DATA-DRIVEN CATEGORY SELECTION)             */
@@ -1819,6 +1841,84 @@ export default function Home() {
                 </Link>
               </div>
             </div>
+          </div>
+        {/* ================================================================== */}
+        {/* HELP CENTER / FAQ SECTION (Matching Home Page Transparent Glass Theme) */}
+        {/* ================================================================== */}
+        <section ref={faqRef} className="reveal-fade-up faq-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+          <div className="container" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 1rem' }}>
+            
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: isMobile ? '2.25rem' : '3.5rem' }}>
+              <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+                HELP CENTER
+              </span>
+              <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
+                Frequently Asked <span style={{ color: 'var(--accent-gold)' }}>Questions</span>
+              </h2>
+            </div>
+
+            {/* Accordion FAQ Cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {faqs.map((faq, idx) => {
+                const isOpen = activeFaq === idx;
+                return (
+                  <div 
+                    key={idx} 
+                    className="glass-card"
+                    style={{ 
+                      borderRadius: '20px', 
+                      backgroundColor: 'rgba(35, 21, 13, 0.75)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
+                      border: isOpen ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.15)',
+                      boxShadow: isOpen ? '0 12px 32px rgba(0, 0, 0, 0.4)' : '0 4px 16px rgba(0, 0, 0, 0.2)',
+                      overflow: 'hidden',
+                      boxSizing: 'border-box',
+                      width: '100%',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <button
+                      onClick={() => setActiveFaq(isOpen ? null : idx)}
+                      style={{
+                        width: '100%',
+                        padding: isMobile ? '1.1rem 1.25rem' : '1.35rem 1.75rem',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        outline: 'none',
+                        gap: '1rem'
+                      }}
+                    >
+                      <span style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', fontWeight: '800', color: '#FFFDF9', flex: 1, fontFamily: 'var(--font-sans)' }}>
+                        {faq.q}
+                      </span>
+                      <ChevronDown 
+                        size={20} 
+                        style={{ 
+                          color: 'var(--accent-gold)', 
+                          transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', 
+                          transition: 'transform 0.3s ease',
+                          flexShrink: 0
+                        }} 
+                      />
+                    </button>
+                    
+                    {isOpen && (
+                      <div style={{ padding: isMobile ? '0 1.25rem 1.25rem 1.25rem' : '0 1.75rem 1.5rem 1.75rem', fontSize: isMobile ? '0.85rem' : '0.95rem', color: 'rgba(255, 255, 255, 0.88)', lineHeight: '1.65', fontWeight: '500', borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1rem' }}>
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
           </div>
         </section>
 
