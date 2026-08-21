@@ -1556,12 +1556,12 @@ export default function Home() {
         <section 
           ref={catalogueRef} 
           className="reveal-fade-up home-catalogue-section" 
-          style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}
+          style={{ padding: isMobile ? '3.5rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}
         >
-          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
+          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 0.5rem' }}>
             
             {/* Header */}
-            <div style={{ textAlign: 'center', maxWidth: '660px', margin: isMobile ? '0 auto 2.25rem' : '0 auto 3.5rem' }}>
+            <div style={{ textAlign: 'center', maxWidth: '660px', margin: isMobile ? '0 auto 1.75rem' : '0 auto 3.5rem' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.6rem', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>
                 <Grid size={14} color="var(--accent-gold)" />
                 <span>OUR COLLECTION</span>
@@ -1580,9 +1580,9 @@ export default function Home() {
                 display: 'flex', 
                 flexWrap: 'wrap',
                 justifyContent: 'center', 
-                gap: '0.75rem', 
-                marginBottom: '2.5rem',
-                padding: '0 0.5rem'
+                gap: '0.45rem', 
+                marginBottom: '2rem',
+                padding: '0 0.25rem'
               }}
             >
               {homeCatalogueCategories.map((cat) => {
@@ -1592,7 +1592,7 @@ export default function Home() {
                     key={cat.id}
                     onClick={() => setSelectedHomeCat(cat.id)}
                     style={{
-                      padding: isMobile ? '0.65rem 1.15rem' : '0.75rem 1.65rem',
+                      padding: isMobile ? '0.45rem 0.95rem' : '0.65rem 1.35rem',
                       borderRadius: '999px',
                       backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
                       border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.25)',
@@ -1601,16 +1601,16 @@ export default function Home() {
                       WebkitBackdropFilter: 'blur(16px)',
                       cursor: 'pointer',
                       transition: 'all 0.25s ease',
-                      boxShadow: isSelected ? '0 6px 20px rgba(36, 79, 33, 0.4)' : '0 4px 12px rgba(0, 0, 0, 0.2)',
+                      boxShadow: isSelected ? '0 4px 14px rgba(36, 79, 33, 0.4)' : '0 2px 8px rgba(0, 0, 0, 0.2)',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.5rem'
+                      gap: '0.35rem'
                     }}
                   >
-                    <span style={{ fontSize: '0.72rem', letterSpacing: '0.08em', fontWeight: '850', color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.5)' }}>
+                    <span style={{ fontSize: '0.68rem', letterSpacing: '0.06em', fontWeight: '850', color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.5)' }}>
                       {cat.number}
                     </span>
-                    <span style={{ fontSize: isMobile ? '0.82rem' : '0.9rem', fontWeight: '800', letterSpacing: '0.04em' }}>
+                    <span style={{ fontSize: isMobile ? '0.78rem' : '0.85rem', fontWeight: '800', letterSpacing: '0.03em' }}>
                       {cat.name}
                     </span>
                   </button>
