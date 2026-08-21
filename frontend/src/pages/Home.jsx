@@ -1574,60 +1574,46 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Category Cards/Tabs Strip */}
+            {/* Compact Centered Category Pills Strip */}
             <div 
               style={{ 
-                display: 'grid', 
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', 
-                gap: '1rem', 
-                marginBottom: '2.5rem' 
+                display: 'flex', 
+                flexWrap: 'wrap',
+                justifyContent: 'center', 
+                gap: '0.75rem', 
+                marginBottom: '2.5rem',
+                padding: '0 0.5rem'
               }}
             >
               {homeCatalogueCategories.map((cat) => {
                 const isSelected = selectedHomeCat === cat.id;
                 return (
-                  <div
+                  <button
                     key={cat.id}
                     onClick={() => setSelectedHomeCat(cat.id)}
-                    className="glass-card"
                     style={{
-                      padding: '1.35rem 1.5rem',
-                      borderRadius: '20px',
-                      backgroundColor: isSelected ? 'rgba(35, 21, 13, 0.90)' : 'rgba(35, 21, 13, 0.45)',
-                      border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.15)',
+                      padding: isMobile ? '0.65rem 1.15rem' : '0.75rem 1.65rem',
+                      borderRadius: '999px',
+                      backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
+                      border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.25)',
+                      color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.85)',
                       backdropFilter: 'blur(16px)',
                       WebkitBackdropFilter: 'blur(16px)',
                       cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      boxShadow: isSelected ? '0 12px 32px rgba(0, 0, 0, 0.4)' : 'none',
-                      display: 'flex',
+                      transition: 'all 0.25s ease',
+                      boxShadow: isSelected ? '0 6px 20px rgba(36, 79, 33, 0.4)' : '0 4px 12px rgba(0, 0, 0, 0.2)',
+                      display: 'inline-flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
-                      position: 'relative',
-                      overflow: 'hidden'
+                      gap: '0.5rem'
                     }}
                   >
-                    <div>
-                      <span style={{ fontSize: '0.75rem', letterSpacing: '0.1em', fontWeight: '850', color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.5)', display: 'block', marginBottom: '0.2rem' }}>
-                        {cat.number}
-                      </span>
-                      <h3 style={{ fontSize: '1.05rem', color: '#FFFDF9', margin: 0, fontWeight: '800' }}>
-                        {cat.name}
-                      </h3>
-                      <p style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.75)', margin: '0.25rem 0 0', fontWeight: '500' }}>
-                        {cat.subtitle}
-                      </p>
-                    </div>
-
-                    <ArrowRight 
-                      size={18} 
-                      style={{ 
-                        color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.4)', 
-                        transform: isSelected ? 'translateX(3px)' : 'none', 
-                        transition: 'transform 0.2s ease' 
-                      }} 
-                    />
-                  </div>
+                    <span style={{ fontSize: '0.72rem', letterSpacing: '0.08em', fontWeight: '850', color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.5)' }}>
+                      {cat.number}
+                    </span>
+                    <span style={{ fontSize: isMobile ? '0.82rem' : '0.9rem', fontWeight: '800', letterSpacing: '0.04em' }}>
+                      {cat.name}
+                    </span>
+                  </button>
                 );
               })}
             </div>

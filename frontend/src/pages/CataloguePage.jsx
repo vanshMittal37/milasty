@@ -84,7 +84,35 @@ export default function CataloguePage() {
   const currentCategoryInfo = categories.find(c => c.id === selectedCategory) || categories[0];
 
   return (
-    <div className="catalogue-page" style={{ backgroundColor: 'transparent', minHeight: '100vh', paddingBottom: '5rem' }}>
+    <div 
+      className="catalogue-page products-page" 
+      style={{ 
+        minHeight: '100vh', 
+        paddingBottom: '5rem',
+        width: '100%',
+        maxWidth: '100%',
+        overflowX: 'hidden',
+        boxSizing: 'border-box',
+        position: 'relative',
+        backgroundImage: 'url(/images/ritiual_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Dark overlay matching Shop page */}
+      <div 
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.30) 0%, rgba(36, 19, 13, 0.22) 100%)',
+          zIndex: 0,
+          pointerEvents: 'none',
+        }} 
+      />
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
       
       {/* 1. COMPACT HERO SECTION */}
       <section 
@@ -236,6 +264,7 @@ export default function CataloguePage() {
         </div>
       </section>
 
+      </div>
     </div>
   );
 }
