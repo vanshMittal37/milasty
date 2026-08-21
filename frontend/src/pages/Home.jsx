@@ -1601,11 +1601,14 @@ export default function Home() {
               className="home-catalogue-categories-strip"
               style={{ 
                 display: 'flex', 
-                flexWrap: 'wrap',
-                justifyContent: 'center', 
-                gap: '0.65rem', 
+                flexWrap: isMobile ? 'nowrap' : 'wrap',
+                justifyContent: isMobile ? 'flex-start' : 'center', 
+                gap: isMobile ? '0.55rem' : '0.65rem', 
                 marginBottom: '1.75rem',
-                padding: '0 0.25rem'
+                padding: isMobile ? '0 1rem 0.5rem' : '0 0.25rem',
+                overflowX: isMobile ? 'auto' : 'visible',
+                scrollSnapType: isMobile ? 'x mandatory' : 'none',
+                WebkitOverflowScrolling: 'touch'
               }}
             >
               {homeCatalogueCategories.map((cat) => {
@@ -1616,7 +1619,7 @@ export default function Home() {
                     onClick={() => setSelectedHomeCat(cat.id)}
                     className="home-catalogue-category-pill"
                     style={{
-                      padding: isMobile ? '0.5rem 1.15rem' : '0.65rem 1.35rem',
+                      padding: isMobile ? '0.42rem 0.9rem' : '0.65rem 1.35rem',
                       borderRadius: '999px',
                       backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
                       border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.25)',
@@ -1628,13 +1631,16 @@ export default function Home() {
                       boxShadow: isSelected ? '0 4px 14px rgba(36, 79, 33, 0.4)' : '0 2px 8px rgba(0, 0, 0, 0.2)',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.35rem'
+                      gap: '0.35rem',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                      scrollSnapAlign: 'start'
                     }}
                   >
-                    <span style={{ fontSize: '0.68rem', letterSpacing: '0.06em', fontWeight: '850', color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.5)' }}>
+                    <span style={{ fontSize: isMobile ? '0.64rem' : '0.68rem', letterSpacing: '0.06em', fontWeight: '850', color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.5)' }}>
                       {cat.number}
                     </span>
-                    <span style={{ fontSize: isMobile ? '0.78rem' : '0.85rem', fontWeight: '800', letterSpacing: '0.03em' }}>
+                    <span style={{ fontSize: isMobile ? '0.74rem' : '0.85rem', fontWeight: '800', letterSpacing: '0.03em' }}>
                       {cat.name}
                     </span>
                   </button>
