@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles, ShieldCheck, ArrowRight, Award, FileText, CheckCircle2,
-  Star, ChevronLeft, ChevronRight, Heart, ShoppingBag, Eye, Check, X, Quote, Grid
+  Star, ChevronLeft, ChevronRight, ChevronDown, Heart, ShoppingBag, Eye, Check, X, Quote, Grid
 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import api from '../api/axios';
