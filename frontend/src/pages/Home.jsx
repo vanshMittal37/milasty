@@ -994,223 +994,164 @@ export default function Home() {
             </div>
           </div>
 
-          {/* MOBILE VIEW: Unified Single Product Showcase Card */}
+          {/* MOBILE VIEW: Compact 2x2 Grid Selector + Detail Panel */}
           <div
             className="mobile-ritual-unified-card"
             style={{
               display: isMobile ? 'block' : 'none',
-              width: 'calc(100% - 32px)',
+              width: '100%',
               margin: '0 auto',
-              backgroundColor: 'rgba(35, 21, 13, 0.85)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              borderRadius: '26px',
-              border: '1px solid rgba(185, 205, 148, 0.25)',
-              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
-              padding: '1.25rem',
               boxSizing: 'border-box'
             }}
           >
-            {/* 4 Product Option Rows inside Unified Card */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginBottom: '1.35rem' }}>
+            {/* 4 Compact 2x2 Product Option Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem', marginBottom: '1.25rem' }}>
               {ritualProducts.map((item, idx) => {
                 const isSelected = activeRitualIdx === idx;
-                const isLast = idx === ritualProducts.length - 1;
+                // Assign icon based on index or title (Hampers get gift icon 🎁, Cookies get cookie icon 🍪)
+                const isHamper = idx < 2 || item.title.toLowerCase().includes('hamper') || item.title.toLowerCase().includes('celebration');
                 return (
                   <div
                     key={item._id || item.slug || idx}
                     onClick={() => setActiveRitualIdx(idx)}
+                    className="glass-card"
                     style={{
-                      padding: '0.85rem 1rem',
-                      borderRadius: isSelected ? '12px' : '0px',
-                      backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.35)' : 'transparent',
-                      border: isSelected ? '1px solid rgba(185, 205, 148, 0.4)' : 'none',
-                      borderBottom: (!isSelected && !isLast) ? '1px solid rgba(255, 255, 255, 0.12)' : (isSelected ? '1px solid rgba(185, 205, 148, 0.4)' : 'none'),
+                      padding: '0.9rem 0.85rem',
+                      borderRadius: '18px',
+                      backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.45)' : 'rgba(35, 21, 13, 0.70)',
+                      border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.20)',
+                      boxShadow: isSelected ? '0 8px 24px rgba(0, 0, 0, 0.35)' : 'none',
                       cursor: 'pointer',
-                      transition: 'all 0.25s ease',
+                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      height: '130px',
+                      boxSizing: 'border-box',
+                      minWidth: 0,
+                      position: 'relative'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                      <span
-                        style={{
-                          fontSize: '1.1rem',
-                          fontFamily: 'var(--font-serif)',
-                          fontWeight: '800',
-                          color: isSelected ? '#b9cd94' : 'rgba(255, 255, 255, 0.55)',
-                          minWidth: '24px'
-                        }}
-                      >
-                        0{idx + 1}
-                      </span>
-                      <h3 
-                        style={{ 
-                          fontSize: '0.95rem', 
-                          color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.85)', 
-                          fontWeight: isSelected ? '750' : '550',
-                          margin: 0
-                        }}
-                      >
-                        {item.title}
-                      </h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>{isHamper ? '🎁' : '🍪'}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)' }}>0{idx + 1}</span>
+                        <ArrowRight size={13} style={{ color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.3)', transform: isSelected ? 'translateX(2px)' : 'none', transition: 'transform 0.2s' }} />
+                      </div>
                     </div>
-                    <ArrowRight 
-                      size={16} 
-                      style={{ 
-                        color: isSelected ? '#b9cd94' : 'rgba(255, 255, 255, 0.4)', 
-                        transform: isSelected ? 'translateX(3px)' : 'translateX(0)', 
-                        transition: 'transform 0.2s' 
-                      }} 
-                    />
+
+                    <div>
+                      <h4 style={{ fontSize: '0.82rem', color: isSelected ? '#FFFFFF' : '#F5EBDD', fontWeight: '850', margin: 0, lineHeight: '1.3', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {item.title}
+                      </h4>
+                      <span style={{ fontSize: '0.64rem', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.55)', fontWeight: '600', display: 'block', marginTop: '0.25rem' }}>
+                        {isSelected ? '✓ Selected' : 'Tap to explore'}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Selected Product Image inside Unified Card */}
+            {/* Selected Product Detail Panel Below 2x2 Grid */}
             <div 
               style={{ 
-                position: 'relative', 
-                height: '230px', 
-                borderRadius: '18px', 
-                overflow: 'hidden', 
-                marginBottom: '1.35rem',
-                backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
+                backgroundColor: 'rgba(35, 21, 13, 0.88)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '24px',
+                border: '1.5px solid var(--accent-gold)',
+                boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
+                padding: '1.25rem',
+                boxSizing: 'border-box',
+                transition: 'all 0.3s ease'
               }}
             >
-              <img 
-                src={activeRitualProduct.image} 
-                alt={activeRitualProduct.title}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                  transition: 'opacity 0.3s ease'
+              {/* Product Image */}
+              <div 
+                style={{ 
+                  position: 'relative', 
+                  height: '210px', 
+                  borderRadius: '16px', 
+                  overflow: 'hidden', 
+                  marginBottom: '1.15rem',
+                  backgroundColor: 'rgba(0, 0, 0, 0.25)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)'
                 }}
-              />
-            </div>
-
-            {/* Selected Product Details inside Unified Card */}
-            <div>
-              <h3 style={{ fontSize: '1.35rem', color: '#FFFDF9', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>
-                {activeRitualProduct.title}
-              </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '0.88rem', lineHeight: '1.6', marginBottom: '1.25rem', fontWeight: '500' }}>
-                {activeRitualProduct.description}
-              </p>
-
-              {/* Ingredient Tags */}
-              {activeRitualProduct.ingredients && activeRitualProduct.ingredients.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1.35rem' }}>
-                  {activeRitualProduct.ingredients.slice(0, 4).map((ingredient, i) => (
-                    <span 
-                      key={i} 
-                      style={{ 
-                        fontSize: '0.72rem', 
-                        color: 'rgba(255, 255, 255, 0.9)', 
-                        fontWeight: '650', 
-                        padding: '0.25rem 0.6rem', 
-                        borderRadius: '6px', 
-                        border: '1px solid rgba(255, 255, 255, 0.35)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)'
-                      }}
-                    >
-                      {ingredient}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Price & CTA Button */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
-                <div>
-                  <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.7)', display: 'block', fontWeight: '600' }}>From</span>
-                  <span style={{ fontSize: '1.35rem', fontWeight: '850', color: '#FFFDF9' }}>
-                    ₹{activeRitualProduct.variants?.[0]?.price || 139}
-                  </span>
-                </div>
-                <Link 
-                  to={`/product/${activeRitualProduct.slug}`} 
-                  className="btn-primary" 
-                  style={{ 
-                    padding: '0.65rem 1.25rem', 
-                    fontSize: '0.85rem', 
-                    backgroundColor: '#c89b3c', 
-                    color: '#FFFFFF', 
-                    fontWeight: '800', 
-                    textDecoration: 'none', 
-                    display: 'inline-flex', 
-                    alignItems: 'center', 
-                    gap: '0.35rem',
-                    borderRadius: '999px'
+              >
+                <img 
+                  src={activeRitualProduct.image} 
+                  alt={activeRitualProduct.title}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                    transition: 'opacity 0.3s ease'
                   }}
-                >
-                  <span>Explore Product</span>
-                  <ArrowRight size={15} />
-                </Link>
+                />
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* 6. MILASTY SNACK RITUAL */}
-      <section ref={timelineRef} className="reveal-fade-up timeline-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-        <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: isMobile ? '2.5rem' : '4.5rem' }}>
-            <div>
-              <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Mindful Eating</span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0 }}>The MILASTY <span style={{ color: 'var(--accent-gold)' }}>Snack Ritual</span></h2>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: isMobile ? '0.92rem' : '1.02rem', fontWeight: '500', margin: '0.5rem 0 0' }}>Turn your everyday snack break into a moment worth slowing down for.</p>
-            </div>
-            {!isMobile && (
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button 
-                  onClick={() => scrollLeft(snackRitualRef)} 
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <button 
-                  onClick={() => scrollRight(snackRitualRef)} 
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <ChevronRight size={16} />
-                </button>
+              {/* Product Title & Description */}
+              <div>
+                <h3 style={{ fontSize: '1.25rem', color: '#FFFDF9', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>
+                  {activeRitualProduct.title}
+                </h3>
+                <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: '0.85rem', lineHeight: '1.55', marginBottom: '1.15rem', fontWeight: '500' }}>
+                  {activeRitualProduct.description}
+                </p>
+
+                {/* Ingredient Tags */}
+                {activeRitualProduct.ingredients && activeRitualProduct.ingredients.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1.15rem' }}>
+                    {activeRitualProduct.ingredients.slice(0, 4).map((ingredient, i) => (
+                      <span 
+                        key={i} 
+                        style={{ 
+                          fontSize: '0.72rem', 
+                          color: 'rgba(255, 255, 255, 0.9)', 
+                          fontWeight: '650', 
+                          padding: '0.25rem 0.6rem', 
+                          borderRadius: '6px', 
+                          border: '1px solid rgba(255, 255, 255, 0.35)',
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)'
+                        }}
+                      >
+                        {ingredient}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Price & CTA Button */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)' }}>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.7)', display: 'block', fontWeight: '600' }}>From</span>
+                    <span style={{ fontSize: '1.35rem', fontWeight: '850', color: '#FFFDF9' }}>
+                      ₹{activeRitualProduct.variants?.[0]?.price || 139}
+                    </span>
+                  </div>
+                  <Link 
+                    to={`/product/${activeRitualProduct.slug}`} 
+                    className="btn-primary" 
+                    style={{ 
+                      padding: '0.65rem 1.25rem', 
+                      fontSize: '0.85rem', 
+                      backgroundColor: '#c89b3c', 
+                      color: '#FFFFFF', 
+                      fontWeight: '800', 
+                      textDecoration: 'none', 
+                      display: 'inline-flex', 
+                      alignItems: 'center', 
+                      gap: '0.35rem',
+                      borderRadius: '999px'
+                    }}
+                  >
+                    <span>Explore Product</span>
+                    <ArrowRight size={15} />
+                  </Link>
+                </div>
               </div>
-            )}
-          </div>
-
-          <div 
-            ref={snackRitualRef}
-            className="timeline-grid fitted-cards-container-4" 
-          >
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>01</div>
-              <h4 style={{ fontSize: isMobile ? '1rem' : '1.15rem', color: '#FFFFFF', marginBottom: '0.4rem', fontWeight: '800' }}>PAUSE</h4>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Step away from screens and digital chatter for five mindful minutes.</p>
-            </div>
-
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>02</div>
-              <h4 style={{ fontSize: isMobile ? '1rem' : '1.15rem', color: '#FFFFFF', marginBottom: '0.4rem', fontWeight: '800' }}>NOTICE</h4>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Take in the warm, nostalgic aroma of slow-baked millets and pure Cow Ghee.</p>
-            </div>
-
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>03</div>
-              <h4 style={{ fontSize: isMobile ? '1rem' : '1.15rem', color: '#FFFFFF', marginBottom: '0.4rem', fontWeight: '800' }}>BITE SLOWLY</h4>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Enjoy the wholesome crumbly texture and balanced sweetness of unrefined jaggery.</p>
-            </div>
-
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: 'var(--accent-gold)', marginBottom: '0.75rem' }}>04</div>
-              <h4 style={{ fontSize: isMobile ? '1rem' : '1.15rem', color: '#FFFFFF', marginBottom: '0.4rem', fontWeight: '800' }}>PAIR & ENJOY</h4>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.88rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Pair with a cup of warm ginger chai, filter coffee, or green tea.</p>
             </div>
           </div>
         </div>
@@ -1219,208 +1160,24 @@ export default function Home() {
       {/* 7. LAB TEST / TRUST SECTION */}
       <section ref={labRef} className="reveal-fade-up lab-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
-          <div className="lab-container" style={{ padding: isMobile ? '2rem 1.25rem' : '4.5rem 3.5rem', color: '#FFFFFF', borderRadius: '24px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))', gap: isMobile ? '2.5rem' : '4rem', alignItems: 'center' }}>
-              <div>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.25rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>
-                  <Award size={14} />
-                  <span>Lab Tested Transparency</span>
-                </span>
+          <div className="lab-container" style={{ padding: isMobile ? '2rem 1.25rem' : '4.5rem 3.5rem', color: '#FFFFFF', borderRadius: '24px', textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.25rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>
+              <Award size={14} />
+              <span>Lab Tested Transparency</span>
+            </span>
 
-                <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.5rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2' }}>
-                  Know What Goes Into <span style={{ color: 'var(--accent-gold)' }}>Every Bite.</span>
-                </h2>
+            <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2' }}>
+              Know What Goes Into <span style={{ color: 'var(--accent-gold)' }}>Every Bite.</span>
+            </h2>
 
-                <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: isMobile ? '0.92rem' : '1rem', lineHeight: '1.7', marginBottom: '2.25rem', fontWeight: '500' }}>
-                  We publish comprehensive nutritional and chemical reports so you can make informed choices. Absolutely no hidden sugars or synthetic preservatives.
-                </p>
+            <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: isMobile ? '0.92rem' : '1.05rem', lineHeight: '1.7', marginBottom: '2.25rem', fontWeight: '500', maxWidth: '640px', margin: '0 auto 2.25rem' }}>
+              We publish comprehensive nutritional and chemical reports so you can make informed choices. Absolutely no hidden sugars or synthetic preservatives.
+            </p>
 
-                <Link to="/nutrition" className="btn-primary" style={{ backgroundColor: '#c89b3c', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', padding: '0.85rem 2rem', borderRadius: '999px', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <FileText size={18} />
-                  <span>View Nutritional Specs →</span>
-                </Link>
-              </div>
-
-              {/* Comparison Box */}
-              <div 
-                className="lab-comparison" 
-                style={{ 
-                  padding: isMobile ? '1.25rem 1rem' : '2.25rem', 
-                  borderRadius: '24px',
-                  width: '100%',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <h4 style={{ color: 'var(--accent-gold)', fontSize: isMobile ? '1.02rem' : '1.15rem', marginBottom: isMobile ? '1rem' : '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>
-                  MILASTY vs Conventional Biscuits
-                </h4>
-
-                {isMobile ? (
-                  /* MOBILE INTERACTIVE 2x2 COMPARISON SELECTOR */
-                  <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', marginBottom: '1rem' }}>
-                      {[
-                        { title: 'FAT SOURCE', num: '01', key: 'Fat Source' },
-                        { title: 'SWEETENER', num: '02', key: 'Sweetener' },
-                        { title: 'FLOUR BASE', num: '03', key: 'Flour Base' },
-                        { title: 'PRESERVATIVES', num: '04', key: 'Preservatives' },
-                      ].map((item, idx) => {
-                        const isSelected = activeMobileVsIdx === idx;
-                        return (
-                          <div
-                            key={idx}
-                            onClick={() => setActiveMobileVsIdx(idx)}
-                            style={{
-                              padding: '0.85rem 0.75rem',
-                              borderRadius: '14px',
-                              backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.40)' : 'rgba(20, 10, 5, 0.40)',
-                              border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.18)',
-                              boxShadow: isSelected ? '0 6px 18px rgba(0, 0, 0, 0.35)' : 'none',
-                              cursor: 'pointer',
-                              transition: 'all 0.25s ease',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'space-between',
-                              height: '100px',
-                              boxSizing: 'border-box',
-                              minWidth: 0,
-                            }}
-                          >
-                            <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)' }}>
-                              {item.num}
-                            </span>
-                            <div>
-                              <h5 style={{ fontSize: '0.78rem', color: isSelected ? '#FFFFFF' : '#F5EBDD', fontWeight: '850', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {item.title}
-                              </h5>
-                              <span style={{ fontSize: '0.62rem', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.55)', fontWeight: '600', display: 'block', marginTop: '0.15rem' }}>
-                                {isSelected ? '✓ Viewing' : 'Tap to compare'}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Expandable Comparison Details Panel */}
-                    <div
-                      style={{
-                        padding: '1rem 0.9rem',
-                        borderRadius: '16px',
-                        backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                        border: '1px solid var(--accent-gold)',
-                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      {[
-                        { 
-                          category: 'FAT SOURCE',
-                          milasty: '100% Pure Cow Ghee',
-                          conventional: 'Refined Palm Oil & Hydrogenated Fats',
-                          note: 'No cheap vegetable oils or trans-fats.'
-                        },
-                        { 
-                          category: 'SWEETENER',
-                          milasty: 'Organic Jaggery',
-                          conventional: 'Refined White Sugar & High-Fructose Syrup',
-                          note: 'Natural unrefined sweetness packed with minerals.'
-                        },
-                        { 
-                          category: 'FLOUR BASE',
-                          milasty: 'Bajra, Jowar & Ragi',
-                          conventional: '100% Refined Maida Flour',
-                          note: 'Zero Maida. Rich in dietary fiber and slow-release energy.'
-                        },
-                        { 
-                          category: 'PRESERVATIVES',
-                          milasty: 'Zero Synthetic Chemicals',
-                          conventional: 'BHA, BHT & Artificial Emulsifiers',
-                          note: 'Freshly baked without chemical shelf-life extenders.'
-                        },
-                      ][activeMobileVsIdx] && (
-                        <div>
-                          <div style={{ fontSize: '0.72rem', fontWeight: '900', color: 'var(--accent-gold)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.4rem' }}>
-                            {[
-                              'FAT SOURCE COMPARISON',
-                              'SWEETENER COMPARISON',
-                              'FLOUR BASE COMPARISON',
-                              'PRESERVATIVE COMPARISON'
-                            ][activeMobileVsIdx]}
-                          </div>
-
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(36, 79, 33, 0.35)', padding: '0.55rem 0.75rem', borderRadius: '10px', border: '1px solid rgba(185, 205, 148, 0.3)' }}>
-                              <span style={{ fontSize: '0.78rem', color: '#FFFDF9', fontWeight: '700' }}>MILASTY:</span>
-                              <strong style={{ fontSize: '0.82rem', color: 'var(--accent-gold)', fontWeight: '900' }}>
-                                {[
-                                  '100% Pure Cow Ghee',
-                                  'Organic Jaggery',
-                                  'Bajra, Jowar & Ragi',
-                                  'Zero Synthetic Chemicals'
-                                ][activeMobileVsIdx]}
-                              </strong>
-                            </div>
-
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.35)', padding: '0.55rem 0.75rem', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
-                              <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.65)', fontWeight: '600' }}>Conventional:</span>
-                              <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.75)', fontWeight: '600', textDecoration: 'line-through' }}>
-                                {[
-                                  'Palm Oil & Trans Fats',
-                                  'Refined White Sugar',
-                                  'Refined Maida Flour',
-                                  'BHA, BHT & Chemicals'
-                                ][activeMobileVsIdx]}
-                              </span>
-                            </div>
-
-                            <p style={{ fontSize: '0.75rem', color: '#F5EBDD', opacity: 0.9, lineHeight: '1.45', margin: '0.2rem 0 0', fontWeight: '500' }}>
-                              {[
-                                'No cheap vegetable oils or harmful trans-fats.',
-                                'Natural unrefined sweetness packed with minerals.',
-                                'Zero Maida. Rich in dietary fiber and slow-release energy.',
-                                'Freshly baked without chemical shelf-life extenders.'
-                              ][activeMobileVsIdx]}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  /* DESKTOP ORIGINAL COMPARISON TABLE */
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', width: '100%', minWidth: 0 }}>
-                    {[
-                      { label: 'Fat Source:', value: '100% Pure Cow Ghee' },
-                      { label: 'Sweetener:', value: 'Organic Jaggery' },
-                      { label: 'Flour Base:', value: 'Bajra, Jowar, Ragi (No Maida)' },
-                      { label: 'Preservatives:', value: 'Zero Synthetic Chemicals' },
-                    ].map((row, idx, arr) => (
-                      <div 
-                        key={idx}
-                        style={{ 
-                          display: 'grid', 
-                          gridTemplateColumns: '1fr auto', 
-                          gap: '0.75rem', 
-                          alignItems: 'baseline', 
-                          borderBottom: idx < arr.length - 1 ? '1px solid rgba(255, 255, 255, 0.25)' : 'none', 
-                          paddingBottom: '0.75rem',
-                          width: '100%',
-                          minWidth: 0
-                        }}
-                      >
-                        <span style={{ color: '#F5EBDD', opacity: 0.95, fontWeight: '600', fontSize: '0.92rem', wordBreak: 'break-word' }}>
-                          {row.label}
-                        </span>
-                        <strong style={{ color: 'var(--accent-gold)', fontWeight: '850', fontSize: '0.92rem', textAlign: 'right', lineHeight: '1.45', wordBreak: 'break-word' }}>
-                          {row.value}
-                        </strong>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+            <Link to="/nutrition" className="btn-primary" style={{ backgroundColor: '#c89b3c', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', padding: '0.85rem 2rem', borderRadius: '999px', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+              <FileText size={18} />
+              <span>View Nutritional Specs →</span>
+            </Link>
           </div>
         </div>
       </section>
