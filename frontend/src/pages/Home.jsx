@@ -900,11 +900,57 @@ export default function Home() {
         <section ref={reviewRef} className="reveal-fade-up reviews-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
           <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1.5rem' }}>
 
-            <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 3.5rem' }}>
-              <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Customer Stories</span>
-              <h2 style={{ fontSize: 'clamp(2.1rem, 4.5vw, 2.8rem)', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2', margin: 0 }}>
-                Loved by <span style={{ color: '#b9cd94' }}>Health-Conscious</span> Homes
-              </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Customer Stories</span>
+                <h2 style={{ fontSize: 'clamp(2.1rem, 4.5vw, 2.8rem)', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2', margin: 0 }}>
+                  Loved by <span style={{ color: '#b9cd94' }}>Health-Conscious</span> Homes
+                </h2>
+              </div>
+
+              {/* Header Chevron Navigation Buttons */}
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <button
+                  onClick={handlePrevSlide}
+                  aria-label="Previous Testimonial"
+                  style={{
+                    backgroundColor: '#244f21',
+                    border: '1.5px solid #b9cd94',
+                    color: '#FFFFFF',
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 4px 12px rgba(36, 79, 33, 0.3)'
+                  }}
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  onClick={handleNextSlide}
+                  aria-label="Next Testimonial"
+                  style={{
+                    backgroundColor: '#244f21',
+                    border: '1.5px solid #b9cd94',
+                    color: '#FFFFFF',
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 4px 12px rgba(36, 79, 33, 0.3)'
+                  }}
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
             </div>
 
             <div
