@@ -1912,7 +1912,6 @@ body, p, span, li, a {
 /* 5. SHOP & RITUALS PAGE RESPONSIVENESS (2x2 GRID FOR PRODUCTS) */
 @media (max-width: 767px) {
   /* Force 2-column layout on mobile viewports for product listings */
-  .products-main-grid,
   .shop-featured-grid,
   .shop-main-grid,
   .favorites-grid,
