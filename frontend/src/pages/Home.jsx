@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles, ShieldCheck, ArrowRight, Award, FileText, CheckCircle2,
-  Star, ChevronLeft, ChevronRight, Heart, ShoppingBag, Eye, Check, X
+  Star, ChevronLeft, ChevronRight, Heart, ShoppingBag, Eye, Check, X, Quote
 } from 'lucide-react';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
@@ -274,6 +274,7 @@ export default function Home() {
   const heroRef = useScrollReveal();
   const trustRef = useScrollReveal();
   const whyRef = useScrollReveal();
+  const customerTestimonialRef = useScrollReveal();
   const favRef = useScrollReveal();
   const ritualRef = useScrollReveal();
   const timelineRef = useScrollReveal();
@@ -281,6 +282,92 @@ export default function Home() {
   const reviewRef = useScrollReveal();
   const storyRef = useScrollReveal();
   const finalCtaRef = useScrollReveal();
+
+  /* -------------------------------------------------------------------------- */
+  /* FRONTEND DUMMY TESTIMONIAL DATA (PREPARED FOR FUTURE ADMIN API INTEG)     */
+  /* -------------------------------------------------------------------------- */
+  const dummyTestimonials = [
+    {
+      id: 1,
+      customerName: "Ananya Sharma",
+      customerRole: "Verified Customer",
+      product: "Cocoa Ragi Cookies",
+      rating: 5,
+      date: "2026-02-10",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+      review: "I genuinely loved how light these tasted. The texture was perfect with my evening tea, and I did not feel like I was eating a typical packaged biscuit.",
+      isVisible: true
+    },
+    {
+      id: 2,
+      customerName: "Rohan Mehta",
+      customerRole: "Verified Customer",
+      product: "Coconut Jowar Cookies",
+      rating: 5,
+      date: "2026-02-12",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      review: "The coconut flavour is subtle and really good. MILASTY has become my go-to snack when I want something simple with my coffee.",
+      isVisible: true
+    },
+    {
+      id: 3,
+      customerName: "Priya Kapoor",
+      customerRole: "Verified Customer",
+      product: "Imperial Wedding Hamper",
+      rating: 5,
+      date: "2026-02-14",
+      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80",
+      review: "The hamper looked beautiful and felt very thoughtfully put together. It made a lovely gift for my family.",
+      isVisible: true
+    },
+    {
+      id: 4,
+      customerName: "Neha Verma",
+      customerRole: "Verified Customer",
+      product: "Millet Bake",
+      rating: 5,
+      date: "2026-02-15",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80",
+      review: "I really appreciate the ingredient transparency. Everything feels carefully made, and the taste is even better than I expected.",
+      isVisible: true
+    },
+    {
+      id: 5,
+      customerName: "Arjun Malhotra",
+      customerRole: "Verified Customer",
+      product: "Cocoa Ragi Cookies",
+      rating: 5,
+      date: "2026-02-18",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
+      review: "Crispy, tasty and not overly sweet. These are now a regular part of my evening snack.",
+      isVisible: true
+    },
+    {
+      id: 6,
+      customerName: "Kavya Singh",
+      customerRole: "Verified Customer",
+      product: "Celebration Hamper",
+      rating: 5,
+      date: "2026-02-20",
+      avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&auto=format&fit=crop&q=80",
+      review: "Beautiful packaging, great taste and a very premium feel. Perfect for gifting.",
+      isVisible: true
+    }
+  ];
+
+  // Filter only visible items (future admin ON/OFF support)
+  const activeTestimonials = dummyTestimonials.filter(t => t.isVisible);
+  const [activeTestimonialIdx, setActiveTestimonialIdx] = useState(0);
+  const [isTestimonialSectionHovered, setIsTestimonialSectionHovered] = useState(false);
+
+  // Autoplay 4s timer
+  useEffect(() => {
+    if (isTestimonialSectionHovered || activeTestimonials.length === 0) return;
+    const timer = setInterval(() => {
+      setActiveTestimonialIdx((prev) => (prev + 1) % activeTestimonials.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [isTestimonialSectionHovered, activeTestimonials.length]);
 
   useEffect(() => {
     api.get('/products?limit=4')
@@ -893,6 +980,280 @@ export default function Home() {
                 </div>
               </div>
             )}
+          </div>
+        </section>
+
+        {/* ================================================================== */}
+        {/* NEW CUSTOMER TESTIMONIALS SECTION (PREPARED FOR FUTURE ADMIN)       */}
+        {/* ================================================================== */}
+        <section 
+          ref={customerTestimonialRef} 
+          className="reveal-fade-up customer-testimonials-section" 
+          style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}
+        >
+          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
+            
+            {/* Section Header */}
+            <div style={{ textAlign: 'center', maxWidth: '660px', margin: isMobile ? '0 auto 2.25rem' : '0 auto 4rem' }}>
+              <span style={{ display: 'inline-block', marginBottom: '0.6rem', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>
+                CUSTOMER LOVE
+              </span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2', margin: '0 0 0.85rem' }}>
+                What Our Customers <span style={{ color: 'var(--accent-gold)' }}>Really Say.</span>
+              </h2>
+              <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+                Real experiences from people who chose MILASTY for their everyday snacking and gifting moments.
+              </p>
+            </div>
+
+            {/* Testimonials Container */}
+            <div 
+              onMouseEnter={() => setIsTestimonialSectionHovered(true)}
+              onMouseLeave={() => setIsTestimonialSectionHovered(false)}
+              onTouchStart={() => setIsTestimonialSectionHovered(true)}
+              onTouchEnd={() => setTimeout(() => setIsTestimonialSectionHovered(false), 3000)}
+            >
+              {isMobile ? (
+                /* MOBILE VIEW: Single Centered Card (No Horizontal Overflow) */
+                <div style={{ width: '100%', boxSizing: 'border-box' }}>
+                  {activeTestimonials[activeTestimonialIdx] && (
+                    <div
+                      className="glass-card"
+                      style={{
+                        width: 'calc(100% - 32px)',
+                        maxWidth: '380px',
+                        margin: '0 auto',
+                        backgroundColor: 'rgba(35, 21, 13, 0.82)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        borderRadius: '24px',
+                        border: '1.5px solid var(--accent-gold)',
+                        boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
+                        padding: '1.75rem 1.35rem',
+                        position: 'relative',
+                        boxSizing: 'border-box',
+                        overflow: 'hidden',
+                        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
+                      }}
+                    >
+                      {/* Translucent Quote Background Watermark */}
+                      <Quote 
+                        size={80} 
+                        style={{ position: 'absolute', top: '10px', right: '15px', color: 'rgba(200, 155, 60, 0.08)', pointerEvents: 'none' }} 
+                      />
+
+                      {/* Gold Corner Accent Line */}
+                      <div style={{ position: 'absolute', top: 0, left: '20px', right: '20px', height: '2px', background: 'linear-gradient(90deg, transparent, var(--accent-gold), transparent)' }} />
+
+                      <div style={{ position: 'relative', zIndex: 2 }}>
+                        {/* Rating Stars */}
+                        <div style={{ display: 'flex', gap: '3px', color: 'var(--accent-gold)', marginBottom: '1rem' }}>
+                          {[...Array(activeTestimonials[activeTestimonialIdx].rating || 5)].map((_, i) => (
+                            <Star key={i} size={16} fill="var(--accent-gold)" color="var(--accent-gold)" />
+                          ))}
+                        </div>
+
+                        {/* Review Content */}
+                        <p style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: '#FFFDF9', lineHeight: '1.65', marginBottom: '1.5rem', fontWeight: '500' }}>
+                          "{activeTestimonials[activeTestimonialIdx].review}"
+                        </p>
+
+                        {/* Customer Footer Info */}
+                        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.15)', paddingTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            {activeTestimonials[activeTestimonialIdx].avatar && (
+                              <img 
+                                src={activeTestimonials[activeTestimonialIdx].avatar} 
+                                alt={activeTestimonials[activeTestimonialIdx].customerName}
+                                style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--accent-gold)' }}
+                              />
+                            )}
+                            <div>
+                              <strong style={{ fontSize: '0.92rem', color: '#FFFDF9', display: 'block', fontWeight: '850', margin: 0 }}>
+                                {activeTestimonials[activeTestimonialIdx].customerName}
+                              </strong>
+                              <span style={{ fontSize: '0.75rem', color: '#b9cd94', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                                <CheckCircle2 size={12} color="#b9cd94" />
+                                {activeTestimonials[activeTestimonialIdx].customerRole}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Tried Product Tag */}
+                          {activeTestimonials[activeTestimonialIdx].product && (
+                            <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.85)', backgroundColor: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.2)', padding: '0.25rem 0.55rem', borderRadius: '6px', fontWeight: '600' }}>
+                              Tried: {activeTestimonials[activeTestimonialIdx].product}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* DESKTOP VIEW: 3-Card Carousel Showcase */
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.75rem', alignItems: 'stretch' }}>
+                  {[
+                    activeTestimonials[(activeTestimonialIdx + activeTestimonials.length - 1) % activeTestimonials.length],
+                    activeTestimonials[activeTestimonialIdx % activeTestimonials.length],
+                    activeTestimonials[(activeTestimonialIdx + 1) % activeTestimonials.length],
+                  ].map((item, idx) => {
+                    const isActiveCenter = idx === 1;
+                    return (
+                      <div
+                        key={item.id || idx}
+                        className="glass-card"
+                        style={{
+                          backgroundColor: isActiveCenter ? 'rgba(35, 21, 13, 0.90)' : 'rgba(35, 21, 13, 0.50)',
+                          backdropFilter: 'blur(20px)',
+                          WebkitBackdropFilter: 'blur(20px)',
+                          borderRadius: '24px',
+                          border: isActiveCenter ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.15)',
+                          boxShadow: isActiveCenter ? '0 16px 40px rgba(0, 0, 0, 0.45)' : '0 8px 24px rgba(0, 0, 0, 0.25)',
+                          padding: isActiveCenter ? '2.25rem 1.85rem' : '1.85rem 1.5rem',
+                          transform: isActiveCenter ? 'scale(1.03)' : 'scale(0.97)',
+                          opacity: isActiveCenter ? 1 : 0.75,
+                          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          minWidth: 0
+                        }}
+                      >
+                        {/* Translucent Quote Background Watermark */}
+                        <Quote 
+                          size={90} 
+                          style={{ position: 'absolute', top: '15px', right: '15px', color: isActiveCenter ? 'rgba(200, 155, 60, 0.10)' : 'rgba(255, 255, 255, 0.04)', pointerEvents: 'none' }} 
+                        />
+
+                        {/* Top Accent Line for Center Card */}
+                        {isActiveCenter && (
+                          <div style={{ position: 'absolute', top: 0, left: '20px', right: '20px', height: '2.5px', background: 'linear-gradient(90deg, transparent, var(--accent-gold), transparent)' }} />
+                        )}
+
+                        <div style={{ position: 'relative', zIndex: 2 }}>
+                          {/* Rating Stars */}
+                          <div style={{ display: 'flex', gap: '4px', color: 'var(--accent-gold)', marginBottom: '1.25rem' }}>
+                            {[...Array(item.rating || 5)].map((_, i) => (
+                              <Star key={i} size={18} fill="var(--accent-gold)" color="var(--accent-gold)" />
+                            ))}
+                          </div>
+
+                          {/* Review Text */}
+                          <p style={{ fontSize: isActiveCenter ? '1.05rem' : '0.95rem', fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: '#FFFDF9', lineHeight: '1.65', marginBottom: '2rem', fontWeight: '500' }}>
+                            "{item.review}"
+                          </p>
+                        </div>
+
+                        {/* Customer Footer Info */}
+                        <div style={{ position: 'relative', zIndex: 2, borderTop: '1px solid rgba(255, 255, 255, 0.15)', paddingTop: '1.15rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                              {item.avatar && (
+                                <img 
+                                  src={item.avatar} 
+                                  alt={item.customerName}
+                                  style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', border: isActiveCenter ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.3)' }}
+                                />
+                              )}
+                              <div>
+                                <strong style={{ fontSize: '1rem', color: '#FFFDF9', display: 'block', fontWeight: '850' }}>
+                                  {item.customerName}
+                                </strong>
+                                <span style={{ fontSize: '0.78rem', color: '#b9cd94', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                                  <CheckCircle2 size={13} color="#b9cd94" />
+                                  {item.customerRole}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Tried Product Tag */}
+                          {item.product && (
+                            <div style={{ marginTop: '0.65rem' }}>
+                              <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.85)', backgroundColor: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.2)', padding: '0.3rem 0.65rem', borderRadius: '6px', fontWeight: '600' }}>
+                                Tried: {item.product}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Navigation Dots Below Card Area */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: isMobile ? '1.5rem' : '2.5rem', marginBottom: '1.25rem' }}>
+                {activeTestimonials.map((_, idx) => {
+                  const active = activeTestimonialIdx === idx;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveTestimonialIdx(idx)}
+                      style={{
+                        width: active ? '24px' : '8px',
+                        height: '8px',
+                        borderRadius: '4px',
+                        backgroundColor: active ? '#b9cd94' : 'rgba(255, 255, 255, 0.3)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        padding: 0
+                      }}
+                      aria-label={`Go to testimonial ${idx + 1}`}
+                    />
+                  );
+                })}
+              </div>
+
+              {/* Compact Circular Navigation Arrows Below Dots */}
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.25rem' }}>
+                <button
+                  onClick={() => setActiveTestimonialIdx((prev) => (prev - 1 + activeTestimonials.length) % activeTestimonials.length)}
+                  aria-label="Previous Testimonial"
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    border: '1.5px solid #b9cd94',
+                    backgroundColor: '#244f21',
+                    color: '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+                  }}
+                >
+                  <ChevronLeft size={20} />
+                </button>
+
+                <button
+                  onClick={() => setActiveTestimonialIdx((prev) => (prev + 1) % activeTestimonials.length)}
+                  aria-label="Next Testimonial"
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    border: '1.5px solid #b9cd94',
+                    backgroundColor: '#244f21',
+                    color: '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+                  }}
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            </div>
           </div>
         </section>
 
