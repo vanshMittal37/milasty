@@ -686,6 +686,11 @@ body, p, span, li, a {
     border-radius: 20px !important;
   }
 
+/* Footer default desktop links wrapper */
+.footer-links-row {
+  display: contents;
+}
+
   /* Footer responsiveness */
   footer {
     padding-top: 3rem !important;
@@ -696,6 +701,13 @@ body, p, span, li, a {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)) !important;
     gap: 2rem !important;
     padding-bottom: 2rem !important;
+  }
+
+  .footer-links-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
   }
 
   footer div[style*="justify-content: space-between"] {
@@ -1838,8 +1850,8 @@ body, p, span, li, a {
   .wishlist-hero-section {
     width: 100% !important;
     max-width: 100% !important;
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
     box-sizing: border-box !important;
   }
 

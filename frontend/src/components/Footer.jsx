@@ -45,68 +45,71 @@ export default function Footer() {
             <p style={{ fontSize: '0.85rem', fontStyle: 'italic', color: 'var(--accent-gold)' }}>"Desh Ka Millets, Desh Ki Sehat"</p>
           </div>
 
-          {/* Column 2: Quick Links */}
-          <div>
-            <h4 style={{ color: 'var(--bg-main)', marginBottom: '1.25rem', fontSize: '1rem', fontWeight: '600' }}>Quick Links</h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem' }}>
-              <li>
-                <Link to="/" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/our-story" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
-                  Our Founder's Story
-                </Link>
-              </li>
-              <li>
-                <Link to="/shop" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
-                  Shop All Bakes
-                </Link>
-              </li>
-              <li>
-                <Link to="/nutrition" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
-                  Lab Reports & Nutrition
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin" style={{ color: 'var(--accent-gold)', fontWeight: '600', transition: 'color 0.2s' }} className="footer-link">
-                  Admin Dashboard
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* Columns 2 & 3: Quick Links & Customer Care grouped for 2-column side-by-side layout on mobile */}
+          <div className="footer-links-row">
+            {/* Column 2: Quick Links */}
+            <div>
+              <h4 style={{ color: 'var(--bg-main)', marginBottom: '1.25rem', fontSize: '1rem', fontWeight: '600' }}>Quick Links</h4>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem' }}>
+                <li>
+                  <Link to="/" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/our-story" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
+                    Our Founder's Story
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/shop" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
+                    Shop All Bakes
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/nutrition" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
+                    Lab Reports & Nutrition
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/admin" style={{ color: 'var(--accent-gold)', fontWeight: '600', transition: 'color 0.2s' }} className="footer-link">
+                    Admin Dashboard
+                  </Link>
+                </li>
+              </ul>
+            </div>
 
-          {/* Column 3: Legal & Policies */}
-          <div>
-            <h4 style={{ color: 'var(--bg-main)', marginBottom: '1.25rem', fontSize: '1rem', fontWeight: '600' }}>Customer Care</h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem' }}>
-              <li>
-                <Link to="/terms" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
-                  Terms & Conditions
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/refund" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
-                  Refund & Cancellation
-                </Link>
-              </li>
-              <li>
-                <Link to="/shipping" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
-                  Shipping & Delivery
-                </Link>
-              </li>
-            </ul>
+            {/* Column 3: Customer Care */}
+            <div>
+              <h4 style={{ color: 'var(--bg-main)', marginBottom: '1.25rem', fontSize: '1rem', fontWeight: '600' }}>Customer Care</h4>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem' }}>
+                <li>
+                  <Link to="/terms" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
+                    Terms & Conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/privacy" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/refund" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
+                    Refund & Cancellation
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/shipping" style={{ color: 'rgba(252, 250, 246, 0.75)', transition: 'color 0.2s' }} className="footer-link">
+                    Shipping & Delivery
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* Column 4: Contact & FSSAI */}
