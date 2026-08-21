@@ -38,7 +38,7 @@ export default function Footer() {
         >
           {/* Column 1: Brand Info */}
           <div>
-            <Logo variant="emblem" style={{ height: '80px', width: 'auto', marginBottom: '1.25rem' }} />
+            <Logo variant="emblem" style={{ height: '110px', width: 'auto', marginBottom: '1.25rem' }} />
             <p style={{ fontSize: '0.88rem', color: 'rgba(252, 250, 246, 0.75)', marginBottom: '1.5rem', lineHeight: '1.75' }}>
               Where millets meet great taste. Healthy snacks baked in pure Desi Ghee and sweetened with organic Jaggery.
             </p>

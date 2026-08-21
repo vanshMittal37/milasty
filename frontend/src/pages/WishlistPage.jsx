@@ -581,6 +581,42 @@ export default function WishlistPage() {
               ))}
             </div>
 
+            {/* 8. YOU MAY ALSO LOVE RECOMMENDATIONS */}
+            <section style={{ borderTop: '1px solid rgba(255, 255, 255, 0.18)', paddingTop: '4rem', marginBottom: '4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.25rem' }}>Recommendations</span>
+                  <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0 }}>You May Also Love</h2>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button 
+                    onClick={() => scrollLeft(recRef)} 
+                    aria-label="Scroll Left" 
+                    style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '38px', height: '38px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button 
+                    onClick={() => scrollRight(recRef)} 
+                    aria-label="Scroll Right" 
+                    style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '38px', height: '38px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+
+              <div 
+                ref={recRef} 
+                className="horizontal-scroll-container wishlist-recommendations-grid" 
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.5rem' }}
+              >
+                {recommendations.map((p) => (
+                  <WishlistProductCard key={`rec-${p._id || p.slug}`} product={p} />
+                ))}
+              </div>
+            </section>
+
             {/* 9. STILL EXPLORING CTA */}
             <section style={{ borderTop: '1px solid rgba(100, 65, 35, 0.18)', paddingTop: '6rem', textAlign: 'center' }}>
               <div style={{
