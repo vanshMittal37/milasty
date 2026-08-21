@@ -477,7 +477,7 @@ export default function Home() {
           style={{
             position: 'relative',
             height: isMobile ? 'auto' : '92vh',
-            minHeight: isMobile ? '100dvh' : '600px',
+            minHeight: isMobile ? 'auto' : '600px',
             overflow: 'hidden',
             backgroundColor: 'transparent',
             display: 'flex',
