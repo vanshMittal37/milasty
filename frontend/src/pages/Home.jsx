@@ -732,6 +732,71 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 3. "WHY MILASTY" SECTION (Transparent tiles with white text and borders) */}
+      <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+        <div className="container">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: isMobile ? '2.5rem' : '4.5rem' }}>
+            <div>
+              <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Core Philosophy</span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0 }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
+            </div>
+            {!isMobile && (
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  onClick={() => scrollLeft(whyDiffRef)} 
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button 
+                  onClick={() => scrollRight(whyDiffRef)} 
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div 
+            ref={whyDiffRef}
+            className="why-grid fitted-cards-container-4" 
+          >
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
+                <Award size={isMobile ? 28 : 36} strokeWidth={1.5} />
+              </div>
+              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PURE DESI GHEE</h3>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
+            </div>
+
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
+                <Sparkles size={isMobile ? 28 : 36} strokeWidth={1.5} />
+              </div>
+              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>WHOLESOME MILLETS</h3>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
+            </div>
+
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
+                <ShieldCheck size={isMobile ? 28 : 36} strokeWidth={1.5} />
+              </div>
+              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NATURALLY SWEET</h3>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
+            </div>
+
+            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
+              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
+                <FileText size={isMobile ? 28 : 36} strokeWidth={1.5} />
+              </div>
+              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTHING UNNECESSARY</h3>
+              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 5. INTERACTIVE MILLET RITUAL SECTION */}
       <section ref={ritualRef} className="reveal-fade-up ritual-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
         <div className="container">
@@ -1308,70 +1373,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. "WHY MILASTY" SECTION (Transparent tiles with white text and borders) */}
-      <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-        <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: isMobile ? '2.5rem' : '4.5rem' }}>
-            <div>
-              <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Core Philosophy</span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0 }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
-            </div>
-            {!isMobile && (
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button 
-                  onClick={() => scrollLeft(whyDiffRef)} 
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <button 
-                  onClick={() => scrollRight(whyDiffRef)} 
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            )}
-          </div>
 
-          <div 
-            ref={whyDiffRef}
-            className="why-grid fitted-cards-container-4" 
-          >
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
-                <Award size={isMobile ? 28 : 36} strokeWidth={1.5} />
-              </div>
-              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PURE DESI GHEE</h3>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
-            </div>
-
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
-                <Sparkles size={isMobile ? 28 : 36} strokeWidth={1.5} />
-              </div>
-              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>WHOLESOME MILLETS</h3>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
-            </div>
-
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
-                <ShieldCheck size={isMobile ? 28 : 36} strokeWidth={1.5} />
-              </div>
-              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NATURALLY SWEET</h3>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
-            </div>
-
-            <div className="glass-card" style={{ padding: isMobile ? '1.5rem 1.15rem' : '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-              <div style={{ color: 'var(--accent-gold)', marginBottom: isMobile ? '1rem' : '1.5rem' }}>
-                <FileText size={isMobile ? 28 : 36} strokeWidth={1.5} />
-              </div>
-              <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTHING UNNECESSARY</h3>
-              <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* 10. FINAL CTA SECTION */}
       <section ref={finalCtaRef} className="reveal-fade-up cta-section" style={{ padding: '5rem 0 7rem', backgroundColor: 'transparent' }}>

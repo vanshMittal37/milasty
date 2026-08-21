@@ -4,6 +4,7 @@ import { Heart, ShoppingBag, Trash2, ArrowRight, Star, ChevronRight, Eye, Sparkl
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { initialProducts } from '../data/seedData';
+import ProductCard from '../components/ProductCard';
 
 // Encapsulated Sub-Component for individual Wishlist Cards
 function WishlistProductCard({ product }) {
@@ -618,20 +619,20 @@ export default function WishlistPage() {
             </section>
 
             {/* 9. STILL EXPLORING CTA */}
-            <section style={{ borderTop: '1px solid rgba(100, 65, 35, 0.18)', paddingTop: '6rem', textAlign: 'center' }}>
+            <section style={{ borderTop: '1px solid rgba(255, 255, 255, 0.18)', paddingTop: '6rem', textAlign: 'center' }}>
               <div style={{
-                backgroundColor: 'rgba(255, 250, 242, 0.78)',
-                backdropFilter: 'blur(18px)',
-                WebkitBackdropFilter: 'blur(18px)',
+                backgroundColor: 'rgba(18, 9, 4, 0.30)',
+                backdropFilter: 'blur(30px) saturate(150%)',
+                WebkitBackdropFilter: 'blur(30px) saturate(150%)',
                 borderRadius: '24px',
-                border: '1px solid rgba(100, 65, 35, 0.14)',
-                boxShadow: '0 8px 32px rgba(80, 45, 15, 0.10)',
+                border: '1px solid rgba(255, 255, 255, 0.20)',
+                boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
                 padding: '3.5rem 2rem',
               }}>
-                <h2 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', marginBottom: '0.75rem', margin: '0 0 0.75rem' }}>
+                <h2 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', marginBottom: '0.75rem', margin: '0 0 0.75rem' }}>
                   Still Exploring?
                 </h2>
-                <p style={{ fontSize: '1rem', color: '#5C3D20', lineHeight: '1.65', marginBottom: '2.25rem', fontWeight: '500', marginTop: '0.5rem' }}>
+                <p style={{ fontSize: '1rem', color: '#F5EBDD', lineHeight: '1.65', marginBottom: '2.25rem', fontWeight: '500', marginTop: '0.5rem' }}>
                   Discover more handcrafted MILASTY bakes made for your everyday rituals.
                 </p>
                 <Link

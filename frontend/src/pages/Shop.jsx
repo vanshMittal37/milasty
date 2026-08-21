@@ -223,27 +223,7 @@ export default function Shop() {
         </div>
       </section>
 
-      {/* 2. TRUST STRIP */}
-      <section className="products-trust-strip" style={{ backgroundColor: 'rgba(20, 10, 5, 0.55)', padding: '2.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid var(--border-color)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Leaf size={16} color="var(--accent-gold)" />
-            <span>100% Pure Desi Ghee</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Sparkles size={16} color="var(--accent-gold)" />
-            <span>Wholesome Millets</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Shield size={16} color="var(--accent-gold)" />
-            <span>No Palm Oil</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Award size={16} color="var(--accent-gold)" />
-            <span>Thoughtful Ingredients</span>
-          </div>
-        </div>
-      </section>
+
 
       {/* 4. MAIN PRODUCTS & FILTERS SECTION */}
       <section id="shop-listings-section" style={{ padding: '6rem 0', backgroundColor: 'rgba(20, 10, 5, 0.55)', borderTop: '1px solid rgba(245, 220, 180, 0.15)' }}>
@@ -387,6 +367,28 @@ export default function Shop() {
             </div>
           )}
 
+        </div>
+      </section>
+
+      {/* TRUST STRIP */}
+      <section className="products-trust-strip" style={{ backgroundColor: 'rgba(20, 10, 5, 0.55)', padding: '2.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid var(--border-color)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Leaf size={16} color="var(--accent-gold)" />
+            <span>100% Pure Desi Ghee</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Sparkles size={16} color="var(--accent-gold)" />
+            <span>Wholesome Millets</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Shield size={16} color="var(--accent-gold)" />
+            <span>No Palm Oil</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-dark)', fontWeight: '800', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Award size={16} color="var(--accent-gold)" />
+            <span>Thoughtful Ingredients</span>
+          </div>
         </div>
       </section>
 

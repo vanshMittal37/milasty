@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
+import ProductCard from '../components/ProductCard';
 
 export default function ShopProductDetail() {
   const { id } = useParams();
