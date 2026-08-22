@@ -424,7 +424,7 @@ function OrbitPrinciplesSection() {
               </p>
             </div>
 
-            {/* Connecting Circular Dotted Ring */}
+            {/* Connecting Circular Dotted Ring (Darkened & Enhanced for Desktop) */}
             <div 
               style={{
                 position: 'absolute',
@@ -434,17 +434,18 @@ function OrbitPrinciplesSection() {
                 width: '620px',
                 height: '420px',
                 borderRadius: '50%',
-                border: '1.5px dashed rgba(185, 205, 148, 0.35)',
+                border: '2px dashed rgba(185, 205, 148, 0.85)',
+                boxShadow: '0 0 20px rgba(185, 205, 148, 0.25)',
                 pointerEvents: 'none',
                 zIndex: 1,
               }}
             />
 
             {/* Small Decorative Dots on Ring */}
-            <div style={{ position: 'absolute', top: 'calc(50% - 210px)', left: '50%', transform: 'translate(-50%, -50%)', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2px solid rgba(18, 9, 4, 0.9)', zIndex: 2 }} />
-            <div style={{ position: 'absolute', top: 'calc(50% + 210px)', left: '50%', transform: 'translate(-50%, -50%)', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2px solid rgba(18, 9, 4, 0.9)', zIndex: 2 }} />
-            <div style={{ position: 'absolute', top: '50%', left: 'calc(50% - 310px)', transform: 'translate(-50%, -50%)', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2px solid rgba(18, 9, 4, 0.9)', zIndex: 2 }} />
-            <div style={{ position: 'absolute', top: '50%', left: 'calc(50% + 310px)', transform: 'translate(-50%, -50%)', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2px solid rgba(18, 9, 4, 0.9)', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: 'calc(50% - 210px)', left: '50%', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2.5px solid rgba(18, 9, 4, 0.95)', boxShadow: '0 0 10px #b9cd94', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: 'calc(50% + 210px)', left: '50%', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2.5px solid rgba(18, 9, 4, 0.95)', boxShadow: '0 0 10px #b9cd94', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: '50%', left: 'calc(50% - 310px)', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2.5px solid rgba(18, 9, 4, 0.95)', boxShadow: '0 0 10px #b9cd94', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: '50%', left: 'calc(50% + 310px)', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2.5px solid rgba(18, 9, 4, 0.95)', boxShadow: '0 0 10px #b9cd94', zIndex: 2 }} />
 
             {/* 4 Floating Cards Positioned Around Center */}
             <div style={{ position: 'absolute', top: '2%', left: '2%', width: '420px', zIndex: 5 }}>
@@ -468,14 +469,15 @@ function OrbitPrinciplesSection() {
               width: '100%', 
               maxWidth: '480px',
               margin: '0 auto',
-              padding: '1.25rem 0.5rem',
+              padding: '1.25rem 0.65rem',
               backgroundColor: 'rgba(35, 21, 13, 0.45)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               borderRadius: '28px',
               border: '1.5px solid rgba(185, 205, 148, 0.35)',
               boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              overflow: 'hidden'
             }}
           >
             {/* Top 2 Cards Row (01 & 02) */}
@@ -500,10 +502,10 @@ function OrbitPrinciplesSection() {
                   position: 'absolute', 
                   width: '70%', 
                   height: '100%', 
-                  borderLeft: '1.5px dashed rgba(185, 205, 148, 0.45)', 
-                  borderRight: '1.5px dashed rgba(185, 205, 148, 0.45)',
-                  borderTop: '1.5px dashed rgba(185, 205, 148, 0.35)',
-                  borderBottom: '1.5px dashed rgba(185, 205, 148, 0.35)',
+                  borderLeft: '1.5px dashed rgba(185, 205, 148, 0.65)', 
+                  borderRight: '1.5px dashed rgba(185, 205, 148, 0.65)',
+                  borderTop: '1.5px dashed rgba(185, 205, 148, 0.55)',
+                  borderBottom: '1.5px dashed rgba(185, 205, 148, 0.55)',
                   borderRadius: '20px',
                   pointerEvents: 'none'
                 }} 
@@ -553,15 +555,17 @@ function OrbitPrinciplesSection() {
               <PrincipleCardMobile principle={principles[3]} isMobile={isMobile} />
             </div>
 
-            {/* INTEGRATED CONNECTED BOTTOM TRUST ROW */}
+            {/* INTEGRATED CONNECTED BOTTOM TRUST ROW (Fitted inside card container) */}
             <div 
               style={{ 
                 paddingTop: '0.85rem', 
-                borderTop: '1.5px dashed rgba(185, 205, 148, 0.35)',
+                borderTop: '1.5px dashed rgba(185, 205, 148, 0.45)',
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '0.5rem',
-                alignItems: 'center'
+                gap: '0.45rem',
+                alignItems: 'center',
+                boxSizing: 'border-box',
+                width: '100%'
               }}
             >
               {[
@@ -577,18 +581,30 @@ function OrbitPrinciplesSection() {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.45rem',
-                      backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                      padding: '0.45rem 0.65rem',
+                      gap: '0.35rem',
+                      backgroundColor: 'rgba(20, 10, 5, 0.75)',
+                      padding: '0.45rem 0.5rem',
                       borderRadius: '999px',
-                      border: '1px solid rgba(185, 205, 148, 0.3)',
-                      boxSizing: 'border-box'
+                      border: '1px solid rgba(185, 205, 148, 0.35)',
+                      boxSizing: 'border-box',
+                      minWidth: 0,
+                      overflow: 'hidden'
                     }}
                   >
-                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <IconComp size={12} color="var(--accent-gold)" />
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <IconComp size={11} color="var(--accent-gold)" />
                     </div>
-                    <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#FFFDF9', letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
+                    <span 
+                      style={{ 
+                        fontSize: isMobile ? '0.64rem' : '0.72rem', 
+                        fontWeight: '800', 
+                        color: '#FFFDF9', 
+                        letterSpacing: '0.01em', 
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
                       {item.label}
                     </span>
                   </div>
