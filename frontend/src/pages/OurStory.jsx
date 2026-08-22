@@ -509,20 +509,20 @@ function OrbitPrinciplesSection() {
             </div>
           </div>
         ) : (
-          /* MOBILE & TABLET UNIFIED CONNECTED FIGURE LAYOUT */
+          /* MOBILE & TABLET UNIFIED CONNECTED FIGURE LAYOUT (Matching Reference Image) */
           <div 
             style={{ 
               position: 'relative', 
               width: '100%', 
-              maxWidth: '480px',
+              maxWidth: '440px',
               margin: '0 auto',
-              padding: '1.25rem 0.65rem',
-              backgroundColor: 'rgba(35, 21, 13, 0.45)',
+              padding: '0.85rem 0.5rem',
+              backgroundColor: 'rgba(32, 20, 13, 0.55)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              borderRadius: '28px',
-              border: '1.5px solid rgba(185, 205, 148, 0.35)',
-              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
+              borderRadius: '32px',
+              border: '1.5px solid rgba(185, 205, 148, 0.4)',
+              boxShadow: '0 16px 45px rgba(0, 0, 0, 0.55)',
               boxSizing: 'border-box',
               overflow: 'hidden'
             }}
@@ -532,7 +532,7 @@ function OrbitPrinciplesSection() {
               style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(2, 1fr)', 
-                gap: '0.65rem',
+                gap: '0.55rem',
                 position: 'relative',
                 zIndex: 2
               }}
@@ -541,49 +541,49 @@ function OrbitPrinciplesSection() {
               <PrincipleCardMobile principle={principles[1]} isMobile={isMobile} />
             </div>
 
-            {/* Connecting Vertical & Horizontal Dashed Lines */}
-            <div style={{ position: 'relative', height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0.2rem 0' }}>
-              {/* Dashed background connector line */}
+            {/* Central Overlapping Circular MILASTY 4 PILLARS Emblem Node */}
+            <div 
+              style={{ 
+                position: 'relative', 
+                height: '70px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                margin: '-1rem 0 -0.85rem',
+                zIndex: 10
+              }}
+            >
               <div 
                 style={{ 
-                  position: 'absolute', 
-                  width: '70%', 
-                  height: '100%', 
-                  borderLeft: '1.5px dashed rgba(185, 205, 148, 0.65)', 
-                  borderRight: '1.5px dashed rgba(185, 205, 148, 0.65)',
-                  borderTop: '1.5px dashed rgba(185, 205, 148, 0.55)',
-                  borderBottom: '1.5px dashed rgba(185, 205, 148, 0.55)',
-                  borderRadius: '20px',
-                  pointerEvents: 'none'
-                }} 
-              />
-
-              {/* Central Connected Emblem Node */}
-              <div 
-                style={{ 
-                  backgroundColor: 'rgba(20, 10, 5, 0.95)',
-                  borderRadius: '999px',
-                  border: '1.5px solid var(--accent-gold)',
-                  padding: '0.35rem 1.1rem',
+                  width: '148px',
+                  height: '148px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(24, 13, 7, 0.95)',
+                  border: '2px solid var(--accent-gold)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.7), 0 0 16px rgba(185, 205, 148, 0.3)',
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '0.4rem',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(185, 205, 148, 0.3)',
-                  zIndex: 10,
-                  pointerEvents: 'auto'
+                  justifyContent: 'center',
+                  padding: '0.65rem',
+                  boxSizing: 'border-box',
+                  textAlign: 'center',
+                  transform: 'scale(0.82)'
                 }}
               >
-                <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Leaf size={12} color="var(--accent-gold)" />
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.2rem' }}>
+                  <Leaf size={14} color="var(--accent-gold)" />
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                  <span style={{ fontSize: '0.62rem', letterSpacing: '0.12em', fontWeight: '900', color: 'var(--accent-gold)', textTransform: 'uppercase', display: 'block', lineHeight: 1 }}>
-                    MILASTY
-                  </span>
-                  <span style={{ fontSize: '0.58rem', fontWeight: '800', color: '#FFFDF9', letterSpacing: '0.04em' }}>
-                    4 PILLARS
-                  </span>
-                </div>
+                <span style={{ fontSize: '0.65rem', letterSpacing: '0.14em', fontWeight: '900', color: 'var(--accent-gold)', textTransform: 'uppercase', lineHeight: 1 }}>
+                  MILASTY
+                </span>
+                <span style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: '#FFFDF9', margin: '0.1rem 0 0.2rem', lineHeight: 1 }}>
+                  4 PILLARS
+                </span>
+                <div style={{ width: '25px', height: '1.5px', backgroundColor: 'rgba(185, 205, 148, 0.6)', margin: '0.15rem auto' }} />
+                <span style={{ fontSize: '0.52rem', color: '#F5EBDD', lineHeight: 1.1, fontStyle: 'italic' }}>
+                  The four pillars we <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>never</span> compromise on.
+                </span>
               </div>
             </div>
 
@@ -592,24 +592,24 @@ function OrbitPrinciplesSection() {
               style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(2, 1fr)', 
-                gap: '0.65rem',
+                gap: '0.55rem',
                 position: 'relative',
                 zIndex: 2,
-                marginBottom: '1rem'
+                marginBottom: '0.75rem'
               }}
             >
               <PrincipleCardMobile principle={principles[2]} isMobile={isMobile} />
               <PrincipleCardMobile principle={principles[3]} isMobile={isMobile} />
             </div>
 
-            {/* INTEGRATED CONNECTED BOTTOM TRUST ROW (Fitted inside card container) */}
+            {/* INTEGRATED CONNECTED BOTTOM TRUST ROW */}
             <div 
               style={{ 
-                paddingTop: '0.85rem', 
+                paddingTop: '0.65rem', 
                 borderTop: '1.5px dashed rgba(185, 205, 148, 0.45)',
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '0.45rem',
+                gap: '0.4rem',
                 alignItems: 'center',
                 boxSizing: 'border-box',
                 width: '100%'
@@ -629,8 +629,8 @@ function OrbitPrinciplesSection() {
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.35rem',
-                      backgroundColor: 'rgba(20, 10, 5, 0.75)',
-                      padding: '0.45rem 0.5rem',
+                      backgroundColor: 'rgba(18, 9, 4, 0.75)',
+                      padding: '0.4rem 0.5rem',
                       borderRadius: '999px',
                       border: '1px solid rgba(185, 205, 148, 0.35)',
                       boxSizing: 'border-box',
@@ -638,12 +638,12 @@ function OrbitPrinciplesSection() {
                       overflow: 'hidden'
                     }}
                   >
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <IconComp size={11} color="var(--accent-gold)" />
+                    <div style={{ width: '18px', height: '18px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <IconComp size={10} color="var(--accent-gold)" />
                     </div>
                     <span 
                       style={{ 
-                        fontSize: isMobile ? '0.64rem' : '0.72rem', 
+                        fontSize: '0.62rem', 
                         fontWeight: '800', 
                         color: '#FFFDF9', 
                         letterSpacing: '0.01em', 
@@ -813,12 +813,12 @@ function PrincipleCardMobile({ principle, isMobile }) {
   return (
     <div
       style={{
-        borderRadius: '18px',
-        backgroundColor: 'rgba(35, 21, 13, 0.75)',
+        borderRadius: '16px',
+        backgroundColor: 'rgba(32, 20, 13, 0.85)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
         border: '1px solid rgba(255, 255, 255, 0.18)',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -827,28 +827,28 @@ function PrincipleCardMobile({ principle, isMobile }) {
       }}
     >
       {/* Top Image Strip */}
-      <div style={{ height: isMobile ? '80px' : '110px', width: '100%', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ height: isMobile ? '68px' : '95px', width: '100%', position: 'relative', overflow: 'hidden' }}>
         <img
           src={principle.image}
           alt={principle.title}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 30%, rgba(35, 21, 13, 0.85))' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 20%, rgba(32, 20, 13, 0.9))' }} />
         
         {/* Step Badge */}
         <span 
           style={{ 
             position: 'absolute', 
-            top: '8px', 
-            left: '8px', 
-            fontSize: isMobile ? '0.95rem' : '1.1rem', 
+            top: '6px', 
+            left: '6px', 
+            fontSize: isMobile ? '0.85rem' : '1rem', 
             fontWeight: '900', 
             color: 'var(--accent-gold)', 
             fontFamily: 'var(--font-serif)',
-            backgroundColor: 'rgba(20, 10, 5, 0.75)',
-            padding: '0.1rem 0.5rem',
-            borderRadius: '8px',
-            border: '1px solid rgba(185, 205, 148, 0.3)'
+            backgroundColor: 'rgba(18, 9, 4, 0.85)',
+            padding: '0.08rem 0.4rem',
+            borderRadius: '6px',
+            border: '1px solid rgba(185, 205, 148, 0.35)'
           }}
         >
           {principle.step}
@@ -858,31 +858,34 @@ function PrincipleCardMobile({ principle, isMobile }) {
         <div 
           style={{ 
             position: 'absolute', 
-            bottom: '6px', 
-            right: '8px', 
-            width: '26px', 
-            height: '26px', 
+            bottom: '5px', 
+            right: '6px', 
+            width: '24px', 
+            height: '24px', 
             borderRadius: '50%', 
             backgroundColor: '#244f21', 
             border: '1px solid #b9cd94', 
             display: 'flex', 
             alignItems: 'center', 
-            justifyContent: 'center' 
+            justifyContent: 'center',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.5)'
           }}
         >
-          <Icon size={13} color="var(--accent-gold)" />
+          <Icon size={12} color="var(--accent-gold)" />
         </div>
       </div>
 
       {/* Content */}
-      <div style={{ padding: isMobile ? '0.75rem 0.65rem' : '1rem 0.85rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-        <span style={{ fontSize: '0.58rem', letterSpacing: '0.06em', fontWeight: '850', color: '#b9cd94', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
+      <div style={{ padding: isMobile ? '0.55rem 0.55rem 0.65rem' : '0.85rem 0.75rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+        <span style={{ fontSize: '0.54rem', letterSpacing: '0.06em', fontWeight: '850', color: '#b9cd94', textTransform: 'uppercase', marginBottom: '0.15rem' }}>
           {principle.badge}
         </span>
-        <h3 style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.35rem', lineHeight: '1.25' }}>
+
+        <h3 style={{ fontSize: isMobile ? '0.95rem' : '1.1rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.25rem', lineHeight: '1.15' }}>
           {principle.title}
         </h3>
-        <p style={{ fontSize: isMobile ? '0.74rem' : '0.82rem', color: '#F5EBDD', lineHeight: '1.4', margin: 0, fontWeight: '500', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+
+        <p style={{ fontSize: isMobile ? '0.72rem' : '0.8rem', color: '#F5EBDD', lineHeight: '1.4', margin: 0, fontWeight: '500', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {principle.desc}
         </p>
       </div>
