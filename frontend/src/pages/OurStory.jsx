@@ -8,22 +8,45 @@ import Logo from '../components/Logo';
 // ========================================================
 function OrbitJourneySection() {
   const milestones = [
-    { step: '01', title: 'The Question', desc: 'Can everyday bakery snacks be healthy, clean, and genuinely delicious?' },
-    { step: '02', title: 'The Search', desc: 'Sourcing honest local ingredients, unrefined sweeteners, and traditional grains.' },
-    { step: '03', title: 'The First Bake', desc: 'Experimenting in small home batches with millet, pure Desi Ghee, and organic jaggery.' },
-    { step: '04', title: 'MILASTY is Born', desc: 'A better, mindful way of snacking, establishing our small-batch bakery.' },
-    { step: '05', title: 'Today', desc: 'Bringing handcrafted millet bakes to wellness-focused Indian homes.' },
+    { 
+      step: '01', 
+      title: 'The Question', 
+      desc: 'Can everyday bakery snacks be healthy, clean, and genuinely delicious?',
+      icon: Compass
+    },
+    { 
+      step: '02', 
+      title: 'The Search', 
+      desc: 'Sourcing honest local ingredients, unrefined sweeteners, and traditional grains.',
+      icon: Leaf
+    },
+    { 
+      step: '03', 
+      title: 'The First Bake', 
+      desc: 'Experimenting in small home batches with millet, pure Desi Ghee, and organic jaggery.',
+      icon: Flame
+    },
+    { 
+      step: '04', 
+      title: 'MILASTY is Born', 
+      desc: 'A better, mindful way of snacking, establishing our small-batch bakery.',
+      icon: ShieldCheck
+    },
+    { 
+      step: '05', 
+      title: 'Today', 
+      desc: 'Bringing handcrafted millet bakes to wellness-focused Indian homes.',
+      icon: Sparkles
+    },
   ];
 
   const [activeIdx, setActiveIdx] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
-  const [isTablet, setIsTablet] = React.useState(false);
 
   React.useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 767);
-      setIsTablet(window.innerWidth > 767 && window.innerWidth <= 1024);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -42,7 +65,7 @@ function OrbitJourneySection() {
   return (
     <section 
       style={{ 
-        padding: isMobile ? '3.5rem 0' : '6.5rem 0', 
+        padding: isMobile ? '3rem 0 2.5rem' : '6.5rem 0', 
         backgroundColor: 'transparent',
         overflow: 'hidden',
         position: 'relative' 
@@ -50,10 +73,10 @@ function OrbitJourneySection() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div style={{ maxWidth: '1100px', margin: '0 auto', paddingLeft: isMobile ? '1rem' : '1.5rem', paddingRight: isMobile ? '1rem' : '1.5rem', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', paddingLeft: isMobile ? '0.75rem' : '1.5rem', paddingRight: isMobile ? '0.75rem' : '1.5rem', boxSizing: 'border-box' }}>
         
         {/* Header */}
-        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 3.5rem' }}>
+        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 3rem' }}>
           <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
             MILESTONES
           </span>
@@ -65,134 +88,292 @@ function OrbitJourneySection() {
           </p>
         </div>
 
-        {/* ALTERNATING CENTRAL PATH INFOGRAPHIC FIGURE (Inspired by Reference 1) */}
-        <div style={{ position: 'relative', width: '100%', margin: '0 auto' }}>
-          
-          {/* Central Vertical Dashed Line Path */}
-          <div 
-            style={{ 
-              position: 'absolute', 
-              top: '20px', 
-              bottom: '20px', 
-              left: isMobile ? '28px' : '50%', 
-              transform: isMobile ? 'none' : 'translateX(-50%)', 
-              width: '2px', 
-              borderLeft: '2px dashed rgba(185, 205, 148, 0.65)', 
-              boxShadow: '0 0 12px rgba(185, 205, 148, 0.3)',
-              zIndex: 1 
-            }} 
-          />
+        {isMobile ? (
+          /* MOBILE EXACT REFERENCE DESIGN */
+          <div style={{ position: 'relative', width: '100%', maxWidth: '420px', margin: '0 auto', padding: '0 0.5rem' }}>
+            
+            {/* Central Vertical Line Path running right down center */}
+            <div 
+              style={{ 
+                position: 'absolute', 
+                top: '15px', 
+                bottom: '35px', 
+                left: '50%', 
+                transform: 'translateX(-50%)', 
+                width: '2px', 
+                backgroundColor: 'rgba(185, 205, 148, 0.55)', 
+                boxShadow: '0 0 8px rgba(185, 205, 148, 0.3)',
+                zIndex: 1 
+              }} 
+            />
 
-          {/* Render 5 Milestone Nodes in Alternating Flow */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '2.25rem' : '3.5rem', position: 'relative', zIndex: 2 }}>
-            {milestones.map((m, idx) => {
-              const isEven = idx % 2 === 0; // Left side on desktop for even index, right side for odd
-              const isHighlight = idx === activeIdx;
+            {/* List of 5 Milestone Stacked Cards with Top Centered Number Nodes */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', position: 'relative', zIndex: 2 }}>
+              {milestones.map((m, idx) => {
+                const IconComp = m.icon;
+                const isHighlight = idx === activeIdx;
 
-              return (
-                <div 
-                  key={m.step}
-                  onClick={() => {
-                    setIsPaused(true);
-                    setActiveIdx(idx);
-                  }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: isMobile ? 'row' : isEven ? 'row-reverse' : 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    position: 'relative',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {/* Card Side (Left or Right on Desktop, Right on Mobile) */}
+                return (
                   <div 
-                    style={{ 
-                      width: isMobile ? 'calc(100% - 60px)' : '44%', 
-                      marginLeft: isMobile ? '12px' : 0,
-                      textAlign: isMobile ? 'left' : isEven ? 'right' : 'left'
+                    key={m.step}
+                    onClick={() => {
+                      setIsPaused(true);
+                      setActiveIdx(idx);
                     }}
+                    style={{ position: 'relative', width: '100%', cursor: 'pointer' }}
                   >
-                    <div
-                      style={{
-                        padding: isMobile ? '1.25rem 1.1rem' : '1.75rem 1.6rem',
-                        borderRadius: '22px',
-                        backgroundColor: isHighlight ? 'rgba(35, 21, 13, 0.92)' : 'rgba(35, 21, 13, 0.55)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        border: isHighlight ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
-                        boxShadow: isHighlight 
-                          ? '0 16px 40px rgba(0, 0, 0, 0.55), 0 0 25px rgba(185, 205, 148, 0.3)' 
-                          : '0 10px 30px rgba(0, 0, 0, 0.3)',
-                        transform: isHighlight ? 'scale(1.02)' : 'scale(1)',
-                        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                        boxSizing: 'border-box'
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'space-between' : isEven ? 'flex-end' : 'flex-start', gap: '0.5rem', marginBottom: '0.4rem' }}>
-                        <span style={{ fontSize: '0.68rem', letterSpacing: '0.12em', fontWeight: '900', color: isHighlight ? '#b9cd94' : 'var(--accent-gold)', textTransform: 'uppercase' }}>
-                          STEP {m.step}
-                        </span>
-                        {isHighlight && (
-                          <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', fontWeight: '850', textTransform: 'uppercase', color: '#FFFDF9', backgroundColor: '#244f21', padding: '0.15rem 0.6rem', borderRadius: '999px', border: '1px solid #b9cd94' }}>
-                            ACTIVE MILESTONE
-                          </span>
-                        )}
-                      </div>
-
-                      <h3 style={{ fontSize: isMobile ? '1.15rem' : '1.4rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.45rem', lineHeight: '1.2' }}>
-                        {m.title}
-                      </h3>
-
-                      <p style={{ fontSize: isMobile ? '0.84rem' : '0.94rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
-                        {m.desc}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Central Node Badge (Origami/Ribbon Node Inspired by Reference 1) */}
-                  <div 
-                    style={{ 
-                      width: isMobile ? '56px' : '12%', 
-                      display: 'flex', 
-                      justifyContent: 'center', 
-                      alignItems: 'center',
-                      flexShrink: 0,
-                      zIndex: 5 
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: isHighlight ? '54px' : '44px',
-                        height: isHighlight ? '54px' : '44px',
+                    {/* Top Center Circular Step Number Badge (01..05) */}
+                    <div 
+                      style={{ 
+                        position: 'relative',
+                        zIndex: 10,
+                        margin: '0 auto -18px',
+                        width: '36px',
+                        height: '36px',
                         borderRadius: '50%',
-                        backgroundColor: isHighlight ? '#244f21' : 'rgba(20, 10, 5, 0.95)',
-                        border: isHighlight ? '2.5px solid #b9cd94' : '1.5px solid var(--accent-gold)',
-                        boxShadow: isHighlight ? '0 0 22px #b9cd94, 0 4px 14px rgba(0,0,0,0.6)' : '0 4px 12px rgba(0,0,0,0.4)',
+                        backgroundColor: '#1c3d19',
+                        border: isHighlight ? '2px solid var(--accent-gold)' : '1.5px solid #b9cd94',
+                        boxShadow: isHighlight ? '0 0 16px rgba(185, 205, 148, 0.6), 0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.4)',
                         display: 'flex',
-                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        transform: isHighlight ? 'scale(1.12)' : 'scale(1)',
-                        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+                        transition: 'all 0.3s ease'
                       }}
                     >
-                      <span style={{ fontSize: isHighlight ? '1.05rem' : '0.88rem', fontWeight: '900', color: isHighlight ? '#FFFDF9' : 'var(--accent-gold)', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: '900', color: '#FFFDF9', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
                         {m.step}
                       </span>
                     </div>
-                  </div>
 
-                  {/* Empty Spacer Side for Desktop Alternating Balance */}
-                  {!isMobile && (
-                    <div style={{ width: '44%' }} />
-                  )}
-                </div>
-              );
-            })}
+                    {/* Main Card Container */}
+                    <div
+                      style={{
+                        backgroundColor: isHighlight ? 'rgba(38, 24, 16, 0.94)' : 'rgba(32, 20, 13, 0.82)',
+                        backdropFilter: 'blur(16px)',
+                        WebkitBackdropFilter: 'blur(16px)',
+                        borderRadius: '24px',
+                        border: isHighlight ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.16)',
+                        boxShadow: isHighlight ? '0 14px 36px rgba(0,0,0,0.6), 0 0 20px rgba(185, 205, 148, 0.2)' : '0 8px 24px rgba(0,0,0,0.4)',
+                        padding: '1.5rem 1.15rem 1.35rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        boxSizing: 'border-box',
+                        transition: 'all 0.35s ease'
+                      }}
+                    >
+                      {/* Left Circular Olive-Green Icon Container */}
+                      <div 
+                        style={{ 
+                          width: '72px', 
+                          height: '72px', 
+                          borderRadius: '50%', 
+                          backgroundColor: 'rgba(40, 58, 28, 0.85)', 
+                          border: '1.5px solid rgba(185, 205, 148, 0.4)', 
+                          boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.5)',
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          flexShrink: 0 
+                        }}
+                      >
+                        <IconComp size={34} color="#b9cd94" strokeWidth={1.5} />
+                      </div>
+
+                      {/* Right Text Content Details */}
+                      <div style={{ flexGrow: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                          <span style={{ fontSize: '0.62rem', letterSpacing: '0.12em', fontWeight: '900', color: 'rgba(185, 205, 148, 0.85)', textTransform: 'uppercase' }}>
+                            STEP {m.step}
+                          </span>
+                          {isHighlight && (
+                            <span style={{ fontSize: '0.55rem', letterSpacing: '0.06em', fontWeight: '850', textTransform: 'uppercase', color: '#FFFDF9', backgroundColor: '#244f21', padding: '0.15rem 0.5rem', borderRadius: '999px', border: '1px solid #b9cd94' }}>
+                              ACTIVE MILESTONE
+                            </span>
+                          )}
+                        </div>
+
+                        <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.35rem', lineHeight: '1.2' }}>
+                          {m.title}
+                        </h3>
+
+                        <p style={{ fontSize: '0.78rem', color: '#F5EBDD', lineHeight: '1.45', margin: 0, fontWeight: '500' }}>
+                          {m.desc}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom Leaf Icon at End of Vertical Path */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.75rem', position: 'relative', zIndex: 5 }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#1c3d19', border: '1.5px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.4)' }}>
+                <Leaf size={16} color="var(--accent-gold)" />
+              </div>
+            </div>
+
           </div>
-        </div>
+        ) : (
+          /* DESKTOP / TABLET ALTERNATING INFOGRAPHIC LAYOUT */
+          <div style={{ position: 'relative', width: '100%', margin: '0 auto' }}>
+            
+            {/* Central Vertical Dashed Line Path */}
+            <div 
+              style={{ 
+                position: 'absolute', 
+                top: '20px', 
+                bottom: '20px', 
+                left: '50%', 
+                transform: 'translateX(-50%)', 
+                width: '2px', 
+                borderLeft: '2px dashed rgba(185, 205, 148, 0.65)', 
+                boxShadow: '0 0 12px rgba(185, 205, 148, 0.3)',
+                zIndex: 1 
+              }} 
+            />
+
+            {/* Render 5 Milestone Nodes in Alternating Flow */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '3.5rem', position: 'relative', zIndex: 2 }}>
+              {milestones.map((m, idx) => {
+                const isEven = idx % 2 === 0;
+                const isHighlight = idx === activeIdx;
+                const IconComp = m.icon;
+
+                return (
+                  <div 
+                    key={m.step}
+                    onClick={() => {
+                      setIsPaused(true);
+                      setActiveIdx(idx);
+                    }}
+                    style={{
+                      display: 'flex',
+                      flexDirection: isEven ? 'row-reverse' : 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '100%',
+                      position: 'relative',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {/* Card Side */}
+                    <div 
+                      style={{ 
+                        width: '44%', 
+                        textAlign: isEven ? 'right' : 'left'
+                      }}
+                    >
+                      <div
+                        style={{
+                          padding: '1.75rem 1.6rem',
+                          borderRadius: '22px',
+                          backgroundColor: isHighlight ? 'rgba(35, 21, 13, 0.92)' : 'rgba(35, 21, 13, 0.55)',
+                          backdropFilter: 'blur(20px)',
+                          WebkitBackdropFilter: 'blur(20px)',
+                          border: isHighlight ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
+                          boxShadow: isHighlight 
+                            ? '0 16px 40px rgba(0, 0, 0, 0.55), 0 0 25px rgba(185, 205, 148, 0.3)' 
+                            : '0 10px 30px rgba(0, 0, 0, 0.3)',
+                          transform: isHighlight ? 'scale(1.02)' : 'scale(1)',
+                          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                          boxSizing: 'border-box',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '1.25rem',
+                          flexDirection: isEven ? 'row-reverse' : 'row'
+                        }}
+                      >
+                        {/* Circular Icon Badge inside card */}
+                        <div 
+                          style={{ 
+                            width: '64px', 
+                            height: '64px', 
+                            borderRadius: '50%', 
+                            backgroundColor: 'rgba(40, 58, 28, 0.85)', 
+                            border: '1.5px solid rgba(185, 205, 148, 0.4)', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            flexShrink: 0 
+                          }}
+                        >
+                          <IconComp size={30} color="#b9cd94" strokeWidth={1.5} />
+                        </div>
+
+                        <div style={{ flexGrow: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: isEven ? 'flex-end' : 'flex-start', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                            <span style={{ fontSize: '0.68rem', letterSpacing: '0.12em', fontWeight: '900', color: isHighlight ? '#b9cd94' : 'var(--accent-gold)', textTransform: 'uppercase' }}>
+                              STEP {m.step}
+                            </span>
+                            {isHighlight && (
+                              <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', fontWeight: '850', textTransform: 'uppercase', color: '#FFFDF9', backgroundColor: '#244f21', padding: '0.15rem 0.6rem', borderRadius: '999px', border: '1px solid #b9cd94' }}>
+                                ACTIVE MILESTONE
+                              </span>
+                            )}
+                          </div>
+
+                          <h3 style={{ fontSize: '1.4rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.45rem', lineHeight: '1.2' }}>
+                            {m.title}
+                          </h3>
+
+                          <p style={{ fontSize: '0.94rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+                            {m.desc}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Central Node Badge */}
+                    <div 
+                      style={{ 
+                        width: '12%', 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        alignItems: 'center',
+                        flexShrink: 0,
+                        zIndex: 5 
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: isHighlight ? '54px' : '44px',
+                          height: isHighlight ? '54px' : '44px',
+                          borderRadius: '50%',
+                          backgroundColor: isHighlight ? '#244f21' : 'rgba(20, 10, 5, 0.95)',
+                          border: isHighlight ? '2.5px solid #b9cd94' : '1.5px solid var(--accent-gold)',
+                          boxShadow: isHighlight ? '0 0 22px #b9cd94, 0 4px 14px rgba(0,0,0,0.6)' : '0 4px 12px rgba(0,0,0,0.4)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transform: isHighlight ? 'scale(1.12)' : 'scale(1)',
+                          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+                        }}
+                      >
+                        <span style={{ fontSize: isHighlight ? '1.05rem' : '0.88rem', fontWeight: '900', color: isHighlight ? '#FFFDF9' : 'var(--accent-gold)', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
+                          {m.step}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Empty Spacer Side */}
+                    <div style={{ width: '44%' }} />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom Leaf Icon at End of Vertical Path */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2.5rem', position: 'relative', zIndex: 5 }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '50%', backgroundColor: '#1c3d19', border: '1.5px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
+                <Leaf size={20} color="var(--accent-gold)" />
+              </div>
+            </div>
+
+          </div>
+        )}
 
       </div>
     </section>
