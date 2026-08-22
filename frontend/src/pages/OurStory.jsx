@@ -461,116 +461,190 @@ function OrbitPrinciplesSection() {
             </div>
           </div>
         ) : (
-          /* MOBILE & TABLET FIGURE / DIAGRAM COMPOSITION */
-          <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
-            
-            {/* Center Emblem/Heading Diagram Anchor */}
-            <div 
-              style={{ 
-                textAlign: 'center', 
-                maxWidth: '280px', 
-                margin: '0 auto 1.5rem', 
-                padding: '1.25rem 1rem', 
-                backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                borderRadius: '24px',
-                border: '1.5px solid var(--accent-gold)',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                position: 'relative',
-                zIndex: 10
-              }}
-            >
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.5)', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.4rem' }}>
-                <Leaf size={18} color="var(--accent-gold)" />
-              </div>
-              <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.2rem' }}>
-                OUR PRINCIPLES
-              </span>
-              <h2 style={{ fontSize: '1.45rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.25rem', lineHeight: '1.2' }}>
-                Our Non-Negotiables
-              </h2>
-              <p style={{ fontSize: '0.78rem', color: '#F5EBDD', fontWeight: '500', margin: 0, fontStyle: 'italic' }}>
-                Four pillars we <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>never</span> compromise on.
-              </p>
-            </div>
-
-            {/* Connecting Dashed Line Diagram Connector */}
-            <div 
-              style={{
-                position: 'relative',
-                margin: '-1rem auto 1.5rem',
-                width: '90%',
-                height: '1px',
-                borderTop: '1.5px dashed rgba(185, 205, 148, 0.4)',
-                zIndex: 1
-              }}
-            />
-
-            {/* 2x2 Figure Cards Layout Surrounding Diagram Center */}
+        ) : (
+          /* MOBILE & TABLET UNIFIED CONNECTED FIGURE LAYOUT */
+          <div 
+            style={{ 
+              position: 'relative', 
+              width: '100%', 
+              maxWidth: '480px',
+              margin: '0 auto',
+              padding: '1.25rem 0.5rem',
+              backgroundColor: 'rgba(35, 21, 13, 0.45)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '28px',
+              border: '1.5px solid rgba(185, 205, 148, 0.35)',
+              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
+              boxSizing: 'border-box'
+            }}
+          >
+            {/* Top 2 Cards Row (01 & 02) */}
             <div 
               style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(2, 1fr)', 
-                gap: isMobile ? '0.75rem' : '1.25rem',
-                maxWidth: '850px',
-                margin: '0 auto'
+                gap: '0.65rem',
+                position: 'relative',
+                zIndex: 2
               }}
             >
-              {principles.map((p) => (
-                <PrincipleCardMobile key={p.step} principle={p} isMobile={isMobile} />
-              ))}
+              <PrincipleCardMobile principle={principles[0]} isMobile={isMobile} />
+              <PrincipleCardMobile principle={principles[1]} isMobile={isMobile} />
             </div>
+
+            {/* Connecting Vertical & Horizontal Dashed Lines */}
+            <div style={{ position: 'relative', height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0.2rem 0' }}>
+              {/* Dashed background connector line */}
+              <div 
+                style={{ 
+                  position: 'absolute', 
+                  width: '70%', 
+                  height: '100%', 
+                  borderLeft: '1.5px dashed rgba(185, 205, 148, 0.45)', 
+                  borderRight: '1.5px dashed rgba(185, 205, 148, 0.45)',
+                  borderTop: '1.5px dashed rgba(185, 205, 148, 0.35)',
+                  borderBottom: '1.5px dashed rgba(185, 205, 148, 0.35)',
+                  borderRadius: '20px',
+                  pointerEvents: 'none'
+                }} 
+              />
+
+              {/* Central Connected Emblem Node */}
+              <div 
+                style={{ 
+                  backgroundColor: 'rgba(20, 10, 5, 0.95)',
+                  borderRadius: '999px',
+                  border: '1.5px solid var(--accent-gold)',
+                  padding: '0.35rem 1.1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(185, 205, 148, 0.3)',
+                  zIndex: 10,
+                  pointerEvents: 'auto'
+                }}
+              >
+                <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Leaf size={12} color="var(--accent-gold)" />
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <span style={{ fontSize: '0.62rem', letterSpacing: '0.12em', fontWeight: '900', color: 'var(--accent-gold)', textTransform: 'uppercase', display: 'block', lineHeight: 1 }}>
+                    MILASTY
+                  </span>
+                  <span style={{ fontSize: '0.58rem', fontWeight: '800', color: '#FFFDF9', letterSpacing: '0.04em' }}>
+                    4 PILLARS
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom 2 Cards Row (03 & 04) */}
+            <div 
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(2, 1fr)', 
+                gap: '0.65rem',
+                position: 'relative',
+                zIndex: 2,
+                marginBottom: '1rem'
+              }}
+            >
+              <PrincipleCardMobile principle={principles[2]} isMobile={isMobile} />
+              <PrincipleCardMobile principle={principles[3]} isMobile={isMobile} />
+            </div>
+
+            {/* INTEGRATED CONNECTED BOTTOM TRUST ROW */}
+            <div 
+              style={{ 
+                paddingTop: '0.85rem', 
+                borderTop: '1.5px dashed rgba(185, 205, 148, 0.35)',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '0.5rem',
+                alignItems: 'center'
+              }}
+            >
+              {[
+                { label: 'Honest Ingredients', icon: Leaf },
+                { label: 'Pure Baking', icon: Flame },
+                { label: 'Real Nourishment', icon: Sparkles },
+                { label: 'Nothing Unnecessary', icon: ShieldCheck }
+              ].map((item, idx) => {
+                const IconComp = item.icon;
+                return (
+                  <div 
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      backgroundColor: 'rgba(20, 10, 5, 0.65)',
+                      padding: '0.45rem 0.65rem',
+                      borderRadius: '999px',
+                      border: '1px solid rgba(185, 205, 148, 0.3)',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <IconComp size={12} color="var(--accent-gold)" />
+                    </div>
+                    <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#FFFDF9', letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
+                      {item.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
           </div>
         )}
 
-        {/* BOTTOM TRUST / VALUE STRIP (Matching Image Bottom Row) */}
-        <div 
-          style={{ 
-            marginTop: isMobile ? '2.5rem' : '4rem', 
-            paddingTop: '2rem', 
-            borderTop: '1px solid rgba(255, 255, 255, 0.15)',
-            display: 'grid',
-            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
-            gap: isMobile ? '1rem' : '2rem',
-            alignItems: 'center',
-            justifyContent: 'center',
-            maxWidth: '1000px',
-            margin: `${isMobile ? '2.5rem' : '4rem'} auto 0`
-          }}
-        >
-          {[
-            { label: 'Honest Ingredients', icon: Leaf },
-            { label: 'Pure Baking', icon: Flame },
-            { label: 'Real Nourishment', icon: Sparkles },
-            { label: 'Nothing Unnecessary', icon: ShieldCheck }
-          ].map((item, idx) => {
-            const IconComp = item.icon;
-            return (
-              <div 
-                key={idx}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.65rem',
-                  justifyContent: isMobile ? 'flex-start' : 'center',
-                  backgroundColor: 'rgba(35, 21, 13, 0.55)',
-                  padding: isMobile ? '0.65rem 0.85rem' : '0.85rem 1.25rem',
-                  borderRadius: '999px',
-                  border: '1px solid rgba(185, 205, 148, 0.3)',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <IconComp size={15} color="var(--accent-gold)" />
+        {/* DESKTOP BOTTOM TRUST / VALUE STRIP */}
+        {!isMobile && !isTablet && (
+          <div 
+            style={{ 
+              marginTop: '4rem', 
+              paddingTop: '2rem', 
+              borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-around',
+              maxWidth: '1000px',
+              margin: '4rem auto 0'
+            }}
+          >
+            {[
+              { label: 'Honest Ingredients', icon: Leaf },
+              { label: 'Pure Baking', icon: Flame },
+              { label: 'Real Nourishment', icon: Sparkles },
+              { label: 'Nothing Unnecessary', icon: ShieldCheck }
+            ].map((item, idx) => {
+              const IconComp = item.icon;
+              return (
+                <div 
+                  key={idx}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.65rem',
+                    backgroundColor: 'rgba(35, 21, 13, 0.55)',
+                    padding: '0.85rem 1.25rem',
+                    borderRadius: '999px',
+                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <IconComp size={15} color="var(--accent-gold)" />
+                  </div>
+                  <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#FFFDF9', letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
+                    {item.label}
+                  </span>
                 </div>
-                <span style={{ fontSize: isMobile ? '0.78rem' : '0.88rem', fontWeight: '800', color: '#FFFDF9', letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
-                  {item.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+              );
+          </div>
+        )}
 
       </div>
     </section>
