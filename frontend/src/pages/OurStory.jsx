@@ -461,7 +461,6 @@ function OrbitPrinciplesSection() {
             </div>
           </div>
         ) : (
-        ) : (
           /* MOBILE & TABLET UNIFIED CONNECTED FIGURE LAYOUT */
           <div 
             style={{ 
@@ -643,6 +642,7 @@ function OrbitPrinciplesSection() {
                   </span>
                 </div>
               );
+            })}
           </div>
         )}
 
