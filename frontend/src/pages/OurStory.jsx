@@ -342,354 +342,421 @@ function OrbitPrinciplesSection() {
       step: '01', 
       title: 'Zero Palm Oil', 
       desc: 'We exclusively bake with 100% pure Cow Desi Ghee. No cheap vegetable fats, trans fats, or hydrogenated oils ever enter our bakery.',
-      icon: Flame
+      icon: Flame,
+      image: '/images/ghee.jpeg',
+      badge: 'NON-NEGOTIABLE'
     },
     { 
       step: '02', 
       title: 'Unrefined Jaggery', 
       desc: 'Naturally sweetened using organic jaggery rich in iron and essential minerals. Zero refined white sugar or artificial sweeteners.',
-      icon: Sparkles
+      icon: Sparkles,
+      image: '/images/image2.jpeg',
+      badge: 'NON-NEGOTIABLE'
     },
     { 
       step: '03', 
       title: 'Zero Preservatives', 
       desc: 'No artificial food coloring, chemical preservatives, or synthetic shelf-life extenders. Just honest, wholesome, fresh baking.',
-      icon: ShieldCheck
+      icon: ShieldCheck,
+      image: '/images/image3.jpeg',
+      badge: 'NON-NEGOTIABLE'
     },
     { 
       step: '04', 
       title: 'Wholesome Grains', 
       desc: 'Native Bajra, Jowar, and Ragi flour instead of refined maida. Nutrient-dense nutrition in every single bite.',
-      icon: Leaf
+      icon: Leaf,
+      image: '/images/bajra.jpeg',
+      badge: 'NON-NEGOTIABLE'
     },
   ];
 
-  const [activeIdx, setActiveIdx] = React.useState(0);
-  const [isPaused, setIsPaused] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
+  const [isTablet, setIsTablet] = React.useState(false);
 
   React.useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 767);
+      setIsTablet(window.innerWidth > 767 && window.innerWidth <= 1024);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  React.useEffect(() => {
-    if (isPaused || prefersReducedMotion) return;
-    const timer = setInterval(() => {
-      setActiveIdx((prev) => (prev + 1) % principles.length);
-    }, 3500);
-    return () => clearInterval(timer);
-  }, [isPaused, prefersReducedMotion, principles.length]);
-
-  const handlePrev = () => {
-    setIsPaused(true);
-    setActiveIdx((prev) => (prev - 1 + principles.length) % principles.length);
-  };
-
-  const handleNext = () => {
-    setIsPaused(true);
-    setActiveIdx((prev) => (prev + 1) % principles.length);
-  };
-
-  const activePrinciple = principles[activeIdx];
-  const ActiveIcon = activePrinciple.icon;
-
-  const getOrbitStyle = (index) => {
-    const total = principles.length;
-    const diff = (index - activeIdx + total) % total;
-
-    if (diff === 0) {
-      return {
-        transform: 'translate(-50%, -50%) scale(1)',
-        opacity: 1,
-        zIndex: 10,
-        pointerEvents: 'auto',
-      };
-    }
-
-    const positions = {
-      1: { x: 350, y: 0, scale: 0.82, opacity: 0.7, zIndex: 6 },
-      2: { x: 0, y: 150, scale: 0.78, opacity: 0.55, zIndex: 4 },
-      3: { x: -350, y: 0, scale: 0.82, opacity: 0.7, zIndex: 6 },
-    };
-
-    const pos = positions[diff] || { x: 0, y: 0, scale: 0.7, opacity: 0.4, zIndex: 2 };
-    return {
-      transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px)) scale(${pos.scale})`,
-      opacity: pos.opacity,
-      zIndex: pos.zIndex,
-      pointerEvents: 'auto',
-      filter: 'blur(0.5px)',
-    };
-  };
-
   return (
     <section 
       style={{ 
-        padding: isMobile ? '3.5rem 0' : '6.5rem 0', 
+        padding: isMobile ? '3.5rem 0 3rem' : '6rem 0 5rem', 
         backgroundColor: 'transparent',
         borderTop: '1px solid rgba(245, 220, 180, 0.15)',
         borderBottom: '1px solid rgba(245, 220, 180, 0.15)',
-        overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        overflow: 'hidden'
       }}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
     >
-      <div style={{ maxWidth: '1240px', margin: '0 auto', paddingLeft: '1.25rem', paddingRight: '1.25rem', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', paddingLeft: isMobile ? '1rem' : '1.5rem', paddingRight: isMobile ? '1rem' : '1.5rem', boxSizing: 'border-box' }}>
         
-        {/* Header */}
-        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 3rem' }}>
-          <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
-            Our Principles
-          </span>
-          <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-            Our Non-Negotiables
-          </h2>
-          <p style={{ fontSize: '0.95rem', color: '#F5EBDD', fontWeight: '500', marginTop: '0.5rem' }}>
-            The guidelines behind every single MILASTY bake.
-          </p>
-        </div>
+        {/* DESKTOP LAYOUT (Central Heading + 4 Surrounding Floating Cards) */}
+        {!isMobile && !isTablet ? (
+          <div style={{ position: 'relative', minHeight: '680px', width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            
+            {/* Center Heading Block */}
+            <div style={{ zIndex: 10, textAlign: 'center', maxWidth: '380px', padding: '1.5rem', boxSizing: 'border-box' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.45)', border: '1.5px solid rgba(185, 205, 148, 0.4)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.85rem' }}>
+                <Leaf size={22} color="var(--accent-gold)" />
+              </div>
+              
+              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.16em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>
+                OUR PRINCIPLES
+              </span>
 
-        {/* Orbit Canvas Container */}
-        {!isMobile ? (
-          /* DESKTOP / TABLET ORBIT VIEW */
-          <div 
-            style={{ 
-              position: 'relative', 
-              height: '480px', 
-              width: '100%', 
-              margin: '0 auto',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            {/* Subtle Orbit Ring */}
+              <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.65rem', lineHeight: '1.15', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+                Our Non-Negotiables
+              </h2>
+
+              <div style={{ width: '40px', height: '2px', backgroundColor: 'var(--accent-gold)', margin: '0 auto 0.75rem', opacity: 0.7 }} />
+
+              <p style={{ fontSize: '0.98rem', color: '#F5EBDD', fontWeight: '500', margin: 0, lineHeight: '1.5', fontStyle: 'italic' }}>
+                The four pillars we <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>never</span> compromise on.
+              </p>
+            </div>
+
+            {/* Connecting Circular Dotted Ring */}
             <div 
               style={{
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                width: '700px',
-                height: '300px',
+                width: '620px',
+                height: '420px',
                 borderRadius: '50%',
-                border: '1.5px dashed rgba(185, 205, 148, 0.25)',
+                border: '1.5px dashed rgba(185, 205, 148, 0.35)',
                 pointerEvents: 'none',
                 zIndex: 1,
               }}
             />
 
-            {/* 4 Orbiting Principle Cards */}
-            {principles.map((principle, idx) => {
-              const isActive = idx === activeIdx;
-              const Icon = principle.icon;
-              const orbitStyle = getOrbitStyle(idx);
-              return (
-                <div
-                  key={principle.step}
-                  onClick={() => {
-                    setIsPaused(true);
-                    setActiveIdx(idx);
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: isActive ? '460px' : '260px',
-                    padding: isActive ? '2.5rem 2.25rem' : '1.4rem 1.25rem',
-                    borderRadius: isActive ? '26px' : '20px',
-                    backgroundColor: isActive ? 'rgba(18, 9, 4, 0.50)' : 'rgba(18, 9, 4, 0.30)',
-                    backdropFilter: 'blur(30px) saturate(150%)',
-                    WebkitBackdropFilter: 'blur(30px) saturate(150%)',
-                    border: isActive ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.20)',
-                    boxShadow: isActive ? '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(185, 205, 148, 0.15)' : '0 10px 30px rgba(0,0,0,0.3)',
-                    cursor: 'pointer',
-                    transition: 'all 800ms cubic-bezier(0.16, 1, 0.3, 1)',
-                    boxSizing: 'border-box',
-                    ...orbitStyle
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isActive ? '1.25rem' : '0.4rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <span style={{ fontSize: isActive ? '1.6rem' : '1.15rem', fontWeight: '900', color: '#b9cd94', fontFamily: 'var(--font-serif)' }}>
-                        {principle.step}
-                      </span>
-                      {isActive && <Icon size={22} color="#b9cd94" />}
-                    </div>
-                    <span style={{ fontSize: '0.72rem', color: isActive ? '#b9cd94' : 'rgba(255,255,255,0.5)', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                      {isActive ? 'Core Principle' : 'Pillar'}
-                    </span>
-                  </div>
+            {/* Small Decorative Dots on Ring */}
+            <div style={{ position: 'absolute', top: 'calc(50% - 210px)', left: '50%', transform: 'translate(-50%, -50%)', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2px solid rgba(18, 9, 4, 0.9)', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: 'calc(50% + 210px)', left: '50%', transform: 'translate(-50%, -50%)', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2px solid rgba(18, 9, 4, 0.9)', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: '50%', left: 'calc(50% - 310px)', transform: 'translate(-50%, -50%)', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2px solid rgba(18, 9, 4, 0.9)', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: '50%', left: 'calc(50% + 310px)', transform: 'translate(-50%, -50%)', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2px solid rgba(18, 9, 4, 0.9)', zIndex: 2 }} />
 
-                  <h3 style={{ fontSize: isActive ? '1.4rem' : '1.05rem', fontWeight: '850', color: '#FFFDF9', marginBottom: isActive ? '0.85rem' : '0', fontFamily: 'var(--font-serif)' }}>
-                    {principle.title}
-                  </h3>
-
-                  {isActive && (
-                    <p style={{ fontSize: '0.95rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
-                      {principle.desc}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          /* MOBILE COMPACT UNIFIED ORBIT VIEW */
-          <div style={{ width: '100%', boxSizing: 'border-box' }}>
-            
-            {/* Numbered Principle Indicators */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-              {principles.map((p, idx) => {
-                const isActive = idx === activeIdx;
-                return (
-                  <button
-                    key={p.step}
-                    onClick={() => {
-                      setIsPaused(true);
-                      setActiveIdx(idx);
-                    }}
-                    style={{
-                      padding: '0.4rem 0.8rem',
-                      borderRadius: '999px',
-                      backgroundColor: isActive ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
-                      border: isActive ? '1px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
-                      color: isActive ? '#b9cd94' : 'rgba(255, 255, 255, 0.7)',
-                      fontWeight: '800',
-                      fontSize: '0.78rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.3rem'
-                    }}
-                  >
-                    <span>{p.step}</span>
-                    {isActive && <span style={{ fontSize: '0.72rem', color: '#FFFDF9' }}>• {p.title}</span>}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Main Central Active Card */}
-            <div
+            {/* 4 Floating Cards Positioned Around Center */}
+            {/* Card 01 — Top Left */}
+            <div 
               style={{
-                width: 'calc(100% - 8px)',
-                margin: '0 auto',
-                padding: '1.75rem 1.25rem',
-                borderRadius: '22px',
-                backgroundColor: 'rgba(18, 9, 4, 0.45)',
-                backdropFilter: 'blur(30px) saturate(150%)',
-                WebkitBackdropFilter: 'blur(30px) saturate(150%)',
-                border: '1.5px solid #b9cd94',
-                boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(185, 205, 148, 0.12)',
-                boxSizing: 'border-box',
-                textAlign: 'left'
+                position: 'absolute',
+                top: '2%',
+                left: '2%',
+                width: '420px',
+                zIndex: 5
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#b9cd94', fontFamily: 'var(--font-serif)' }}>
-                    {activePrinciple.step}
-                  </span>
-                  <ActiveIcon size={20} color="#b9cd94" />
-                </div>
-                <span style={{ fontSize: '0.75rem', color: '#b9cd94', fontWeight: '850', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                  {activeIdx + 1} of {principles.length}
-                </span>
-              </div>
+              <PrincipleCardDesktop principle={principles[0]} />
+            </div>
 
-              <h3 style={{ fontSize: '1.3rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.6rem', fontFamily: 'var(--font-serif)' }}>
-                {activePrinciple.title}
-              </h3>
+            {/* Card 02 — Top Right */}
+            <div 
+              style={{
+                position: 'absolute',
+                top: '2%',
+                right: '2%',
+                width: '420px',
+                zIndex: 5
+              }}
+            >
+              <PrincipleCardDesktop principle={principles[1]} />
+            </div>
 
-              <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
-                {activePrinciple.desc}
+            {/* Card 03 — Bottom Left */}
+            <div 
+              style={{
+                position: 'absolute',
+                bottom: '2%',
+                left: '2%',
+                width: '420px',
+                zIndex: 5
+              }}
+            >
+              <PrincipleCardDesktop principle={principles[2]} />
+            </div>
+
+            {/* Card 04 — Bottom Right */}
+            <div 
+              style={{
+                position: 'absolute',
+                bottom: '2%',
+                right: '2%',
+                width: '420px',
+                zIndex: 5
+              }}
+            >
+              <PrincipleCardDesktop principle={principles[3]} />
+            </div>
+          </div>
+        ) : (
+          /* TABLET & MOBILE RESPONSIVE LAYOUT */
+          <div>
+            {/* Central Heading */}
+            <div style={{ textAlign: 'center', maxWidth: '580px', margin: '0 auto 2.5rem' }}>
+              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>
+                OUR PRINCIPLES
+              </span>
+              <h2 style={{ fontSize: isMobile ? '2rem' : '2.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
+                Our Non-Negotiables
+              </h2>
+              <p style={{ fontSize: isMobile ? '0.9rem' : '1rem', color: '#F5EBDD', fontWeight: '500', margin: 0 }}>
+                The four pillars we <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>never</span> compromise on.
               </p>
             </div>
 
+            {/* 2x2 Grid for Mobile (<768px) and Tablet */}
+            <div 
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(2, 1fr)', 
+                gap: isMobile ? '0.85rem' : '1.5rem',
+                maxWidth: '900px',
+                margin: '0 auto 3rem'
+              }}
+            >
+              {principles.map((p) => (
+                <PrincipleCardMobile key={p.step} principle={p} isMobile={isMobile} />
+              ))}
+            </div>
           </div>
         )}
 
-        {/* Controls & Progress bar */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginTop: '2.5rem' }}>
-          <button
-            onClick={handlePrev}
-            aria-label="Previous Principle"
-            style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '50%',
-              border: '1px solid #b9cd94',
-              backgroundColor: '#244f21',
-              color: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <ChevronLeft size={20} />
-          </button>
-
-          {/* Stepper Dots */}
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            {principles.map((_, idx) => (
-              <button
+        {/* BOTTOM TRUST / VALUE STRIP (Matching Image Bottom Row) */}
+        <div 
+          style={{ 
+            marginTop: isMobile ? '2.5rem' : '4rem', 
+            paddingTop: '2rem', 
+            borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+            display: 'grid',
+            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+            gap: isMobile ? '1rem' : '2rem',
+            alignItems: 'center',
+            justifyContent: 'center',
+            maxWidth: '1000px',
+            margin: `${isMobile ? '2.5rem' : '4rem'} auto 0`
+          }}
+        >
+          {[
+            { label: 'Honest Ingredients', icon: Leaf },
+            { label: 'Pure Baking', icon: Flame },
+            { label: 'Real Nourishment', icon: Sparkles },
+            { label: 'Nothing Unnecessary', icon: ShieldCheck }
+          ].map((item, idx) => {
+            const IconComp = item.icon;
+            return (
+              <div 
                 key={idx}
-                onClick={() => {
-                  setIsPaused(true);
-                  setActiveIdx(idx);
-                }}
                 style={{
-                  width: idx === activeIdx ? '24px' : '8px',
-                  height: '8px',
-                  borderRadius: '4px',
-                  backgroundColor: idx === activeIdx ? '#b9cd94' : 'rgba(255, 255, 255, 0.25)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  padding: 0
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.65rem',
+                  justifyContent: isMobile ? 'flex-start' : 'center',
+                  backgroundColor: 'rgba(35, 21, 13, 0.55)',
+                  padding: isMobile ? '0.65rem 0.85rem' : '0.85rem 1.25rem',
+                  borderRadius: '999px',
+                  border: '1px solid rgba(185, 205, 148, 0.3)',
+                  boxSizing: 'border-box'
                 }}
-                title={`Go to principle ${idx + 1}`}
-              />
-            ))}
-          </div>
-
-          <button
-            onClick={handleNext}
-            aria-label="Next Principle"
-            style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '50%',
-              border: '1px solid #b9cd94',
-              backgroundColor: '#244f21',
-              color: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <ChevronRight size={20} />
-          </button>
+              >
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <IconComp size={15} color="var(--accent-gold)" />
+                </div>
+                <span style={{ fontSize: isMobile ? '0.78rem' : '0.88rem', fontWeight: '800', color: '#FFFDF9', letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
+                  {item.label}
+                </span>
+              </div>
+            );
+          })}
         </div>
 
       </div>
     </section>
+  );
+}
+
+// Subcomponent: Desktop Floating Principle Card
+function PrincipleCardDesktop({ principle }) {
+  const Icon = principle.icon;
+  const [hovered, setHovered] = React.useState(false);
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        borderRadius: '24px',
+        backgroundColor: 'rgba(35, 21, 13, 0.78)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: hovered ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: hovered ? '0 16px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(185, 205, 148, 0.2)' : '0 10px 30px rgba(0,0,0,0.35)',
+        transform: hovered ? 'translateY(-6px)' : 'translateY(0)',
+        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+        overflow: 'hidden',
+        boxSizing: 'border-box',
+        height: '210px'
+      }}
+    >
+      {/* Integrated Ingredient Image */}
+      <div 
+        style={{ 
+          width: '145px', 
+          height: '100%', 
+          position: 'relative', 
+          overflow: 'hidden',
+          flexShrink: 0 
+        }}
+      >
+        <img
+          src={principle.image}
+          alt={principle.title}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transform: hovered ? 'scale(1.08)' : 'scale(1)',
+            transition: 'transform 0.5s ease'
+          }}
+        />
+        {/* Subtle overlay gradient */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.1), rgba(35, 21, 13, 0.8))' }} />
+        
+        {/* Circular Floating Badge Icon */}
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: '12px', 
+            left: '12px', 
+            width: '34px', 
+            height: '34px', 
+            borderRadius: '50%', 
+            backgroundColor: '#244f21', 
+            border: '1px solid #b9cd94', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.4)'
+          }}
+        >
+          <Icon size={17} color="var(--accent-gold)" />
+        </div>
+      </div>
+
+      {/* Card Details */}
+      <div style={{ padding: '1.25rem 1.25rem 1.25rem 1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexGrow: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+          <span style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--accent-gold)', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
+            {principle.step}
+          </span>
+          <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', fontWeight: '850', textTransform: 'uppercase', color: '#b9cd94', backgroundColor: 'rgba(36, 79, 33, 0.6)', padding: '0.15rem 0.55rem', borderRadius: '999px', border: '1px solid rgba(185, 205, 148, 0.3)' }}>
+            {principle.badge}
+          </span>
+        </div>
+
+        <h3 style={{ fontSize: '1.15rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.35rem', lineHeight: '1.2' }}>
+          {principle.title}
+        </h3>
+
+        <p style={{ fontSize: '0.82rem', color: '#F5EBDD', lineHeight: '1.5', margin: 0, fontWeight: '500', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          {principle.desc}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Subcomponent: Mobile 2x2 Principle Card
+function PrincipleCardMobile({ principle, isMobile }) {
+  const Icon = principle.icon;
+
+  return (
+    <div
+      style={{
+        borderRadius: '18px',
+        backgroundColor: 'rgba(35, 21, 13, 0.75)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box',
+        height: '100%'
+      }}
+    >
+      {/* Top Image Strip */}
+      <div style={{ height: isMobile ? '80px' : '110px', width: '100%', position: 'relative', overflow: 'hidden' }}>
+        <img
+          src={principle.image}
+          alt={principle.title}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 30%, rgba(35, 21, 13, 0.85))' }} />
+        
+        {/* Step Badge */}
+        <span 
+          style={{ 
+            position: 'absolute', 
+            top: '8px', 
+            left: '8px', 
+            fontSize: isMobile ? '0.95rem' : '1.1rem', 
+            fontWeight: '900', 
+            color: 'var(--accent-gold)', 
+            fontFamily: 'var(--font-serif)',
+            backgroundColor: 'rgba(20, 10, 5, 0.75)',
+            padding: '0.1rem 0.5rem',
+            borderRadius: '8px',
+            border: '1px solid rgba(185, 205, 148, 0.3)'
+          }}
+        >
+          {principle.step}
+        </span>
+
+        {/* Floating Icon */}
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: '6px', 
+            right: '8px', 
+            width: '26px', 
+            height: '26px', 
+            borderRadius: '50%', 
+            backgroundColor: '#244f21', 
+            border: '1px solid #b9cd94', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}
+        >
+          <Icon size={13} color="var(--accent-gold)" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: isMobile ? '0.75rem 0.65rem' : '1rem 0.85rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+        <span style={{ fontSize: '0.58rem', letterSpacing: '0.06em', fontWeight: '850', color: '#b9cd94', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
+          {principle.badge}
+        </span>
+        <h3 style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.35rem', lineHeight: '1.25' }}>
+          {principle.title}
+        </h3>
+        <p style={{ fontSize: isMobile ? '0.74rem' : '0.82rem', color: '#F5EBDD', lineHeight: '1.4', margin: 0, fontWeight: '500', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          {principle.desc}
+        </p>
+      </div>
+    </div>
   );
 }
 
