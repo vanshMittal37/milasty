@@ -10,75 +10,23 @@ function OrbitJourneySection() {
   const milestones = [
     { step: '01', title: 'The Question', desc: 'Can everyday bakery snacks be healthy, clean, and genuinely delicious?' },
     { step: '02', title: 'The Search', desc: 'Sourcing honest local ingredients, unrefined sweeteners, and traditional grains.' },
-    { step: '03', title: 'The First Bake', desc: 'Experimenting in small home batches with millet, pure Desi Ghee, and organic jaggery.' },
+    { step: '03', title: 'The First Bake', desc: 'Experimenting in small home batches with millet, pure Desi Ghee, and organic jaggery.', isActive: true },
     { step: '04', title: 'MILASTY is Born', desc: 'A better, mindful way of snacking, establishing our small-batch bakery.' },
     { step: '05', title: 'Today', desc: 'Bringing handcrafted millet bakes to wellness-focused Indian homes.' },
   ];
 
-  const [activeIdx, setActiveIdx] = React.useState(0);
-  const [isPaused, setIsPaused] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
+  const [isTablet, setIsTablet] = React.useState(false);
 
   React.useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 767);
+      setIsTablet(window.innerWidth > 767 && window.innerWidth <= 1024);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  React.useEffect(() => {
-    if (isPaused || prefersReducedMotion) return;
-    const timer = setInterval(() => {
-      setActiveIdx((prev) => (prev + 1) % milestones.length);
-    }, 3500);
-    return () => clearInterval(timer);
-  }, [isPaused, prefersReducedMotion, milestones.length]);
-
-  const handlePrev = () => {
-    setIsPaused(true);
-    setActiveIdx((prev) => (prev - 1 + milestones.length) % milestones.length);
-  };
-
-  const handleNext = () => {
-    setIsPaused(true);
-    setActiveIdx((prev) => (prev + 1) % milestones.length);
-  };
-
-  const activeMilestone = milestones[activeIdx];
-
-  const getOrbitStyle = (index) => {
-    const total = milestones.length;
-    const diff = (index - activeIdx + total) % total;
-
-    if (diff === 0) {
-      return {
-        transform: 'translate(-50%, -50%) scale(1)',
-        opacity: 1,
-        zIndex: 10,
-        pointerEvents: 'auto',
-      };
-    }
-
-    const angles = {
-      1: { x: 340, y: -90, scale: 0.82, opacity: 0.7, zIndex: 6 },
-      2: { x: 220, y: 140, scale: 0.75, opacity: 0.5, zIndex: 4 },
-      3: { x: -220, y: 140, scale: 0.75, opacity: 0.5, zIndex: 4 },
-      4: { x: -340, y: -90, scale: 0.82, opacity: 0.7, zIndex: 6 },
-    };
-
-    const pos = angles[diff] || { x: 0, y: 0, scale: 0.7, opacity: 0.4, zIndex: 2 };
-    return {
-      transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px)) scale(${pos.scale})`,
-      opacity: pos.opacity,
-      zIndex: pos.zIndex,
-      pointerEvents: 'auto',
-      filter: 'blur(0.5px)',
-    };
-  };
 
   return (
     <section 
@@ -88,244 +36,142 @@ function OrbitJourneySection() {
         overflow: 'hidden',
         position: 'relative' 
       }}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
     >
-      <div style={{ maxWidth: '1240px', margin: '0 auto', paddingLeft: '1.25rem', paddingRight: '1.25rem', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', paddingLeft: isMobile ? '1rem' : '1.5rem', paddingRight: isMobile ? '1rem' : '1.5rem', boxSizing: 'border-box' }}>
         
         {/* Header */}
-        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 3rem' }}>
-          <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
-            Milestones
+        <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 3.5rem' }}>
+          <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+            MILESTONES
           </span>
-          <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-            The MILASTY Journey
+          <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+            The MILASTY <span style={{ color: '#b9cd94' }}>Journey</span>
           </h2>
-          <p style={{ fontSize: '0.95rem', color: '#F5EBDD', fontWeight: '500', marginTop: '0.5rem' }}>
+          <p style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', color: '#F5EBDD', fontWeight: '500', marginTop: '0.6rem', lineHeight: '1.6' }}>
             From an inspiring question to handcrafted bakes delivered nationwide.
           </p>
         </div>
 
-        {/* Orbit Canvas Container */}
-        {!isMobile ? (
-          /* DESKTOP / TABLET ORBIT VIEW */
+        {/* ALTERNATING CENTRAL PATH INFOGRAPHIC FIGURE (Inspired by Reference 1) */}
+        <div style={{ position: 'relative', width: '100%', margin: '0 auto' }}>
+          
+          {/* Central Vertical Dashed Line Path */}
           <div 
             style={{ 
-              position: 'relative', 
-              height: '520px', 
-              width: '100%', 
-              margin: '0 auto',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            {/* Ambient Orbit Ring */}
-            <div 
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '680px',
-                height: '280px',
-                borderRadius: '50%',
-                border: '1.5px dashed rgba(185, 205, 148, 0.25)',
-                pointerEvents: 'none',
-                zIndex: 1,
-              }}
-            />
+              position: 'absolute', 
+              top: '20px', 
+              bottom: '20px', 
+              left: isMobile ? '28px' : '50%', 
+              transform: isMobile ? 'none' : 'translateX(-50%)', 
+              width: '2px', 
+              borderLeft: '2px dashed rgba(185, 205, 148, 0.65)', 
+              boxShadow: '0 0 12px rgba(185, 205, 148, 0.3)',
+              zIndex: 1 
+            }} 
+          />
 
-            {/* Render 5 Milestone Cards in Orbit */}
-            {milestones.map((milestone, idx) => {
-              const isActive = idx === activeIdx;
-              const orbitStyle = getOrbitStyle(idx);
+          {/* Render 5 Milestone Nodes in Alternating Flow */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '2.25rem' : '3.5rem', position: 'relative', zIndex: 2 }}>
+            {milestones.map((m, idx) => {
+              const isEven = idx % 2 === 0; // Left side on desktop for even index, right side for odd
+              const isHighlight = m.isActive;
+
               return (
-                <div
-                  key={milestone.step}
-                  onClick={() => {
-                    setIsPaused(true);
-                    setActiveIdx(idx);
-                  }}
+                <div 
+                  key={m.step}
                   style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: isActive ? '450px' : '280px',
-                    padding: isActive ? '2.5rem 2.25rem' : '1.5rem 1.25rem',
-                    borderRadius: isActive ? '26px' : '20px',
-                    backgroundColor: isActive ? 'rgba(18, 9, 4, 0.50)' : 'rgba(18, 9, 4, 0.30)',
-                    backdropFilter: 'blur(30px) saturate(150%)',
-                    WebkitBackdropFilter: 'blur(30px) saturate(150%)',
-                    border: isActive ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.20)',
-                    boxShadow: isActive ? '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(185, 205, 148, 0.15)' : '0 10px 30px rgba(0,0,0,0.3)',
-                    cursor: 'pointer',
-                    transition: 'all 800ms cubic-bezier(0.16, 1, 0.3, 1)',
-                    boxSizing: 'border-box',
-                    ...orbitStyle
+                    display: 'flex',
+                    flexDirection: isMobile ? 'row' : isEven ? 'row-reverse' : 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    position: 'relative'
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isActive ? '1rem' : '0.5rem' }}>
-                    <span style={{ fontSize: isActive ? '1.6rem' : '1.2rem', fontWeight: '900', color: '#b9cd94', fontFamily: 'var(--font-serif)' }}>
-                      {milestone.step}
-                    </span>
-                    <span style={{ fontSize: '0.72rem', color: isActive ? '#b9cd94' : 'rgba(255,255,255,0.5)', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                      {isActive ? 'Active Milestone' : `Step 0${idx + 1}`}
-                    </span>
+                  {/* Card Side (Left or Right on Desktop, Right on Mobile) */}
+                  <div 
+                    style={{ 
+                      width: isMobile ? 'calc(100% - 60px)' : '44%', 
+                      marginLeft: isMobile ? '12px' : 0,
+                      textAlign: isMobile ? 'left' : isEven ? 'right' : 'left'
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: isMobile ? '1.25rem 1.1rem' : '1.75rem 1.6rem',
+                        borderRadius: '22px',
+                        backgroundColor: isHighlight ? 'rgba(35, 21, 13, 0.88)' : 'rgba(35, 21, 13, 0.65)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: isHighlight ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.2)',
+                        boxShadow: isHighlight 
+                          ? '0 16px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(185, 205, 148, 0.25)' 
+                          : '0 10px 30px rgba(0, 0, 0, 0.35)',
+                        transition: 'all 0.3s ease',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'space-between' : isEven ? 'flex-end' : 'flex-start', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                        <span style={{ fontSize: '0.68rem', letterSpacing: '0.12em', fontWeight: '900', color: isHighlight ? '#b9cd94' : 'var(--accent-gold)', textTransform: 'uppercase' }}>
+                          STEP {m.step}
+                        </span>
+                        {isHighlight && (
+                          <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', fontWeight: '850', textTransform: 'uppercase', color: '#FFFDF9', backgroundColor: '#244f21', padding: '0.15rem 0.6rem', borderRadius: '999px', border: '1px solid #b9cd94' }}>
+                            ACTIVE MILESTONE
+                          </span>
+                        )}
+                      </div>
+
+                      <h3 style={{ fontSize: isMobile ? '1.15rem' : '1.4rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.45rem', lineHeight: '1.2' }}>
+                        {m.title}
+                      </h3>
+
+                      <p style={{ fontSize: isMobile ? '0.84rem' : '0.94rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+                        {m.desc}
+                      </p>
+                    </div>
                   </div>
 
-                  <h3 style={{ fontSize: isActive ? '1.35rem' : '1.05rem', fontWeight: '850', color: '#FFFDF9', marginBottom: isActive ? '0.75rem' : '0.35rem', fontFamily: 'var(--font-serif)' }}>
-                    {milestone.title}
-                  </h3>
+                  {/* Central Node Badge (Origami/Ribbon Node Inspired by Reference 1) */}
+                  <div 
+                    style={{ 
+                      width: isMobile ? '56px' : '12%', 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center',
+                      flexShrink: 0,
+                      zIndex: 5 
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: isHighlight ? '52px' : '44px',
+                        height: isHighlight ? '52px' : '44px',
+                        borderRadius: '50%',
+                        backgroundColor: isHighlight ? '#244f21' : 'rgba(20, 10, 5, 0.95)',
+                        border: isHighlight ? '2.5px solid #b9cd94' : '1.5px solid var(--accent-gold)',
+                        boxShadow: isHighlight ? '0 0 20px #b9cd94, 0 4px 14px rgba(0,0,0,0.6)' : '0 4px 12px rgba(0,0,0,0.4)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      <span style={{ fontSize: isHighlight ? '1rem' : '0.88rem', fontWeight: '900', color: isHighlight ? '#FFFDF9' : 'var(--accent-gold)', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
+                        {m.step}
+                      </span>
+                    </div>
+                  </div>
 
-                  <p style={{ fontSize: isActive ? '0.95rem' : '0.82rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
-                    {milestone.desc}
-                  </p>
+                  {/* Empty Spacer Side for Desktop Alternating Balance */}
+                  {!isMobile && (
+                    <div style={{ width: '44%' }} />
+                  )}
                 </div>
               );
             })}
           </div>
-        ) : (
-          /* MOBILE COMPACT UNIFIED ORBIT VIEW */
-          <div style={{ width: '100%', boxSizing: 'border-box' }}>
-            
-            {/* Numbered Milestone Indicators around top */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-              {milestones.map((m, idx) => {
-                const isActive = idx === activeIdx;
-                return (
-                  <button
-                    key={m.step}
-                    onClick={() => {
-                      setIsPaused(true);
-                      setActiveIdx(idx);
-                    }}
-                    style={{
-                      padding: '0.4rem 0.8rem',
-                      borderRadius: '999px',
-                      backgroundColor: isActive ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
-                      border: isActive ? '1px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
-                      color: isActive ? '#b9cd94' : 'rgba(255, 255, 255, 0.7)',
-                      fontWeight: '800',
-                      fontSize: '0.78rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.3rem'
-                    }}
-                  >
-                    <span>{m.step}</span>
-                    {isActive && <span style={{ fontSize: '0.72rem', color: '#FFFDF9' }}>• {m.title}</span>}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Main Central Active Card */}
-            <div
-              style={{
-                width: 'calc(100% - 8px)',
-                margin: '0 auto',
-                padding: '1.75rem 1.25rem',
-                borderRadius: '22px',
-                backgroundColor: 'rgba(18, 9, 4, 0.45)',
-                backdropFilter: 'blur(30px) saturate(150%)',
-                WebkitBackdropFilter: 'blur(30px) saturate(150%)',
-                border: '1.5px solid #b9cd94',
-                boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(185, 205, 148, 0.12)',
-                boxSizing: 'border-box',
-                textAlign: 'left'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
-                <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#b9cd94', fontFamily: 'var(--font-serif)' }}>
-                  {activeMilestone.step}
-                </span>
-                <span style={{ fontSize: '0.75rem', color: '#b9cd94', fontWeight: '800', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                  {activeIdx + 1} of {milestones.length}
-                </span>
-              </div>
-
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '850', color: '#FFFDF9', marginBottom: '0.6rem', fontFamily: 'var(--font-serif)' }}>
-                {activeMilestone.title}
-              </h3>
-
-              <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
-                {activeMilestone.desc}
-              </p>
-            </div>
-
-          </div>
-        )}
-
-        {/* Controls & Progress bar */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginTop: '2.5rem' }}>
-          <button
-            onClick={handlePrev}
-            aria-label="Previous Milestone"
-            style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '50%',
-              border: '1px solid #b9cd94',
-              backgroundColor: '#244f21',
-              color: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <ChevronLeft size={20} />
-          </button>
-
-          {/* Stepper Dots */}
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            {milestones.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  setIsPaused(true);
-                  setActiveIdx(idx);
-                }}
-                style={{
-                  width: idx === activeIdx ? '24px' : '8px',
-                  height: '8px',
-                  borderRadius: '4px',
-                  backgroundColor: idx === activeIdx ? '#b9cd94' : 'rgba(255, 255, 255, 0.25)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  padding: 0
-                }}
-                title={`Go to milestone ${idx + 1}`}
-              />
-            ))}
-          </div>
-
-          <button
-            onClick={handleNext}
-            aria-label="Next Milestone"
-            style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '50%',
-              border: '1px solid #b9cd94',
-              backgroundColor: '#244f21',
-              color: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <ChevronRight size={20} />
-          </button>
         </div>
 
       </div>
