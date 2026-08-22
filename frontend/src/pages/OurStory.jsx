@@ -398,8 +398,9 @@ function OrbitPrinciplesSection() {
     >
       <div style={{ maxWidth: '1280px', margin: '0 auto', paddingLeft: isMobile ? '1rem' : '1.5rem', paddingRight: isMobile ? '1rem' : '1.5rem', boxSizing: 'border-box' }}>
         
-        {/* DESKTOP LAYOUT (Central Heading + 4 Surrounding Floating Cards) */}
+        {/* RESPONSIVE FIGURE/DIAGRAM COMPOSITION (Desktop, Tablet & Mobile) */}
         {!isMobile && !isTablet ? (
+          /* DESKTOP VIEW */
           <div style={{ position: 'relative', minHeight: '680px', width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             
             {/* Center Heading Block */}
@@ -446,82 +447,74 @@ function OrbitPrinciplesSection() {
             <div style={{ position: 'absolute', top: '50%', left: 'calc(50% + 310px)', transform: 'translate(-50%, -50%)', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2px solid rgba(18, 9, 4, 0.9)', zIndex: 2 }} />
 
             {/* 4 Floating Cards Positioned Around Center */}
-            {/* Card 01 — Top Left */}
-            <div 
-              style={{
-                position: 'absolute',
-                top: '2%',
-                left: '2%',
-                width: '420px',
-                zIndex: 5
-              }}
-            >
+            <div style={{ position: 'absolute', top: '2%', left: '2%', width: '420px', zIndex: 5 }}>
               <PrincipleCardDesktop principle={principles[0]} />
             </div>
-
-            {/* Card 02 — Top Right */}
-            <div 
-              style={{
-                position: 'absolute',
-                top: '2%',
-                right: '2%',
-                width: '420px',
-                zIndex: 5
-              }}
-            >
+            <div style={{ position: 'absolute', top: '2%', right: '2%', width: '420px', zIndex: 5 }}>
               <PrincipleCardDesktop principle={principles[1]} />
             </div>
-
-            {/* Card 03 — Bottom Left */}
-            <div 
-              style={{
-                position: 'absolute',
-                bottom: '2%',
-                left: '2%',
-                width: '420px',
-                zIndex: 5
-              }}
-            >
+            <div style={{ position: 'absolute', bottom: '2%', left: '2%', width: '420px', zIndex: 5 }}>
               <PrincipleCardDesktop principle={principles[2]} />
             </div>
-
-            {/* Card 04 — Bottom Right */}
-            <div 
-              style={{
-                position: 'absolute',
-                bottom: '2%',
-                right: '2%',
-                width: '420px',
-                zIndex: 5
-              }}
-            >
+            <div style={{ position: 'absolute', bottom: '2%', right: '2%', width: '420px', zIndex: 5 }}>
               <PrincipleCardDesktop principle={principles[3]} />
             </div>
           </div>
         ) : (
-          /* TABLET & MOBILE RESPONSIVE LAYOUT */
-          <div>
-            {/* Central Heading */}
-            <div style={{ textAlign: 'center', maxWidth: '580px', margin: '0 auto 2.5rem' }}>
-              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>
+          /* MOBILE & TABLET FIGURE / DIAGRAM COMPOSITION */
+          <div style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
+            
+            {/* Center Emblem/Heading Diagram Anchor */}
+            <div 
+              style={{ 
+                textAlign: 'center', 
+                maxWidth: '280px', 
+                margin: '0 auto 1.5rem', 
+                padding: '1.25rem 1rem', 
+                backgroundColor: 'rgba(35, 21, 13, 0.85)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderRadius: '24px',
+                border: '1.5px solid var(--accent-gold)',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                position: 'relative',
+                zIndex: 10
+              }}
+            >
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.5)', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.4rem' }}>
+                <Leaf size={18} color="var(--accent-gold)" />
+              </div>
+              <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.2rem' }}>
                 OUR PRINCIPLES
               </span>
-              <h2 style={{ fontSize: isMobile ? '2rem' : '2.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
+              <h2 style={{ fontSize: '1.45rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.25rem', lineHeight: '1.2' }}>
                 Our Non-Negotiables
               </h2>
-              <p style={{ fontSize: isMobile ? '0.9rem' : '1rem', color: '#F5EBDD', fontWeight: '500', margin: 0 }}>
-                The four pillars we <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>never</span> compromise on.
+              <p style={{ fontSize: '0.78rem', color: '#F5EBDD', fontWeight: '500', margin: 0, fontStyle: 'italic' }}>
+                Four pillars we <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>never</span> compromise on.
               </p>
             </div>
 
-            {/* 2x2 Grid for Mobile (<768px) and Tablet */}
+            {/* Connecting Dashed Line Diagram Connector */}
+            <div 
+              style={{
+                position: 'relative',
+                margin: '-1rem auto 1.5rem',
+                width: '90%',
+                height: '1px',
+                borderTop: '1.5px dashed rgba(185, 205, 148, 0.4)',
+                zIndex: 1
+              }}
+            />
+
+            {/* 2x2 Figure Cards Layout Surrounding Diagram Center */}
             <div 
               style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(2, 1fr)', 
-                gap: isMobile ? '0.85rem' : '1.5rem',
-                maxWidth: '900px',
-                margin: '0 auto 3rem'
+                gap: isMobile ? '0.75rem' : '1.25rem',
+                maxWidth: '850px',
+                margin: '0 auto'
               }}
             >
               {principles.map((p) => (
