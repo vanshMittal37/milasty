@@ -10,11 +10,13 @@ function OrbitJourneySection() {
   const milestones = [
     { step: '01', title: 'The Question', desc: 'Can everyday bakery snacks be healthy, clean, and genuinely delicious?' },
     { step: '02', title: 'The Search', desc: 'Sourcing honest local ingredients, unrefined sweeteners, and traditional grains.' },
-    { step: '03', title: 'The First Bake', desc: 'Experimenting in small home batches with millet, pure Desi Ghee, and organic jaggery.', isActive: true },
+    { step: '03', title: 'The First Bake', desc: 'Experimenting in small home batches with millet, pure Desi Ghee, and organic jaggery.' },
     { step: '04', title: 'MILASTY is Born', desc: 'A better, mindful way of snacking, establishing our small-batch bakery.' },
     { step: '05', title: 'Today', desc: 'Bringing handcrafted millet bakes to wellness-focused Indian homes.' },
   ];
 
+  const [activeIdx, setActiveIdx] = React.useState(0);
+  const [isPaused, setIsPaused] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isTablet, setIsTablet] = React.useState(false);
 
@@ -28,6 +30,15 @@ function OrbitJourneySection() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Cyclic Rotation from Step 1 to 5
+  React.useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(() => {
+      setActiveIdx((prev) => (prev + 1) % milestones.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [isPaused, milestones.length]);
+
   return (
     <section 
       style={{ 
@@ -36,6 +47,8 @@ function OrbitJourneySection() {
         overflow: 'hidden',
         position: 'relative' 
       }}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
     >
       <div style={{ maxWidth: '1100px', margin: '0 auto', paddingLeft: isMobile ? '1rem' : '1.5rem', paddingRight: isMobile ? '1rem' : '1.5rem', boxSizing: 'border-box' }}>
         
@@ -45,7 +58,7 @@ function OrbitJourneySection() {
             MILESTONES
           </span>
           <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-            The MILASTY <span style={{ color: '#b9cd94' }}>Journey</span>
+            The MILASTY <span style={{ color: '#b9cd94', fontSize: '1.18em', fontWeight: '900', textShadow: '0 0 12px rgba(185, 205, 148, 0.4)' }}>Journey</span>
           </h2>
           <p style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', color: '#F5EBDD', fontWeight: '500', marginTop: '0.6rem', lineHeight: '1.6' }}>
             From an inspiring question to handcrafted bakes delivered nationwide.
@@ -74,18 +87,23 @@ function OrbitJourneySection() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '2.25rem' : '3.5rem', position: 'relative', zIndex: 2 }}>
             {milestones.map((m, idx) => {
               const isEven = idx % 2 === 0; // Left side on desktop for even index, right side for odd
-              const isHighlight = m.isActive;
+              const isHighlight = idx === activeIdx;
 
               return (
                 <div 
                   key={m.step}
+                  onClick={() => {
+                    setIsPaused(true);
+                    setActiveIdx(idx);
+                  }}
                   style={{
                     display: 'flex',
                     flexDirection: isMobile ? 'row' : isEven ? 'row-reverse' : 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
-                    position: 'relative'
+                    position: 'relative',
+                    cursor: 'pointer'
                   }}
                 >
                   {/* Card Side (Left or Right on Desktop, Right on Mobile) */}
@@ -100,14 +118,15 @@ function OrbitJourneySection() {
                       style={{
                         padding: isMobile ? '1.25rem 1.1rem' : '1.75rem 1.6rem',
                         borderRadius: '22px',
-                        backgroundColor: isHighlight ? 'rgba(35, 21, 13, 0.88)' : 'rgba(35, 21, 13, 0.65)',
+                        backgroundColor: isHighlight ? 'rgba(35, 21, 13, 0.92)' : 'rgba(35, 21, 13, 0.55)',
                         backdropFilter: 'blur(20px)',
                         WebkitBackdropFilter: 'blur(20px)',
-                        border: isHighlight ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.2)',
+                        border: isHighlight ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
                         boxShadow: isHighlight 
-                          ? '0 16px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(185, 205, 148, 0.25)' 
-                          : '0 10px 30px rgba(0, 0, 0, 0.35)',
-                        transition: 'all 0.3s ease',
+                          ? '0 16px 40px rgba(0, 0, 0, 0.55), 0 0 25px rgba(185, 205, 148, 0.3)' 
+                          : '0 10px 30px rgba(0, 0, 0, 0.3)',
+                        transform: isHighlight ? 'scale(1.02)' : 'scale(1)',
+                        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                         boxSizing: 'border-box'
                       }}
                     >
@@ -145,20 +164,21 @@ function OrbitJourneySection() {
                   >
                     <div
                       style={{
-                        width: isHighlight ? '52px' : '44px',
-                        height: isHighlight ? '52px' : '44px',
+                        width: isHighlight ? '54px' : '44px',
+                        height: isHighlight ? '54px' : '44px',
                         borderRadius: '50%',
                         backgroundColor: isHighlight ? '#244f21' : 'rgba(20, 10, 5, 0.95)',
                         border: isHighlight ? '2.5px solid #b9cd94' : '1.5px solid var(--accent-gold)',
-                        boxShadow: isHighlight ? '0 0 20px #b9cd94, 0 4px 14px rgba(0,0,0,0.6)' : '0 4px 12px rgba(0,0,0,0.4)',
+                        boxShadow: isHighlight ? '0 0 22px #b9cd94, 0 4px 14px rgba(0,0,0,0.6)' : '0 4px 12px rgba(0,0,0,0.4)',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        transition: 'all 0.3s ease'
+                        transform: isHighlight ? 'scale(1.12)' : 'scale(1)',
+                        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
                       }}
                     >
-                      <span style={{ fontSize: isHighlight ? '1rem' : '0.88rem', fontWeight: '900', color: isHighlight ? '#FFFDF9' : 'var(--accent-gold)', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
+                      <span style={{ fontSize: isHighlight ? '1.05rem' : '0.88rem', fontWeight: '900', color: isHighlight ? '#FFFDF9' : 'var(--accent-gold)', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
                         {m.step}
                       </span>
                     </div>
