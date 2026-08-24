@@ -184,63 +184,6 @@ export default function Shop() {
       <div style={{ position: 'relative', zIndex: 1 }}>
 
       {/* ================================================================== */}
-      {/* 1. SHOP HERO (Compact on Mobile) */}
-      {/* ================================================================== */}
-      <section 
-        style={{ 
-          padding: isMobile ? '3rem 1.25rem 2rem' : '5rem 1.5rem 3.5rem', 
-          textAlign: 'center', 
-          maxWidth: '850px', 
-          margin: '0 auto',
-          boxSizing: 'border-box'
-        }}
-      >
-        <span 
-          style={{ 
-            fontSize: '0.78rem', 
-            textTransform: 'uppercase', 
-            letterSpacing: '0.14em', 
-            color: 'var(--accent-gold)', 
-            fontWeight: '850',
-            backgroundColor: 'rgba(36, 79, 33, 0.35)',
-            padding: '0.35rem 0.95rem',
-            borderRadius: '999px',
-            border: '1.5px solid rgba(185, 205, 148, 0.4)',
-            display: 'inline-block',
-            marginBottom: '1rem'
-          }}
-        >
-          SHOP MILASTY
-        </span>
-        <h1 
-          style={{ 
-            fontSize: isMobile ? '2.1rem' : '3.6rem', 
-            fontFamily: 'var(--font-serif)', 
-            color: '#FFFDF9', 
-            fontWeight: '850', 
-            lineHeight: '1.15',
-            margin: '0 0 0.85rem 0',
-            letterSpacing: '-0.02em',
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
-          }}
-        >
-          Wholesome Millet Bakes.
-        </h1>
-        <p 
-          style={{ 
-            fontSize: isMobile ? '0.95rem' : '1.12rem', 
-            color: '#F5EBDD', 
-            lineHeight: '1.6', 
-            maxWidth: '560px',
-            margin: '0 auto',
-            fontWeight: '550'
-          }}
-        >
-          Slow-baked in pure Desi Ghee and organic jaggery for everyday mindful snacking.
-        </p>
-      </section>
-
-      {/* ================================================================== */}
       {/* 3. FEATURED PRODUCTS (Strict 2x2 Grid on Mobile) */}
       {/* ================================================================== */}
       <section 
@@ -391,52 +334,68 @@ export default function Shop() {
           <div 
             style={{ 
               display: 'flex', 
-              gap: '0.75rem', 
+              gap: isMobile ? '0.5rem' : '0.75rem', 
               maxWidth: '620px', 
-              margin: '0 auto 2.5rem', 
-              alignItems: 'center' 
+              margin: isMobile ? '0 auto 1.75rem' : '0 auto 2.5rem', 
+              alignItems: 'center',
+              width: '100%',
+              boxSizing: 'border-box' 
             }}
           >
             <div style={{ position: 'relative', flexGrow: 1 }}>
-              <Search size={20} color="var(--accent-gold)" style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 2 }} />
+              <Search className="shop-search-icon" size={isMobile ? 16 : 18} />
               <input 
                 type="text"
-                placeholder="Search cookies, ingredients, hampers..."
+                className="shop-search-input"
+                placeholder={isMobile ? "Search bakes..." : "Search cookies, ingredients, hampers..."}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.85rem 1.25rem 0.85rem 3.4rem',
-                  borderRadius: '999px',
-                  backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.25)',
-                  color: '#FFFDF9',
-                  fontSize: isMobile ? '0.88rem' : '0.95rem',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
               />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  style={{
+                    position: 'absolute',
+                    right: isMobile ? '10px' : '14px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'rgba(255, 255, 255, 0.65)',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    padding: '0.2rem 0.4rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 3
+                  }}
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
             </div>
             
             <button
               onClick={() => setFilterModalOpen(true)}
               style={{
-                padding: '0.85rem 1.35rem',
+                padding: isMobile ? '0.6rem 1rem' : '0.85rem 1.35rem',
                 borderRadius: '999px',
                 backgroundColor: 'rgba(36, 79, 33, 0.85)',
                 border: '1.5px solid #b9cd94',
                 color: '#FFFDF9',
                 fontWeight: '850',
-                fontSize: '0.88rem',
+                fontSize: isMobile ? '0.82rem' : '0.88rem',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.45rem',
+                gap: isMobile ? '0.35rem' : '0.45rem',
                 flexShrink: 0,
                 boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
               }}
             >
-              <Filter size={17} color="var(--accent-gold)" />
+              <Filter size={isMobile ? 15 : 17} color="var(--accent-gold)" />
               <span>Filter</span>
             </button>
           </div>
@@ -853,51 +812,7 @@ export default function Shop() {
         </div>
       </section>
 
-      {/* ================================================================== */}
-      {/* 8. FINAL CONVERSION SECTION (Matching Home Page Final CTA Card) */}
-      {/* ================================================================== */}
-      <section 
-        className="reveal-fade-up cta-section"
-        style={{ 
-          padding: isMobile ? '4rem 0 6rem' : '5rem 0 7rem', 
-          backgroundColor: 'transparent' 
-        }}
-      >
-        <div className="container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1rem' }}>
-          <div
-            className="cta-card glass-card"
-            style={{
-              padding: isMobile ? '3.5rem 1.5rem' : '5rem 2rem',
-              textAlign: 'center',
-              color: '#FFFFFF',
-              position: 'relative',
-              borderRadius: '30px',
-              backgroundColor: 'rgba(35, 21, 13, 0.75)',
-              border: '1.5px solid rgba(255, 255, 255, 0.20)',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4)',
-              overflow: 'hidden',
-            }}
-          >
-            <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>
-              Ready to Upgrade Your <span style={{ color: 'var(--accent-gold)' }}>Everyday Snack?</span>
-            </h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: isMobile ? '0.95rem' : '1.1rem', maxWidth: '580px', margin: '0 auto 2.5rem', lineHeight: '1.7', fontWeight: '500' }}>
-              Discover freshly baked millet cookies made with pure Desi Ghee and organic jaggery. Delivered fresh all across India.
-            </p>
-            <button
-              onClick={() => handleScrollToSection('featured-bakes-section')}
-              className="btn-primary" 
-              style={{ padding: '1.1rem 2.75rem', fontSize: '1.05rem', backgroundColor: '#c89b3c', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', borderRadius: '999px', cursor: 'pointer' }}
-            >
-              <span>Shop All Fresh Bakes →</span>
-            </button>
 
-            <div style={{ marginTop: '2rem', fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.8)', letterSpacing: '0.05em', fontWeight: '700' }}>
-              PAN-INDIA SHIPPING • FRESHLY BAKED ON ORDER
-            </div>
-          </div>
-        </div>
-      </section>
 
       </div>
     </div>

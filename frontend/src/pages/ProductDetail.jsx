@@ -19,6 +19,13 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [btnText, setBtnText] = useState('Add to Cart');
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     fetchProduct();
@@ -168,7 +175,7 @@ export default function ProductDetail() {
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed',
       minHeight: '100vh',
-      padding: '2.5rem 0 5rem',
+      padding: isMobile ? '1.25rem 0 3rem' : '2.5rem 0 5rem',
       position: 'relative'
     }}>
       {/* Dark overlay for readability matching Shop */}
@@ -180,30 +187,34 @@ export default function ProductDetail() {
         pointerEvents: 'none',
       }} />
 
-      <div className="container" style={{ maxWidth: '1150px', position: 'relative', zIndex: 1 }}>
+      <div className="container" style={{ maxWidth: '1150px', position: 'relative', zIndex: 1, padding: isMobile ? '0 0.85rem' : '0 1.5rem' }}>
         
         {/* Breadcrumb */}
         <div style={{
-          fontSize: '0.78rem',
+          fontSize: isMobile ? '0.72rem' : '0.78rem',
           fontWeight: '700',
           textTransform: 'uppercase',
           letterSpacing: '0.06em',
           color: '#F5EBDD',
-          marginBottom: '2rem',
+          marginBottom: isMobile ? '1.25rem' : '2rem',
           backgroundColor: 'rgba(20, 10, 5, 0.65)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          padding: '0.6rem 1.2rem',
+          padding: isMobile ? '0.45rem 0.95rem' : '0.6rem 1.2rem',
           borderRadius: '999px',
           display: 'inline-flex',
           alignItems: 'center',
-          border: '1px solid rgba(185, 205, 148, 0.35)'
+          border: '1px solid rgba(185, 205, 148, 0.35)',
+          maxWidth: '100%',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis'
         }}>
           <Link to="/" style={{ color: '#F5EBDD', textDecoration: 'none' }}>Home</Link>
-          <span style={{ margin: '0 0.5rem', color: '#b9cd94' }}>/</span>
+          <span style={{ margin: '0 0.4rem', color: '#b9cd94' }}>/</span>
           <Link to="/shop" style={{ color: '#F5EBDD', textDecoration: 'none' }}>Shop</Link>
-          <span style={{ margin: '0 0.5rem', color: '#b9cd94' }}>/</span>
-          <span style={{ color: '#b9cd94', fontWeight: '800' }}>{product.title}</span>
+          <span style={{ margin: '0 0.4rem', color: '#b9cd94' }}>/</span>
+          <span style={{ color: '#b9cd94', fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.title}</span>
         </div>
 
         {/* Main Details Panel */}
@@ -213,19 +224,19 @@ export default function ProductDetail() {
             backgroundColor: 'rgba(20, 10, 5, 0.55)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            borderRadius: '28px',
+            borderRadius: isMobile ? '20px' : '28px',
             border: '1px solid rgba(245, 220, 180, 0.18)',
             boxShadow: '0 16px 48px rgba(0,0,0,0.4)',
-            padding: '2.5rem',
-            marginBottom: '3.5rem'
+            padding: isMobile ? '1.25rem 1rem' : '2.5rem',
+            marginBottom: isMobile ? '2rem' : '3.5rem'
           }}
         >
           <div 
             className="product-detail-layout"
             style={{ 
               display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', 
-              gap: '3.5rem', 
+              gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', 
+              gap: isMobile ? '1.5rem' : '3.5rem', 
               alignItems: 'start'
             }}
           >
@@ -233,7 +244,7 @@ export default function ProductDetail() {
             <div>
               <div 
                 style={{ 
-                  borderRadius: '20px', 
+                  borderRadius: isMobile ? '16px' : '20px', 
                   overflow: 'hidden', 
                   backgroundColor: 'rgba(20, 10, 5, 0.65)', 
                   border: '1.5px solid rgba(245, 220, 180, 0.22)',
@@ -244,23 +255,24 @@ export default function ProductDetail() {
                 <img 
                   src={selectedImage} 
                   alt={product.title} 
-                  style={{ width: '100%', height: '440px', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} 
+                  className="product-main-image"
+                  style={{ width: '100%', height: isMobile ? '260px' : '440px', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} 
                   onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
                   onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                 />
               </div>
               
               {/* Gallery Thumbnails */}
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+              <div style={{ display: 'flex', gap: isMobile ? '0.5rem' : '0.75rem', marginTop: isMobile ? '0.75rem' : '1rem' }}>
                 <img
                   src={product.image}
                   alt="Thumbnail primary"
                   onClick={() => setSelectedImage(product.image)}
                   style={{
-                    width: '74px',
-                    height: '74px',
+                    width: isMobile ? '58px' : '74px',
+                    height: isMobile ? '58px' : '74px',
                     objectFit: 'cover',
-                    borderRadius: '12px',
+                    borderRadius: isMobile ? '10px' : '12px',
                     cursor: 'pointer',
                     border: selectedImage === product.image ? '2.5px solid #b9cd94' : '1.5px solid rgba(245, 220, 180, 0.25)',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
@@ -272,10 +284,10 @@ export default function ProductDetail() {
                     alt="Thumbnail secondary"
                     onClick={() => setSelectedImage(product.secondaryImage)}
                     style={{
-                      width: '74px',
-                      height: '74px',
+                      width: isMobile ? '58px' : '74px',
+                      height: isMobile ? '58px' : '74px',
                       objectFit: 'cover',
-                      borderRadius: '12px',
+                      borderRadius: isMobile ? '10px' : '12px',
                       cursor: 'pointer',
                       border: selectedImage === product.secondaryImage ? '2.5px solid #b9cd94' : '1.5px solid rgba(245, 220, 180, 0.25)',
                       boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
@@ -286,22 +298,22 @@ export default function ProductDetail() {
             </div>
 
             {/* Right Column: Details & Actions */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.85rem' : '1.2rem' }}>
               
               {/* Badges / Stock */}
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                {product.badges?.map((badge, idx) => (
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                {product.badges?.slice(0, isMobile ? 1 : 2).map((badge, idx) => (
                   <span 
                     key={idx} 
                     style={{
                       fontSize: '0.68rem',
                       fontWeight: '800',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
+                      letterSpacing: '0.04em',
                       color: '#b9cd94',
                       backgroundColor: 'rgba(36, 79, 33, 0.85)',
                       border: '1px solid rgba(185, 205, 148, 0.4)',
-                      padding: '0.3rem 0.75rem',
+                      padding: '0.25rem 0.65rem',
                       borderRadius: '999px',
                     }}
                   >
@@ -317,7 +329,7 @@ export default function ProductDetail() {
                     backgroundColor: currentStock > 5 ? 'rgba(36, 79, 33, 0.30)' : 'rgba(184, 50, 30, 0.30)', 
                     color: currentStock > 5 ? '#b9cd94' : '#ff9e88',
                     border: currentStock > 5 ? '1px solid rgba(185, 205, 148, 0.4)' : '1px solid rgba(184, 50, 30, 0.4)',
-                    padding: '0.3rem 0.75rem',
+                    padding: '0.25rem 0.65rem',
                     borderRadius: '999px'
                   }}
                 >
@@ -327,30 +339,26 @@ export default function ProductDetail() {
 
               {/* Title & Description */}
               <div>
-                <h1 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', margin: '0 0 0.5rem 0' }}>{product.title}</h1>
-                <p style={{ fontSize: '1.05rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+                <h1 style={{ fontSize: isMobile ? '1.45rem' : '2.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', margin: '0 0 0.3rem 0', lineHeight: '1.2' }}>{product.title}</h1>
+                <p style={{ fontSize: isMobile ? '0.88rem' : '1rem', color: '#F5EBDD', lineHeight: '1.45', margin: 0, fontWeight: '500' }}>
                   {product.subtitle || product.description}
                 </p>
               </div>
 
               {/* Ratings & reviews */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#F5EBDD', fontWeight: '600' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: isMobile ? '0.78rem' : '0.85rem', color: '#F5EBDD', fontWeight: '600' }}>
                 <div style={{ display: 'flex', color: '#b9cd94' }}>
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={15} fill="#b9cd94" color="#b9cd94" />
-                  ))}
+                  <Star size={14} fill="#b9cd94" color="#b9cd94" />
                 </div>
                 <span style={{ color: '#FFFDF9', fontWeight: '800' }}>{product.rating}</span>
-                <span style={{ color: '#F5EBDD' }}>({product.reviewCount || 24} customer reviews)</span>
-                <span style={{ color: 'rgba(255, 255, 255, 0.25)' }}>|</span>
-                <span style={{ color: '#F5EBDD' }}>SKU: {product.sku || 'MLS-001'}</span>
+                <span style={{ color: '#F5EBDD' }}>({product.reviewCount || 24} reviews)</span>
               </div>
 
               {/* Price section */}
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.65rem' }}>
-                <span style={{ fontSize: '2.2rem', fontWeight: '900', color: '#b9cd94' }}>₹{unitPrice}</span>
+                <span style={{ fontSize: isMobile ? '1.65rem' : '2.2rem', fontWeight: '900', color: '#b9cd94' }}>₹{unitPrice}</span>
                 {selectedVariant.originalPrice && (
-                  <span style={{ textDecoration: 'line-through', color: 'rgba(245, 235, 221, 0.65)', fontSize: '1.15rem', fontWeight: '500' }}>
+                  <span style={{ textDecoration: 'line-through', color: 'rgba(245, 235, 221, 0.65)', fontSize: isMobile ? '0.95rem' : '1.15rem', fontWeight: '500' }}>
                     ₹{selectedVariant.originalPrice}
                   </span>
                 )}
@@ -358,18 +366,18 @@ export default function ProductDetail() {
 
               {/* Pack Size Selectors */}
               {product.variants && product.variants.length > 1 && (
-                <div style={{ padding: '0.35rem 0' }}>
-                  <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#FFFDF9', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.65rem' }}>Select Pack Size</span>
+                <div style={{ padding: '0.1rem 0' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#FFFDF9', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.4rem' }}>Select Pack Size</span>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     {product.variants.map((v, idx) => (
                       <button
                         key={idx}
                         onClick={() => setSelectedVariantIndex(idx)}
                         style={{
-                          padding: '0.65rem 1.15rem',
+                          padding: isMobile ? '0.5rem 0.85rem' : '0.65rem 1.15rem',
                           borderRadius: '12px',
                           fontWeight: '800',
-                          fontSize: '0.85rem',
+                          fontSize: isMobile ? '0.78rem' : '0.85rem',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                           backgroundColor: selectedVariantIndex === idx ? '#244f21' : 'rgba(20, 10, 5, 0.65)',
@@ -386,20 +394,20 @@ export default function ProductDetail() {
               )}
 
               {/* Quantity Selector & Main Buttons */}
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', paddingTop: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: isMobile ? '0.65rem' : '1rem', alignItems: 'center', flexWrap: 'wrap', paddingTop: '0.2rem' }}>
                 {/* Qty count */}
-                <div style={{ display: 'inline-flex', alignItems: 'center', border: '1.5px solid rgba(185, 205, 148, 0.35)', borderRadius: '999px', backgroundColor: 'rgba(20, 10, 5, 0.65)', padding: '0.35rem 0.75rem' }}>
-                  <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} style={{ padding: '0.2rem 0.55rem', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#FFFDF9' }}><Minus size={14} /></button>
-                  <span style={{ padding: '0 0.85rem', fontWeight: '900', color: '#FFFDF9', fontSize: '0.95rem' }}>{quantity}</span>
-                  <button onClick={() => setQuantity((q) => Math.min(currentStock, q + 1))} style={{ padding: '0.2rem 0.55rem', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#FFFDF9' }}><Plus size={14} /></button>
+                <div style={{ display: 'inline-flex', alignItems: 'center', border: '1.5px solid rgba(185, 205, 148, 0.35)', borderRadius: '999px', backgroundColor: 'rgba(20, 10, 5, 0.65)', padding: isMobile ? '0.25rem 0.55rem' : '0.35rem 0.75rem' }}>
+                  <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} style={{ padding: '0.2rem 0.45rem', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#FFFDF9' }}><Minus size={14} /></button>
+                  <span style={{ padding: '0 0.65rem', fontWeight: '900', color: '#FFFDF9', fontSize: isMobile ? '0.88rem' : '0.95rem' }}>{quantity}</span>
+                  <button onClick={() => setQuantity((q) => Math.min(currentStock, q + 1))} style={{ padding: '0.2rem 0.45rem', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#FFFDF9' }}><Plus size={14} /></button>
                 </div>
 
                 {/* Add to cart */}
                 <button
                   onClick={handleAddToCart}
                   style={{
-                    padding: '0.9rem 2.25rem',
-                    fontSize: '0.92rem',
+                    padding: isMobile ? '0.75rem 1.4rem' : '0.9rem 2.25rem',
+                    fontSize: isMobile ? '0.85rem' : '0.92rem',
                     backgroundColor: '#244f21',
                     color: '#FFFFFF',
                     border: '1px solid #b9cd94',
@@ -407,9 +415,11 @@ export default function ProductDetail() {
                     fontWeight: '800',
                     display: 'inline-flex',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     gap: '0.5rem',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 16px rgba(36, 79, 33, 0.35)'
+                    boxShadow: '0 4px 16px rgba(36, 79, 33, 0.35)',
+                    flexGrow: isMobile ? 1 : 0
                   }}
                 >
                   <ShoppingBag size={16} color="#FFFFFF" />
@@ -420,8 +430,8 @@ export default function ProductDetail() {
                 <button
                   onClick={() => toggleWishlist(product)}
                   style={{
-                    width: '46px',
-                    height: '46px',
+                    width: isMobile ? '40px' : '46px',
+                    height: isMobile ? '40px' : '46px',
                     borderRadius: '50%',
                     backgroundColor: 'rgba(20, 10, 5, 0.65)',
                     border: '1.5px solid rgba(185, 205, 148, 0.35)',
@@ -430,7 +440,8 @@ export default function ProductDetail() {
                     justifyContent: 'center',
                     cursor: 'pointer',
                     color: wishlisted ? '#b9cd94' : '#F5EBDD',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    flexShrink: 0
                   }}
                   title="Add to Wishlist"
                 >
@@ -439,15 +450,9 @@ export default function ProductDetail() {
               </div>
 
               {/* Custom Brand Trust bullet strip */}
-              <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1.5px solid rgba(255, 255, 255, 0.15)', paddingTop: '1.25rem', fontSize: '0.88rem', color: '#F5EBDD' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: '600' }}>
-                  <ShieldCheck size={17} color="#b9cd94" />
-                  <span>100% Maida-Free &amp; Palm-Oil Free</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontWeight: '600' }}>
-                  <ShieldCheck size={17} color="#b9cd94" />
-                  <span>Baked in pure Cow Desi Ghee &amp; sweetened with Jaggery</span>
-                </div>
+              <div style={{ marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.45rem', borderTop: '1.5px solid rgba(255, 255, 255, 0.12)', paddingTop: '0.75rem', fontSize: isMobile ? '0.78rem' : '0.85rem', color: '#F5EBDD', fontWeight: '600' }}>
+                <ShieldCheck size={15} color="#b9cd94" />
+                <span>100% Maida-Free • Cow Desi Ghee &amp; Jaggery</span>
               </div>
 
             </div>
