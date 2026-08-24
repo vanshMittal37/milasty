@@ -18,6 +18,7 @@ export default function Shop() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [search, setSearch] = useState('');
   const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [recSelectedOption, setRecSelectedOption] = useState(null);
 
   // Reviews Carousel State
   const [reviewIndex, setReviewIndex] = useState(0);
@@ -609,50 +610,77 @@ export default function Shop() {
             NOT SURE WHAT TO CHOOSE?
           </span>
 
-          <h2 style={{ fontSize: isMobile ? '1.75rem' : '2.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 1.25rem', lineHeight: '1.25' }}>
+          <h2 style={{ fontSize: isMobile ? '1.75rem' : '2.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 1.5rem', lineHeight: '1.25' }}>
             Find Your Perfect <span style={{ color: 'var(--accent-gold)' }}>MILASTY Bake</span>
           </h2>
 
-          <p style={{ fontSize: isMobile ? '0.92rem' : '1rem', color: '#F5EBDD', marginBottom: '1.5rem', fontWeight: '600' }}>
-            Question 1: What are you looking for?
+          <p style={{ fontSize: isMobile ? '0.95rem' : '1.05rem', color: '#F5EBDD', marginBottom: '1.5rem', fontWeight: '600' }}>
+            What are you looking for?
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '420px', margin: '0 auto' }}>
+          {/* Option Buttons */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '420px', margin: '0 auto 1.5rem' }}>
             {[
               { label: 'Everyday Chai Snacking', catId: 'daily' },
               { label: 'Something for Gifting', catId: 'gifts' },
               { label: 'A Light Evening Snack', catId: 'daily' }
-            ].map((option) => (
+            ].map((option) => {
+              const isOptionSelected = recSelectedOption?.label === option.label;
+              return (
+                <button
+                  key={option.label}
+                  onClick={() => setRecSelectedOption(option)}
+                  style={{
+                    padding: isMobile ? '0.85rem 1.1rem' : '0.95rem 1.35rem',
+                    borderRadius: '999px',
+                    backgroundColor: isOptionSelected ? '#244f21' : 'rgba(20, 10, 5, 0.65)',
+                    border: isOptionSelected ? '2px solid #b9cd94' : '1.5px solid rgba(255, 255, 255, 0.25)',
+                    color: '#FFFDF9',
+                    fontWeight: '800',
+                    fontSize: isMobile ? '0.88rem' : '0.95rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease',
+                    boxShadow: isOptionSelected ? '0 6px 20px rgba(36, 79, 33, 0.5)' : '0 4px 12px rgba(0, 0, 0, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  {isOptionSelected && <Check size={16} color="#b9cd94" />}
+                  <span>{option.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Explore Bakes Button (Appears after selecting an option) */}
+          {recSelectedOption && (
+            <div style={{ marginTop: '1.25rem' }}>
               <button
-                key={option.label}
-                onClick={() => handleCategoryClick(option.catId)}
+                onClick={() => handleCategoryClick(recSelectedOption.catId)}
+                className="btn-primary"
                 style={{
-                  padding: isMobile ? '0.8rem 1.1rem' : '0.9rem 1.35rem',
+                  padding: isMobile ? '0.85rem 2rem' : '1rem 2.5rem',
+                  fontSize: isMobile ? '0.9rem' : '1rem',
+                  backgroundColor: '#c89b3c',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  fontWeight: '850',
                   borderRadius: '999px',
-                  backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.25)',
-                  color: '#FFFDF9',
-                  fontWeight: '750',
-                  fontSize: isMobile ? '0.88rem' : '0.94rem',
                   cursor: 'pointer',
-                  transition: 'all 0.25s ease',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = '#244f21';
-                  e.currentTarget.style.borderColor = '#b9cd94';
-                  e.currentTarget.style.color = '#FFFDF9';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(20, 10, 5, 0.65)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
-                  e.currentTarget.style.color = '#FFFDF9';
+                  boxShadow: '0 8px 24px rgba(200, 155, 60, 0.4)',
+                  transition: 'all 0.3s ease',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
                 }}
               >
-                {option.label}
+                <span>Explore Recommended Bakes</span>
+                <ArrowRight size={18} />
               </button>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       </section>
 
