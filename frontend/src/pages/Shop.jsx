@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Search, ChevronRight, ShoppingBag, Leaf, Sparkles, 
-  Shield, Award, ArrowRight, Star, ChevronLeft, HelpCircle, Check, Filter
+  Shield, Award, ArrowRight, Star, ChevronLeft, Check, Filter
 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import api from '../api/axios';
@@ -17,13 +17,7 @@ export default function Shop() {
   // Filter & Search state
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [search, setSearch] = useState('');
-  const [catSearch, setCatSearch] = useState('');
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-
-  // Recommendation Engine State
-  const [recStep, setRecStep] = useState(1);
-  const [recAnswers, setRecAnswers] = useState({ lookingFor: '', preference: '' });
-  const [recResult, setRecResult] = useState(null);
 
   // Reviews Carousel State
   const [reviewIndex, setReviewIndex] = useState(0);
@@ -57,21 +51,69 @@ export default function Shop() {
     }
   };
 
-  // Categories definition (Data-driven)
-  const categoryList = [
-    { id: 'all', name: 'ALL BAKES', label: 'All Bakes' },
-    { id: 'starter', name: 'STARTER FAVOURITES', label: 'Starter Favourites', count: 'Curated Boxes' },
-    { id: 'daily', name: 'DAILY RITUAL', label: 'Daily Ritual', count: 'Everyday Cookies' },
-    { id: 'gifts', name: 'GIFTING HAMPERS', label: 'Gifting Hampers', count: 'Celebration Gifts' },
+  // Single Source of Truth for Categories
+  const categoriesList = [
+    { 
+      id: 'starter', 
+      number: '01',
+      name: 'STARTER FAVOURITES', 
+      label: 'Starter Favourites', 
+      subtitle: 'Curated tasting boxes & best sellers',
+      image: '/images/image1.jpeg' 
+    },
+    { 
+      id: 'daily', 
+      number: '02',
+      name: 'DAILY RITUAL', 
+      label: 'Daily Ritual', 
+      subtitle: 'Guilt-free everyday tea companions',
+      image: '/images/bajra.jpeg' 
+    },
+    { 
+      id: 'gifts', 
+      number: '03',
+      name: 'GIFTING HAMPERS', 
+      label: 'Gifting Hampers', 
+      subtitle: 'Luxury artisanal gift hampers',
+      image: '/images/image2.jpeg' 
+    },
+    { 
+      id: 'cookies', 
+      number: '04',
+      name: 'COOKIES', 
+      label: 'Cookies', 
+      subtitle: 'Pure Desi Ghee millet cookies',
+      image: '/images/jowar.jpeg' 
+    },
   ];
 
-  // Filtering products for Featured section & Category filtering
+  // Helper function to check product category match
+  const matchesCategoryFilter = (p, catId) => {
+    if (catId === 'all') return true;
+    if (p.category === catId) return true;
+    if (catId === 'gifts' && (p.category === 'gifting' || p.title.toLowerCase().includes('hamper') || p.title.toLowerCase().includes('box'))) return true;
+    if (catId === 'cookies' && (p.category === 'daily' || p.title.toLowerCase().includes('cookies') || p.slug.includes('cookies'))) return true;
+    if (catId === 'starter' && (p.category === 'starter' || p.isFeatured || p.title.toLowerCase().includes('trio'))) return true;
+    return false;
+  };
+
+  // Filter categories to ensure only categories with at least 1 matching product are active
+  const activeCategoryList = categoriesList.filter(cat => 
+    products.some(p => matchesCategoryFilter(p, cat.id))
+  );
+
+  // Full category list including "ALL BAKES" for filter modal & catalogue
+  const modalCategoryList = [
+    { id: 'all', number: '00', name: 'ALL BAKES', label: 'All Bakes', subtitle: 'Explore the complete MILASTY collection' },
+    ...activeCategoryList
+  ];
+
+  // Featured Products (Normal Product Cards, NOT circular)
   const featuredProducts = products.filter(p => p.isFeatured || p.category === 'starter');
-  
+
+  // Filtered Catalogue Products
   const displayedProducts = products.filter(p => {
-    const matchesCat = selectedCategory === 'all' || 
-                       p.category === selectedCategory || 
-                       (selectedCategory === 'gifts' && (p.category === 'gifting' || p.title.toLowerCase().includes('hamper') || p.title.toLowerCase().includes('box')));
+    const matchesCat = matchesCategoryFilter(p, selectedCategory);
     const matchesSearch = !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.description.toLowerCase().includes(search.toLowerCase());
     return matchesCat && matchesSearch;
   });
@@ -120,39 +162,21 @@ export default function Shop() {
     }
   ];
 
-  // Recommendation Engine Logic
-  const handleRecAnswer = (key, value) => {
-    const newAnswers = { ...recAnswers, [key]: value };
-    setRecAnswers(newAnswers);
-
-    if (key === 'lookingFor') {
-      setRecStep(2);
-    } else if (key === 'preference') {
-      // Determine match
-      let match = products[0];
-      if (newAnswers.lookingFor === 'Gifting') {
-        match = products.find(p => p.category === 'gifts' || p.title.toLowerCase().includes('hamper')) || products[0];
-      } else if (value === 'Rich & Indulgent') {
-        match = products.find(p => p.slug.includes('ragi') || p.slug.includes('trio')) || products[0];
-      } else if (value === 'Less Sweet') {
-        match = products.find(p => p.slug.includes('bajra')) || products[1] || products[0];
-      } else {
-        match = products.find(p => p.slug.includes('jowar')) || products[2] || products[0];
-      }
-      setRecResult(match);
-      setRecStep(3);
+  // Category Click Handler → Auto Select Filter & Smooth Scroll to Catalogue
+  const handleCategoryClick = (catId) => {
+    setSelectedCategory(catId);
+    setFilterModalOpen(false);
+    
+    // Smooth scroll to product catalogue section
+    const targetEl = document.getElementById('browse-milasty-collection');
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  };
-
-  const resetRec = () => {
-    setRecStep(1);
-    setRecAnswers({ lookingFor: '', preference: '' });
-    setRecResult(null);
   };
 
   const handleScrollToSection = (id) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -184,9 +208,10 @@ export default function Shop() {
       <div style={{ position: 'relative', zIndex: 1 }}>
 
       {/* ================================================================== */}
-      {/* 1. SHOP HERO (Compact on Mobile) */}
+      {/* 1. SHOP HERO */}
       {/* ================================================================== */}
       <section 
+        id="shop-hero-section"
         style={{ 
           padding: isMobile ? '3rem 1.25rem 2rem' : '5rem 1.5rem 3.5rem', 
           textAlign: 'center', 
@@ -241,132 +266,42 @@ export default function Shop() {
       </section>
 
       {/* ================================================================== */}
-      {/* 3. FEATURED PRODUCTS (Strict 2x2 Grid on Mobile) */}
+      {/* 2. FEATURED BAKES (Standard Product Cards Grid) */}
       {/* ================================================================== */}
       <section 
         id="featured-bakes-section" 
-        style={{ padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', maxWidth: '1200px', margin: '0 auto', boxSizing: 'border-box' }}
+        style={{ 
+          padding: isMobile ? '3rem 1rem' : '5rem 1.5rem', 
+          maxWidth: '1240px', 
+          margin: '0 auto', 
+          boxSizing: 'border-box' 
+        }}
       >
-        <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 2.25rem' : '0 auto 3.5rem' }}>
+        <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 2rem' : '0 auto 3.5rem' }}>
           <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
             FEATURED BAKES
           </span>
-          <h2 style={{ fontSize: isMobile ? '2.4rem' : '3.3rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
-            Discover Our <span style={{ color: '#b9cd94', fontSize: '1.05em' }}>Favourites</span>
+          <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
+            Discover Our <span style={{ color: '#b9cd94' }}>Favourites</span>
           </h2>
-          <p style={{ fontSize: isMobile ? '0.95rem' : '1.12rem', color: '#F5EBDD', margin: '0.6rem 0 0', fontWeight: '500' }}>
+          <p style={{ fontSize: isMobile ? '0.92rem' : '1.1rem', color: '#F5EBDD', margin: '0.6rem 0 0', fontWeight: '500' }}>
             A few of the MILASTY favourites worth trying first.
           </p>
         </div>
 
-        {/* Circular Featured Products Showcase: 4 Columns on Desktop | 2x2 Grid on Mobile */}
-        <div 
-          style={{ 
-            display: 'grid', 
-            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', 
-            gap: isMobile ? '1.5rem 1rem' : '2.5rem 1.5rem',
-            alignItems: 'start',
-            justifyItems: 'center',
-            maxWidth: '1050px',
-            margin: '0 auto'
-          }}
-        >
+        {/* Featured Products: Responsive Grid on Desktop | 2x2 Grid on Mobile */}
+        <div className="favorites-grid fitted-cards-container-4">
           {featuredProducts.slice(0, 4).map((product) => (
-            <Link
-              key={product._id || product.slug}
-              to={`/product/${product.slug}`}
-              style={{
-                textDecoration: 'none',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                textAlign: 'center',
-                width: '100%',
-                maxWidth: isMobile ? '150px' : '220px',
-                cursor: 'pointer',
-                transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-              }}
-              onMouseOver={(e) => {
-                const circle = e.currentTarget.querySelector('.featured-circle-wrap');
-                const title = e.currentTarget.querySelector('.featured-circle-title');
-                if (circle) {
-                  circle.style.transform = 'scale(1.06)';
-                  circle.style.borderColor = '#b9cd94';
-                  circle.style.boxShadow = '0 12px 28px rgba(36, 79, 33, 0.45)';
-                }
-                if (title) title.style.color = 'var(--accent-gold)';
-              }}
-              onMouseOut={(e) => {
-                const circle = e.currentTarget.querySelector('.featured-circle-wrap');
-                const title = e.currentTarget.querySelector('.featured-circle-title');
-                if (circle) {
-                  circle.style.transform = 'scale(1)';
-                  circle.style.borderColor = 'rgba(185, 205, 148, 0.45)';
-                  circle.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.35)';
-                }
-                if (title) title.style.color = '#FFFDF9';
-              }}
-            >
-              {/* Circular Product Image Wrap */}
-              <div
-                className="featured-circle-wrap"
-                style={{
-                  width: isMobile ? '135px' : '200px',
-                  height: isMobile ? '135px' : '200px',
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  position: 'relative',
-                  border: '2px solid rgba(185, 205, 148, 0.45)',
-                  backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
-                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                  marginBottom: '0.9rem',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
-              </div>
-
-              {/* Product Name Centered Below Circle */}
-              <h3
-                className="featured-circle-title"
-                style={{
-                  fontSize: isMobile ? '0.88rem' : '1.05rem',
-                  color: '#FFFDF9',
-                  fontFamily: 'var(--font-serif)',
-                  fontWeight: '800',
-                  lineHeight: '1.3',
-                  margin: 0,
-                  transition: 'color 0.25s ease',
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                  overflow: 'hidden',
-                  wordBreak: 'break-word',
-                  maxWidth: '100%'
-                }}
-              >
-                {product.title}
-              </h3>
-            </Link>
+            <ProductCard key={product._id || product.slug} product={product} />
           ))}
         </div>
       </section>
 
       {/* ================================================================== */}
-      {/* 4. CATEGORIES SECTION (Dedicated Filter & Search Product Cards Grid) */}
+      {/* 3. EXPLORE BY CATEGORY (Circular Category Design) */}
       {/* ================================================================== */}
       <section 
-        id="shop-categories-section"
+        id="explore-by-category-section"
         style={{ 
           padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', 
           backgroundColor: 'rgba(20, 10, 5, 0.45)', 
@@ -374,96 +309,354 @@ export default function Shop() {
           borderBottom: '1px solid rgba(255, 255, 255, 0.12)' 
         }}
       >
-        <div style={{ maxWidth: '1200px', margin: '0 auto', boxSizing: 'border-box' }}>
-          <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 1.75rem' : '0 auto 3rem' }}>
+        <div style={{ maxWidth: '1240px', margin: '0 auto', boxSizing: 'border-box' }}>
+          <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 2.25rem' : '0 auto 3.5rem' }}>
             <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
-              EXPLORE BY CATEGORY & SEARCH
+              EXPLORE BY CATEGORY
             </span>
-            <h2 style={{ fontSize: isMobile ? '2.4rem' : '3.3rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
-              Browse <span style={{ color: '#b9cd94', fontSize: '1.05em' }}>MILASTY Collection</span>
+            <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
+              Explore the <span style={{ color: '#b9cd94' }}>MILASTY Collection</span>
             </h2>
-            <p style={{ fontSize: isMobile ? '0.95rem' : '1.12rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>
-              Showing {displayedProducts.length} bakes {selectedCategory !== 'all' ? `in ${categoryList.find(c => c.id === selectedCategory)?.label || selectedCategory}` : ''}
+            <p style={{ fontSize: isMobile ? '0.92rem' : '1.1rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>
+              Discover our wholesome bakes by collection.
             </p>
           </div>
 
-          {/* Search Bar & Category Filter Popup Trigger */}
+          {/* Circular Category Grid: 2x2 on Mobile | Clean Horizontal Row on Desktop */}
           <div 
             style={{ 
-              display: 'flex', 
-              gap: '0.75rem', 
-              maxWidth: '620px', 
-              margin: '0 auto 2.5rem', 
-              alignItems: 'center' 
+              display: 'grid', 
+              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${activeCategoryList.length}, 1fr)`, 
+              gap: isMobile ? '1.75rem 1rem' : '2.5rem 2rem',
+              alignItems: 'start',
+              justifyItems: 'center',
+              maxWidth: isMobile ? '380px' : `${activeCategoryList.length * 240}px`,
+              margin: '0 auto'
             }}
           >
-            <div style={{ position: 'relative', flexGrow: 1 }}>
-              <Search size={20} color="var(--accent-gold)" style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 2 }} />
-              <input 
-                type="text"
-                placeholder="Search cookies, ingredients, hampers..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.85rem 1.25rem 0.85rem 3.4rem',
-                  borderRadius: '999px',
-                  backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.25)',
-                  color: '#FFFDF9',
-                  fontSize: isMobile ? '0.88rem' : '0.95rem',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
-            
-            <button
-              onClick={() => setFilterModalOpen(true)}
-              style={{
-                padding: '0.85rem 1.35rem',
-                borderRadius: '999px',
-                backgroundColor: 'rgba(36, 79, 33, 0.85)',
-                border: '1.5px solid #b9cd94',
-                color: '#FFFDF9',
-                fontWeight: '850',
-                fontSize: '0.88rem',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                flexShrink: 0,
-                boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
-              }}
-            >
-              <Filter size={17} color="var(--accent-gold)" />
-              <span>Filter</span>
-            </button>
-          </div>
-
-          {/* Product Cards for Categories Section */}
-          <div className="favorites-grid fitted-cards-container-4">
-            {displayedProducts.length > 0 ? (
-              displayedProducts.map((product) => (
-                <ProductCard key={product._id || product.slug} product={product} />
-              ))
-            ) : (
-              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
-                <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
-                <button 
-                  onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
-                  className="btn-primary" 
-                  style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
+            {activeCategoryList.map((cat) => {
+              const isSelected = selectedCategory === cat.id;
+              return (
+                <div
+                  key={cat.id}
+                  onClick={() => handleCategoryClick(cat.id)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    width: '100%',
+                    maxWidth: isMobile ? '160px' : '200px',
+                    cursor: 'pointer',
+                    transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                  }}
+                  onMouseOver={(e) => {
+                    const circle = e.currentTarget.querySelector('.category-circle-wrap');
+                    const title = e.currentTarget.querySelector('.category-circle-title');
+                    if (circle) {
+                      circle.style.transform = 'scale(1.08)';
+                      circle.style.borderColor = '#b9cd94';
+                      circle.style.boxShadow = '0 12px 30px rgba(36, 79, 33, 0.5), 0 0 20px rgba(185, 205, 148, 0.3)';
+                    }
+                    if (title) title.style.color = 'var(--accent-gold)';
+                  }}
+                  onMouseOut={(e) => {
+                    const circle = e.currentTarget.querySelector('.category-circle-wrap');
+                    const title = e.currentTarget.querySelector('.category-circle-title');
+                    if (circle) {
+                      circle.style.transform = 'scale(1)';
+                      circle.style.borderColor = isSelected ? '#b9cd94' : 'rgba(185, 205, 148, 0.45)';
+                      circle.style.boxShadow = isSelected ? '0 10px 25px rgba(36, 79, 33, 0.4)' : '0 8px 24px rgba(0, 0, 0, 0.35)';
+                    }
+                    if (title) title.style.color = isSelected ? 'var(--accent-gold)' : '#FFFDF9';
+                  }}
                 >
-                  Reset All Filters
-                </button>
-              </div>
-            )}
+                  {/* Circle Image Wrapper */}
+                  <div
+                    className="category-circle-wrap"
+                    style={{
+                      width: isMobile ? '105px' : '150px',
+                      height: isMobile ? '105px' : '150px',
+                      borderRadius: '50%',
+                      overflow: 'hidden',
+                      position: 'relative',
+                      border: isSelected ? '2.5px solid #b9cd94' : '2px solid rgba(185, 205, 148, 0.45)',
+                      backgroundColor: 'rgba(35, 21, 13, 0.85)',
+                      boxShadow: isSelected ? '0 10px 25px rgba(36, 79, 33, 0.4)' : '0 8px 24px rgba(0, 0, 0, 0.35)',
+                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                      marginBottom: '0.85rem',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                        transition: 'transform 0.4s ease'
+                      }}
+                    />
+                    {/* Active check badge */}
+                    {isSelected && (
+                      <div 
+                        style={{
+                          position: 'absolute',
+                          bottom: '6px',
+                          right: '6px',
+                          backgroundColor: '#244f21',
+                          border: '1.5px solid #b9cd94',
+                          borderRadius: '50%',
+                          width: '24px',
+                          height: '24px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#FFFDF9'
+                        }}
+                      >
+                        <Check size={14} strokeWidth={3} color="#b9cd94" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Category Name Centered Below Circle */}
+                  <span 
+                    style={{ 
+                      fontSize: '0.68rem', 
+                      letterSpacing: '0.08em', 
+                      fontWeight: '850', 
+                      color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.5)',
+                      marginBottom: '0.15rem',
+                      display: 'block'
+                    }}
+                  >
+                    {cat.number}
+                  </span>
+                  <h3
+                    className="category-circle-title"
+                    style={{
+                      fontSize: isMobile ? '0.82rem' : '0.95rem',
+                      color: isSelected ? 'var(--accent-gold)' : '#FFFDF9',
+                      fontFamily: 'var(--font-serif)',
+                      fontWeight: '800',
+                      lineHeight: '1.25',
+                      margin: 0,
+                      transition: 'color 0.25s ease',
+                      letterSpacing: '0.02em',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    {cat.name}
+                  </h3>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* FILTER POPUP MODAL */}
+      {/* ================================================================== */}
+      {/* 4. BROWSE MILASTY COLLECTION (Search + Filter + Product Catalogue) */}
+      {/* ================================================================== */}
+      <section 
+        id="browse-milasty-collection"
+        style={{ 
+          padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', 
+          maxWidth: '1240px', 
+          margin: '0 auto', 
+          boxSizing: 'border-box' 
+        }}
+      >
+        <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 1.75rem' : '0 auto 3rem' }}>
+          <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+            BROWSE MILASTY COLLECTION
+          </span>
+          <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
+            Explore All <span style={{ color: '#b9cd94' }}>Wholesome Bakes</span>
+          </h2>
+          <p style={{ fontSize: isMobile ? '0.92rem' : '1.1rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>
+            Showing {displayedProducts.length} bakes {selectedCategory !== 'all' ? `in ${modalCategoryList.find(c => c.id === selectedCategory)?.label || selectedCategory}` : ''}
+          </p>
+        </div>
+
+        {/* Selected Active Category Indicator Pill */}
+        {selectedCategory !== 'all' && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+            <div 
+              style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '0.5rem', 
+                padding: '0.4rem 1rem', 
+                borderRadius: '999px', 
+                backgroundColor: '#244f21', 
+                border: '1.5px solid #b9cd94', 
+                color: '#FFFDF9', 
+                fontSize: '0.82rem', 
+                fontWeight: '800' 
+              }}
+            >
+              <Check size={14} color="#b9cd94" />
+              <span>ACTIVE FILTER: {modalCategoryList.find(c => c.id === selectedCategory)?.label?.toUpperCase()}</span>
+              <button 
+                onClick={() => setSelectedCategory('all')} 
+                style={{ backgroundColor: 'transparent', border: 'none', color: '#FFFDF9', cursor: 'pointer', marginLeft: '0.25rem', fontWeight: '900', padding: 0 }}
+                title="Clear Category Filter"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Search Bar & Category Filter Trigger */}
+        <div 
+          style={{ 
+            display: 'flex', 
+            gap: '0.75rem', 
+            maxWidth: '620px', 
+            margin: '0 auto 2.5rem', 
+            alignItems: 'center' 
+          }}
+        >
+          <div style={{ position: 'relative', flexGrow: 1 }}>
+            <Search size={20} color="var(--accent-gold)" style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 2 }} />
+            <input 
+              type="text"
+              placeholder="Search cookies, ingredients, hampers..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.85rem 1.25rem 0.85rem 3.4rem',
+                borderRadius: '999px',
+                backgroundColor: 'rgba(35, 21, 13, 0.85)',
+                border: '1.5px solid rgba(255, 255, 255, 0.25)',
+                color: '#FFFDF9',
+                fontSize: isMobile ? '0.88rem' : '0.95rem',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+          </div>
+          
+          <button
+            onClick={() => setFilterModalOpen(true)}
+            style={{
+              padding: '0.85rem 1.35rem',
+              borderRadius: '999px',
+              backgroundColor: 'rgba(36, 79, 33, 0.85)',
+              border: '1.5px solid #b9cd94',
+              color: '#FFFDF9',
+              fontWeight: '850',
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              flexShrink: 0,
+              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+            }}
+          >
+            <Filter size={17} color="var(--accent-gold)" />
+            <span>Filter</span>
+          </button>
+        </div>
+
+        {/* Product Cards Grid */}
+        <div className="favorites-grid fitted-cards-container-4">
+          {displayedProducts.length > 0 ? (
+            displayedProducts.map((product) => (
+              <ProductCard key={product._id || product.slug} product={product} />
+            ))
+          ) : (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
+              <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
+              <button 
+                onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
+                className="btn-primary" 
+                style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
+              >
+                Reset All Filters
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ================================================================== */}
+      {/* 5. FIND YOUR PERFECT MILASTY BAKE (Single Question Recommendation) */}
+      {/* ================================================================== */}
+      <section 
+        id="recommendation-section"
+        style={{ padding: isMobile ? '2.5rem 1rem' : '4.5rem 1.5rem', maxWidth: '850px', margin: '0 auto', boxSizing: 'border-box' }}
+      >
+        <div 
+          className="glass-card"
+          style={{ 
+            padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem', 
+            borderRadius: '24px', 
+            backgroundColor: 'rgba(35, 21, 13, 0.75)',
+            border: '1.5px solid var(--accent-gold)',
+            boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
+            textAlign: 'center'
+          }}
+        >
+          <span style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+            NOT SURE WHAT TO CHOOSE?
+          </span>
+
+          <h2 style={{ fontSize: isMobile ? '1.75rem' : '2.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 1.25rem', lineHeight: '1.25' }}>
+            Find Your Perfect <span style={{ color: 'var(--accent-gold)' }}>MILASTY Bake</span>
+          </h2>
+
+          <p style={{ fontSize: isMobile ? '0.92rem' : '1rem', color: '#F5EBDD', marginBottom: '1.5rem', fontWeight: '600' }}>
+            Question 1: What are you looking for?
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '420px', margin: '0 auto' }}>
+            {[
+              { label: 'Everyday Chai Snacking', catId: 'daily' },
+              { label: 'Something for Gifting', catId: 'gifts' },
+              { label: 'A Light Evening Snack', catId: 'daily' }
+            ].map((option) => (
+              <button
+                key={option.label}
+                onClick={() => handleCategoryClick(option.catId)}
+                style={{
+                  padding: isMobile ? '0.8rem 1.1rem' : '0.9rem 1.35rem',
+                  borderRadius: '999px',
+                  backgroundColor: 'rgba(20, 10, 5, 0.65)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.25)',
+                  color: '#FFFDF9',
+                  fontWeight: '750',
+                  fontSize: isMobile ? '0.88rem' : '0.94rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s ease',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = '#244f21';
+                  e.currentTarget.style.borderColor = '#b9cd94';
+                  e.currentTarget.style.color = '#FFFDF9';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(20, 10, 5, 0.65)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                  e.currentTarget.style.color = '#FFFDF9';
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FILTER POPUP MODAL (Synchronized with single category source) */}
       {filterModalOpen && (
         <div 
           style={{ 
@@ -509,16 +702,12 @@ export default function Shop() {
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
-              {categoryList.map((cat) => {
+              {modalCategoryList.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
                 return (
                   <button
                     key={cat.id}
-                    onClick={() => {
-                      setSelectedCategory(cat.id);
-                      setFilterModalOpen(false);
-                      handleScrollToSection('shop-categories-section');
-                    }}
+                    onClick={() => handleCategoryClick(cat.id)}
                     style={{
                       padding: '0.85rem 1.25rem',
                       borderRadius: '16px',
@@ -534,8 +723,11 @@ export default function Shop() {
                       transition: 'all 0.25s ease'
                     }}
                   >
-                    <span>{cat.label}</span>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: '700' }}>{cat.count || 'All'}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)', fontWeight: '800' }}>{cat.number}</span>
+                      <span>{cat.label}</span>
+                    </div>
+                    {isSelected && <Check size={16} color="#b9cd94" />}
                   </button>
                 );
               })}
@@ -566,142 +758,7 @@ export default function Shop() {
       )}
 
       {/* ================================================================== */}
-      {/* 5. RECOMMENDATION ENGINE (Interactive Bake Finder) */}
-      {/* ================================================================== */}
-      <section 
-        style={{ padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', maxWidth: '850px', margin: '0 auto', boxSizing: 'border-box' }}
-      >
-        <div 
-          className="glass-card"
-          style={{ 
-            padding: isMobile ? '2rem 1.25rem' : '3.5rem 3rem', 
-            borderRadius: '24px', 
-            backgroundColor: 'rgba(35, 21, 13, 0.75)',
-            border: '1.5px solid var(--accent-gold)',
-            boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
-            textAlign: 'center'
-          }}
-        >
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-gold)', fontWeight: '850', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '0.75rem' }}>
-            <HelpCircle size={16} />
-            <span>NOT SURE WHAT TO CHOOSE?</span>
-          </div>
-
-          <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 1.5rem', lineHeight: '1.25' }}>
-            Find Your Perfect <span style={{ color: 'var(--accent-gold)' }}>MILASTY Bake</span>
-          </h2>
-
-          {recStep === 1 && (
-            <div>
-              <p style={{ fontSize: '1rem', color: '#F5EBDD', marginBottom: '1.75rem', fontWeight: '600' }}>
-                Question 1: What are you looking for?
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '400px', margin: '0 auto' }}>
-                {['Everyday Chai Snacking', 'Something for Gifting', 'A Light Evening Snack'].map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => handleRecAnswer('lookingFor', option)}
-                    style={{
-                      padding: '0.9rem 1.25rem',
-                      borderRadius: '999px',
-                      backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                      border: '1px solid rgba(255, 255, 255, 0.25)',
-                      color: '#FFFDF9',
-                      fontWeight: '750',
-                      fontSize: '0.92rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.25s ease'
-                    }}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {recStep === 2 && (
-            <div>
-              <p style={{ fontSize: '1rem', color: '#F5EBDD', marginBottom: '1.75rem', fontWeight: '600' }}>
-                Question 2: What kind of flavour profile do you prefer?
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '400px', margin: '0 auto' }}>
-                {['Less Sweet & Spiced', 'Rich & Indulgent Cocoa', 'Light & Nutty Coconut'].map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => handleRecAnswer('preference', option)}
-                    style={{
-                      padding: '0.9rem 1.25rem',
-                      borderRadius: '999px',
-                      backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                      border: '1px solid rgba(255, 255, 255, 0.25)',
-                      color: '#FFFDF9',
-                      fontWeight: '750',
-                      fontSize: '0.92rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.25s ease'
-                    }}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {recStep === 3 && recResult && (
-            <div>
-              <span style={{ fontSize: '0.82rem', color: 'var(--accent-gold)', fontWeight: '850', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>
-                ✦ YOUR PERFECT MATCH ✦
-              </span>
-              <h3 style={{ fontSize: '1.6rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '0.5rem' }}>
-                {recResult.title}
-              </h3>
-              <p style={{ fontSize: '0.92rem', color: '#F5EBDD', maxWidth: '500px', margin: '0 auto 1.75rem', lineHeight: '1.6' }}>
-                {recResult.subtitle || recResult.description}
-              </p>
-
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Link
-                  to={`/product/${recResult.slug}`}
-                  className="btn-primary"
-                  style={{
-                    padding: '0.85rem 2rem',
-                    backgroundColor: '#244f21',
-                    color: '#FFF',
-                    borderRadius: '999px',
-                    fontWeight: '850',
-                    textDecoration: 'none',
-                    border: '1.5px solid #b9cd94',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.4rem'
-                  }}
-                >
-                  <span>EXPLORE PRODUCT →</span>
-                </Link>
-                <button
-                  onClick={resetRec}
-                  style={{
-                    padding: '0.85rem 1.5rem',
-                    backgroundColor: 'transparent',
-                    color: 'rgba(255, 255, 255, 0.75)',
-                    borderRadius: '999px',
-                    fontWeight: '700',
-                    border: '1px solid rgba(255, 255, 255, 0.25)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Retake Quiz
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ================================================================== */}
-      {/* 6. TRUST STRIP */}
+      {/* 5. TRUST STRIP */}
       {/* ================================================================== */}
       <section 
         className="products-trust-strip" 
@@ -733,7 +790,7 @@ export default function Shop() {
       </section>
 
       {/* ================================================================== */}
-      {/* 7. REVIEWS (1 Card at a time on Mobile) */}
+      {/* 6. REVIEWS */}
       {/* ================================================================== */}
       <section 
         style={{ padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', maxWidth: '900px', margin: '0 auto', boxSizing: 'border-box' }}
@@ -742,8 +799,8 @@ export default function Shop() {
           <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
             CUSTOMER REVIEWS
           </span>
-          <h2 style={{ fontSize: isMobile ? '2.4rem' : '3.3rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
-            Loved by <span style={{ color: '#b9cd94', fontSize: '1.05em' }}>MILASTY Customers</span>
+          <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
+            Loved by <span style={{ color: '#b9cd94' }}>MILASTY Customers</span>
           </h2>
         </div>
 
@@ -793,7 +850,6 @@ export default function Shop() {
 
           {/* Dots Indicator & Navigation Arrows */}
           <div style={{ marginTop: '1.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-            {/* Dots */}
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               {dummyReviews.map((_, idx) => (
                 <button
@@ -812,7 +868,6 @@ export default function Shop() {
               ))}
             </div>
 
-            {/* Prev / Next Arrows */}
             <div style={{ display: 'flex', gap: '1rem' }}>
               <button
                 onClick={() => setReviewIndex(prev => (prev === 0 ? dummyReviews.length - 1 : prev - 1))}
@@ -854,7 +909,53 @@ export default function Shop() {
       </section>
 
       {/* ================================================================== */}
-      {/* 8. FINAL CONVERSION SECTION (Matching Home Page Final CTA Card) */}
+      {/* 8. BACK TO TOP BUTTON */}
+      {/* ================================================================== */}
+      <div 
+        style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          padding: isMobile ? '1.5rem 0 3rem' : '2.5rem 0 4rem' 
+        }}
+      >
+        <button
+          onClick={() => handleScrollToSection('shop-hero-section')}
+          style={{
+            padding: isMobile ? '0.75rem 1.6rem' : '0.9rem 2.25rem',
+            borderRadius: '999px',
+            backgroundColor: 'rgba(36, 79, 33, 0.75)',
+            border: '1.5px solid #b9cd94',
+            color: '#FFFDF9',
+            fontWeight: '850',
+            fontSize: isMobile ? '0.82rem' : '0.9rem',
+            letterSpacing: '0.08em',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: '0 6px 20px rgba(36, 79, 33, 0.4), inset 0 1px 1px rgba(255,255,255,0.2)',
+            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#244f21';
+            e.currentTarget.style.transform = 'translateY(-3px)';
+            e.currentTarget.style.boxShadow = '0 10px 25px rgba(36, 79, 33, 0.6)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(36, 79, 33, 0.75)';
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(36, 79, 33, 0.4)';
+          }}
+        >
+          <span>BACK TO TOP</span>
+          <span style={{ fontSize: '1.1rem', fontWeight: '900', color: 'var(--accent-gold)', lineHeight: 1 }}>↑</span>
+        </button>
+      </div>
+
+      {/* ================================================================== */}
+      {/* 9. FINAL CONVERSION */}
       {/* ================================================================== */}
       <section 
         className="reveal-fade-up cta-section"
@@ -903,3 +1004,4 @@ export default function Shop() {
     </div>
   );
 }
+
