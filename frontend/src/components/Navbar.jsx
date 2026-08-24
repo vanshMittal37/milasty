@@ -57,7 +57,6 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'About', path: '/our-story' },
-    { name: 'Catalogue', path: '/catalogue' },
     { name: 'Shop', path: '/shop' },
     { name: 'Nutrition', path: '/nutrition' },
     { name: 'Contact', path: '/contact' },

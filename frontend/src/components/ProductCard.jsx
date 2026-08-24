@@ -24,8 +24,19 @@ export default function ProductCard({ product }) {
       setTimeout(() => setBtnText('Add to Cart'), 2000);
     }
   };
+  const formatMinimalBadge = (text) => {
+    if (!text) return '';
+    const lower = text.toLowerCase();
+    if (lower.includes('bestseller') || lower.includes('best seller')) return 'BESTSELLER';
+    if (lower.includes('gluten')) return 'GLUTEN-FREE';
+    if (lower.includes('fiber')) return 'HIGH FIBER';
+    if (lower.includes('calcium')) return 'CALCIUM+';
+    if (lower.includes('starter')) return 'STARTER';
+    return text.toUpperCase();
+  };
 
-  return (    <div
+  return (
+    <div
       className="glass-card home-product-card"
       style={{
         display: 'flex',
@@ -110,8 +121,7 @@ export default function ProductCard({ product }) {
               top: '6px',
               left: '6px',
               display: 'flex',
-              flexWrap: 'wrap',
-              gap: '3px',
+              alignItems: 'center',
               zIndex: 10,
               pointerEvents: 'none'
             }}
@@ -121,22 +131,24 @@ export default function ProductCard({ product }) {
                 key={idx} 
                 className="card-badge-span"
                 style={{
-                  fontSize: '0.52rem',
-                  fontWeight: '850',
+                  fontSize: '0.50rem',
+                  fontWeight: '800',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.03em',
+                  letterSpacing: '0.04em',
                   color: '#b9cd94',
                   backgroundColor: 'rgba(36, 79, 33, 0.90)',
                   backdropFilter: 'blur(8px)',
                   WebkitBackdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(185, 205, 148, 0.4)',
-                  padding: '0.12rem 0.35rem',
-                  borderRadius: '999px',
+                  border: '1px solid rgba(185, 205, 148, 0.45)',
+                  padding: '0.12rem 0.38rem',
+                  borderRadius: '4px',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-                  lineHeight: '1.2'
+                  lineHeight: '1.1',
+                  whiteSpace: 'nowrap',
+                  display: 'inline-block'
                 }}
               >
-                {badge}
+                {formatMinimalBadge(badge)}
               </span>
             ))}
           </div>

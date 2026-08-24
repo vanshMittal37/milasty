@@ -127,7 +127,7 @@ function MainLayout() {
           <Route path="/terms" element={<LegalPage />} />
 
           {/* Customer E-commerce System */}
-          <Route path="/catalogue" element={<CataloguePage />} />
+          <Route path="/catalogue" element={<Navigate to="/shop" replace />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/shop/product/:id" element={<ShopProductDetail />} />
           <Route path="/cart" element={<CartPage />} />

@@ -311,9 +311,9 @@ export default function Home() {
   /* HOME CATALOGUE SECTION STATE (DATA-DRIVEN CATEGORY SELECTION)             */
   /* -------------------------------------------------------------------------- */
   const homeCatalogueCategories = [
-    { id: 'starter', number: '01', name: 'STARTER FAVOURITES', subtitle: 'Curated tasting boxes & best sellers' },
-    { id: 'daily', number: '02', name: 'DAILY RITUAL', subtitle: 'Guilt-free everyday tea companions' },
-    { id: 'gifting', number: '03', name: 'GIFTING HAMPERS', subtitle: 'Luxury artisanal gift hampers' },
+    { id: 'starter', name: 'Starter Boxes' },
+    { id: 'daily', name: 'Daily Bakes' },
+    { id: 'gifting', name: 'Gifting Hampers' },
   ];
   const [selectedHomeCat, setSelectedHomeCat] = useState('starter');
 
@@ -750,110 +750,114 @@ export default function Home() {
 
 
 
-        {/* 4. SIGNATURE PRODUCTS SECTION */}
-        <section ref={favRef} className="reveal-fade-up favorites-section" style={{ padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-          <div className="container">
-            <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4rem' }}>
-              <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Our Favorites</span>
-              <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>Meet the <span style={{ color: 'var(--accent-gold)' }}>MILASTY</span> Favourites</h2>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '1.05rem', fontWeight: '500' }}>Four wholesome bakes. One better way to snack.</p>
+        {/* 4. SIGNATURE PRODUCTS & FAVOURITES SECTION */}
+        <section ref={favRef} className="reveal-fade-up favorites-section" style={{ padding: isMobile ? '3.5rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 0.5rem' }}>
+            
+            {/* Header */}
+            <div style={{ textAlign: 'center', maxWidth: '660px', margin: isMobile ? '0 auto 1.75rem' : '0 auto 3rem' }}>
+              <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>OUR FAVORITES</span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2', margin: '0 0 0.75rem' }}>
+                Meet the <span style={{ color: 'var(--accent-gold)' }}>MILASTY</span> Favourites
+              </h2>
+              <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+                Four wholesome bakes. One better way to snack everyday.
+              </p>
             </div>
 
-            <div className="favorites-grid fitted-cards-container-4">
-              {dbProducts.slice(0, 4).map((product) => {
-                const selectedVariant = product.variants?.[0];
-                const isWishlisted = wishlistItems && wishlistItems.some((item) => (item._id || item.slug) === (product._id || product.slug));
+            {/* Centered Category Pills Strip */}
+            <div 
+              className="home-catalogue-categories-strip"
+              style={{ 
+                display: 'flex', 
+                flexWrap: isMobile ? 'nowrap' : 'wrap',
+                justifyContent: 'center', 
+                gap: isMobile ? '0.4rem' : '0.6rem', 
+                marginBottom: '1.75rem',
+                padding: isMobile ? '0 0.5rem 0.35rem' : '0 0.25rem',
+                overflowX: isMobile ? 'auto' : 'visible',
+                scrollSnapType: isMobile ? 'x mandatory' : 'none',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
+              {homeCatalogueCategories.map((cat) => {
+                const isSelected = selectedHomeCat === cat.id;
                 return (
-                  <div
-                    key={product._id || product.slug}
-                    className="glass-card home-product-card"
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedHomeCat(cat.id)}
+                    className="home-catalogue-category-pill"
                     style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      borderRadius: '20px',
-                      overflow: 'hidden',
-                      position: 'relative',
-                      boxSizing: 'border-box',
-                      width: '100%',
-                      minWidth: 0,
+                      padding: isMobile ? '0.35rem 0.85rem' : '0.45rem 1.15rem',
+                      height: isMobile ? '30px' : '34px',
+                      borderRadius: '999px',
+                      backgroundColor: isSelected ? '#244f21' : 'rgba(255, 255, 255, 0.08)',
+                      border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.16)',
+                      color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.75)',
+                      backdropFilter: 'blur(12px)',
+                      WebkitBackdropFilter: 'blur(12px)',
+                      cursor: 'pointer',
+                      fontSize: isMobile ? '0.74rem' : '0.8rem',
+                      fontWeight: '700',
+                      letterSpacing: '0.02em',
+                      transition: 'all 0.25s ease',
+                      boxShadow: isSelected ? '0 4px 12px rgba(36, 79, 33, 0.4)' : 'none',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                      scrollSnapAlign: 'center'
                     }}
                   >
-                    <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: 'transparent' }} className="card-image-wrap">
-                      <Link to={`/product/${product.slug}`}>
-                        <img
-                          src={product.image}
-                          alt={product.title}
-                          loading="eager"
-                          decoding="async"
-                          style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            transition: 'transform 0.4s ease'
-                          }}
-                          onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.04)'}
-                          onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        />
-                      </Link>
-
-                      <button
-                        onClick={() => toggleWishlist(product)}
-                        className="card-wishlist-btn"
-                        style={{
-                          position: 'absolute',
-                          top: '8px',
-                          right: '8px',
-                          backgroundColor: 'rgba(255, 255, 255, 0.90)',
-                          border: 'none',
-                          width: isMobile ? '28px' : '32px',
-                          height: isMobile ? '28px' : '32px',
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                          color: isWishlisted ? 'var(--accent-terracotta)' : '#333333',
-                          cursor: 'pointer',
-                          zIndex: 5
-                        }}
-                      >
-                        <Heart size={isMobile ? 13 : 15} fill={isWishlisted ? 'var(--accent-terracotta)' : 'none'} />
-                      </button>
-                    </div>
-
-                    <div className="card-body" style={{ padding: isMobile ? '0.85rem 0.7rem' : '1.25rem 1.15rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1, minWidth: 0 }}>
-                      <div>
-                        <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', marginBottom: '0.35rem' }}>
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} size={isMobile ? 11 : 13} fill={i < Math.floor(product.rating || 5) ? 'var(--accent-gold)' : 'none'} color="var(--accent-gold)" />
-                          ))}
-                          <span style={{ fontSize: isMobile ? '0.7rem' : '0.78rem', color: 'rgba(255, 255, 255, 0.85)', marginLeft: '0.2rem', fontWeight: '600' }}>({product.reviewCount || 10})</span>
-                        </div>
-                        <h3 className="card-title" style={{ fontSize: isMobile ? '0.9rem' : '1.1rem', color: '#FFFDF9', marginBottom: '0.3rem', fontFamily: 'var(--font-serif)', fontWeight: '850', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          <Link to={`/product/${product.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{product.title}</Link>
-                        </h3>
-                        <p className="card-subtitle" style={{ fontSize: isMobile ? '0.75rem' : '0.82rem', color: '#F5EBDD', marginBottom: '0.85rem', lineHeight: '1.4', fontWeight: '550', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.subtitle || product.description}</p>
-                      </div>
-
-                      <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.6rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', minWidth: 0 }}>
-                        <span className="card-price" style={{ fontSize: isMobile ? '0.95rem' : '1.15rem', fontWeight: '900', color: '#FFFDF9' }}>₹{selectedVariant?.price || 139}</span>
-                        <button
-                          onClick={() => addToCart(product, selectedVariant)}
-                          className="btn-primary add-cart-btn"
-                          style={{ padding: isMobile ? '0.4rem 0.65rem' : '0.5rem 0.9rem', fontSize: isMobile ? '0.72rem' : '0.8rem', gap: '0.25rem', backgroundColor: '#244f21', color: '#FFFFFF', fontWeight: '850', borderRadius: '999px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
-                        >
-                          <ShoppingBag size={isMobile ? 12 : 14} />
-                          <span>Add</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                    {cat.name}
+                  </button>
                 );
               })}
             </div>
+
+            {/* Product Cards Grid */}
+            <div className="favorites-grid fitted-cards-container-4" style={{ marginBottom: '2.5rem' }}>
+              {(() => {
+                let filtered = [];
+                if (selectedHomeCat === 'starter') {
+                  filtered = initialProducts.filter(p => p.category === 'starter' || p.isFeatured || p.slug.includes('trio'));
+                } else if (selectedHomeCat === 'daily') {
+                  filtered = initialProducts.filter(p => p.category === 'daily' || p.slug.includes('cookie') || p.slug.includes('bajra'));
+                } else if (selectedHomeCat === 'gifting') {
+                  filtered = initialProducts.filter(p => p.category === 'gifts' || p.category === 'gifting' || p.title.toLowerCase().includes('hamper') || p.title.toLowerCase().includes('box'));
+                }
+                if (filtered.length === 0) filtered = initialProducts.slice(0, 4);
+                return filtered.slice(0, 4).map((product) => (
+                  <ProductCard key={product._id || product.slug} product={product} />
+                ));
+              })()}
+            </div>
+
+            {/* SEE THE FULL COLLECTION Button */}
+            <div style={{ textAlign: 'center' }}>
+              <Link
+                to={`/shop`}
+                className="btn-primary"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.6rem',
+                  padding: isMobile ? '0.75rem 1.65rem' : '0.9rem 2.25rem',
+                  backgroundColor: '#244f21',
+                  color: '#FFFFFF',
+                  border: '1.5px solid #b9cd94',
+                  borderRadius: '999px',
+                  fontWeight: '850',
+                  fontSize: isMobile ? '0.82rem' : '0.9rem',
+                  letterSpacing: '0.05em',
+                  textDecoration: 'none',
+                  boxShadow: '0 8px 24px rgba(36, 79, 33, 0.35)',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <span>SEE THE FULL COLLECTION</span>
+                <ArrowRight size={18} color="#b9cd94" />
+              </Link>
+            </div>
+
           </div>
         </section>
 
@@ -1572,129 +1576,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================================================================== */}
-        {/* NEW HOME PAGE PRODUCT CATALOGUE SECTION                            */}
-        {/* ================================================================== */}
-        <section 
-          ref={catalogueRef} 
-          className="reveal-fade-up home-catalogue-section" 
-          style={{ padding: isMobile ? '3.5rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}
-        >
-          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 0.5rem' }}>
-            
-            {/* Header */}
-            <div style={{ textAlign: 'center', maxWidth: '660px', margin: isMobile ? '0 auto 1.75rem' : '0 auto 3.5rem' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.6rem', fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>
-                <Grid size={14} color="var(--accent-gold)" />
-                <span>OUR COLLECTION</span>
-              </span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.2', margin: '0 0 0.85rem' }}>
-                Explore the <span style={{ color: 'var(--accent-gold)' }}>MILASTY Collection</span>
-              </h2>
-              <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
-                Discover wholesome millet bakes made for everyday snacking, mindful moments and thoughtful gifting.
-              </p>
-            </div>
 
-            {/* Compact Centered Category Pills Strip */}
-            <div 
-              className="home-catalogue-categories-strip"
-              style={{ 
-                display: 'flex', 
-                flexWrap: isMobile ? 'nowrap' : 'wrap',
-                justifyContent: isMobile ? 'flex-start' : 'center', 
-                gap: isMobile ? '0.55rem' : '0.65rem', 
-                marginBottom: '1.75rem',
-                padding: isMobile ? '0 1rem 0.5rem' : '0 0.25rem',
-                overflowX: isMobile ? 'auto' : 'visible',
-                scrollSnapType: isMobile ? 'x mandatory' : 'none',
-                WebkitOverflowScrolling: 'touch'
-              }}
-            >
-              {homeCatalogueCategories.map((cat) => {
-                const isSelected = selectedHomeCat === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedHomeCat(cat.id)}
-                    className="home-catalogue-category-pill"
-                    style={{
-                      padding: isMobile ? '0.42rem 0.9rem' : '0.65rem 1.35rem',
-                      borderRadius: '999px',
-                      backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
-                      border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.25)',
-                      color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.85)',
-                      backdropFilter: 'blur(16px)',
-                      WebkitBackdropFilter: 'blur(16px)',
-                      cursor: 'pointer',
-                      transition: 'all 0.25s ease',
-                      boxShadow: isSelected ? '0 4px 14px rgba(36, 79, 33, 0.4)' : '0 2px 8px rgba(0, 0, 0, 0.2)',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                      scrollSnapAlign: 'start'
-                    }}
-                  >
-                    <span style={{ fontSize: isMobile ? '0.64rem' : '0.68rem', letterSpacing: '0.06em', fontWeight: '850', color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.5)' }}>
-                      {cat.number}
-                    </span>
-                    <span style={{ fontSize: isMobile ? '0.74rem' : '0.85rem', fontWeight: '800', letterSpacing: '0.03em' }}>
-                      {cat.name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Related 3-4 Products Preview (Compact 2x2 Grid on Mobile | 3-4 Columns on Desktop) */}
-            <div className="catalogue-home-products-grid favorites-grid fitted-cards-container-4" style={{ marginBottom: '2.5rem' }}>
-              {(() => {
-                let filtered = [];
-                if (selectedHomeCat === 'starter') {
-                  filtered = initialProducts.filter(p => p.category === 'starter' || p.isFeatured || p.slug.includes('trio'));
-                } else if (selectedHomeCat === 'daily') {
-                  filtered = initialProducts.filter(p => p.category === 'daily' || p.slug.includes('cookie') || p.slug.includes('bajra'));
-                } else if (selectedHomeCat === 'gifting') {
-                  filtered = initialProducts.filter(p => p.category === 'gifts' || p.category === 'gifting' || p.title.toLowerCase().includes('hamper') || p.title.toLowerCase().includes('box'));
-                }
-                if (filtered.length === 0) filtered = initialProducts.slice(0, 4);
-                return filtered.slice(0, 4).map((product) => (
-                  <ProductCard key={product._id || product.slug} product={product} />
-                ));
-              })()}
-            </div>
-
-            {/* SEE THE FULL COLLECTION Button */}
-            <div style={{ textAlign: 'center' }}>
-              <Link
-                to={`/catalogue?category=${selectedHomeCat}`}
-                className="btn-primary"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.6rem',
-                  padding: '0.9rem 2.25rem',
-                  backgroundColor: '#244f21',
-                  color: '#FFFFFF',
-                  border: '1.5px solid #b9cd94',
-                  borderRadius: '999px',
-                  fontWeight: '850',
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.05em',
-                  textDecoration: 'none',
-                  boxShadow: '0 8px 24px rgba(36, 79, 33, 0.35)',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <span>SEE THE FULL COLLECTION</span>
-                <ArrowRight size={18} color="#b9cd94" />
-              </Link>
-            </div>
-
-          </div>
-        </section>
 
         {/* 5. INTERACTIVE MILLET RITUAL SECTION (Desktop Only) */}
         <section ref={ritualRef} className="reveal-fade-up ritual-section desktop-only-section" style={{ display: isMobile ? 'none' : 'block', padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
