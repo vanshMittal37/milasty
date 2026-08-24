@@ -207,7 +207,7 @@ export default function Shop() {
       }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
 
-      {/* ================================================================== */}
+
       {/* 1. SHOP HERO */}
       {/* ================================================================== */}
       <section 
@@ -267,6 +267,7 @@ export default function Shop() {
 
       {/* ================================================================== */}
       {/* 2. FEATURED BAKES (Standard Product Cards Grid) */}
+
       {/* ================================================================== */}
       <section 
         id="featured-bakes-section" 
@@ -325,6 +326,7 @@ export default function Shop() {
           {/* Circular Category Grid: 2x2 on Mobile | Clean Horizontal Row on Desktop */}
           <div 
             style={{ 
+<<<<<<< HEAD
               display: 'grid', 
               gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${activeCategoryList.length}, 1fr)`, 
               gap: isMobile ? '1.75rem 1rem' : '2.5rem 2rem',
@@ -370,6 +372,87 @@ export default function Shop() {
                     }
                     if (title) title.style.color = isSelected ? 'var(--accent-gold)' : '#FFFDF9';
                   }}
+              display: 'flex', 
+              gap: isMobile ? '0.5rem' : '0.75rem', 
+              maxWidth: '620px', 
+              margin: isMobile ? '0 auto 1.75rem' : '0 auto 2.5rem', 
+              alignItems: 'center',
+              width: '100%',
+              boxSizing: 'border-box' 
+            }}
+          >
+            <div style={{ position: 'relative', flexGrow: 1 }}>
+              <Search className="shop-search-icon" size={isMobile ? 16 : 18} />
+              <input 
+                type="text"
+                className="shop-search-input"
+                placeholder={isMobile ? "Search bakes..." : "Search cookies, ingredients, hampers..."}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  style={{
+                    position: 'absolute',
+                    right: isMobile ? '10px' : '14px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'rgba(255, 255, 255, 0.65)',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    padding: '0.2rem 0.4rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 3
+                  }}
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            
+            <button
+              onClick={() => setFilterModalOpen(true)}
+              style={{
+                padding: isMobile ? '0.6rem 1rem' : '0.85rem 1.35rem',
+                borderRadius: '999px',
+                backgroundColor: 'rgba(36, 79, 33, 0.85)',
+                border: '1.5px solid #b9cd94',
+                color: '#FFFDF9',
+                fontWeight: '850',
+                fontSize: isMobile ? '0.82rem' : '0.88rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: isMobile ? '0.35rem' : '0.45rem',
+                flexShrink: 0,
+                boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+              }}
+            >
+              <Filter size={isMobile ? 15 : 17} color="var(--accent-gold)" />
+              <span>Filter</span>
+            </button>
+          </div>
+
+          {/* Product Cards for Categories Section */}
+          <div className="favorites-grid fitted-cards-container-4">
+            {displayedProducts.length > 0 ? (
+              displayedProducts.map((product) => (
+                <ProductCard key={product._id || product.slug} product={product} />
+              ))
+            ) : (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
+                <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
+                <button 
+                  onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
+                  className="btn-primary" 
+                  style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
+
                 >
                   {/* Circle Image Wrapper */}
                   <div
@@ -908,6 +991,7 @@ export default function Shop() {
         </div>
       </section>
 
+<<<<<<< HEAD
       {/* ================================================================== */}
       {/* 8. BACK TO TOP BUTTON */}
       {/* ================================================================== */}
@@ -992,13 +1076,9 @@ export default function Shop() {
             >
               <span>Shop All Fresh Bakes →</span>
             </button>
+=======
+>>>>>>> f1dc1a382b7070dc23f8cd769b8b711a4e9c81f5
 
-            <div style={{ marginTop: '2rem', fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.8)', letterSpacing: '0.05em', fontWeight: '700' }}>
-              PAN-INDIA SHIPPING • FRESHLY BAKED ON ORDER
-            </div>
-          </div>
-        </div>
-      </section>
 
       </div>
     </div>

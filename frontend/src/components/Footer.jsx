@@ -5,7 +5,7 @@ import Logo from './Logo';
 
 export default function Footer() {
   const location = useLocation();
-  const transparentPages = ['/', '/our-story', '/products', '/shop', '/catalogue', '/nutrition', '/contact', '/wishlist'];
+  const transparentPages = ['/', '/our-story', '/products', '/shop', '/nutrition', '/contact', '/wishlist'];
   const isTransparentPage = transparentPages.includes(location.pathname);
 
   return (
