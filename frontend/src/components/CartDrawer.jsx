@@ -145,6 +145,48 @@ export default function CartDrawer() {
             <span>₹{subtotal}</span>
             <span>Threshold: ₹499</span>
           </div>
+          {amountNeededForFreeShip > 0 && (
+            <div
+              style={{
+                marginTop: '0.65rem',
+                padding: '0.55rem 0.75rem',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(36, 79, 33, 0.25)',
+                border: '1px solid rgba(185, 205, 148, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.5rem'
+              }}
+            >
+              <div style={{ fontSize: '0.74rem', color: '#FFFDF9', fontWeight: '600' }}>
+                <span style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Trial Snack Box</span> — ₹99
+              </div>
+              <button
+                onClick={() => {
+                  addToCart({
+                    _id: 'trial-pack-99',
+                    title: 'Trial Snack Box (100g)',
+                    slug: 'trial-snack-box',
+                    image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500&auto=format&fit=crop&q=80',
+                    variants: [{ weight: '100g', price: 99, originalPrice: 120 }]
+                  }, { weight: '100g', price: 99 });
+                }}
+                style={{
+                  padding: '0.25rem 0.65rem',
+                  fontSize: '0.7rem',
+                  backgroundColor: '#244f21',
+                  color: '#FFFFFF',
+                  border: '1px solid #b9cd94',
+                  borderRadius: '999px',
+                  fontWeight: '800',
+                  cursor: 'pointer'
+                }}
+              >
+                + Add (₹99)
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Cart Items List */}
@@ -354,8 +396,11 @@ export default function CartDrawer() {
               <span>Proceed to Checkout</span>
               <ArrowRight size={16} />
             </button>
-            <div style={{ textAlign: 'center', marginTop: '0.65rem', fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600', letterSpacing: '0.02em' }}>
-              Secure Checkout • Fast Pan-India Delivery
+            <div style={{ textAlign: 'center', marginTop: '0.65rem', fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600', letterSpacing: '0.02em', display: 'flex', flexDirection: 'column', gap: '0.35rem', alignItems: 'center' }}>
+              <span>🔒 100% Encrypted & Safe Checkout</span>
+              <div style={{ display: 'flex', gap: '0.4rem', fontSize: '0.68rem', color: 'var(--accent-gold)', fontWeight: '700', letterSpacing: '0.05em' }}>
+                <span>UPI</span> • <span>GPay</span> • <span>PhonePe</span> • <span>Cards</span> • <span>NetBanking</span>
+              </div>
             </div>
           </div>
         )}

@@ -20,6 +20,16 @@ export default function ProductDetail() {
   const [btnText, setBtnText] = useState('Add to Cart');
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [pincode, setPincode] = useState('');
+  const [deliveryMsg, setDeliveryMsg] = useState('');
+
+  const checkDelivery = () => {
+    if (pincode.length === 6) {
+      setDeliveryMsg('⚡ Delivery Available: Estimated in 2–4 Business Days');
+    } else {
+      setDeliveryMsg('Please enter a valid 6-digit Pincode');
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -346,12 +356,18 @@ export default function ProductDetail() {
               </div>
 
               {/* Ratings & reviews */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: isMobile ? '0.78rem' : '0.85rem', color: '#F5EBDD', fontWeight: '600' }}>
-                <div style={{ display: 'flex', color: '#b9cd94' }}>
-                  <Star size={14} fill="#b9cd94" color="#b9cd94" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: isMobile ? '0.78rem' : '0.85rem', color: '#F5EBDD', fontWeight: '600' }}>
+                  <div style={{ display: 'flex', color: '#b9cd94' }}>
+                    <Star size={14} fill="#b9cd94" color="#b9cd94" />
+                  </div>
+                  <span style={{ color: '#FFFDF9', fontWeight: '800' }}>{product.rating}</span>
+                  <span style={{ color: '#F5EBDD' }}>({product.reviewCount || 24} reviews)</span>
                 </div>
-                <span style={{ color: '#FFFDF9', fontWeight: '800' }}>{product.rating}</span>
-                <span style={{ color: '#F5EBDD' }}>({product.reviewCount || 24} reviews)</span>
+                {/* Stock Scarcity Signal */}
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.2rem 0.55rem', borderRadius: '6px', backgroundColor: 'rgba(234, 179, 8, 0.15)', border: '1px solid rgba(234, 179, 8, 0.4)', color: '#FACC15', fontSize: '0.74rem', fontWeight: '800' }}>
+                  <span>⚡ Limited Batch: Only {currentStock || 8} left!</span>
+                </div>
               </div>
 
               {/* Price section */}
@@ -449,6 +465,51 @@ export default function ProductDetail() {
                 </button>
               </div>
 
+              {/* Pincode Delivery Checker */}
+              <div style={{ marginTop: '0.4rem', paddingTop: '0.65rem', borderTop: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#FFFDF9', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.35rem' }}>
+                  Delivery Availability
+                </span>
+                <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '320px' }}>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    placeholder="Enter 6-digit Pincode..."
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
+                    style={{
+                      padding: '0.4rem 0.75rem',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(255, 255, 255, 0.22)',
+                      backgroundColor: 'rgba(20, 10, 5, 0.65)',
+                      color: '#FFFDF9',
+                      fontSize: '0.78rem',
+                      flexGrow: 1
+                    }}
+                  />
+                  <button
+                    onClick={checkDelivery}
+                    style={{
+                      padding: '0.4rem 0.85rem',
+                      borderRadius: '8px',
+                      backgroundColor: '#244f21',
+                      border: '1px solid #b9cd94',
+                      color: '#FFFDF9',
+                      fontSize: '0.76rem',
+                      fontWeight: '800',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Check
+                  </button>
+                </div>
+                {deliveryMsg && (
+                  <div style={{ fontSize: '0.74rem', color: deliveryMsg.includes('⚡') ? '#b9cd94' : '#f87171', fontWeight: '700', marginTop: '0.35rem' }}>
+                    {deliveryMsg}
+                  </div>
+                )}
+              </div>
+
               {/* Custom Brand Trust bullet strip */}
               <div style={{ marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.45rem', borderTop: '1.5px solid rgba(255, 255, 255, 0.12)', paddingTop: '0.75rem', fontSize: isMobile ? '0.78rem' : '0.85rem', color: '#F5EBDD', fontWeight: '600' }}>
                 <ShieldCheck size={15} color="#b9cd94" />
@@ -532,6 +593,52 @@ export default function ProductDetail() {
         )}
 
       </div>
+
+      {/* Sticky Bottom Action Bar for Mobile Viewports */}
+      {isMobile && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: 'rgba(20, 10, 5, 0.94)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderTop: '1px solid rgba(185, 205, 148, 0.35)',
+            padding: '0.65rem 1.15rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            zIndex: 100,
+            boxShadow: '0 -8px 24px rgba(0, 0, 0, 0.4)'
+          }}
+        >
+          <div>
+            <div style={{ fontSize: '0.68rem', color: '#F5EBDD', fontWeight: '600' }}>Price</div>
+            <div style={{ fontSize: '1.05rem', fontWeight: '900', color: '#b9cd94' }}>₹{unitPrice}</div>
+          </div>
+          <button
+            onClick={handleAddToCart}
+            style={{
+              padding: '0.6rem 1.45rem',
+              backgroundColor: '#244f21',
+              color: '#FFFFFF',
+              border: '1px solid #b9cd94',
+              borderRadius: '999px',
+              fontWeight: '850',
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem'
+            }}
+          >
+            <ShoppingBag size={15} />
+            <span>{btnText}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

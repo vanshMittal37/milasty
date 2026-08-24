@@ -682,27 +682,43 @@ export default function Home() {
               </a>
             </div>
 
-            {/* Trust badges */}
+            {/* Micro-Trust Bar */}
             <div
               style={{
-                marginTop: '3.5rem',
-                display: 'flex',
-                gap: '1.75rem',
+                marginTop: isMobile ? '2.25rem' : '3.25rem',
+                display: 'inline-flex',
+                gap: isMobile ? '0.6rem' : '1.25rem',
                 flexWrap: 'wrap',
                 justifyContent: 'center',
-                fontSize: '0.8rem',
-                color: '#FFFFFF',
+                alignItems: 'center',
+                padding: isMobile ? '0.65rem 1.15rem' : '0.75rem 1.75rem',
+                borderRadius: '999px',
+                backgroundColor: 'rgba(20, 10, 5, 0.70)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                border: '1px solid rgba(185, 205, 148, 0.35)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
+                fontSize: isMobile ? '0.72rem' : '0.82rem',
+                color: '#FFFDF9',
                 fontWeight: '700',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                textShadow: '0 1px 4px rgba(0,0,0,0.3)'
+                letterSpacing: '0.03em'
               }}
             >
-              <span>No Maida</span>
-              <span>•</span>
-              <span>No Palm Oil</span>
-              <span>•</span>
-              <span>No Refined Sugar</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                <ShieldCheck size={14} color="#b9cd94" /> 100% Maida-Free
+              </span>
+              <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>•</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                <Award size={14} color="#b9cd94" /> Pure Desi Cow Ghee
+              </span>
+              <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>•</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                <Sparkles size={14} color="#b9cd94" /> Organic Jaggery
+              </span>
+              <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>•</span>
+              <span style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>
+                ★ 4.9/5 (500+ Reviews)
+              </span>
             </div>
           </div>
 

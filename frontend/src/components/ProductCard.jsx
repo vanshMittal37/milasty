@@ -27,11 +27,11 @@ export default function ProductCard({ product }) {
   const formatMinimalBadge = (text) => {
     if (!text) return '';
     const lower = text.toLowerCase();
-    if (lower.includes('bestseller') || lower.includes('best seller')) return 'BESTSELLER';
-    if (lower.includes('gluten')) return 'GLUTEN-FREE';
-    if (lower.includes('fiber')) return 'HIGH FIBER';
-    if (lower.includes('calcium')) return 'CALCIUM+';
-    if (lower.includes('starter')) return 'STARTER';
+    if (lower.includes('bestseller') || lower.includes('best seller')) return '🔥 BESTSELLER';
+    if (lower.includes('gluten')) return '🛡️ GLUTEN-FREE';
+    if (lower.includes('fiber')) return '🌾 HIGH FIBER';
+    if (lower.includes('calcium')) return '💪 CALCIUM+';
+    if (lower.includes('starter')) return '✨ STARTER';
     return text.toUpperCase();
   };
 
