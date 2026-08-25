@@ -12,6 +12,7 @@ import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Nutrition from './pages/Nutrition';
 import OurStory from './pages/OurStory';
+import TestimonialsPage from './pages/TestimonialsPage';
 import Contact from './pages/Contact';
 import LegalPage from './pages/LegalPage';
 
@@ -120,6 +121,8 @@ function MainLayout() {
           <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/nutrition" element={<Nutrition />} />
           <Route path="/our-story" element={<OurStory />} />
+          <Route path="/reviews" element={<TestimonialsPage />} />
+          <Route path="/testimonials" element={<TestimonialsPage />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/shipping" element={<LegalPage />} />
           <Route path="/refund" element={<LegalPage />} />

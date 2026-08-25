@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Search, ChevronRight, ShoppingBag, Leaf, Sparkles, 
-  Shield, Award, ArrowRight, Star, ChevronLeft, Check, Filter
+  Shield, Award, ArrowRight, Star, ChevronLeft, Check, Filter,
+  Calendar, Truck, Gift
 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import api from '../api/axios';
@@ -163,6 +164,130 @@ export default function Shop() {
     }
   ];
 
+  // Custom Future Favourites Bakes Data (Tailored Luxury Themes for Wood Background)
+  const customFutureFavourites = [
+    {
+      id: 'signature-trio-box',
+      title: 'Signature Trio Box',
+      badgeText: '🔥 BESTSELLER',
+      desc: '3 timeless MILASTY delights in 1 box.',
+      preBookPrice: '₹549',
+      originalPrice: '₹650',
+      shippingDate: 'SHIPPING STARTS 15TH JUNE',
+      image: '/images/image1.jpeg',
+      features: [
+        { icon: Leaf, label: 'Wholesome' },
+        { icon: Gift, label: 'Gifting' },
+        { icon: Award, label: 'Top Rated' },
+      ],
+      // Luxury Amber Cocoa Theme
+      bgGradient: 'linear-gradient(180deg, rgba(46, 26, 15, 0.92) 0%, rgba(26, 14, 8, 0.96) 100%)',
+      borderColor: 'rgba(212, 175, 55, 0.45)',
+      titleColor: '#FFFDF9',
+      badgeBg: 'linear-gradient(135deg, #D4AF37 0%, #AA8222 100%)',
+      badgeColor: '#1A0E07',
+      priceBoxBg: '#D8BA96',
+      priceLabelColor: '#382315',
+      priceTextColor: '#1F1109',
+      btnBg: '#241208',
+      btnColor: '#FFFDF9',
+      featureIconColor: '#D4AF37',
+      featureTextColor: '#FFFDF9',
+      featuresBg: 'rgba(0, 0, 0, 0.3)',
+      featuresBorder: 'rgba(212, 175, 55, 0.2)',
+    },
+    {
+      id: 'cardamom-bajra-cookies',
+      title: 'Cardamom Bajra Cookies',
+      badgeText: '🍃 HIGH FIBER',
+      desc: 'Pearl millet cookies with green cardamom.',
+      preBookPrice: '₹99',
+      originalPrice: '₹120',
+      shippingDate: 'SHIPPING STARTS 20TH JUNE',
+      image: '/images/bajra.jpeg',
+      features: [
+        { icon: Leaf, label: 'High Fiber' },
+        { icon: Shield, label: 'Digestion' },
+        { icon: Sparkles, label: 'No Sugar' },
+      ],
+      // Deep Forest Emerald Glass Theme (Same as Card 3)
+      bgGradient: 'linear-gradient(180deg, rgba(30, 44, 20, 0.92) 0%, rgba(18, 28, 12, 0.96) 100%)',
+      borderColor: '#557038',
+      titleColor: '#FFFDF9',
+      badgeBg: '#3D5625',
+      badgeColor: '#FAF4EB',
+      priceBoxBg: '#8BA460',
+      priceLabelColor: '#15240A',
+      priceTextColor: '#101C07',
+      btnBg: '#728C47',
+      btnColor: '#101C07',
+      featureIconColor: '#A3B580',
+      featureTextColor: '#FFFDF9',
+      featuresBg: 'rgba(0, 0, 0, 0.25)',
+      featuresBorder: 'rgba(255, 255, 255, 0.08)',
+    },
+    {
+      id: 'coconut-jowar-cookies',
+      title: 'Coconut Jowar Cookies',
+      badgeText: '🛡 GLUTEN-FREE',
+      desc: 'Light sorghum cookies with toasted coconut.',
+      preBookPrice: '₹99',
+      originalPrice: '₹120',
+      shippingDate: 'SHIPPING STARTS 18TH JUNE',
+      image: '/images/jowar.jpeg',
+      features: [
+        { icon: Shield, label: 'Gluten Free' },
+        { icon: Award, label: 'Protein' },
+        { icon: Leaf, label: 'Jowar' },
+      ],
+      // Deep Forest Emerald Glass Theme
+      bgGradient: 'linear-gradient(180deg, rgba(30, 44, 20, 0.92) 0%, rgba(18, 28, 12, 0.96) 100%)',
+      borderColor: '#557038',
+      titleColor: '#FFFDF9',
+      badgeBg: '#3D5625',
+      badgeColor: '#FAF4EB',
+      priceBoxBg: '#8BA460',
+      priceLabelColor: '#15240A',
+      priceTextColor: '#101C07',
+      btnBg: '#728C47',
+      btnColor: '#101C07',
+      featureIconColor: '#A3B580',
+      featureTextColor: '#FFFDF9',
+      featuresBg: 'rgba(0, 0, 0, 0.25)',
+      featuresBorder: 'rgba(255, 255, 255, 0.08)',
+    },
+    {
+      id: 'cocoa-ragi-cookies',
+      title: 'Cocoa Ragi Cookies',
+      badgeText: '💪 CALCIUM+',
+      desc: 'Finger millet blended with Dutch cocoa.',
+      preBookPrice: '₹99',
+      originalPrice: '₹120',
+      shippingDate: 'SHIPPING STARTS 22ND JUNE',
+      image: '/images/ragi.jpeg',
+      features: [
+        { icon: Shield, label: 'Calcium' },
+        { icon: Award, label: 'Strong Bone' },
+        { icon: Sparkles, label: 'Real Cocoa' },
+      ],
+      // Deep Velvet Cocoa & Copper Accent Theme
+      bgGradient: 'linear-gradient(180deg, rgba(58, 30, 20, 0.92) 0%, rgba(33, 16, 10, 0.96) 100%)',
+      borderColor: '#A87045',
+      titleColor: '#FFFDF9',
+      badgeBg: '#C8733B',
+      badgeColor: '#FFFDF9',
+      priceBoxBg: '#DFB28C',
+      priceLabelColor: '#2A140A',
+      priceTextColor: '#1A0B05',
+      btnBg: '#261107',
+      btnColor: '#FFFDF9',
+      featureIconColor: '#DFB28C',
+      featureTextColor: '#FFFDF9',
+      featuresBg: 'rgba(0, 0, 0, 0.28)',
+      featuresBorder: 'rgba(223, 178, 140, 0.2)',
+    },
+  ];
+
   // Category Click Handler → Auto Select Filter & Smooth Scroll to Catalogue
   const handleCategoryClick = (catId) => {
     setSelectedCategory(catId);
@@ -208,94 +333,276 @@ export default function Shop() {
       }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
 
-      {/* ================================================================== */}
-      {/* 1. SHOP HERO */}
-      {/* ================================================================== */}
-      <section 
-        id="shop-hero-section"
-        style={{ 
-          padding: isMobile ? '3rem 1.25rem 2rem' : '5rem 1.5rem 3.5rem', 
-          textAlign: 'center', 
-          maxWidth: '850px', 
-          margin: '0 auto',
-          boxSizing: 'border-box'
-        }}
-      >
-        <span 
-          style={{ 
-            fontSize: '0.78rem', 
-            textTransform: 'uppercase', 
-            letterSpacing: '0.14em', 
-            color: 'var(--accent-gold)', 
-            fontWeight: '850',
-            backgroundColor: 'rgba(36, 79, 33, 0.35)',
-            padding: '0.35rem 0.95rem',
-            borderRadius: '999px',
-            border: '1.5px solid rgba(185, 205, 148, 0.4)',
-            display: 'inline-block',
-            marginBottom: '1rem'
-          }}
-        >
-          SHOP MILASTY
-        </span>
-        <h1 
-          style={{ 
-            fontSize: isMobile ? '2.1rem' : '3.6rem', 
-            fontFamily: 'var(--font-serif)', 
-            color: '#FFFDF9', 
-            fontWeight: '850', 
-            lineHeight: '1.15',
-            margin: '0 0 0.85rem 0',
-            letterSpacing: '-0.02em',
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
-          }}
-        >
-          Wholesome Millet Bakes.
-        </h1>
-        <p 
-          style={{ 
-            fontSize: isMobile ? '0.95rem' : '1.12rem', 
-            color: '#F5EBDD', 
-            lineHeight: '1.6', 
-            maxWidth: '560px',
-            margin: '0 auto',
-            fontWeight: '550'
-          }}
-        >
-          Slow-baked in pure Desi Ghee and organic jaggery for everyday mindful snacking.
-        </p>
-      </section>
+
 
       {/* ================================================================== */}
-      {/* 2. FEATURED BAKES (Standard Product Cards Grid) */}
+      {/* 2. FUTURE FAVOURITES / WHAT'S NEXT FROM MILASTY                     */}
       {/* ================================================================== */}
       <section 
-        id="featured-bakes-section" 
+        id="future-favourites-section" 
         style={{ 
-          padding: isMobile ? '3rem 1rem' : '5rem 1.5rem', 
-          maxWidth: '1240px', 
+          padding: isMobile ? '2.5rem 1rem 3.5rem' : '4.5rem 1.5rem 5rem', 
+          maxWidth: '1280px', 
           margin: '0 auto', 
           boxSizing: 'border-box' 
         }}
       >
-        <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 2rem' : '0 auto 3.5rem' }}>
-          <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
-            FEATURED BAKES
+        {/* Header */}
+        <div style={{ textAlign: 'center', maxWidth: '780px', margin: isMobile ? '0 auto 2rem' : '0 auto 3rem' }}>
+          <span 
+            style={{ 
+              fontSize: '0.8rem', 
+              textTransform: 'uppercase', 
+              letterSpacing: '0.18em', 
+              color: '#A3B580', 
+              fontWeight: '800', 
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginBottom: '0.65rem'
+            }}
+          >
+            <Leaf size={14} color="#A3B580" /> FUTURE FAVOURITES <Leaf size={14} color="#A3B580" />
           </span>
-          <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
-            Discover Our <span style={{ color: '#b9cd94' }}>Favourites</span>
+          <h2 
+            style={{ 
+              fontSize: isMobile ? '2.2rem' : '3.4rem', 
+              fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif', 
+              color: '#FFFDF9', 
+              fontWeight: '800', 
+              margin: '0 0 0.85rem 0', 
+              lineHeight: '1.2' 
+            }}
+          >
+            What's Next from <span style={{ color: '#A3B580' }}>MILASTY</span>
           </h2>
-          <p style={{ fontSize: isMobile ? '0.92rem' : '1.1rem', color: '#F5EBDD', margin: '0.6rem 0 0', fontWeight: '500' }}>
-            A few of the MILASTY favourites worth trying first.
+          <p 
+            style={{ 
+              fontSize: isMobile ? '0.92rem' : '1.08rem', 
+              color: '#EADEC9', 
+              margin: '0 auto 1.5rem', 
+              fontWeight: '500',
+              lineHeight: '1.6',
+              maxWidth: '620px'
+            }}
+          >
+            Exciting new bakes, handcrafted with the goodness you love.<br />
+            Pre-book your favourites now and be the first to enjoy!
           </p>
+
+          <span
+            style={{
+              backgroundColor: 'rgba(36, 79, 33, 0.45)',
+              color: '#EADEC9',
+              border: '1.5px solid rgba(163, 181, 128, 0.45)',
+              padding: '0.45rem 1.25rem',
+              borderRadius: '25px',
+              fontSize: '0.78rem',
+              fontWeight: '700',
+              letterSpacing: '0.08em',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.25)'
+            }}
+          >
+            <Calendar size={14} color="#A3B580" /> NOW OPEN FOR PRE-BOOKING
+          </span>
         </div>
 
-        {/* Featured Products: Responsive Grid on Desktop | 2x2 Grid on Mobile */}
-        <div className="favorites-grid fitted-cards-container-4">
-          {featuredProducts.slice(0, 4).map((product) => (
-            <ProductCard key={product._id || product.slug} product={product} />
+        {/* 4 Custom Product Cards Grid (Short, Compact & Concise Design) */}
+        <div 
+          style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', 
+            gap: isMobile ? '0.65rem' : '1.15rem', 
+            alignItems: 'stretch' 
+          }}
+        >
+          {customFutureFavourites.map((item) => (
+            <div
+              key={item.id}
+              style={{
+                background: item.bgGradient,
+                borderRadius: isMobile ? '14px' : '20px',
+                border: `1.5px solid ${item.borderColor}`,
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                padding: isMobile ? '0.65rem 0.55rem 0.6rem' : '1.15rem 1rem 1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                position: 'relative',
+                overflow: 'hidden',
+                boxSizing: 'border-box',
+                transition: 'transform 0.3s ease, border-color 0.3s ease',
+              }}
+            >
+              <div>
+                {/* Top Badge */}
+                <div style={{ marginBottom: isMobile ? '0.35rem' : '0.75rem' }}>
+                  <span
+                    style={{
+                      background: item.badgeBg,
+                      color: item.badgeColor,
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      padding: isMobile ? '0.18rem 0.45rem' : '0.3rem 0.8rem',
+                      borderRadius: '20px',
+                      fontSize: isMobile ? '0.54rem' : '0.7rem',
+                      fontWeight: '800',
+                      letterSpacing: '0.03em',
+                      textTransform: 'uppercase',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.2rem',
+                    }}
+                  >
+                    {item.badgeText}
+                  </span>
+                </div>
+
+                {/* Card Title & Side Thumbnail Image Layout */}
+                <div 
+                  style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: isMobile ? '1fr 55px' : '1fr 85px', 
+                    gap: isMobile ? '0.35rem' : '0.65rem', 
+                    alignItems: 'center', 
+                    marginBottom: isMobile ? '0.35rem' : '0.75rem' 
+                  }}
+                >
+                  <div>
+                    <h3
+                      style={{
+                        margin: 0,
+                        fontSize: isMobile ? '0.85rem' : '1.1rem',
+                        fontWeight: '800',
+                        color: item.titleColor,
+                        fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
+                        lineHeight: '1.2',
+                      }}
+                    >
+                      {item.title}
+                    </h3>
+                  </div>
+                  <div 
+                    style={{ 
+                      width: isMobile ? '55px' : '85px', 
+                      height: isMobile ? '55px' : '85px', 
+                      borderRadius: isMobile ? '8px' : '12px', 
+                      overflow: 'hidden', 
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.3)', 
+                      border: '1px solid rgba(255,255,255,0.15)', 
+                      flexShrink: 0 
+                    }}
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p
+                  style={{
+                    fontSize: isMobile ? '0.68rem' : '0.82rem',
+                    color: item.descColor || 'rgba(255, 255, 255, 0.82)',
+                    lineHeight: '1.3',
+                    marginBottom: isMobile ? '0.35rem' : '0.85rem',
+                    fontWeight: '400',
+                    margin: isMobile ? '0 0 0.35rem 0' : '0 0 0.85rem 0',
+                  }}
+                >
+                  {item.desc}
+                </p>
+
+                {/* 3 Feature Badges */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: '0.1rem',
+                    marginBottom: isMobile ? '0.45rem' : '0.85rem',
+                    textAlign: 'center',
+                    padding: isMobile ? '0.25rem 0.15rem' : '0.5rem 0.3rem',
+                    backgroundColor: item.featuresBg || 'rgba(0, 0, 0, 0.22)',
+                    borderRadius: isMobile ? '8px' : '10px',
+                    border: `1px solid ${item.featuresBorder || 'rgba(255, 255, 255, 0.08)'}`,
+                  }}
+                >
+                  {item.features.map((feat, idx) => {
+                    const FeatIcon = feat.icon;
+                    return (
+                      <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.1rem' }}>
+                        <FeatIcon size={isMobile ? 11 : 15} color={item.featureIconColor || '#A3B580'} />
+                        <span style={{ fontSize: isMobile ? '0.52rem' : '0.64rem', color: item.featureTextColor || '#FFFDF9', fontWeight: '600', lineHeight: '1.1' }}>
+                          {feat.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                {/* Full-width Pre-Book Action Button */}
+                <button
+                  onClick={() => {
+                    addToCart({
+                      _id: item.id,
+                      title: item.title,
+                      price: parseInt(item.preBookPrice.replace('₹', '')),
+                      image: item.image,
+                      category: 'cookies',
+                      quantity: 1
+                    });
+                  }}
+                  style={{
+                    backgroundColor: item.priceBoxBg || item.btnBg,
+                    color: item.priceTextColor || item.btnColor || '#101C07',
+                    border: 'none',
+                    padding: isMobile ? '0.55rem 0.75rem' : '0.7rem 1rem',
+                    borderRadius: isMobile ? '12px' : '14px',
+                    fontSize: isMobile ? '0.75rem' : '0.85rem',
+                    fontWeight: '850',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.4rem',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                    transition: 'transform 0.2s ease, opacity 0.2s ease',
+                    width: '100%',
+                    marginBottom: isMobile ? '0.45rem' : '0.65rem',
+                  }}
+                >
+                  Pre-Book Now <ArrowRight size={isMobile ? 12 : 15} />
+                </button>
+
+                {/* Shipping Starts Date Pill */}
+                <div style={{ textAlign: 'center' }}>
+                  <span
+                    style={{
+                      fontSize: isMobile ? '0.52rem' : '0.66rem',
+                      color: item.descColor ? 'rgba(44, 26, 14, 0.8)' : 'rgba(255, 255, 255, 0.75)',
+                      fontWeight: '700',
+                      letterSpacing: '0.03em',
+                      textTransform: 'uppercase',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.2rem',
+                    }}
+                  >
+                    <Calendar size={isMobile ? 9 : 12} color={item.descColor ? 'rgba(44, 26, 14, 0.8)' : 'rgba(255, 255, 255, 0.75)'} /> {item.shippingDate}
+                  </span>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
+
+
       </section>
 
       {/* ================================================================== */}
