@@ -1321,7 +1321,7 @@ export default function Shop() {
               Discover freshly baked millet cookies made with pure Desi Ghee and organic jaggery. Delivered fresh all across India.
             </p>
             <button
-              onClick={() => handleScrollToSection('featured-bakes-section')}
+              onClick={() => handleScrollToSection('browse-milasty-collection')}
               className="btn-primary" 
               style={{ padding: '1.1rem 2.75rem', fontSize: '1.05rem', backgroundColor: '#c89b3c', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', borderRadius: '999px', cursor: 'pointer' }}
             >
