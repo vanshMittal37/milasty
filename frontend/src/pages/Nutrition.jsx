@@ -548,24 +548,66 @@ export default function Nutrition() {
             </div>
           )}
 
-          {/* Carousel Dots */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.25rem' }}>
-            {dailyProducts.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setGlanceIndex(idx)}
-                style={{
-                  width: glanceIndex === idx ? '24px' : '8px',
-                  height: '8px',
-                  borderRadius: '999px',
-                  backgroundColor: glanceIndex === idx ? '#b9cd94' : 'rgba(255,255,255,0.3)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-                aria-label={`Go to card ${idx + 1}`}
-              />
-            ))}
+          {/* Carousel Manual Control Strip with Arrows & Dots */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.85rem', marginTop: '1.25rem' }}>
+            <button
+              onClick={() => setGlanceIndex((prev) => (prev === 0 ? dailyProducts.length - 1 : prev - 1))}
+              aria-label="Previous card"
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                color: '#FFFDF9',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <ChevronLeft size={18} />
+            </button>
+
+            <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
+              {dailyProducts.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setGlanceIndex(idx)}
+                  style={{
+                    width: glanceIndex === idx ? '24px' : '8px',
+                    height: '8px',
+                    borderRadius: '999px',
+                    backgroundColor: glanceIndex === idx ? '#b9cd94' : 'rgba(255,255,255,0.3)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                  aria-label={`Go to card ${idx + 1}`}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={() => setGlanceIndex((prev) => (prev + 1) % dailyProducts.length)}
+              aria-label="Next card"
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                color: '#FFFDF9',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <ChevronRight size={18} />
+            </button>
           </div>
         </div>
 
@@ -703,24 +745,66 @@ export default function Nutrition() {
             </div>
           )}
 
-          {/* Carousel Dots */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.25rem' }}>
-            {whyIngredientsData.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setWhyIngredientsIndex(idx)}
-                style={{
-                  width: whyIngredientsIndex === idx ? '24px' : '8px',
-                  height: '8px',
-                  borderRadius: '999px',
-                  backgroundColor: whyIngredientsIndex === idx ? '#b9cd94' : 'rgba(255,255,255,0.3)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-                aria-label={`Go to ingredient card ${idx + 1}`}
-              />
-            ))}
+          {/* Carousel Manual Control Strip with Arrows & Dots */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.85rem', marginTop: '1.25rem' }}>
+            <button
+              onClick={() => setWhyIngredientsIndex((prev) => (prev === 0 ? whyIngredientsData.length - 1 : prev - 1))}
+              aria-label="Previous ingredient"
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                color: '#FFFDF9',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <ChevronLeft size={18} />
+            </button>
+
+            <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
+              {whyIngredientsData.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setWhyIngredientsIndex(idx)}
+                  style={{
+                    width: whyIngredientsIndex === idx ? '24px' : '8px',
+                    height: '8px',
+                    borderRadius: '999px',
+                    backgroundColor: whyIngredientsIndex === idx ? '#b9cd94' : 'rgba(255,255,255,0.3)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                  aria-label={`Go to ingredient card ${idx + 1}`}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={() => setWhyIngredientsIndex((prev) => (prev + 1) % whyIngredientsData.length)}
+              aria-label="Next ingredient"
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                color: '#FFFDF9',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <ChevronRight size={18} />
+            </button>
           </div>
         </div>
       </section>

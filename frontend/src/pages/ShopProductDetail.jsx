@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Star, ShieldCheck, Heart, ChevronRight, CheckCircle, Plus, Minus } from 'lucide-react';
+import { ShoppingBag, Star, ShieldCheck, Heart, ChevronRight, ChevronLeft, CheckCircle, Plus, Minus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import api from '../api/axios';
@@ -11,6 +11,20 @@ export default function ShopProductDetail() {
   const { id } = useParams();
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+
+  const relatedRef = useRef(null);
+
+  const scrollLeft = (ref) => {
+    if (ref.current) {
+      ref.current.scrollBy({ left: -320, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = (ref) => {
+    if (ref.current) {
+      ref.current.scrollBy({ left: 320, behavior: 'smooth' });
+    }
+  };
 
   const [product, setProduct] = useState(null);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -55,7 +69,10 @@ export default function ShopProductDetail() {
       if (found) {
         setProduct(found);
         setSelectedImage(found.image);
-        setRelatedProducts(initialProducts.filter(p => p.category === found.category && p.slug !== found.slug).slice(0, 3));
+        const allFiltered = initialProducts.filter((p) => p.slug !== id && p._id !== id);
+        const sameCategory = allFiltered.filter(p => p.category === found.category);
+        const otherCategory = allFiltered.filter(p => p.category !== found.category);
+        setRelatedProducts(sameCategory.length > 0 ? [...sameCategory, ...otherCategory] : allFiltered);
       }
     } finally {
       setLoading(false);
@@ -64,11 +81,24 @@ export default function ShopProductDetail() {
 
   const fetchRelated = async (category) => {
     try {
-      const res = await api.get(`/products?category=${category}&limit=4`);
-      if (res.data && res.data.products) {
-        setRelatedProducts(res.data.products.filter((p) => p.slug !== id && p._id !== id).slice(0, 3));
+      const res = await api.get('/products?limit=100');
+      if (res.data && res.data.products && res.data.products.length > 0) {
+        const allFiltered = res.data.products.filter((p) => p.slug !== id && p._id !== id);
+        const sameCategory = allFiltered.filter(p => p.category === category);
+        const otherCategory = allFiltered.filter(p => p.category !== category);
+        setRelatedProducts(sameCategory.length > 0 ? [...sameCategory, ...otherCategory] : allFiltered);
+      } else {
+        const allFiltered = initialProducts.filter((p) => p.slug !== id && p._id !== id);
+        const sameCategory = allFiltered.filter(p => p.category === category);
+        const otherCategory = allFiltered.filter(p => p.category !== category);
+        setRelatedProducts(sameCategory.length > 0 ? [...sameCategory, ...otherCategory] : allFiltered);
       }
-    } catch (e) {}
+    } catch (e) {
+      const allFiltered = initialProducts.filter((p) => p.slug !== id && p._id !== id);
+      const sameCategory = allFiltered.filter(p => p.category === category);
+      const otherCategory = allFiltered.filter(p => p.category !== category);
+      setRelatedProducts(sameCategory.length > 0 ? [...sameCategory, ...otherCategory] : allFiltered);
+    }
   };
 
   if (loading) {
@@ -567,26 +597,50 @@ export default function ShopProductDetail() {
           </div>
         </div>
 
-        {/* Section 3: Related Products recommendations */}
+        {/* Section 3: Related Products recommendations with manual horizontal slider */}
         {relatedProducts.length > 0 && (
           <section style={{ borderTop: '1px solid rgba(245, 220, 180, 0.18)', paddingTop: '4.5rem' }}>
-            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Discover More</span>
-              <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', margin: 0 }}>
-                You May Also Like
-              </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Discover More</span>
+                <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', margin: 0 }}>
+                  You May Also Like
+                </h2>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  onClick={() => scrollLeft(relatedRef)}
+                  aria-label="Scroll left"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  onClick={() => scrollRight(relatedRef)}
+                  aria-label="Scroll right"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
             </div>
 
-            <div 
-              className="products-main-grid" 
-              style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))', 
-                gap: '2.5rem' 
+            <div
+              ref={relatedRef}
+              className="horizontal-scroll-container"
+              style={{
+                display: 'flex',
+                gap: '1.5rem',
+                overflowX: 'auto',
+                scrollBehavior: 'smooth',
+                paddingBottom: '1.25rem',
+                WebkitOverflowScrolling: 'touch'
               }}
             >
               {relatedProducts.map((p) => (
-                <ProductCard key={p._id || p.slug} product={p} />
+                <div key={p._id || p.slug} style={{ flex: isMobile ? '0 0 260px' : '0 0 280px', width: isMobile ? '260px' : '280px' }}>
+                  <ProductCard product={p} />
+                </div>
               ))}
             </div>
           </section>

@@ -100,7 +100,7 @@ export default function TestimonialSection() {
       {/* ------------------------------------------------------------- */}
       <div
         style={{
-          backgroundColor: '#FAF3EA',
+          backgroundColor: '#E5D3BF',
           borderRadius: isMobile ? '18px' : '28px',
           boxShadow: '0 16px 36px rgba(0, 0, 0, 0.4)',
           overflow: 'hidden',
@@ -108,7 +108,7 @@ export default function TestimonialSection() {
           gridTemplateColumns: isMobile ? '1fr' : '42% 58%',
           alignItems: 'stretch',
           position: 'relative',
-          border: '1px solid #EAE0D3',
+          border: '1px solid #D9C3AE',
         }}
       >
         {/* Left Image Section */}
@@ -146,7 +146,7 @@ export default function TestimonialSection() {
                 bottom: 0,
                 width: '50px',
                 height: '100%',
-                color: '#FAF3EA',
+                color: '#E5D3BF',
                 pointerEvents: 'none',
                 zIndex: 2,
               }}
@@ -175,7 +175,7 @@ export default function TestimonialSection() {
           <div style={{ marginBottom: isMobile ? '0.75rem' : '1rem' }}>
             <span
               style={{
-                backgroundColor: '#EAD8C5',
+                backgroundColor: '#D9C3AE',
                 color: '#4A341E',
                 padding: isMobile ? '0.35rem 0.85rem' : '0.4rem 1rem',
                 borderRadius: '20px',

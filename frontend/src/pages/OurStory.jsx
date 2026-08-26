@@ -1002,13 +1002,6 @@ export default function OurStory() {
               <span>Discover Our Bakes</span>
               <ChevronRight size={16} />
             </Link>
-            <Link 
-              to="/shop" 
-              className="btn-secondary" 
-              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', borderColor: '#b9cd94', color: '#b9cd94', backgroundColor: 'rgba(36, 79, 33, 0.25)', borderRadius: '999px', fontWeight: '850' }}
-            >
-              <span>Explore Our Bakes</span>
-            </Link>
           </div>
         </div>
 
