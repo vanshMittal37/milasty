@@ -90,6 +90,10 @@ const PAGE_BACKGROUNDS = {
   '/nutrition': '/images/nutrition_background_image.jpeg',
   '/contact': '/images/shop_background_image.jpeg',
   '/wishlist': '/images/ritiual_background_image.jpeg',
+  '/terms': '/images/about_background_image.jpeg',
+  '/shipping': '/images/about_background_image.jpeg',
+  '/refund': '/images/about_background_image.jpeg',
+  '/privacy': '/images/about_background_image.jpeg',
 };
 
 function MainLayout() {

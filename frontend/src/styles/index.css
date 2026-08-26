@@ -2559,3 +2559,109 @@ footer.transparent-blurred-footer {
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25) !important;
 }
 
+/* ==================================================
+   TERMS & CONDITIONS PAGE EDITORIAL STYLING
+   ================================================== */
+@media (min-width: 1025px) {
+  .tc-layout-grid {
+    grid-template-columns: 260px minmax(0, 1fr) !important;
+  }
+  .tc-sticky-nav {
+    display: block !important;
+  }
+}
+
+/* Cancellation Policy Vertical Timeline */
+.tc-cancellation-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+}
+
+.tc-timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  position: relative;
+  background: rgba(50, 26, 18, 0.4);
+  border: 1px solid rgba(245, 235, 221, 0.15);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  transition: all 0.25s ease;
+}
+
+.tc-timeline-item:hover {
+  border-color: rgba(185, 205, 148, 0.4);
+  transform: translateX(4px);
+}
+
+.tc-timeline-badge {
+  background-color: rgba(36, 79, 33, 0.9);
+  border: 1px solid #b9cd94;
+  color: #b9cd94;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tc-timeline-content {
+  flex-grow: 1;
+}
+
+@media (max-width: 640px) {
+  .tc-timeline-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.15rem;
+  }
+}
+
+/* Shipping Process Visual Flow */
+.shipping-process-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.shipping-step-card {
+  flex: 1;
+  background: rgba(50, 26, 18, 0.45);
+  border: 1px solid rgba(245, 235, 221, 0.15);
+  border-radius: 14px;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.25s ease;
+}
+
+.shipping-step-card:hover {
+  border-color: rgba(185, 205, 148, 0.45);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .shipping-process-flow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+  .shipping-step-arrow {
+    transform: rotate(90deg);
+    margin: 0 auto;
+  }
+}
+
+
+
