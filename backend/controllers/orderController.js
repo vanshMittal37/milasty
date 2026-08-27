@@ -19,8 +19,26 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ message: 'Order must contain at least one item' });
     }
 
-    if (!customerName || !customerPhone || !shippingAddress || !pincode) {
-      return res.status(400).json({ message: 'Shipping details are mandatory' });
+    let formattedAddress = '';
+    let finalPincode = pincode || '';
+
+    if (typeof shippingAddress === 'object' && shippingAddress !== null) {
+      formattedAddress = [
+        shippingAddress.building,
+        shippingAddress.addressLine,
+        shippingAddress.city,
+        shippingAddress.state,
+        shippingAddress.country || 'India',
+      ].filter(Boolean).join(', ');
+      if (!finalPincode && shippingAddress.pincode) {
+        finalPincode = shippingAddress.pincode;
+      }
+    } else {
+      formattedAddress = String(shippingAddress || '');
+    }
+
+    if (!customerName || !customerPhone || !formattedAddress || !finalPincode) {
+      return res.status(400).json({ message: 'Shipping details and pincode are mandatory' });
     }
 
     // SERVER-SIDE PRICE VALIDATION TRUTH
@@ -74,8 +92,8 @@ export const createOrder = async (req, res) => {
           customer_name: customerName,
           customer_email: customerEmail || '',
           customer_phone: customerPhone,
-          shipping_address: shippingAddress,
-          pincode,
+          shipping_address: formattedAddress,
+          pincode: finalPincode,
           subtotal,
           delivery_fee: deliveryFee,
           grand_total: grandTotal,
