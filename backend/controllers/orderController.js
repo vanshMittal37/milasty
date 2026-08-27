@@ -6,7 +6,9 @@ export const createOrder = async (req, res) => {
     const {
       customerName,
       customerEmail,
+      email,
       customerPhone,
+      phone,
       shippingAddress,
       pincode,
       items, // array of { productId, variantName, quantity }
@@ -14,6 +16,9 @@ export const createOrder = async (req, res) => {
       paymentId = null,
       notes = '',
     } = req.body;
+
+    const finalEmail = customerEmail || email || '';
+    const finalPhone = customerPhone || phone || '';
 
     if (!items || !items.length) {
       return res.status(400).json({ message: 'Order must contain at least one item' });
@@ -37,8 +42,8 @@ export const createOrder = async (req, res) => {
       formattedAddress = String(shippingAddress || '');
     }
 
-    if (!customerName || !customerPhone || !formattedAddress || !finalPincode) {
-      return res.status(400).json({ message: 'Shipping details and pincode are mandatory' });
+    if (!customerName || !finalPhone || !formattedAddress || !finalPincode) {
+      return res.status(400).json({ message: 'Shipping details, customer name, mobile phone, and pincode are mandatory' });
     }
 
     // SERVER-SIDE PRICE VALIDATION TRUTH
@@ -90,8 +95,8 @@ export const createOrder = async (req, res) => {
           order_number: orderNumber,
           user_id: req.user ? req.user.id : null,
           customer_name: customerName,
-          customer_email: customerEmail || '',
-          customer_phone: customerPhone,
+          customer_email: finalEmail,
+          customer_phone: finalPhone,
           shipping_address: formattedAddress,
           pincode: finalPincode,
           subtotal,
