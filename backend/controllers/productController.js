@@ -1,8 +1,5 @@
-import mongoose from 'mongoose';
-import Product from '../models/Product.js';
+import { supabase } from '../config/supabase.js';
 import { initialProducts } from '../data/seedData.js';
-
-let memoryProducts = [...initialProducts];
 
 export const getProducts = async (req, res) => {
   try {
@@ -18,78 +15,93 @@ export const getProducts = async (req, res) => {
       limit = 12,
     } = req.query;
 
-    let query = {};
+    // Try fetching from Supabase PostgreSQL first
+    let query = supabase.from('products').select('*, product_variants(*)');
 
     if (category && category !== 'all') {
-      query.category = category;
+      query = query.eq('category', category);
     }
 
     if (featured === 'true') {
-      query.isFeatured = true;
+      query = query.eq('is_featured', true);
     }
 
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { sku: { $regex: search, $options: 'i' } },
-      ];
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     }
 
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
-    }
+    const { data: dbProducts, error } = await query;
 
-    if (inStock === 'true') {
-      query.stock = { $gt: 0 };
-    }
+    if (!error && dbProducts && dbProducts.length > 0) {
+      // Map DB schema to frontend expected format
+      const formatted = dbProducts.map((p) => ({
+        _id: p.id,
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        subtitle: p.subtitle,
+        description: p.description,
+        category: p.category,
+        image: p.image_url,
+        secondaryImage: p.secondary_image_url || p.image_url,
+        badges: p.badges || [],
+        ingredients: p.ingredients || [],
+        allergens: p.allergens,
+        benefits: p.benefits || [],
+        targetAudience: p.target_audience,
+        nutritionFacts: p.nutrition_facts || {},
+        labReportUrl: p.lab_report_url,
+        isFeatured: p.is_featured,
+        rating: p.rating || 5.0,
+        reviewCount: p.review_count || 0,
+        variants: (p.product_variants || []).map((v) => ({
+          id: v.id,
+          name: v.name,
+          weight: v.weight,
+          price: Number(v.price),
+          originalPrice: Number(v.original_price),
+          inStock: v.in_stock,
+        })),
+      }));
 
-    let sortOptions = { createdAt: -1 }; // default newest
-    if (sort === 'price_low_high') sortOptions = { price: 1 };
-    if (sort === 'price_high_low') sortOptions = { price: -1 };
-    if (sort === 'popular') sortOptions = { reviewCount: -1, rating: -1 };
-    if (sort === 'discount') sortOptions = { discountValue: -1 };
-
-    if (mongoose.connection.readyState === 1) {
-      try {
-        const skip = (Number(page) - 1) * Number(limit);
-        const total = await Product.countDocuments(query);
-        const products = await Product.find(query)
-          .sort(sortOptions)
-          .skip(skip)
-          .limit(Number(limit));
-
-        if (products && products.length > 0) {
-          return res.json({
-            products,
-            page: Number(page),
-            pages: Math.ceil(total / Number(limit)) || 1,
-            total,
-          });
-        }
-      } catch (e) {
-        // Fallback
+      let filtered = [...formatted];
+      if (minPrice || maxPrice) {
+        filtered = filtered.filter((p) => {
+          const price = p.variants[0]?.price || 0;
+          if (minPrice && price < Number(minPrice)) return false;
+          if (maxPrice && price > Number(maxPrice)) return false;
+          return true;
+        });
       }
+
+      if (sort === 'price_low_high') filtered.sort((a, b) => (a.variants[0]?.price || 0) - (b.variants[0]?.price || 0));
+      if (sort === 'price_high_low') filtered.sort((a, b) => (b.variants[0]?.price || 0) - (a.variants[0]?.price || 0));
+
+      const skip = (Number(page) - 1) * Number(limit);
+      const paginated = filtered.slice(skip, skip + Number(limit));
+
+      return res.json({
+        products: paginated,
+        page: Number(page),
+        pages: Math.ceil(filtered.length / Number(limit)) || 1,
+        total: filtered.length,
+      });
     }
 
-    // In-memory filter logic fallback
-    let filtered = [...memoryProducts];
-    if (category && category !== 'all') filtered = filtered.filter((p) => p.category === category);
-    if (featured === 'true') filtered = filtered.filter((p) => p.isFeatured);
+    // Fallback to seed data if Supabase isn't seeded yet
+    let fallback = [...initialProducts];
+    if (category && category !== 'all') fallback = fallback.filter((p) => p.category === category);
+    if (featured === 'true') fallback = fallback.filter((p) => p.isFeatured);
     if (search) {
       const s = search.toLowerCase();
-      filtered = filtered.filter((p) => p.title.toLowerCase().includes(s) || p.description.toLowerCase().includes(s));
+      fallback = fallback.filter((p) => p.title.toLowerCase().includes(s) || p.description.toLowerCase().includes(s));
     }
-    if (sort === 'price_low_high') filtered.sort((a, b) => a.variants[0].price - b.variants[0].price);
-    if (sort === 'price_high_low') filtered.sort((a, b) => b.variants[0].price - a.variants[0].price);
 
-    res.json({
-      products: filtered,
+    return res.json({
+      products: fallback,
       page: 1,
       pages: 1,
-      total: filtered.length,
+      total: fallback.length,
     });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching products', error: error.message });
@@ -99,20 +111,50 @@ export const getProducts = async (req, res) => {
 export const getProductBySlugOrId = async (req, res) => {
   try {
     const { identifier } = req.params;
-    try {
-      let product = await Product.findOne({
-        $or: [{ slug: identifier }, { _id: identifier.match(/^[0-9a-fA-F]{24}$/) ? identifier : null }],
-      });
-      if (product) return res.json(product);
-    } catch (e) {
-      // Fallback
+
+    const { data: p, error } = await supabase
+      .from('products')
+      .select('*, product_variants(*)')
+      .or(`slug.eq.${identifier},id.eq.${identifier}`)
+      .single();
+
+    if (!error && p) {
+      const formatted = {
+        _id: p.id,
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        subtitle: p.subtitle,
+        description: p.description,
+        category: p.category,
+        image: p.image_url,
+        secondaryImage: p.secondary_image_url || p.image_url,
+        badges: p.badges || [],
+        ingredients: p.ingredients || [],
+        allergens: p.allergens,
+        benefits: p.benefits || [],
+        targetAudience: p.target_audience,
+        nutritionFacts: p.nutrition_facts || {},
+        labReportUrl: p.lab_report_url,
+        isFeatured: p.is_featured,
+        rating: p.rating || 5.0,
+        reviewCount: p.review_count || 0,
+        variants: (p.product_variants || []).map((v) => ({
+          id: v.id,
+          name: v.name,
+          weight: v.weight,
+          price: Number(v.price),
+          originalPrice: Number(v.original_price),
+          inStock: v.in_stock,
+        })),
+      };
+      return res.json(formatted);
     }
 
-    const product = memoryProducts.find((p) => p.slug === identifier || p._id === identifier);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-    res.json(product);
+    const fallback = initialProducts.find((p) => p.slug === identifier || p._id === identifier);
+    if (fallback) return res.json(fallback);
+
+    return res.status(404).json({ message: 'Product not found' });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching product', error: error.message });
   }
@@ -120,11 +162,40 @@ export const getProductBySlugOrId = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const productData = req.body;
-    if (!productData.slug) {
-      productData.slug = productData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const { title, slug, subtitle, description, category, image, variants, ingredients, nutritionFacts } = req.body;
+    const finalSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+    const { data: product, error } = await supabase
+      .from('products')
+      .insert([
+        {
+          title,
+          slug: finalSlug,
+          subtitle,
+          description,
+          category,
+          image_url: image,
+          ingredients: ingredients || [],
+          nutrition_facts: nutritionFacts || {},
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    if (variants && variants.length > 0) {
+      const variantRows = variants.map((v) => ({
+        product_id: product.id,
+        name: v.name,
+        weight: v.weight,
+        price: v.price,
+        original_price: v.originalPrice || v.price,
+        in_stock: v.inStock !== false,
+      }));
+      await supabase.from('product_variants').insert(variantRows);
     }
-    const product = await Product.create(productData);
+
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({ message: 'Error creating product', error: error.message });
@@ -134,8 +205,23 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    const updates = req.body;
+
+    const { data: product, error } = await supabase
+      .from('products')
+      .update({
+        title: updates.title,
+        subtitle: updates.subtitle,
+        description: updates.description,
+        category: updates.category,
+        image_url: updates.image,
+        updated_at: new Date(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
     res.json(product);
   } catch (error) {
     res.status(500).json({ message: 'Error updating product', error: error.message });
@@ -145,7 +231,8 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    await Product.findByIdAndDelete(id);
+    const { error } = await supabase.from('products').delete().eq('id', id);
+    if (error) throw error;
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting product', error: error.message });

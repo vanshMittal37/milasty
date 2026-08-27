@@ -404,6 +404,25 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [isTestimonialSectionHovered, activeTestimonials.length]);
 
+  // Dynamic Home CMS Data state
+  const [homeCms, setHomeCms] = useState({
+    heroTitle: "Artisanal Millet Bakes Baked with Pure Desi Ghee & Jaggery",
+    heroSubtitle: "Handcrafted in small batches without Maida, Palm Oil, or refined sugars.",
+    heroVideoUrl: "https://res.cloudinary.com/dmm8lfc3x/video/upload/q_auto,f_auto/v1787068808/cookie_video.mp4",
+    heroPosterUrl: "https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1787068808/cookie_video.jpg",
+  });
+
+  useEffect(() => {
+    // Fetch Dynamic Home CMS content from backend/Supabase
+    api.get('/home-cms')
+      .then(res => {
+        if (res.data) {
+          setHomeCms(prev => ({ ...prev, ...res.data }));
+        }
+      })
+      .catch(err => console.log('Using default Home CMS content'));
+  }, []);
+
   useEffect(() => {
     api.get('/products?limit=4')
       .then(res => {
