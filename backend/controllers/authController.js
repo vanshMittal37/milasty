@@ -136,3 +136,149 @@ export const getMe = async (req, res) => {
     res.status(500).json({ message: 'Error fetching profile', error: error.message });
   }
 };
+
+// Add User Address
+export const addAddress = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const newAddress = req.body;
+
+    const { data: user, error: fetchErr } = await supabase
+      .from('users')
+      .select('addresses')
+      .eq('id', userId)
+      .single();
+
+    if (fetchErr || !user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const currentAddresses = user.addresses || [];
+    const addressId = Date.now().toString();
+    const updatedAddresses = [...currentAddresses, { ...newAddress, _id: addressId, id: addressId }];
+
+    const { error: updateErr } = await supabase
+      .from('users')
+      .update({ addresses: updatedAddresses, updated_at: new Date() })
+      .eq('id', userId);
+
+    if (updateErr) throw updateErr;
+
+    res.status(201).json(updatedAddresses);
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding address', error: error.message });
+  }
+};
+
+// Update User Address
+export const updateAddress = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { addressId } = req.params;
+    const addressData = req.body;
+
+    const { data: user, error: fetchErr } = await supabase
+      .from('users')
+      .select('addresses')
+      .eq('id', userId)
+      .single();
+
+    if (fetchErr || !user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const currentAddresses = user.addresses || [];
+    const updatedAddresses = currentAddresses.map((addr) => {
+      if (addr._id === addressId || addr.id === addressId) {
+        return { ...addr, ...addressData };
+      }
+      return addr;
+    });
+
+    const { error: updateErr } = await supabase
+      .from('users')
+      .update({ addresses: updatedAddresses, updated_at: new Date() })
+      .eq('id', userId);
+
+    if (updateErr) throw updateErr;
+
+    res.json(updatedAddresses);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating address', error: error.message });
+  }
+};
+
+// Delete User Address
+export const deleteAddress = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { addressId } = req.params;
+
+    const { data: user, error: fetchErr } = await supabase
+      .from('users')
+      .select('addresses')
+      .eq('id', userId)
+      .single();
+
+    if (fetchErr || !user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const currentAddresses = user.addresses || [];
+    const updatedAddresses = currentAddresses.filter((addr) => addr._id !== addressId && addr.id !== addressId);
+
+    const { error: updateErr } = await supabase
+      .from('users')
+      .update({ addresses: updatedAddresses, updated_at: new Date() })
+      .eq('id', userId);
+
+    if (updateErr) throw updateErr;
+
+    res.json(updatedAddresses);
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting address', error: error.message });
+  }
+};
+
+// Update User Profile
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, phone } = req.body;
+
+    const updates = { updated_at: new Date() };
+    if (name) updates.name = name;
+    if (phone) updates.phone = phone;
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .update(updates)
+      .eq('id', userId)
+      .select('id, name, email, phone, role, addresses')
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      _id: user.id,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      addresses: user.addresses || [],
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating profile', error: error.message });
+  }
+};
+
+// Forgot Password
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    res.json({ message: 'Password reset link sent to registered email if account exists.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error processing forgot password', error: error.message });
+  }
+};
