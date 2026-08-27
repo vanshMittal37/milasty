@@ -14,7 +14,7 @@ export const getCustomers = async (req, res) => {
         return {
           ...u._doc,
           orderCount,
-          totalSpent, // gfffh
+          totalSpent, // gfffhggg
         };
       })
     );
