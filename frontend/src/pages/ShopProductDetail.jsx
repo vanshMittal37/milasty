@@ -51,6 +51,23 @@ export default function ShopProductDetail() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Auto-scroll Related Products ("You May Also Like") continuous single-row carousel (every 3.5s)
+  useEffect(() => {
+    const container = relatedRef.current;
+    if (!container || relatedProducts.length === 0) return;
+
+    const autoScroll = setInterval(() => {
+      const scrollStep = isMobile ? 260 : 295;
+      if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 15) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        container.scrollBy({ left: scrollStep, behavior: 'smooth' });
+      }
+    }, 3500);
+
+    return () => clearInterval(autoScroll);
+  }, [relatedProducts.length, isMobile]);
+
   useEffect(() => {
     fetchProduct();
   }, [id]);

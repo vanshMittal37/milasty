@@ -4,7 +4,7 @@ import { supabase } from '../config/supabase.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'milasty_super_secret_jwt_key_2026';
 
-// Register User
+// Register User with Supabase Auth
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
@@ -13,42 +13,58 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'Please provide name, email, and password' });
     }
 
-    // Check if user already exists in Supabase
-    const { data: existingUser } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', email.toLowerCase())
-      .single();
+    const cleanEmail = email.toLowerCase().trim();
+    const role = cleanEmail === 'admin@milasty.com' ? 'admin' : 'customer';
 
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists with this email' });
+    // 1. Create user in Supabase Auth (Dashboard -> Authentication -> Users)
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email: cleanEmail,
+      password,
+      email_confirm: true,
+      user_metadata: { name, phone, role },
+    });
+
+    let userId = authData?.user?.id;
+
+    if (authError) {
+      // If user already registered in Supabase Auth, attempt login or retrieve ID
+      if (authError.message?.includes('already been registered') || authError.status === 422) {
+        const { data: existingUsers } = await supabase.auth.admin.listUsers();
+        const existing = existingUsers?.users?.find((u) => u.email === cleanEmail);
+        if (existing) {
+          userId = existing.id;
+        } else {
+          return res.status(400).json({ message: 'User already exists with this email' });
+        }
+      } else {
+        throw authError;
+      }
     }
 
-    // Hash password
+    // 2. Hash password for local fallback
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Default admin role for designated admin email or customer role
-    const role = email.toLowerCase() === 'admin@milasty.com' ? 'admin' : 'customer';
-
-    // Insert user into Supabase
-    const { data: newUser, error } = await supabase
+    // 3. Upsert user record into Supabase PostgreSQL 'users' table
+    const { data: newUser, error: dbError } = await supabase
       .from('users')
-      .insert([
+      .upsert([
         {
+          id: userId,
           name,
-          email: email.toLowerCase(),
+          email: cleanEmail,
           password_hash: passwordHash,
           phone: phone || '',
           role,
+          updated_at: new Date(),
         },
-      ])
-      .select('id, name, email, phone, role, created_at')
+      ], { onConflict: 'email' })
+      .select('id, name, email, phone, role, addresses')
       .single();
 
-    if (error) throw error;
+    if (dbError) throw dbError;
 
-    // Issue JWT token
+    // Issue JWT session token
     const token = jwt.sign({ id: newUser.id, role: newUser.role }, JWT_SECRET, { expiresIn: '30d' });
 
     res.status(201).json({
@@ -58,6 +74,7 @@ export const registerUser = async (req, res) => {
       email: newUser.email,
       phone: newUser.phone,
       role: newUser.role,
+      addresses: newUser.addresses || [],
       token,
     });
   } catch (error) {
@@ -65,7 +82,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// Login User & Admin
+// Login User & Admin with Supabase Auth
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -74,24 +91,37 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: 'Please provide email and password' });
     }
 
-    // Fetch user from Supabase
-    const { data: user, error } = await supabase
+    const cleanEmail = email.toLowerCase().trim();
+
+    // 1. Authenticate against Supabase Auth engine
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password,
+    });
+
+    let authenticatedUserId = authData?.user?.id;
+
+    // 2. Fetch user details from Supabase PostgreSQL 'users' table
+    const { data: user, error: dbError } = await supabase
       .from('users')
       .select('*')
-      .eq('email', email.toLowerCase())
+      .eq('email', cleanEmail)
       .single();
 
-    if (error || !user) {
+    if (dbError || !user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Verify password
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+    // Fallback password verification if Supabase Auth signin failed
+    if (authError || !authenticatedUserId) {
+      const isMatch = await bcrypt.compare(password, user.password_hash);
+      if (!isMatch) {
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
+      authenticatedUserId = user.id;
     }
 
-    // Issue JWT token
+    // Issue JWT session token
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
 
     res.json({

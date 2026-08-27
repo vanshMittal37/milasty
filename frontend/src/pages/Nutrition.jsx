@@ -45,21 +45,36 @@ export default function Nutrition() {
 
   const dailyProducts = products.filter((p) => p.category === 'daily');
 
-  // Auto-rotate Nutrition at a Glance carousel on Mobile (every 2.5s)
+  // Auto-scroll Nutrition At A Glance horizontal container (every 3.5s)
   useEffect(() => {
-    if (!dailyProducts.length) return;
-    const timer = setInterval(() => {
-      setGlanceIndex((prev) => (prev + 1) % dailyProducts.length);
-    }, 2500);
-    return () => clearInterval(timer);
-  }, [dailyProducts.length]);
+    const container = glanceRef.current;
+    if (!container) return;
 
-  // Auto-rotate Why Ingredients Matter carousel on Mobile (every 3.0s)
+    const autoScroll = setInterval(() => {
+      if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        container.scrollBy({ left: 300, behavior: 'smooth' });
+      }
+    }, 3500);
+
+    return () => clearInterval(autoScroll);
+  }, []);
+
+  // Auto-scroll Why Ingredients Matter / Clean Sourcing horizontal container (every 4.0s)
   useEffect(() => {
-    const timer = setInterval(() => {
-      setWhyIngredientsIndex((prev) => (prev + 1) % 3);
-    }, 3000);
-    return () => clearInterval(timer);
+    const container = ingredientsRef.current;
+    if (!container) return;
+
+    const autoScroll = setInterval(() => {
+      if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        container.scrollBy({ left: 300, behavior: 'smooth' });
+      }
+    }, 4000);
+
+    return () => clearInterval(autoScroll);
   }, []);
 
   const whyIngredientsData = [

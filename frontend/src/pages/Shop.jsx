@@ -21,8 +21,15 @@ export default function Shop() {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [recSelectedOption, setRecSelectedOption] = useState(null);
 
-  // Reviews Carousel State
+  // Reviews Carousel State & Automatic Auto-play (every 4s)
   const [reviewIndex, setReviewIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setReviewIndex((prev) => (prev + 1) % 5);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
@@ -546,39 +553,50 @@ export default function Shop() {
               </div>
 
               <div>
-                {/* Full-width Pre-Book Action Button */}
-                <button
-                  onClick={() => {
-                    addToCart({
-                      _id: item.id,
-                      title: item.title,
-                      price: parseInt(item.preBookPrice.replace('₹', '')),
-                      image: item.image,
-                      category: 'cookies',
-                      quantity: 1
-                    });
-                  }}
-                  style={{
-                    backgroundColor: item.priceBoxBg || item.btnBg,
-                    color: item.priceTextColor || item.btnColor || '#101C07',
-                    border: 'none',
-                    padding: isMobile ? '0.55rem 0.75rem' : '0.7rem 1rem',
-                    borderRadius: isMobile ? '12px' : '14px',
-                    fontSize: isMobile ? '0.75rem' : '0.85rem',
-                    fontWeight: '850',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.4rem',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                    transition: 'transform 0.2s ease, opacity 0.2s ease',
-                    width: '100%',
-                    marginBottom: isMobile ? '0.45rem' : '0.65rem',
-                  }}
-                >
-                  Pre-Book Now <ArrowRight size={isMobile ? 12 : 15} />
-                </button>
+                {/* Collection Card Action Row: Price & Add Button */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: isMobile ? '0.45rem' : '0.65rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
+                      <span style={{ fontSize: isMobile ? '0.95rem' : '1.15rem', fontWeight: '900', color: item.priceTextColor || '#FFFDF9' }}>
+                        {item.preBookPrice}
+                      </span>
+                      <span style={{ fontSize: isMobile ? '0.68rem' : '0.78rem', textDecoration: 'line-through', color: 'rgba(255, 255, 255, 0.55)' }}>
+                        {item.originalPrice}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      addToCart({
+                        _id: item.id,
+                        title: item.title,
+                        price: parseInt(item.preBookPrice.replace('₹', '')),
+                        image: item.image,
+                        category: 'cookies',
+                        quantity: 1
+                      });
+                    }}
+                    style={{
+                      backgroundColor: '#244f21',
+                      color: '#FFFDF9',
+                      border: '1px solid #b9cd94',
+                      padding: isMobile ? '0.45rem 0.75rem' : '0.55rem 1rem',
+                      borderRadius: '999px',
+                      fontSize: isMobile ? '0.72rem' : '0.82rem',
+                      fontWeight: '850',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <ShoppingBag size={isMobile ? 12 : 14} color="#b9cd94" />
+                    <span>Add</span>
+                  </button>
+                </div>
 
                 {/* Shipping Starts Date Pill */}
                 <div style={{ textAlign: 'center' }}>
