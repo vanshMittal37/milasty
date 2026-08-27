@@ -164,3 +164,86 @@ export const getAllOrders = async (req, res) => {
     res.status(500).json({ message: 'Error fetching all orders', error: error.message });
   }
 };
+
+// Get Single Order By ID or Order Number
+export const getOrderById = async (req, res) => {
+  try {
+    const { identifier } = req.params;
+    const { data: order, error } = await supabase
+      .from('orders')
+      .select('*, order_items(*)')
+      .or(`id.eq.${identifier},order_number.eq.${identifier}`)
+      .single();
+
+    if (error || !order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching order details', error: error.message });
+  }
+};
+
+// Cancel Order
+export const cancelOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { data: order, error } = await supabase
+      .from('orders')
+      .update({ order_status: 'cancelled', updated_at: new Date() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json({ message: 'Order cancelled successfully', order });
+  } catch (error) {
+    res.status(500).json({ message: 'Error cancelling order', error: error.message });
+  }
+};
+
+// Admin: Update Order Status
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { orderStatus, paymentStatus } = req.body;
+
+    const updates = { updated_at: new Date() };
+    if (orderStatus) updates.order_status = orderStatus;
+    if (paymentStatus) updates.payment_status = paymentStatus;
+
+    const { data: order, error } = await supabase
+      .from('orders')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json({ message: 'Order status updated', order });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating order status', error: error.message });
+  }
+};
+
+// Admin: Get Analytics Summary
+export const getAdminAnalytics = async (req, res) => {
+  try {
+    const { data: orders, error } = await supabase.from('orders').select('*');
+    if (error) throw error;
+
+    const totalOrders = orders ? orders.length : 0;
+    const totalRevenue = orders ? orders.reduce((sum, o) => sum + Number(o.grand_total || 0), 0) : 0;
+    const pendingOrders = orders ? orders.filter((o) => o.order_status === 'pending').length : 0;
+    const deliveredOrders = orders ? orders.filter((o) => o.order_status === 'delivered').length : 0;
+
+    res.json({
+      totalOrders,
+      totalRevenue,
+      pendingOrders,
+      deliveredOrders,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching admin analytics', error: error.message });
+  }
+};
