@@ -51,22 +51,24 @@ export default function ShopProductDetail() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Auto-scroll Related Products ("You May Also Like") continuous single-row carousel (every 3.5s)
+  const [isRelatedHovered, setIsRelatedHovered] = useState(false);
+
+  // Auto-scroll Related Products ("You May Also Like") continuous single-row carousel (every 2.0s)
   useEffect(() => {
     const container = relatedRef.current;
-    if (!container || relatedProducts.length === 0) return;
+    if (!container || relatedProducts.length === 0 || isRelatedHovered) return;
 
     const autoScroll = setInterval(() => {
-      const scrollStep = isMobile ? 260 : 295;
+      const scrollStep = isMobile ? 240 : 295;
       if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 15) {
         container.scrollTo({ left: 0, behavior: 'smooth' });
       } else {
         container.scrollBy({ left: scrollStep, behavior: 'smooth' });
       }
-    }, 3500);
+    }, 2000);
 
     return () => clearInterval(autoScroll);
-  }, [relatedProducts.length, isMobile]);
+  }, [relatedProducts.length, isMobile, isRelatedHovered]);
 
   useEffect(() => {
     fetchProduct();
@@ -645,20 +647,68 @@ export default function ShopProductDetail() {
             <div
               ref={relatedRef}
               className="horizontal-scroll-container"
+              onMouseEnter={() => setIsRelatedHovered(true)}
+              onMouseLeave={() => setIsRelatedHovered(false)}
+              onTouchStart={() => setIsRelatedHovered(true)}
+              onTouchEnd={() => setIsRelatedHovered(false)}
               style={{
                 display: 'flex',
-                gap: '1.5rem',
+                flexWrap: 'nowrap',
+                gap: isMobile ? '0.85rem' : '1.5rem',
                 overflowX: 'auto',
                 scrollBehavior: 'smooth',
                 paddingBottom: '1.25rem',
-                WebkitOverflowScrolling: 'touch'
+                WebkitOverflowScrolling: 'touch',
+                width: '100%'
               }}
             >
               {relatedProducts.map((p) => (
-                <div key={p._id || p.slug} style={{ flex: isMobile ? '0 0 260px' : '0 0 280px', width: isMobile ? '260px' : '280px' }}>
+                <div key={p._id || p.slug} style={{ flex: isMobile ? '0 0 210px' : '0 0 280px', minWidth: isMobile ? '210px' : '280px', width: isMobile ? '210px' : '280px' }}>
                   <ProductCard product={p} />
                 </div>
-              ))}
+            </div>
+
+            {/* Bottom Manual Navigation Control Strip with Left/Right Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.85rem', marginTop: '1.25rem' }}>
+              <button
+                onClick={() => scrollLeft(relatedRef)}
+                aria-label="Scroll left"
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  color: '#FFFDF9',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <ChevronLeft size={18} />
+              </button>
+              
+              <button
+                onClick={() => scrollRight(relatedRef)}
+                aria-label="Scroll right"
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  color: '#FFFDF9',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
           </section>
         )}

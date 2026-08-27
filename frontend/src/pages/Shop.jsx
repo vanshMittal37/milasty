@@ -195,7 +195,7 @@ export default function Shop() {
       badgeColor: '#1A0E07',
       priceBoxBg: '#D8BA96',
       priceLabelColor: '#382315',
-      priceTextColor: '#1F1109',
+      priceTextColor: '#FFFDF9',
       btnBg: '#241208',
       btnColor: '#FFFDF9',
       featureIconColor: '#D4AF37',
@@ -554,13 +554,13 @@ export default function Shop() {
 
               <div>
                 {/* Collection Card Action Row: Price & Add Button */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: isMobile ? '0.45rem' : '0.65rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: isMobile ? '0.65rem' : '0.85rem', paddingTop: '0.25rem' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
-                      <span style={{ fontSize: isMobile ? '0.95rem' : '1.15rem', fontWeight: '900', color: item.priceTextColor || '#FFFDF9' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
+                      <span style={{ fontSize: isMobile ? '1.15rem' : '1.35rem', fontWeight: '950', color: '#FFFDF9', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                         {item.preBookPrice}
                       </span>
-                      <span style={{ fontSize: isMobile ? '0.68rem' : '0.78rem', textDecoration: 'line-through', color: 'rgba(255, 255, 255, 0.55)' }}>
+                      <span style={{ fontSize: isMobile ? '0.78rem' : '0.88rem', textDecoration: 'line-through', color: 'rgba(255, 255, 255, 0.65)', fontWeight: '600' }}>
                         {item.originalPrice}
                       </span>
                     </div>
@@ -577,23 +577,25 @@ export default function Shop() {
                         quantity: 1
                       });
                     }}
+                    className="btn-primary"
                     style={{
                       backgroundColor: '#244f21',
-                      color: '#FFFDF9',
-                      border: '1px solid #b9cd94',
-                      padding: isMobile ? '0.45rem 0.75rem' : '0.55rem 1rem',
+                      color: '#FFFFFF',
+                      border: '1.5px solid #b9cd94',
+                      padding: isMobile ? '0.65rem 1.1rem' : '0.8rem 1.4rem',
                       borderRadius: '999px',
-                      fontSize: isMobile ? '0.72rem' : '0.82rem',
+                      fontSize: isMobile ? '0.82rem' : '0.92rem',
                       fontWeight: '850',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.35rem',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
-                      transition: 'all 0.2s ease'
+                      gap: '0.45rem',
+                      boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
+                      transition: 'all 0.25s ease',
+                      flexShrink: 0
                     }}
                   >
-                    <ShoppingBag size={isMobile ? 12 : 14} color="#b9cd94" />
+                    <ShoppingBag size={isMobile ? 14 : 17} color="#b9cd94" />
                     <span>Add</span>
                   </button>
                 </div>

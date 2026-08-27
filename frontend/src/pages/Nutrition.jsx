@@ -45,10 +45,13 @@ export default function Nutrition() {
 
   const dailyProducts = products.filter((p) => p.category === 'daily');
 
-  // Auto-scroll Nutrition At A Glance horizontal container (every 3.5s)
+  const [isGlanceHovered, setIsGlanceHovered] = useState(false);
+  const [isIngredientsHovered, setIsIngredientsHovered] = useState(false);
+
+  // Auto-scroll Nutrition At A Glance horizontal container (every 2.0s)
   useEffect(() => {
     const container = glanceRef.current;
-    if (!container) return;
+    if (!container || isGlanceHovered) return;
 
     const autoScroll = setInterval(() => {
       if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
@@ -56,15 +59,15 @@ export default function Nutrition() {
       } else {
         container.scrollBy({ left: 300, behavior: 'smooth' });
       }
-    }, 3500);
+    }, 2000);
 
     return () => clearInterval(autoScroll);
-  }, []);
+  }, [isGlanceHovered]);
 
-  // Auto-scroll Why Ingredients Matter / Clean Sourcing horizontal container (every 4.0s)
+  // Auto-scroll Why Ingredients Matter / Clean Sourcing horizontal container (every 2.0s)
   useEffect(() => {
     const container = ingredientsRef.current;
-    if (!container) return;
+    if (!container || isIngredientsHovered) return;
 
     const autoScroll = setInterval(() => {
       if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
@@ -72,10 +75,10 @@ export default function Nutrition() {
       } else {
         container.scrollBy({ left: 300, behavior: 'smooth' });
       }
-    }, 4000);
+    }, 2000);
 
     return () => clearInterval(autoScroll);
-  }, []);
+  }, [isIngredientsHovered]);
 
   const whyIngredientsData = [
     {
@@ -247,8 +250,12 @@ export default function Nutrition() {
         </div>
 
         <div 
-          ref={insideBiteRef}
+          ref={glanceRef}
           className="horizontal-scroll-container fitted-cards-container-4"
+          onMouseEnter={() => setIsGlanceHovered(true)}
+          onMouseLeave={() => setIsGlanceHovered(false)}
+          onTouchStart={() => setIsGlanceHovered(true)}
+          onTouchEnd={() => setIsGlanceHovered(false)}
         >
           <div 
             className="glass-card" 
@@ -726,6 +733,10 @@ export default function Nutrition() {
         <div 
           ref={ingredientsRef}
           className="horizontal-scroll-container fitted-cards-container-3"
+          onMouseEnter={() => setIsIngredientsHovered(true)}
+          onMouseLeave={() => setIsIngredientsHovered(false)}
+          onTouchStart={() => setIsIngredientsHovered(true)}
+          onTouchEnd={() => setIsIngredientsHovered(false)}
         >
           {whyIngredientsData.map((item, idx) => (
             <div key={idx} className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box' }}>
