@@ -154,18 +154,59 @@ export const createOrder = async (req, res) => {
   }
 };
 
+// Format raw DB order payload into frontend expected format
+const formatOrderPayload = (o) => {
+  if (!o) return null;
+  return {
+    ...o,
+    orderId: o.id || o.order_number,
+    _id: o.id,
+    id: o.id,
+    orderNumber: o.order_number,
+    customerName: o.customer_name,
+    customerEmail: o.customer_email,
+    customerPhone: o.customer_phone,
+    shippingAddress: o.shipping_address,
+    subtotal: Number(o.subtotal || 0),
+    deliveryFee: Number(o.delivery_fee || 0),
+    discountAmount: Number(o.discount_amount || 0),
+    grandTotal: Number(o.grand_total || 0),
+    orderStatus: o.order_status || 'Confirmed',
+    paymentStatus: o.payment_status || 'pending',
+    paymentMethod: o.payment_method || 'cod',
+    createdAt: o.created_at,
+    items: (o.order_items || []).map((item) => ({
+      ...item,
+      productId: item.product_id,
+      title: item.product_title,
+      variantName: item.variant_name,
+      price: Number(item.unit_price),
+      quantity: item.quantity,
+      totalPrice: Number(item.total_price),
+    })),
+  };
+};
+
 // Get User Orders
 export const getMyOrders = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user ? (req.user.id || req.user._id) : null;
+    if (!userId) {
+      return res.json([]);
+    }
+
     const { data: orders, error } = await supabase
       .from('orders')
       .select('*, order_items(*)')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    res.json(orders || []);
+    if (error || !orders) {
+      return res.json([]);
+    }
+
+    const formatted = orders.map(formatOrderPayload);
+    res.json(formatted);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching orders', error: error.message });
   }
@@ -179,8 +220,12 @@ export const getAllOrders = async (req, res) => {
       .select('*, order_items(*)')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    res.json(orders || []);
+    if (error || !orders) {
+      return res.json([]);
+    }
+
+    const formatted = orders.map(formatOrderPayload);
+    res.json(formatted);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching all orders', error: error.message });
   }
@@ -196,10 +241,24 @@ export const getOrderById = async (req, res) => {
       .or(`id.eq.${identifier},order_number.eq.${identifier}`)
       .single();
 
-    if (error || !order) {
-      return res.status(404).json({ message: 'Order not found' });
+    if (!error && order) {
+      return res.json(formatOrderPayload(order));
     }
-    res.json(order);
+
+    // Secondary fallback search by string prefix if needed
+    const { data: fallbackOrders } = await supabase
+      .from('orders')
+      .select('*, order_items(*)')
+      .limit(10);
+
+    if (fallbackOrders && fallbackOrders.length > 0) {
+      const match = fallbackOrders.find((o) => o.id === identifier || o.order_number === identifier || identifier.includes(o.id));
+      if (match) {
+        return res.json(formatOrderPayload(match));
+      }
+    }
+
+    return res.status(404).json({ message: 'Order not found' });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching order details', error: error.message });
   }
