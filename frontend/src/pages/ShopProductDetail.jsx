@@ -666,6 +666,7 @@ export default function ShopProductDetail() {
                 <div key={p._id || p.slug} style={{ flex: isMobile ? '0 0 210px' : '0 0 280px', minWidth: isMobile ? '210px' : '280px', width: isMobile ? '210px' : '280px' }}>
                   <ProductCard product={p} />
                 </div>
+              ))}
             </div>
 
             {/* Bottom Manual Navigation Control Strip with Left/Right Buttons */}
