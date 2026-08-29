@@ -35,20 +35,11 @@ export default function Shop() {
     return () => clearInterval(timer);
   }, [isReviewHovered]);
 
-  // Mobile Products Carousel Index State & Auto-play (every 2.0s with hover/swipe pause)
+  // Mobile Products Carousel Index State
   const [shopProductsIndex, setShopProductsIndex] = useState(0);
   const [isShopProductsHovered, setIsShopProductsHovered] = useState(false);
   const [shopProductsTouchStartX, setShopProductsTouchStartX] = useState(null);
   const [shopProductsTouchStartY, setShopProductsTouchStartY] = useState(null);
-
-  useEffect(() => {
-    if (!isMobile || isShopProductsHovered || displayedProducts.length <= 2) return;
-    const maxIndex = Math.max(0, displayedProducts.length - 2);
-    const timer = setInterval(() => {
-      setShopProductsIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
-    }, 2000);
-    return () => clearInterval(timer);
-  }, [isMobile, isShopProductsHovered, displayedProducts.length]);
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
@@ -145,6 +136,16 @@ export default function Shop() {
     const matchesSearch = !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.description.toLowerCase().includes(search.toLowerCase());
     return matchesCat && matchesSearch;
   });
+
+  // Mobile Products Carousel Auto-play (every 2.0s with hover/swipe pause)
+  useEffect(() => {
+    if (!isMobile || isShopProductsHovered || displayedProducts.length <= 2) return;
+    const maxIndex = Math.max(0, displayedProducts.length - 2);
+    const timer = setInterval(() => {
+      setShopProductsIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [isMobile, isShopProductsHovered, displayedProducts.length]);
 
   // Dummy Reviews Data
   const dummyReviews = [
