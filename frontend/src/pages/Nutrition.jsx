@@ -48,36 +48,28 @@ export default function Nutrition() {
   const [isGlanceHovered, setIsGlanceHovered] = useState(false);
   const [isIngredientsHovered, setIsIngredientsHovered] = useState(false);
 
-  // Auto-scroll Nutrition At A Glance horizontal container (every 2.0s)
+  // Touch gesture swipe state
+  const [glanceTouchStartX, setGlanceTouchStartX] = useState(null);
+  const [glanceTouchStartY, setGlanceTouchStartY] = useState(null);
+  const [ingredientsTouchStartX, setIngredientsTouchStartX] = useState(null);
+  const [ingredientsTouchStartY, setIngredientsTouchStartY] = useState(null);
+
+  // Auto-scroll Nutrition At A Glance cards (every 2.0s with hover/touch pause)
   useEffect(() => {
-    const container = glanceRef.current;
-    if (!container || isGlanceHovered) return;
-
-    const autoScroll = setInterval(() => {
-      if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
-        container.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        container.scrollBy({ left: 300, behavior: 'smooth' });
-      }
+    if (isGlanceHovered || dailyProducts.length <= 1) return;
+    const timer = setInterval(() => {
+      setGlanceIndex((prev) => (prev + 1) % dailyProducts.length);
     }, 2000);
+    return () => clearInterval(timer);
+  }, [isGlanceHovered, dailyProducts.length]);
 
-    return () => clearInterval(autoScroll);
-  }, [isGlanceHovered]);
-
-  // Auto-scroll Why Ingredients Matter / Clean Sourcing horizontal container (every 2.0s)
+  // Auto-scroll Why Ingredients Matter / Clean Sourcing cards (every 2.0s with hover/touch pause)
   useEffect(() => {
-    const container = ingredientsRef.current;
-    if (!container || isIngredientsHovered) return;
-
-    const autoScroll = setInterval(() => {
-      if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
-        container.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        container.scrollBy({ left: 300, behavior: 'smooth' });
-      }
+    if (isIngredientsHovered) return;
+    const timer = setInterval(() => {
+      setWhyIngredientsIndex((prev) => (prev + 1) % 3);
     }, 2000);
-
-    return () => clearInterval(autoScroll);
+    return () => clearInterval(timer);
   }, [isIngredientsHovered]);
 
   const whyIngredientsData = [
@@ -494,7 +486,45 @@ export default function Nutrition() {
         </div>
 
         {/* MOBILE SINGLE CARD AUTO-SCROLLING CAROUSEL (NUTRITION AT A GLANCE) */}
-        <div className="nutrition-glance-mobile-carousel">
+        <div 
+          className="nutrition-glance-mobile-carousel"
+          onMouseEnter={() => setIsGlanceHovered(true)}
+          onMouseLeave={() => setIsGlanceHovered(false)}
+          onTouchStart={(e) => {
+            setIsGlanceHovered(true);
+            const touch = e.touches[0];
+            setGlanceTouchStartX(touch.clientX);
+            setGlanceTouchStartY(touch.clientY);
+          }}
+          onTouchMove={(e) => {
+            if (glanceTouchStartX === null) return;
+            const touch = e.touches[0];
+            const diffX = glanceTouchStartX - touch.clientX;
+            const diffY = Math.abs(glanceTouchStartY - touch.clientY);
+            if (Math.abs(diffX) > diffY && Math.abs(diffX) > 10) {
+              if (e.cancelable) e.preventDefault();
+            }
+          }}
+          onTouchEnd={(e) => {
+            setIsGlanceHovered(false);
+            if (glanceTouchStartX === null) return;
+            const touch = e.changedTouches[0];
+            const diffX = glanceTouchStartX - touch.clientX;
+            const diffY = Math.abs(glanceTouchStartY - touch.clientY);
+            if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
+              if (diffX > 0) {
+                // Swiped left -> Next card
+                setGlanceIndex((prev) => (prev + 1) % dailyProducts.length);
+              } else {
+                // Swiped right -> Previous card
+                setGlanceIndex((prev) => (prev === 0 ? dailyProducts.length - 1 : prev - 1));
+              }
+            }
+            setGlanceTouchStartX(null);
+            setGlanceTouchStartY(null);
+          }}
+          style={{ touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none' }}
+        >
           {dailyProducts[glanceIndex] && (
             <div 
               key={glanceIndex} 
@@ -753,7 +783,45 @@ export default function Nutrition() {
         </div>
 
         {/* MOBILE SINGLE CARD AUTO-SCROLLING CAROUSEL (WHY INGREDIENTS MATTER) */}
-        <div className="why-ingredients-mobile-carousel">
+        <div 
+          className="why-ingredients-mobile-carousel"
+          onMouseEnter={() => setIsIngredientsHovered(true)}
+          onMouseLeave={() => setIsIngredientsHovered(false)}
+          onTouchStart={(e) => {
+            setIsIngredientsHovered(true);
+            const touch = e.touches[0];
+            setIngredientsTouchStartX(touch.clientX);
+            setIngredientsTouchStartY(touch.clientY);
+          }}
+          onTouchMove={(e) => {
+            if (ingredientsTouchStartX === null) return;
+            const touch = e.touches[0];
+            const diffX = ingredientsTouchStartX - touch.clientX;
+            const diffY = Math.abs(ingredientsTouchStartY - touch.clientY);
+            if (Math.abs(diffX) > diffY && Math.abs(diffX) > 10) {
+              if (e.cancelable) e.preventDefault();
+            }
+          }}
+          onTouchEnd={(e) => {
+            setIsIngredientsHovered(false);
+            if (ingredientsTouchStartX === null) return;
+            const touch = e.changedTouches[0];
+            const diffX = ingredientsTouchStartX - touch.clientX;
+            const diffY = Math.abs(ingredientsTouchStartY - touch.clientY);
+            if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
+              if (diffX > 0) {
+                // Swiped left -> Next ingredient
+                setWhyIngredientsIndex((prev) => (prev + 1) % whyIngredientsData.length);
+              } else {
+                // Swiped right -> Previous ingredient
+                setWhyIngredientsIndex((prev) => (prev === 0 ? whyIngredientsData.length - 1 : prev - 1));
+              }
+            }
+            setIngredientsTouchStartX(null);
+            setIngredientsTouchStartY(null);
+          }}
+          style={{ touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none' }}
+        >
           {whyIngredientsData[whyIngredientsIndex] && (
             <div className="glass-card animate-fade-in" style={{ padding: '2rem 1.5rem', borderRadius: '24px', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
