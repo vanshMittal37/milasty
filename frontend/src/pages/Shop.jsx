@@ -914,178 +914,25 @@ export default function Shop() {
           </button>
         </div>
 
-        {/* Product Cards Grid / Mobile 2-Card Horizontal Carousel */}
-        {isMobile ? (
-          <div style={{ width: '100%', overflow: 'hidden' }}>
-            {displayedProducts.length > 0 ? (
-              <>
-                <div
-                  onMouseEnter={() => setIsShopProductsHovered(true)}
-                  onMouseLeave={() => setIsShopProductsHovered(false)}
-                  onTouchStart={(e) => {
-                    setIsShopProductsHovered(true);
-                    const touch = e.touches[0];
-                    setShopProductsTouchStartX(touch.clientX);
-                    setShopProductsTouchStartY(touch.clientY);
-                  }}
-                  onTouchMove={(e) => {
-                    if (shopProductsTouchStartX === null) return;
-                    const touch = e.touches[0];
-                    const diffX = shopProductsTouchStartX - touch.clientX;
-                    const diffY = Math.abs(shopProductsTouchStartY - touch.clientY);
-                    if (Math.abs(diffX) > diffY && Math.abs(diffX) > 10) {
-                      if (e.cancelable) e.preventDefault();
-                    }
-                  }}
-                  onTouchEnd={(e) => {
-                    setIsShopProductsHovered(false);
-                    if (shopProductsTouchStartX === null) return;
-                    const touch = e.changedTouches[0];
-                    const diffX = shopProductsTouchStartX - touch.clientX;
-                    const diffY = Math.abs(shopProductsTouchStartY - touch.clientY);
-                    const maxIdx = Math.max(0, displayedProducts.length - 2);
-                    if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
-                      if (diffX > 0) {
-                        // Swiped left -> next
-                        setShopProductsIndex((prev) => (prev >= maxIdx ? 0 : prev + 1));
-                      } else {
-                        // Swiped right -> prev
-                        setShopProductsIndex((prev) => (prev <= 0 ? maxIdx : prev - 1));
-                      }
-                    }
-                    setShopProductsTouchStartX(null);
-                    setShopProductsTouchStartY(null);
-                  }}
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'nowrap',
-                    gap: '0.65rem',
-                    transform: `translateX(calc(-${shopProductsIndex} * (50% + 0.325rem)))`,
-                    transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                    width: '100%',
-                    touchAction: 'pan-y',
-                    userSelect: 'none',
-                    WebkitUserSelect: 'none'
-                  }}
-                >
-                  {displayedProducts.map((product) => (
-                    <div
-                      key={product._id || product.slug}
-                      style={{
-                        flex: '0 0 calc(50% - 0.325rem)',
-                        minWidth: 'calc(50% - 0.325rem)',
-                        maxWidth: 'calc(50% - 0.325rem)',
-                        boxSizing: 'border-box'
-                      }}
-                    >
-                      <ProductCard product={product} />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Mobile Carousel Pagination Dots & Left/Right Buttons */}
-                <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.85rem' }}>
-                  {/* Pagination Dots */}
-                  <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
-                    {Array.from({ length: Math.max(1, displayedProducts.length - 1) }).map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setShopProductsIndex(idx)}
-                        style={{
-                          width: shopProductsIndex === idx ? '22px' : '8px',
-                          height: '8px',
-                          borderRadius: '999px',
-                          backgroundColor: shopProductsIndex === idx ? '#b9cd94' : 'rgba(255, 255, 255, 0.25)',
-                          border: 'none',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s ease'
-                        }}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Left / Right Navigation Buttons */}
-                  <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center' }}>
-                    <button
-                      onClick={() => {
-                        const maxIdx = Math.max(0, displayedProducts.length - 2);
-                        setShopProductsIndex((prev) => (prev <= 0 ? maxIdx : prev - 1));
-                      }}
-                      aria-label="Previous product"
-                      style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: '50%',
-                        backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                        border: '1px solid rgba(255, 255, 255, 0.25)',
-                        color: '#FFFDF9',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-                      }}
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button
-                      onClick={() => {
-                        const maxIdx = Math.max(0, displayedProducts.length - 2);
-                        setShopProductsIndex((prev) => (prev >= maxIdx ? 0 : prev + 1));
-                      }}
-                      aria-label="Next product"
-                      style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: '50%',
-                        backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                        border: '1px solid rgba(255, 255, 255, 0.25)',
-                        color: '#FFFDF9',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-                      }}
-                    >
-                      <ChevronRight size={18} />
-                    </button>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
-                <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
-                <button 
-                  onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
-                  className="btn-primary" 
-                  style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
-                >
-                  Reset All Filters
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="favorites-grid fitted-cards-container-4">
-            {displayedProducts.length > 0 ? (
-              displayedProducts.map((product) => (
-                <ProductCard key={product._id || product.slug} product={product} />
-              ))
-            ) : (
-              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
-                <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
-                <button 
-                  onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
-                  className="btn-primary" 
-                  style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
-                >
-                  Reset All Filters
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Product Cards Grid */}
+        <div className="favorites-grid fitted-cards-container-4">
+          {displayedProducts.length > 0 ? (
+            displayedProducts.map((product) => (
+              <ProductCard key={product._id || product.slug} product={product} />
+            ))
+          ) : (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
+              <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
+              <button 
+                onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
+                className="btn-primary" 
+                style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
+              >
+                Reset All Filters
+              </button>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* ================================================================== */}
