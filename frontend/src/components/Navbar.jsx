@@ -11,13 +11,27 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
 
-  const { cartItems, totalItemCount, isCartOpen, setIsCartOpen } = useCart();
+  const { cartItems, totalItemCount, isCartOpen, setIsCartOpen, mobileNavOpen, setMobileNavOpen, openCart, openNav } = useCart();
   const { wishlistCount } = useWishlist();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const location = useLocation();
 
   const cartCount = totalItemCount || cartItems.length;
-  const toggleCart = () => setIsCartOpen(!isCartOpen);
+  const toggleCart = () => {
+    if (isCartOpen) {
+      setIsCartOpen(false);
+    } else {
+      openCart();
+    }
+  };
+
+  const toggleMobileNav = () => {
+    if (mobileNavOpen) {
+      setMobileNavOpen(false);
+    } else {
+      openNav();
+    }
+  };
 
   const accountMenuRef = useRef(null);
 
@@ -458,7 +472,7 @@ export default function Navbar() {
 
             {/* Mobile Hamburger Toggle */}
             <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              onClick={toggleMobileNav} 
               className="mobile-toggle mobile-toggle-btn" 
               style={{ 
                 background: 'none', 
@@ -469,72 +483,142 @@ export default function Navbar() {
                 transition: 'color 0.35s ease'
               }}
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileNavOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </header>
 
-        {/* Mobile Navigation Drawer */}
+        {/* Mobile Navigation Drawer Backdrop */}
         <div 
-          className={`mobile-menu-panel ${mobileMenuOpen ? 'open' : ''}`}
+          onClick={() => setMobileNavOpen(false)}
+          className="mobile-nav-backdrop"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100vh',
+            backgroundColor: 'rgba(20, 10, 5, 0.65)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            zIndex: 1000,
+            opacity: mobileNavOpen ? 1 : 0,
+            pointerEvents: mobileNavOpen ? 'auto' : 'none',
+            visibility: mobileNavOpen ? 'visible' : 'hidden',
+            transition: 'opacity 300ms ease, visibility 300ms step-end',
+            overflow: 'hidden'
+          }}
+        />
+
+        {/* Mobile Navigation Side Drawer */}
+        <div 
+          className={`mobile-menu-panel ${mobileNavOpen ? 'open' : ''}`}
+          onClick={(e) => e.stopPropagation()}
+          onTouchStart={(e) => {
+            const touch = e.touches[0];
+            if (touch) {
+              touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+            }
+          }}
+          onTouchMove={(e) => {
+            if (!touchStartRef.current) return;
+            const touch = e.touches[0];
+            if (!touch) return;
+            const diffX = touchStartRef.current.x - touch.clientX;
+            const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
+            // Swiping left to close
+            if (diffX > 10 && diffX > diffY) {
+              if (e.cancelable) e.preventDefault();
+            }
+          }}
+          onTouchEnd={(e) => {
+            if (!touchStartRef.current) return;
+            const touch = e.changedTouches[0];
+            if (touch) {
+              const diffX = touchStartRef.current.x - touch.clientX;
+              const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
+              if (diffX > 45 && diffX > diffY) {
+                setMobileNavOpen(false);
+              }
+            }
+            touchStartRef.current = null;
+          }}
           style={{ 
-            backgroundColor: 'rgba(35, 21, 13, 0.97)',
-            backgroundImage: 'linear-gradient(135deg, rgba(35, 21, 13, 0.98) 0%, rgba(20, 10, 5, 0.99) 100%)',
-            border: '1.5px solid rgba(200, 155, 60, 0.28)',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.55)',
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
-            left: '12px',
-            right: '12px',
-            borderRadius: '24px',
-            padding: '1.75rem 1.5rem 2rem',
+            backgroundColor: 'rgba(35, 21, 13, 0.98)',
+            backgroundImage: 'linear-gradient(135deg, rgba(35, 21, 13, 0.99) 0%, rgba(20, 10, 5, 1) 100%)',
+            borderRight: '1px solid rgba(245, 235, 221, 0.18)',
+            boxShadow: '8px 0 35px rgba(0, 0, 0, 0.55)',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width: '75vw',
+            maxWidth: '360px',
+            height: '100vh',
+            padding: '2rem 1.5rem 2.5rem',
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
+            justifyContent: 'space-between',
             gap: '1.5rem',
-            zIndex: 99,
+            zIndex: 1001,
             transition: 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease, visibility 300ms step-end',
-            transform: mobileMenuOpen ? 'translateY(0) scale(1)' : 'translateY(-12px) scale(0.97)',
-            opacity: mobileMenuOpen ? 1 : 0,
-            visibility: mobileMenuOpen ? 'visible' : 'hidden',
-            pointerEvents: mobileMenuOpen ? 'auto' : 'none'
+            transform: mobileNavOpen ? 'translateX(0)' : 'translateX(-100%)',
+            opacity: mobileNavOpen ? 1 : 0,
+            visibility: mobileNavOpen ? 'visible' : 'hidden',
+            pointerEvents: mobileNavOpen ? 'auto' : 'none',
+            touchAction: 'pan-y',
+            userSelect: 'none',
+            WebkitUserSelect: 'none'
           }}
         >
-          {/* Mobile Drawer Content */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', fontWeight: '800', marginBottom: '0.5rem' }}>Navigation</span>
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.path;
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  style={{
-                    fontSize: '1.1rem',
-                    fontWeight: '800',
-                    fontFamily: 'var(--font-serif)',
-                    color: isActive ? '#b9cd94' : '#FFFDF9',
-                    padding: '0.65rem 0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    textDecoration: 'none',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
-                  }}
-                >
-                  <span>{link.name}</span>
-                  {isActive && <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#b9cd94' }} />}
-                </Link>
-              );
-            })}
+          {/* Mobile Drawer Header & Nav Links */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.12)', paddingBottom: '1rem' }}>
+              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', fontWeight: '800' }}>Navigation Menu</span>
+              <button 
+                onClick={() => setMobileNavOpen(false)} 
+                aria-label="Close Navigation Menu"
+                style={{ background: 'none', border: 'none', color: '#FFFDF9', cursor: 'pointer', padding: '0.2rem' }}
+              >
+                <X size={22} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.path;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setMobileNavOpen(false)}
+                    style={{
+                      fontSize: '1.1rem',
+                      fontWeight: '800',
+                      fontFamily: 'var(--font-serif)',
+                      color: isActive ? '#b9cd94' : '#FFFDF9',
+                      padding: '0.65rem 0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      textDecoration: 'none',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+                    }}
+                  >
+                    <span>{link.name}</span>
+                    {isActive && <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#b9cd94' }} />}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
 
           {/* Quick Account / Wishlist actions in mobile menu */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.12)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.12)' }}>
             <Link 
               to="/wishlist" 
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => setMobileNavOpen(false)}
               style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#F5EBDD', fontSize: '0.92rem', fontWeight: '700', textDecoration: 'none' }}
             >
               <Heart size={18} color="#b9cd94" />
@@ -544,7 +628,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <Link 
                 to="/account" 
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => setMobileNavOpen(false)}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#F5EBDD', fontSize: '0.92rem', fontWeight: '700', textDecoration: 'none' }}
               >
                 <User size={18} color="#b9cd94" />
@@ -553,7 +637,7 @@ export default function Navbar() {
             ) : (
               <Link 
                 to="/login" 
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => setMobileNavOpen(false)}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#b9cd94', fontSize: '0.92rem', fontWeight: '800', textDecoration: 'none' }}
               >
                 <User size={18} color="#b9cd94" />

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Plus, Minus, Trash2, ShoppingBag, Truck, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -9,6 +9,7 @@ export default function CartDrawer() {
     cartItems,
     isCartOpen,
     setIsCartOpen,
+    setMobileNavOpen,
     updateQuantity,
     removeFromCart,
     subtotal,
@@ -16,17 +17,23 @@ export default function CartDrawer() {
     grandTotal,
   } = useCart();
 
-  // Prevent scroll when drawer is open
+  const touchStartRef = useRef(null);
+
+  // Close navigation drawer whenever cart opens to enforce mutual exclusion
   useEffect(() => {
     if (isCartOpen) {
+      setMobileNavOpen(false);
+      document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     };
-  }, [isCartOpen]);
+  }, [isCartOpen, setMobileNavOpen]);
 
   // Close drawer on Escape key press
   useEffect(() => {
@@ -42,6 +49,40 @@ export default function CartDrawer() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isCartOpen, setIsCartOpen]);
+
+  // Touch gesture listeners inside cart drawer for swiping right to close
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    if (touch) {
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStartRef.current) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const diffX = touch.clientX - touchStartRef.current.x;
+    const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
+    // If predominantly swiping horizontally to the right (closing gesture)
+    if (diffX > 10 && diffX > diffY) {
+      if (e.cancelable) e.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchStartRef.current) return;
+    const touch = e.changedTouches[0];
+    if (touch) {
+      const diffX = touch.clientX - touchStartRef.current.x;
+      const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
+      // Swiping right by > 45px closes the drawer
+      if (diffX > 45 && diffX > diffY) {
+        setIsCartOpen(false);
+      }
+    }
+    touchStartRef.current = null;
+  };
 
   if (!isCartOpen) return null;
 
@@ -59,26 +100,32 @@ export default function CartDrawer() {
         backgroundColor: 'rgba(20, 10, 5, 0.65)', // Deep chocolate backdrop tint
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        zIndex: 200,
+        zIndex: 1000,
         display: 'flex',
         justifyContent: 'flex-end',
       }}
       onClick={() => setIsCartOpen(false)}
-      className="animate-fade-in"
+      className="animate-fade-in cart-drawer-backdrop"
     >
       <div
         style={{
-          width: '100%',
-          maxWidth: '460px',
+          width: '75vw',
+          maxWidth: '360px',
           height: '100%',
           backgroundColor: 'var(--bg-main)', // Dark chocolate background
           display: 'flex',
           flexDirection: 'column',
           boxShadow: '-8px 0 35px rgba(0, 0, 0, 0.5)',
           borderLeft: '1px solid rgba(245, 235, 221, 0.15)',
+          touchAction: 'pan-y',
+          userSelect: 'none',
+          WebkitUserSelect: 'none'
         }}
         onClick={(e) => e.stopPropagation()}
-        className="animate-slide-right"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="animate-slide-right cart-drawer-panel"
       >
         {/* Drawer Header */}
         <div

@@ -168,6 +168,18 @@ export const CartProvider = ({ children }) => {
     showToast('Coupon removed');
   };
 
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const openCart = () => {
+    setMobileNavOpen(false);
+    setIsCartOpen(true);
+  };
+
+  const openNav = () => {
+    setIsCartOpen(false);
+    setMobileNavOpen(true);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -178,6 +190,10 @@ export const CartProvider = ({ children }) => {
         clearCart,
         isCartOpen,
         setIsCartOpen,
+        mobileNavOpen,
+        setMobileNavOpen,
+        openCart,
+        openNav,
         subtotal,
         deliveryFee,
         grandTotal,

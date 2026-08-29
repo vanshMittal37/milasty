@@ -84,6 +84,8 @@ function ToastNotification() {
   );
 }
 
+import EdgeSwipeHandler from './components/EdgeSwipeHandler';
+
 const PAGE_BACKGROUNDS = {
   '/our-story': '/images/about_background_image.jpeg',
   '/shop': '/images/ritiual_background_image.jpeg',
@@ -116,6 +118,7 @@ function MainLayout() {
           }}
         />
       )}
+      <EdgeSwipeHandler />
       <Navbar />
       <main style={{ flexGrow: 1, position: 'relative', zIndex: 1, paddingTop: '135px' }}>
         <Routes>
