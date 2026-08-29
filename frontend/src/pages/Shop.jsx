@@ -574,13 +574,13 @@ export default function Shop() {
 
               <div>
                 {/* Collection Card Action Row: Price & Add Button */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: isMobile ? '0.65rem' : '0.85rem', paddingTop: '0.25rem' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
-                      <span style={{ fontSize: isMobile ? '1.15rem' : '1.35rem', fontWeight: '950', color: '#FFFDF9', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: isMobile ? '0.2rem' : '0.5rem', marginBottom: isMobile ? '0.45rem' : '0.85rem', paddingTop: '0.25rem', width: '100%', boxSizing: 'border-box' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '0.2rem' : '0.4rem', flexWrap: 'nowrap' }}>
+                      <span style={{ fontSize: isMobile ? '0.92rem' : '1.35rem', fontWeight: '950', color: '#FFFDF9', textShadow: '0 2px 4px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>
                         {item.preBookPrice}
                       </span>
-                      <span style={{ fontSize: isMobile ? '0.78rem' : '0.88rem', textDecoration: 'line-through', color: 'rgba(255, 255, 255, 0.65)', fontWeight: '600' }}>
+                      <span style={{ fontSize: isMobile ? '0.65rem' : '0.88rem', textDecoration: 'line-through', color: 'rgba(255, 255, 255, 0.65)', fontWeight: '600', whiteSpace: 'nowrap' }}>
                         {item.originalPrice}
                       </span>
                     </div>
@@ -601,21 +601,21 @@ export default function Shop() {
                     style={{
                       backgroundColor: '#244f21',
                       color: '#FFFFFF',
-                      border: '1.5px solid #b9cd94',
-                      padding: isMobile ? '0.4rem 0.75rem' : '0.8rem 1.4rem',
+                      border: '1px solid #b9cd94',
+                      padding: isMobile ? '0.35rem 0.5rem' : '0.8rem 1.4rem',
                       borderRadius: '999px',
-                      fontSize: isMobile ? '0.75rem' : '0.92rem',
+                      fontSize: isMobile ? '0.68rem' : '0.92rem',
                       fontWeight: '850',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: isMobile ? '0.25rem' : '0.45rem',
-                      boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
+                      gap: isMobile ? '0.15rem' : '0.45rem',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
                       transition: 'all 0.25s ease',
                       flexShrink: 0
                     }}
                   >
-                    <ShoppingBag size={isMobile ? 12 : 17} color="#b9cd94" />
+                    <ShoppingBag size={isMobile ? 11 : 17} color="#b9cd94" />
                     <span>Add</span>
                   </button>
                 </div>
