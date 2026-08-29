@@ -413,12 +413,10 @@ body, p, span, li, a {
    UNIVERSAL TABLET & MOBILE OVERRIDES (<= 1024px)
    ========================================== */
 @media (max-width: 1024px) {
-  /* Spacing */
-  section {
-    padding: clamp(2.5rem, 6vw, 4rem) 0 !important;
+  main {
+    padding-top: 105px !important;
   }
-
-  /* Header Navigation Toggle */
+  
   .desktop-links {
     display: none !important;
   }

@@ -117,7 +117,7 @@ function MainLayout() {
         />
       )}
       <Navbar />
-      <main style={{ flexGrow: 1, position: 'relative', zIndex: 1 }}>
+      <main style={{ flexGrow: 1, position: 'relative', zIndex: 1, paddingTop: '135px' }}>
         <Routes>
           {/* Company Portfolio Pages */}
           <Route path="/" element={<Home />} />

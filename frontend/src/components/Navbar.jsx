@@ -71,80 +71,59 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Top Announcement Bar - Continuous Smooth Marquee */}
-      <div 
-        className="announcement-bar"
-        style={{ 
-          backgroundColor: '#1A0C05', 
-          color: '#FCFAF6', 
-          fontSize: '0.82rem', 
-          padding: '0.55rem 0', 
-          borderBottom: '1px solid rgba(255,255,255,0.08)', 
-          zIndex: 101, 
-          position: 'relative',
-          transition: 'background-color 0.35s ease',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap'
-        }}
-      >
-        <div className="announcement-marquee-track">
-          <div className="announcement-marquee-content">
-            <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
-            <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
-            <span>&nbsp;for 10% OFF</span>
-          </div>
-          <div className="announcement-marquee-content">
-            <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
-            <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
-            <span>&nbsp;for 10% OFF</span>
-          </div>
-          <div className="announcement-marquee-content">
-            <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
-            <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
-            <span>&nbsp;for 10% OFF</span>
-          </div>
-          <div className="announcement-marquee-content">
-            <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
-            <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
-            <span>&nbsp;for 10% OFF</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      <div 
-        onClick={() => setMobileMenuOpen(false)}
-        className="mobile-menu-overlay"
+      {/* Top Fixed Main Navbar Wrapper (Announcement Bar + Site Header Fixed At Top) */}
+      <div
+        className="fixed-navbar-wrapper"
         style={{
           position: 'fixed',
           top: 0,
           left: 0,
+          right: 0,
+          zIndex: 1000,
           width: '100%',
-          height: '100vh',
-          backgroundColor: 'rgba(20, 10, 5, 0.55)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          zIndex: 98,
-          opacity: mobileMenuOpen ? 1 : 0,
-          pointerEvents: mobileMenuOpen ? 'auto' : 'none',
-          visibility: mobileMenuOpen ? 'visible' : 'hidden',
-          transition: 'opacity 250ms ease, visibility 250ms step-end',
-          overflow: 'hidden'
-        }}
-      />
-
-      {/* Main Sticky 100% Full-Width Navbar Container */}
-      <div 
-        className="sticky-navbar"
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          width: '100%',
-          padding: 0,
-          transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+          boxSizing: 'border-box'
         }}
       >
+        {/* Top Announcement Bar - Continuous Smooth Marquee */}
+        <div 
+          className="announcement-bar"
+          style={{ 
+            backgroundColor: '#1A0C05', 
+            color: '#FCFAF6', 
+            fontSize: '0.82rem', 
+            padding: '0.55rem 0', 
+            borderBottom: '1px solid rgba(255,255,255,0.08)', 
+            position: 'relative',
+            transition: 'background-color 0.35s ease',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          <div className="announcement-marquee-track">
+            <div className="announcement-marquee-content">
+              <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
+              <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
+              <span>&nbsp;for 10% OFF</span>
+            </div>
+            <div className="announcement-marquee-content">
+              <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
+              <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
+              <span>&nbsp;for 10% OFF</span>
+            </div>
+            <div className="announcement-marquee-content">
+              <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
+              <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
+              <span>&nbsp;for 10% OFF</span>
+            </div>
+            <div className="announcement-marquee-content">
+              <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery • Use code&nbsp;</span>
+              <strong style={{ color: '#b9cd94' }}>WELCOME10</strong>
+              <span>&nbsp;for 10% OFF</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Header Container */}
         <header
           className="site-header"
           style={{

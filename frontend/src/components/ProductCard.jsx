@@ -216,8 +216,8 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Pricing & Actions Bottom Divider */}
-        <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.55rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', gap: '0.35rem', flexWrap: 'wrap' }}>
-          <div className="card-price" style={{ fontSize: '0.98rem', fontWeight: '900', color: '#b9cd94', display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.25rem', minWidth: 0 }}>
+        <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.55rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
+          <div className="card-price" style={{ fontSize: '0.98rem', fontWeight: '900', color: '#FFFDF9', display: 'flex', alignItems: 'baseline', flexWrap: 'nowrap', gap: '0.25rem', minWidth: 0, flexShrink: 1 }}>
             <span>₹{selectedVariant.price}</span>
             {selectedVariant.originalPrice && (
               <span
@@ -234,29 +234,7 @@ export default function ProductCard({ product }) {
             )}
           </div>
 
-          <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
-            <Link
-              to={`/product/${product.slug}`}
-              className="btn-secondary view-details-btn"
-              style={{
-                padding: '0.35rem 0.5rem',
-                fontSize: '0.7rem',
-                borderRadius: '999px',
-                fontWeight: '850',
-                textAlign: 'center',
-                borderColor: '#b9cd94',
-                color: '#b9cd94',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'rgba(36, 79, 33, 0.25)',
-                transition: 'all 0.2s',
-              }}
-            >
-              View Details
-            </Link>
-
+          <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
             <button
               onClick={handleAddToCart}
               className="btn-primary add-cart-btn"
@@ -266,7 +244,7 @@ export default function ProductCard({ product }) {
                 borderRadius: '999px',
                 backgroundColor: '#244f21',
                 color: '#FFFFFF',
-                border: 'none',
+                border: '1px solid #b9cd94',
                 fontWeight: '850',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -277,7 +255,7 @@ export default function ProductCard({ product }) {
                 whiteSpace: 'nowrap'
               }}
             >
-              <ShoppingBag size={12} />
+              <ShoppingBag size={12} color="#b9cd94" />
               <span>{btnText === 'Add to Cart' ? 'Add' : btnText}</span>
             </button>
           </div>

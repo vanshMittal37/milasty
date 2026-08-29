@@ -21,15 +21,34 @@ export default function Shop() {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [recSelectedOption, setRecSelectedOption] = useState(null);
 
-  // Reviews Carousel State & Automatic Auto-play (every 4s)
+  // Reviews Carousel State & Automatic Auto-play (every 2.0s with hover/swipe pause)
   const [reviewIndex, setReviewIndex] = useState(0);
+  const [isReviewHovered, setIsReviewHovered] = useState(false);
+  const [reviewTouchStartX, setReviewTouchStartX] = useState(null);
+  const [reviewTouchStartY, setReviewTouchStartY] = useState(null);
 
   useEffect(() => {
+    if (isReviewHovered) return;
     const timer = setInterval(() => {
       setReviewIndex((prev) => (prev + 1) % 5);
-    }, 4000);
+    }, 2000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isReviewHovered]);
+
+  // Mobile Products Carousel Index State & Auto-play (every 2.0s with hover/swipe pause)
+  const [shopProductsIndex, setShopProductsIndex] = useState(0);
+  const [isShopProductsHovered, setIsShopProductsHovered] = useState(false);
+  const [shopProductsTouchStartX, setShopProductsTouchStartX] = useState(null);
+  const [shopProductsTouchStartY, setShopProductsTouchStartY] = useState(null);
+
+  useEffect(() => {
+    if (!isMobile || isShopProductsHovered || displayedProducts.length <= 2) return;
+    const maxIndex = Math.max(0, displayedProducts.length - 2);
+    const timer = setInterval(() => {
+      setShopProductsIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [isMobile, isShopProductsHovered, displayedProducts.length]);
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
@@ -582,20 +601,20 @@ export default function Shop() {
                       backgroundColor: '#244f21',
                       color: '#FFFFFF',
                       border: '1.5px solid #b9cd94',
-                      padding: isMobile ? '0.65rem 1.1rem' : '0.8rem 1.4rem',
+                      padding: isMobile ? '0.4rem 0.75rem' : '0.8rem 1.4rem',
                       borderRadius: '999px',
-                      fontSize: isMobile ? '0.82rem' : '0.92rem',
+                      fontSize: isMobile ? '0.75rem' : '0.92rem',
                       fontWeight: '850',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.45rem',
+                      gap: isMobile ? '0.25rem' : '0.45rem',
                       boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
                       transition: 'all 0.25s ease',
                       flexShrink: 0
                     }}
                   >
-                    <ShoppingBag size={isMobile ? 14 : 17} color="#b9cd94" />
+                    <ShoppingBag size={isMobile ? 12 : 17} color="#b9cd94" />
                     <span>Add</span>
                   </button>
                 </div>
@@ -894,25 +913,178 @@ export default function Shop() {
           </button>
         </div>
 
-        {/* Product Cards Grid */}
-        <div className="favorites-grid fitted-cards-container-4">
-          {displayedProducts.length > 0 ? (
-            displayedProducts.map((product) => (
-              <ProductCard key={product._id || product.slug} product={product} />
-            ))
-          ) : (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
-              <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
-              <button 
-                onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
-                className="btn-primary" 
-                style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
-              >
-                Reset All Filters
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Product Cards Grid / Mobile 2-Card Horizontal Carousel */}
+        {isMobile ? (
+          <div style={{ width: '100%', overflow: 'hidden' }}>
+            {displayedProducts.length > 0 ? (
+              <>
+                <div
+                  onMouseEnter={() => setIsShopProductsHovered(true)}
+                  onMouseLeave={() => setIsShopProductsHovered(false)}
+                  onTouchStart={(e) => {
+                    setIsShopProductsHovered(true);
+                    const touch = e.touches[0];
+                    setShopProductsTouchStartX(touch.clientX);
+                    setShopProductsTouchStartY(touch.clientY);
+                  }}
+                  onTouchMove={(e) => {
+                    if (shopProductsTouchStartX === null) return;
+                    const touch = e.touches[0];
+                    const diffX = shopProductsTouchStartX - touch.clientX;
+                    const diffY = Math.abs(shopProductsTouchStartY - touch.clientY);
+                    if (Math.abs(diffX) > diffY && Math.abs(diffX) > 10) {
+                      if (e.cancelable) e.preventDefault();
+                    }
+                  }}
+                  onTouchEnd={(e) => {
+                    setIsShopProductsHovered(false);
+                    if (shopProductsTouchStartX === null) return;
+                    const touch = e.changedTouches[0];
+                    const diffX = shopProductsTouchStartX - touch.clientX;
+                    const diffY = Math.abs(shopProductsTouchStartY - touch.clientY);
+                    const maxIdx = Math.max(0, displayedProducts.length - 2);
+                    if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
+                      if (diffX > 0) {
+                        // Swiped left -> next
+                        setShopProductsIndex((prev) => (prev >= maxIdx ? 0 : prev + 1));
+                      } else {
+                        // Swiped right -> prev
+                        setShopProductsIndex((prev) => (prev <= 0 ? maxIdx : prev - 1));
+                      }
+                    }
+                    setShopProductsTouchStartX(null);
+                    setShopProductsTouchStartY(null);
+                  }}
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'nowrap',
+                    gap: '0.65rem',
+                    transform: `translateX(calc(-${shopProductsIndex} * (50% + 0.325rem)))`,
+                    transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                    width: '100%',
+                    touchAction: 'pan-y',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none'
+                  }}
+                >
+                  {displayedProducts.map((product) => (
+                    <div
+                      key={product._id || product.slug}
+                      style={{
+                        flex: '0 0 calc(50% - 0.325rem)',
+                        minWidth: 'calc(50% - 0.325rem)',
+                        maxWidth: 'calc(50% - 0.325rem)',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <ProductCard product={product} />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mobile Carousel Pagination Dots & Left/Right Buttons */}
+                <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.85rem' }}>
+                  {/* Pagination Dots */}
+                  <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
+                    {Array.from({ length: Math.max(1, displayedProducts.length - 1) }).map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setShopProductsIndex(idx)}
+                        style={{
+                          width: shopProductsIndex === idx ? '22px' : '8px',
+                          height: '8px',
+                          borderRadius: '999px',
+                          backgroundColor: shopProductsIndex === idx ? '#b9cd94' : 'rgba(255, 255, 255, 0.25)',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease'
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Left / Right Navigation Buttons */}
+                  <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center' }}>
+                    <button
+                      onClick={() => {
+                        const maxIdx = Math.max(0, displayedProducts.length - 2);
+                        setShopProductsIndex((prev) => (prev <= 0 ? maxIdx : prev - 1));
+                      }}
+                      aria-label="Previous product"
+                      style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(35, 21, 13, 0.85)',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        color: '#FFFDF9',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                      }}
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        const maxIdx = Math.max(0, displayedProducts.length - 2);
+                        setShopProductsIndex((prev) => (prev >= maxIdx ? 0 : prev + 1));
+                      }}
+                      aria-label="Next product"
+                      style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(35, 21, 13, 0.85)',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        color: '#FFFDF9',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                      }}
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
+                <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
+                <button 
+                  onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
+                  className="btn-primary" 
+                  style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
+                >
+                  Reset All Filters
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="favorites-grid fitted-cards-container-4">
+            {displayedProducts.length > 0 ? (
+              displayedProducts.map((product) => (
+                <ProductCard key={product._id || product.slug} product={product} />
+              ))
+            ) : (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
+                <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
+                <button 
+                  onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
+                  className="btn-primary" 
+                  style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
+                >
+                  Reset All Filters
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </section>
 
       {/* ================================================================== */}
@@ -1159,13 +1331,49 @@ export default function Shop() {
           </h2>
         </div>
 
-        {/* Reviews Showcase */}
+        {/* Reviews Showcase with Touch Swipe Support */}
         <div style={{ width: '100%', maxWidth: isMobile ? '380px' : '750px', margin: '0 auto' }}>
           {(() => {
             const rev = dummyReviews[reviewIndex];
             return (
               <div
                 className="glass-card"
+                onMouseEnter={() => setIsReviewHovered(true)}
+                onMouseLeave={() => setIsReviewHovered(false)}
+                onTouchStart={(e) => {
+                  setIsReviewHovered(true);
+                  const touch = e.touches[0];
+                  setReviewTouchStartX(touch.clientX);
+                  setReviewTouchStartY(touch.clientY);
+                }}
+                onTouchMove={(e) => {
+                  if (reviewTouchStartX === null) return;
+                  const touch = e.touches[0];
+                  const diffX = reviewTouchStartX - touch.clientX;
+                  const diffY = Math.abs(reviewTouchStartY - touch.clientY);
+                  // Prevent vertical scroll interference if horizontal swipe is intentional
+                  if (Math.abs(diffX) > diffY && Math.abs(diffX) > 10) {
+                    if (e.cancelable) e.preventDefault();
+                  }
+                }}
+                onTouchEnd={(e) => {
+                  setIsReviewHovered(false);
+                  if (reviewTouchStartX === null) return;
+                  const touch = e.changedTouches[0];
+                  const diffX = reviewTouchStartX - touch.clientX;
+                  const diffY = Math.abs(reviewTouchStartY - touch.clientY);
+                  if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
+                    if (diffX > 0) {
+                      // Swiped left -> next
+                      setReviewIndex((prev) => (prev + 1) % dummyReviews.length);
+                    } else {
+                      // Swiped right -> prev
+                      setReviewIndex((prev) => (prev === 0 ? dummyReviews.length - 1 : prev - 1));
+                    }
+                  }
+                  setReviewTouchStartX(null);
+                  setReviewTouchStartY(null);
+                }}
                 style={{
                   padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
                   borderRadius: '24px',
@@ -1175,7 +1383,10 @@ export default function Shop() {
                   textAlign: 'center',
                   boxSizing: 'border-box',
                   width: '100%',
-                  margin: '0 auto'
+                  margin: '0 auto',
+                  touchAction: 'pan-y',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none'
                 }}
               >
                 {/* Rating Stars */}
