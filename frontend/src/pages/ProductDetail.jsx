@@ -45,11 +45,26 @@ export default function ProductDetail() {
     }
   };
 
+  const [isRelatedHovered, setIsRelatedHovered] = useState(false);
+  const [relatedIndex, setRelatedIndex] = useState(0);
+  const [relatedTouchStartX, setRelatedTouchStartX] = useState(null);
+  const [relatedTouchStartY, setRelatedTouchStartY] = useState(null);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Auto-scroll Related Products ("You May Also Like") mobile 2-card slider (every 2.0s with hover/touch pause)
+  useEffect(() => {
+    if (!isMobile || isRelatedHovered || relatedProducts.length <= 2) return;
+    const maxIdx = Math.max(0, relatedProducts.length - 2);
+    const timer = setInterval(() => {
+      setRelatedIndex((prev) => (prev >= maxIdx ? 0 : prev + 1));
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [isMobile, isRelatedHovered, relatedProducts.length]);
 
   useEffect(() => {
     fetchProduct();
@@ -597,7 +612,7 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* Section 3: Related Products recommendations with manual horizontal slider */}
+        {/* Section 3: Related Products recommendations with 2-card animated mobile slider */}
         {relatedProducts.length > 0 && (
           <section style={{ borderTop: '1px solid rgba(245, 220, 180, 0.18)', paddingTop: '4.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
@@ -607,42 +622,184 @@ export default function ProductDetail() {
                   You May Also Like
                 </h2>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button
-                  onClick={() => scrollLeft(relatedRef)}
-                  aria-label="Scroll left"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <button
-                  onClick={() => scrollRight(relatedRef)}
-                  aria-label="Scroll right"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
+              {!isMobile && (
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    onClick={() => scrollLeft(relatedRef)}
+                    aria-label="Scroll left"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button
+                    onClick={() => scrollRight(relatedRef)}
+                    aria-label="Scroll right"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              )}
             </div>
 
-            <div
-              ref={relatedRef}
-              className="horizontal-scroll-container"
-              style={{
-                display: 'flex',
-                gap: '1.5rem',
-                overflowX: 'auto',
-                scrollBehavior: 'smooth',
-                paddingBottom: '1.25rem',
-                WebkitOverflowScrolling: 'touch'
-              }}
-            >
-              {relatedProducts.map((p) => (
-                <div key={p._id || p.slug} style={{ flex: isMobile ? '0 0 260px' : '0 0 280px', width: isMobile ? '260px' : '280px' }}>
-                  <ProductCard product={p} />
+            {isMobile ? (
+              <div style={{ width: '100%', overflow: 'hidden' }}>
+                <div
+                  onMouseEnter={() => setIsRelatedHovered(true)}
+                  onMouseLeave={() => setIsRelatedHovered(false)}
+                  onTouchStart={(e) => {
+                    setIsRelatedHovered(true);
+                    const touch = e.touches[0];
+                    setRelatedTouchStartX(touch.clientX);
+                    setRelatedTouchStartY(touch.clientY);
+                  }}
+                  onTouchMove={(e) => {
+                    if (relatedTouchStartX === null) return;
+                    const touch = e.touches[0];
+                    const diffX = relatedTouchStartX - touch.clientX;
+                    const diffY = Math.abs(relatedTouchStartY - touch.clientY);
+                    if (Math.abs(diffX) > diffY && Math.abs(diffX) > 10) {
+                      if (e.cancelable) e.preventDefault();
+                    }
+                  }}
+                  onTouchEnd={(e) => {
+                    setIsRelatedHovered(false);
+                    if (relatedTouchStartX === null) return;
+                    const touch = e.changedTouches[0];
+                    const diffX = relatedTouchStartX - touch.clientX;
+                    const diffY = Math.abs(relatedTouchStartY - touch.clientY);
+                    const maxIdx = Math.max(0, relatedProducts.length - 2);
+                    if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
+                      if (diffX > 0) {
+                        // Swiped left -> next
+                        setRelatedIndex((prev) => (prev >= maxIdx ? 0 : prev + 1));
+                      } else {
+                        // Swiped right -> prev
+                        setRelatedIndex((prev) => (prev <= 0 ? maxIdx : prev - 1));
+                      }
+                    }
+                    setRelatedTouchStartX(null);
+                    setRelatedTouchStartY(null);
+                  }}
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'nowrap',
+                    gap: '0.65rem',
+                    transform: `translateX(calc(-${relatedIndex} * (50% + 0.325rem)))`,
+                    transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                    width: '100%',
+                    touchAction: 'pan-y',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none'
+                  }}
+                >
+                  {relatedProducts.map((p) => (
+                    <div
+                      key={p._id || p.slug}
+                      style={{
+                        flex: '0 0 calc(50% - 0.325rem)',
+                        minWidth: 'calc(50% - 0.325rem)',
+                        maxWidth: 'calc(50% - 0.325rem)',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <ProductCard product={p} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+
+                {/* Pagination Dots & Navigation Controls */}
+                <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.85rem' }}>
+                  {/* Dots */}
+                  <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
+                    {Array.from({ length: Math.max(1, relatedProducts.length - 1) }).map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setRelatedIndex(idx)}
+                        style={{
+                          width: relatedIndex === idx ? '22px' : '8px',
+                          height: '8px',
+                          borderRadius: '999px',
+                          backgroundColor: relatedIndex === idx ? '#b9cd94' : 'rgba(255, 255, 255, 0.25)',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease'
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Left / Right Chevron Buttons */}
+                  <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center' }}>
+                    <button
+                      onClick={() => {
+                        const maxIdx = Math.max(0, relatedProducts.length - 2);
+                        setRelatedIndex((prev) => (prev <= 0 ? maxIdx : prev - 1));
+                      }}
+                      aria-label="Previous product"
+                      style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(35, 21, 13, 0.85)',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        color: '#FFFDF9',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                      }}
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        const maxIdx = Math.max(0, relatedProducts.length - 2);
+                        setRelatedIndex((prev) => (prev >= maxIdx ? 0 : prev + 1));
+                      }}
+                      aria-label="Next product"
+                      style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(35, 21, 13, 0.85)',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        color: '#FFFDF9',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                      }}
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div
+                ref={relatedRef}
+                className="horizontal-scroll-container"
+                style={{
+                  display: 'flex',
+                  flexWrap: 'nowrap',
+                  gap: '1.5rem',
+                  overflowX: 'auto',
+                  scrollBehavior: 'smooth',
+                  paddingBottom: '1.25rem',
+                  WebkitOverflowScrolling: 'touch',
+                  width: '100%'
+                }}
+              >
+                {relatedProducts.map((p) => (
+                  <div key={p._id || p.slug} style={{ flex: '0 0 280px', minWidth: '280px', width: '280px', boxSizing: 'border-box' }}>
+                    <ProductCard product={p} />
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
 
