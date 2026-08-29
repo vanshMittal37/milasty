@@ -59,7 +59,7 @@ export default function ShopProductDetail() {
     if (!container || relatedProducts.length === 0 || isRelatedHovered) return;
 
     const autoScroll = setInterval(() => {
-      const scrollStep = isMobile ? 240 : 295;
+      const scrollStep = isMobile ? container.clientWidth : 295;
       if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 15) {
         container.scrollTo({ left: 0, behavior: 'smooth' });
       } else {
@@ -663,7 +663,7 @@ export default function ShopProductDetail() {
               }}
             >
               {relatedProducts.map((p) => (
-                <div key={p._id || p.slug} style={{ flex: isMobile ? '0 0 210px' : '0 0 280px', minWidth: isMobile ? '210px' : '280px', width: isMobile ? '210px' : '280px' }}>
+                <div key={p._id || p.slug} style={{ flex: isMobile ? '0 0 calc(50% - 0.425rem)' : '0 0 280px', minWidth: isMobile ? 'calc(50% - 0.425rem)' : '280px', width: isMobile ? 'calc(50% - 0.425rem)' : '280px', boxSizing: 'border-box' }}>
                   <ProductCard product={p} />
                 </div>
               ))}
