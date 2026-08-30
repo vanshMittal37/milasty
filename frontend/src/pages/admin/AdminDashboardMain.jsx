@@ -156,10 +156,6 @@ export default function AdminDashboardMain() {
           </Link>
         </div>
       </div>
-            <span>Add New Product</span>
-          </Link>
-        </div>
-      </div>
 
       {/* ==================================================
           2. STORE OVERVIEW SECTION (4 KPI Cards in one Row)
