@@ -172,12 +172,12 @@ export default function AdminProductForm() {
         <span>Back to Product Listing</span>
       </Link>
 
-      <div className="admin-card" style={{ padding: '2.5rem' }}>
-        <div style={{ borderBottom: '1px solid var(--admin-border)', paddingBottom: '1rem', marginBottom: '1.75rem' }}>
-          <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
+      <div className="admin-card" style={{ padding: '2rem' }}>
+        <div style={{ borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.85rem', marginBottom: '1.5rem' }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.07em', margin: '0 0 0.2rem 0' }}>
             {isEdit ? 'Modify' : 'New Entry'}
-          </span>
-          <h2 style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0 0' }}>
+          </p>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             {isEdit ? 'Edit Catalog Product' : 'Add New Product'}
           </h2>
         </div>
@@ -248,13 +248,13 @@ export default function AdminProductForm() {
           {/* Pricing Auto Calculator Box */}
           <div 
             style={{ 
-              backgroundColor: 'rgba(24, 32, 25, 0.02)', 
-              padding: '1.5rem', 
-              borderRadius: '14px', 
+              backgroundColor: 'var(--admin-surface-elevated)', 
+              padding: '1.25rem', 
+              borderRadius: '12px', 
               border: '1px solid var(--admin-border)',
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
-              gap: '1.25rem',
+              gap: '1rem',
               alignItems: 'center'
             }}
           >
@@ -454,7 +454,7 @@ export default function AdminProductForm() {
                       alignItems: 'end',
                       padding: '1rem',
                       borderRadius: '12px',
-                      backgroundColor: 'var(--admin-surface-card)',
+                      backgroundColor: 'var(--admin-surface-elevated)',
                       border: '1px solid var(--admin-border)'
                     }}
                   >

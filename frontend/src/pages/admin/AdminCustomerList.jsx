@@ -34,16 +34,18 @@ export default function AdminCustomerList() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ borderBottom: '1px solid var(--admin-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>
-        <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
-          Customers
-        </span>
-        <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
-          Customer Registry
-        </h1>
-        <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
-          Monitor customer activity, order statistics, total lifetime spend, and account status controls.
-        </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--admin-text-muted)', margin: '0 0 0.2rem 0' }}>
+            Customers
+          </p>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+            Customer Registry
+          </h2>
+          <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+            Monitor customer activity, order statistics, total lifetime spend, and account status controls.
+          </p>
+        </div>
       </div>
 
       <div className="admin-table-container">
@@ -75,7 +77,7 @@ export default function AdminCustomerList() {
                           width: '38px',
                           height: '38px',
                           borderRadius: '50%',
-                          backgroundColor: 'rgba(117, 139, 69, 0.08)',
+                          backgroundColor: 'rgba(143, 175, 91, 0.12)',
                           color: 'var(--admin-accent)',
                           display: 'flex',
                           alignItems: 'center',

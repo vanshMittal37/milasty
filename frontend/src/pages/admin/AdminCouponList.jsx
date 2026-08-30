@@ -63,16 +63,18 @@ export default function AdminCouponList() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ borderBottom: '1px solid var(--admin-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>
-        <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
-          Coupons & Discounts
-        </span>
-        <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
-          Promotions & Discount Codes
-        </h1>
-        <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
-          Create and manage promotional discount voucher codes for store checkout.
-        </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--admin-text-muted)', margin: '0 0 0.2rem 0' }}>
+            Coupons & Discounts
+          </p>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+            Promotions & Discount Codes
+          </h2>
+          <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+            Create and manage promotional discount voucher codes for store checkout.
+          </p>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
@@ -185,12 +187,12 @@ export default function AdminCouponList() {
                     justifyContent: 'space-between',
                     padding: '0.85rem 1.15rem',
                     borderRadius: '12px',
-                    backgroundColor: 'var(--admin-surface-card)',
+                    backgroundColor: 'var(--admin-surface-elevated)',
                     border: '1px solid var(--admin-border)'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                    <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: 'rgba(117, 139, 69, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-accent)' }}>
+                    <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: 'rgba(143, 175, 91, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-accent)' }}>
                       <Ticket size={16} />
                     </div>
                     <div>

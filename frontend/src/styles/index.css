@@ -49,28 +49,27 @@
   --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Unified MILASTY Admin Dashboard Design Tokens — Premium Ivory & Muted Olive Brand System */
-  --admin-bg: #F3F1E8;
-  --admin-surface: #FFFFFF;
-  --admin-surface-card: #FAFAF6;
-  --admin-surface-elevated: #FFFFFF;
-  --admin-sidebar-bg: #182019;
-  --admin-border: #D9DDD2;
-  --admin-border-hover: #A5B66C;
-  --admin-text-primary: #182019;
-  --admin-text-secondary: #687066;
-  --admin-text-muted: #8B9289;
-  --admin-accent: #758B45;
-  /* Muted Olive Brand Green */
-  --admin-accent-dark: #5E7035;
-  --admin-accent-light: #A5B66C;
-  --admin-accent-gold: #C9943D;
-  --admin-danger: #C75D52;
-  --admin-danger-bg: rgba(199, 93, 82, 0.08);
-  --admin-warning: #C9943D;
-  --admin-warning-bg: rgba(201, 148, 61, 0.08);
-  --admin-success: #668A45;
-  --admin-success-bg: rgba(102, 138, 69, 0.08);
+  /* Unified MILASTY Admin Dashboard Design Tokens — Premium Dark Graphite & Olive System */
+  --admin-bg: #0B0F0D;
+  --admin-surface: #101512;
+  --admin-surface-card: #141A17;
+  --admin-surface-elevated: #181F1B;
+  --admin-sidebar-bg: #0D120F;
+  --admin-border: #27302A;
+  --admin-border-hover: #8FAF5B;
+  --admin-text-primary: #F2F3EE;
+  --admin-text-secondary: #A8B0AA;
+  --admin-text-muted: #737B75;
+  --admin-accent: #8FAF5B;
+  --admin-accent-dark: #6E8843;
+  --admin-accent-light: #B8CC7A;
+  --admin-accent-gold: #D6A23F;
+  --admin-danger: #D96B5F;
+  --admin-danger-bg: rgba(217, 107, 95, 0.08);
+  --admin-warning: #D6A23F;
+  --admin-warning-bg: rgba(214, 162, 63, 0.10);
+  --admin-success: #6FA66A;
+  --admin-success-bg: rgba(111, 166, 106, 0.10);
 }
 
 * {
@@ -2821,29 +2820,36 @@ footer.transparent-blurred-footer {
 /* ==================================================
    MILASTY ADMIN DASHBOARD GLOBAL DESIGN SYSTEM & UI CLASSES
    ================================================== */
+.admin-page-wrapper {
+  background-color: var(--admin-bg) !important;
+  color: var(--admin-text-primary) !important;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+}
+
 .admin-card {
-  background-color: var(--admin-surface);
+  background-color: var(--admin-surface-card);
   border: 1px solid var(--admin-border);
-  border-radius: 16px;
+  border-radius: 14px;
   padding: 1.5rem;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 12px rgba(24, 32, 25, 0.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .admin-card-hover:hover {
   transform: translateY(-2px);
   border-color: var(--admin-border-hover);
-  box-shadow: 0 8px 24px rgba(24, 32, 25, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .admin-btn-primary {
   background-color: var(--admin-accent);
-  color: #FFFFFF;
+  color: #0B0F0D;
   border: 1px solid var(--admin-accent);
-  padding: 0.65rem 1.25rem;
-  border-radius: 10px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2856,18 +2862,18 @@ footer.transparent-blurred-footer {
 .admin-btn-primary:hover {
   background-color: var(--admin-accent-dark);
   border-color: var(--admin-accent-dark);
+  color: #0B0F0D;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(117, 139, 69, 0.15);
 }
 
 .admin-btn-secondary {
-  background-color: var(--admin-surface);
+  background-color: var(--admin-surface-elevated);
   color: var(--admin-text-primary);
   border: 1px solid var(--admin-border);
-  padding: 0.65rem 1.25rem;
-  border-radius: 10px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2878,15 +2884,14 @@ footer.transparent-blurred-footer {
 }
 
 .admin-btn-secondary:hover {
-  background-color: rgba(24, 32, 25, 0.03);
+  background-color: rgba(255, 255, 255, 0.04);
   border-color: var(--admin-border-hover);
-  color: var(--admin-text-primary);
 }
 
 .admin-btn-danger {
   background-color: var(--admin-danger-bg);
-  color: #B0443A;
-  border: 1px solid rgba(199, 93, 82, 0.25);
+  color: var(--admin-danger);
+  border: 1px solid rgba(217, 107, 95, 0.25);
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: 700;
@@ -2900,7 +2905,7 @@ footer.transparent-blurred-footer {
 }
 
 .admin-btn-danger:hover {
-  background-color: rgba(199, 93, 82, 0.15);
+  background-color: rgba(217, 107, 95, 0.15);
   border-color: var(--admin-danger);
 }
 
@@ -2911,7 +2916,7 @@ footer.transparent-blurred-footer {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--admin-surface);
+  background-color: var(--admin-surface-card);
   border: 1px solid var(--admin-border);
   color: var(--admin-text-secondary);
   cursor: pointer;
@@ -2919,18 +2924,18 @@ footer.transparent-blurred-footer {
 }
 
 .admin-icon-btn:hover {
-  background-color: rgba(24, 32, 25, 0.03);
+  background-color: rgba(255, 255, 255, 0.04);
   color: var(--admin-text-primary);
   border-color: var(--admin-border-hover);
 }
 
 .admin-input {
-  background-color: var(--admin-surface);
+  background-color: var(--admin-surface-card);
   border: 1px solid var(--admin-border);
   color: var(--admin-text-primary);
-  border-radius: 10px;
-  padding: 0.7rem 1rem;
-  font-size: 0.88rem;
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.86rem;
   outline: none;
   width: 100%;
   box-sizing: border-box;
@@ -2939,7 +2944,7 @@ footer.transparent-blurred-footer {
 
 .admin-input:focus {
   border-color: var(--admin-accent);
-  box-shadow: 0 0 0 3px rgba(117, 139, 69, 0.12);
+  box-shadow: 0 0 0 3px rgba(143, 175, 91, 0.15);
 }
 
 .admin-input::placeholder {
@@ -2950,9 +2955,9 @@ footer.transparent-blurred-footer {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.28rem 0.7rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -2960,24 +2965,24 @@ footer.transparent-blurred-footer {
 
 .admin-badge-success {
   background-color: var(--admin-success-bg);
-  color: #4A6C2B;
-  border: 1px solid rgba(102, 138, 69, 0.2);
+  color: var(--admin-success);
+  border: 1px solid rgba(111, 166, 106, 0.25);
 }
 
 .admin-badge-warning {
   background-color: var(--admin-warning-bg);
-  color: #A67425;
-  border: 1px solid rgba(201, 148, 61, 0.2);
+  color: var(--admin-warning);
+  border: 1px solid rgba(214, 162, 63, 0.25);
 }
 
 .admin-badge-danger {
   background-color: var(--admin-danger-bg);
-  color: #B0443A;
-  border: 1px solid rgba(199, 93, 82, 0.2);
+  color: var(--admin-danger);
+  border: 1px solid rgba(217, 107, 95, 0.25);
 }
 
 .admin-badge-neutral {
-  background-color: rgba(24, 32, 25, 0.04);
+  background-color: rgba(255, 255, 255, 0.04);
   color: var(--admin-text-secondary);
   border: 1px solid var(--admin-border);
 }
@@ -2986,9 +2991,9 @@ footer.transparent-blurred-footer {
 .admin-table-container {
   width: 100%;
   overflow-x: auto;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--admin-border);
-  background-color: var(--admin-surface);
+  background-color: var(--admin-surface-card);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -2996,22 +3001,22 @@ footer.transparent-blurred-footer {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
 }
 
 .admin-table th {
-  background-color: rgba(24, 32, 25, 0.025);
-  color: var(--admin-text-primary);
+  background-color: var(--admin-surface);
+  color: var(--admin-text-secondary);
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
-  padding: 1rem 1.25rem;
+  padding: 0.95rem 1.15rem;
   border-bottom: 1px solid var(--admin-border);
 }
 
 .admin-table td {
-  padding: 1rem 1.25rem;
+  padding: 0.95rem 1.15rem;
   border-bottom: 1px solid var(--admin-border);
   color: var(--admin-text-primary);
   vertical-align: middle;
@@ -3022,7 +3027,7 @@ footer.transparent-blurred-footer {
 }
 
 .admin-table tbody tr:hover {
-  background-color: rgba(24, 32, 25, 0.012);
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .admin-table tbody tr:last-child td {
@@ -3039,20 +3044,20 @@ footer.transparent-blurred-footer {
   padding: 4rem 2rem;
   background-color: var(--admin-surface-card);
   border: 1px solid var(--admin-border);
-  border-radius: 18px;
+  border-radius: 14px;
   gap: 1rem;
 }
 
 .admin-empty-icon {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--admin-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--admin-accent-light);
+  color: var(--admin-accent);
 }
 
 .shipping-step-card:hover {
