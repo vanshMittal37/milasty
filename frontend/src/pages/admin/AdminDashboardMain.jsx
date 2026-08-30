@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, Package, ShoppingBag, Users, AlertTriangle, ArrowUpRight, 
-  Plus, RefreshCw, CheckCircle, TrendingUp, ChevronRight, Activity, MessageSquare
+  Plus, RefreshCw, CheckCircle, TrendingUp, ChevronRight, Activity, MessageSquare, Ticket
 } from 'lucide-react';
 import api from '../../api/axios';
 
