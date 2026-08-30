@@ -151,19 +151,11 @@ export default function AdminCategories() {
 
                   <button 
                     onClick={() => handleDelete(cat._id)} 
-                      alignItems: 'center',
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = 'var(--accent-terracotta)';
-                      e.currentTarget.style.backgroundColor = 'rgba(217, 83, 79, 0.05)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = 'rgba(217, 83, 79, 0.7)';
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }}
+                    className="admin-icon-btn"
+                    style={{ color: '#FF8A80' }}
+                    title="Delete Category"
                   >
-                    <Trash2 size={15} />
+                    <Trash2 size={14} />
                   </button>
                 </div>
               ))}
