@@ -15,7 +15,7 @@ export default function AdminLayout() {
   // Securely protect layout from unauthenticated access in useEffect
   useEffect(() => {
     if (!isAuthenticated || !isAdmin) {
-      navigate('/admin/login');
+      navigate('/login');
     }
   }, [isAuthenticated, isAdmin, navigate]);
 

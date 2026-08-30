@@ -453,13 +453,10 @@ export default function Navbar() {
                       ) : (
                         <>
                           <Link to="/login" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.7rem 1.1rem', fontSize: '0.88rem', color: '#FFFDF9', fontWeight: '700' }}>
-                            Customer Login
+                            Sign In / Login
                           </Link>
                           <Link to="/register" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.7rem 1.1rem', fontSize: '0.88rem', color: '#b9cd94', fontWeight: '600' }}>
                             Create New Account
-                          </Link>
-                          <Link to="/admin/login" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.82rem', color: '#E8DCCB', fontWeight: '700', borderTop: '1px solid rgba(245, 220, 180, 0.15)', marginTop: '0.35rem' }}>
-                            Admin Portal Login
                           </Link>
                         </>
                       )}

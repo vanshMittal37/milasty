@@ -32,7 +32,6 @@ import OrderHistoryPage from './pages/OrderHistoryPage';
 import CustomerOrderDetailPage from './pages/CustomerOrderDetailPage';
 
 // Admin Panel Layout & Pages
-import AdminLogin from './pages/admin/AdminLogin';
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboardMain from './pages/admin/AdminDashboardMain';
 import AdminProductList from './pages/admin/AdminProductList';
@@ -168,7 +167,6 @@ export default function App() {
             <ScrollToTop />
             <Routes>
               {/* Admin Separate Portal */}
-              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route path="dashboard" element={<AdminDashboardMain />} />
                 <Route path="products" element={<AdminProductList />} />
