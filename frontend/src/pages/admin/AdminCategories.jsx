@@ -55,10 +55,10 @@ export default function AdminCategories() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
-        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
           Category Management
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0, fontWeight: '500' }}>
+        <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
           Organize store products into logical, navigable categories.
         </p>
       </div>
@@ -66,22 +66,13 @@ export default function AdminCategories() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', alignItems: 'start' }}>
         
         {/* Left Side: Create Category Form */}
-        <div 
-          className="glass-card" 
-          style={{ 
-            padding: '2rem', 
-            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
-            borderRadius: '16px', 
-            border: '1px solid rgba(245, 235, 221, 0.25)', 
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' 
-          }}
-        >
-          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem', marginTop: 0 }}>
+        <div className="admin-card">
+          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.5rem', marginTop: 0 }}>
             Add New Category
           </h3>
           <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Category Name *
               </label>
               <input 
@@ -90,23 +81,12 @@ export default function AdminCategories() {
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
                 placeholder="e.g. Sugar-Free Bakes" 
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }} 
+                className="admin-input"
               />
             </div>
             
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Description
               </label>
               <textarea 
@@ -114,41 +94,16 @@ export default function AdminCategories() {
                 value={description} 
                 onChange={(e) => setDescription(e.target.value)} 
                 placeholder="Brief category summary for customer reference..." 
-                style={{ 
-                  width: '100%', 
-                  padding: '0.75rem 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)',
-                  resize: 'none'
-                }} 
+                className="admin-input"
+                style={{ resize: 'none' }}
               />
             </div>
 
             <button 
               type="submit" 
               disabled={loading} 
-              className="btn-primary" 
-              style={{ 
-                width: '100%', 
-                height: '48px', 
-                justifyContent: 'center', 
-                backgroundColor: 'var(--accent-gold)', 
-                border: 'none', 
-                borderRadius: '10px', 
-                color: '#24130D',
-                fontWeight: '800',
-                fontSize: '0.88rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                cursor: 'pointer',
-                marginTop: '0.5rem'
-              }}
+              className="admin-btn-primary" 
+              style={{ width: '100%', marginTop: '0.5rem' }}
             >
               <Plus size={15} />
               <span>{loading ? 'Creating...' : 'Create Category'}</span>
@@ -157,24 +112,15 @@ export default function AdminCategories() {
         </div>
 
         {/* Right Side: Categories List */}
-        <div 
-          className="glass-card" 
-          style={{ 
-            padding: '2rem', 
-            backgroundColor: 'rgba(50, 26, 18, 0.60)', 
-            borderRadius: '16px', 
-            border: '1px solid rgba(245, 235, 221, 0.25)', 
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' 
-          }}
-        >
-          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem', marginTop: 0 }}>
+        <div className="admin-card">
+          <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.5rem', marginTop: 0 }}>
             Active Categories
           </h3>
           
           {fetching ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 0', gap: '0.5rem' }}>
-              <RefreshCw size={18} className="animate-spin" color="var(--accent-gold)" />
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600' }}>Fetching categories...</span>
+              <RefreshCw size={18} className="animate-spin" color="var(--admin-accent-light)" />
+              <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Fetching categories...</span>
             </div>
           ) : categories.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
@@ -183,30 +129,28 @@ export default function AdminCategories() {
                   key={cat._id || cat.slug} 
                   style={{ 
                     display: 'flex', 
-                    justifyContent: 'space-between', 
                     alignItems: 'center', 
-                    padding: '0.95rem 1.25rem', 
-                    backgroundColor: 'rgba(255, 255, 255, 0.03)', 
+                    justifyContent: 'space-between', 
+                    padding: '1rem 1.25rem', 
                     borderRadius: '12px', 
-                    border: '1px solid rgba(245, 235, 221, 0.15)',
-                    transition: 'border-color 0.2s'
+                    backgroundColor: 'rgba(255, 255, 255, 0.03)', 
+                    border: '1px solid var(--admin-border)' 
                   }}
-                  className="admin-category-row"
                 >
-                  <div>
-                    <div style={{ fontWeight: '800', color: 'var(--text-light)', fontSize: '0.9rem' }}>{cat.name}</div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600', marginTop: '0.15rem' }}>Slug: {cat.slug}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: 'rgba(185, 205, 148, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-accent-light)' }}>
+                      <Tags size={16} />
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: '800', color: 'var(--admin-text-primary)', fontSize: '0.9rem' }}>{cat.name}</div>
+                      <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', marginTop: '0.15rem' }}>
+                        {cat.description || `Slug: ${cat.slug}`}
+                      </div>
+                    </div>
                   </div>
+
                   <button 
                     onClick={() => handleDelete(cat._id)} 
-                    style={{ 
-                      background: 'none', 
-                      border: 'none', 
-                      color: 'rgba(217, 83, 79, 0.7)', 
-                      cursor: 'pointer',
-                      padding: '0.45rem',
-                      borderRadius: '8px',
-                      display: 'flex',
                       alignItems: 'center',
                       transition: 'all 0.2s'
                     }}

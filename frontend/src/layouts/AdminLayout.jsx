@@ -77,28 +77,28 @@ export default function AdminLayout() {
         flexDirection: 'column', 
         height: '100%', 
         justifyContent: 'space-between',
-        background: 'linear-gradient(180deg, #381423 0%, #200812 100%)', // Brand Deep Plum Gradient
-        color: '#FFFFFF',
-        padding: '2rem 1.5rem',
+        background: 'linear-gradient(180deg, var(--admin-surface) 0%, #170A06 100%)',
+        color: 'var(--admin-text-primary)',
+        padding: '2rem 1.25rem',
         overflowY: 'auto'
       }}
     >
       <div>
         {/* Brand Logo Header */}
-        <div style={{ marginBottom: '2.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.08em', margin: 0, color: '#FFFFFF' }}>
-            MILASTY<span style={{ color: 'var(--accent-gold)' }}>.</span>
+        <div style={{ marginBottom: '2rem', borderBottom: '1px solid var(--admin-border)', paddingBottom: '1.25rem' }}>
+          <h2 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.08em', margin: 0, color: 'var(--admin-text-primary)' }}>
+            MILASTY<span style={{ color: 'var(--admin-accent-light)' }}>.</span>
           </h2>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '800', marginTop: '0.2rem' }}>
+          <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--admin-accent-light)', fontWeight: '800', marginTop: '0.25rem' }}>
             Store Management
           </div>
         </div>
 
         {/* Sidebar Nav Items */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {sections.map((section) => (
             <div key={section.title}>
-              <h3 style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255, 255, 255, 0.4)', fontWeight: '800', marginBottom: '0.75rem' }}>
+              <h3 style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--admin-text-muted)', fontWeight: '800', marginBottom: '0.75rem' }}>
                 {section.title}
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
@@ -119,14 +119,14 @@ export default function AdminLayout() {
                         fontSize: '0.85rem',
                         fontWeight: '700',
                         textDecoration: 'none',
-                        color: active ? '#FFFFFF' : 'rgba(255, 255, 255, 0.75)',
-                        backgroundColor: active ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-                        borderLeft: active ? '3.5px solid var(--accent-gold)' : '3.5px solid transparent',
+                        color: active ? '#FFFFFF' : 'var(--admin-text-secondary)',
+                        backgroundColor: active ? 'rgba(36, 79, 33, 0.45)' : 'transparent',
+                        borderLeft: active ? '3.5px solid var(--admin-accent-light)' : '3.5px solid transparent',
                         transition: 'all 0.2s ease',
                       }}
                       className="admin-sidebar-link"
                     >
-                      <Icon size={16} color={active ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.75)'} />
+                      <Icon size={16} color={active ? 'var(--admin-accent-light)' : 'var(--admin-text-muted)'} />
                       <span>{item.label}</span>
                     </Link>
                   );

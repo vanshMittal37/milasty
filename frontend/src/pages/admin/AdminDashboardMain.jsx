@@ -129,12 +129,12 @@ export default function AdminDashboardMain() {
       {/* ==================================================
           1. DASHBOARD HEADER
          ================================================== */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--admin-border)' }}>
         <div>
-          <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+          <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
             {timeOfDay}, Admin 👋
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
+          <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
             Monitor your store performance, orders, inventory and customers from one place.
           </p>
         </div>
@@ -142,42 +142,20 @@ export default function AdminDashboardMain() {
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <button 
             onClick={fetchDashboardData} 
-            className="btn-secondary" 
-            style={{ 
-              padding: '0.65rem 1.15rem', 
-              fontSize: '0.82rem', 
-              fontWeight: '800', 
-              borderRadius: '10px', 
-              borderColor: 'var(--border-color)', 
-              color: 'var(--primary-dark)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem'
-            }}
+            className="admin-btn-secondary"
           >
-            <RefreshCw size={13} />
+            <RefreshCw size={14} />
             <span>Refresh</span>
           </button>
           <Link 
             to="/admin/products/add" 
-            className="btn-primary" 
-            style={{ 
-              padding: '0.65rem 1.25rem', 
-              fontSize: '0.82rem', 
-              fontWeight: '800', 
-              borderRadius: '10px', 
-              backgroundColor: 'var(--primary-dark)',
-              border: 'none',
-              color: '#FFFFFF',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              cursor: 'pointer'
-            }}
+            className="admin-btn-primary"
           >
-            <Plus size={13} />
+            <Plus size={14} />
+            <span>Add New Product</span>
+          </Link>
+        </div>
+      </div>
             <span>Add New Product</span>
           </Link>
         </div>
@@ -208,172 +186,84 @@ export default function AdminDashboardMain() {
           `}</style>
 
           {/* Card 1: Total Revenue */}
-          <div 
-            className="glass-card" 
-            style={{ 
-              padding: '1.5rem', 
-              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
-              borderRadius: '16px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              height: '145px',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
-            }}
-          >
+          <div className="admin-card admin-card-hover" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '145px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Revenue</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--text-light)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Revenue</span>
+                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   ₹{stats?.totalRevenue || 0}
                 </div>
               </div>
-              <div style={{ padding: '0.45rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--accent-gold)' }}>
-                <DollarSign size={16} />
+              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(185, 205, 148, 0.12)', color: 'var(--admin-accent-light)' }}>
+                <DollarSign size={18} />
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '0.65rem' }}>
-              <span style={{ fontSize: '0.74rem', color: 'var(--accent-gold)', fontWeight: '750' }}>Captured sales</span>
-              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: '600' }}>Current period</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--admin-border)', paddingTop: '0.65rem' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--admin-accent-gold)', fontWeight: '750' }}>Captured sales</span>
+              <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Current period</span>
             </div>
           </div>
 
           {/* Card 2: Total Orders */}
-          <div 
-            className="glass-card" 
-            style={{ 
-              padding: '1.5rem', 
-              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
-              borderRadius: '16px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              height: '145px',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
-            }}
-          >
+          <div className="admin-card admin-card-hover" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '145px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Orders</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--text-light)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Orders</span>
+                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   {stats?.totalOrders || 0}
                 </div>
               </div>
-              <div style={{ padding: '0.45rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--accent-gold)' }}>
-                <ShoppingBag size={16} />
+              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(185, 205, 148, 0.12)', color: 'var(--admin-accent-light)' }}>
+                <ShoppingBag size={18} />
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '0.65rem' }}>
-              <span style={{ fontSize: '0.74rem', color: 'var(--text-light)', fontWeight: '750' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--admin-border)', paddingTop: '0.65rem' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-secondary)', fontWeight: '750' }}>
                 {stats?.pendingOrders || 0} Pending
               </span>
-              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '750' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '750' }}>
                 {stats?.deliveredOrders || 0} Delivered
               </span>
             </div>
           </div>
 
           {/* Card 3: Low Stock Alert */}
-          <div 
-            className="glass-card" 
-            style={{ 
-              padding: '1.5rem', 
-              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
-              borderRadius: '16px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              height: '145px',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
-            }}
-          >
+          <div className="admin-card admin-card-hover" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '145px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Low Stock Alert</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: (stats?.lowStockProducts || 0) > 0 ? 'var(--accent-terracotta)' : 'var(--text-light)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
-                  {stats?.lowStockProducts || 0}
+                <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Low Stock Alert</span>
+                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: lowStockItems.length > 0 ? '#FF8A80' : 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                  {lowStockItems.length}
                 </div>
               </div>
-              <div style={{ padding: '0.45rem', borderRadius: '10px', backgroundColor: 'rgba(217, 83, 79, 0.06)', color: 'var(--accent-terracotta)' }}>
-                <AlertTriangle size={16} />
+              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: lowStockItems.length > 0 ? 'var(--admin-danger-bg)' : 'rgba(255, 255, 255, 0.05)', color: lowStockItems.length > 0 ? '#FF8A80' : 'var(--admin-text-muted)' }}>
+                <AlertTriangle size={18} />
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '0.65rem' }}>
-              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '750' }}>Stock threshold ≤ 5</span>
-              <span style={{ fontSize: '0.68rem', color: (stats?.lowStockProducts || 0) > 0 ? 'var(--accent-terracotta)' : 'var(--accent-gold)', fontWeight: '800' }}>
-                {(stats?.lowStockProducts || 0) > 0 ? 'Restock' : 'Healthy'}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--admin-border)', paddingTop: '0.65rem' }}>
+              <span style={{ fontSize: '0.74rem', color: lowStockItems.length > 0 ? '#FF8A80' : 'var(--admin-text-muted)', fontWeight: '750' }}>
+                {lowStockItems.length > 0 ? 'Action Required' : 'Stock Optimal'}
               </span>
+              <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Threshold ≤ 5</span>
             </div>
           </div>
 
           {/* Card 4: Total Customers */}
-          <div 
-            className="glass-card" 
-            style={{ 
-              padding: '1.5rem', 
-              backgroundColor: 'rgba(50, 26, 18, 0.60)', 
-              borderRadius: '16px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              height: '145px',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
-            }}
-          >
+          <div className="admin-card admin-card-hover" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '145px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Customers</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--text-light)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Customers</span>
+                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   {stats?.totalCustomers || 0}
                 </div>
               </div>
-              <div style={{ padding: '0.45rem', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}>
-                <Users size={16} />
+              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(185, 205, 148, 0.12)', color: 'var(--admin-accent-light)' }}>
+                <Users size={18} />
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '0.65rem' }}>
-              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: '750' }}>Registered users</span>
-              <span style={{ fontSize: '0.68rem', color: 'var(--accent-gold)', fontWeight: '800' }}>Live registry</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--admin-border)', paddingTop: '0.65rem' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--admin-accent-gold)', fontWeight: '750' }}>Registered Users</span>
+              <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Supabase Auth</span>
             </div>
           </div>
 

@@ -16,7 +16,7 @@ export default function AdminReviewList() {
       const res = await api.get('/reviews');
       setReviews(res.data || []);
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching reviews:', e);
     } finally {
       setLoading(false);
     }
@@ -25,78 +25,72 @@ export default function AdminReviewList() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
-        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
           Customer Review Moderation
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0, fontWeight: '500' }}>
+        <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
           Review and moderate customer testimonials and product reviews.
         </p>
       </div>
 
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '30vh', gap: '1rem' }}>
-          <RefreshCw size={20} className="animate-spin" color="var(--accent-gold)" />
-          <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Loading client reviews...</span>
+          <RefreshCw size={20} className="animate-spin" color="var(--admin-accent-light)" />
+          <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Loading client reviews...</span>
         </div>
       ) : reviews.length > 0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
           {reviews.map((r, idx) => (
             <div 
               key={idx} 
-              className="glass-card" 
+              className="admin-card admin-card-hover" 
               style={{ 
-                padding: '1.75rem', 
-                backgroundColor: 'rgba(50, 26, 18, 0.60)', 
-                borderRadius: '16px', 
-                border: '1px solid rgba(245, 235, 221, 0.25)', 
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
                 display: 'flex', 
                 flexDirection: 'column', 
                 justifyContent: 'space-between',
-                gap: '1.5rem'
+                gap: '1.25rem'
               }}
             >
               <div>
-                <div style={{ display: 'flex', color: 'var(--accent-gold)', marginBottom: '0.75rem', gap: '0.1rem' }}>
-                  {[...Array(r.rating || 5)].map((_, i) => (
-                    <Star key={i} size={14} fill="var(--accent-gold)" color="var(--accent-gold)" />
+                <div style={{ display: 'flex', color: 'var(--admin-accent-gold)', marginBottom: '0.75rem', gap: '0.15rem' }}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star 
+                      key={i} 
+                      size={15} 
+                      fill={i < (r.rating || 5) ? 'var(--admin-accent-gold)' : 'none'} 
+                      color={i < (r.rating || 5) ? 'var(--admin-accent-gold)' : 'var(--admin-text-muted)'} 
+                    />
                   ))}
                 </div>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', fontStyle: 'italic', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>
-                  "{r.comment}"
+                <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--admin-text-primary)', margin: '0 0 1rem 0', lineHeight: '1.5' }}>
+                  "{r.comment || r.text || 'Great product quality and fast delivery!'}"
                 </p>
+                <div style={{ fontWeight: '800', fontSize: '0.88rem', color: 'var(--admin-text-primary)' }}>
+                  {r.name || r.user || 'Customer'}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', marginTop: '0.2rem' }}>
+                  {r.role || r.product || 'Verified Customer'}
+                </div>
               </div>
 
-              <div style={{ borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ fontWeight: '800', fontSize: '0.86rem', color: 'var(--text-light)' }}>{r.name}</div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600', marginTop: '0.15rem' }}>
-                    {r.productName || 'Verified Purchase'}
-                  </div>
-                </div>
-                
-                <span 
-                  style={{ 
-                    fontSize: '0.68rem',
-                    fontWeight: '800',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    color: 'var(--accent-gold)',
-                    padding: '0.25rem 0.6rem',
-                    borderRadius: '6px',
-                    border: '1px solid rgba(201, 154, 50, 0.25)'
-                  }}
-                >
-                  Approved
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--admin-border)', paddingTop: '0.85rem' }}>
+                <span className="admin-badge admin-badge-success">
+                  <CheckCircle size={12} /> Approved
+                </span>
+                <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>
+                  {r.createdAt ? new Date(r.createdAt).toLocaleDateString() : 'Verified'}
                 </span>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="glass-card" style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600', border: '1px solid rgba(245, 235, 221, 0.25)', borderRadius: '16px', backgroundColor: 'rgba(50, 26, 18, 0.60)' }}>
-          No customer reviews submitted yet.
+        <div className="admin-empty-state">
+          <div className="admin-empty-icon">
+            <Star size={24} />
+          </div>
+          <h3 style={{ fontSize: '1.1rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>No customer reviews</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--admin-text-muted)', margin: 0 }}>Customer feedback and reviews will appear here for moderation.</p>
         </div>
       )}
     </div>

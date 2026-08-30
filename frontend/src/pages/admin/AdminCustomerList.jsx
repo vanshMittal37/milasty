@@ -35,86 +35,90 @@ export default function AdminCustomerList() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
-        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
           Customer Registry
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0, fontWeight: '500' }}>
+        <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
           Monitor customer activity, order statistics, total lifetime spend, and account status controls.
         </p>
       </div>
 
-      <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'rgba(50, 26, 18, 0.60)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' }}>
+      <div className="admin-table-container">
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', gap: '1rem' }}>
-            <RefreshCw size={20} className="animate-spin" color="var(--accent-gold)" />
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Loading customer accounts...</span>
+            <RefreshCw size={20} className="animate-spin" color="var(--admin-accent-light)" />
+            <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Loading customer accounts...</span>
           </div>
         ) : customers.length > 0 ? (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.86rem', textAlign: 'left' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid rgba(245, 235, 221, 0.15)', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Customer</th>
-                  <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Email & Phone</th>
-                  <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Total Orders</th>
-                  <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Total Spent</th>
-                  <th style={{ padding: '0.85rem 1rem', fontWeight: '800' }}>Status</th>
-                  <th style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: '800' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {customers.map((c) => (
-                  <tr key={c._id} style={{ borderBottom: '1px solid rgba(245, 235, 221, 0.15)' }}>
-                    <td style={{ padding: '1rem', fontWeight: '800', color: 'var(--text-light)' }}>{c.name}</td>
-                    <td style={{ padding: '1rem' }}>
-                      <div style={{ fontWeight: '750', color: 'var(--text-light)' }}>{c.email}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{c.phone || 'N/A'}</div>
-                    </td>
-                    <td style={{ padding: '1rem', fontWeight: '850', color: 'var(--text-light)' }}>{c.orderCount || 0}</td>
-                    <td style={{ padding: '1rem', fontWeight: '850', color: 'var(--text-light)' }}>₹{c.totalSpent || 0}</td>
-                    <td style={{ padding: '1rem' }}>
-                      <span 
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Email & Phone</th>
+                <th>Total Orders</th>
+                <th>Total Spent</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {customers.map((c) => {
+                const initials = (c.name || 'C').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                return (
+                  <tr key={c._id || c.email}>
+                    <td style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <div 
                         style={{ 
-                          fontSize: '0.7rem',
+                          width: '38px', 
+                          height: '38px', 
+                          borderRadius: '50%', 
+                          backgroundColor: 'rgba(185, 205, 148, 0.12)', 
+                          color: 'var(--admin-accent-light)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           fontWeight: '800',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.04em',
-                          backgroundColor: c.status === 'active' ? 'rgba(39, 76, 55, 0.08)' : 'rgba(217, 83, 79, 0.08)', 
-                          color: c.status === 'active' ? 'var(--accent-gold)' : 'var(--accent-terracotta)',
-                          padding: '0.25rem 0.6rem',
-                          borderRadius: '6px',
-                          border: c.status === 'active' ? '1px solid rgba(201, 154, 50, 0.25)' : '1px solid rgba(217, 83, 79, 0.25)'
+                          fontSize: '0.85rem',
+                          border: '1px solid var(--admin-border)'
                         }}
                       >
+                        {initials}
+                      </div>
+                      <div style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>{c.name}</div>
+                    </td>
+                    <td>
+                      <div style={{ fontWeight: '600', color: 'var(--admin-text-primary)' }}>{c.email}</div>
+                      <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>{c.phone || 'No phone'}</div>
+                    </td>
+                    <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>{c.totalOrders || 0}</td>
+                    <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>₹{c.totalSpent || 0}</td>
+                    <td>
+                      <span className={`admin-badge ${c.status === 'disabled' ? 'admin-badge-danger' : 'admin-badge-success'}`}>
                         {c.status || 'active'}
                       </span>
                     </td>
-                    <td style={{ padding: '1rem', textAlign: 'right' }}>
-                      <button
-                        onClick={() => handleToggleStatus(c._id, c.status || 'active')}
-                        className="btn-secondary"
-                        style={{ 
-                          padding: '0.45rem 0.85rem', 
-                          fontSize: '0.78rem', 
-                          borderRadius: '8px',
-                          fontWeight: '800',
-                          borderColor: c.status === 'active' ? 'rgba(217, 83, 79, 0.2)' : 'rgba(201, 154, 50, 0.2)',
-                          color: c.status === 'active' ? 'var(--accent-terracotta)' : 'var(--accent-gold)',
-                          backgroundColor: 'transparent',
-                          cursor: 'pointer'
-                        }}
+                    <td style={{ textAlign: 'right' }}>
+                      <button 
+                        onClick={() => handleToggleStatus(c._id, c.status)} 
+                        className="admin-btn-secondary"
+                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
                       >
-                        {c.status === 'active' ? 'Disable Account' : 'Enable Account'}
+                        {c.status === 'disabled' ? <UserCheck size={14} /> : <UserX size={14} />}
+                        <span>{c.status === 'disabled' ? 'Enable' : 'Disable'}</span>
                       </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                );
+              })}
+            </tbody>
+          </table>
         ) : (
-          <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>
-            No customer accounts registered yet.
+          <div className="admin-empty-state">
+            <div className="admin-empty-icon">
+              <Users size={24} />
+            </div>
+            <h3 style={{ fontSize: '1.1rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>No customers yet</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--admin-text-muted)', margin: 0 }}>Registered customer accounts will appear here.</p>
           </div>
         )}
       </div>
