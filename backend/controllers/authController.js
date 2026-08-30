@@ -16,45 +16,55 @@ export const registerUser = async (req, res) => {
     const cleanEmail = email.toLowerCase().trim();
     const role = cleanEmail === 'admin@milasty.com' ? 'admin' : 'customer';
 
-    // 1. Create user in Supabase Auth (Dashboard -> Authentication -> Users)
+    // 1. Check if user already exists in Supabase PostgreSQL 'users' table
+    const { data: existingDbUser } = await supabase
+      .from('users')
+      .select('id, email')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    if (existingDbUser) {
+      return res.status(400).json({ message: 'User already exists with this email' });
+    }
+
+    // 2. Hash password for secure database storage and authentication
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    // 3. Create or fetch user in Supabase Auth (Dashboard -> Authentication -> Users)
+    let userId = null;
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email: cleanEmail,
-      password,
+      password: password,
       email_confirm: true,
       user_metadata: { name, phone, role },
     });
 
-    let userId = authData?.user?.id;
-
-    if (authError) {
-      // If user already registered in Supabase Auth, attempt login or retrieve ID
-      if (authError.message?.includes('already been registered') || authError.status === 422) {
-        const { data: existingUsers } = await supabase.auth.admin.listUsers();
-        const existing = existingUsers?.users?.find((u) => u.email === cleanEmail);
-        if (existing) {
-          userId = existing.id;
-        } else {
-          return res.status(400).json({ message: 'User already exists with this email' });
-        }
+    if (authData?.user?.id) {
+      userId = authData.user.id;
+    } else if (authError) {
+      // If already registered in Supabase Auth engine, retrieve Auth User ID or generate fallback
+      const { data: existingUsers } = await supabase.auth.admin.listUsers();
+      const existingAuth = existingUsers?.users?.find((u) => u.email === cleanEmail);
+      if (existingAuth) {
+        userId = existingAuth.id;
+        // Keep Supabase Auth password updated
+        await supabase.auth.admin.updateUserById(userId, { password: password });
       } else {
-        throw authError;
+        userId = 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
       }
     }
 
-    // 2. Hash password for local fallback
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
-
-    // 3. Upsert user record into Supabase PostgreSQL 'users' table
+    // 4. Insert user record into Supabase PostgreSQL 'users' table
     const { data: newUser, error: dbError } = await supabase
       .from('users')
       .upsert([
         {
           id: userId,
-          name,
+          name: name.trim(),
           email: cleanEmail,
           password_hash: passwordHash,
-          phone: phone || '',
+          phone: phone ? phone.trim() : '',
           role,
           updated_at: new Date(),
         },
@@ -93,32 +103,39 @@ export const loginUser = async (req, res) => {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    // 1. Authenticate against Supabase Auth engine
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: cleanEmail,
-      password,
-    });
-
-    let authenticatedUserId = authData?.user?.id;
-
-    // 2. Fetch user details from Supabase PostgreSQL 'users' table
+    // 1. Fetch user record from Supabase PostgreSQL 'users' table
     const { data: user, error: dbError } = await supabase
       .from('users')
       .select('*')
       .eq('email', cleanEmail)
-      .single();
+      .maybeSingle();
 
     if (dbError || !user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Fallback password verification if Supabase Auth signin failed
-    if (authError || !authenticatedUserId) {
+    // 2. Verify password with stored bcrypt hash
+    if (user.password_hash) {
       const isMatch = await bcrypt.compare(password, user.password_hash);
       if (!isMatch) {
         return res.status(401).json({ message: 'Invalid email or password' });
       }
-      authenticatedUserId = user.id;
+    } else {
+      // Fallback to Supabase Auth signin if no password_hash in DB
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
+      if (authError) {
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
+    }
+
+    // 3. Keep Supabase Auth password synchronized in background
+    try {
+      await supabase.auth.admin.updateUserById(user.id, { password: password });
+    } catch (sErr) {
+      // Ignore background sync errors if Auth Admin API restricted
     }
 
     // Issue JWT session token
