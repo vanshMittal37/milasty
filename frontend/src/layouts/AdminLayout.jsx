@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { 
-  LayoutDashboard, Package, Tags, ShoppingCart, Users, Ticket, Star, 
+import {
+  LayoutDashboard, Package, Tags, ShoppingCart, Users, Ticket, Star,
   LogOut, Menu, Bell, ChevronDown, Globe, KeyRound, UserCheck, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -95,11 +95,11 @@ export default function AdminLayout() {
   };
 
   const SidebarContent = () => (
-    <div 
-      style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        height: '100%', 
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
         justifyContent: 'space-between',
         backgroundColor: 'var(--admin-sidebar-bg)',
         color: '#F4F3EA',
@@ -111,14 +111,14 @@ export default function AdminLayout() {
         {/* Brand Logo Header */}
         <div style={{ marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h2 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.06em', margin: 0, color: '#FFFFFF' }}>
+            <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.06em', margin: 0, color: '#F4F3EA' }}>
               MILASTY<span style={{ color: 'var(--admin-accent-light)' }}>.</span>
             </h2>
-          <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)', fontWeight: '700', marginTop: '0.15rem' }}>
+            <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8BDB2', fontWeight: '800', marginTop: '0.2rem' }}>
               Store Management
             </div>
           </div>
-          <button 
+          <button
             onClick={() => setMobileSidebarOpen(false)}
             style={{ background: 'none', border: 'none', color: '#B8BDB2', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0.2rem' }}
             className="admin-hamburger-btn"
@@ -152,14 +152,14 @@ export default function AdminLayout() {
                         fontSize: '0.85rem',
                         fontWeight: '700',
                         textDecoration: 'none',
-                        color: active ? '#FFFFFF' : 'rgba(255,255,255,0.55)',
-                        backgroundColor: active ? 'var(--admin-sidebar-active)' : 'transparent',
-                        borderLeft: active ? '3px solid var(--admin-accent-light)' : '3px solid transparent',
+                        color: active ? '#FFFFFF' : '#B8BDB2',
+                        backgroundColor: active ? 'var(--admin-accent)' : 'transparent',
+                        borderLeft: active ? '3.5px solid var(--admin-accent-light)' : '3.5px solid transparent',
                         transition: 'all 0.2s ease',
                       }}
                       className="admin-sidebar-link"
                     >
-                      <Icon size={16} color={active ? '#FFFFFF' : 'rgba(255,255,255,0.45)'} />
+                      <Icon size={16} color={active ? '#FFFFFF' : '#858E83'} />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -174,14 +174,14 @@ export default function AdminLayout() {
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.25rem', marginTop: '2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div 
-              style={{ 
-                width: '36px', 
-                height: '36px', 
-                borderRadius: '50%', 
-                backgroundColor: 'rgba(255, 255, 255, 0.08)', 
-                display: 'flex', 
-                alignItems: 'center', 
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'center',
                 color: '#FFFFFF',
                 fontWeight: '800',
@@ -196,13 +196,13 @@ export default function AdminLayout() {
               <div style={{ fontSize: '0.68rem', color: '#B8BDB2', fontWeight: '600' }}>Store Manager</div>
             </div>
           </div>
-          
-          <button 
-            onClick={logout} 
-            style={{ 
-              background: 'none', 
-              border: 'none', 
-              color: 'var(--admin-danger)', 
+
+          <button
+            onClick={logout}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--admin-danger)',
               cursor: 'pointer',
               padding: '0.4rem',
               display: 'flex',
@@ -220,18 +220,18 @@ export default function AdminLayout() {
   );
 
   return (
-    <div className="admin-page-wrapper" style={{ minHeight: '100vh', display: 'flex', color: 'var(--admin-text-primary)' }}>
-      
+    <div style={{ backgroundColor: 'var(--admin-bg)', minHeight: '100vh', display: 'flex', color: 'var(--admin-text-primary)' }}>
+
       {/* ==================================================
           DESKTOP SIDEBAR (Fixed Left)
          ================================================== */}
-      <div 
-        style={{ 
-          width: '260px', 
-          position: 'fixed', 
-          top: 0, 
-          bottom: 0, 
-          left: 0, 
+      <div
+        style={{
+          width: '260px',
+          position: 'fixed',
+          top: 0,
+          bottom: 0,
+          left: 0,
           zIndex: 90,
           display: 'none',
           height: '100vh',
@@ -257,29 +257,29 @@ export default function AdminLayout() {
           MOBILE SIDEBAR DRAWER (Collapsible neutral overlay)
          ================================================== */}
       {mobileSidebarOpen && (
-        <div 
+        <div
           onClick={() => setMobileSidebarOpen(false)}
-          style={{ 
-            position: 'fixed', 
-            top: 0, 
-            left: 0, 
-            width: '100%', 
-            height: '100%', 
-            backgroundColor: 'rgba(10, 12, 10, 0.45)', 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(10, 12, 10, 0.45)',
             zIndex: 1000,
             backdropFilter: 'blur(5px)'
           }}
         />
       )}
-      <div 
-        style={{ 
-          position: 'fixed', 
-          top: 0, 
-          bottom: 0, 
-          left: 0, 
-          width: '260px', 
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          width: '260px',
           maxWidth: '85vw',
-          zIndex: 1001, 
+          zIndex: 1001,
           transform: mobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           height: '100vh',
@@ -293,25 +293,25 @@ export default function AdminLayout() {
       {/* ==================================================
           RIGHT WORKSPACE CONTAINER (Top Bar + Main Outlet)
          ================================================== */}
-      <div 
-        style={{ 
-          flexGrow: 1, 
-          display: 'flex', 
-          flexDirection: 'column', 
+      <div
+        style={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
           minWidth: 0,
           marginLeft: 0
         }}
         className="admin-main-container"
       >
-        
+
         {/* STICKY TOP BAR */}
-        <header 
-          style={{ 
-            position: 'sticky', 
-            top: 0, 
-            zIndex: 80, 
-            backgroundColor: 'var(--admin-surface)', 
-            borderBottom: '1px solid var(--admin-border)', 
+        <header
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 80,
+            backgroundColor: 'var(--admin-surface)',
+            borderBottom: '1px solid var(--admin-border)',
             padding: '0.5rem 1.5rem',
             display: 'flex',
             alignItems: 'center',
@@ -321,7 +321,7 @@ export default function AdminLayout() {
         >
           {/* Left: Mobile hamburger menu toggle & titles */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <button 
+            <button
               onClick={() => setMobileSidebarOpen(true)}
               style={{
                 background: 'none',
@@ -344,12 +344,12 @@ export default function AdminLayout() {
               `}</style>
               <Menu size={22} />
             </button>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em', lineHeight: '1.2' }}>
                 {pageBreadcrumb}
               </span>
-              <h1 style={{ fontSize: 'clamp(17px, 2.8vw, 21px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
+              <h1 style={{ fontSize: 'clamp(22px, 3.5vw, 26px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.1' }}>
                 {pageTitle}
               </h1>
             </div>
@@ -357,15 +357,15 @@ export default function AdminLayout() {
 
           {/* Right: Actions, notification bell, admin profile dropdown */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <Link 
-              to="/" 
-              style={{ 
-                color: 'var(--admin-text-primary)', 
-                fontSize: '0.78rem', 
+            <Link
+              to="/"
+              style={{
+                color: 'var(--admin-text-primary)',
+                fontSize: '0.78rem',
                 fontWeight: '750',
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.35rem', 
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
                 textDecoration: 'none',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
@@ -401,14 +401,14 @@ export default function AdminLayout() {
             >
               <Bell size={16} />
             </button>
-            
+
             {/* Interactive Admin Profile Avatar & Dropdown */}
             <div style={{ position: 'relative' }} ref={dropdownRef}>
-              <div 
+              <div
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
                   gap: '0.65rem',
                   cursor: 'pointer',
                   padding: '0.3rem 0.6rem',
@@ -417,15 +417,15 @@ export default function AdminLayout() {
                   transition: 'all 0.2s ease'
                 }}
               >
-                <div 
-                  style={{ 
-                    width: '36px', 
-                    height: '36px', 
-                    borderRadius: '50%', 
-                    backgroundColor: 'rgba(117, 139, 69, 0.12)', 
-                    color: 'var(--admin-accent)', 
-                    display: 'flex', 
-                    alignItems: 'center', 
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(117, 139, 69, 0.12)',
+                    color: 'var(--admin-accent)',
+                    display: 'flex',
+                    alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: '900',
                     fontSize: '0.9rem',
@@ -447,7 +447,7 @@ export default function AdminLayout() {
 
               {/* Profile Dropdown Menu */}
               {profileDropdownOpen && (
-                <div 
+                <div
                   style={{
                     position: 'absolute',
                     top: 'calc(100% + 8px)',
@@ -469,7 +469,7 @@ export default function AdminLayout() {
                     <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', marginTop: '0.15rem' }}>admin@milasty.com</div>
                   </div>
 
-                  <button 
+                  <button
                     onClick={() => { setProfileDropdownOpen(false); alert('Profile settings are synchronized with Supabase Auth.'); }}
                     style={{
                       display: 'flex',
@@ -493,7 +493,7 @@ export default function AdminLayout() {
                     <span>Profile Settings</span>
                   </button>
 
-                  <button 
+                  <button
                     onClick={() => { setProfileDropdownOpen(false); alert('To change password, use Supabase Auth password reset flow.'); }}
                     style={{
                       display: 'flex',
@@ -518,7 +518,7 @@ export default function AdminLayout() {
                   </button>
 
                   <div style={{ borderTop: '1px solid var(--admin-border)', marginTop: '0.25rem', paddingTop: '0.25rem' }}>
-                    <button 
+                    <button
                       onClick={() => { setProfileDropdownOpen(false); logout(); }}
                       style={{
                         display: 'flex',
@@ -549,9 +549,9 @@ export default function AdminLayout() {
         </header>
 
         {/* WORKSPACE AREA */}
-        <main 
-          style={{ 
-            flexGrow: 1, 
+        <main
+          style={{
+            flexGrow: 1,
             padding: '2rem 1.5rem',
             maxWidth: '1450px',
             width: '100%',

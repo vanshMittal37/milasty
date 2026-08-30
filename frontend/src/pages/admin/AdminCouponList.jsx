@@ -67,7 +67,7 @@ export default function AdminCouponList() {
         <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
           Coupons & Discounts
         </span>
-        <h1 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.55rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.1rem 0 0.25rem 0', lineHeight: '1.25' }}>
+        <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
           Promotions & Discount Codes
         </h1>
         <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
@@ -76,7 +76,7 @@ export default function AdminCouponList() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
-        
+
         {/* Left Card: Create Coupon Form */}
         <div className="admin-card">
           <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
@@ -87,25 +87,25 @@ export default function AdminCouponList() {
               <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Coupon Code *
               </label>
-              <input 
-                type="text" 
-                required 
-                value={code} 
-                onChange={(e) => setCode(e.target.value)} 
-                placeholder="e.g. FESTIVE20" 
+              <input
+                type="text"
+                required
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="e.g. FESTIVE20"
                 className="admin-input"
                 style={{ textTransform: 'uppercase', fontWeight: '800' }}
               />
             </div>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
                 <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Discount Type
                 </label>
-                <select 
-                  value={discountType} 
-                  onChange={(e) => setDiscountType(e.target.value)} 
+                <select
+                  value={discountType}
+                  onChange={(e) => setDiscountType(e.target.value)}
                   className="admin-input"
                 >
                   <option value="percentage">Percentage (%)</option>
@@ -116,11 +116,11 @@ export default function AdminCouponList() {
                 <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Discount Value *
                 </label>
-                <input 
-                  type="number" 
-                  required 
-                  value={discountValue} 
-                  onChange={(e) => setDiscountValue(Number(e.target.value))} 
+                <input
+                  type="number"
+                  required
+                  value={discountValue}
+                  onChange={(e) => setDiscountValue(Number(e.target.value))}
                   className="admin-input"
                 />
               </div>
@@ -131,10 +131,10 @@ export default function AdminCouponList() {
                 <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Min Order (₹)
                 </label>
-                <input 
-                  type="number" 
-                  value={minOrderAmount} 
-                  onChange={(e) => setMinOrderAmount(Number(e.target.value))} 
+                <input
+                  type="number"
+                  value={minOrderAmount}
+                  onChange={(e) => setMinOrderAmount(Number(e.target.value))}
                   className="admin-input"
                 />
               </div>
@@ -142,19 +142,19 @@ export default function AdminCouponList() {
                 <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Max Cap (₹)
                 </label>
-                <input 
-                  type="number" 
-                  value={maxDiscountAmount} 
-                  onChange={(e) => setMaxDiscountAmount(Number(e.target.value))} 
+                <input
+                  type="number"
+                  value={maxDiscountAmount}
+                  onChange={(e) => setMaxDiscountAmount(Number(e.target.value))}
                   className="admin-input"
                 />
               </div>
             </div>
 
-            <button 
-              type="submit" 
-              disabled={creating} 
-              className="admin-btn-primary" 
+            <button
+              type="submit"
+              disabled={creating}
+              className="admin-btn-primary"
               style={{ width: '100%', marginTop: '0.5rem' }}
             >
               <Plus size={15} />
@@ -168,7 +168,7 @@ export default function AdminCouponList() {
           <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
             Active Promotional Coupons
           </h3>
-          
+
           {loading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 0', gap: '0.5rem' }}>
               <RefreshCw size={18} className="animate-spin" color="var(--admin-accent)" />
@@ -177,16 +177,16 @@ export default function AdminCouponList() {
           ) : coupons.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               {coupons.map((c) => (
-                <div 
-                  key={c._id || c.code} 
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between', 
-                    padding: '0.85rem 1.15rem', 
-                    borderRadius: '12px', 
-                    backgroundColor: 'var(--admin-surface-card)', 
-                    border: '1px solid var(--admin-border)' 
+                <div
+                  key={c._id || c.code}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.85rem 1.15rem',
+                    borderRadius: '12px',
+                    backgroundColor: 'var(--admin-surface-card)',
+                    border: '1px solid var(--admin-border)'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
@@ -201,8 +201,8 @@ export default function AdminCouponList() {
                     </div>
                   </div>
 
-                  <button 
-                    onClick={() => handleDelete(c._id)} 
+                  <button
+                    onClick={() => handleDelete(c._id)}
                     className="admin-icon-btn"
                     style={{ color: 'var(--admin-danger)' }}
                     title="Delete Coupon"

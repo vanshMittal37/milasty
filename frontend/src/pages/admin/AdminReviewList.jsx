@@ -28,7 +28,7 @@ export default function AdminReviewList() {
         <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
           Reviews
         </span>
-        <h1 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.55rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.1rem 0 0.25rem 0', lineHeight: '1.25' }}>
+        <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
           Customer Review Moderation
         </h1>
         <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
@@ -44,12 +44,12 @@ export default function AdminReviewList() {
       ) : reviews.length > 0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
           {reviews.map((r, idx) => (
-            <div 
-              key={idx} 
-              className="admin-card admin-card-hover" 
-              style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
+            <div
+              key={idx}
+              className="admin-card admin-card-hover"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
                 justifyContent: 'space-between',
                 gap: '1.25rem'
               }}
@@ -57,11 +57,11 @@ export default function AdminReviewList() {
               <div>
                 <div style={{ display: 'flex', color: 'var(--admin-accent-gold)', marginBottom: '0.75rem', gap: '0.15rem' }}>
                   {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      size={15} 
-                      fill={i < (r.rating || 5) ? 'var(--admin-accent-gold)' : 'none'} 
-                      color={i < (r.rating || 5) ? 'var(--admin-accent-gold)' : 'var(--admin-text-muted)'} 
+                    <Star
+                      key={i}
+                      size={15}
+                      fill={i < (r.rating || 5) ? 'var(--admin-accent-gold)' : 'none'}
+                      color={i < (r.rating || 5) ? 'var(--admin-accent-gold)' : 'var(--admin-text-muted)'}
                     />
                   ))}
                 </div>

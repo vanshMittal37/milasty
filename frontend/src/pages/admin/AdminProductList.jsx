@@ -37,14 +37,14 @@ export default function AdminProductList() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      
+
       {/* Header section */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1rem', flexWrap: 'wrap', gap: '1.25rem', borderBottom: '1px solid var(--admin-border)', paddingBottom: '1rem' }}>
         <div>
           <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
             Products
           </span>
-          <h1 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.55rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.1rem 0 0.25rem 0', lineHeight: '1.25' }}>
+          <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
             Product Catalog
           </h1>
           <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
@@ -52,8 +52,8 @@ export default function AdminProductList() {
           </p>
         </div>
 
-        <Link 
-          to="/admin/products/add" 
+        <Link
+          to="/admin/products/add"
           className="admin-btn-primary"
         >
           <Plus size={14} />
@@ -65,13 +65,13 @@ export default function AdminProductList() {
       <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flexGrow: 1, maxWidth: '420px' }}>
           <Search size={16} color="var(--admin-text-muted)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search products by title, subtitle, or slug..." 
+            placeholder="Search products by title, subtitle, or slug..."
             className="admin-input"
-            style={{ paddingLeft: '2.5rem' }} 
+            style={{ paddingLeft: '2.5rem' }}
           />
         </div>
       </div>
@@ -124,15 +124,15 @@ export default function AdminProductList() {
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                        <Link 
-                          to={`/admin/products/edit/${p._id || p.slug}`} 
+                        <Link
+                          to={`/admin/products/edit/${p._id || p.slug}`}
                           className="admin-icon-btn"
                           title="Edit product"
                         >
                           <Edit2 size={14} />
                         </Link>
-                        <button 
-                          onClick={() => handleDelete(p._id || p.slug)} 
+                        <button
+                          onClick={() => handleDelete(p._id || p.slug)}
                           className="admin-icon-btn"
                           style={{ color: 'var(--admin-danger)' }}
                           title="Delete product"

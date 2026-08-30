@@ -40,14 +40,14 @@ export default function AdminOrderList() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      
+
       {/* Header Area */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1.25rem', borderBottom: '1px solid var(--admin-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>
         <div>
           <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
             Orders Log
           </span>
-          <h1 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.55rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.1rem 0 0.25rem 0', lineHeight: '1.25' }}>
+          <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
             Orders Management Log
           </h1>
           <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
@@ -55,8 +55,8 @@ export default function AdminOrderList() {
           </p>
         </div>
 
-        <button 
-          onClick={fetchOrders} 
+        <button
+          onClick={fetchOrders}
           className="admin-btn-secondary"
         >
           <RefreshCw size={14} />
@@ -68,20 +68,20 @@ export default function AdminOrderList() {
       <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flexGrow: 1, maxWidth: '420px' }}>
           <Search size={16} color="var(--admin-text-muted)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
-          <input 
-            type="text" 
-            value={search} 
-            onChange={(e) => setSearch(e.target.value)} 
-            placeholder="Search by Order ID, customer, email..." 
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by Order ID, customer, email..."
             className="admin-input"
-            style={{ paddingLeft: '2.5rem' }} 
+            style={{ paddingLeft: '2.5rem' }}
           />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Filter size={15} color="var(--admin-text-muted)" />
-          <select 
-            value={statusFilter} 
+          <select
+            value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="admin-input"
             style={{ width: 'auto', paddingRight: '2rem' }}
@@ -141,8 +141,8 @@ export default function AdminOrderList() {
                       {new Date(o.createdAt).toLocaleDateString()}
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <select 
-                        value={o.orderStatus} 
+                      <select
+                        value={o.orderStatus}
                         onChange={(e) => handleStatusChange(o._id, e.target.value)}
                         className="admin-input"
                         style={{ width: 'auto', padding: '0.35rem 0.65rem', fontSize: '0.78rem' }}

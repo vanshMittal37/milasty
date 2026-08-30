@@ -58,7 +58,7 @@ export default function AdminCategories() {
         <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
           Categories
         </span>
-        <h1 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.55rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.1rem 0 0.25rem 0', lineHeight: '1.25' }}>
+        <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
           Category Management
         </h1>
         <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
@@ -67,7 +67,7 @@ export default function AdminCategories() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
-        
+
         {/* Left Side: Create Category Form */}
         <div className="admin-card">
           <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
@@ -78,34 +78,34 @@ export default function AdminCategories() {
               <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Category Name *
               </label>
-              <input 
-                type="text" 
-                required 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                placeholder="e.g. Sugar-Free Bakes" 
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Sugar-Free Bakes"
                 className="admin-input"
               />
             </div>
-            
+
             <div>
               <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Description
               </label>
-              <textarea 
-                rows={3} 
-                value={description} 
-                onChange={(e) => setDescription(e.target.value)} 
-                placeholder="Brief category summary for customer reference..." 
+              <textarea
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Brief category summary for customer reference..."
                 className="admin-input"
                 style={{ resize: 'none' }}
               />
             </div>
 
-            <button 
-              type="submit" 
-              disabled={loading} 
-              className="admin-btn-primary" 
+            <button
+              type="submit"
+              disabled={loading}
+              className="admin-btn-primary"
               style={{ width: '100%', marginTop: '0.5rem' }}
             >
               <Plus size={15} />
@@ -119,7 +119,7 @@ export default function AdminCategories() {
           <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
             Active Categories
           </h3>
-          
+
           {fetching ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 0', gap: '0.5rem' }}>
               <RefreshCw size={18} className="animate-spin" color="var(--admin-accent)" />
@@ -128,16 +128,16 @@ export default function AdminCategories() {
           ) : categories.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               {categories.map((cat) => (
-                <div 
-                  key={cat._id || cat.slug} 
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between', 
-                    padding: '0.85rem 1.15rem', 
-                    borderRadius: '12px', 
-                    backgroundColor: 'var(--admin-surface-card)', 
-                    border: '1px solid var(--admin-border)' 
+                <div
+                  key={cat._id || cat.slug}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.85rem 1.15rem',
+                    borderRadius: '12px',
+                    backgroundColor: 'var(--admin-surface-card)',
+                    border: '1px solid var(--admin-border)'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
@@ -152,8 +152,8 @@ export default function AdminCategories() {
                     </div>
                   </div>
 
-                  <button 
-                    onClick={() => handleDelete(cat._id)} 
+                  <button
+                    onClick={() => handleDelete(cat._id)}
                     className="admin-icon-btn"
                     style={{ color: 'var(--admin-danger)' }}
                     title="Delete Category"

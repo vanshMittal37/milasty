@@ -38,7 +38,7 @@ export default function AdminCustomerList() {
         <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
           Customers
         </span>
-        <h1 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.55rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.1rem 0 0.25rem 0', lineHeight: '1.25' }}>
+        <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
           Customer Registry
         </h1>
         <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
@@ -70,12 +70,12 @@ export default function AdminCustomerList() {
                 return (
                   <tr key={c._id || c.email}>
                     <td style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                      <div 
-                        style={{ 
-                          width: '38px', 
-                          height: '38px', 
-                          borderRadius: '50%', 
-                          backgroundColor: 'rgba(117, 139, 69, 0.08)', 
+                      <div
+                        style={{
+                          width: '38px',
+                          height: '38px',
+                          borderRadius: '50%',
+                          backgroundColor: 'rgba(117, 139, 69, 0.08)',
                           color: 'var(--admin-accent)',
                           display: 'flex',
                           alignItems: 'center',
@@ -101,8 +101,8 @@ export default function AdminCustomerList() {
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <button 
-                        onClick={() => handleToggleStatus(c._id, c.status)} 
+                      <button
+                        onClick={() => handleToggleStatus(c._id, c.status)}
                         className="admin-btn-secondary"
                         style={{ padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
                       >
