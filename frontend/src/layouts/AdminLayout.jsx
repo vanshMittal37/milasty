@@ -456,13 +456,14 @@ export default function AdminLayout() {
               {/* Profile Dropdown Menu */}
               {profileDropdownOpen && (
                 <div 
+                  className="admin-card"
                   style={{
                     position: 'absolute',
                     top: 'calc(100% + 8px)',
                     right: 0,
                     width: '220px',
                     backgroundColor: 'var(--admin-surface-elevated)',
-                    border: '1px solid var(--admin-border)',
+                    border: '1px solid var(--admin-border-card)',
                     borderRadius: '12px',
                     padding: '0.4rem',
                     boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',

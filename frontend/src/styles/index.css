@@ -50,12 +50,12 @@
   --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Unified MILASTY Admin Dashboard Design Tokens — Premium Dark Graphite & Olive System */
-  --admin-bg: #F4F3EF;
-  --admin-surface: #FFFFFF;
+  --admin-bg: #EFECE1;
+  --admin-surface: #EFECE1;
   --admin-surface-card: #141A17;
   --admin-surface-elevated: #1D2420;
   --admin-sidebar-bg: #0D120F;
-  --admin-border: #DCDAD0;
+  --admin-border: #DFDCD3;
   --admin-border-hover: #8FAF5B;
   --admin-text-primary: #182019;
   --admin-text-secondary: #5C635D;
@@ -2875,7 +2875,13 @@ footer.transparent-blurred-footer {
 }
 
 .admin-card {
-  background-color: var(--admin-surface-card);
+  --admin-text-primary: var(--admin-text-light);
+  --admin-text-secondary: var(--admin-text-light-muted);
+  --admin-text-muted: var(--admin-text-light-muted);
+  --admin-border: var(--admin-border-card);
+  --admin-surface: var(--admin-surface-elevated);
+  --admin-surface-card: var(--admin-surface-elevated);
+  background-color: #141A17;
   border: 1px solid var(--admin-border-card);
   border-radius: 14px;
   padding: 1.5rem;
@@ -3023,7 +3029,7 @@ footer.transparent-blurred-footer {
 }
 
 .admin-input {
-  background-color: var(--admin-surface-card);
+  background-color: #FFFFFF;
   border: 1px solid var(--admin-border);
   color: var(--admin-text-primary);
   border-radius: 8px;
@@ -3086,7 +3092,7 @@ footer.transparent-blurred-footer {
   overflow-x: auto;
   border-radius: 12px;
   border: 1px solid var(--admin-border);
-  background-color: var(--admin-surface-card);
+  background-color: #FFFFFF;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -3098,7 +3104,7 @@ footer.transparent-blurred-footer {
 }
 
 .admin-table th {
-  background-color: var(--admin-surface);
+  background-color: rgba(0, 0, 0, 0.02);
   color: var(--admin-text-secondary);
   font-weight: 700;
   text-transform: uppercase;
@@ -3120,7 +3126,7 @@ footer.transparent-blurred-footer {
 }
 
 .admin-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: rgba(0, 0, 0, 0.015);
 }
 
 .admin-table tbody tr:last-child td {
