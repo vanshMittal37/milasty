@@ -111,10 +111,10 @@ export default function AdminLayout() {
         {/* Brand Logo Header */}
         <div style={{ marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.06em', margin: 0, color: '#F4F3EA' }}>
+            <h2 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.06em', margin: 0, color: '#FFFFFF' }}>
               MILASTY<span style={{ color: 'var(--admin-accent-light)' }}>.</span>
             </h2>
-            <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8BDB2', fontWeight: '800', marginTop: '0.2rem' }}>
+          <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)', fontWeight: '700', marginTop: '0.15rem' }}>
               Store Management
             </div>
           </div>
@@ -152,14 +152,14 @@ export default function AdminLayout() {
                         fontSize: '0.85rem',
                         fontWeight: '700',
                         textDecoration: 'none',
-                        color: active ? '#FFFFFF' : '#B8BDB2',
-                        backgroundColor: active ? 'var(--admin-accent)' : 'transparent',
-                        borderLeft: active ? '3.5px solid var(--admin-accent-light)' : '3.5px solid transparent',
+                        color: active ? '#FFFFFF' : 'rgba(255,255,255,0.55)',
+                        backgroundColor: active ? 'var(--admin-sidebar-active)' : 'transparent',
+                        borderLeft: active ? '3px solid var(--admin-accent-light)' : '3px solid transparent',
                         transition: 'all 0.2s ease',
                       }}
                       className="admin-sidebar-link"
                     >
-                      <Icon size={16} color={active ? '#FFFFFF' : '#858E83'} />
+                      <Icon size={16} color={active ? '#FFFFFF' : 'rgba(255,255,255,0.45)'} />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -220,7 +220,7 @@ export default function AdminLayout() {
   );
 
   return (
-    <div style={{ backgroundColor: 'var(--admin-bg)', minHeight: '100vh', display: 'flex', color: 'var(--admin-text-primary)' }}>
+    <div className="admin-page-wrapper" style={{ minHeight: '100vh', display: 'flex', color: 'var(--admin-text-primary)' }}>
       
       {/* ==================================================
           DESKTOP SIDEBAR (Fixed Left)
@@ -349,7 +349,7 @@ export default function AdminLayout() {
               <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em', lineHeight: '1.2' }}>
                 {pageBreadcrumb}
               </span>
-              <h1 style={{ fontSize: 'clamp(22px, 3.5vw, 26px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.1' }}>
+              <h1 style={{ fontSize: 'clamp(17px, 2.8vw, 21px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
                 {pageTitle}
               </h1>
             </div>

@@ -28,7 +28,7 @@ export default function AdminReviewList() {
         <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
           Reviews
         </span>
-        <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
+        <h1 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.55rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.1rem 0 0.25rem 0', lineHeight: '1.25' }}>
           Customer Review Moderation
         </h1>
         <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
