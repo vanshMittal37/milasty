@@ -50,31 +50,26 @@
   --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Unified MILASTY Admin Dashboard Design Tokens — Premium Dark Graphite & Olive System */
-  --admin-bg: #EFECE1;
-  --admin-surface: #EFECE1;
+  --admin-bg: #0B0F0D;
+  --admin-surface: #101512;
   --admin-surface-card: #141A17;
-  --admin-surface-elevated: #1D2420;
+  --admin-surface-elevated: #181F1B;
   --admin-sidebar-bg: #0D120F;
-  --admin-border: #DFDCD3;
+  --admin-border: #2C3730;
   --admin-border-hover: #8FAF5B;
-  --admin-text-primary: #182019;
-  --admin-text-secondary: #5C635D;
-  --admin-text-muted: #828A83;
+  --admin-text-primary: #F4F5F0;
+  --admin-text-secondary: #C1C7C1;
+  --admin-text-muted: #929B94;
   --admin-accent: #8FAF5B;
   --admin-accent-dark: #6E8843;
-  --admin-accent-light: #B8CC7A;
-  --admin-accent-gold: #D6A23F;
+  --admin-accent-light: #A8C66C;
+  --admin-accent-gold: #D8B84A;
   --admin-danger: #D96B5F;
   --admin-danger-bg: rgba(217, 107, 95, 0.08);
   --admin-warning: #D6A23F;
   --admin-warning-bg: rgba(214, 162, 63, 0.10);
   --admin-success: #6FA66A;
   --admin-success-bg: rgba(111, 166, 106, 0.10);
-
-  /* Card specific variables (retained for dark contrast inside graphite panels) */
-  --admin-border-card: #27302A;
-  --admin-text-light: #F2F3EE;
-  --admin-text-light-muted: #A8B0AA;
 }
 
 * {
@@ -2837,13 +2832,13 @@ footer.transparent-blurred-footer {
   font-family: var(--font-sans);
 }
 
-/* Force override global main tag color rules */
+/* Force override global main tag background rules */
 .admin-page-wrapper main {
   background-color: var(--admin-bg) !important;
   color: var(--admin-text-primary) !important;
 }
 
-/* Specific text color overrides to bypass global h1-h5 font-serif & text-light overrides */
+/* Bypass global h1-h5 font-serif overrides */
 .admin-page-wrapper h1,
 .admin-page-wrapper h2,
 .admin-page-wrapper h3,
@@ -2875,28 +2870,22 @@ footer.transparent-blurred-footer {
 }
 
 .admin-card {
-  --admin-text-primary: var(--admin-text-light);
-  --admin-text-secondary: var(--admin-text-light-muted);
-  --admin-text-muted: var(--admin-text-light-muted);
-  --admin-border: var(--admin-border-card);
-  --admin-surface: var(--admin-surface-elevated);
-  --admin-surface-card: var(--admin-surface-elevated);
-  background-color: #141A17;
-  border: 1px solid var(--admin-border-card);
+  background-color: var(--admin-surface-card);
+  border: 1px solid var(--admin-border);
   border-radius: 14px;
   padding: 1.5rem;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  color: var(--admin-text-light);
+  color: var(--admin-text-primary);
 }
 
-/* Sub-rule to guarantee light colors inside dark green/graphite cards (no important so inline can override) */
+/* Guaranteed high-contrast text color overrides inside dark cards */
 .admin-card h1,
 .admin-card h2,
 .admin-card h3,
 .admin-card h4,
 .admin-card h5 {
-  color: var(--admin-text-light) !important;
+  color: var(--admin-text-primary) !important;
 }
 
 .admin-card p,
@@ -2904,46 +2893,18 @@ footer.transparent-blurred-footer {
 .admin-card label,
 .admin-card td,
 .admin-card th {
-  color: var(--admin-text-light);
-}
-
-.admin-card .admin-table th {
-  background-color: rgba(0, 0, 0, 0.25);
-  color: var(--admin-text-light-muted);
-  border-bottom: 1px solid var(--admin-border-card);
-}
-
-.admin-card .admin-table td {
-  border-bottom: 1px solid var(--admin-border-card);
-  color: var(--admin-text-light);
-}
-
-.admin-card .admin-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.02);
-}
-
-.admin-card select,
-.admin-card input,
-.admin-card textarea {
-  background-color: var(--admin-surface-elevated) !important;
-  border: 1px solid var(--admin-border-card) !important;
-  color: var(--admin-text-light) !important;
-}
-
-.admin-card select option {
-  background-color: var(--admin-surface-card) !important;
-  color: var(--admin-text-light) !important;
+  color: var(--admin-text-secondary);
 }
 
 .admin-card-hover:hover {
   transform: translateY(-2px);
-  border-color: var(--admin-accent);
+  border-color: var(--admin-accent-light);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .admin-btn-primary {
   background-color: var(--admin-accent);
-  color: #0B0F0D;
+  color: #10140F !important;
   border: 1px solid var(--admin-accent);
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
@@ -2959,16 +2920,16 @@ footer.transparent-blurred-footer {
 }
 
 .admin-btn-primary:hover {
-  background-color: var(--admin-accent-dark);
-  border-color: var(--admin-accent-dark);
-  color: #0B0F0D;
+  background-color: var(--admin-accent-light);
+  border-color: var(--admin-accent-light);
+  color: #10140F !important;
   transform: translateY(-1px);
 }
 
 .admin-btn-secondary {
-  background-color: var(--admin-surface-elevated);
-  color: var(--admin-text-primary);
-  border: 1px solid var(--admin-border);
+  background-color: #171D19;
+  color: #F0F2EC !important;
+  border: 1px solid #39443B;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
   font-weight: 700;
@@ -2983,13 +2944,13 @@ footer.transparent-blurred-footer {
 }
 
 .admin-btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.04);
-  border-color: var(--admin-border-hover);
+  background-color: #212923;
+  border-color: var(--admin-accent-light);
 }
 
 .admin-btn-danger {
   background-color: var(--admin-danger-bg);
-  color: var(--admin-danger);
+  color: var(--admin-danger) !important;
   border: 1px solid rgba(217, 107, 95, 0.25);
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -3015,7 +2976,7 @@ footer.transparent-blurred-footer {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--admin-surface-card);
+  background-color: var(--admin-surface-elevated);
   border: 1px solid var(--admin-border);
   color: var(--admin-text-secondary);
   cursor: pointer;
@@ -3029,9 +2990,9 @@ footer.transparent-blurred-footer {
 }
 
 .admin-input {
-  background-color: #FFFFFF;
-  border: 1px solid var(--admin-border);
-  color: var(--admin-text-primary);
+  background-color: #151B17;
+  border: 1px solid #344038;
+  color: #F2F4EF;
   border-radius: 8px;
   padding: 0.65rem 0.9rem;
   font-size: 0.86rem;
@@ -3047,7 +3008,7 @@ footer.transparent-blurred-footer {
 }
 
 .admin-input::placeholder {
-  color: var(--admin-text-muted);
+  color: #8F9891;
 }
 
 .admin-badge {
@@ -3063,21 +3024,21 @@ footer.transparent-blurred-footer {
 }
 
 .admin-badge-success {
-  background-color: var(--admin-success-bg);
-  color: var(--admin-success);
-  border: 1px solid rgba(111, 166, 106, 0.25);
+  background-color: rgba(111, 166, 106, 0.15);
+  color: #B8CC7A;
+  border: 1px solid rgba(111, 166, 106, 0.3);
 }
 
 .admin-badge-warning {
-  background-color: var(--admin-warning-bg);
-  color: var(--admin-warning);
-  border: 1px solid rgba(214, 162, 63, 0.25);
+  background-color: rgba(214, 162, 63, 0.15);
+  color: #F5C564;
+  border: 1px solid rgba(214, 162, 63, 0.3);
 }
 
 .admin-badge-danger {
-  background-color: var(--admin-danger-bg);
-  color: var(--admin-danger);
-  border: 1px solid rgba(217, 107, 95, 0.25);
+  background-color: rgba(217, 107, 95, 0.15);
+  color: #F08A7C;
+  border: 1px solid rgba(217, 107, 95, 0.3);
 }
 
 .admin-badge-neutral {
@@ -3092,7 +3053,7 @@ footer.transparent-blurred-footer {
   overflow-x: auto;
   border-radius: 12px;
   border: 1px solid var(--admin-border);
-  background-color: #FFFFFF;
+  background-color: var(--admin-surface-card);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -3104,8 +3065,8 @@ footer.transparent-blurred-footer {
 }
 
 .admin-table th {
-  background-color: rgba(0, 0, 0, 0.02);
-  color: var(--admin-text-secondary);
+  background-color: var(--admin-surface);
+  color: #DDE2DC;
   font-weight: 700;
   text-transform: uppercase;
   font-size: 0.68rem;
@@ -3117,7 +3078,7 @@ footer.transparent-blurred-footer {
 .admin-table td {
   padding: 0.95rem 1.15rem;
   border-bottom: 1px solid var(--admin-border);
-  color: var(--admin-text-primary);
+  color: #F0F2ED;
   vertical-align: middle;
 }
 
@@ -3126,11 +3087,55 @@ footer.transparent-blurred-footer {
 }
 
 .admin-table tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.015);
+  background-color: rgba(255, 255, 255, 0.015);
 }
 
 .admin-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* Empty State Card */
+.admin-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: var(--admin-surface-card);
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  gap: 1rem;
+}
+
+.admin-empty-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--admin-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-accent);
+}
+
+.shipping-step-card:hover {
+  border-color: rgba(185, 205, 148, 0.45);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .shipping-process-flow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .shipping-step-arrow {
+    transform: rotate(90deg);
+    margin: 0 auto;
+  }
 }
 
 /* Empty State Card */

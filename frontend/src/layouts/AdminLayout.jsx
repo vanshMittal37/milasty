@@ -139,7 +139,7 @@ export default function AdminLayout() {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {sections.map((section) => (
             <div key={section.title}>
-              <h3 style={{ fontSize: '0.64rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--admin-text-muted)', fontWeight: '800', marginBottom: '0.65rem' }}>
+              <h3 style={{ fontSize: '0.64rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8C47F', fontWeight: '800', marginBottom: '0.65rem' }}>
                 {section.title}
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
@@ -160,14 +160,14 @@ export default function AdminLayout() {
                         fontSize: '0.82rem',
                         fontWeight: '700',
                         textDecoration: 'none',
-                        color: active ? 'var(--admin-text-primary)' : 'var(--admin-text-secondary)',
+                        color: active ? '#FFFFFF' : '#C5CBC5',
                         backgroundColor: active ? 'rgba(143, 175, 91, 0.12)' : 'transparent',
-                        borderLeft: active ? '3px solid var(--admin-accent)' : '3px solid transparent',
+                        borderLeft: active ? '3px solid #B8CC7A' : '3px solid transparent',
                         transition: 'all 0.2s ease',
                       }}
                       className="admin-sidebar-link"
                     >
-                      <Icon size={15} color={active ? 'var(--admin-accent)' : 'var(--admin-text-muted)'} />
+                      <Icon size={15} color={active ? '#B8CC7A' : '#C5CBC5'} />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -354,10 +354,10 @@ export default function AdminLayout() {
             </button>
             
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <span style={{ fontSize: '0.64rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em', lineHeight: '1.2' }}>
+              <span style={{ fontSize: '0.64rem', fontWeight: '800', textTransform: 'uppercase', color: '#9DA69F', letterSpacing: '0.05em', lineHeight: '1.2' }}>
                 {pageBreadcrumb}
               </span>
-              <h1 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.4rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
+              <h1 style={{ fontSize: 'clamp(30px, 3.5vw, 36px)', fontFamily: 'var(--font-serif)', color: '#F4F5F0', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
                 {pageTitle}
               </h1>
             </div>
@@ -368,7 +368,7 @@ export default function AdminLayout() {
             <Link 
               to="/" 
               style={{ 
-                color: 'var(--admin-text-primary)', 
+                color: '#F0F2EC', 
                 fontSize: '0.74rem', 
                 fontWeight: '700',
                 display: 'flex', 
@@ -377,10 +377,10 @@ export default function AdminLayout() {
                 textDecoration: 'none',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                backgroundColor: 'rgba(143, 175, 91, 0.1)',
+                backgroundColor: '#171D19',
                 padding: '0.45rem 0.8rem',
                 borderRadius: '6px',
-                border: '1px solid rgba(143, 175, 91, 0.25)'
+                border: '1px solid #39443B'
               }}
               className="desktop-links hover-scale"
             >
@@ -393,7 +393,7 @@ export default function AdminLayout() {
               style={{
                 background: 'none',
                 border: 'none',
-                color: 'var(--admin-text-primary)',
+                color: '#D9DED8',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -430,40 +430,39 @@ export default function AdminLayout() {
                     width: '32px', 
                     height: '32px', 
                     borderRadius: '50%', 
-                    backgroundColor: 'rgba(143, 175, 91, 0.12)', 
-                    color: 'var(--admin-accent)', 
+                    backgroundColor: 'rgba(143, 175, 91, 0.15)', 
+                    color: '#B8CC7A', 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
                     fontWeight: '800',
                     fontSize: '0.85rem',
-                    border: '1.5px solid var(--admin-accent)'
+                    border: '1.5px solid #8FAF5B'
                   }}
                 >
                   M
                 </div>
                 <div className="desktop-links" style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--admin-text-primary)', lineHeight: '1.2' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#F4F5F0', lineHeight: '1.2' }}>
                     Milasty Admin
                   </span>
-                  <span style={{ fontSize: '0.66rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>
+                  <span style={{ fontSize: '0.66rem', color: '#9DA69F', fontWeight: '600' }}>
                     Super Admin
                   </span>
                 </div>
-                <ChevronDown size={12} color="var(--admin-text-muted)" style={{ transform: profileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                <ChevronDown size={12} color="#9DA69F" style={{ transform: profileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
               </div>
 
               {/* Profile Dropdown Menu */}
               {profileDropdownOpen && (
                 <div 
-                  className="admin-card"
                   style={{
                     position: 'absolute',
                     top: 'calc(100% + 8px)',
                     right: 0,
                     width: '220px',
-                    backgroundColor: 'var(--admin-surface-elevated)',
-                    border: '1px solid var(--admin-border-card)',
+                    backgroundColor: '#181F1B',
+                    border: '1px solid #303B33',
                     borderRadius: '12px',
                     padding: '0.4rem',
                     boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
@@ -473,9 +472,9 @@ export default function AdminLayout() {
                     gap: '0.2rem'
                   }}
                 >
-                  <div style={{ padding: '0.6rem 0.8rem', borderBottom: '1px solid var(--admin-border)', marginBottom: '0.25rem' }}>
-                    <div style={{ fontWeight: '800', fontSize: '0.82rem', color: 'var(--admin-text-primary)' }}>Milasty Admin</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)', marginTop: '0.15rem' }}>admin@milasty.com</div>
+                  <div style={{ padding: '0.6rem 0.8rem', borderBottom: '1px solid #303B33', marginBottom: '0.25rem' }}>
+                    <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#FFFFFF' }}>Milasty Admin</div>
+                    <div style={{ fontSize: '0.7rem', color: '#AAB2AB', marginTop: '0.15rem' }}>admin@milasty.com</div>
                   </div>
 
                   <button 
@@ -488,7 +487,7 @@ export default function AdminLayout() {
                       padding: '0.55rem 0.8rem',
                       background: 'none',
                       border: 'none',
-                      color: 'var(--admin-text-secondary)',
+                      color: '#E5E9E4',
                       fontSize: '0.8rem',
                       fontWeight: '600',
                       borderRadius: '6px',
@@ -499,7 +498,7 @@ export default function AdminLayout() {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
-                    <UserCheck size={14} color="var(--admin-accent)" />
+                    <UserCheck size={14} color="#B8CC7A" />
                     <span>Profile Settings</span>
                   </button>
 
@@ -513,7 +512,7 @@ export default function AdminLayout() {
                       padding: '0.55rem 0.8rem',
                       background: 'none',
                       border: 'none',
-                      color: 'var(--admin-text-secondary)',
+                      color: '#E5E9E4',
                       fontSize: '0.8rem',
                       fontWeight: '600',
                       borderRadius: '6px',
@@ -524,11 +523,11 @@ export default function AdminLayout() {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
-                    <KeyRound size={14} color="var(--admin-accent-gold)" />
+                    <KeyRound size={14} color="#D8B84A" />
                     <span>Change Password</span>
                   </button>
 
-                  <div style={{ borderTop: '1px solid var(--admin-border)', marginTop: '0.25rem', paddingTop: '0.25rem' }}>
+                  <div style={{ borderTop: '1px solid #303B33', marginTop: '0.25rem', paddingTop: '0.25rem' }}>
                     <button 
                       onClick={() => { setProfileDropdownOpen(false); logout(); }}
                       style={{
@@ -539,7 +538,7 @@ export default function AdminLayout() {
                         padding: '0.55rem 0.8rem',
                         background: 'none',
                         border: 'none',
-                        color: 'var(--admin-danger)',
+                        color: '#F08A7C',
                         fontSize: '0.8rem',
                         fontWeight: '700',
                         borderRadius: '6px',

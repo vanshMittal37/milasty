@@ -57,23 +57,23 @@ export default function AdminReviewList() {
               }}
             >
               <div>
-                <div style={{ display: 'flex', color: 'var(--admin-accent-gold)', marginBottom: '0.75rem', gap: '0.15rem' }}>
+                <div style={{ display: 'flex', color: '#D8B84A', marginBottom: '0.75rem', gap: '0.15rem' }}>
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       size={15}
-                      fill={i < (r.rating || 5) ? 'var(--admin-accent-gold)' : 'none'}
-                      color={i < (r.rating || 5) ? 'var(--admin-accent-gold)' : 'var(--admin-text-muted)'}
+                      fill={i < (r.rating || 5) ? '#D8B84A' : 'none'}
+                      color={i < (r.rating || 5) ? '#D8B84A' : '#929B94'}
                     />
                   ))}
                 </div>
-                <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--admin-text-primary)', margin: '0 0 1rem 0', lineHeight: '1.5' }}>
+                <p style={{ fontStyle: 'italic', fontSize: '0.9rem', color: '#F0F2ED', margin: '0 0 1rem 0', lineHeight: '1.5' }}>
                   "{r.comment || r.text || 'Great product quality and fast delivery!'}"
                 </p>
-                <div style={{ fontWeight: '800', fontSize: '0.88rem', color: 'var(--admin-text-primary)' }}>
+                <div style={{ fontWeight: '800', fontSize: '0.88rem', color: '#FFFFFF' }}>
                   {r.name || r.user || 'Customer'}
                 </div>
-                <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', marginTop: '0.2rem' }}>
+                <div style={{ fontSize: '0.74rem', color: '#AEB6AE', marginTop: '0.2rem' }}>
                   {r.role || r.product || 'Verified Customer'}
                 </div>
               </div>
@@ -82,7 +82,7 @@ export default function AdminReviewList() {
                 <span className="admin-badge admin-badge-success">
                   <CheckCircle size={12} /> Approved
                 </span>
-                <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>
+                <span style={{ fontSize: '0.74rem', color: '#AEB6AE', fontWeight: '600' }}>
                   {r.createdAt ? new Date(r.createdAt).toLocaleDateString() : 'Verified'}
                 </span>
               </div>
