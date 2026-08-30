@@ -36,6 +36,14 @@ export default function AdminLayout() {
     };
   }, []);
 
+  // Handle body class for background override
+  useEffect(() => {
+    document.body.classList.add('admin-body');
+    return () => {
+      document.body.classList.remove('admin-body');
+    };
+  }, []);
+
   // Securely protect layout from unauthenticated access
   useEffect(() => {
     if (!isAuthenticated || !isAdmin) {

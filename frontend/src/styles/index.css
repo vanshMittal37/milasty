@@ -50,16 +50,16 @@
   --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Unified MILASTY Admin Dashboard Design Tokens — Premium Dark Graphite & Olive System */
-  --admin-bg: #0B0F0D;
-  --admin-surface: #101512;
+  --admin-bg: #F4F3EF;
+  --admin-surface: #FFFFFF;
   --admin-surface-card: #141A17;
-  --admin-surface-elevated: #181F1B;
+  --admin-surface-elevated: #1D2420;
   --admin-sidebar-bg: #0D120F;
-  --admin-border: #27302A;
+  --admin-border: #DCDAD0;
   --admin-border-hover: #8FAF5B;
-  --admin-text-primary: #F2F3EE;
-  --admin-text-secondary: #A8B0AA;
-  --admin-text-muted: #737B75;
+  --admin-text-primary: #182019;
+  --admin-text-secondary: #5C635D;
+  --admin-text-muted: #828A83;
   --admin-accent: #8FAF5B;
   --admin-accent-dark: #6E8843;
   --admin-accent-light: #B8CC7A;
@@ -70,6 +70,11 @@
   --admin-warning-bg: rgba(214, 162, 63, 0.10);
   --admin-success: #6FA66A;
   --admin-success-bg: rgba(111, 166, 106, 0.10);
+
+  /* Card specific variables (retained for dark contrast inside graphite panels) */
+  --admin-border-card: #27302A;
+  --admin-text-light: #F2F3EE;
+  --admin-text-light-muted: #A8B0AA;
 }
 
 * {
@@ -85,6 +90,11 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+body.admin-body {
+  background-color: var(--admin-bg) !important;
+  color: var(--admin-text-primary) !important;
 }
 
 /* Universal Page & Section Background Overrides for Cocoa Theme */
@@ -2827,19 +2837,102 @@ footer.transparent-blurred-footer {
   font-family: var(--font-sans);
 }
 
+/* Force override global main tag color rules */
+.admin-page-wrapper main {
+  background-color: var(--admin-bg) !important;
+  color: var(--admin-text-primary) !important;
+}
+
+/* Specific text color overrides to bypass global h1-h5 font-serif & text-light overrides */
+.admin-page-wrapper h1,
+.admin-page-wrapper h2,
+.admin-page-wrapper h3,
+.admin-page-wrapper h4,
+.admin-page-wrapper h5 {
+  color: var(--admin-text-primary) !important;
+  font-family: var(--font-serif) !important;
+}
+
+.admin-page-wrapper p,
+.admin-page-wrapper span,
+.admin-page-wrapper label,
+.admin-page-wrapper td,
+.admin-page-wrapper th {
+  color: var(--admin-text-secondary);
+}
+
+/* Correct header sizes overrides to avoid fluid typography scale overrides */
+.admin-page-wrapper h1 {
+  font-size: clamp(1.15rem, 2.5vw, 1.4rem) !important;
+}
+
+.admin-page-wrapper h2 {
+  font-size: clamp(1rem, 2vw, 1.25rem) !important;
+}
+
+.admin-page-wrapper h3 {
+  font-size: 1.05rem !important;
+}
+
 .admin-card {
   background-color: var(--admin-surface-card);
-  border: 1px solid var(--admin-border);
+  border: 1px solid var(--admin-border-card);
   border-radius: 14px;
   padding: 1.5rem;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  color: var(--admin-text-light);
+}
+
+/* Sub-rule to guarantee light colors inside dark green/graphite cards (no important so inline can override) */
+.admin-card h1,
+.admin-card h2,
+.admin-card h3,
+.admin-card h4,
+.admin-card h5 {
+  color: var(--admin-text-light) !important;
+}
+
+.admin-card p,
+.admin-card span:not(.admin-badge),
+.admin-card label,
+.admin-card td,
+.admin-card th {
+  color: var(--admin-text-light);
+}
+
+.admin-card .admin-table th {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: var(--admin-text-light-muted);
+  border-bottom: 1px solid var(--admin-border-card);
+}
+
+.admin-card .admin-table td {
+  border-bottom: 1px solid var(--admin-border-card);
+  color: var(--admin-text-light);
+}
+
+.admin-card .admin-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.admin-card select,
+.admin-card input,
+.admin-card textarea {
+  background-color: var(--admin-surface-elevated) !important;
+  border: 1px solid var(--admin-border-card) !important;
+  color: var(--admin-text-light) !important;
+}
+
+.admin-card select option {
+  background-color: var(--admin-surface-card) !important;
+  color: var(--admin-text-light) !important;
 }
 
 .admin-card-hover:hover {
   transform: translateY(-2px);
-  border-color: var(--admin-border-hover);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  border-color: var(--admin-accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .admin-btn-primary {
