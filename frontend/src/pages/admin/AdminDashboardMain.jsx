@@ -283,7 +283,9 @@ export default function AdminDashboardMain() {
               grid-template-columns: 2fr 1fr !important;
             }
           }
-        `        {/* Sales Overview Card */}
+        `}</style>
+
+        {/* Sales Overview Card */}
         <div className="admin-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
@@ -538,15 +540,6 @@ export default function AdminDashboardMain() {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.65rem'
-                }}
-              >sName="admin-action-card"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
                 }}
               >
                 <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: 'rgba(154, 170, 98, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-accent)' }}>
