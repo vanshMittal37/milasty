@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, Package, ShoppingBag, Users, AlertTriangle, ArrowUpRight, 
-  Plus, RefreshCw, Layers, ShieldCheck, Award, Star, Ticket, Edit3, CheckCircle,
-  TrendingUp, Calendar, ChevronRight, Activity, MessageSquare
+  Plus, RefreshCw, CheckCircle, TrendingUp, ChevronRight, Activity, MessageSquare
 } from 'lucide-react';
 import api from '../../api/axios';
 
@@ -51,24 +50,23 @@ export default function AdminDashboardMain() {
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '1.25rem' }}>
-        <RefreshCw size={28} className="animate-spin" color="var(--primary-dark)" />
-        <span style={{ fontSize: '0.88rem', color: 'var(--text-muted)', fontWeight: '700', letterSpacing: '0.04em' }}>LOADING STORE PERFORMANCE ANALYTICS...</span>
+        <RefreshCw size={28} className="animate-spin" color="var(--admin-accent)" />
+        <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', fontWeight: '700', letterSpacing: '0.04em' }}>LOADING STORE PERFORMANCE ANALYTICS...</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '1.5rem', padding: '2rem', textAlign: 'center' }}>
-        <ShieldCheck size={48} color="var(--accent-terracotta)" />
+      <div className="admin-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', gap: '1.5rem', padding: '2rem', textAlign: 'center', margin: '0 auto', maxWidth: '600px' }}>
+        <AlertTriangle size={48} color="var(--admin-danger)" />
         <div>
-          <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontWeight: '800', marginBottom: '0.5rem' }}>Unable to load dashboard data</h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Please check your internet connection or server status and try again.</p>
+          <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '0.5rem' }}>Unable to load dashboard data</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--admin-text-secondary)', margin: 0 }}>Please check your internet connection or server status and try again.</p>
         </div>
         <button 
           onClick={fetchDashboardData} 
-          className="btn-primary" 
-          style={{ padding: '0.75rem 1.75rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: '800', backgroundColor: 'var(--primary-dark)', color: '#FFFFFF', border: 'none', cursor: 'pointer' }}
+          className="admin-btn-primary" 
         >
           Try Again
         </button>
@@ -124,18 +122,21 @@ export default function AdminDashboardMain() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
       
       {/* ==================================================
           1. DASHBOARD HEADER
          ================================================== */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--admin-border)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1.25rem', paddingBottom: '1rem', borderBottom: '1px solid var(--admin-border)' }}>
         <div>
-          <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+          <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
+            Overview
+          </span>
+          <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
             {timeOfDay}, Admin 👋
           </h1>
-          <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
-            Monitor your store performance, orders, inventory and customers from one place.
+          <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
+            Here's what's happening with your store today.
           </p>
         </div>
 
@@ -161,7 +162,7 @@ export default function AdminDashboardMain() {
           2. STORE OVERVIEW SECTION (4 KPI Cards in one Row)
          ================================================== */}
       <div>
-        <h3 style={{ fontSize: '1rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--primary-dark)', marginBottom: '1rem', marginTop: 0 }}>
+        <h3 style={{ fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--admin-text-muted)', marginBottom: '0.75rem', marginTop: 0 }}>
           Store Overview
         </h3>
         
@@ -185,17 +186,17 @@ export default function AdminDashboardMain() {
           <div className="admin-card admin-card-hover" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '145px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Revenue</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Revenue</span>
+                <div style={{ fontSize: '1.75rem', fontWeight: '900', color: 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   ₹{stats?.totalRevenue || 0}
                 </div>
               </div>
-              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(185, 205, 148, 0.12)', color: 'var(--admin-accent-light)' }}>
+              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(117, 139, 69, 0.08)', color: 'var(--admin-accent)' }}>
                 <DollarSign size={18} />
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--admin-border)', paddingTop: '0.65rem' }}>
-              <span style={{ fontSize: '0.74rem', color: 'var(--admin-accent-gold)', fontWeight: '750' }}>Captured sales</span>
+              <span style={{ fontSize: '0.74rem', color: 'var(--admin-accent)', fontWeight: '750' }}>Captured sales</span>
               <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Current period</span>
             </div>
           </div>
@@ -204,20 +205,20 @@ export default function AdminDashboardMain() {
           <div className="admin-card admin-card-hover" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '145px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Orders</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Orders</span>
+                <div style={{ fontSize: '1.75rem', fontWeight: '900', color: 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   {stats?.totalOrders || 0}
                 </div>
               </div>
-              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(185, 205, 148, 0.12)', color: 'var(--admin-accent-light)' }}>
+              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(117, 139, 69, 0.08)', color: 'var(--admin-accent)' }}>
                 <ShoppingBag size={18} />
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--admin-border)', paddingTop: '0.65rem' }}>
-              <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-secondary)', fontWeight: '750' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--admin-accent-gold)', fontWeight: '750' }}>
                 {stats?.pendingOrders || 0} Pending
               </span>
-              <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '750' }}>
+              <span style={{ fontSize: '0.74rem', color: 'var(--admin-success)', fontWeight: '750' }}>
                 {stats?.deliveredOrders || 0} Delivered
               </span>
             </div>
@@ -227,17 +228,17 @@ export default function AdminDashboardMain() {
           <div className="admin-card admin-card-hover" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '145px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Low Stock Alert</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: lowStockItems.length > 0 ? '#FF8A80' : 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Low Stock Alert</span>
+                <div style={{ fontSize: '1.75rem', fontWeight: '900', color: lowStockItems.length > 0 ? 'var(--admin-danger)' : 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   {lowStockItems.length}
                 </div>
               </div>
-              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: lowStockItems.length > 0 ? 'var(--admin-danger-bg)' : 'rgba(255, 255, 255, 0.05)', color: lowStockItems.length > 0 ? '#FF8A80' : 'var(--admin-text-muted)' }}>
+              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: lowStockItems.length > 0 ? 'var(--admin-danger-bg)' : 'rgba(24, 32, 25, 0.04)', color: lowStockItems.length > 0 ? 'var(--admin-danger)' : 'var(--admin-text-muted)' }}>
                 <AlertTriangle size={18} />
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--admin-border)', paddingTop: '0.65rem' }}>
-              <span style={{ fontSize: '0.74rem', color: lowStockItems.length > 0 ? '#FF8A80' : 'var(--admin-text-muted)', fontWeight: '750' }}>
+              <span style={{ fontSize: '0.74rem', color: lowStockItems.length > 0 ? 'var(--admin-danger)' : 'var(--admin-text-muted)', fontWeight: '750' }}>
                 {lowStockItems.length > 0 ? 'Action Required' : 'Stock Optimal'}
               </span>
               <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Threshold ≤ 5</span>
@@ -248,17 +249,17 @@ export default function AdminDashboardMain() {
           <div className="admin-card admin-card-hover" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '145px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Customers</span>
-                <div style={{ fontSize: '1.85rem', fontWeight: '900', color: 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Customers</span>
+                <div style={{ fontSize: '1.75rem', fontWeight: '900', color: 'var(--admin-text-primary)', letterSpacing: '-0.02em', marginTop: '0.35rem' }}>
                   {stats?.totalCustomers || 0}
                 </div>
               </div>
-              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(185, 205, 148, 0.12)', color: 'var(--admin-accent-light)' }}>
+              <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: 'rgba(117, 139, 69, 0.08)', color: 'var(--admin-accent)' }}>
                 <Users size={18} />
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--admin-border)', paddingTop: '0.65rem' }}>
-              <span style={{ fontSize: '0.74rem', color: 'var(--admin-accent-gold)', fontWeight: '750' }}>Registered Users</span>
+              <span style={{ fontSize: '0.74rem', color: 'var(--admin-accent)', fontWeight: '750' }}>Registered Users</span>
               <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Supabase Auth</span>
             </div>
           </div>
@@ -293,15 +294,15 @@ export default function AdminDashboardMain() {
               <p style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', margin: '0.15rem 0 0 0', fontWeight: '500' }}>Revenue performance over time</p>
             </div>
             
-            <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: 'rgba(255,255,255,0.03)', padding: '0.25rem', borderRadius: '8px', border: '1px solid var(--admin-border)' }}>
+            <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: 'rgba(24, 32, 25, 0.02)', padding: '0.25rem', borderRadius: '8px', border: '1px solid var(--admin-border)' }}>
               {['7 Days', '30 Days', '3 Months', '1 Year'].map(range => (
                 <button 
                   key={range} 
                   onClick={() => setActiveRange(range)}
                   style={{ 
                     border: 'none', 
-                    background: range === activeRange ? 'rgba(154, 170, 98, 0.2)' : 'none', 
-                    color: range === activeRange ? 'var(--admin-accent-light)' : 'var(--admin-text-muted)', 
+                    background: range === activeRange ? 'rgba(117, 139, 69, 0.12)' : 'none', 
+                    color: range === activeRange ? 'var(--admin-accent)' : 'var(--admin-text-muted)', 
                     fontSize: '0.7rem', 
                     padding: '0.35rem 0.75rem', 
                     borderRadius: '6px', 
@@ -321,14 +322,14 @@ export default function AdminDashboardMain() {
               <svg viewBox="0 0 500 200" width="100%" height="100%" style={{ overflow: 'visible' }}>
                 <defs>
                   <linearGradient id="chartGradPlum" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--admin-accent)" stopOpacity="0.25" />
+                    <stop offset="0%" stopColor="var(--admin-accent)" stopOpacity="0.15" />
                     <stop offset="100%" stopColor="var(--admin-accent)" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
                 
                 {/* Horizontal Grid lines */}
                 {[0, 50, 100, 150].map((yVal) => (
-                  <line key={yVal} x1="0" y1={yVal} x2="500" y2={yVal} stroke="rgba(255, 255, 255, 0.05)" strokeWidth="1" strokeDasharray="4 4" />
+                  <line key={yVal} x1="0" y1={yVal} x2="500" y2={yVal} stroke="var(--admin-border)" strokeWidth="0.75" strokeDasharray="3 3" />
                 ))}
 
                 {/* Line Path */}
@@ -340,7 +341,7 @@ export default function AdminDashboardMain() {
                   }, '')}
                   fill="none"
                   stroke="var(--admin-accent)" 
-                  strokeWidth="3"
+                  strokeWidth="3.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -365,7 +366,7 @@ export default function AdminDashboardMain() {
                       cx={xCoord} 
                       cy={yCoord} 
                       r="4.5" 
-                      fill="#111412" 
+                      fill="#FFFFFF" 
                       stroke="var(--admin-accent)" 
                       strokeWidth="2.5" 
                       style={{ cursor: 'pointer' }}
@@ -377,7 +378,7 @@ export default function AdminDashboardMain() {
               </svg>
             </div>
           ) : (
-            <div style={{ height: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.45rem', border: '1px dashed var(--admin-border)', borderRadius: '12px', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
+            <div style={{ height: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.45rem', border: '1px dashed var(--admin-border)', borderRadius: '12px', backgroundColor: 'rgba(24, 32, 25, 0.01)' }}>
               <TrendingUp size={24} color="var(--admin-text-muted)" />
               <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--admin-text-primary)' }}>No sales data yet</span>
               <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', fontWeight: '500' }}>Your sales performance will appear here once completed orders are recorded.</span>
@@ -398,7 +399,7 @@ export default function AdminDashboardMain() {
                     <img src={p.image} alt={p.title} style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--admin-border)' }} />
                     <div style={{ flexGrow: 1 }}>
                       <div style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--admin-text-primary)', lineHeight: '1.25' }}>{p.title}</div>
-                      <div style={{ fontSize: '0.72rem', color: '#F88F84', fontWeight: '750', marginTop: '0.15rem' }}>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--admin-danger)', fontWeight: '750', marginTop: '0.15rem' }}>
                         {p.stock !== undefined ? p.stock : 0} units left
                       </div>
                     </div>
@@ -406,8 +407,8 @@ export default function AdminDashboardMain() {
                 ))}
               </div>
             ) : (
-              <div style={{ padding: '2.5rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(142, 170, 99, 0.05)', borderRadius: '12px', border: '1px dashed rgba(142, 170, 99, 0.25)' }}>
-                <CheckCircle size={28} color="var(--admin-accent)" />
+              <div style={{ padding: '2.5rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', backgroundColor: 'var(--admin-success-bg)', borderRadius: '12px', border: '1px dashed rgba(102, 138, 69, 0.25)' }}>
+                <CheckCircle size={28} color="var(--admin-success)" />
                 <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--admin-text-primary)' }}>✓ Inventory looks healthy</span>
                 <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', fontWeight: '500' }}>No products currently need restocking.</span>
               </div>
@@ -423,7 +424,7 @@ export default function AdminDashboardMain() {
               gap: '0.35rem', 
               fontSize: '0.8rem', 
               fontWeight: '800', 
-              color: 'var(--admin-accent-light)', 
+              color: 'var(--admin-accent)', 
               textDecoration: 'none',
               marginTop: '1.5rem',
               borderTop: '1px solid var(--admin-border)',
@@ -446,7 +447,7 @@ export default function AdminDashboardMain() {
             <p style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', margin: '0.15rem 0 0 0', fontWeight: '500' }}>Latest store checkout activities</p>
           </div>
           
-          <Link to="/admin/orders" style={{ fontSize: '0.82rem', color: 'var(--admin-accent-light)', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.2rem', textDecoration: 'none' }}>
+          <Link to="/admin/orders" style={{ fontSize: '0.82rem', color: 'var(--admin-accent)', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.2rem', textDecoration: 'none' }}>
             <span>View All Orders</span>
             <ArrowUpRight size={14} />
           </Link>
@@ -493,7 +494,7 @@ export default function AdminDashboardMain() {
                       style={{ 
                         fontSize: '0.8rem', 
                         fontWeight: '800', 
-                        color: 'var(--admin-accent-light)', 
+                        color: 'var(--admin-accent)', 
                         textDecoration: 'none',
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -519,7 +520,7 @@ export default function AdminDashboardMain() {
           5. QUICK ACTIONS
          ================================================== */}
       <div>
-        <h3 style={{ fontSize: '0.95rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--admin-text-primary)', marginBottom: '1rem', marginTop: 0 }}>
+        <h3 style={{ fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--admin-text-muted)', marginBottom: '0.75rem', marginTop: 0 }}>
           Quick Actions
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
@@ -542,7 +543,7 @@ export default function AdminDashboardMain() {
                   gap: '0.65rem'
                 }}
               >
-                <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: 'rgba(154, 170, 98, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-accent)' }}>
+                <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: 'rgba(117, 139, 69, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-accent)' }}>
                   <Icon size={16} />
                 </div>
                 <div>
@@ -584,7 +585,7 @@ export default function AdminDashboardMain() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {activityEvents.map((act, idx) => (
                 <div key={idx} style={{ display: 'flex', gap: '0.75rem', borderBottom: idx !== activityEvents.length - 1 ? '1px solid var(--admin-border)' : 'none', paddingBottom: '0.75rem' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(154, 170, 98, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-accent)', flexShrink: 0 }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(117, 139, 69, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-accent)', flexShrink: 0 }}>
                     <Activity size={12} />
                   </div>
                   <div style={{ flexGrow: 1 }}>

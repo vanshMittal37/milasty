@@ -126,15 +126,33 @@ export default function AdminProductForm() {
 
   if (loadingDetails) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justify: 'center', minHeight: '40vh', gap: '1rem' }}>
-        <RefreshCw size={20} className="animate-spin" color="var(--primary-dark)" />
-        <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Loading product details...</span>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', gap: '1rem' }}>
+        <RefreshCw size={20} className="animate-spin" color="var(--admin-accent)" />
+        <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Loading product details...</span>
       </div>
     );
   }
 
+  const handleVariantChange = (index, field, value) => {
+    const updated = [...formData.variants];
+    updated[index] = { ...updated[index], [field]: value };
+    setFormData({ ...formData, variants: updated });
+  };
+
+  const addVariant = () => {
+    setFormData({
+      ...formData,
+      variants: [...formData.variants, { name: '', weight: '', price: 0, originalPrice: 0, stock: 10 }],
+    });
+  };
+
+  const removeVariant = (index) => {
+    const updated = formData.variants.filter((_, i) => i !== index);
+    setFormData({ ...formData, variants: updated });
+  };
+
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       
       {/* Back Link */}
       <Link 
@@ -143,7 +161,7 @@ export default function AdminProductForm() {
           display: 'inline-flex', 
           alignItems: 'center', 
           gap: '0.45rem', 
-          color: 'var(--accent-gold)', 
+          color: 'var(--admin-accent)', 
           fontWeight: '800', 
           fontSize: '0.85rem',
           textDecoration: 'none',
@@ -154,26 +172,22 @@ export default function AdminProductForm() {
         <span>Back to Product Listing</span>
       </Link>
 
-      <div 
-        className="glass-card" 
-        style={{ 
-          padding: '2.5rem', 
-          backgroundColor: 'rgba(50, 26, 18, 0.60)', 
-          borderRadius: '16px', 
-          border: '1px solid rgba(245, 235, 221, 0.25)', 
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)' 
-        }}
-      >
-        <h2 style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '2rem', marginTop: 0 }}>
-          {isEdit ? 'Edit Catalog Product' : 'Add New Product'}
-        </h2>
+      <div className="admin-card" style={{ padding: '2.5rem' }}>
+        <div style={{ borderBottom: '1px solid var(--admin-border)', paddingBottom: '1rem', marginBottom: '1.75rem' }}>
+          <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
+            {isEdit ? 'Modify' : 'New Entry'}
+          </span>
+          <h2 style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0 0' }}>
+            {isEdit ? 'Edit Catalog Product' : 'Add New Product'}
+          </h2>
+        </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           
           {/* Title & Slug */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Product Title *
               </label>
               <input
@@ -182,22 +196,11 @@ export default function AdminProductForm() {
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-') })}
                 placeholder="e.g. Cardamom Bajra Cookies"
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 URL Slug *
               </label>
               <input
@@ -206,18 +209,7 @@ export default function AdminProductForm() {
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 placeholder="e.g. cardamom-bajra-cookies"
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
           </div>
@@ -225,33 +217,22 @@ export default function AdminProductForm() {
           {/* Category & Subtitle */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Category *
               </label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.75rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)',
-                  cursor: 'pointer'
-                }}
+                className="admin-input"
+                style={{ cursor: 'pointer' }}
               >
                 {categories.map((cat) => (
-                  <option key={cat._id || cat.slug} value={cat.slug} style={{ backgroundColor: '#24130D', color: '#FFF' }}>{cat.name}</option>
+                  <option key={cat._id || cat.slug} value={cat.slug}>{cat.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Subtitle / Tagline
               </label>
               <input
@@ -259,18 +240,7 @@ export default function AdminProductForm() {
                 value={formData.subtitle}
                 onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                 placeholder="e.g. Warming Pearl Millet with Aromatic Cardamom"
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
           </div>
@@ -278,10 +248,10 @@ export default function AdminProductForm() {
           {/* Pricing Auto Calculator Box */}
           <div 
             style={{ 
-              backgroundColor: 'rgba(255, 255, 255, 0.03)', 
+              backgroundColor: 'rgba(24, 32, 25, 0.02)', 
               padding: '1.5rem', 
               borderRadius: '14px', 
-              border: '1px solid rgba(245, 235, 221, 0.15)',
+              border: '1px solid var(--admin-border)',
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
               gap: '1.25rem',
@@ -289,7 +259,7 @@ export default function AdminProductForm() {
             }}
           >
             <div>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.4', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Base Price (₹) *
               </label>
               <input
@@ -297,87 +267,53 @@ export default function AdminProductForm() {
                 required
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                style={{ 
-                  width: '100%', 
-                  height: '42px', 
-                  padding: '0 0.75rem', 
-                  borderRadius: '8px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.4', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Discount Type
               </label>
               <select
                 value={formData.discountType}
                 onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
-                style={{ 
-                  width: '100%', 
-                  height: '42px', 
-                  padding: '0 0.65rem', 
-                  borderRadius: '8px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)',
-                  cursor: 'pointer'
-                }}
+                className="admin-input"
+                style={{ cursor: 'pointer' }}
               >
-                <option value="none" style={{ backgroundColor: '#24130D', color: '#FFF' }}>No Discount</option>
-                <option value="percentage" style={{ backgroundColor: '#24130D', color: '#FFF' }}>Percentage (%)</option>
-                <option value="fixed" style={{ backgroundColor: '#24130D', color: '#FFF' }}>Fixed Flat (₹)</option>
+                <option value="none">No Discount</option>
+                <option value="percentage">Percentage (%)</option>
+                <option value="fixed">Fixed Flat (₹)</option>
               </select>
             </div>
             <div>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.4', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Discount Value
               </label>
               <input
                 type="number"
                 value={formData.discountValue}
                 onChange={(e) => setFormData({ ...formData, discountValue: Number(e.target.value) })}
-                style={{ 
-                  width: '100%', 
-                  height: '42px', 
-                  padding: '0 0.75rem', 
-                  borderRadius: '8px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
             <div 
               style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+                backgroundColor: 'var(--admin-surface-card)', 
                 padding: '0.85rem 1rem', 
                 borderRadius: '10px', 
-                border: '1px solid rgba(245, 235, 221, 0.15)', 
-                textAlign: 'center',
-                boxShadow: 'var(--shadow-sm)' 
+                border: '1px solid var(--admin-border)', 
+                textAlign: 'center'
               }}
             >
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.15rem' }}>Auto Final Price:</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--accent-gold)' }}>₹{calculatedFinalPrice}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.15rem' }}>Auto Final Price:</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--admin-accent)' }}>₹{calculatedFinalPrice}</div>
             </div>
           </div>
 
           {/* Stock, SKU, Status */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Total Stock *
               </label>
               <input
@@ -385,22 +321,11 @@ export default function AdminProductForm() {
                 required
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 SKU Code
               </label>
               <input
@@ -408,50 +333,28 @@ export default function AdminProductForm() {
                 value={formData.sku}
                 onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                 placeholder="e.g. MLS-PRD-001"
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Catalog Status
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.75rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)',
-                  cursor: 'pointer'
-                }}
+                className="admin-input"
+                style={{ cursor: 'pointer' }}
               >
-                <option value="active" style={{ backgroundColor: '#24130D', color: '#FFF' }}>Active (Visible)</option>
-                <option value="inactive" style={{ backgroundColor: '#24130D', color: '#FFF' }}>Inactive (Hidden)</option>
+                <option value="active">Active (Visible)</option>
+                <option value="inactive">Inactive (Hidden)</option>
               </select>
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Product Description *
             </label>
             <textarea
@@ -460,25 +363,15 @@ export default function AdminProductForm() {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Provide a detailed description of the product, its flavor profile, and baking method..."
-              style={{ 
-                width: '100%', 
-                padding: '0.75rem 0.95rem', 
-                borderRadius: '10px', 
-                border: '1px solid rgba(245, 235, 221, 0.25)', 
-                fontSize: '0.88rem',
-                outline: 'none',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                fontFamily: 'inherit',
-                color: 'var(--text-light)',
-                resize: 'none'
-              }}
+              className="admin-input"
+              style={{ resize: 'none' }}
             />
           </div>
 
           {/* Image URLs */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Main Product Image URL *
               </label>
               <input
@@ -486,22 +379,11 @@ export default function AdminProductForm() {
                 required
                 value={formData.image}
                 onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Secondary Image URL
               </label>
               <input
@@ -509,18 +391,7 @@ export default function AdminProductForm() {
                 value={formData.secondaryImage}
                 onChange={(e) => setFormData({ ...formData, secondaryImage: e.target.value })}
                 placeholder="Optional second gallery image link..."
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
           </div>
@@ -528,7 +399,7 @@ export default function AdminProductForm() {
           {/* Badges & Ingredients */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Badges (comma separated)
               </label>
               <input
@@ -536,22 +407,11 @@ export default function AdminProductForm() {
                 value={formData.badges}
                 onChange={(e) => setFormData({ ...formData, badges: e.target.value })}
                 placeholder="e.g. Pure Desi Ghee, Organic Jaggery, No Maida"
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--accent-gold)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Ingredients (comma separated)
               </label>
               <input
@@ -559,41 +419,129 @@ export default function AdminProductForm() {
                 value={formData.ingredients}
                 onChange={(e) => setFormData({ ...formData, ingredients: e.target.value })}
                 placeholder="e.g. Bajra, Pure Desi Ghee, Organic Jaggery"
-                style={{ 
-                  width: '100%', 
-                  height: '46px', 
-                  padding: '0 0.95rem', 
-                  borderRadius: '10px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)', 
-                  fontSize: '0.88rem',
-                  outline: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  fontFamily: 'inherit',
-                  color: 'var(--text-light)'
-                }}
+                className="admin-input"
               />
             </div>
+          </div>
+
+          {/* Product Pack Options Variants System */}
+          <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '1.5rem', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <div>
+                <h4 style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0 }}>Product Pack Options (Variants)</h4>
+                <p style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', margin: '0.15rem 0 0 0' }}>Configure weights, discount values, pricing tiers, and stock limits.</p>
+              </div>
+              <button 
+                type="button" 
+                onClick={addVariant}
+                className="admin-btn-secondary"
+                style={{ padding: '0.45rem 0.85rem', fontSize: '0.78rem' }}
+              >
+                <Plus size={14} />
+                <span>Add Variant Option</span>
+              </button>
+            </div>
+
+            {formData.variants && formData.variants.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                {formData.variants.map((v, index) => (
+                  <div 
+                    key={index} 
+                    style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr)) 44px', 
+                      gap: '0.85rem', 
+                      alignItems: 'end',
+                      padding: '1rem',
+                      borderRadius: '12px',
+                      backgroundColor: 'var(--admin-surface-card)',
+                      border: '1px solid var(--admin-border)'
+                    }}
+                  >
+                    <div>
+                      <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Variant Name</label>
+                      <input 
+                        type="text" 
+                        required 
+                        value={v.name} 
+                        onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                        placeholder="e.g. Regular Pack" 
+                        className="admin-input"
+                        style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Weight</label>
+                      <input 
+                        type="text" 
+                        required 
+                        value={v.weight} 
+                        onChange={(e) => handleVariantChange(index, 'weight', e.target.value)}
+                        placeholder="e.g. 100g" 
+                        className="admin-input"
+                        style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Price (₹)</label>
+                      <input 
+                        type="number" 
+                        required 
+                        value={v.price} 
+                        onChange={(e) => handleVariantChange(index, 'price', Number(e.target.value))}
+                        className="admin-input"
+                        style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Original Price</label>
+                      <input 
+                        type="number" 
+                        required 
+                        value={v.originalPrice} 
+                        onChange={(e) => handleVariantChange(index, 'originalPrice', Number(e.target.value))}
+                        className="admin-input"
+                        style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Stock</label>
+                      <input 
+                        type="number" 
+                        required 
+                        value={v.stock} 
+                        onChange={(e) => handleVariantChange(index, 'stock', Number(e.target.value))}
+                        className="admin-input"
+                        style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
+                      />
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => removeVariant(index)}
+                      className="admin-icon-btn"
+                      style={{ color: 'var(--admin-danger)', height: '36px', width: '36px', borderRadius: '6px' }}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ padding: '2rem', textAlign: 'center', border: '1px dashed var(--admin-border)', borderRadius: '12px', color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>
+                No variants configured. Click "Add Variant Option" to configure pricing pack variants.
+              </div>
+            )}
           </div>
 
           {/* Submit Button */}
           <button 
             type="submit" 
             disabled={loading} 
-            className="btn-primary" 
+            className="admin-btn-primary" 
             style={{ 
               width: '100%', 
-              height: '52px', 
+              height: '50px', 
               justifyContent: 'center', 
-              backgroundColor: 'var(--accent-gold)',
-              border: 'none',
-              borderRadius: '12px',
-              color: '#24130D',
-              fontWeight: '800',
-              fontSize: '0.92rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              cursor: 'pointer',
               marginTop: '1rem',
               textTransform: 'uppercase',
               letterSpacing: '0.06em'

@@ -23,19 +23,22 @@ export default function AdminReviewList() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <div>
-        <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ borderBottom: '1px solid var(--admin-border)', paddingBottom: '1rem', marginBottom: '1rem' }}>
+        <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.05em' }}>
+          Reviews
+        </span>
+        <h1 style={{ fontSize: 'clamp(28px, 4.5vw, 40px)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: '0.15rem 0 0.35rem 0', lineHeight: '1.2' }}>
           Customer Review Moderation
         </h1>
-        <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
+        <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0, fontWeight: '500' }}>
           Review and moderate customer testimonials and product reviews.
         </p>
       </div>
 
       {loading ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '30vh', gap: '1rem' }}>
-          <RefreshCw size={20} className="animate-spin" color="var(--admin-accent-light)" />
+          <RefreshCw size={20} className="animate-spin" color="var(--admin-accent)" />
           <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Loading client reviews...</span>
         </div>
       ) : reviews.length > 0 ? (
