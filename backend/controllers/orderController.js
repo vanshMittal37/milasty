@@ -120,6 +120,43 @@ export const createOrder = async (req, res) => {
           order_id: order.id,
         }));
         await supabase.from('order_items').insert(orderItemsRows);
+
+        // Realtime Stock Deduction: Decrement stock for purchased products & variants
+        for (const item of items) {
+          if (item.productId) {
+            // Decrement product_variant stock if found
+            const { data: varData } = await supabase
+              .from('product_variants')
+              .select('id, stock')
+              .eq('product_id', item.productId)
+              .eq('name', item.variantName || 'Standard Pack')
+              .maybeSingle();
+
+            if (varData) {
+              const currentVarStock = varData.stock !== undefined && varData.stock !== null ? Number(varData.stock) : 50;
+              const newVarStock = Math.max(0, currentVarStock - (item.quantity || 1));
+              await supabase
+                .from('product_variants')
+                .update({ stock: newVarStock, in_stock: newVarStock > 0 })
+                .eq('id', varData.id);
+            }
+
+            // Decrement main product stock
+            const { data: prodData } = await supabase
+              .from('products')
+              .select('id, stock')
+              .eq('id', item.productId)
+              .maybeSingle();
+
+            if (prodData && prodData.stock !== undefined && prodData.stock !== null) {
+              const newProdStock = Math.max(0, Number(prodData.stock) - (item.quantity || 1));
+              await supabase
+                .from('products')
+                .update({ stock: newProdStock })
+                .eq('id', prodData.id);
+            }
+          }
+        }
       }
     } catch (e) {
       console.warn('Supabase order table insert error, utilizing fallback order receipt:', e.message);

@@ -39,10 +39,7 @@ export default function AdminProductForm() {
       sodiumMg: '38mg',
     },
     variants: [
-      { name: 'Trial Pack', weight: '70g', price: 99, originalPrice: 120, stock: 50 },
-      { name: 'Regular Pack', weight: '100g', price: 139, originalPrice: 160, stock: 50 },
-      { name: 'Couple Pack', weight: '130g', price: 179, originalPrice: 200, stock: 50 },
-      { name: 'Family Pack', weight: '180g', price: 239, originalPrice: 275, stock: 50 },
+      { name: 'Standard Pack', weight: '100g', price: 139, originalPrice: 160, stock: 100 },
     ],
   });
 
@@ -78,6 +75,9 @@ export default function AdminProductForm() {
           badges: Array.isArray(res.data.badges) ? res.data.badges.join(', ') : res.data.badges || '',
           ingredients: Array.isArray(res.data.ingredients) ? res.data.ingredients.join(', ') : res.data.ingredients || '',
           benefits: Array.isArray(res.data.benefits) ? res.data.benefits.join(', ') : res.data.benefits || '',
+          variants: res.data.variants && res.data.variants.length > 0
+            ? res.data.variants
+            : [{ name: 'Standard Pack', weight: '100g', price: res.data.price || 139, originalPrice: res.data.originalPrice || 160, stock: res.data.stock || 100 }],
         });
       }
     } catch (e) {

@@ -98,7 +98,9 @@ export default function AdminProductList() {
             </thead>
             <tbody>
               {products.map((p) => {
-                const stockLevel = p.stock !== undefined ? p.stock : 50;
+                const stockLevel = p.stock !== undefined && p.stock !== null
+                  ? p.stock
+                  : (p.variants && p.variants.length > 0 ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0) : 0);
                 const isLowStock = stockLevel <= 5;
                 return (
                   <tr key={p._id || p.slug}>
