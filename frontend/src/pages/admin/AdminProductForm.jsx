@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus } from 'lucide-react';
 import api from '../../api/axios';
-import { useToast } = from '../../context/ToastContext';
+import { useToast } from '../../context/ToastContext';
 
 export default function AdminProductForm() {
   const { id } = useParams();
