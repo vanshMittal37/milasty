@@ -657,6 +657,7 @@ export default function Navbar() {
                 <span>Sign In / Register</span>
               </Link>
             )}
+          </div>
         </div>
       </div>
 
