@@ -6,18 +6,6 @@ dotenv.config();
 
 const router = express.Router();
 
-const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dmm8lfc3x';
-const apiKey = process.env.CLOUDINARY_API_KEY;
-const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-if (cloudName && apiKey && apiSecret) {
-  cloudinary.config({
-    cloud_name: cloudName,
-    api_key: apiKey,
-    api_secret: apiSecret,
-  });
-}
-
 router.post('/', async (req, res) => {
   try {
     const { image } = req.body;
@@ -25,39 +13,39 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'No image data provided' });
     }
 
-    // 1. Try SDK server-side upload if credentials are model configured
-    if (cloudName && apiKey && apiSecret) {
-      const uploadResult = await cloudinary.uploader.upload(image, {
+    const cloudName = (process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dmm8lfc3x').trim();
+    const apiKey = (process.env.CLOUDINARY_API_KEY || '').trim();
+    const apiSecret = (process.env.CLOUDINARY_API_SECRET || '').trim();
+    const uploadPreset = (process.env.CLOUDINARY_UPLOAD_PRESET || 'gdjzgrey').trim();
+
+    cloudinary.config({
+      cloud_name: cloudName,
+      api_key: apiKey || undefined,
+      api_secret: apiSecret || undefined,
+      secure: true,
+    });
+
+    let uploadResult;
+    if (apiKey && apiSecret) {
+      uploadResult = await cloudinary.uploader.upload(image, {
         folder: 'milasty/products',
         resource_type: 'auto',
       });
+    } else {
+      uploadResult = await cloudinary.uploader.unsigned_upload(image, uploadPreset, {
+        folder: 'milasty/products',
+        resource_type: 'auto',
+      });
+    }
+
+    if (uploadResult && uploadResult.secure_url) {
       return res.json({ url: uploadResult.secure_url, public_id: uploadResult.public_id });
     }
 
-    // 2. Fallback to unsigned preset REST API upload
-    const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || 'gdjzgrey';
-    const formData = new URLSearchParams();
-    formData.append('file', image);
-    formData.append('upload_preset', uploadPreset);
-
-    const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: formData.toString(),
-    });
-
-    const data = await cloudRes.json();
-
-    if (data.secure_url) {
-      return res.json({ url: data.secure_url, public_id: data.public_id });
-    } else {
-      return res.status(500).json({ message: data.error?.message || 'Cloudinary upload failed' });
-    }
+    return res.status(400).json({ message: 'Cloudinary upload failed: No URL returned' });
   } catch (error) {
-    console.error('Image upload error:', error);
-    res.status(500).json({ message: 'Error uploading image to Cloudinary', error: error.message });
+    console.error('Cloudinary Image Upload Error:', error);
+    return res.status(400).json({ message: error.message || 'Error uploading image to Cloudinary' });
   }
 });
 
