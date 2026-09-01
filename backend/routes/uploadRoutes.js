@@ -13,25 +13,26 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'No image data provided' });
     }
 
-    const cloudName = (process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dmm8lfc3x').trim();
-    const apiKey = (process.env.CLOUDINARY_API_KEY || '').trim();
-    const apiSecret = (process.env.CLOUDINARY_API_SECRET || '').trim();
+    const cloudName = (process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.VITE_CLOUDINARY_CLOUD_NAME || 'dmm8lfc3x').trim();
+    const apiKey = (process.env.CLOUDINARY_API_KEY || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || process.env.VITE_CLOUDINARY_API_KEY || '439913678893597').trim();
+    const apiSecret = (process.env.CLOUDINARY_API_SECRET || process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET || process.env.VITE_CLOUDINARY_API_SECRET || 'wyCApTQ5Ir3A6Oi4fO94ughge8Q').trim();
     const uploadPreset = (process.env.CLOUDINARY_UPLOAD_PRESET || 'gdjzgrey').trim();
 
     cloudinary.config({
       cloud_name: cloudName,
-      api_key: apiKey || undefined,
-      api_secret: apiSecret || undefined,
+      api_key: apiKey,
+      api_secret: apiSecret,
       secure: true,
     });
 
     let uploadResult;
-    if (apiKey && apiSecret) {
+    try {
       uploadResult = await cloudinary.uploader.upload(image, {
         folder: 'milasty/products',
         resource_type: 'auto',
       });
-    } else {
+    } catch (signedErr) {
+      console.warn('Signed upload failed, trying unsigned upload:', signedErr.message);
       uploadResult = await cloudinary.uploader.unsigned_upload(image, uploadPreset, {
         folder: 'milasty/products',
         resource_type: 'auto',
@@ -44,8 +45,9 @@ router.post('/', async (req, res) => {
 
     return res.status(400).json({ message: 'Cloudinary upload failed: No URL returned' });
   } catch (error) {
-    console.error('Cloudinary Image Upload Error:', error);
-    return res.status(400).json({ message: error.message || 'Error uploading image to Cloudinary' });
+    console.error('Cloudinary Image Upload Error:', error?.response?.data || error?.message || error);
+    const errorDetails = error?.response?.data?.error?.message || error?.message || 'Error uploading image to Cloudinary';
+    return res.status(400).json({ message: errorDetails, error: error?.response?.data || error });
   }
 });
 

@@ -127,7 +127,8 @@ export default function AdminProductForm() {
         }
       } catch (err) {
         console.error('Image upload error:', err);
-        toast.error('Image upload failed');
+        const serverMsg = err.response?.data?.message || err.message || 'Image upload failed';
+        toast.error(`Image upload failed: ${serverMsg}`);
       } finally {
         if (fieldName === 'image') setUploadingMain(false);
         else setUploadingSec(false);
