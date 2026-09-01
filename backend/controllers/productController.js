@@ -270,6 +270,7 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ message: error.message || 'Database error creating product', details: error });
     }
 
+    let insertedVariants = [];
     if (variants && variants.length > 0) {
       const variantRows = variants.map((v) => ({
         product_id: product.id,
@@ -280,10 +281,44 @@ export const createProduct = async (req, res) => {
         stock: Number(v.stock !== undefined && v.stock !== null ? v.stock : stock || 50),
         in_stock: v.inStock !== false && Number(v.stock !== undefined && v.stock !== null ? v.stock : stock || 50) > 0,
       }));
-      await supabase.from('product_variants').insert(variantRows);
+      const { data: vData } = await supabase.from('product_variants').insert(variantRows).select();
+      if (vData) insertedVariants = vData;
     }
 
-    return res.status(201).json(product);
+    const formattedProduct = {
+      _id: product.id,
+      id: product.id,
+      title: product.title,
+      slug: product.slug,
+      subtitle: product.subtitle,
+      description: product.description,
+      category: product.category,
+      price: Number(insertedVariants[0]?.price || 0),
+      originalPrice: Number(insertedVariants[0]?.original_price || 0),
+      stock: product.stock,
+      sku: product.sku,
+      status: product.is_active !== false ? 'active' : 'inactive',
+      image: product.image_url,
+      secondaryImage: product.secondary_image_url || product.image_url,
+      badges: product.badges || [],
+      ingredients: product.ingredients || [],
+      allergens: product.allergens || '',
+      benefits: product.benefits || [],
+      targetAudience: product.target_audience || '',
+      nutritionFacts: product.nutrition_facts || {},
+      isFeatured: product.is_featured !== false,
+      variants: insertedVariants.map((v) => ({
+        id: v.id,
+        name: v.name,
+        weight: v.weight,
+        price: Number(v.price),
+        originalPrice: Number(v.original_price),
+        stock: Number(v.stock || 0),
+        inStock: v.in_stock,
+      })),
+    };
+
+    return res.status(201).json(formattedProduct);
   } catch (error) {
     console.error('createProduct Catch Error:', error);
     return res.status(500).json({ message: 'Error creating product', error: error.message });
@@ -342,7 +377,7 @@ export const updateProduct = async (req, res) => {
       return res.status(400).json({ message: error.message || 'Database error updating product' });
     }
 
-    // Update variants if provided: delete existing and re-insert
+    let updatedVariants = [];
     if (updates.variants && Array.isArray(updates.variants)) {
       await supabase.from('product_variants').delete().eq('product_id', id);
 
@@ -356,11 +391,48 @@ export const updateProduct = async (req, res) => {
           stock: Number(v.stock !== undefined ? v.stock : updates.stock || 50),
           in_stock: v.inStock !== false && Number(v.stock !== undefined ? v.stock : updates.stock || 50) > 0,
         }));
-        await supabase.from('product_variants').insert(variantRows);
+        const { data: vData } = await supabase.from('product_variants').insert(variantRows).select();
+        if (vData) updatedVariants = vData;
       }
+    } else {
+      const { data: existingV } = await supabase.from('product_variants').select('*').eq('product_id', id);
+      if (existingV) updatedVariants = existingV;
     }
 
-    return res.json(product);
+    const formattedProduct = {
+      _id: product.id,
+      id: product.id,
+      title: product.title,
+      slug: product.slug,
+      subtitle: product.subtitle,
+      description: product.description,
+      category: product.category,
+      price: Number(updatedVariants[0]?.price || 0),
+      originalPrice: Number(updatedVariants[0]?.original_price || 0),
+      stock: product.stock,
+      sku: product.sku,
+      status: product.is_active !== false ? 'active' : 'inactive',
+      image: product.image_url,
+      secondaryImage: product.secondary_image_url || product.image_url,
+      badges: product.badges || [],
+      ingredients: product.ingredients || [],
+      allergens: product.allergens || '',
+      benefits: product.benefits || [],
+      targetAudience: product.target_audience || '',
+      nutritionFacts: product.nutrition_facts || {},
+      isFeatured: product.is_featured !== false,
+      variants: updatedVariants.map((v) => ({
+        id: v.id,
+        name: v.name,
+        weight: v.weight,
+        price: Number(v.price),
+        originalPrice: Number(v.original_price),
+        stock: Number(v.stock || 0),
+        inStock: v.in_stock,
+      })),
+    };
+
+    return res.json(formattedProduct);
   } catch (error) {
     console.error('updateProduct Catch Error:', error);
     return res.status(500).json({ message: 'Error updating product', error: error.message });
