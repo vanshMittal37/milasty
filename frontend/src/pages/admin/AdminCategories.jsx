@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Tags, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
+import ConfirmationModal from '../../components/ConfirmationModal';
+import { useToast } from '../../context/ToastContext';
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
@@ -8,6 +10,8 @@ export default function AdminCategories() {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchCategories();
@@ -19,7 +23,7 @@ export default function AdminCategories() {
       const res = await api.get('/categories');
       setCategories(res.data || []);
     } catch (e) {
-      console.error(e);
+      toast.error('Unable to fetch categories');
     } finally {
       setFetching(false);
     }
@@ -31,24 +35,26 @@ export default function AdminCategories() {
     setLoading(true);
     try {
       await api.post('/categories', { name, description });
+      toast.success('Category created successfully.');
       setName('');
       setDescription('');
       fetchCategories();
     } catch (e) {
-      alert('Error creating category');
+      toast.error('Error creating category.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this category?')) {
-      try {
-        await api.delete(`/categories/${id}`);
-        fetchCategories();
-      } catch (e) {
-        alert('Error deleting category');
-      }
+  const confirmDeleteCategory = async () => {
+    if (!deleteTargetId) return;
+    try {
+      await api.delete(`/categories/${deleteTargetId}`);
+      toast.success('Category deleted successfully.');
+      setDeleteTargetId(null);
+      fetchCategories();
+    } catch (e) {
+      toast.error('Error deleting category.');
     }
   };
 
@@ -155,7 +161,7 @@ export default function AdminCategories() {
                   </div>
 
                   <button
-                    onClick={() => handleDelete(cat._id)}
+                    onClick={() => setDeleteTargetId(cat._id || cat.id || cat.slug)}
                     className="admin-icon-btn"
                     style={{ color: 'var(--admin-danger)' }}
                     title="Delete Category"
@@ -173,6 +179,17 @@ export default function AdminCategories() {
         </div>
 
       </div>
+
+      <ConfirmationModal
+        isOpen={!!deleteTargetId}
+        title="Delete Category?"
+        message="Are you sure you want to delete this category? Products associated with this category may be affected."
+        confirmText="Delete Category"
+        cancelText="Cancel"
+        isDanger={true}
+        onConfirm={confirmDeleteCategory}
+        onCancel={() => setDeleteTargetId(null)}
+      />
     </div>
   );
 }

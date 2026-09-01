@@ -6,14 +6,19 @@ import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
 
+import ConfirmationModal from './ConfirmationModal';
+import { useToast } from '../context/ToastContext';
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const { cartItems, totalItemCount, isCartOpen, setIsCartOpen, mobileNavOpen, setMobileNavOpen, openCart, openNav } = useCart();
   const { wishlistCount } = useWishlist();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { toast } = useToast();
   const location = useLocation();
 
   const cartCount = totalItemCount || cartItems.length;
@@ -406,7 +411,7 @@ export default function Navbar() {
                         position: 'absolute',
                         right: 0,
                         top: 'calc(100% + 12px)',
-                        width: 'min(240px, calc(100vw - 24px))',
+                        width: 'min(250px, calc(100vw - 24px))',
                         backgroundColor: 'rgba(28, 14, 9, 0.95)',
                         backdropFilter: 'blur(20px)',
                         WebkitBackdropFilter: 'blur(20px)',
@@ -422,27 +427,38 @@ export default function Navbar() {
                       {isAuthenticated ? (
                         <>
                           <div style={{ padding: '0.65rem 1.1rem 0.65rem', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
-                            <div style={{ fontWeight: '800', fontSize: '0.9rem', color: '#FFFDF9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#b9cd94', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '0.1rem' }}>{user?.email}</div>
+                            <div style={{ fontWeight: '800', fontSize: '0.9rem', color: '#FFFDF9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {isAdmin ? 'MILASTY Admin' : user?.name}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#b9cd94', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '0.1rem' }}>
+                              {user?.email} {isAdmin ? '(Admin)' : ''}
+                            </div>
                           </div>
-                          <Link to="/account" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#F5EBDD', fontWeight: '500', transition: 'all 0.2s' }}>
-                            My Dashboard &amp; Addresses
-                          </Link>
-                          <Link to="/account/orders" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#F5EBDD', fontWeight: '500', transition: 'all 0.2s' }}>
-                            My Orders &amp; Tracking
-                          </Link>
-                          <Link to="/wishlist" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#F5EBDD', fontWeight: '500', transition: 'all 0.2s' }}>
-                            My Wishlist
-                          </Link>
-                          {isAdmin && (
-                            <Link to="/admin/dashboard" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#b9cd94', fontWeight: '800' }}>
-                              ★ Admin Panel
-                            </Link>
+
+                          {isAdmin ? (
+                            <>
+                              <Link to="/admin/dashboard" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#b9cd94', fontWeight: '800' }}>
+                                ★ Go to Admin Dashboard
+                              </Link>
+                            </>
+                          ) : (
+                            <>
+                              <Link to="/account" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#F5EBDD', fontWeight: '500', transition: 'all 0.2s' }}>
+                                My Dashboard &amp; Addresses
+                              </Link>
+                              <Link to="/account/orders" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#F5EBDD', fontWeight: '500', transition: 'all 0.2s' }}>
+                                My Orders &amp; Tracking
+                              </Link>
+                              <Link to="/wishlist" onClick={() => setAccountMenuOpen(false)} style={{ display: 'block', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#F5EBDD', fontWeight: '500', transition: 'all 0.2s' }}>
+                                My Wishlist
+                              </Link>
+                            </>
                           )}
+
                           <button
                             onClick={() => {
-                              logout();
                               setAccountMenuOpen(false);
+                              setShowLogoutModal(true);
                             }}
                             style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', textAlign: 'left', padding: '0.65rem 1.1rem', fontSize: '0.86rem', color: '#e57373', background: 'none', border: 'none', borderTop: '1px solid rgba(245, 220, 180, 0.15)', marginTop: '0.35rem', fontWeight: '700', cursor: 'pointer' }}
                           >
@@ -641,10 +657,23 @@ export default function Navbar() {
                 <span>Sign In / Register</span>
               </Link>
             )}
-          </div>
-
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={showLogoutModal}
+        title="Logout?"
+        message="Are you sure you want to logout of your account?"
+        confirmText="Logout"
+        cancelText="Cancel"
+        isDanger={true}
+        onConfirm={() => {
+          logout();
+          setShowLogoutModal(false);
+          toast.success('Logged out successfully.');
+        }}
+        onCancel={() => setShowLogoutModal(false)}
+      />
     </>
   );
 }

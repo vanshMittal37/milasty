@@ -46,13 +46,32 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ message: 'Shipping details, customer name, mobile phone, and pincode are mandatory' });
     }
 
-    // SERVER-SIDE PRICE VALIDATION TRUTH
-    // Fetch product pricing directly from Supabase
-    const productIds = items.map((i) => i.productId);
+    // SERVER-SIDE PRICE & STOCK VALIDATION TRUTH
+    // Fetch product pricing & stock directly from Supabase
+    const productIds = items.map((i) => i.productId).filter(Boolean);
     const { data: dbProducts, error: prodErr } = await supabase
       .from('products')
-      .select('id, title, product_variants(*)')
+      .select('id, title, stock, product_variants(*)')
       .in('id', productIds);
+
+    // Pre-check stock for all requested items
+    for (const item of items) {
+      if (item.productId) {
+        const dbProduct = dbProducts ? dbProducts.find((p) => p.id === item.productId) : null;
+        if (dbProduct) {
+          const dbVariant = (dbProduct.product_variants || []).find((v) => v.name === item.variantName);
+          const availableStock = dbVariant && dbVariant.stock !== undefined && dbVariant.stock !== null
+            ? Number(dbVariant.stock)
+            : (dbProduct.stock !== undefined && dbProduct.stock !== null ? Number(dbProduct.stock) : 100);
+
+          if (availableStock < (item.quantity || 1)) {
+            return res.status(400).json({ 
+              message: `Insufficient stock available for ${dbProduct.title} (${item.variantName || 'Standard Pack'}). Available: ${availableStock}, Requested: ${item.quantity}` 
+            });
+          }
+        }
+      }
+    }
 
     let subtotal = 0;
     const validatedItems = [];

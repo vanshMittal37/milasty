@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Search, CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
+import PriceDisplay from '../../components/PriceDisplay';
+import ConfirmationModal from '../../components/ConfirmationModal';
+import { useToast } from '../../context/ToastContext';
 
 export default function AdminProductList() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchProducts();
@@ -18,20 +23,21 @@ export default function AdminProductList() {
       const res = await api.get(`/products?search=${search}&limit=50`);
       setProducts(res.data.products || []);
     } catch (e) {
-      console.error('Error fetching products', e);
+      toast.error('Unable to load products.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      try {
-        await api.delete(`/products/${id}`);
-        fetchProducts();
-      } catch (e) {
-        alert('Error deleting product');
-      }
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    try {
+      await api.delete(`/products/${deleteTargetId}`);
+      toast.success('Product deleted successfully.');
+      setDeleteTargetId(null);
+      fetchProducts();
+    } catch (e) {
+      toast.error('Error deleting product.');
     }
   };
 
@@ -90,7 +96,7 @@ export default function AdminProductList() {
                 <th>Product</th>
                 <th>Category</th>
                 <th>SKU</th>
-                <th>Base Price</th>
+                <th>Pricing</th>
                 <th>Stock Level</th>
                 <th>Status</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
@@ -102,6 +108,9 @@ export default function AdminProductList() {
                   ? p.stock
                   : (p.variants && p.variants.length > 0 ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0) : 0);
                 const isLowStock = stockLevel <= 5;
+                const displayPrice = p.price || p.variants?.[0]?.price;
+                const displayOrigPrice = p.originalPrice || p.variants?.[0]?.originalPrice || displayPrice;
+
                 return (
                   <tr key={p._id || p.slug}>
                     <td style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
@@ -113,7 +122,9 @@ export default function AdminProductList() {
                     </td>
                     <td style={{ textTransform: 'capitalize', fontWeight: '700', color: 'var(--admin-text-secondary)' }}>{p.category}</td>
                     <td style={{ fontFamily: 'monospace', color: 'var(--admin-text-muted)', fontSize: '0.78rem', fontWeight: '600' }}>{p.sku || 'MLS-PRD'}</td>
-                    <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>₹{p.price || p.variants?.[0]?.price}</td>
+                    <td>
+                      <PriceDisplay price={displayPrice} originalPrice={displayOrigPrice} size="small" />
+                    </td>
                     <td>
                       <span className={`admin-badge ${isLowStock ? 'admin-badge-danger' : 'admin-badge-success'}`}>
                         {stockLevel} units
@@ -134,7 +145,7 @@ export default function AdminProductList() {
                           <Edit2 size={14} />
                         </Link>
                         <button
-                          onClick={() => handleDelete(p._id || p.slug)}
+                          onClick={() => setDeleteTargetId(p._id || p.slug)}
                           className="admin-icon-btn"
                           style={{ color: 'var(--admin-danger)' }}
                           title="Delete product"
@@ -162,6 +173,18 @@ export default function AdminProductList() {
           </div>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={!!deleteTargetId}
+        title="Delete Product?"
+        message="Are you sure you want to delete this product? This action cannot be undone."
+        confirmText="Delete Product"
+        cancelText="Cancel"
+        isDanger={true}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
     </div>
   );
 }
+

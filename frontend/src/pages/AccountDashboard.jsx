@@ -7,6 +7,8 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
+import ConfirmationModal from '../components/ConfirmationModal';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 
@@ -107,27 +109,33 @@ export default function AccountDashboard() {
     setShowAddressModal(true);
   };
 
+  const [deleteAddrTargetId, setDeleteAddrTargetId] = useState(null);
+  const { toast } = useToast();
+
   const handleSaveAddress = async (e) => {
     e.preventDefault();
     try {
       if (editingAddress) {
         await updateAddress(editingAddress._id, addressForm);
+        toast.success('Address updated successfully.');
       } else {
         await addAddress(addressForm);
+        toast.success('Address added successfully.');
       }
       setShowAddressModal(false);
     } catch (err) {
-      console.error('Error saving address', err);
+      toast.error('Error saving address');
     }
   };
 
-  const handleDeleteAddress = async (addrId) => {
-    if (window.confirm("Are you sure you want to delete this address?")) {
-      try {
-        await deleteAddress(addrId);
-      } catch (err) {
-        console.error('Error deleting address', err);
-      }
+  const confirmDeleteAddress = async () => {
+    if (!deleteAddrTargetId) return;
+    try {
+      await deleteAddress(deleteAddrTargetId);
+      toast.success('Address deleted successfully.');
+      setDeleteAddrTargetId(null);
+    } catch (err) {
+      toast.error('Error deleting address');
     }
   };
 
@@ -883,6 +891,16 @@ export default function AccountDashboard() {
         </div>
       )}
 
+      <ConfirmationModal
+        isOpen={!!deleteAddrTargetId}
+        title="Delete Address?"
+        message="Are you sure you want to delete this saved delivery address?"
+        confirmText="Delete Address"
+        cancelText="Cancel"
+        isDanger={true}
+        onConfirm={confirmDeleteAddress}
+        onCancel={() => setDeleteAddrTargetId(null)}
+      />
     </div>
   );
 }

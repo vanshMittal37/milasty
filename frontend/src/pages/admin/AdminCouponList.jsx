@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Ticket, Tag, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
+import ConfirmationModal from '../../components/ConfirmationModal';
+import { useToast } from '../../context/ToastContext';
 
 export default function AdminCouponList() {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const { toast } = useToast();
 
   const [code, setCode] = useState('');
   const [discountType, setDiscountType] = useState('percentage');
@@ -23,7 +27,7 @@ export default function AdminCouponList() {
       const res = await api.get('/coupons');
       setCoupons(res.data || []);
     } catch (e) {
-      console.error(e);
+      toast.error('Unable to fetch coupons.');
     } finally {
       setLoading(false);
     }
@@ -36,28 +40,30 @@ export default function AdminCouponList() {
       await api.post('/coupons', {
         code: code.toUpperCase(),
         discountType,
-        discountValue,
-        minOrderAmount,
-        maxDiscountAmount,
+        discountValue: Number(discountValue),
+        minOrderAmount: Number(minOrderAmount),
+        maxDiscountAmount: Number(maxDiscountAmount),
         expiryDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days
       });
+      toast.success('Coupon created successfully.');
       setCode('');
       fetchCoupons();
     } catch (e) {
-      alert('Error creating coupon');
+      toast.error('Error creating coupon.');
     } finally {
       setCreating(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this coupon?')) {
-      try {
-        await api.delete(`/coupons/${id}`);
-        fetchCoupons();
-      } catch (e) {
-        alert('Error deleting coupon');
-      }
+  const confirmDeleteCoupon = async () => {
+    if (!deleteTargetId) return;
+    try {
+      await api.delete(`/coupons/${deleteTargetId}`);
+      toast.success('Coupon deleted successfully.');
+      setDeleteTargetId(null);
+      fetchCoupons();
+    } catch (e) {
+      toast.error('Error deleting coupon.');
     }
   };
 
@@ -204,7 +210,7 @@ export default function AdminCouponList() {
                   </div>
 
                   <button
-                    onClick={() => handleDelete(c._id)}
+                    onClick={() => setDeleteTargetId(c._id || c.id || c.code)}
                     className="admin-icon-btn"
                     style={{ color: 'var(--admin-danger)' }}
                     title="Delete Coupon"
@@ -222,6 +228,17 @@ export default function AdminCouponList() {
         </div>
 
       </div>
+
+      <ConfirmationModal
+        isOpen={!!deleteTargetId}
+        title="Delete Coupon?"
+        message="Are you sure you want to delete this coupon? Customers will no longer be able to apply this discount code at checkout."
+        confirmText="Delete Coupon"
+        cancelText="Cancel"
+        isDanger={true}
+        onConfirm={confirmDeleteCoupon}
+        onCancel={() => setDeleteTargetId(null)}
+      />
     </div>
   );
 }

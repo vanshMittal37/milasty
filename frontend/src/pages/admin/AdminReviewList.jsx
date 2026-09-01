@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Star, CheckCircle, XCircle, Trash2, Edit2, Plus, X, RefreshCw, ShieldAlert, Award } from 'lucide-react';
 import api from '../../api/axios';
+import ConfirmationModal from '../../components/ConfirmationModal';
+import { useToast } from '../../context/ToastContext';
 
 export default function AdminReviewList() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingReview, setEditingReview] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const { toast } = useToast();
 
   // Create Form States
   const [name, setName] = useState('');
@@ -37,7 +41,7 @@ export default function AdminReviewList() {
       const res = await api.get('/reviews');
       setReviews(res.data || []);
     } catch (e) {
-      console.error('Error fetching reviews:', e);
+      toast.error('Unable to fetch reviews.');
     } finally {
       setLoading(false);
     }
@@ -54,6 +58,7 @@ export default function AdminReviewList() {
         isVerified,
         status,
       });
+      toast.success('Review added successfully.');
       setName('');
       setEmail('');
       setRating(5);
@@ -63,7 +68,7 @@ export default function AdminReviewList() {
       setShowAddForm(false);
       fetchReviews();
     } catch (e) {
-      alert('Error creating review: ' + (e.response?.data?.message || e.message));
+      toast.error('Error creating review: ' + (e.response?.data?.message || e.message));
     }
   };
 
@@ -80,30 +85,33 @@ export default function AdminReviewList() {
         status: editStatus,
         isVerified: editIsVerified,
       });
+      toast.success('Review updated successfully.');
       setEditingReview(null);
       fetchReviews();
     } catch (e) {
-      alert('Error updating review: ' + (e.response?.data?.message || e.message));
+      toast.error('Error updating review: ' + (e.response?.data?.message || e.message));
     }
   };
 
   const handleStatusChange = async (id, newStatus) => {
     try {
       await api.put(`/reviews/${id}`, { status: newStatus });
+      toast.success(`Review ${newStatus} successfully.`);
       fetchReviews();
     } catch (e) {
-      alert('Error updating review status: ' + (e.response?.data?.message || e.message));
+      toast.error('Error updating review status.');
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this review?')) {
-      try {
-        await api.delete(`/reviews/${id}`);
-        fetchReviews();
-      } catch (e) {
-        alert('Error deleting review: ' + (e.response?.data?.message || e.message));
-      }
+  const confirmDeleteReview = async () => {
+    if (!deleteTargetId) return;
+    try {
+      await api.delete(`/reviews/${deleteTargetId}`);
+      toast.success('Review deleted successfully.');
+      setDeleteTargetId(null);
+      fetchReviews();
+    } catch (e) {
+      toast.error('Error deleting review.');
     }
   };
 
@@ -481,7 +489,7 @@ export default function AdminReviewList() {
                       <Edit2 size={13} color="var(--admin-text-secondary)" />
                     </button>
                     <button
-                      onClick={() => handleDelete(id)}
+                      onClick={() => setDeleteTargetId(id)}
                       className="admin-icon-btn"
                       title="Delete Review"
                       style={{ padding: '0.45rem', backgroundColor: 'rgba(255,255,255,0.03)', color: 'var(--admin-danger)' }}
@@ -507,6 +515,17 @@ export default function AdminReviewList() {
           </p>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={!!deleteTargetId}
+        title="Delete Review?"
+        message="Are you sure you want to delete this review? This action cannot be undone."
+        confirmText="Delete Review"
+        cancelText="Cancel"
+        isDanger={true}
+        onConfirm={confirmDeleteReview}
+        onCancel={() => setDeleteTargetId(null)}
+      />
     </div>
   );
 }

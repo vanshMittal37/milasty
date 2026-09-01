@@ -1,55 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Save, Sparkles, Plus, Trash2, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus } from 'lucide-react';
 import api from '../../api/axios';
+import { useToast } = from '../../context/ToastContext';
 
 export default function AdminProductForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEdit = !!id;
+  const { toast } = useToast();
 
-  const [formData, setFormData] = useState({
+  const emptyForm = {
     title: '',
     slug: '',
     subtitle: '',
     description: '',
     category: 'daily',
-    price: 139,
-    originalPrice: 160,
-    discountType: 'percentage',
-    discountValue: 10,
-    stock: 100,
+    price: '',
+    originalPrice: '',
+    discountType: 'none',
+    discountValue: '',
+    stock: '',
     sku: '',
     status: 'active',
     isFeatured: true,
-    image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=800&q=80',
+    image: '',
     secondaryImage: '',
-    badges: 'Pure Desi Ghee, Organic Jaggery, No Maida',
-    ingredients: 'Pearl Millet (Bajra), Pure Desi Ghee, Organic Jaggery, Green Cardamom',
-    allergens: 'Contains Dairy (Ghee).',
-    benefits: 'High Fiber, Iron Rich, Zero Palm Oil',
+    badges: '',
+    ingredients: '',
+    allergens: '',
+    benefits: '',
     nutritionFacts: {
-      energyKcal: '476 kcal / 100g',
-      proteinG: '7.9g',
-      carbohydrateG: '64.2g',
-      totalSugarsG: '17.5g',
-      addedSugarsG: '0g',
-      totalFatG: '21.4g',
-      dietaryFiberG: '8.1g',
-      sodiumMg: '38mg',
+      energyKcal: '',
+      proteinG: '',
+      carbohydrateG: '',
+      totalSugarsG: '',
+      addedSugarsG: '',
+      totalFatG: '',
+      dietaryFiberG: '',
+      sodiumMg: '',
     },
-    variants: [
-      { name: 'Standard Pack', weight: '100g', price: 139, originalPrice: 160, stock: 100 },
-    ],
-  });
+    variants: [],
+  };
 
+  const [formData, setFormData] = useState(emptyForm);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [uploadingMain, setUploadingMain] = useState(false);
+  const [uploadingSec, setUploadingSec] = useState(false);
   const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
     fetchCategories();
-    if (isEdit) fetchProductDetails();
+    if (isEdit) {
+      fetchProductDetails();
+    } else {
+      setFormData(emptyForm);
+    }
   }, [id]);
 
   const fetchCategories = async () => {
@@ -58,9 +65,10 @@ export default function AdminProductForm() {
       if (res.data) setCategories(res.data);
     } catch (e) {
       setCategories([
-        { name: 'Starter Favorites', slug: 'starter' },
-        { name: 'Daily Ritual Cookies', slug: 'daily' },
-        { name: 'Gifting Hampers', slug: 'gifts' },
+        { name: 'STARTER BOX', slug: 'starter' },
+        { name: 'DAILY BAKES', slug: 'daily' },
+        { name: 'GIFTING HAMPER', slug: 'gifting' },
+        { name: 'COOKIES', slug: 'cookies' },
       ]);
     }
   };
@@ -72,19 +80,59 @@ export default function AdminProductForm() {
       if (res.data) {
         setFormData({
           ...res.data,
+          price: res.data.price !== undefined ? res.data.price : '',
+          originalPrice: res.data.originalPrice !== undefined ? res.data.originalPrice : '',
+          stock: res.data.stock !== undefined ? res.data.stock : '',
           badges: Array.isArray(res.data.badges) ? res.data.badges.join(', ') : res.data.badges || '',
           ingredients: Array.isArray(res.data.ingredients) ? res.data.ingredients.join(', ') : res.data.ingredients || '',
           benefits: Array.isArray(res.data.benefits) ? res.data.benefits.join(', ') : res.data.benefits || '',
-          variants: res.data.variants && res.data.variants.length > 0
-            ? res.data.variants
-            : [{ name: 'Standard Pack', weight: '100g', price: res.data.price || 139, originalPrice: res.data.originalPrice || 160, stock: res.data.stock || 100 }],
+          variants: res.data.variants || [],
         });
       }
     } catch (e) {
-      console.error('Error loading product details', e);
+      toast.error('Failed to load product details');
     } finally {
       setLoadingDetails(false);
     }
+  };
+
+  const handleFileUpload = async (e, fieldName = 'image') => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.match(/^image\/(jpeg|jpg|png|webp)$/i)) {
+      toast.error('Only JPG, JPEG, PNG, or WEBP images are supported');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size exceeds 5MB limit');
+      return;
+    }
+
+    if (fieldName === 'image') setUploadingMain(true);
+    else setUploadingSec(true);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = async () => {
+      try {
+        const base64Data = reader.result;
+        const res = await api.post('/upload', { image: base64Data });
+        if (res.data && res.data.url) {
+          setFormData((prev) => ({ ...prev, [fieldName]: res.data.url }));
+          toast.success('Image uploaded successfully!');
+        } else {
+          toast.error('Cloudinary upload failed');
+        }
+      } catch (err) {
+        console.error('Image upload error:', err);
+        toast.error('Image upload failed');
+      } finally {
+        if (fieldName === 'image') setUploadingMain(false);
+        else setUploadingSec(false);
+      }
+    };
   };
 
   const calculatedFinalPrice = (() => {
@@ -100,6 +148,11 @@ export default function AdminProductForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.title || !formData.title.trim()) {
+      toast.error('Product title is required');
+      return;
+    }
+
     setLoading(true);
 
     const payload = {
@@ -107,18 +160,22 @@ export default function AdminProductForm() {
       badges: typeof formData.badges === 'string' ? formData.badges.split(',').map((s) => s.trim()).filter(Boolean) : formData.badges,
       ingredients: typeof formData.ingredients === 'string' ? formData.ingredients.split(',').map((s) => s.trim()).filter(Boolean) : formData.ingredients,
       benefits: typeof formData.benefits === 'string' ? formData.benefits.split(',').map((s) => s.trim()).filter(Boolean) : formData.benefits,
-      finalPrice: calculatedFinalPrice,
+      price: formData.price !== '' ? Number(formData.price) : 0,
+      originalPrice: formData.originalPrice !== '' ? Number(formData.originalPrice) : Number(formData.price || 0),
+      stock: formData.stock !== '' ? Number(formData.stock) : 100,
     };
 
     try {
       if (isEdit) {
         await api.put(`/products/${id}`, payload);
+        toast.success('Product updated successfully.');
       } else {
         await api.post('/products', payload);
+        toast.success('Product created successfully.');
       }
       navigate('/admin/products');
     } catch (err) {
-      alert(err.response?.data?.message || 'Error saving product');
+      toast.error(err.response?.data?.message || 'Failed to save product');
     } finally {
       setLoading(false);
     }
@@ -127,8 +184,8 @@ export default function AdminProductForm() {
   if (loadingDetails) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', gap: '1rem' }}>
-        <RefreshCw size={20} className="animate-spin" color="var(--admin-accent)" />
-        <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Loading product details...</span>
+        <RefreshCw size={24} className="animate-spin" color="var(--admin-accent)" />
+        <span style={{ fontSize: '0.88rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Loading product details...</span>
       </div>
     );
   }
@@ -142,7 +199,7 @@ export default function AdminProductForm() {
   const addVariant = () => {
     setFormData({
       ...formData,
-      variants: [...formData.variants, { name: '', weight: '', price: 0, originalPrice: 0, stock: 10 }],
+      variants: [...formData.variants, { name: '', weight: '', price: '', originalPrice: '', stock: '' }],
     });
   };
 
@@ -152,7 +209,7 @@ export default function AdminProductForm() {
   };
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div style={{ maxWidth: '920px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       
       {/* Back Link */}
       <Link 
@@ -165,7 +222,6 @@ export default function AdminProductForm() {
           fontWeight: '800', 
           fontSize: '0.85rem',
           textDecoration: 'none',
-          transition: 'color 0.2s'
         }}
       >
         <ArrowLeft size={16} />
@@ -175,7 +231,7 @@ export default function AdminProductForm() {
       <div className="admin-card" style={{ padding: '2rem' }}>
         <div style={{ borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.85rem', marginBottom: '1.5rem' }}>
           <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.07em', margin: '0 0 0.2rem 0' }}>
-            {isEdit ? 'Modify' : 'New Entry'}
+            {isEdit ? 'Modify Product' : 'New Catalog Entry'}
           </p>
           <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             {isEdit ? 'Edit Catalog Product' : 'Add New Product'}
@@ -194,8 +250,15 @@ export default function AdminProductForm() {
                 type="text"
                 required
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-') })}
-                placeholder="e.g. Cardamom Bajra Cookies"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setFormData({
+                    ...formData,
+                    title: val,
+                    slug: isEdit ? formData.slug : val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+                  });
+                }}
+                placeholder="Enter product title"
                 className="admin-input"
               />
             </div>
@@ -226,9 +289,13 @@ export default function AdminProductForm() {
                 className="admin-input"
                 style={{ cursor: 'pointer' }}
               >
-                {categories.map((cat) => (
-                  <option key={cat._id || cat.slug} value={cat.slug}>{cat.name}</option>
-                ))}
+                {categories.length > 0 ? (
+                  categories.map((cat) => (
+                    <option key={cat._id || cat.slug || cat.id} value={cat.slug}>{cat.name || cat.label}</option>
+                  ))
+                ) : (
+                  <option value="daily">Daily Bakes</option>
+                )}
               </select>
             </div>
             <div>
@@ -239,13 +306,13 @@ export default function AdminProductForm() {
                 type="text"
                 value={formData.subtitle}
                 onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                placeholder="e.g. Warming Pearl Millet with Aromatic Cardamom"
+                placeholder="Enter product subtitle"
                 className="admin-input"
               />
             </div>
           </div>
 
-          {/* Pricing Auto Calculator Box */}
+          {/* Pricing Box */}
           <div 
             style={{ 
               backgroundColor: 'var(--admin-surface-elevated)', 
@@ -266,7 +333,8 @@ export default function AdminProductForm() {
                 type="number"
                 required
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                placeholder="Enter base price"
                 className="admin-input"
               />
             </div>
@@ -292,7 +360,8 @@ export default function AdminProductForm() {
               <input
                 type="number"
                 value={formData.discountValue}
-                onChange={(e) => setFormData({ ...formData, discountValue: Number(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
+                placeholder="Enter discount"
                 className="admin-input"
               />
             </div>
@@ -305,8 +374,10 @@ export default function AdminProductForm() {
                 textAlign: 'center'
               }}
             >
-              <div style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.15rem' }}>Auto Final Price:</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--admin-accent)' }}>₹{calculatedFinalPrice}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.15rem' }}>Selling Price:</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--admin-accent)' }}>
+                ₹{calculatedFinalPrice || 0}
+              </div>
             </div>
           </div>
 
@@ -320,7 +391,8 @@ export default function AdminProductForm() {
                 type="number"
                 required
                 value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                placeholder="Enter total stock"
                 className="admin-input"
               />
             </div>
@@ -362,37 +434,150 @@ export default function AdminProductForm() {
               required
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Provide a detailed description of the product, its flavor profile, and baking method..."
+              placeholder="Enter product description..."
               className="admin-input"
               style={{ resize: 'none' }}
             />
           </div>
 
-          {/* Image URLs */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Main Product Image URL *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                className="admin-input"
-              />
-            </div>
-            <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Secondary Image URL
-              </label>
-              <input
-                type="text"
-                value={formData.secondaryImage}
-                onChange={(e) => setFormData({ ...formData, secondaryImage: e.target.value })}
-                placeholder="Optional second gallery image link..."
-                className="admin-input"
-              />
+          {/* Cloudinary Image Upload & URL Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', border: '1px solid var(--admin-border)', padding: '1.25rem', borderRadius: '12px', backgroundColor: 'var(--admin-surface-elevated)' }}>
+            <h4 style={{ margin: 0, fontSize: '0.92rem', color: 'var(--admin-text-primary)', fontWeight: '700' }}>Product Image Management</h4>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
+              {/* Main Image Upload Box */}
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  Main Image URL or File *
+                </label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.65rem' }}>
+                  <input
+                    type="text"
+                    required
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    placeholder="Enter image URL"
+                    className="admin-input"
+                    style={{ flex: 1 }}
+                  />
+                  <label 
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      padding: '0 0.85rem',
+                      backgroundColor: 'var(--admin-accent)',
+                      color: '#ffffff',
+                      borderRadius: '8px',
+                      fontSize: '0.78rem',
+                      fontWeight: '700',
+                      cursor: uploadingMain ? 'not-allowed' : 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <Upload size={14} />
+                    <span>{uploadingMain ? 'Uploading...' : 'Upload Image'}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
+                      onChange={(e) => handleFileUpload(e, 'image')}
+                      style={{ display: 'none' }}
+                      disabled={uploadingMain}
+                    />
+                  </label>
+                </div>
+
+                {/* Main Image Preview */}
+                {formData.image ? (
+                  <div style={{ position: 'relative', width: '90px', height: '90px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--admin-border)' }}>
+                    <img src={formData.image} alt="Main preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, image: '' })}
+                      style={{
+                        position: 'absolute',
+                        top: '4px',
+                        right: '4px',
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        border: 'none',
+                        color: '#ff5b5b',
+                        borderRadius: '4px',
+                        padding: '3px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+
+              {/* Secondary Image Upload Box */}
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  Secondary Image URL or File
+                </label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.65rem' }}>
+                  <input
+                    type="text"
+                    value={formData.secondaryImage}
+                    onChange={(e) => setFormData({ ...formData, secondaryImage: e.target.value })}
+                    placeholder="Enter secondary image URL"
+                    className="admin-input"
+                    style={{ flex: 1 }}
+                  />
+                  <label 
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      padding: '0 0.85rem',
+                      backgroundColor: 'var(--admin-surface-card)',
+                      border: '1px solid var(--admin-border)',
+                      color: 'var(--admin-text-primary)',
+                      borderRadius: '8px',
+                      fontSize: '0.78rem',
+                      fontWeight: '700',
+                      cursor: uploadingSec ? 'not-allowed' : 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <Upload size={14} />
+                    <span>{uploadingSec ? 'Uploading...' : 'Upload Image'}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
+                      onChange={(e) => handleFileUpload(e, 'secondaryImage')}
+                      style={{ display: 'none' }}
+                      disabled={uploadingSec}
+                    />
+                  </label>
+                </div>
+
+                {/* Secondary Image Preview */}
+                {formData.secondaryImage ? (
+                  <div style={{ position: 'relative', width: '90px', height: '90px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--admin-border)' }}>
+                    <img src={formData.secondaryImage} alt="Secondary preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, secondaryImage: '' })}
+                      style={{
+                        position: 'absolute',
+                        top: '4px',
+                        right: '4px',
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        border: 'none',
+                        color: '#ff5b5b',
+                        borderRadius: '4px',
+                        padding: '3px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
 
@@ -406,7 +591,7 @@ export default function AdminProductForm() {
                 type="text"
                 value={formData.badges}
                 onChange={(e) => setFormData({ ...formData, badges: e.target.value })}
-                placeholder="e.g. Pure Desi Ghee, Organic Jaggery, No Maida"
+                placeholder="Enter badges"
                 className="admin-input"
               />
             </div>
@@ -418,18 +603,18 @@ export default function AdminProductForm() {
                 type="text"
                 value={formData.ingredients}
                 onChange={(e) => setFormData({ ...formData, ingredients: e.target.value })}
-                placeholder="e.g. Bajra, Pure Desi Ghee, Organic Jaggery"
+                placeholder="Enter ingredients"
                 className="admin-input"
               />
             </div>
           </div>
 
-          {/* Product Pack Options Variants System */}
+          {/* Product Variants System */}
           <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '1.5rem', marginTop: '0.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <div>
                 <h4 style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0 }}>Product Pack Options (Variants)</h4>
-                <p style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', margin: '0.15rem 0 0 0' }}>Configure weights, discount values, pricing tiers, and stock limits.</p>
+                <p style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', margin: '0.15rem 0 0 0' }}>Configure weights, pricing tiers, and stock limits.</p>
               </div>
               <button 
                 type="button" 
@@ -488,7 +673,8 @@ export default function AdminProductForm() {
                         type="number" 
                         required 
                         value={v.price} 
-                        onChange={(e) => handleVariantChange(index, 'price', Number(e.target.value))}
+                        onChange={(e) => handleVariantChange(index, 'price', e.target.value)}
+                        placeholder="Enter price"
                         className="admin-input"
                         style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
                       />
@@ -497,9 +683,9 @@ export default function AdminProductForm() {
                       <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Original Price</label>
                       <input 
                         type="number" 
-                        required 
                         value={v.originalPrice} 
-                        onChange={(e) => handleVariantChange(index, 'originalPrice', Number(e.target.value))}
+                        onChange={(e) => handleVariantChange(index, 'originalPrice', e.target.value)}
+                        placeholder="Original price"
                         className="admin-input"
                         style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
                       />
@@ -510,7 +696,8 @@ export default function AdminProductForm() {
                         type="number" 
                         required 
                         value={v.stock} 
-                        onChange={(e) => handleVariantChange(index, 'stock', Number(e.target.value))}
+                        onChange={(e) => handleVariantChange(index, 'stock', e.target.value)}
+                        placeholder="Stock"
                         className="admin-input"
                         style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
                       />
@@ -536,7 +723,7 @@ export default function AdminProductForm() {
           {/* Submit Button */}
           <button 
             type="submit" 
-            disabled={loading} 
+            disabled={loading || uploadingMain || uploadingSec} 
             className="admin-btn-primary" 
             style={{ 
               width: '100%', 
@@ -548,7 +735,11 @@ export default function AdminProductForm() {
             }}
           >
             <Save size={16} />
-            <span>{loading ? 'Saving Changes...' : (isEdit ? 'Update Product Details' : 'Save & Publish Product')}</span>
+            <span>
+              {loading 
+                ? (isEdit ? 'Updating Product...' : 'Creating Product...') 
+                : (isEdit ? 'Update Product Details' : 'Save & Publish Product')}
+            </span>
           </button>
         </form>
       </div>

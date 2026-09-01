@@ -217,19 +217,45 @@ export const createProduct = async (req, res) => {
       variants,
     } = req.body;
 
+    if (!title || !title.trim()) {
+      return res.status(400).json({ message: 'Product title is required' });
+    }
+
+    const computedSlug = (slug && slug.trim())
+      ? slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+      : title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+    const finalSlug = computedSlug || `product-${Date.now()}`;
+
+    const parsedBadges = Array.isArray(badges) 
+      ? badges 
+      : (typeof badges === 'string' ? badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
+    
+    const parsedIngredients = Array.isArray(ingredients) 
+      ? ingredients 
+      : (typeof ingredients === 'string' ? ingredients.split(',').map((s) => s.trim()).filter(Boolean) : []);
+
+    const parsedBenefits = Array.isArray(benefits) 
+      ? benefits 
+      : (typeof benefits === 'string' ? benefits.split(',').map((s) => s.trim()).filter(Boolean) : []);
+
     const insertPayload = {
-      title,
+      title: title.trim(),
       slug: finalSlug,
       subtitle: subtitle || '',
       description: description || '',
-      category,
+      category: category || 'daily',
+      price: Number(price) || (variants && variants[0] ? Number(variants[0].price) : 0),
+      original_price: Number(originalPrice || price) || (variants && variants[0] ? Number(variants[0].originalPrice || variants[0].price) : 0),
+      stock: stock !== undefined && stock !== null && stock !== '' ? Number(stock) : 100,
+      sku: sku || `MLS-PRD-${Date.now().toString().slice(-4)}`,
       image_url: image || '',
       secondary_image_url: secondaryImage || image || '',
-      ingredients: ingredients || [],
-      nutrition_facts: nutritionFacts || {},
-      badges: badges || [],
+      ingredients: parsedIngredients,
+      nutrition_facts: typeof nutritionFacts === 'object' ? nutritionFacts : {},
+      badges: parsedBadges,
       allergens: allergens || '',
-      benefits: benefits || [],
+      benefits: parsedBenefits,
       target_audience: targetAudience || '',
       is_featured: isFeatured !== false,
       is_active: status === 'active',
@@ -241,7 +267,10 @@ export const createProduct = async (req, res) => {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase Product Insert Error:', error);
+      return res.status(400).json({ message: error.message || 'Database error creating product', details: error });
+    }
 
     if (variants && variants.length > 0) {
       const variantRows = variants.map((v) => ({
@@ -250,15 +279,16 @@ export const createProduct = async (req, res) => {
         weight: v.weight,
         price: Number(v.price),
         original_price: Number(v.originalPrice || v.price),
-        stock: Number(v.stock !== undefined ? v.stock : stock || 50),
-        in_stock: v.inStock !== false && Number(v.stock !== undefined ? v.stock : stock || 50) > 0,
+        stock: Number(v.stock !== undefined && v.stock !== null ? v.stock : stock || 50),
+        in_stock: v.inStock !== false && Number(v.stock !== undefined && v.stock !== null ? v.stock : stock || 50) > 0,
       }));
       await supabase.from('product_variants').insert(variantRows);
     }
 
-    res.status(201).json(product);
+    return res.status(201).json(product);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating product', error: error.message });
+    console.error('createProduct Catch Error:', error);
+    return res.status(500).json({ message: 'Error creating product', error: error.message });
   }
 };
 
@@ -267,23 +297,42 @@ export const updateProduct = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
+    const parsedBadges = Array.isArray(updates.badges) 
+      ? updates.badges 
+      : (typeof updates.badges === 'string' ? updates.badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
+    
+    const parsedIngredients = Array.isArray(updates.ingredients) 
+      ? updates.ingredients 
+      : (typeof updates.ingredients === 'string' ? updates.ingredients.split(',').map((s) => s.trim()).filter(Boolean) : []);
+
+    const parsedBenefits = Array.isArray(updates.benefits) 
+      ? updates.benefits 
+      : (typeof updates.benefits === 'string' ? updates.benefits.split(',').map((s) => s.trim()).filter(Boolean) : []);
+
     const updatePayload = {
       title: updates.title,
       subtitle: updates.subtitle || '',
       description: updates.description,
       category: updates.category,
+      price: updates.price !== undefined ? Number(updates.price) : undefined,
+      original_price: updates.originalPrice !== undefined ? Number(updates.originalPrice) : undefined,
+      stock: updates.stock !== undefined ? Number(updates.stock) : undefined,
+      sku: updates.sku || undefined,
       image_url: updates.image,
       secondary_image_url: updates.secondaryImage || updates.image,
-      ingredients: updates.ingredients || [],
+      ingredients: parsedIngredients,
       nutrition_facts: updates.nutritionFacts || {},
-      badges: updates.badges || [],
+      badges: parsedBadges,
       allergens: updates.allergens || '',
-      benefits: updates.benefits || [],
+      benefits: parsedBenefits,
       target_audience: updates.targetAudience || '',
       is_featured: updates.isFeatured !== false,
       is_active: updates.status === 'active',
       updated_at: new Date(),
     };
+
+    // Remove undefined keys
+    Object.keys(updatePayload).forEach((key) => updatePayload[key] === undefined && delete updatePayload[key]);
 
     const { data: product, error } = await supabase
       .from('products')
@@ -292,7 +341,10 @@ export const updateProduct = async (req, res) => {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase Product Update Error:', error);
+      return res.status(400).json({ message: error.message || 'Database error updating product' });
+    }
 
     // Update variants if provided: delete existing and re-insert
     if (updates.variants && Array.isArray(updates.variants)) {
@@ -312,9 +364,10 @@ export const updateProduct = async (req, res) => {
       }
     }
 
-    res.json(product);
+    return res.json(product);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating product', error: error.message });
+    console.error('updateProduct Catch Error:', error);
+    return res.status(500).json({ message: 'Error updating product', error: error.message });
   }
 };
 

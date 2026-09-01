@@ -5,13 +5,17 @@ import {
   LogOut, Menu, Bell, ChevronDown, Globe, KeyRound, UserCheck, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function AdminLayout() {
   const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dropdownRef = useRef(null);
 
   // Close profile dropdown on click outside or Escape key
@@ -206,7 +210,7 @@ export default function AdminLayout() {
           </div>
           
           <button 
-            onClick={logout} 
+            onClick={() => setShowLogoutModal(true)} 
             style={{ 
               background: 'none', 
               border: 'none', 
@@ -528,19 +532,22 @@ export default function AdminLayout() {
                   </button>
 
                   <div style={{ borderTop: '1px solid #303B33', marginTop: '0.25rem', paddingTop: '0.25rem' }}>
-                    <button 
-                      onClick={() => { setProfileDropdownOpen(false); logout(); }}
+                    <button
+                      onClick={() => {
+                        setProfileDropdownOpen(false);
+                        setShowLogoutModal(true);
+                      }}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.6rem',
+                        gap: '0.65rem',
                         width: '100%',
-                        padding: '0.55rem 0.8rem',
-                        background: 'none',
-                        border: 'none',
-                        color: '#F08A7C',
+                        padding: '0.65rem 0.85rem',
                         fontSize: '0.8rem',
                         fontWeight: '700',
+                        color: 'var(--admin-danger)',
+                        backgroundColor: 'transparent',
+                        border: 'none',
                         borderRadius: '6px',
                         cursor: 'pointer',
                         textAlign: 'left',
@@ -582,6 +589,21 @@ export default function AdminLayout() {
         </main>
       </div>
 
+      <ConfirmationModal
+        isOpen={showLogoutModal}
+        title="Logout?"
+        message="Are you sure you want to logout of the Admin Dashboard?"
+        confirmText="Logout"
+        cancelText="Cancel"
+        isDanger={true}
+        onConfirm={() => {
+          logout();
+          setShowLogoutModal(false);
+          toast.success('Logged out successfully.');
+          navigate('/login');
+        }}
+        onCancel={() => setShowLogoutModal(false)}
+      />
     </div>
   );
 }

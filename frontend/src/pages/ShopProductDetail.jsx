@@ -6,6 +6,7 @@ import { useWishlist } from '../context/WishlistContext';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 import ProductCard from '../components/ProductCard';
+import PriceDisplay from '../components/PriceDisplay';
 
 export default function ShopProductDetail() {
   const { id } = useParams();
@@ -416,14 +417,11 @@ export default function ShopProductDetail() {
               </div>
 
               {/* Price section */}
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.65rem' }}>
-                <span style={{ fontSize: isMobile ? '1.65rem' : '2.2rem', fontWeight: '900', color: '#b9cd94' }}>₹{unitPrice}</span>
-                {selectedVariant.originalPrice && (
-                  <span style={{ textDecoration: 'line-through', color: 'rgba(245, 235, 221, 0.65)', fontSize: isMobile ? '0.95rem' : '1.15rem', fontWeight: '500' }}>
-                    ₹{selectedVariant.originalPrice}
-                  </span>
-                )}
-              </div>
+              <PriceDisplay 
+                price={unitPrice} 
+                originalPrice={selectedVariant.originalPrice} 
+                size="large" 
+              />
 
               {/* Pack Size Selectors */}
               {product.variants && product.variants.length > 1 && (

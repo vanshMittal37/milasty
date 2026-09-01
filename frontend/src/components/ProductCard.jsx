@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ShoppingBag, Star, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import PriceDisplay from './PriceDisplay';
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
@@ -217,22 +218,11 @@ export default function ProductCard({ product }) {
 
         {/* Pricing & Actions Bottom Divider */}
         <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.55rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
-          <div className="card-price" style={{ fontSize: '0.98rem', fontWeight: '900', color: '#FFFDF9', display: 'flex', alignItems: 'baseline', flexWrap: 'nowrap', gap: '0.25rem', minWidth: 0, flexShrink: 1 }}>
-            <span>₹{selectedVariant.price}</span>
-            {selectedVariant.originalPrice && (
-              <span
-                className="original-price"
-                style={{
-                  fontSize: '0.7rem',
-                  color: 'rgba(245, 235, 221, 0.65)',
-                  textDecoration: 'line-through',
-                  fontWeight: '500',
-                }}
-              >
-                ₹{selectedVariant.originalPrice}
-              </span>
-            )}
-          </div>
+          <PriceDisplay 
+            price={selectedVariant.price} 
+            originalPrice={selectedVariant.originalPrice} 
+            size="small" 
+          />
 
           <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
             <button

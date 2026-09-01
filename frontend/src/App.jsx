@@ -158,33 +158,37 @@ function MainLayout() {
   );
 }
 
+import { ToastProvider } from './context/ToastContext';
+
 export default function App() {
   return (
-    <AuthProvider>
-      <WishlistProvider>
-        <CartProvider>
-          <Router>
-            <ScrollToTop />
-            <Routes>
-              {/* Admin Separate Portal */}
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route path="dashboard" element={<AdminDashboardMain />} />
-                <Route path="products" element={<AdminProductList />} />
-                <Route path="products/add" element={<AdminProductForm />} />
-                <Route path="products/edit/:id" element={<AdminProductForm />} />
-                <Route path="categories" element={<AdminCategories />} />
-                <Route path="orders" element={<AdminOrderList />} />
-                <Route path="customers" element={<AdminCustomerList />} />
-                <Route path="coupons" element={<AdminCouponList />} />
-                <Route path="reviews" element={<AdminReviewList />} />
-              </Route>
+    <ToastProvider>
+      <AuthProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <Router>
+              <ScrollToTop />
+              <Routes>
+                {/* Admin Separate Portal */}
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route path="dashboard" element={<AdminDashboardMain />} />
+                  <Route path="products" element={<AdminProductList />} />
+                  <Route path="products/add" element={<AdminProductForm />} />
+                  <Route path="products/edit/:id" element={<AdminProductForm />} />
+                  <Route path="categories" element={<AdminCategories />} />
+                  <Route path="orders" element={<AdminOrderList />} />
+                  <Route path="customers" element={<AdminCustomerList />} />
+                  <Route path="coupons" element={<AdminCouponList />} />
+                  <Route path="reviews" element={<AdminReviewList />} />
+                </Route>
 
-              {/* Public Website & Store */}
-              <Route path="/*" element={<MainLayout />} />
-            </Routes>
-          </Router>
-        </CartProvider>
-      </WishlistProvider>
-    </AuthProvider>
+                {/* Public Website & Store */}
+                <Route path="/*" element={<MainLayout />} />
+              </Routes>
+            </Router>
+          </CartProvider>
+        </WishlistProvider>
+      </AuthProvider>
+    </ToastProvider>
   );
 }
