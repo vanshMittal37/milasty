@@ -217,16 +217,14 @@ export const createProduct = async (req, res) => {
       variants,
     } = req.body;
 
-    const finalSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-
     const insertPayload = {
       title,
       slug: finalSlug,
       subtitle: subtitle || '',
-      description,
+      description: description || '',
       category,
-      image_url: image,
-      secondary_image_url: secondaryImage || image,
+      image_url: image || '',
+      secondary_image_url: secondaryImage || image || '',
       ingredients: ingredients || [],
       nutrition_facts: nutritionFacts || {},
       badges: badges || [],
@@ -236,10 +234,6 @@ export const createProduct = async (req, res) => {
       is_featured: isFeatured !== false,
       is_active: status === 'active',
     };
-
-    // Include stock & sku if supported by table columns
-    if (stock !== undefined) insertPayload.stock = Number(stock);
-    if (sku) insertPayload.sku = sku;
 
     const { data: product, error } = await supabase
       .from('products')
@@ -290,9 +284,6 @@ export const updateProduct = async (req, res) => {
       is_active: updates.status === 'active',
       updated_at: new Date(),
     };
-
-    if (updates.stock !== undefined) updatePayload.stock = Number(updates.stock);
-    if (updates.sku) updatePayload.sku = updates.sku;
 
     const { data: product, error } = await supabase
       .from('products')
