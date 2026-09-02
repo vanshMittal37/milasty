@@ -286,7 +286,10 @@ export const createProduct = async (req, res) => {
         stock: Number(v.stock !== undefined && v.stock !== null ? v.stock : stock || 50),
         in_stock: v.inStock !== false && Number(v.stock !== undefined && v.stock !== null ? v.stock : stock || 50) > 0,
       }));
-      const { data: vData } = await supabase.from('product_variants').insert(variantRows).select();
+      const { data: vData, error: vErr } = await supabase.from('product_variants').insert(variantRows).select();
+      if (vErr) {
+        console.error('Supabase Variant Insert Error:', vErr);
+      }
       if (vData) insertedVariants = vData;
     }
 

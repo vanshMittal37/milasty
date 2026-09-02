@@ -10,7 +10,7 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
 
   const dailyItems = products.filter((p) => p.category === 'daily' || p.category === 'starter').slice(0, 4);
   const activeProduct = dailyItems[activeIdx] || dailyItems[0];
-  const selectedVariant = activeProduct.variants[0];
+  const selectedVariant = activeProduct?.variants?.[0] || {};
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem', alignItems: 'center' }}>

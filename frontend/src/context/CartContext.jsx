@@ -42,9 +42,9 @@ export const CartProvider = ({ children }) => {
   };
 
   const addToCart = (product, variant, qty = 1) => {
-    const selectedVariant = variant || product.variants[0];
-    const itemKey = `${product._id || product.slug}-${selectedVariant.name}`;
-    const unitPrice = selectedVariant.price || product.finalPrice || product.price;
+    const selectedVariant = variant || product?.variants?.[0] || {};
+    const itemKey = `${product?._id || product?.slug}-${selectedVariant?.name || 'default'}`;
+    const unitPrice = selectedVariant?.price || product?.finalPrice || product?.price || 0;
 
     setCartItems((prevItems) => {
       const existingIndex = prevItems.findIndex((item) => item.key === itemKey);

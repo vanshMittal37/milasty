@@ -11,8 +11,8 @@ export default function ProductCard({ product }) {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [btnText, setBtnText] = useState('Add to Cart');
 
-  const selectedVariant = product.variants[selectedVariantIndex] || product.variants[0];
-  const wishlisted = isInWishlist(product._id || product.slug);
+  const selectedVariant = product?.variants?.[selectedVariantIndex] || product?.variants?.[0] || {};
+  const wishlisted = isInWishlist(product?._id || product?.slug);
 
   const handleAddToCart = async () => {
     setBtnText('Adding...');

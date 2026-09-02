@@ -207,10 +207,10 @@ export default function ProductDetail() {
     );
   }
 
-  const selectedVariant = product.variants[selectedVariantIndex] || product.variants[0];
-  const unitPrice = selectedVariant.price || product.finalPrice || product.price;
-  const wishlisted = isInWishlist(product._id || product.slug);
-  const currentStock = selectedVariant.stock || product.stock || 50;
+  const selectedVariant = product?.variants?.[selectedVariantIndex] || product?.variants?.[0] || {};
+  const unitPrice = selectedVariant?.price || product?.finalPrice || product?.price || 0;
+  const wishlisted = isInWishlist(product?._id || product?.slug);
+  const currentStock = selectedVariant?.stock || product?.stock || 50;
 
   const handleAddToCart = async () => {
     setBtnText('Adding...');
