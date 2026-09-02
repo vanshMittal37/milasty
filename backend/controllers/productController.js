@@ -221,11 +221,18 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ message: 'Product title is required' });
     }
 
-    const computedSlug = (slug && slug.trim())
+    let baseSlug = (slug && slug.trim())
       ? slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
       : title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
-    const finalSlug = computedSlug || `product-${Date.now()}`;
+    if (!baseSlug) baseSlug = `product-${Date.now()}`;
+
+    // Check if slug already exists in Supabase
+    let finalSlug = baseSlug;
+    const { data: existing } = await supabase.from('products').select('id').eq('slug', finalSlug).maybeSingle();
+    if (existing) {
+      finalSlug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
+    }
 
     const parsedBadges = Array.isArray(badges) 
       ? badges 
