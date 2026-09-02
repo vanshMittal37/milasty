@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles, ShieldCheck, ArrowRight, Award, FileText, CheckCircle2,
-  Star, ChevronLeft, ChevronRight, ChevronDown, Heart, ShoppingBag, Eye, Check, X, Quote, Grid
+  Star, ChevronLeft, ChevronRight, ChevronDown, Heart, ShoppingBag, Eye, Check, X, Quote, Grid,
+  Flame, Leaf
 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import TestimonialSection from '../components/TestimonialSection';
@@ -18,6 +19,7 @@ export default function Home() {
 
   const snackRitualRef = useRef(null);
   const whyDiffRef = useRef(null);
+  const ingredientsRef = useRef(null);
 
   const scrollLeft = (ref) => {
     if (ref.current) {
@@ -887,166 +889,60 @@ export default function Home() {
               </Link>
             </div>
 
-          </div>
-        </section>
-
-        {/* 3. "WHY MILASTY" SECTION (Transparent tiles with white text and borders) */}
-        <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ padding: isMobile ? '4rem 0' : '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-          <div className="container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: isMobile ? '2.5rem' : '4.5rem' }}>
-              <div>
-                <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>WHY MILASTY ? </span>
-                <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0 }}><span style={{ color: 'var(--accent-gold)' }}>Made Differently.</span> Tasted Slowly.</h2>
-              </div>
-              {!isMobile && (
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button
-                    onClick={() => scrollLeft(whyDiffRef)}
-                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <button
-                    onClick={() => scrollRight(whyDiffRef)}
-                    style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(245,235,221,0.2)', color: 'var(--text-light)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-              )}
+               {/* 3. WHY MILASTY FEELS DIFFERENT SECTION */}
+        <section id="why-milasty" ref={whyRef} className="reveal-fade-up why-section" style={{ backgroundColor: 'transparent', padding: isMobile ? '4rem 0' : '6.5rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+          <div style={{ maxWidth: '850px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
+            
+            <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+              <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>WHY MILASTY ?</span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.6rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.5rem', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+                Why MILASTY Feels Different
+              </h2>
+              <p style={{ fontSize: '0.98rem', color: '#F5EBDD', fontWeight: '600' }}>Comparing mindful everyday baking with mass-produced alternatives.</p>
             </div>
 
-            {isMobile ? (
-              /* MOBILE INTERACTIVE 2x2 SELECTOR VIEW */
-              <div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  {[
-                    { icon: Award, title: 'PURE GHEE', num: '01', desc: 'Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.' },
-                    { icon: Sparkles, title: 'MILLETS', num: '02', desc: 'Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.' },
-                    { icon: ShieldCheck, title: 'JAGGERY', num: '03', desc: 'Sweetened with pure organic jaggery instead of refined white sugars.' },
-                    { icon: FileText, title: 'TRANSPARENCY', num: '04', desc: 'Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.' },
-                  ].map((item, idx) => {
-                    const isSelected = activeMobileTransparencyIdx === idx;
-                    const IconComp = item.icon;
-                    return (
-                      <div
-                        key={idx}
-                        onClick={() => setActiveMobileTransparencyIdx(idx)}
-                        className="glass-card"
-                        style={{
-                          padding: '1rem 0.85rem',
-                          borderRadius: '16px',
-                          backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.40)' : 'rgba(20, 10, 5, 0.40)',
-                          border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.20)',
-                          boxShadow: isSelected ? '0 8px 24px rgba(0, 0, 0, 0.35)' : 'none',
-                          cursor: 'pointer',
-                          transition: 'all 0.25s ease',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          height: '120px',
-                          boxSizing: 'border-box',
-                          minWidth: 0,
-                        }}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <IconComp size={22} color={isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.7)'} strokeWidth={1.8} />
-                          <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)' }}>{item.num}</span>
-                        </div>
-                        <div>
-                          <h4 style={{ fontSize: '0.82rem', color: isSelected ? '#FFFFFF' : '#F5EBDD', fontWeight: '850', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</h4>
-                          <span style={{ fontSize: '0.65rem', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.6)', fontWeight: '600', display: 'block', marginTop: '0.15rem' }}>
-                            {isSelected ? '✓ Selected' : 'Tap to view'}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Detail Panel Below 2x2 Grid */}
-                <div
-                  className="glass-card"
-                  style={{
-                    padding: '1.25rem 1.15rem',
-                    borderRadius: '18px',
-                    backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                    border: '1px solid var(--accent-gold)',
-                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  {[
-                    { fullTitle: 'PURE DESI COW GHEE', desc: 'Slow-baked with authentic Desi Cow Ghee for rich aroma, crumbly texture, and wholesome natural nutrition without vegetable oils.' },
-                    { fullTitle: 'WHOLESOME NATIVE MILLETS', desc: 'Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour, giving you complex carbs and dietary fiber.' },
-                    { fullTitle: 'UNREFINED ORGANIC JAGGERY', desc: 'Sweetened with 100% pure organic jaggery instead of refined white sugars, artificial sweeteners, or high-fructose syrups.' },
-                    { fullTitle: '100% CLEAN & TRANSPARENT', desc: 'Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives, artificial colors, or emulsifiers.' },
-                  ][activeMobileTransparencyIdx] && (
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
-                          <span style={{ fontSize: '0.75rem', fontWeight: '900', color: 'var(--accent-gold)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                            0{activeMobileTransparencyIdx + 1} • HIGHLIGHT
-                          </span>
-                        </div>
-                        <h3 style={{ fontSize: '1.05rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '0.45rem', marginTop: 0 }}>
-                          {[
-                            'PURE DESI COW GHEE',
-                            'WHOLESOME NATIVE MILLETS',
-                            'UNREFINED ORGANIC JAGGERY',
-                            '100% CLEAN & TRANSPARENT'
-                          ][activeMobileTransparencyIdx]}
-                        </h3>
-                        <p style={{ fontSize: '0.84rem', color: '#F5EBDD', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>
-                          {[
-                            'Slow-baked with authentic Desi Cow Ghee for rich aroma, crumbly texture, and wholesome natural nutrition without vegetable oils.',
-                            'Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour, giving you complex carbs and dietary fiber.',
-                            'Sweetened with 100% pure organic jaggery instead of refined white sugars, artificial sweeteners, or high-fructose syrups.',
-                            'Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives, artificial colors, or emulsifiers.'
-                          ][activeMobileTransparencyIdx]}
-                        </p>
-                      </div>
-                    )}
-                </div>
+            <div 
+              className="glass-card about-comparison-card"
+              style={{ 
+                borderRadius: '24px', 
+                border: '1px solid rgba(255, 255, 255, 0.2)', 
+                boxShadow: '0 16px 48px rgba(0,0,0,0.3)',
+                overflow: 'hidden',
+              }}
+            >
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', backgroundColor: 'rgba(36, 79, 33, 0.45)', color: '#FFFFFF', padding: '1.25rem 1.75rem', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+                <span>Mindful Snacking (MILASTY)</span>
+                <span>Standard Supermarket Biscuits</span>
               </div>
-            ) : (
-              /* DESKTOP & TABLET ORIGINAL VIEW */
-              <div
-                ref={whyDiffRef}
-                className="why-grid fitted-cards-container-4"
-              >
-                <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-                  <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                    <Award size={36} strokeWidth={1.5} />
-                  </div>
-                  <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>PURE DESI GHEE</h3>
-                  <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Slow-baked with authentic Desi Cow Ghee for rich aroma and natural nutrition.</p>
-                </div>
 
-                <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-                  <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                    <Sparkles size={36} strokeWidth={1.5} />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {[
+                  { milasty: '100% Millet-First (Bajra, Jowar, Ragi)', standard: 'Refined Wheat Flour (Maida) heavy' },
+                  { milasty: 'Pure Cow Desi Ghee exclusively', standard: 'Cheap Palm Oil & Hydrogenated vegetable fats' },
+                  { milasty: 'Naturally Sweetened with Jaggery', standard: 'Excessive highly refined white sugar' },
+                  { milasty: 'Small Batch, fresh baked to order', standard: 'Mass-produced with artificial shelf extenders' }
+                ].map((row, idx) => (
+                  <div 
+                    key={idx} 
+                    style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: '1fr 1fr', 
+                      padding: '1.25rem 1.75rem', 
+                      fontSize: '0.95rem', 
+                      borderBottom: idx < 3 ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
+                      fontWeight: '600',
+                      color: '#FFFDF9'
+                    }}
+                  >
+                    <span style={{ color: '#b9cd94', fontWeight: '850' }}>✓ {row.milasty}</span>
+                    <span style={{ color: '#F5EBDD', opacity: 0.9 }}>✕ {row.standard}</span>
                   </div>
-                  <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>WHOLESOME MILLETS</h3>
-                  <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Packed with the traditional goodness of native Bajra, Jowar, and Ragi flour.</p>
-                </div>
-
-                <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-                  <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                    <ShieldCheck size={36} strokeWidth={1.5} />
-                  </div>
-                  <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NATURALLY SWEET</h3>
-                  <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Sweetened with pure organic jaggery instead of refined white sugars.</p>
-                </div>
-
-                <div className="glass-card" style={{ padding: '2.5rem 2rem', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', minWidth: 0 }}>
-                  <div style={{ color: 'var(--accent-gold)', marginBottom: '1.5rem' }}>
-                    <FileText size={36} strokeWidth={1.5} />
-                  </div>
-                  <h3 style={{ fontSize: '1.25rem', color: '#FFFFFF', marginBottom: '0.5rem', fontWeight: '800' }}>NOTHING UNNECESSARY</h3>
-                  <p style={{ fontSize: '0.9rem', color: 'rgba(255, 255, 255, 0.9)', lineHeight: '1.55', fontWeight: '500', margin: 0 }}>Zero Maida flour. Zero Palm Oil. Absolutely no hidden chemical preservatives.</p>
-                </div>
+                ))}
               </div>
-            )}
+            </div>
+
+          </div>
+        </section>
           </div>
         </section>
 
@@ -1212,6 +1108,62 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* HONEST BAKING SECTION */}
+        <section className="reveal-fade-up" style={{ backgroundColor: 'transparent', padding: isMobile ? '4rem 0' : '6rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
+              <div>
+                <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>Honest Baking</span>
+                <h2 style={{ fontSize: isMobile ? '2rem' : '2.25rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+                  What Goes Into Every Bake
+                </h2>
+              </div>
+              <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  onClick={() => scrollLeft(ingredientsRef)} 
+                  style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button 
+                  onClick={() => scrollRight(ingredientsRef)} 
+                  style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+
+            <div 
+              ref={ingredientsRef}
+              className="horizontal-scroll-container fitted-cards-container-4"
+            >
+              {[
+                { name: 'BAJRA', type: 'Pearl Millet', desc: 'Powerhouse of fiber, magnesium, and essential nutrients.', img: '/images/bajra.jpeg' },
+                { name: 'JOWAR', type: 'Sorghum Millet', desc: 'Gluten-free grain that aids digestion and regulates blood sugar.', img: '/images/jowar.jpeg' },
+                { name: 'RAGI', type: 'Finger Millet', desc: 'Calcium-rich grain that builds bone strength naturally.', img: '/images/ragi.jpeg' },
+                { name: 'DESI GHEE', type: 'Pure Cow Ghee', desc: 'Rich in A2 fats, vitamins, providing aroma and crisp texture.', img: '/images/ghee.jpeg' },
+              ].map((ingredient) => (
+                <div key={ingredient.name} style={{ textAlign: 'center', width: '100%' }}>
+                  <img 
+                    src={ingredient.img} 
+                    alt={ingredient.name} 
+                    style={{ width: '130px', height: '130px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(185, 205, 148, 0.4)', margin: '0 auto 1.25rem', display: 'block', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }} 
+                  />
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.2rem 0' }}>{ingredient.name}</h4>
+                  <span style={{ fontSize: '0.8rem', color: '#b9cd94', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{ingredient.type}</span>
+                  <p style={{ fontSize: '0.85rem', color: '#F5EBDD', lineHeight: '1.55', marginTop: '0.45rem', padding: '0 0.5rem', fontWeight: '550' }}>{ingredient.desc}</p>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </section>
+
+        {/* NON-NEGOTIABLES SECTION */}
+        <OrbitPrinciplesSection />
 
         {/* ================================================================== */}
         {/* HELP CENTER / FAQ SECTION (Matching Home Page Transparent Glass Theme) */}
@@ -1380,6 +1332,519 @@ export default function Home() {
         }
       `}</style>
 
+    </div>
+  );
+}
+
+// ========================================================
+// ORBIT PRINCIPLES (Non-Negotiables) COMPONENT
+// ========================================================
+function OrbitPrinciplesSection() {
+  const principles = [
+    { 
+      step: '01', 
+      title: 'Zero Palm Oil', 
+      desc: 'We exclusively bake with 100% pure Cow Desi Ghee. No cheap vegetable fats, trans fats, or hydrogenated oils ever enter our bakery.',
+      icon: Flame,
+      image: '/images/ghee.jpeg',
+      badge: 'NON-NEGOTIABLE'
+    },
+    { 
+      step: '02', 
+      title: 'Unrefined Jaggery', 
+      desc: 'Naturally sweetened using organic jaggery rich in iron and essential minerals. Zero refined white sugar or artificial sweeteners.',
+      icon: Sparkles,
+      image: '/images/image2.jpeg',
+      badge: 'NON-NEGOTIABLE'
+    },
+    { 
+      step: '03', 
+      title: 'Zero Preservatives', 
+      desc: 'No artificial food coloring, chemical preservatives, or synthetic shelf-life extenders. Just honest, wholesome, fresh baking.',
+      icon: ShieldCheck,
+      image: '/images/image3.jpeg',
+      badge: 'NON-NEGOTIABLE'
+    },
+    { 
+      step: '04', 
+      title: 'Wholesome Grains', 
+      desc: 'Native Bajra, Jowar, and Ragi flour instead of refined maida. Nutrient-dense nutrition in every single bite.',
+      icon: Leaf,
+      image: '/images/bajra.jpeg',
+      badge: 'NON-NEGOTIABLE'
+    },
+  ];
+
+  const [isMobile, setIsMobile] = React.useState(false);
+  const [isTablet, setIsTablet] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 767);
+      setIsTablet(window.innerWidth > 767 && window.innerWidth <= 1024);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <section 
+      style={{ 
+        padding: isMobile ? '3.5rem 0 3rem' : '6rem 0 5rem', 
+        backgroundColor: 'transparent',
+        borderTop: '1px solid rgba(245, 220, 180, 0.15)',
+        borderBottom: '1px solid rgba(245, 220, 180, 0.15)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
+      <div style={{ maxWidth: '1280px', margin: '0 auto', paddingLeft: isMobile ? '1rem' : '1.5rem', paddingRight: isMobile ? '1rem' : '1.5rem', boxSizing: 'border-box' }}>
+        
+        {/* RESPONSIVE FIGURE/DIAGRAM COMPOSITION (Desktop, Tablet & Mobile) */}
+        {!isMobile && !isTablet ? (
+          /* DESKTOP VIEW */
+          <div style={{ position: 'relative', minHeight: '680px', width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            
+            {/* Center Heading Block */}
+            <div style={{ zIndex: 10, textAlign: 'center', maxWidth: '380px', padding: '1.5rem', boxSizing: 'border-box' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.45)', border: '1.5px solid rgba(185, 205, 148, 0.4)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.85rem' }}>
+                <Leaf size={22} color="var(--accent-gold)" />
+              </div>
+              
+              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.16em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>
+                OUR PRINCIPLES
+              </span>
+
+              <h2 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.65rem', lineHeight: '1.15', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+                Our Non-Negotiables
+              </h2>
+
+              <div style={{ width: '40px', height: '2px', backgroundColor: 'var(--accent-gold)', margin: '0 auto 0.75rem', opacity: 0.7 }} />
+
+              <p style={{ fontSize: '0.98rem', color: '#F5EBDD', fontWeight: '500', margin: 0, lineHeight: '1.5', fontStyle: 'italic' }}>
+                The four pillars we <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>never</span> compromise on.
+              </p>
+            </div>
+
+            {/* Connecting Circular Dotted Ring (Darkened & Enhanced for Desktop) */}
+            <div 
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '620px',
+                height: '420px',
+                borderRadius: '50%',
+                border: '2px dashed rgba(185, 205, 148, 0.85)',
+                boxShadow: '0 0 20px rgba(185, 205, 148, 0.25)',
+                pointerEvents: 'none',
+                zIndex: 1,
+              }}
+            />
+
+            {/* Small Decorative Dots on Ring */}
+            <div style={{ position: 'absolute', top: 'calc(50% - 210px)', left: '50%', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2.5px solid rgba(18, 9, 4, 0.95)', boxShadow: '0 0 10px #b9cd94', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: 'calc(50% + 210px)', left: '50%', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2.5px solid rgba(18, 9, 4, 0.95)', boxShadow: '0 0 10px #b9cd94', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: '50%', left: 'calc(50% - 310px)', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2.5px solid rgba(18, 9, 4, 0.95)', boxShadow: '0 0 10px #b9cd94', zIndex: 2 }} />
+            <div style={{ position: 'absolute', top: '50%', left: 'calc(50% + 310px)', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#b9cd94', border: '2.5px solid rgba(18, 9, 4, 0.95)', boxShadow: '0 0 10px #b9cd94', zIndex: 2 }} />
+
+            {/* 4 Floating Cards Positioned Around Center */}
+            <div style={{ position: 'absolute', top: '2%', left: '2%', width: '420px', zIndex: 5 }}>
+              <PrincipleCardDesktop principle={principles[0]} />
+            </div>
+            <div style={{ position: 'absolute', top: '2%', right: '2%', width: '420px', zIndex: 5 }}>
+              <PrincipleCardDesktop principle={principles[1]} />
+            </div>
+            <div style={{ position: 'absolute', bottom: '2%', left: '2%', width: '420px', zIndex: 5 }}>
+              <PrincipleCardDesktop principle={principles[2]} />
+            </div>
+            <div style={{ position: 'absolute', bottom: '2%', right: '2%', width: '420px', zIndex: 5 }}>
+              <PrincipleCardDesktop principle={principles[3]} />
+            </div>
+          </div>
+        ) : (
+          /* MOBILE & TABLET UNIFIED CONNECTED FIGURE LAYOUT (Matching Reference Image) */
+          <div 
+            style={{ 
+              position: 'relative', 
+              width: '100%', 
+              maxWidth: '440px',
+              margin: '0 auto',
+              padding: '0.85rem 0.5rem',
+              backgroundColor: 'rgba(32, 20, 13, 0.55)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderRadius: '32px',
+              border: '1.5px solid rgba(185, 205, 148, 0.4)',
+              boxShadow: '0 16px 45px rgba(0, 0, 0, 0.55)',
+              boxSizing: 'border-box',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Top 2 Cards Row (01 & 02) */}
+            <div 
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(2, 1fr)', 
+                gap: '0.55rem',
+                position: 'relative',
+                zIndex: 2
+              }}
+            >
+              <PrincipleCardMobile principle={principles[0]} isMobile={isMobile} />
+              <PrincipleCardMobile principle={principles[1]} isMobile={isMobile} />
+            </div>
+
+            {/* Central Overlapping Circular MILASTY 4 PILLARS Emblem Node */}
+            <div 
+              style={{ 
+                position: 'relative', 
+                height: '70px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                margin: '-1rem 0 -0.85rem',
+                zIndex: 10
+              }}
+            >
+              <div 
+                style={{ 
+                  width: '148px',
+                  height: '148px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(24, 13, 7, 0.95)',
+                  border: '2px solid var(--accent-gold)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.7), 0 0 16px rgba(185, 205, 148, 0.3)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0.65rem',
+                  boxSizing: 'border-box',
+                  textAlign: 'center',
+                  transform: 'scale(0.82)'
+                }}
+              >
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.2rem' }}>
+                  <Leaf size={14} color="var(--accent-gold)" />
+                </div>
+                <span style={{ fontSize: '0.65rem', letterSpacing: '0.14em', fontWeight: '900', color: 'var(--accent-gold)', textTransform: 'uppercase', lineHeight: 1 }}>
+                  MILASTY
+                </span>
+                <span style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: '#FFFDF9', margin: '0.1rem 0 0.2rem', lineHeight: 1 }}>
+                  4 PILLARS
+                </span>
+                <div style={{ width: '25px', height: '1.5px', backgroundColor: 'rgba(185, 205, 148, 0.6)', margin: '0.15rem auto' }} />
+                <span style={{ fontSize: '0.52rem', color: '#F5EBDD', lineHeight: 1.1, fontStyle: 'italic' }}>
+                  The four pillars we <span style={{ color: 'var(--accent-gold)', fontWeight: '700' }}>never</span> compromise on.
+                </span>
+              </div>
+            </div>
+
+            {/* Bottom 2 Cards Row (03 & 04) */}
+            <div 
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(2, 1fr)', 
+                gap: '0.55rem',
+                position: 'relative',
+                zIndex: 2,
+                marginBottom: '0.75rem'
+              }}
+            >
+              <PrincipleCardMobile principle={principles[2]} isMobile={isMobile} />
+              <PrincipleCardMobile principle={principles[3]} isMobile={isMobile} />
+            </div>
+
+            {/* INTEGRATED CONNECTED BOTTOM TRUST ROW */}
+            <div 
+              style={{ 
+                paddingTop: '0.65rem', 
+                borderTop: '1.5px dashed rgba(185, 205, 148, 0.45)',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '0.4rem',
+                alignItems: 'center',
+                boxSizing: 'border-box',
+                width: '100%'
+              }}
+            >
+              {[
+                { label: 'Honest Ingredients', icon: Leaf },
+                { label: 'Pure Baking', icon: Flame },
+                { label: 'Real Nourishment', icon: Sparkles },
+                { label: 'Nothing Unnecessary', icon: ShieldCheck }
+              ].map((item, idx) => {
+                const IconComp = item.icon;
+                return (
+                  <div 
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      backgroundColor: 'rgba(18, 9, 4, 0.75)',
+                      padding: '0.4rem 0.5rem',
+                      borderRadius: '999px',
+                      border: '1px solid rgba(185, 205, 148, 0.35)',
+                      boxSizing: 'border-box',
+                      minWidth: 0,
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <div style={{ width: '18px', height: '18px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <IconComp size={10} color="var(--accent-gold)" />
+                    </div>
+                    <span 
+                      style={{ 
+                        fontSize: '0.62rem', 
+                        fontWeight: '800', 
+                        color: '#FFFDF9', 
+                        letterSpacing: '0.01em', 
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+        )}
+
+        {/* DESKTOP BOTTOM TRUST / VALUE STRIP */}
+        {!isMobile && !isTablet && (
+          <div 
+            style={{ 
+              marginTop: '4rem', 
+              paddingTop: '2rem', 
+              borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-around',
+              maxWidth: '1000px',
+              margin: '4rem auto 0'
+            }}
+          >
+            {[
+              { label: 'Honest Ingredients', icon: Leaf },
+              { label: 'Pure Baking', icon: Flame },
+              { label: 'Real Nourishment', icon: Sparkles },
+              { label: 'Nothing Unnecessary', icon: ShieldCheck }
+            ].map((item, idx) => {
+              const IconComp = item.icon;
+              return (
+                <div 
+                  key={idx}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.65rem',
+                    backgroundColor: 'rgba(35, 21, 13, 0.55)',
+                    padding: '0.85rem 1.25rem',
+                    borderRadius: '999px',
+                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <IconComp size={15} color="var(--accent-gold)" />
+                  </div>
+                  <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#FFFDF9', letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
+                    {item.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+      </div>
+    </section>
+  );
+}
+
+// Subcomponent: Desktop Floating Principle Card
+function PrincipleCardDesktop({ principle }) {
+  const Icon = principle.icon;
+  const [hovered, setHovered] = React.useState(false);
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        borderRadius: '24px',
+        backgroundColor: 'rgba(35, 21, 13, 0.78)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: hovered ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: hovered ? '0 16px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(185, 205, 148, 0.2)' : '0 10px 30px rgba(0,0,0,0.35)',
+        transform: hovered ? 'translateY(-6px)' : 'translateY(0)',
+        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+        overflow: 'hidden',
+        boxSizing: 'border-box',
+        height: '210px'
+      }}
+    >
+      {/* Integrated Ingredient Image */}
+      <div 
+        style={{ 
+          width: '145px', 
+          height: '100%', 
+          position: 'relative', 
+          overflow: 'hidden',
+          flexShrink: 0 
+        }}
+      >
+        <img
+          src={principle.image}
+          alt={principle.title}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transform: hovered ? 'scale(1.08)' : 'scale(1)',
+            transition: 'transform 0.5s ease'
+          }}
+        />
+        {/* Subtle overlay gradient */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.1), rgba(35, 21, 13, 0.8))' }} />
+        
+        {/* Circular Floating Badge Icon */}
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: '12px', 
+            left: '12px', 
+            width: '34px', 
+            height: '34px', 
+            borderRadius: '50%', 
+            backgroundColor: '#244f21', 
+            border: '1px solid #b9cd94', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.4)'
+          }}
+        >
+          <Icon size={17} color="var(--accent-gold)" />
+        </div>
+      </div>
+
+      {/* Card Details */}
+      <div style={{ padding: '1.25rem 1.25rem 1.25rem 1rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexGrow: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+          <span style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--accent-gold)', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
+            {principle.step}
+          </span>
+          <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', fontWeight: '850', textTransform: 'uppercase', color: '#b9cd94', backgroundColor: 'rgba(36, 79, 33, 0.6)', padding: '0.15rem 0.55rem', borderRadius: '999px', border: '1px solid rgba(185, 205, 148, 0.3)' }}>
+            {principle.badge}
+          </span>
+        </div>
+
+        <h3 style={{ fontSize: '1.15rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.35rem', lineHeight: '1.2' }}>
+          {principle.title}
+        </h3>
+
+        <p style={{ fontSize: '0.82rem', color: '#F5EBDD', lineHeight: '1.5', margin: 0, fontWeight: '500', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          {principle.desc}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Subcomponent: Mobile 2x2 Principle Card
+function PrincipleCardMobile({ principle, isMobile }) {
+  const Icon = principle.icon;
+
+  return (
+    <div
+      style={{
+        borderRadius: '16px',
+        backgroundColor: 'rgba(32, 20, 13, 0.85)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box',
+        height: '100%'
+      }}
+    >
+      {/* Top Image Strip */}
+      <div style={{ height: isMobile ? '68px' : '95px', width: '100%', position: 'relative', overflow: 'hidden' }}>
+        <img
+          src={principle.image}
+          alt={principle.title}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 20%, rgba(32, 20, 13, 0.9))' }} />
+        
+        {/* Step Badge */}
+        <span 
+          style={{ 
+            position: 'absolute', 
+            top: '6px', 
+            left: '6px', 
+            fontSize: isMobile ? '0.85rem' : '1rem', 
+            fontWeight: '900', 
+            color: 'var(--accent-gold)', 
+            fontFamily: 'var(--font-serif)',
+            backgroundColor: 'rgba(18, 9, 4, 0.85)',
+            padding: '0.08rem 0.4rem',
+            borderRadius: '6px',
+            border: '1px solid rgba(185, 205, 148, 0.35)'
+          }}
+        >
+          {principle.step}
+        </span>
+
+        {/* Floating Icon */}
+        <div 
+          style={{ 
+            position: 'absolute', 
+            bottom: '5px', 
+            right: '6px', 
+            width: '24px', 
+            height: '24px', 
+            borderRadius: '50%', 
+            backgroundColor: '#244f21', 
+            border: '1px solid #b9cd94', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.5)'
+          }}
+        >
+          <Icon size={12} color="var(--accent-gold)" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: isMobile ? '0.55rem 0.55rem 0.65rem' : '0.85rem 0.75rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+        <span style={{ fontSize: '0.54rem', letterSpacing: '0.06em', fontWeight: '850', color: '#b9cd94', textTransform: 'uppercase', marginBottom: '0.15rem' }}>
+          {principle.badge}
+        </span>
+
+        <h3 style={{ fontSize: isMobile ? '0.95rem' : '1.1rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.25rem', lineHeight: '1.15' }}>
+          {principle.title}
+        </h3>
+
+        <p style={{ fontSize: isMobile ? '0.72rem' : '0.8rem', color: '#F5EBDD', lineHeight: '1.4', margin: 0, fontWeight: '500', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          {principle.desc}
+        </p>
+      </div>
     </div>
   );
 }
