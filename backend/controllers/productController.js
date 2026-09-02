@@ -57,8 +57,8 @@ export const getProducts = async (req, res) => {
           subtitle: p.subtitle,
           description: p.description,
           category: p.category,
-          price: Number(p.price || variants[0]?.price || 139),
-          originalPrice: Number(p.original_price || variants[0]?.originalPrice || 160),
+          price: Number(variants[0]?.price || p.price || 0),
+          originalPrice: Number(variants[0]?.originalPrice || p.original_price || variants[0]?.price || p.price || 0),
           stock: calculatedStock,
           sku: p.sku || 'MLS-PRD',
           status: p.is_active !== false ? 'active' : 'inactive',
@@ -161,8 +161,8 @@ export const getProductBySlugOrId = async (req, res) => {
         subtitle: p.subtitle,
         description: p.description,
         category: p.category,
-        price: Number(p.price || variants[0]?.price || 139),
-        originalPrice: Number(p.original_price || variants[0]?.originalPrice || 160),
+        price: Number(variants[0]?.price || p.price || 0),
+        originalPrice: Number(variants[0]?.originalPrice || p.original_price || variants[0]?.price || p.price || 0),
         stock: calculatedStock,
         sku: p.sku || 'MLS-PRD',
         status: p.is_active !== false ? 'active' : 'inactive',
@@ -290,6 +290,18 @@ export const createProduct = async (req, res) => {
       if (vData) insertedVariants = vData;
     }
 
+    const totalStock = insertedVariants.length > 0 
+      ? insertedVariants.reduce((acc, v) => acc + (Number(v.stock) || 0), 0)
+      : (stock !== undefined && stock !== null && stock !== '' ? Number(stock) : 100);
+
+    const basePrice = insertedVariants.length > 0
+      ? Number(insertedVariants[0].price)
+      : (req.body.price !== undefined && req.body.price !== '' ? Number(req.body.price) : 0);
+
+    const baseOriginalPrice = insertedVariants.length > 0
+      ? Number(insertedVariants[0].original_price)
+      : (req.body.originalPrice !== undefined && req.body.originalPrice !== '' ? Number(req.body.originalPrice) : basePrice);
+
     const formattedProduct = {
       _id: product.id,
       id: product.id,
@@ -298,10 +310,10 @@ export const createProduct = async (req, res) => {
       subtitle: product.subtitle,
       description: product.description,
       category: product.category,
-      price: Number(insertedVariants[0]?.price || 0),
-      originalPrice: Number(insertedVariants[0]?.original_price || 0),
-      stock: product.stock,
-      sku: product.sku,
+      price: basePrice,
+      originalPrice: baseOriginalPrice,
+      stock: totalStock,
+      sku: product.sku || 'MLS-PRD',
       status: product.is_active !== false ? 'active' : 'inactive',
       image: product.image_url,
       secondaryImage: product.secondary_image_url || product.image_url,
