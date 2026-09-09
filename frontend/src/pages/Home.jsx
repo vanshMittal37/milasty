@@ -504,7 +504,7 @@ export default function Home() {
                 maxWidth: '850px'
               }}
             >
-              {homeCms.heroTitle || "Ancient Grains. Modern Cravings."}
+              Ancient Grains. Modern Cravings.
             </h1>
 
             <p
@@ -519,7 +519,7 @@ export default function Home() {
                 fontWeight: '500'
               }}
             >
-              {homeCms.heroSubtitle || "Delicious cookies, crackers & brownies made with millets, jaggery & desi ghee — crafted for the way you snack today."}
+             Delicious cookies, crackers & brownies made with millets, jaggery & desi ghee — crafted for the way you snack today.
             </p>
 
             <div className="hero-buttons" style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
