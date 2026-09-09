@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShieldCheck, MapPin, Phone, MessageSquare, Heart } from 'lucide-react';
+import { ShieldCheck, MapPin, Phone, MessageSquare, Heart, Instagram, Facebook, Youtube, Linkedin } from 'lucide-react';
 import Logo from './Logo';
 
 export default function Footer() {
@@ -112,7 +112,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Column 4: Contact & FSSAI */}
+          {/* Column 4: Contact & FSSAI & Social Links */}
           <div>
             <h4 style={{ color: 'var(--bg-main)', marginBottom: '1.25rem', fontSize: '1rem', fontWeight: '600' }}>Trust & Connect</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.88rem', color: 'rgba(252, 250, 246, 0.75)' }}>
@@ -127,6 +127,25 @@ export default function Footer() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <MessageSquare size={18} color="var(--accent-gold)" />
                 <span>WhatsApp Desk: +91 89271 42056</span>
+              </div>
+              
+              {/* Social Media Links */}
+              <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', fontWeight: '700', display: 'block', marginBottom: '0.6rem' }}>Follow Our Journey</span>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                  <a href="https://instagram.com/milasty" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: 'rgba(252, 250, 246, 0.85)', backgroundColor: 'rgba(255,255,255,0.08)', padding: '0.45rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease', border: '1px solid rgba(255,255,255,0.15)' }} onMouseOver={(e) => { e.currentTarget.style.color = '#c89b3c'; e.currentTarget.style.borderColor = '#c89b3c'; }} onMouseOut={(e) => { e.currentTarget.style.color = 'rgba(252, 250, 246, 0.85)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}>
+                    <Instagram size={17} />
+                  </a>
+                  <a href="https://facebook.com/milasty" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: 'rgba(252, 250, 246, 0.85)', backgroundColor: 'rgba(255,255,255,0.08)', padding: '0.45rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease', border: '1px solid rgba(255,255,255,0.15)' }} onMouseOver={(e) => { e.currentTarget.style.color = '#c89b3c'; e.currentTarget.style.borderColor = '#c89b3c'; }} onMouseOut={(e) => { e.currentTarget.style.color = 'rgba(252, 250, 246, 0.85)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}>
+                    <Facebook size={17} />
+                  </a>
+                  <a href="https://youtube.com/@milasty" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style={{ color: 'rgba(252, 250, 246, 0.85)', backgroundColor: 'rgba(255,255,255,0.08)', padding: '0.45rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease', border: '1px solid rgba(255,255,255,0.15)' }} onMouseOver={(e) => { e.currentTarget.style.color = '#c89b3c'; e.currentTarget.style.borderColor = '#c89b3c'; }} onMouseOut={(e) => { e.currentTarget.style.color = 'rgba(252, 250, 246, 0.85)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}>
+                    <Youtube size={17} />
+                  </a>
+                  <a href="https://linkedin.com/company/milasty" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{ color: 'rgba(252, 250, 246, 0.85)', backgroundColor: 'rgba(255,255,255,0.08)', padding: '0.45rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease', border: '1px solid rgba(255,255,255,0.15)' }} onMouseOver={(e) => { e.currentTarget.style.color = '#c89b3c'; e.currentTarget.style.borderColor = '#c89b3c'; }} onMouseOut={(e) => { e.currentTarget.style.color = 'rgba(252, 250, 246, 0.85)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}>
+                    <Linkedin size={17} />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
