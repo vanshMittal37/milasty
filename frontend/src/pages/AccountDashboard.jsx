@@ -203,6 +203,12 @@ export default function AccountDashboard() {
   const recentOrders = orders.slice(0, 3);
   const recommendedProducts = initialProducts.slice(0, 3);
 
+  const handleLogout = () => {
+    logout();
+    toast.success('Successfully logged out.');
+    navigate('/', { replace: true });
+  };
+
   return (
     <div className="account-dashboard-page" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '2.5rem 0 6.5rem' }}>
       <div className="container" style={{ maxWidth: '1150px' }}>
@@ -296,7 +302,7 @@ export default function AccountDashboard() {
               <span>Change Password</span>
             </button>
             <button 
-              onClick={logout} 
+              onClick={handleLogout} 
               className="btn-secondary" 
               style={{ padding: '0.7rem 1.25rem', fontSize: '0.8rem', fontWeight: '800', borderRadius: '10px', borderColor: 'rgba(217, 83, 79, 0.2)', color: 'var(--accent-terracotta)', backgroundColor: 'rgba(217, 83, 79, 0.05)' }}
             >

@@ -672,6 +672,7 @@ export default function Navbar() {
           logout();
           setShowLogoutModal(false);
           toast.success('Logged out successfully.');
+          navigate('/', { replace: true });
         }}
         onCancel={() => setShowLogoutModal(false)}
       />
