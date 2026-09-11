@@ -61,65 +61,110 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // 4. Create or synchronize user in Supabase Auth
-    let userId = existingDbUser?.id || existingAuthUser?.id || null;
+    let newUser = null;
 
-    if (!existingAuthUser) {
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: cleanEmail,
-        password: password,
-        email_confirm: true,
-        user_metadata: { name: name.trim(), phone: phone ? phone.trim() : '', role },
-      });
+    // 4. Case A: User already exists in public.users (e.g. from orders/legacy records)
+    if (existingDbUser) {
+      const targetId = existingDbUser.id;
 
-      if (authData?.user?.id) {
-        userId = authData.user.id;
-      } else if (authError) {
-        console.error('Supabase Auth createUser error:', authError);
-        // If Auth fails because email exists in Auth engine
-        if (authError.message?.toLowerCase().includes('already') || authError.status === 422) {
-          return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
+      // Sync/Create Supabase Auth session if not already existing
+      if (!existingAuthUser) {
+        try {
+          await supabase.auth.admin.createUser({
+            email: cleanEmail,
+            password: password,
+            email_confirm: true,
+            user_metadata: { name: name.trim(), phone: phone ? phone.trim() : '', role },
+          });
+        } catch (authErr) {
+          console.warn('Supabase Auth sync error for existing DB user:', authErr.message);
         }
-        return res.status(500).json({
-          message: `Authentication engine error: ${authError.message || 'Failed to create user session'}`,
-        });
+      } else {
+        try {
+          await supabase.auth.admin.updateUserById(existingAuthUser.id, { password: password });
+        } catch (uErr) {
+          console.warn('Update Auth user password error:', uErr.message);
+        }
       }
-    } else {
-      // User existed in Supabase Auth but not DB - update Auth password
-      userId = existingAuthUser.id;
-      try {
-        await supabase.auth.admin.updateUserById(userId, { password: password });
-      } catch (uErr) {
-        console.warn('Update existing Auth user password warning:', uErr.message);
-      }
-    }
 
-    if (!userId) {
-      userId = 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-    }
-
-    // 5. Upsert user record in Supabase PostgreSQL 'users' table
-    const { data: newUser, error: dbError } = await supabase
-      .from('users')
-      .upsert([
-        {
-          id: userId,
+      // Update existing record WITHOUT mutating the 'id' column to prevent foreign key errors
+      const { data: updatedDbUser, error: updateErr } = await supabase
+        .from('users')
+        .update({
           name: name.trim(),
-          email: cleanEmail,
           password_hash: passwordHash,
           phone: phone ? phone.trim() : '',
           role,
           updated_at: new Date(),
-        },
-      ], { onConflict: 'email' })
-      .select('id, name, email, phone, role, addresses')
-      .single();
+        })
+        .eq('id', targetId)
+        .select('id, name, email, phone, role, addresses')
+        .single();
 
-    if (dbError) {
-      console.error('Supabase PostgreSQL upsert error:', dbError);
-      return res.status(500).json({
-        message: `Database error during registration: ${dbError.message || 'Failed to save profile'}`,
-      });
+      if (updateErr) {
+        console.error('Supabase DB update error:', updateErr);
+        return res.status(500).json({ message: `Database error updating profile: ${updateErr.message}` });
+      }
+
+      newUser = updatedDbUser;
+    } else {
+      // 5. Case B: Truly NEW user
+      let newAuthId = null;
+
+      if (!existingAuthUser) {
+        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+          email: cleanEmail,
+          password: password,
+          email_confirm: true,
+          user_metadata: { name: name.trim(), phone: phone ? phone.trim() : '', role },
+        });
+
+        if (authData?.user?.id) {
+          newAuthId = authData.user.id;
+        } else if (authError) {
+          console.error('Supabase Auth createUser error:', authError);
+          if (authError.message?.toLowerCase().includes('already') || authError.status === 422) {
+            return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
+          }
+          return res.status(500).json({ message: `Authentication error: ${authError.message}` });
+        }
+      } else {
+        newAuthId = existingAuthUser.id;
+        try {
+          await supabase.auth.admin.updateUserById(newAuthId, { password: password });
+        } catch (uErr) {
+          console.warn('Update Auth password error:', uErr.message);
+        }
+      }
+
+      if (!newAuthId) {
+        newAuthId = 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      }
+
+      // Insert new record into public.users
+      const { data: createdDbUser, error: insertErr } = await supabase
+        .from('users')
+        .insert([
+          {
+            id: newAuthId,
+            name: name.trim(),
+            email: cleanEmail,
+            password_hash: passwordHash,
+            phone: phone ? phone.trim() : '',
+            role,
+            created_at: new Date(),
+            updated_at: new Date(),
+          },
+        ])
+        .select('id, name, email, phone, role, addresses')
+        .single();
+
+      if (insertErr) {
+        console.error('Supabase PostgreSQL insert error:', insertErr);
+        return res.status(500).json({ message: `Database error creating user: ${insertErr.message}` });
+      }
+
+      newUser = createdDbUser;
     }
 
     // Issue JWT session token
