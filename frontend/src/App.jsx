@@ -27,6 +27,7 @@ import OrderSuccessPage from './pages/OrderSuccessPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import AccountDashboard from './pages/AccountDashboard';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import CustomerOrderDetailPage from './pages/CustomerOrderDetailPage';
@@ -146,6 +147,7 @@ function MainLayout() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/account" element={<AccountDashboard />} />
           <Route path="/account/orders" element={<OrderHistoryPage />} />
           <Route path="/account/orders/:id" element={<CustomerOrderDetailPage />} />

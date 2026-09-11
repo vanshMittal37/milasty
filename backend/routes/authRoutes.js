@@ -6,6 +6,7 @@ import {
   addAddress,
   deleteAddress,
   forgotPassword,
+  resetPassword,
   updateProfile,
   updateAddress,
 } from '../controllers/authController.js';
@@ -19,7 +20,9 @@ router.get('/me', protect, getMe);
 router.post('/address', protect, addAddress);
 router.delete('/address/:addressId', protect, deleteAddress);
 router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 router.put('/profile', protect, updateProfile);
 router.put('/address/:addressId', protect, updateAddress);
 
 export default router;
+

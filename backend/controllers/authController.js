@@ -324,8 +324,122 @@ export const updateProfile = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    res.json({ message: 'Password reset link sent to registered email if account exists.' });
+
+    if (!email) {
+      return res.status(400).json({ message: 'Please enter your email address' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return res.status(400).json({ message: 'Please enter a valid email address' });
+    }
+
+    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
+
+    // Request password reset email from Supabase Auth
+    try {
+      await supabase.auth.resetPasswordForEmail(cleanEmail, {
+        redirectTo: `${frontendUrl}/reset-password`,
+      });
+    } catch (sErr) {
+      console.error('Supabase resetPasswordForEmail warning:', sErr.message);
+    }
+
+    // Security: Generic message to prevent account enumeration
+    res.json({
+      message: "If an account exists for this email, you'll receive a password reset link shortly.",
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error processing forgot password', error: error.message });
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Error processing password reset request', error: error.message });
   }
 };
+
+// Reset Password
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, password, token, access_token } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ message: 'Please enter a new password' });
+    }
+
+    // Validate password requirements
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.',
+      });
+    }
+
+    let targetUserId = null;
+    let cleanEmail = email ? email.toLowerCase().trim() : null;
+
+    // 1. If email is provided, lookup user in Supabase PostgreSQL 'users' table
+    if (cleanEmail) {
+      const { data: dbUser } = await supabase
+        .from('users')
+        .select('id, email')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+
+      if (dbUser) {
+        targetUserId = dbUser.id;
+      }
+    }
+
+    // 2. If targetUserId still unknown, try listing/retrieving user from Supabase Auth
+    if (!targetUserId && access_token) {
+      const { data: userData } = await supabase.auth.getUser(access_token);
+      if (userData?.user?.id) {
+        targetUserId = userData.user.id;
+        cleanEmail = userData.user.email;
+      }
+    }
+
+    // 3. Fallback: Search Supabase Auth by email if email provided
+    if (!targetUserId && cleanEmail) {
+      const { data: usersList } = await supabase.auth.admin.listUsers();
+      const authUser = usersList?.users?.find((u) => u.email === cleanEmail);
+      if (authUser) {
+        targetUserId = authUser.id;
+      }
+    }
+
+    if (!targetUserId && !cleanEmail) {
+      return res.status(400).json({ message: 'Unable to identify user for password reset. Please request a new link.' });
+    }
+
+    // 4. Update password in Supabase Auth
+    if (targetUserId) {
+      try {
+        await supabase.auth.admin.updateUserById(targetUserId, { password });
+      } catch (authErr) {
+        console.warn('Supabase Auth admin updateUserById warning:', authErr.message);
+      }
+    }
+
+    // 5. Update bcrypt password_hash in Supabase PostgreSQL 'users' table
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    if (targetUserId) {
+      await supabase
+        .from('users')
+        .update({ password_hash: passwordHash, updated_at: new Date() })
+        .eq('id', targetUserId);
+    } else if (cleanEmail) {
+      await supabase
+        .from('users')
+        .update({ password_hash: passwordHash, updated_at: new Date() })
+        .eq('email', cleanEmail);
+    }
+
+    res.json({ message: 'Password updated successfully. You can now log in with your new password.' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: 'Error resetting password', error: error.message });
+  }
+};
+
