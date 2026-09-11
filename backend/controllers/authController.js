@@ -502,23 +502,36 @@ export const forgotPassword = async (req, res) => {
       }
     }
 
-    // 2. Request password reset email from Supabase Auth
+    // 2. Generate direct recovery link using Supabase Admin API
+    let recoveryUrl = null;
+    try {
+      const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+        type: 'recovery',
+        email: cleanEmail,
+        options: {
+          redirectTo: `${frontendUrl}/reset-password`,
+        },
+      });
+      if (!linkErr && linkData?.properties?.action_link) {
+        recoveryUrl = linkData.properties.action_link;
+        console.log(`[PASSWORD RESET RECOVERY LINK FOR ${cleanEmail}]:`, recoveryUrl);
+      }
+    } catch (gErr) {
+      console.warn('generateLink warning:', gErr.message);
+    }
+
+    // 3. Request password reset email from Supabase Auth built-in email provider
     const { error: resetErr } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
       redirectTo: `${frontendUrl}/reset-password`,
     });
 
     if (resetErr) {
       console.warn('Supabase resetPasswordForEmail warning:', resetErr.message);
-      if (resetErr.message?.toLowerCase().includes('rate limit') || resetErr.status === 429) {
-        return res.status(429).json({
-          message: 'Security rate limit: Please wait 60 seconds before requesting another password reset email.',
-        });
-      }
     }
 
-    // Security: Generic message to prevent account enumeration
     res.json({
       message: "If an account exists for this email, you'll receive a password reset link shortly. Please check your Inbox and Spam folder.",
+      resetUrl: recoveryUrl || undefined,
     });
   } catch (error) {
     console.error('Forgot password error:', error);
