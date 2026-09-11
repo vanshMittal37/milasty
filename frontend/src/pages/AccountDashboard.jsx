@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   User, Package, Heart, MapPin, Plus, Trash2, LogOut, ShieldCheck, 
-  ShoppingBag, ChevronRight, Edit3, X, Mail, Phone, Calendar, ArrowRight
+  ShoppingBag, ChevronRight, Edit3, X, Mail, Phone, Calendar, ArrowRight, Lock
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
