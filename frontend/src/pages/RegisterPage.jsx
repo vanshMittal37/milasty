@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, Phone, ArrowRight, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const inputStyle = {
   width: '100%',
@@ -31,6 +32,7 @@ const labelStyle = {
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { toast } = useToast();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -41,17 +43,46 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!name.trim()) {
+      const msg = 'Please enter your full name.';
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+    if (!email.trim()) {
+      const msg = 'Please enter your email address.';
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+    if (password.length < 6) {
+      const msg = 'Password must be at least 6 characters long.';
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
     setLoading(true);
     setError('');
+
     try {
-      await register(name, email, password, phone);
+      await register(name.trim(), email.trim(), password, phone.trim());
+      toast.success('Account created successfully! Welcome to MILASTY.');
       navigate('/account');
     } catch (err) {
-      setError(err.response?.data?.message || 'Error creating account');
+      const status = err.response?.status;
+      const data = err.response?.data;
+      console.error('[Registration Debug]', { status, data, rawError: err });
+
+      const msg = data?.message || 'Error creating account. Please try again.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
+
 
   const focusStyle = (e) => {
     e.target.style.borderColor = '#244f21';

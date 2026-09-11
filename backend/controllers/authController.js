@@ -4,58 +4,101 @@ import { supabase } from '../config/supabase.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'milasty_super_secret_jwt_key_2026';
 
-// Register User with Supabase Auth
+// Register User with Supabase Auth & PostgreSQL users table
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Please provide name, email, and password' });
+    // 1. Input Validation
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Please enter your full name' });
+    }
+    if (!email || !email.trim()) {
+      return res.status(400).json({ message: 'Please enter your email address' });
+    }
+    if (!password) {
+      return res.status(400).json({ message: 'Please enter a password' });
     }
 
     const cleanEmail = email.toLowerCase().trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return res.status(400).json({ message: 'Please enter a valid email address' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+    }
+
     const role = cleanEmail === 'admin@milasty.com' ? 'admin' : 'customer';
 
-    // 1. Check if user already exists in Supabase PostgreSQL 'users' table
-    const { data: existingDbUser } = await supabase
+    // 2. Check if user exists in Supabase PostgreSQL 'users' table AND Supabase Auth
+    const { data: existingDbUser, error: dbCheckErr } = await supabase
       .from('users')
-      .select('id, email')
+      .select('id, email, password_hash')
       .eq('email', cleanEmail)
       .maybeSingle();
 
-    if (existingDbUser) {
-      return res.status(400).json({ message: 'User already exists with this email' });
+    if (dbCheckErr) {
+      console.error('Supabase DB check error:', dbCheckErr);
     }
 
-    // 2. Hash password for secure database storage and authentication
+    // Check Supabase Auth engine for existing user
+    let existingAuthUser = null;
+    try {
+      const { data: usersList } = await supabase.auth.admin.listUsers();
+      existingAuthUser = usersList?.users?.find((u) => u.email === cleanEmail);
+    } catch (aCheckErr) {
+      console.warn('Supabase Auth listUsers warning:', aCheckErr.message);
+    }
+
+    // If registered in BOTH DB and Supabase Auth, return duplicate email error
+    if (existingDbUser && existingAuthUser) {
+      return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
+    }
+
+    // 3. Hash password for secure database storage
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // 3. Create or fetch user in Supabase Auth (Dashboard -> Authentication -> Users)
-    let userId = null;
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: cleanEmail,
-      password: password,
-      email_confirm: true,
-      user_metadata: { name, phone, role },
-    });
+    // 4. Create or synchronize user in Supabase Auth
+    let userId = existingDbUser?.id || existingAuthUser?.id || null;
 
-    if (authData?.user?.id) {
-      userId = authData.user.id;
-    } else if (authError) {
-      // If already registered in Supabase Auth engine, retrieve Auth User ID or generate fallback
-      const { data: existingUsers } = await supabase.auth.admin.listUsers();
-      const existingAuth = existingUsers?.users?.find((u) => u.email === cleanEmail);
-      if (existingAuth) {
-        userId = existingAuth.id;
-        // Keep Supabase Auth password updated
+    if (!existingAuthUser) {
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: cleanEmail,
+        password: password,
+        email_confirm: true,
+        user_metadata: { name: name.trim(), phone: phone ? phone.trim() : '', role },
+      });
+
+      if (authData?.user?.id) {
+        userId = authData.user.id;
+      } else if (authError) {
+        console.error('Supabase Auth createUser error:', authError);
+        // If Auth fails because email exists in Auth engine
+        if (authError.message?.toLowerCase().includes('already') || authError.status === 422) {
+          return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
+        }
+        return res.status(500).json({
+          message: `Authentication engine error: ${authError.message || 'Failed to create user session'}`,
+        });
+      }
+    } else {
+      // User existed in Supabase Auth but not DB - update Auth password
+      userId = existingAuthUser.id;
+      try {
         await supabase.auth.admin.updateUserById(userId, { password: password });
-      } else {
-        userId = 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      } catch (uErr) {
+        console.warn('Update existing Auth user password warning:', uErr.message);
       }
     }
 
-    // 4. Insert user record into Supabase PostgreSQL 'users' table
+    if (!userId) {
+      userId = 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+    }
+
+    // 5. Upsert user record in Supabase PostgreSQL 'users' table
     const { data: newUser, error: dbError } = await supabase
       .from('users')
       .upsert([
@@ -72,7 +115,12 @@ export const registerUser = async (req, res) => {
       .select('id, name, email, phone, role, addresses')
       .single();
 
-    if (dbError) throw dbError;
+    if (dbError) {
+      console.error('Supabase PostgreSQL upsert error:', dbError);
+      return res.status(500).json({
+        message: `Database error during registration: ${dbError.message || 'Failed to save profile'}`,
+      });
+    }
 
     // Issue JWT session token
     const token = jwt.sign({ id: newUser.id, role: newUser.role }, JWT_SECRET, { expiresIn: '30d' });
@@ -88,9 +136,11 @@ export const registerUser = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.error('Registration server error:', error);
     res.status(500).json({ message: 'Error registering user', error: error.message });
   }
 };
+
 
 // Login User & Admin with Supabase Auth
 export const loginUser = async (req, res) => {
