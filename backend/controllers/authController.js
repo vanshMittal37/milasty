@@ -52,11 +52,6 @@ export const registerUser = async (req, res) => {
       console.warn('Supabase Auth listUsers warning:', aCheckErr.message);
     }
 
-    // If registered in BOTH DB and Supabase Auth, return duplicate email error
-    if (existingDbUser && existingAuthUser) {
-      return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
-    }
-
     // 3. Hash password for secure database storage
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
@@ -123,10 +118,14 @@ export const registerUser = async (req, res) => {
           newAuthId = authData.user.id;
         } else if (authError) {
           console.error('Supabase Auth createUser error:', authError);
-          if (authError.message?.toLowerCase().includes('already') || authError.status === 422) {
+          const isDuplicate = authError.message?.toLowerCase().includes('already registered') || 
+                              authError.message?.toLowerCase().includes('already exists') || 
+                              authError.message?.toLowerCase().includes('user_already_exists');
+          
+          if (isDuplicate) {
             return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
           }
-          return res.status(500).json({ message: `Authentication error: ${authError.message}` });
+          return res.status(400).json({ message: `Authentication error: ${authError.message}` });
         }
       } else {
         newAuthId = existingAuthUser.id;
