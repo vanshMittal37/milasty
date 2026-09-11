@@ -518,7 +518,7 @@ export const forgotPassword = async (req, res) => {
       });
       if (!linkErr && linkData?.properties?.action_link) {
         recoveryUrl = linkData.properties.action_link;
-        console.log(`[FORGOT PASSWORD] Recovery link generated for ${cleanEmail}: ${recoveryUrl}`);
+        console.log(`[FORGOT PASSWORD] Recovery link generated OK for ${cleanEmail}`);
       } else if (linkErr) {
         console.error('[FORGOT PASSWORD] generateLink error:', linkErr.message);
       }
@@ -526,12 +526,32 @@ export const forgotPassword = async (req, res) => {
       console.warn('[FORGOT PASSWORD] generateLink exception:', gErr.message);
     }
 
-    // 3. Send email via Resend API (works for ANY recipient email, unlike onboarding@resend.dev sandbox)
+    // 3. Build HTML email body
+    const emailHtml = `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 32px 24px; background-color: #FAF7F2; color: #24130D; max-width: 520px; margin: 0 auto; border-radius: 18px; border: 1px solid #E8DCCB;">
+        <div style="text-align:center; margin-bottom: 20px;">
+          <span style="font-size: 1.5rem; font-weight: 800; letter-spacing: 0.08em; color: #24130D;">MILASTY</span>
+        </div>
+        <h2 style="color: #244f21; font-size: 1.3rem; margin-bottom: 12px;">Password Reset Request</h2>
+        <p style="margin: 0 0 12px; line-height: 1.6;">Hello,</p>
+        <p style="margin: 0 0 20px; line-height: 1.6;">We received a request to reset the password for your MILASTY account associated with <strong>${cleanEmail}</strong>.</p>
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="${recoveryUrl || '#'}" style="background-color: #244f21; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 1rem; display: inline-block; letter-spacing: 0.02em;">
+            Reset My Password
+          </a>
+        </div>
+        <p style="font-size: 0.82rem; color: #7A5535; line-height: 1.5; margin: 0 0 8px;">This link will expire in <strong>1 hour</strong>. If you did not request a password reset, please ignore this email — your account is safe.</p>
+        <hr style="border: none; border-top: 1px solid #E8DCCB; margin: 20px 0;" />
+        <p style="font-size: 0.75rem; color: #A08060; text-align: center; margin: 0;">© ${new Date().getFullYear()} MILASTY. All rights reserved.</p>
+      </div>
+    `;
+
     let emailSent = false;
     let emailError = null;
 
+    // 4a. PRIMARY: Send via Resend API (works for any email if you have a verified domain)
     if (process.env.RESEND_API_KEY && recoveryUrl) {
-      console.log(`[FORGOT PASSWORD] Attempting Resend API email to: ${cleanEmail}`);
+      console.log(`[FORGOT PASSWORD] Trying Resend API for: ${cleanEmail}`);
       try {
         const resendResp = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -543,47 +563,59 @@ export const forgotPassword = async (req, res) => {
             from: process.env.EMAIL_FROM || 'MILASTY <onboarding@resend.dev>',
             to: [cleanEmail],
             subject: 'Reset your MILASTY Account Password',
-            html: `
-              <div style="font-family: 'Segoe UI', sans-serif; padding: 32px 24px; background-color: #FAF7F2; color: #24130D; max-width: 520px; margin: 0 auto; border-radius: 18px; border: 1px solid #E8DCCB;">
-                <div style="text-align:center; margin-bottom: 20px;">
-                  <span style="font-size: 1.5rem; font-weight: 800; letter-spacing: 0.08em; color: #24130D;">MILASTY</span>
-                </div>
-                <h2 style="color: #244f21; font-size: 1.3rem; margin-bottom: 12px;">Password Reset Request</h2>
-                <p style="margin: 0 0 12px; line-height: 1.6;">Hello,</p>
-                <p style="margin: 0 0 20px; line-height: 1.6;">We received a request to reset the password for your MILASTY account associated with <strong>${cleanEmail}</strong>.</p>
-                <div style="text-align: center; margin: 28px 0;">
-                  <a href="${recoveryUrl}" style="background-color: #244f21; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 1rem; display: inline-block; letter-spacing: 0.02em;">
-                    Reset My Password
-                  </a>
-                </div>
-                <p style="font-size: 0.82rem; color: #7A5535; line-height: 1.5; margin: 0 0 8px;">This link will expire in <strong>1 hour</strong>. If you did not request a password reset, please ignore this email — your account is safe.</p>
-                <hr style="border: none; border-top: 1px solid #E8DCCB; margin: 20px 0;" />
-                <p style="font-size: 0.75rem; color: #A08060; text-align: center; margin: 0;">© ${new Date().getFullYear()} MILASTY. All rights reserved.</p>
-              </div>
-            `,
+            html: emailHtml,
           }),
         });
-
         const resendData = await resendResp.json();
         console.log(`[RESEND API] Status: ${resendResp.status}`, JSON.stringify(resendData));
 
         if (resendResp.status === 200 || resendResp.status === 201) {
           emailSent = true;
-          console.log(`[FORGOT PASSWORD] Email sent successfully via Resend to: ${cleanEmail}`);
+          console.log(`[FORGOT PASSWORD] ✅ Resend sent successfully to: ${cleanEmail}`);
         } else {
           emailError = resendData;
-          console.error(`[FORGOT PASSWORD] Resend API returned error:`, resendData);
+          console.warn(`[FORGOT PASSWORD] ⚠️ Resend failed (status ${resendResp.status}):`, resendData);
         }
       } catch (rErr) {
         emailError = rErr.message;
-        console.error('[FORGOT PASSWORD] Resend fetch exception:', rErr.message);
+        console.warn('[FORGOT PASSWORD] Resend exception:', rErr.message);
       }
-    } else {
-      if (!process.env.RESEND_API_KEY) {
-        console.error('[FORGOT PASSWORD] RESEND_API_KEY is NOT set in environment variables!');
+    }
+
+    // 4b. FALLBACK: Send via Gmail SMTP using nodemailer (works for ANY recipient email worldwide)
+    if (!emailSent && process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD && recoveryUrl) {
+      console.log(`[FORGOT PASSWORD] Trying Gmail SMTP for: ${cleanEmail}`);
+      try {
+        const nodemailer = await import('nodemailer');
+        const transporter = nodemailer.default.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_APP_PASSWORD,
+          },
+        });
+
+        const info = await transporter.sendMail({
+          from: `"MILASTY" <${process.env.GMAIL_USER}>`,
+          to: cleanEmail,
+          subject: 'Reset your MILASTY Account Password',
+          html: emailHtml,
+        });
+
+        console.log(`[FORGOT PASSWORD] ✅ Gmail SMTP sent to: ${cleanEmail}, messageId: ${info.messageId}`);
+        emailSent = true;
+      } catch (gErr) {
+        emailError = gErr.message;
+        console.error('[FORGOT PASSWORD] ❌ Gmail SMTP failed:', gErr.message);
+      }
+    }
+
+    if (!emailSent) {
+      if (!process.env.RESEND_API_KEY && !process.env.GMAIL_USER) {
+        console.error('[FORGOT PASSWORD] ❌ No email provider configured! Set RESEND_API_KEY or GMAIL_USER + GMAIL_APP_PASSWORD in env.');
       }
       if (!recoveryUrl) {
-        console.error('[FORGOT PASSWORD] recoveryUrl is null — could not generate Supabase recovery link!');
+        console.error('[FORGOT PASSWORD] ❌ recoveryUrl is null — Supabase generateLink failed!');
       }
     }
 
