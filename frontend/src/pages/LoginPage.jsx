@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lock, Mail, ArrowRight, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 // Shared input style for the warm beige background
 const inputStyle = {
@@ -32,6 +33,7 @@ const labelStyle = {
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -44,13 +46,16 @@ export default function LoginPage() {
     setError('');
     try {
       const user = await login(email, password);
+      toast.success(`Welcome back, ${user.name || 'User'}!`);
       if (user.role === 'admin') {
         navigate('/admin/dashboard');
       } else {
         navigate('/account');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+      const msg = err.response?.data?.message || 'Invalid email or password';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

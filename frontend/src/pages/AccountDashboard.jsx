@@ -17,6 +17,7 @@ export default function AccountDashboard() {
   const { user, isAuthenticated, logout, addAddress, deleteAddress, updateProfile, updateAddress } = useAuth();
   const { wishlistCount } = useWishlist();
   const { totalItemCount, setIsCartOpen, addToCart } = useCart();
+  const { toast } = useToast();
 
   // Local state
   const [orders, setOrders] = useState([]);
@@ -151,7 +152,6 @@ export default function AccountDashboard() {
   };
 
   const [deleteAddrTargetId, setDeleteAddrTargetId] = useState(null);
-  const { toast } = useToast();
 
   const handleSaveAddress = async (e) => {
     e.preventDefault();
