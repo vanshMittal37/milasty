@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Mail, CheckCircle2, ArrowRight, ArrowLeft, RefreshCw, ShieldAlert } from 'lucide-react';
 import api from '../api/axios';
 import { useToast } from '../context/ToastContext';
+import { supabase } from '../config/supabase';
 
 const inputStyle = {
   width: '100%',
@@ -72,10 +73,20 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
+      // Trigger frontend Supabase Auth recovery email directly
+      try {
+        await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+      } catch (sErr) {
+        console.warn('Frontend Supabase resetPasswordForEmail warning:', sErr);
+      }
+
+      // Trigger backend auto-sync & reset request
       const res = await api.post('/auth/forgot-password', { email: email.trim() });
       setSent(true);
       setCooldown(60);
-      toast.success(res.data?.message || 'Password reset link sent securely!');
+      toast.success(res.data?.message || 'Password reset link sent! Check your inbox and spam folder.');
     } catch (err) {
       const msg = err.response?.data?.message || 'Something went wrong. Please try again.';
       setError(msg);

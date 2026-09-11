@@ -479,18 +479,46 @@ export const forgotPassword = async (req, res) => {
 
     const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
 
-    // Request password reset email from Supabase Auth
+    // 1. Check if user exists in PostgreSQL users table or Supabase Auth
+    const { data: dbUser } = await supabase.from('users').select('id, name, phone, role').eq('email', cleanEmail).maybeSingle();
+    let authUser = null;
     try {
-      await supabase.auth.resetPasswordForEmail(cleanEmail, {
-        redirectTo: `${frontendUrl}/reset-password`,
-      });
-    } catch (sErr) {
-      console.error('Supabase resetPasswordForEmail warning:', sErr.message);
+      const { data: usersList } = await supabase.auth.admin.listUsers();
+      authUser = usersList?.users?.find((u) => u.email === cleanEmail);
+    } catch (lErr) {}
+
+    // If user exists in DB but not in Supabase Auth engine, create Auth user session
+    if (dbUser && !authUser) {
+      try {
+        const { data: newAuth } = await supabase.auth.admin.createUser({
+          email: cleanEmail,
+          password: 'Tmp_' + Math.random().toString(36).substring(2, 10),
+          email_confirm: true,
+          user_metadata: { name: dbUser.name || 'Customer', phone: dbUser.phone || '', role: dbUser.role || 'customer' },
+        });
+        if (newAuth?.user) authUser = newAuth.user;
+      } catch (cErr) {
+        console.warn('Auth user auto-creation for forgotPassword warning:', cErr.message);
+      }
+    }
+
+    // 2. Request password reset email from Supabase Auth
+    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+      redirectTo: `${frontendUrl}/reset-password`,
+    });
+
+    if (resetErr) {
+      console.warn('Supabase resetPasswordForEmail warning:', resetErr.message);
+      if (resetErr.message?.toLowerCase().includes('rate limit') || resetErr.status === 429) {
+        return res.status(429).json({
+          message: 'Security rate limit: Please wait 60 seconds before requesting another password reset email.',
+        });
+      }
     }
 
     // Security: Generic message to prevent account enumeration
     res.json({
-      message: "If an account exists for this email, you'll receive a password reset link shortly.",
+      message: "If an account exists for this email, you'll receive a password reset link shortly. Please check your Inbox and Spam folder.",
     });
   } catch (error) {
     console.error('Forgot password error:', error);
