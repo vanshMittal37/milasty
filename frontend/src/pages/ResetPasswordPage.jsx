@@ -135,10 +135,11 @@ export default function ResetPasswordPage() {
         console.warn('Frontend Supabase Auth updateUser warning:', err);
       }
 
-      // 2. Call backend API to update Supabase Auth admin and PostgreSQL users table bcrypt hash
+      // 2. Call backend API to update password (supports JWT token and Supabase access_token)
       const res = await api.post('/auth/reset-password', {
         email,
         password,
+        token: queryParams.get('token') || null,
         access_token: accessToken,
         refresh_token: refreshToken,
       });

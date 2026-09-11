@@ -462,7 +462,7 @@ export const changePassword = async (req, res) => {
   }
 };
 
-// Forgot Password
+// Forgot Password — JWT-based, works for ANY email address
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -477,87 +477,85 @@ export const forgotPassword = async (req, res) => {
       return res.status(400).json({ message: 'Please enter a valid email address' });
     }
 
-    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
-    console.log(`[FORGOT PASSWORD] Request for: ${cleanEmail}, frontendUrl: ${frontendUrl}`);
+    const frontendUrl = (process.env.FRONTEND_URL || 'https://milasty.vercel.app').replace(/\/$/, '');
+    console.log(`[FORGOT PASSWORD] Request for: ${cleanEmail}`);
 
-    // 1. Check if user exists in PostgreSQL users table or Supabase Auth
-    const { data: dbUser } = await supabase.from('users').select('id, name, phone, role').eq('email', cleanEmail).maybeSingle();
-    let authUser = null;
-    try {
-      const { data: usersList } = await supabase.auth.admin.listUsers();
-      authUser = usersList?.users?.find((u) => u.email === cleanEmail);
-    } catch (lErr) {}
+    // 1. Look up user name for personalized email (optional)
+    const { data: dbUser } = await supabase
+      .from('users')
+      .select('id, name')
+      .eq('email', cleanEmail)
+      .maybeSingle();
 
-    console.log(`[FORGOT PASSWORD] dbUser exists: ${!!dbUser}, authUser exists: ${!!authUser}`);
+    console.log(`[FORGOT PASSWORD] DB user found: ${!!dbUser}`);
 
-    // Ensure Auth user exists for link generation
-    if (!authUser) {
-      try {
-        const { data: newAuth } = await supabase.auth.admin.createUser({
-          email: cleanEmail,
-          password: 'Tmp_' + Math.random().toString(36).substring(2, 10),
-          email_confirm: true,
-          user_metadata: { name: dbUser?.name || 'Customer', phone: dbUser?.phone || '', role: dbUser?.role || 'customer' },
-        });
-        if (newAuth?.user) authUser = newAuth.user;
-        console.log(`[FORGOT PASSWORD] Created new Auth user for: ${cleanEmail}`);
-      } catch (cErr) {
-        console.warn('[FORGOT PASSWORD] Auth user auto-creation warning:', cErr.message);
-      }
-    }
+    // 2. Generate JWT reset token (expires in 1h) — no Supabase admin API needed
+    const resetToken = jwt.sign(
+      { email: cleanEmail, purpose: 'password_reset' },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    const resetLink = `${frontendUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(cleanEmail)}`;
+    console.log(`[FORGOT PASSWORD] Reset link built for: ${cleanEmail}`);
 
-    // 2. Generate direct recovery link using Supabase Admin API
-    let recoveryUrl = null;
-    try {
-      const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-        type: 'recovery',
-        email: cleanEmail,
-        options: {
-          redirectTo: `${frontendUrl}/reset-password`,
-        },
-      });
-      if (!linkErr && linkData?.properties?.action_link) {
-        recoveryUrl = linkData.properties.action_link;
-        console.log(`[FORGOT PASSWORD] Recovery link generated OK for ${cleanEmail}`);
-      } else if (linkErr) {
-        console.error('[FORGOT PASSWORD] generateLink error:', linkErr.message);
-      }
-    } catch (gErr) {
-      console.warn('[FORGOT PASSWORD] generateLink exception:', gErr.message);
-    }
-
-    // 3. Build HTML email body
+    // 3. Email HTML template
     const emailHtml = `
-      <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 32px 24px; background-color: #FAF7F2; color: #24130D; max-width: 520px; margin: 0 auto; border-radius: 18px; border: 1px solid #E8DCCB;">
-        <div style="text-align:center; margin-bottom: 20px;">
-          <span style="font-size: 1.5rem; font-weight: 800; letter-spacing: 0.08em; color: #24130D;">MILASTY</span>
+      <div style="font-family:'Segoe UI',Arial,sans-serif;padding:32px 24px;background-color:#FAF7F2;color:#24130D;max-width:520px;margin:0 auto;border-radius:18px;border:1px solid #E8DCCB;">
+        <div style="text-align:center;margin-bottom:20px;">
+          <span style="font-size:1.6rem;font-weight:800;letter-spacing:0.08em;color:#24130D;">MILASTY</span>
         </div>
-        <h2 style="color: #244f21; font-size: 1.3rem; margin-bottom: 12px;">Password Reset Request</h2>
-        <p style="margin: 0 0 12px; line-height: 1.6;">Hello,</p>
-        <p style="margin: 0 0 20px; line-height: 1.6;">We received a request to reset the password for your MILASTY account associated with <strong>${cleanEmail}</strong>.</p>
-        <div style="text-align: center; margin: 28px 0;">
-          <a href="${recoveryUrl || '#'}" style="background-color: #244f21; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 1rem; display: inline-block; letter-spacing: 0.02em;">
+        <h2 style="color:#244f21;font-size:1.3rem;margin-bottom:12px;">Password Reset Request</h2>
+        <p style="margin:0 0 12px;line-height:1.6;">Hello${dbUser?.name ? ` ${dbUser.name}` : ''},</p>
+        <p style="margin:0 0 20px;line-height:1.6;">We received a request to reset the password for your MILASTY account associated with <strong>${cleanEmail}</strong>.</p>
+        <div style="text-align:center;margin:28px 0;">
+          <a href="${resetLink}" style="background-color:#244f21;color:#ffffff;padding:14px 32px;text-decoration:none;border-radius:12px;font-weight:700;font-size:1rem;display:inline-block;">
             Reset My Password
           </a>
         </div>
-        <p style="font-size: 0.82rem; color: #7A5535; line-height: 1.5; margin: 0 0 8px;">This link will expire in <strong>1 hour</strong>. If you did not request a password reset, please ignore this email — your account is safe.</p>
-        <hr style="border: none; border-top: 1px solid #E8DCCB; margin: 20px 0;" />
-        <p style="font-size: 0.75rem; color: #A08060; text-align: center; margin: 0;">© ${new Date().getFullYear()} MILASTY. All rights reserved.</p>
+        <p style="font-size:0.82rem;color:#7A5535;line-height:1.5;margin:0 0 8px;">This link will expire in <strong>1 hour</strong>. If you did not request this, please ignore this email.</p>
+        <hr style="border:none;border-top:1px solid #E8DCCB;margin:20px 0;" />
+        <p style="font-size:0.75rem;color:#A08060;text-align:center;margin:0;">© ${new Date().getFullYear()} MILASTY. All rights reserved.</p>
       </div>
     `;
 
     let emailSent = false;
     let emailError = null;
 
-    // 4a. PRIMARY: Send via Resend API (works for any email if you have a verified domain)
-    if (process.env.RESEND_API_KEY && recoveryUrl) {
+    // 4a. PRIMARY: Gmail SMTP — works for ANY email address worldwide
+    if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+      console.log(`[FORGOT PASSWORD] Sending via Gmail SMTP to: ${cleanEmail}`);
+      try {
+        const nodemailer = await import('nodemailer');
+        const transporter = nodemailer.default.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_APP_PASSWORD,
+          },
+        });
+        const info = await transporter.sendMail({
+          from: `"MILASTY" <${process.env.GMAIL_USER}>`,
+          to: cleanEmail,
+          subject: 'Reset your MILASTY Account Password',
+          html: emailHtml,
+        });
+        console.log(`[FORGOT PASSWORD] ✅ Gmail sent to ${cleanEmail}, id: ${info.messageId}`);
+        emailSent = true;
+      } catch (gErr) {
+        emailError = gErr.message;
+        console.error('[FORGOT PASSWORD] ❌ Gmail SMTP error:', gErr.message);
+      }
+    }
+
+    // 4b. FALLBACK: Resend API (only works for your Resend account email with sandbox domain)
+    if (!emailSent && process.env.RESEND_API_KEY) {
       console.log(`[FORGOT PASSWORD] Trying Resend API for: ${cleanEmail}`);
       try {
         const resendResp = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
           },
           body: JSON.stringify({
             from: process.env.EMAIL_FROM || 'MILASTY <onboarding@resend.dev>',
@@ -568,13 +566,12 @@ export const forgotPassword = async (req, res) => {
         });
         const resendData = await resendResp.json();
         console.log(`[RESEND API] Status: ${resendResp.status}`, JSON.stringify(resendData));
-
         if (resendResp.status === 200 || resendResp.status === 201) {
           emailSent = true;
-          console.log(`[FORGOT PASSWORD] ✅ Resend sent successfully to: ${cleanEmail}`);
+          console.log(`[FORGOT PASSWORD] ✅ Resend sent to: ${cleanEmail}`);
         } else {
           emailError = resendData;
-          console.warn(`[FORGOT PASSWORD] ⚠️ Resend failed (status ${resendResp.status}):`, resendData);
+          console.warn(`[FORGOT PASSWORD] ⚠️ Resend failed:`, resendData);
         }
       } catch (rErr) {
         emailError = rErr.message;
@@ -582,72 +579,30 @@ export const forgotPassword = async (req, res) => {
       }
     }
 
-    // 4b. FALLBACK: Send via Gmail SMTP using nodemailer (works for ANY recipient email worldwide)
-    if (!emailSent && process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD && recoveryUrl) {
-      console.log(`[FORGOT PASSWORD] Trying Gmail SMTP for: ${cleanEmail}`);
-      try {
-        const nodemailer = await import('nodemailer');
-        const transporter = nodemailer.default.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_APP_PASSWORD,
-          },
-        });
-
-        const info = await transporter.sendMail({
-          from: `"MILASTY" <${process.env.GMAIL_USER}>`,
-          to: cleanEmail,
-          subject: 'Reset your MILASTY Account Password',
-          html: emailHtml,
-        });
-
-        console.log(`[FORGOT PASSWORD] ✅ Gmail SMTP sent to: ${cleanEmail}, messageId: ${info.messageId}`);
-        emailSent = true;
-      } catch (gErr) {
-        emailError = gErr.message;
-        console.error('[FORGOT PASSWORD] ❌ Gmail SMTP failed:', gErr.message);
-      }
-    }
-
     if (!emailSent) {
-      if (!process.env.RESEND_API_KEY && !process.env.GMAIL_USER) {
-        console.error('[FORGOT PASSWORD] ❌ No email provider configured! Set RESEND_API_KEY or GMAIL_USER + GMAIL_APP_PASSWORD in env.');
-      }
-      if (!recoveryUrl) {
-        console.error('[FORGOT PASSWORD] ❌ recoveryUrl is null — Supabase generateLink failed!');
+      console.error(`[FORGOT PASSWORD] ❌ All email methods failed for: ${cleanEmail}. Error: ${JSON.stringify(emailError)}`);
+      if (!process.env.GMAIL_USER && !process.env.RESEND_API_KEY) {
+        console.error('[FORGOT PASSWORD] No email provider set. Add GMAIL_USER + GMAIL_APP_PASSWORD to Railway env vars.');
       }
     }
 
-    // 4. Always respond with a generic success message for security (don't reveal if email exists)
-    res.json({
-      message: "If an account exists for this email, you'll receive a password reset link shortly. Please check your Inbox and Spam folder.",
-      ...(process.env.NODE_ENV !== 'production' && {
-        _debug: {
-          emailSent,
-          emailError,
-          hasRecoveryUrl: !!recoveryUrl,
-          hasResendKey: !!process.env.RESEND_API_KEY,
-          frontendUrl,
-        }
-      }),
-    });
+    res.json({ message: "If an account exists for this email, you'll receive a password reset link shortly. Please check your Inbox and Spam folder." });
   } catch (error) {
     console.error('[FORGOT PASSWORD] Unhandled error:', error);
     res.status(500).json({ message: 'Error processing password reset request', error: error.message });
   }
 };
 
-// Reset Password
+
+// Reset Password — supports both JWT reset tokens and Supabase access tokens
 export const resetPassword = async (req, res) => {
   try {
-    const { email, password, access_token } = req.body;
+    const { email, password, access_token, token } = req.body;
 
     if (!password) {
       return res.status(400).json({ message: 'Please enter a new password' });
     }
 
-    // Validate password requirements
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!passwordRegex.test(password)) {
       return res.status(400).json({
@@ -655,73 +610,79 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    let targetUserId = null;
     let cleanEmail = email ? email.toLowerCase().trim() : null;
+    let targetUserId = null;
 
-    // 1. Retrieve user from access token or email
-    if (access_token) {
+    // 1. Verify our JWT reset token (from Gmail/Resend email link)
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.purpose !== 'password_reset') {
+          return res.status(400).json({ message: 'Invalid reset token. Please request a new link.' });
+        }
+        cleanEmail = decoded.email;
+        console.log(`[RESET PASSWORD] JWT token verified for: ${cleanEmail}`);
+      } catch (jwtErr) {
+        if (jwtErr.name === 'TokenExpiredError') {
+          return res.status(400).json({ message: 'This reset link has expired. Please request a new one.' });
+        }
+        return res.status(400).json({ message: 'Invalid reset token. Please request a new link.' });
+      }
+    }
+
+    // 2. Fallback: Supabase access_token (from Supabase email flow)
+    if (!cleanEmail && access_token) {
       try {
         const { data: userData } = await supabase.auth.getUser(access_token);
-        if (userData?.user?.id) {
-          targetUserId = userData.user.id;
+        if (userData?.user?.email) {
           cleanEmail = userData.user.email;
+          targetUserId = userData.user.id;
         }
       } catch (e) {}
     }
 
-    if (!targetUserId && cleanEmail) {
+    if (!cleanEmail) {
+      return res.status(400).json({ message: 'Unable to identify user. Please request a new password reset link.' });
+    }
+
+    console.log(`[RESET PASSWORD] Updating password for: ${cleanEmail}`);
+
+    // 3. Find user in PostgreSQL
+    if (!targetUserId) {
       const { data: dbUser } = await supabase
         .from('users')
         .select('id, email')
         .eq('email', cleanEmail)
         .maybeSingle();
-
-      if (dbUser) {
-        targetUserId = dbUser.id;
-      }
+      if (dbUser) targetUserId = dbUser.id;
     }
 
-    if (!targetUserId && cleanEmail) {
-      const { data: usersList } = await supabase.auth.admin.listUsers();
-      const authUser = usersList?.users?.find((u) => u.email === cleanEmail);
-      if (authUser) {
-        targetUserId = authUser.id;
-      }
+    // 4. Update bcrypt hash in PostgreSQL users table
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const { error: updateErr } = await supabase
+      .from('users')
+      .update({ password_hash: passwordHash, updated_at: new Date() })
+      .eq('email', cleanEmail);
+
+    if (updateErr) {
+      console.error('[RESET PASSWORD] DB update error:', updateErr.message);
     }
 
-    if (!targetUserId && !cleanEmail) {
-      return res.status(400).json({ message: 'Unable to identify user for password reset. Please request a new link.' });
-    }
-
-    // 2. Update password in Supabase Auth engine
+    // 5. Also update Supabase Auth (best effort)
     if (targetUserId) {
       try {
         await supabase.auth.admin.updateUserById(targetUserId, { password });
       } catch (authErr) {
-        console.warn('Supabase Auth admin updateUserById warning:', authErr.message);
+        console.warn('[RESET PASSWORD] Supabase Auth update warning:', authErr.message);
       }
     }
 
-    // 3. Compute new bcrypt hash and update PostgreSQL 'users' table for BOTH id and email
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
-
-    if (targetUserId) {
-      await supabase
-        .from('users')
-        .update({ password_hash: passwordHash, updated_at: new Date() })
-        .eq('id', targetUserId);
-    }
-    if (cleanEmail) {
-      await supabase
-        .from('users')
-        .update({ password_hash: passwordHash, updated_at: new Date() })
-        .eq('email', cleanEmail);
-    }
-
+    console.log(`[RESET PASSWORD] ✅ Password updated for: ${cleanEmail}`);
     res.json({ message: 'Password updated successfully. You can now log in with your new password.' });
   } catch (error) {
-    console.error('Reset password error:', error);
+    console.error('[RESET PASSWORD] Unhandled error:', error);
     res.status(500).json({ message: 'Error resetting password', error: error.message });
   }
 };
