@@ -47,6 +47,7 @@ export default function ResetPasswordPage() {
   // Extracted auth params from URL
   const [accessToken, setAccessToken] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
+  const [resetToken, setResetToken] = useState('');
   const [email, setEmail] = useState('');
 
   useEffect(() => {
@@ -69,7 +70,8 @@ export default function ResetPasswordPage() {
     const hashParams = new URLSearchParams(hash.startsWith('#') ? hash.substring(1) : hash);
     const queryParams = new URLSearchParams(search);
 
-    const token = hashParams.get('access_token') || queryParams.get('access_token') || queryParams.get('token');
+    const token = hashParams.get('access_token') || queryParams.get('access_token');
+    const customToken = queryParams.get('token');
     const refresh = hashParams.get('refresh_token') || queryParams.get('refresh_token');
     const userEmail = hashParams.get('email') || queryParams.get('email');
     const errorDesc = hashParams.get('error_description') || queryParams.get('error_description');
@@ -81,6 +83,9 @@ export default function ResetPasswordPage() {
 
     if (token) {
       setAccessToken(token);
+    }
+    if (customToken) {
+      setResetToken(customToken);
     }
     if (refresh) {
       setRefreshToken(refresh);
@@ -139,7 +144,7 @@ export default function ResetPasswordPage() {
       const res = await api.post('/auth/reset-password', {
         email,
         password,
-        token: queryParams.get('token') || null,
+        token: resetToken || null,
         access_token: accessToken,
         refresh_token: refreshToken,
       });
