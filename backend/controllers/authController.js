@@ -532,7 +532,7 @@ export const forgotPassword = async (req, res) => {
     // 4. Fallback Direct Email sending via Resend API if RESEND_API_KEY is defined in environment
     if (process.env.RESEND_API_KEY && recoveryUrl) {
       try {
-        await fetch('https://api.resend.com/emails', {
+        const resendResp = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -557,7 +557,8 @@ export const forgotPassword = async (req, res) => {
             `,
           }),
         });
-        console.log(`[RESEND DIRECT EMAIL SENT TO ${cleanEmail}]`);
+        const resendData = await resendResp.json();
+        console.log(`[RESEND API RESPONSE STATUS ${resendResp.status}]:`, resendData);
       } catch (rErr) {
         console.error('Direct Resend email dispatch error:', rErr.message);
       }

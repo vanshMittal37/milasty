@@ -38,7 +38,6 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [cooldown, setCooldown] = useState(0);
-  const [directUrl, setDirectUrl] = useState('');
 
   useEffect(() => {
     let timer;
@@ -85,12 +84,9 @@ export default function ForgotPasswordPage() {
 
       // Trigger backend auto-sync & reset request
       const res = await api.post('/auth/forgot-password', { email: email.trim() });
-      if (res.data?.resetUrl) {
-        setDirectUrl(res.data.resetUrl);
-      }
       setSent(true);
       setCooldown(60);
-      toast.success(res.data?.message || 'Password reset link dispatched!');
+      toast.success(res.data?.message || 'Password reset link sent! Please check your email.');
     } catch (err) {
       const msg = err.response?.data?.message || 'Something went wrong. Please try again.';
       setError(msg);
@@ -217,32 +213,9 @@ export default function ForgotPasswordPage() {
               <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '700', marginBottom: '0.4rem' }}>
                 Check Your Email
               </h3>
-              <p style={{ color: '#5C3D20', fontSize: '0.88rem', lineHeight: '1.5', margin: '0 0 1rem', fontWeight: '500' }}>
+              <p style={{ color: '#5C3D20', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
                 We've sent password reset instructions to <strong>{email}</strong>. Please check your inbox and spam folder.
               </p>
-
-              {directUrl && (
-                <div style={{ backgroundColor: 'rgba(36, 79, 33, 0.06)', border: '1px solid rgba(36, 79, 33, 0.25)', borderRadius: '14px', padding: '0.85rem 1rem', marginTop: '0.75rem', textAlign: 'center' }}>
-                  <p style={{ fontSize: '0.76rem', color: '#244f21', fontWeight: '700', margin: '0 0 0.5rem' }}>
-                    Haven't received the email yet? Click below to reset directly:
-                  </p>
-                  <a
-                    href={directUrl}
-                    style={{
-                      display: 'inline-block',
-                      backgroundColor: '#244f21',
-                      color: '#FFFFFF',
-                      padding: '0.6rem 1.2rem',
-                      borderRadius: '10px',
-                      fontWeight: '800',
-                      fontSize: '0.82rem',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Open Password Reset Link
-                  </a>
-                </div>
-              )}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
