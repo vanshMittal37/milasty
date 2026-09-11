@@ -187,6 +187,7 @@ export const registerUser = async (req, res) => {
 
 
 // Login User & Admin with Supabase Auth
+// Login User & Admin with Supabase Auth (Single Source of Truth)
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -208,29 +209,39 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // 2. Verify password with stored bcrypt hash
-    if (user.password_hash) {
-      const isMatch = await bcrypt.compare(password, user.password_hash);
-      if (!isMatch) {
-        return res.status(401).json({ message: 'Invalid email or password' });
-      }
-    } else {
-      // Fallback to Supabase Auth signin if no password_hash in DB
-      const { error: authError } = await supabase.auth.signInWithPassword({
+    // 2. Validate password against Supabase Auth FIRST (Single Source of Truth)
+    let authSuccess = false;
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password,
       });
-      if (authError) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+      if (!authError && authData?.user) {
+        authSuccess = true;
       }
+    } catch (e) {
+      authSuccess = false;
     }
 
-    // 3. Keep Supabase Auth password synchronized in background
-    try {
-      await supabase.auth.admin.updateUserById(user.id, { password: password });
-    } catch (sErr) {
-      // Ignore background sync errors if Auth Admin API restricted
+    // 3. Check bcrypt hash if Supabase Auth client call was restricted
+    let bcryptSuccess = false;
+    if (user.password_hash) {
+      bcryptSuccess = await bcrypt.compare(password, user.password_hash);
     }
+
+    // IF NEITHER MATCHED (e.g. OLD password attempted after reset), REJECT LOGIN!
+    if (!authSuccess && !bcryptSuccess) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Keep Supabase Auth and DB synchronized
+    try {
+      await supabase.auth.admin.updateUserById(user.id, { password });
+    } catch (sErr) {}
+
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+    await supabase.from('users').update({ password_hash: passwordHash }).eq('id', user.id);
 
     // Issue JWT session token
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
@@ -414,6 +425,62 @@ export const updateProfile = async (req, res) => {
   }
 };
 
+// Change Password (for logged-in customer in Account Settings)
+export const changePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Please enter current password and new password' });
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({
+        message: 'New password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.',
+      });
+    }
+
+    const { data: user } = await supabase.from('users').select('id, email, password_hash').eq('id', userId).single();
+    if (!user) {
+      return res.status(404).json({ message: 'User profile not found' });
+    }
+
+    // Verify current password
+    let isCurrentValid = false;
+    if (user.password_hash) {
+      isCurrentValid = await bcrypt.compare(currentPassword, user.password_hash);
+    }
+    if (!isCurrentValid) {
+      try {
+        const { data: authData } = await supabase.auth.signInWithPassword({ email: user.email, password: currentPassword });
+        if (authData?.user) isCurrentValid = true;
+      } catch (e) {}
+    }
+
+    if (!isCurrentValid) {
+      return res.status(400).json({ message: 'Current password is incorrect.' });
+    }
+
+    // Update password in Supabase Auth
+    try {
+      await supabase.auth.admin.updateUserById(userId, { password: newPassword });
+    } catch (aErr) {
+      console.warn('Supabase Auth update warning:', aErr.message);
+    }
+
+    // Update bcrypt password_hash in PostgreSQL users table
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(newPassword, salt);
+    await supabase.from('users').update({ password_hash: passwordHash, updated_at: new Date() }).eq('id', userId);
+
+    res.json({ message: 'Password changed successfully.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error changing password', error: error.message });
+  }
+};
+
 // Forgot Password
 export const forgotPassword = async (req, res) => {
   try {
@@ -453,7 +520,7 @@ export const forgotPassword = async (req, res) => {
 // Reset Password
 export const resetPassword = async (req, res) => {
   try {
-    const { email, password, token, access_token } = req.body;
+    const { email, password, access_token } = req.body;
 
     if (!password) {
       return res.status(400).json({ message: 'Please enter a new password' });
@@ -470,8 +537,18 @@ export const resetPassword = async (req, res) => {
     let targetUserId = null;
     let cleanEmail = email ? email.toLowerCase().trim() : null;
 
-    // 1. If email is provided, lookup user in Supabase PostgreSQL 'users' table
-    if (cleanEmail) {
+    // 1. Retrieve user from access token or email
+    if (access_token) {
+      try {
+        const { data: userData } = await supabase.auth.getUser(access_token);
+        if (userData?.user?.id) {
+          targetUserId = userData.user.id;
+          cleanEmail = userData.user.email;
+        }
+      } catch (e) {}
+    }
+
+    if (!targetUserId && cleanEmail) {
       const { data: dbUser } = await supabase
         .from('users')
         .select('id, email')
@@ -483,16 +560,6 @@ export const resetPassword = async (req, res) => {
       }
     }
 
-    // 2. If targetUserId still unknown, try listing/retrieving user from Supabase Auth
-    if (!targetUserId && access_token) {
-      const { data: userData } = await supabase.auth.getUser(access_token);
-      if (userData?.user?.id) {
-        targetUserId = userData.user.id;
-        cleanEmail = userData.user.email;
-      }
-    }
-
-    // 3. Fallback: Search Supabase Auth by email if email provided
     if (!targetUserId && cleanEmail) {
       const { data: usersList } = await supabase.auth.admin.listUsers();
       const authUser = usersList?.users?.find((u) => u.email === cleanEmail);
@@ -505,7 +572,7 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'Unable to identify user for password reset. Please request a new link.' });
     }
 
-    // 4. Update password in Supabase Auth
+    // 2. Update password in Supabase Auth engine
     if (targetUserId) {
       try {
         await supabase.auth.admin.updateUserById(targetUserId, { password });
@@ -514,7 +581,7 @@ export const resetPassword = async (req, res) => {
       }
     }
 
-    // 5. Update bcrypt password_hash in Supabase PostgreSQL 'users' table
+    // 3. Compute new bcrypt hash and update PostgreSQL 'users' table for BOTH id and email
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
@@ -523,7 +590,8 @@ export const resetPassword = async (req, res) => {
         .from('users')
         .update({ password_hash: passwordHash, updated_at: new Date() })
         .eq('id', targetUserId);
-    } else if (cleanEmail) {
+    }
+    if (cleanEmail) {
       await supabase
         .from('users')
         .update({ password_hash: passwordHash, updated_at: new Date() })
@@ -536,4 +604,5 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Error resetting password', error: error.message });
   }
 };
+
 

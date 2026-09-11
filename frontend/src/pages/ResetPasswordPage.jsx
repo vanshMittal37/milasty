@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Eye, EyeOff, CheckCircle2, ShieldAlert, AlertTriangle, ArrowRight, ArrowLeft } from 'lucide-react';
 import api from '../api/axios';
 import { useToast } from '../context/ToastContext';
+import { supabase } from '../config/supabase';
 
 const inputStyle = {
   width: '100%',
@@ -49,6 +50,18 @@ export default function ResetPasswordPage() {
   const [email, setEmail] = useState('');
 
   useEffect(() => {
+    // Listen to Supabase Auth state / recovery events
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' || session) {
+        if (session?.access_token) {
+          setAccessToken(session.access_token);
+        }
+        if (session?.user?.email) {
+          setEmail(session.user.email);
+        }
+      }
+    });
+
     // Parse Hash Fragment (#access_token=...&refresh_token=...&type=recovery)
     const hash = location.hash;
     const search = location.search;
@@ -75,6 +88,10 @@ export default function ResetPasswordPage() {
     if (userEmail) {
       setEmail(userEmail);
     }
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
   }, [location]);
 
   // Real-time password requirement checks
@@ -109,6 +126,16 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     try {
+      // 1. Update password in Supabase Auth client if session present
+      let supabaseSuccess = false;
+      try {
+        const { error: sErr } = await supabase.auth.updateUser({ password });
+        if (!sErr) supabaseSuccess = true;
+      } catch (err) {
+        console.warn('Frontend Supabase Auth updateUser warning:', err);
+      }
+
+      // 2. Call backend API to update Supabase Auth admin and PostgreSQL users table bcrypt hash
       const res = await api.post('/auth/reset-password', {
         email,
         password,
@@ -116,13 +143,18 @@ export default function ResetPasswordPage() {
         refresh_token: refreshToken,
       });
 
+      // 3. Clear recovery session to prevent session reuse
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {}
+
       setSuccess(true);
       toast.success(res.data?.message || 'Password updated successfully!');
 
-      // Redirect after 3.5 seconds
+      // Redirect to login after 3 seconds
       setTimeout(() => {
         navigate('/login');
-      }, 3500);
+      }, 3000);
     } catch (err) {
       const msg = err.response?.data?.message || 'Failed to update password. Link may be expired.';
       setError(msg);

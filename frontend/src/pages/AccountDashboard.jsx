@@ -43,6 +43,47 @@ export default function AccountDashboard() {
     phone: '',
   });
 
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [passwordLoading, setPasswordLoading] = useState(false);
+
+  const handleSavePassword = async (e) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error('New passwords do not match.');
+      return;
+    }
+    const reqs = [
+      passwordForm.newPassword.length >= 8,
+      /[A-Z]/.test(passwordForm.newPassword),
+      /[a-z]/.test(passwordForm.newPassword),
+      /\d/.test(passwordForm.newPassword),
+    ];
+    if (!reqs.every(Boolean)) {
+      toast.error('New password must be 8+ characters and contain uppercase, lowercase, and numbers.');
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const res = await api.put('/auth/change-password', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      });
+      toast.success(res.data?.message || 'Password changed successfully.');
+      setShowPasswordModal(false);
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Error changing password.');
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
@@ -237,7 +278,7 @@ export default function AccountDashboard() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button 
               onClick={() => setShowProfileModal(true)} 
               className="btn-secondary" 
@@ -245,6 +286,14 @@ export default function AccountDashboard() {
             >
               <Edit3 size={14} />
               <span>Edit Profile</span>
+            </button>
+            <button 
+              onClick={() => setShowPasswordModal(true)} 
+              className="btn-secondary" 
+              style={{ padding: '0.7rem 1.25rem', fontSize: '0.8rem', fontWeight: '800', borderRadius: '10px', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent' }}
+            >
+              <Lock size={14} />
+              <span>Change Password</span>
             </button>
             <button 
               onClick={logout} 
@@ -884,6 +933,95 @@ export default function AccountDashboard() {
                   style={{ padding: '0.7rem 2rem', fontSize: '0.82rem', borderRadius: '10px', border: 'none', backgroundColor: 'var(--accent-gold)', color: '#24130D', fontWeight: '800', cursor: 'pointer' }}
                 >
                   Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================
+          MODAL 3: CHANGE PASSWORD MODAL
+         ================================================== */}
+      {showPasswordModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div 
+            className="glass-card" 
+            style={{ 
+              backgroundColor: 'rgba(50, 26, 18, 0.95)', 
+              borderRadius: '24px', 
+              border: '1px solid rgba(245, 235, 221, 0.25)', 
+              width: '100%', 
+              maxWidth: '460px', 
+              padding: '2.5rem',
+              boxShadow: 'var(--shadow-lg)',
+              position: 'relative'
+            }}
+          >
+            <button 
+              onClick={() => setShowPasswordModal(false)}
+              style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+            >
+              <X size={20} />
+            </button>
+
+            <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem' }}>
+              Change Account Password
+            </h3>
+
+            <form onSubmit={handleSavePassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Current Password</label>
+                <input 
+                  type="password" 
+                  required 
+                  value={passwordForm.currentPassword} 
+                  onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })} 
+                  placeholder="Enter current password"
+                  style={{ width: '100%', height: '48px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>New Password</label>
+                <input 
+                  type="password" 
+                  required 
+                  value={passwordForm.newPassword} 
+                  onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })} 
+                  placeholder="At least 8 characters with A-Z, a-z, 0-9"
+                  style={{ width: '100%', height: '48px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Confirm New Password</label>
+                <input 
+                  type="password" 
+                  required 
+                  value={passwordForm.confirmPassword} 
+                  onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })} 
+                  placeholder="Re-enter new password"
+                  style={{ width: '100%', height: '48px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setShowPasswordModal(false)}
+                  className="btn-secondary"
+                  style={{ padding: '0.7rem 1.5rem', fontSize: '0.82rem', borderRadius: '10px', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={passwordLoading}
+                  className="btn-primary"
+                  style={{ padding: '0.7rem 2rem', fontSize: '0.82rem', borderRadius: '10px', border: 'none', backgroundColor: 'var(--accent-gold)', color: '#24130D', fontWeight: '800', cursor: passwordLoading ? 'not-allowed' : 'pointer', opacity: passwordLoading ? 0.7 : 1 }}
+                >
+                  {passwordLoading ? 'Updating...' : 'Update Password'}
                 </button>
               </div>
             </form>
