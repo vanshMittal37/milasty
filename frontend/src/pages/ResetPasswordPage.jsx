@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Lock, Eye, EyeOff, CheckCircle2, ShieldAlert, AlertTriangle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, CheckCircle2, ShieldAlert, AlertTriangle, ArrowRight, ArrowLeft } from 'lucide-react';
 import api from '../api/axios';
 import { useToast } from '../context/ToastContext';
 import { supabase } from '../config/supabase';
@@ -395,9 +395,40 @@ export default function ResetPasswordPage() {
             )}
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+              {/* Registered Email Address */}
+              <div>
+                <label style={labelStyle}>Registered Email Address *</label>
+                <div style={{ position: 'relative' }}>
+                  <Mail
+                    size={16}
+                    color="#7A5535"
+                    style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}
+                  />
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (error) setError('');
+                    }}
+                    placeholder="Enter your registered email"
+                    style={inputStyle}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#244f21';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(36,79,33,0.10)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = 'rgba(100, 65, 35, 0.28)';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                </div>
+              </div>
+
               {/* New Password */}
               <div>
-                <label style={labelStyle}>New Password</label>
+                <label style={labelStyle}>New Password *</label>
                 <div style={{ position: 'relative' }}>
                   <Lock
                     size={16}

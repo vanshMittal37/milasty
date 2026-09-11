@@ -187,7 +187,7 @@ export const registerUser = async (req, res) => {
 
 
 // Login User & Admin with Supabase Auth
-// Login User & Admin with Supabase Auth (Single Source of Truth)
+// Login User & Admin with Supabase Auth
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -209,39 +209,20 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // 2. Validate password against Supabase Auth FIRST (Single Source of Truth)
-    let authSuccess = false;
-    try {
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
-      });
-      if (!authError && authData?.user) {
-        authSuccess = true;
-      }
-    } catch (e) {
-      authSuccess = false;
-    }
-
-    // 3. Check bcrypt hash if Supabase Auth client call was restricted
-    let bcryptSuccess = false;
-    if (user.password_hash) {
-      bcryptSuccess = await bcrypt.compare(password, user.password_hash);
-    }
-
-    // IF NEITHER MATCHED (e.g. OLD password attempted after reset), REJECT LOGIN!
-    if (!authSuccess && !bcryptSuccess) {
+    // 2. Verify password with stored bcrypt hash
+    if (!user.password_hash) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Keep Supabase Auth and DB synchronized
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // 3. Keep Supabase Auth password synchronized in background
     try {
       await supabase.auth.admin.updateUserById(user.id, { password });
     } catch (sErr) {}
-
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
-    await supabase.from('users').update({ password_hash: passwordHash }).eq('id', user.id);
 
     // Issue JWT session token
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
