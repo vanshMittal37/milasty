@@ -478,6 +478,7 @@ export const forgotPassword = async (req, res) => {
     }
 
     const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
+    console.log(`[FORGOT PASSWORD] Request for: ${cleanEmail}, frontendUrl: ${frontendUrl}`);
 
     // 1. Check if user exists in PostgreSQL users table or Supabase Auth
     const { data: dbUser } = await supabase.from('users').select('id, name, phone, role').eq('email', cleanEmail).maybeSingle();
@@ -486,6 +487,8 @@ export const forgotPassword = async (req, res) => {
       const { data: usersList } = await supabase.auth.admin.listUsers();
       authUser = usersList?.users?.find((u) => u.email === cleanEmail);
     } catch (lErr) {}
+
+    console.log(`[FORGOT PASSWORD] dbUser exists: ${!!dbUser}, authUser exists: ${!!authUser}`);
 
     // Ensure Auth user exists for link generation
     if (!authUser) {
@@ -497,8 +500,9 @@ export const forgotPassword = async (req, res) => {
           user_metadata: { name: dbUser?.name || 'Customer', phone: dbUser?.phone || '', role: dbUser?.role || 'customer' },
         });
         if (newAuth?.user) authUser = newAuth.user;
+        console.log(`[FORGOT PASSWORD] Created new Auth user for: ${cleanEmail}`);
       } catch (cErr) {
-        console.warn('Auth user auto-creation for forgotPassword warning:', cErr.message);
+        console.warn('[FORGOT PASSWORD] Auth user auto-creation warning:', cErr.message);
       }
     }
 
@@ -514,25 +518,20 @@ export const forgotPassword = async (req, res) => {
       });
       if (!linkErr && linkData?.properties?.action_link) {
         recoveryUrl = linkData.properties.action_link;
-        console.log(`[PASSWORD RESET RECOVERY LINK FOR ${cleanEmail}]:`, recoveryUrl);
+        console.log(`[FORGOT PASSWORD] Recovery link generated for ${cleanEmail}: ${recoveryUrl}`);
       } else if (linkErr) {
-        console.error('generateLink error:', linkErr.message);
+        console.error('[FORGOT PASSWORD] generateLink error:', linkErr.message);
       }
     } catch (gErr) {
-      console.warn('generateLink warning:', gErr.message);
+      console.warn('[FORGOT PASSWORD] generateLink exception:', gErr.message);
     }
 
-    // 3. Request password reset email from Supabase Auth built-in email provider
-    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-      redirectTo: `${frontendUrl}/reset-password`,
-    });
+    // 3. Send email via Resend API (works for ANY recipient email, unlike onboarding@resend.dev sandbox)
+    let emailSent = false;
+    let emailError = null;
 
-    if (resetErr) {
-      console.warn('Supabase resetPasswordForEmail warning:', resetErr.message);
-    }
-
-    // 4. Fallback Direct Email sending via Resend API if RESEND_API_KEY is defined in environment
     if (process.env.RESEND_API_KEY && recoveryUrl) {
+      console.log(`[FORGOT PASSWORD] Attempting Resend API email to: ${cleanEmail}`);
       try {
         const resendResp = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -541,37 +540,68 @@ export const forgotPassword = async (req, res) => {
             'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
           },
           body: JSON.stringify({
-            from: process.env.EMAIL_FROM || 'MILASTY Security <onboarding@resend.dev>',
+            from: process.env.EMAIL_FROM || 'MILASTY <onboarding@resend.dev>',
             to: [cleanEmail],
             subject: 'Reset your MILASTY Account Password',
             html: `
-              <div style="font-family: sans-serif; padding: 20px; background-color: #FAF7F2; color: #24130D; max-width: 500px; margin: 0 auto; border-radius: 16px; border: 1px solid #E8DCCB;">
-                <h2 style="color: #244f21;">MILASTY Password Reset</h2>
-                <p>Hello,</p>
-                <p>We received a request to reset your password for your MILASTY account.</p>
-                <p style="margin: 25px 0;">
-                  <a href="${recoveryUrl}" style="background-color: #244f21; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 10px; font-weight: bold; display: inline-block;">
+              <div style="font-family: 'Segoe UI', sans-serif; padding: 32px 24px; background-color: #FAF7F2; color: #24130D; max-width: 520px; margin: 0 auto; border-radius: 18px; border: 1px solid #E8DCCB;">
+                <div style="text-align:center; margin-bottom: 20px;">
+                  <span style="font-size: 1.5rem; font-weight: 800; letter-spacing: 0.08em; color: #24130D;">MILASTY</span>
+                </div>
+                <h2 style="color: #244f21; font-size: 1.3rem; margin-bottom: 12px;">Password Reset Request</h2>
+                <p style="margin: 0 0 12px; line-height: 1.6;">Hello,</p>
+                <p style="margin: 0 0 20px; line-height: 1.6;">We received a request to reset the password for your MILASTY account associated with <strong>${cleanEmail}</strong>.</p>
+                <div style="text-align: center; margin: 28px 0;">
+                  <a href="${recoveryUrl}" style="background-color: #244f21; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 1rem; display: inline-block; letter-spacing: 0.02em;">
                     Reset My Password
                   </a>
-                </p>
-                <p style="font-size: 0.85rem; color: #666;">If you did not request this, please ignore this email.</p>
+                </div>
+                <p style="font-size: 0.82rem; color: #7A5535; line-height: 1.5; margin: 0 0 8px;">This link will expire in <strong>1 hour</strong>. If you did not request a password reset, please ignore this email — your account is safe.</p>
+                <hr style="border: none; border-top: 1px solid #E8DCCB; margin: 20px 0;" />
+                <p style="font-size: 0.75rem; color: #A08060; text-align: center; margin: 0;">© ${new Date().getFullYear()} MILASTY. All rights reserved.</p>
               </div>
             `,
           }),
         });
+
         const resendData = await resendResp.json();
-        console.log(`[RESEND API RESPONSE STATUS ${resendResp.status}]:`, resendData);
+        console.log(`[RESEND API] Status: ${resendResp.status}`, JSON.stringify(resendData));
+
+        if (resendResp.status === 200 || resendResp.status === 201) {
+          emailSent = true;
+          console.log(`[FORGOT PASSWORD] Email sent successfully via Resend to: ${cleanEmail}`);
+        } else {
+          emailError = resendData;
+          console.error(`[FORGOT PASSWORD] Resend API returned error:`, resendData);
+        }
       } catch (rErr) {
-        console.error('Direct Resend email dispatch error:', rErr.message);
+        emailError = rErr.message;
+        console.error('[FORGOT PASSWORD] Resend fetch exception:', rErr.message);
+      }
+    } else {
+      if (!process.env.RESEND_API_KEY) {
+        console.error('[FORGOT PASSWORD] RESEND_API_KEY is NOT set in environment variables!');
+      }
+      if (!recoveryUrl) {
+        console.error('[FORGOT PASSWORD] recoveryUrl is null — could not generate Supabase recovery link!');
       }
     }
 
+    // 4. Always respond with a generic success message for security (don't reveal if email exists)
     res.json({
       message: "If an account exists for this email, you'll receive a password reset link shortly. Please check your Inbox and Spam folder.",
-      resetUrl: recoveryUrl || undefined,
+      ...(process.env.NODE_ENV !== 'production' && {
+        _debug: {
+          emailSent,
+          emailError,
+          hasRecoveryUrl: !!recoveryUrl,
+          hasResendKey: !!process.env.RESEND_API_KEY,
+          frontendUrl,
+        }
+      }),
     });
   } catch (error) {
-    console.error('Forgot password error:', error);
+    console.error('[FORGOT PASSWORD] Unhandled error:', error);
     res.status(500).json({ message: 'Error processing password reset request', error: error.message });
   }
 };
