@@ -529,6 +529,40 @@ export const forgotPassword = async (req, res) => {
       console.warn('Supabase resetPasswordForEmail warning:', resetErr.message);
     }
 
+    // 4. Fallback Direct Email sending via Resend API if RESEND_API_KEY is defined in environment
+    if (process.env.RESEND_API_KEY && recoveryUrl) {
+      try {
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          },
+          body: JSON.stringify({
+            from: process.env.EMAIL_FROM || 'MILASTY Security <onboarding@resend.dev>',
+            to: [cleanEmail],
+            subject: 'Reset your MILASTY Account Password',
+            html: `
+              <div style="font-family: sans-serif; padding: 20px; background-color: #FAF7F2; color: #24130D; max-width: 500px; margin: 0 auto; border-radius: 16px; border: 1px solid #E8DCCB;">
+                <h2 style="color: #244f21;">MILASTY Password Reset</h2>
+                <p>Hello,</p>
+                <p>We received a request to reset your password for your MILASTY account.</p>
+                <p style="margin: 25px 0;">
+                  <a href="${recoveryUrl}" style="background-color: #244f21; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 10px; font-weight: bold; display: inline-block;">
+                    Reset My Password
+                  </a>
+                </p>
+                <p style="font-size: 0.85rem; color: #666;">If you did not request this, please ignore this email.</p>
+              </div>
+            `,
+          }),
+        });
+        console.log(`[RESEND DIRECT EMAIL SENT TO ${cleanEmail}]`);
+      } catch (rErr) {
+        console.error('Direct Resend email dispatch error:', rErr.message);
+      }
+    }
+
     res.json({
       message: "If an account exists for this email, you'll receive a password reset link shortly. Please check your Inbox and Spam folder.",
       resetUrl: recoveryUrl || undefined,
