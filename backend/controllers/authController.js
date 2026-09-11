@@ -487,14 +487,14 @@ export const forgotPassword = async (req, res) => {
       authUser = usersList?.users?.find((u) => u.email === cleanEmail);
     } catch (lErr) {}
 
-    // If user exists in DB but not in Supabase Auth engine, create Auth user session
-    if (dbUser && !authUser) {
+    // Ensure Auth user exists for link generation
+    if (!authUser) {
       try {
         const { data: newAuth } = await supabase.auth.admin.createUser({
           email: cleanEmail,
           password: 'Tmp_' + Math.random().toString(36).substring(2, 10),
           email_confirm: true,
-          user_metadata: { name: dbUser.name || 'Customer', phone: dbUser.phone || '', role: dbUser.role || 'customer' },
+          user_metadata: { name: dbUser?.name || 'Customer', phone: dbUser?.phone || '', role: dbUser?.role || 'customer' },
         });
         if (newAuth?.user) authUser = newAuth.user;
       } catch (cErr) {
@@ -515,6 +515,8 @@ export const forgotPassword = async (req, res) => {
       if (!linkErr && linkData?.properties?.action_link) {
         recoveryUrl = linkData.properties.action_link;
         console.log(`[PASSWORD RESET RECOVERY LINK FOR ${cleanEmail}]:`, recoveryUrl);
+      } else if (linkErr) {
+        console.error('generateLink error:', linkErr.message);
       }
     } catch (gErr) {
       console.warn('generateLink warning:', gErr.message);
