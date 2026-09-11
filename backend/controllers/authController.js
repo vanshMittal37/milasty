@@ -462,7 +462,7 @@ export const changePassword = async (req, res) => {
   }
 };
 
-// Forgot Password — JWT-based, works for ANY email address
+// Forgot Password — Resend API + JWT reset token (no Supabase admin API, no nodemailer)
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -480,25 +480,23 @@ export const forgotPassword = async (req, res) => {
     const frontendUrl = (process.env.FRONTEND_URL || 'https://milasty.vercel.app').replace(/\/$/, '');
     console.log(`[FORGOT PASSWORD] Request for: ${cleanEmail}`);
 
-    // 1. Look up user name for personalized email (optional)
+    // 1. Look up user name for personalized greeting
     const { data: dbUser } = await supabase
       .from('users')
       .select('id, name')
       .eq('email', cleanEmail)
       .maybeSingle();
 
-    console.log(`[FORGOT PASSWORD] DB user found: ${!!dbUser}`);
-
-    // 2. Generate JWT reset token (expires in 1h) — no Supabase admin API needed
+    // 2. Generate a secure JWT reset token (1 hour expiry)
     const resetToken = jwt.sign(
       { email: cleanEmail, purpose: 'password_reset' },
       JWT_SECRET,
       { expiresIn: '1h' }
     );
     const resetLink = `${frontendUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(cleanEmail)}`;
-    console.log(`[FORGOT PASSWORD] Reset link built for: ${cleanEmail}`);
+    console.log(`[FORGOT PASSWORD] Reset link generated for: ${cleanEmail}`);
 
-    // 3. Email HTML template
+    // 3. Email HTML
     const emailHtml = `
       <div style="font-family:'Segoe UI',Arial,sans-serif;padding:32px 24px;background-color:#FAF7F2;color:#24130D;max-width:520px;margin:0 auto;border-radius:18px;border:1px solid #E8DCCB;">
         <div style="text-align:center;margin-bottom:20px;">
@@ -512,86 +510,55 @@ export const forgotPassword = async (req, res) => {
             Reset My Password
           </a>
         </div>
-        <p style="font-size:0.82rem;color:#7A5535;line-height:1.5;margin:0 0 8px;">This link will expire in <strong>1 hour</strong>. If you did not request this, please ignore this email.</p>
+        <p style="font-size:0.82rem;color:#7A5535;line-height:1.5;margin:0 0 8px;">This link expires in <strong>1 hour</strong>. If you didn't request this, ignore this email — your account is safe.</p>
         <hr style="border:none;border-top:1px solid #E8DCCB;margin:20px 0;" />
         <p style="font-size:0.75rem;color:#A08060;text-align:center;margin:0;">© ${new Date().getFullYear()} MILASTY. All rights reserved.</p>
       </div>
     `;
 
-    let emailSent = false;
-    let emailError = null;
+    // 4. Send via Resend API
+    if (!process.env.RESEND_API_KEY) {
+      console.error('[FORGOT PASSWORD] ❌ RESEND_API_KEY not set in environment!');
+      return res.json({ message: "If an account exists for this email, you'll receive a password reset link shortly." });
+    }
 
-    // 4a. PRIMARY: Gmail SMTP — works for ANY email address worldwide
-    if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
-      console.log(`[FORGOT PASSWORD] Sending via Gmail SMTP to: ${cleanEmail}`);
-      try {
-        const nodemailer = await import('nodemailer');
-        const transporter = nodemailer.default.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_APP_PASSWORD,
-          },
-        });
-        const info = await transporter.sendMail({
-          from: `"MILASTY" <${process.env.GMAIL_USER}>`,
-          to: cleanEmail,
+    try {
+      const resendResp = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: process.env.EMAIL_FROM || 'MILASTY <onboarding@resend.dev>',
+          to: [cleanEmail],
           subject: 'Reset your MILASTY Account Password',
           html: emailHtml,
-        });
-        console.log(`[FORGOT PASSWORD] ✅ Gmail sent to ${cleanEmail}, id: ${info.messageId}`);
-        emailSent = true;
-      } catch (gErr) {
-        emailError = gErr.message;
-        console.error('[FORGOT PASSWORD] ❌ Gmail SMTP error:', gErr.message);
+        }),
+      });
+
+      const resendData = await resendResp.json();
+      console.log(`[RESEND API] Status: ${resendResp.status}`, JSON.stringify(resendData));
+
+      if (resendResp.status === 200 || resendResp.status === 201) {
+        console.log(`[FORGOT PASSWORD] ✅ Email sent via Resend to: ${cleanEmail}`);
+      } else {
+        console.warn(`[FORGOT PASSWORD] ⚠️ Resend returned ${resendResp.status}:`, resendData);
+        // If Resend fails (e.g. 403 for non-account email with sandbox domain),
+        // the user needs to add a custom domain at https://resend.com/domains
       }
+    } catch (rErr) {
+      console.error('[FORGOT PASSWORD] ❌ Resend fetch error:', rErr.message);
     }
 
-    // 4b. FALLBACK: Resend API (only works for your Resend account email with sandbox domain)
-    if (!emailSent && process.env.RESEND_API_KEY) {
-      console.log(`[FORGOT PASSWORD] Trying Resend API for: ${cleanEmail}`);
-      try {
-        const resendResp = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          },
-          body: JSON.stringify({
-            from: process.env.EMAIL_FROM || 'MILASTY <onboarding@resend.dev>',
-            to: [cleanEmail],
-            subject: 'Reset your MILASTY Account Password',
-            html: emailHtml,
-          }),
-        });
-        const resendData = await resendResp.json();
-        console.log(`[RESEND API] Status: ${resendResp.status}`, JSON.stringify(resendData));
-        if (resendResp.status === 200 || resendResp.status === 201) {
-          emailSent = true;
-          console.log(`[FORGOT PASSWORD] ✅ Resend sent to: ${cleanEmail}`);
-        } else {
-          emailError = resendData;
-          console.warn(`[FORGOT PASSWORD] ⚠️ Resend failed:`, resendData);
-        }
-      } catch (rErr) {
-        emailError = rErr.message;
-        console.warn('[FORGOT PASSWORD] Resend exception:', rErr.message);
-      }
-    }
-
-    if (!emailSent) {
-      console.error(`[FORGOT PASSWORD] ❌ All email methods failed for: ${cleanEmail}. Error: ${JSON.stringify(emailError)}`);
-      if (!process.env.GMAIL_USER && !process.env.RESEND_API_KEY) {
-        console.error('[FORGOT PASSWORD] No email provider set. Add GMAIL_USER + GMAIL_APP_PASSWORD to Railway env vars.');
-      }
-    }
-
+    // Always respond with success (security: don't reveal if email exists)
     res.json({ message: "If an account exists for this email, you'll receive a password reset link shortly. Please check your Inbox and Spam folder." });
   } catch (error) {
     console.error('[FORGOT PASSWORD] Unhandled error:', error);
     res.status(500).json({ message: 'Error processing password reset request', error: error.message });
   }
 };
+
 
 
 // Reset Password — supports both JWT reset tokens and Supabase access tokens
