@@ -3169,6 +3169,11 @@ footer.transparent-blurred-footer {
   transform: translateY(-2px);
 }
 
+@keyframes authSpinner {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @media (max-width: 768px) {
   .shipping-process-flow {
     flex-direction: column;
@@ -3180,4 +3185,13 @@ footer.transparent-blurred-footer {
     transform: rotate(90deg);
     margin: 0 auto;
   }
-}
+
+  .milasty-auth-page {
+    padding: 4.5rem 1rem 2.5rem !important;
+  }
+
+  .milasty-auth-card {
+    padding: 1.85rem 1.35rem 1.5rem !important;
+    border-radius: 20px !important;
+  }
+}
