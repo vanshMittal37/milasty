@@ -118,42 +118,58 @@ section,
   color: var(--text-dark) !important;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-.font-serif {
+h1:not(.light-bg-page *):not(.milasty-auth-page *),
+h2:not(.light-bg-page *):not(.milasty-auth-page *),
+h3:not(.light-bg-page *):not(.milasty-auth-page *),
+h4:not(.light-bg-page *):not(.milasty-auth-page *),
+h5:not(.light-bg-page *):not(.milasty-auth-page *) {
   font-family: var(--font-serif);
   font-weight: 700;
   color: var(--text-light) !important;
 }
 
-p,
-span,
-li,
-label,
-td,
-th {
+p:not(.light-bg-page *):not(.milasty-auth-page *),
+span:not(.light-bg-page *):not(.milasty-auth-page *),
+li:not(.light-bg-page *):not(.milasty-auth-page *),
+label:not(.light-bg-page *):not(.milasty-auth-page *),
+td:not(.light-bg-page *):not(.milasty-auth-page *),
+th:not(.light-bg-page *):not(.milasty-auth-page *) {
   color: var(--text-muted);
 }
 
-/* ── Light-background page overrides ──
-   Pages with warm beige backgrounds need dark text.
-   These selectors override the global dark-theme rules above. */
+/* ── Light-background page overrides ── */
 .light-bg-page h1,
 .light-bg-page h2,
 .light-bg-page h3,
 .light-bg-page h4,
-.light-bg-page h5 {
-  color: #24130D !important;
+.light-bg-page h5,
+.milasty-auth-page h1,
+.milasty-auth-card h1,
+.auth-heading {
+  color: #2B1710 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .light-bg-page p,
-.light-bg-page span:not(.badge-pill),
-.light-bg-page label {
-  color: #5C3D20 !important;
+.light-bg-page label,
+.milasty-auth-card p,
+.milasty-auth-card label,
+.auth-subtitle,
+.auth-label {
+  color: #5A4438 !important;
 }
+
+.auth-security-text {
+  color: #675449 !important;
+}
+
+.auth-badge {
+  background-color: #E8EFE3 !important;
+  color: #355A3B !important;
+  border-color: #C9D7C3 !important;
+}
+
 
 input::placeholder,
 textarea::placeholder {

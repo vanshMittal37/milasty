@@ -17,7 +17,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Password requirements checklist strictly matching reference image UI
+  // Password requirements checklist strictly matching Critical Problem #7 requirements
   const requirements = [
     { label: 'At least 8 characters', pass: password.length >= 8 },
     { label: 'One uppercase letter (A-Z)', pass: /[A-Z]/.test(password) },
@@ -71,7 +71,7 @@ export default function RegisterPage() {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.05rem' }}>
         {/* Full Name */}
         <AuthInput
-          label="FULL NAME"
+          label="FULL NAME *"
           type="text"
           icon={User}
           value={name}
@@ -87,7 +87,7 @@ export default function RegisterPage() {
 
         {/* Email Address */}
         <AuthInput
-          label="EMAIL ADDRESS"
+          label="EMAIL ADDRESS *"
           type="email"
           icon={Mail}
           value={email}
@@ -103,7 +103,7 @@ export default function RegisterPage() {
 
         {/* Mobile Number */}
         <AuthInput
-          label="MOBILE NUMBER (Optional)"
+          label="MOBILE NUMBER (OPTIONAL)"
           type="tel"
           icon={Phone}
           value={phone}
@@ -119,7 +119,7 @@ export default function RegisterPage() {
         {/* Password */}
         <div>
           <AuthInput
-            label="PASSWORD"
+            label="PASSWORD *"
             type={showPassword ? 'text' : 'password'}
             icon={Lock}
             value={password}
@@ -139,7 +139,7 @@ export default function RegisterPage() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#4A2F17',
+                  color: '#5A4438',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -152,7 +152,7 @@ export default function RegisterPage() {
             }
           />
 
-          {/* Checklist Box matching Reference Image with high contrast dark text (#3D2413 / #1C4019) */}
+          {/* Password Requirements Checklist Box matching Critical Problem #7 */}
           <div
             style={{
               marginTop: '0.6rem',
@@ -173,8 +173,8 @@ export default function RegisterPage() {
                   alignItems: 'center',
                   gap: '0.45rem',
                   fontSize: '0.74rem',
-                  color: req.pass ? '#1C4019' : '#4A2F17',
-                  fontWeight: '800',
+                  color: req.pass ? '#1F5A28 !important' : '#5A4438 !important',
+                  fontWeight: '700',
                 }}
               >
                 <div
@@ -182,16 +182,16 @@ export default function RegisterPage() {
                     width: '15px',
                     height: '15px',
                     borderRadius: '50%',
-                    backgroundColor: req.pass ? '#1C4019' : '#C8BBA7',
+                    backgroundColor: req.pass ? '#1F5A28' : '#C8BBA7',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
                   }}
                 >
-                  <CheckCircle2 size={11} color={req.pass ? '#FFFFFF' : '#4A2F17'} />
+                  <CheckCircle2 size={11} color={req.pass ? '#FFFFFF' : '#5A4438'} />
                 </div>
-                <span>{req.label}</span>
+                <span>{req.pass ? `✓ ${req.label}` : `✓ ${req.label}`}</span>
               </div>
             ))}
           </div>
@@ -204,9 +204,9 @@ export default function RegisterPage() {
       </form>
 
       {/* Switch to Login */}
-      <div style={{ textAlign: 'center', fontSize: '0.88rem', color: '#4A2F17', fontWeight: '700', paddingTop: '0.1rem' }}>
+      <div style={{ textAlign: 'center', fontSize: '0.88rem', color: '#5A4438 !important', fontWeight: '600', paddingTop: '0.1rem' }}>
         Already have an account?{' '}
-        <Link to="/login" style={{ color: '#1C4019', fontWeight: '900', textDecoration: 'none' }}>
+        <Link to="/login" style={{ color: '#1F5A28 !important', fontWeight: '800', textDecoration: 'none' }}>
           Login here
         </Link>
       </div>

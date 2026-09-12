@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
   };
 
   if (sent) {
-    /* Polished Success Card matching bottom box of Reference Image */
+    /* Polished Success Card matching Forgot Password Success Structure */
     return (
       <AuthLayout trustBadges={[]}>
         <div style={{ textAlign: 'center', padding: '0.4rem 0', display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
@@ -79,31 +79,32 @@ export default function ForgotPasswordPage() {
               height: '56px',
               borderRadius: '50%',
               backgroundColor: '#CDE5CB',
-              color: '#1C4019',
+              color: '#1F5A28',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto',
             }}
           >
-            <Check size={28} color="#1C4019" style={{ strokeWidth: 3 }} />
+            <Check size={28} color="#1F5A28" style={{ strokeWidth: 3 }} />
           </div>
 
           <div>
             <h1
+              className="auth-heading"
               style={{
                 fontSize: '1.9rem',
                 fontFamily: 'var(--font-serif)',
-                color: '#1F100A',
-                fontWeight: '900',
+                color: '#2B1710 !important',
+                fontWeight: '800',
                 margin: '0 0 0.45rem',
               }}
             >
               Check Your Email
             </h1>
-            <p style={{ color: '#4A2F17', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '600' }}>
+            <p style={{ color: '#5A4438 !important', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
               We've sent password reset instructions to{' '}
-              <strong style={{ color: '#1F100A', wordBreak: 'break-all' }}>{email}</strong>. Please check your inbox and follow the secure link.
+              <strong style={{ color: '#2B1710 !important', wordBreak: 'break-all' }}>{email}</strong>. Please check your inbox and follow the secure link.
             </p>
           </div>
 
@@ -117,10 +118,10 @@ export default function ForgotPasswordPage() {
                 width: '100%',
                 height: '46px',
                 backgroundColor: '#F3EDE2',
-                color: cooldown > 0 ? '#705438' : '#1C4019',
+                color: cooldown > 0 ? '#675449 !important' : '#1F5A28 !important',
                 borderRadius: '12px',
-                border: '1.5px solid #1C4019',
-                fontWeight: '800',
+                border: '1.5px solid #1F5A28',
+                fontWeight: '700',
                 fontSize: '0.88rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -139,8 +140,8 @@ export default function ForgotPasswordPage() {
               to="/login"
               style={{
                 fontSize: '0.86rem',
-                color: '#1C4019',
-                fontWeight: '800',
+                color: '#1F5A28 !important',
+                fontWeight: '700',
                 textDecoration: 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -163,6 +164,10 @@ export default function ForgotPasswordPage() {
       titleLine1="Forgot"
       titleLine2="Password"
       subtitle="Enter the email address associated with your MILASTY account and we'll send you a secure link to reset your password."
+      trustBadges={[
+        { icon: '🔒', text: '256-bit Encryption' },
+        { icon: '🌿', text: 'MILASTY Protection' },
+      ]}
     >
       {/* Error Alert */}
       <AuthAlert message={error} type="error" />
@@ -193,8 +198,8 @@ export default function ForgotPasswordPage() {
             to="/login"
             style={{
               fontSize: '0.86rem',
-              color: '#1C4019',
-              fontWeight: '800',
+              color: '#1F5A28 !important',
+              fontWeight: '700',
               textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',

@@ -38,7 +38,7 @@ function LeafMotif() {
 }
 
 /**
- * Shared Auth Container Layout matching reference image with ultra-high contrast dark espresso colors
+ * Shared Auth Container Layout with explicit non-inheriting dark colors & light sage badge
  */
 export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, children, trustBadges }) {
   const defaultBadges = [
@@ -50,7 +50,7 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
 
   return (
     <div
-      className="milasty-auth-page"
+      className="milasty-auth-page light-bg-page"
       style={{
         minHeight: '100vh',
         backgroundImage: 'url(/images/register_login_background_image.jpeg)',
@@ -65,18 +65,18 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
         boxSizing: 'border-box',
       }}
     >
-      {/* Background Soft Dark Overlay for background contrast */}
+      {/* Background Soft Dark Overlay for depth contrast */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundColor: 'rgba(25, 14, 8, 0.40)',
+          backgroundColor: 'rgba(25, 14, 8, 0.35)',
           pointerEvents: 'none',
           zIndex: 1,
         }}
       />
 
-      {/* Central Card */}
+      {/* Central Card (#F8F3E9 warm ivory/cream) */}
       <div
         className="milasty-auth-card"
         style={{
@@ -84,7 +84,7 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
           zIndex: 2,
           width: '100%',
           maxWidth: '460px',
-          backgroundColor: '#FBF9F4',
+          backgroundColor: '#F8F3E9',
           borderRadius: '26px',
           border: '1.5px solid #E2D7C7',
           boxShadow: '0 20px 48px rgba(35, 20, 10, 0.22), 0 4px 14px rgba(0,0,0,0.05)',
@@ -103,16 +103,17 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
         <div style={{ textAlign: 'center', position: 'relative', zIndex: 2 }}>
           {badge && (
             <span
+              className="auth-badge"
               style={{
                 fontSize: '0.68rem',
                 fontWeight: '800',
                 textTransform: 'uppercase',
                 letterSpacing: '0.12em',
-                color: '#1C4019',
-                backgroundColor: '#E2EBE0',
+                color: '#355A3B !important',
+                backgroundColor: '#E8EFE3 !important',
                 padding: '0.35rem 0.9rem',
                 borderRadius: '999px',
-                border: '1.5px solid #B5C9B3',
+                border: '1px solid #C9D7C3 !important',
                 display: 'inline-block',
                 marginBottom: '0.85rem',
               }}
@@ -121,16 +122,19 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
             </span>
           )}
 
-          {/* Large Editorial Title - Deep Espresso Brown */}
+          {/* Large Editorial Title - Explicit #2B1710 Dark Espresso */}
           <h1
+            className="auth-heading"
             style={{
               fontSize: '2.2rem',
               fontFamily: 'var(--font-serif)',
-              color: '#1F100A',
-              fontWeight: '900',
+              color: '#2B1710 !important',
+              fontWeight: '800',
               margin: '0 0 0.45rem',
               letterSpacing: '-0.01em',
               lineHeight: '1.15',
+              opacity: 1,
+              visibility: 'visible',
             }}
           >
             {titleLine1 && titleLine2 ? (
@@ -146,11 +150,12 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
 
           {subtitle && (
             <p
+              className="auth-subtitle"
               style={{
-                color: '#4A2F17',
+                color: '#5A4438 !important',
                 fontSize: '0.88rem',
                 margin: 0,
-                fontWeight: '600',
+                fontWeight: '500',
                 lineHeight: '1.45',
                 padding: '0 0.5rem',
               }}
@@ -180,10 +185,11 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
             {badgesToRender.map((badgeItem, idx) => (
               <span
                 key={idx}
+                className="auth-security-text"
                 style={{
                   fontSize: '0.72rem',
-                  color: '#4A2F17',
-                  fontWeight: '800',
+                  color: '#675449 !important',
+                  fontWeight: '700',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.3rem',
@@ -212,8 +218,8 @@ export function AuthAlert({ message, type = 'error' }) {
       role="alert"
       style={{
         backgroundColor: isError ? '#FDF2F0' : '#EAEFE6',
-        border: `1.5px solid ${isError ? '#D9534F' : '#1C4019'}`,
-        color: isError ? '#801B18' : '#1C4019',
+        border: `1.5px solid ${isError ? '#D9534F' : '#1F5A28'}`,
+        color: isError ? '#801B18 !important' : '#1F5A28 !important',
         padding: '0.8rem 0.95rem',
         borderRadius: '12px',
         fontSize: '0.85rem',
@@ -231,7 +237,7 @@ export function AuthAlert({ message, type = 'error' }) {
 }
 
 /**
- * Input Component with High Contrast Labels, Dark Placeholders (#5C4329) & Dark Input Text (#1F100A)
+ * Input Component with Input Wrapper (padding-left: 44px, padding-right: 44px), Left Icon (left: 14px), Right Eye Toggle
  */
 export function AuthInput({
   label,
@@ -258,33 +264,36 @@ export function AuthInput({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <label
             htmlFor={inputId}
+            className="auth-label"
             style={{
               fontSize: '0.74rem',
-              fontWeight: '900',
-              color: '#2E180C',
+              fontWeight: '700',
+              color: '#3A2922 !important',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
             }}
           >
             {label}
           </label>
-          {hint && <span style={{ fontSize: '0.74rem', color: '#5C4329', fontWeight: '700' }}>{hint}</span>}
+          {hint && <span style={{ fontSize: '0.74rem', color: '#675449 !important', fontWeight: '600' }}>{hint}</span>}
         </div>
       )}
 
-      <div style={{ position: 'relative', width: '100%' }}>
+      {/* Input Wrapper matching Critical Problem #3 instructions */}
+      <div className="input-wrapper" style={{ position: 'relative', width: '100%' }}>
         {Icon && (
           <div
+            className="input-left-icon"
             style={{
               position: 'absolute',
-              left: '16px',
+              left: '14px',
               top: '50%',
               transform: 'translateY(-50%)',
               pointerEvents: 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: isFocused ? '#1C4019' : '#4A2F17',
+              color: isFocused ? '#1F5A28' : '#5A4438',
               transition: 'color 0.2s',
               zIndex: 2,
             }}
@@ -292,6 +301,7 @@ export function AuthInput({
             <Icon size={18} style={{ strokeWidth: 2.2 }} />
           </div>
         )}
+
         <input
           id={inputId}
           type={type}
@@ -307,29 +317,31 @@ export function AuthInput({
           style={{
             width: '100%',
             height: '48px',
-            paddingLeft: Icon ? '2.75rem' : '1rem',
-            paddingRight: rightElement ? '3rem' : '1rem',
+            paddingLeft: Icon ? '44px' : '14px',
+            paddingRight: rightElement ? '44px' : '14px',
             borderRadius: '12px',
             border: `1.5px solid ${
-              error ? '#B8321E' : isFocused ? '#1C4019' : '#D8CCB8'
+              error ? '#B8321E' : isFocused ? '#1F5A28' : '#D8CCB8'
             }`,
-            boxShadow: isFocused ? '0 0 0 3px rgba(28, 64, 25, 0.15)' : 'none',
+            boxShadow: isFocused ? '0 0 0 3px rgba(31, 90, 40, 0.15)' : 'none',
             fontSize: '0.92rem',
             fontWeight: '600',
             outline: 'none',
             backgroundColor: '#F3EDE2',
-            color: '#1F100A',
+            color: '#2B1710 !important',
             transition: 'all 0.2s ease',
             fontFamily: 'inherit',
             boxSizing: 'border-box',
           }}
           {...props}
         />
+
         {rightElement && (
           <div
+            className="password-toggle"
             style={{
               position: 'absolute',
-              right: '12px',
+              right: '10px',
               top: '50%',
               transform: 'translateY(-50%)',
               display: 'flex',
@@ -347,7 +359,7 @@ export function AuthInput({
 }
 
 /**
- * Deep MILASTY Green Primary Button Component with PURE WHITE Bold Text
+ * Deep MILASTY Green Primary Button Component with PURE WHITE Bold Text (#FFFFFF)
  */
 export function AuthButton({
   children,
@@ -368,11 +380,11 @@ export function AuthButton({
         width: '100%',
         height: '50px',
         marginTop: '0.2rem',
-        backgroundColor: '#1C4019',
-        color: '#FFFFFF',
+        backgroundColor: '#1F5A28',
+        color: '#FFFFFF !important',
         borderRadius: '12px',
         border: 'none',
-        fontWeight: '800',
+        fontWeight: '700',
         fontSize: '0.98rem',
         letterSpacing: '0.01em',
         display: 'flex',
@@ -383,7 +395,7 @@ export function AuthButton({
         opacity: disabled || loading ? 0.78 : 1,
         transition: 'all 0.2s ease',
         fontFamily: 'inherit',
-        boxShadow: '0 4px 14px rgba(28, 64, 25, 0.28)',
+        boxShadow: '0 4px 14px rgba(31, 90, 40, 0.28)',
         boxSizing: 'border-box',
         ...style,
       }}
@@ -400,11 +412,11 @@ export function AuthButton({
               animation: 'authSpinner 0.8s linear infinite',
             }}
           />
-          <span style={{ color: '#FFFFFF', fontWeight: '800' }}>{loadingText}</span>
+          <span style={{ color: '#FFFFFF !important', fontWeight: '700' }}>{loadingText}</span>
         </div>
       ) : (
         <>
-          <span style={{ color: '#FFFFFF', fontWeight: '800' }}>{children}</span>
+          <span style={{ color: '#FFFFFF !important', fontWeight: '700' }}>{children}</span>
           {Icon && <Icon size={18} color="#FFFFFF" style={{ strokeWidth: 2.8 }} />}
         </>
       )}
