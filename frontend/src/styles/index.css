@@ -3174,6 +3174,28 @@ footer.transparent-blurred-footer {
   100% { transform: rotate(360deg); }
 }
 
+/* MILASTY Auth Input Placeholder & Contrast Overrides */
+.milasty-auth-input::placeholder {
+  color: #5C4329 !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
+.milasty-auth-input::-webkit-input-placeholder {
+  color: #5C4329 !important;
+  opacity: 1 !important;
+}
+
+.milasty-auth-input::-moz-placeholder {
+  color: #5C4329 !important;
+  opacity: 1 !important;
+}
+
+.milasty-auth-input:-ms-input-placeholder {
+  color: #5C4329 !important;
+  opacity: 1 !important;
+}
+
 @media (max-width: 768px) {
   .shipping-process-flow {
     flex-direction: column;
@@ -3187,11 +3209,16 @@ footer.transparent-blurred-footer {
   }
 
   .milasty-auth-page {
-    padding: 4.5rem 1rem 2.5rem !important;
+    padding: 3.5rem 0.85rem 2rem !important;
   }
 
   .milasty-auth-card {
-    padding: 1.85rem 1.35rem 1.5rem !important;
+    padding: 1.85rem 1.25rem 1.5rem !important;
     border-radius: 20px !important;
   }
-}
+
+  .milasty-auth-card h1 {
+    font-size: 1.85rem !important;
+  }
+}
+

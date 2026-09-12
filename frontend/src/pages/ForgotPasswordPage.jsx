@@ -78,15 +78,15 @@ export default function ForgotPasswordPage() {
               width: '56px',
               height: '56px',
               borderRadius: '50%',
-              backgroundColor: '#D1E2CD',
-              color: '#244F21',
+              backgroundColor: '#CDE5CB',
+              color: '#1C4019',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto',
             }}
           >
-            <Check size={28} color="#244F21" style={{ strokeWidth: 3 }} />
+            <Check size={28} color="#1C4019" style={{ strokeWidth: 3 }} />
           </div>
 
           <div>
@@ -94,21 +94,21 @@ export default function ForgotPasswordPage() {
               style={{
                 fontSize: '1.9rem',
                 fontFamily: 'var(--font-serif)',
-                color: '#26150F',
-                fontWeight: '800',
+                color: '#1F100A',
+                fontWeight: '900',
                 margin: '0 0 0.45rem',
               }}
             >
               Check Your Email
             </h1>
-            <p style={{ color: '#5C3D20', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
+            <p style={{ color: '#4A2F17', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '600' }}>
               We've sent password reset instructions to{' '}
-              <strong style={{ color: '#26150F', wordBreak: 'break-all' }}>{email}</strong>. Please check your inbox and follow the secure link.
+              <strong style={{ color: '#1F100A', wordBreak: 'break-all' }}>{email}</strong>. Please check your inbox and follow the secure link.
             </p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.2rem' }}>
-            {/* Resend Email Button matching Reference Image (#EAEFE6 outline button) */}
+            {/* Resend Email Button */}
             <button
               type="button"
               onClick={handleResend}
@@ -116,12 +116,12 @@ export default function ForgotPasswordPage() {
               style={{
                 width: '100%',
                 height: '46px',
-                backgroundColor: '#F5F1E8',
-                color: cooldown > 0 ? '#8A7352' : '#244F21',
+                backgroundColor: '#F3EDE2',
+                color: cooldown > 0 ? '#705438' : '#1C4019',
                 borderRadius: '12px',
-                border: '1.5px solid #244F21',
-                fontWeight: '700',
-                fontSize: '0.86rem',
+                border: '1.5px solid #1C4019',
+                fontWeight: '800',
+                fontSize: '0.88rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -138,9 +138,9 @@ export default function ForgotPasswordPage() {
             <Link
               to="/login"
               style={{
-                fontSize: '0.85rem',
-                color: '#244F21',
-                fontWeight: '700',
+                fontSize: '0.86rem',
+                color: '#1C4019',
+                fontWeight: '800',
                 textDecoration: 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -192,9 +192,9 @@ export default function ForgotPasswordPage() {
           <Link
             to="/login"
             style={{
-              fontSize: '0.85rem',
-              color: '#244F21',
-              fontWeight: '700',
+              fontSize: '0.86rem',
+              color: '#1C4019',
+              fontWeight: '800',
               textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',

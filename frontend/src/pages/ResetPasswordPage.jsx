@@ -80,11 +80,11 @@ export default function ResetPasswordPage() {
   const passwordsMatch = password && confirmPassword && password === confirmPassword;
 
   const getStrengthLabel = () => {
-    if (password.length === 0) return { text: 'Weak', color: '#8A7352', bars: 1 };
-    if (metCount <= 1) return { text: 'Weak', color: '#D96B5F', bars: 1 };
+    if (password.length === 0) return { text: 'Weak', color: '#5C4329', bars: 1 };
+    if (metCount <= 1) return { text: 'Weak', color: '#D9534F', bars: 1 };
     if (metCount === 2) return { text: 'Fair', color: '#D6A23F', bars: 2 };
-    if (metCount === 3) return { text: 'Good', color: '#8FAF5B', bars: 3 };
-    return { text: 'Strong', color: '#244F21', bars: 4 };
+    if (metCount === 3) return { text: 'Good', color: '#7AA34A', bars: 3 };
+    return { text: 'Strong', color: '#1C4019', bars: 4 };
   };
 
   const strength = getStrengthLabel();
@@ -175,17 +175,17 @@ export default function ResetPasswordPage() {
               style={{
                 width: '100%',
                 height: '50px',
-                backgroundColor: '#244F21',
+                backgroundColor: '#1C4019',
                 color: '#FFFFFF',
                 borderRadius: '12px',
-                fontWeight: '700',
+                fontWeight: '800',
                 fontSize: '0.95rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0.5rem',
                 textDecoration: 'none',
-                boxShadow: '0 4px 12px rgba(36, 79, 33, 0.22)',
+                boxShadow: '0 4px 14px rgba(28, 64, 25, 0.28)',
                 boxSizing: 'border-box',
               }}
             >
@@ -196,9 +196,9 @@ export default function ResetPasswordPage() {
             <Link
               to="/login"
               style={{
-                fontSize: '0.85rem',
-                color: '#244F21',
-                fontWeight: '700',
+                fontSize: '0.86rem',
+                color: '#1C4019',
+                fontWeight: '800',
                 textDecoration: 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -225,15 +225,15 @@ export default function ResetPasswordPage() {
               width: '56px',
               height: '56px',
               borderRadius: '50%',
-              backgroundColor: '#D1E2CD',
-              color: '#244F21',
+              backgroundColor: '#CDE5CB',
+              color: '#1C4019',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto',
             }}
           >
-            <Check size={28} color="#244F21" style={{ strokeWidth: 3 }} />
+            <Check size={28} color="#1C4019" style={{ strokeWidth: 3 }} />
           </div>
 
           <div>
@@ -241,14 +241,14 @@ export default function ResetPasswordPage() {
               style={{
                 fontSize: '1.9rem',
                 fontFamily: 'var(--font-serif)',
-                color: '#26150F',
-                fontWeight: '800',
+                color: '#1F100A',
+                fontWeight: '900',
                 margin: '0 0 0.45rem',
               }}
             >
               Password Updated
             </h1>
-            <p style={{ color: '#5C3D20', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
+            <p style={{ color: '#4A2F17', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '600' }}>
               Your password has been successfully updated. You can now login with your new password.
             </p>
           </div>
@@ -258,10 +258,10 @@ export default function ResetPasswordPage() {
             style={{
               width: '100%',
               height: '50px',
-              backgroundColor: '#244F21',
+              backgroundColor: '#1C4019',
               color: '#FFFFFF',
               borderRadius: '12px',
-              fontWeight: '700',
+              fontWeight: '800',
               fontSize: '0.95rem',
               display: 'flex',
               alignItems: 'center',
@@ -269,7 +269,7 @@ export default function ResetPasswordPage() {
               gap: '0.5rem',
               textDecoration: 'none',
               marginTop: '0.2rem',
-              boxShadow: '0 4px 12px rgba(36, 79, 33, 0.22)',
+              boxShadow: '0 4px 14px rgba(28, 64, 25, 0.28)',
               boxSizing: 'border-box',
             }}
           >
@@ -297,9 +297,9 @@ export default function ResetPasswordPage() {
             <label
               htmlFor="reset-password"
               style={{
-                fontSize: '0.72rem',
-                fontWeight: '800',
-                color: '#3D2413',
+                fontSize: '0.74rem',
+                fontWeight: '900',
+                color: '#2E180C',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}
@@ -328,7 +328,7 @@ export default function ResetPasswordPage() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#6B4A2F',
+                  color: '#4A2F17',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -346,19 +346,19 @@ export default function ResetPasswordPage() {
             style={{
               marginTop: '0.6rem',
               padding: '0.65rem 0.85rem',
-              backgroundColor: '#F5F1E8',
+              backgroundColor: '#F3EDE2',
               borderRadius: '12px',
-              border: '1px solid #E2D7C7',
+              border: '1.5px solid #D8CCB8',
               display: 'flex',
               flexDirection: 'column',
               gap: '0.45rem',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.74rem', color: '#5C3D20', fontWeight: '700' }}>
+              <span style={{ fontSize: '0.74rem', color: '#4A2F17', fontWeight: '800' }}>
                 Password strength
               </span>
-              <span style={{ fontSize: '0.74rem', color: strength.color, fontWeight: '800' }}>
+              <span style={{ fontSize: '0.74rem', color: strength.color, fontWeight: '900' }}>
                 {strength.text}
               </span>
             </div>
@@ -371,7 +371,7 @@ export default function ResetPasswordPage() {
                   style={{
                     height: '5px',
                     borderRadius: '2px',
-                    backgroundColor: segment <= strength.bars ? strength.color : '#E2D7C7',
+                    backgroundColor: segment <= strength.bars ? strength.color : '#D8CCB8',
                     transition: 'all 0.3s ease',
                   }}
                 />
@@ -387,9 +387,9 @@ export default function ResetPasswordPage() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.45rem',
-                    fontSize: '0.73rem',
-                    color: req.pass ? '#244F21' : '#6B4A2F',
-                    fontWeight: req.pass ? '700' : '500',
+                    fontSize: '0.74rem',
+                    color: req.pass ? '#1C4019' : '#4A2F17',
+                    fontWeight: '800',
                   }}
                 >
                   <div
@@ -397,14 +397,14 @@ export default function ResetPasswordPage() {
                       width: '15px',
                       height: '15px',
                       borderRadius: '50%',
-                      backgroundColor: req.pass ? '#244F21' : '#E2D7C7',
+                      backgroundColor: req.pass ? '#1C4019' : '#C8BBA7',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
                     }}
                   >
-                    <CheckCircle2 size={11} color={req.pass ? '#FFFFFF' : '#8A7352'} />
+                    <CheckCircle2 size={11} color={req.pass ? '#FFFFFF' : '#4A2F17'} />
                   </div>
                   <span>{req.label}</span>
                 </div>
@@ -436,7 +436,7 @@ export default function ResetPasswordPage() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#6B4A2F',
+                  color: '#4A2F17',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -458,9 +458,9 @@ export default function ResetPasswordPage() {
           <Link
             to="/login"
             style={{
-              fontSize: '0.85rem',
-              color: '#244F21',
-              fontWeight: '700',
+              fontSize: '0.86rem',
+              color: '#1C4019',
+              fontWeight: '800',
               textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',

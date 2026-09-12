@@ -80,9 +80,9 @@ export default function LoginPage() {
             <label
               htmlFor="login-password"
               style={{
-                fontSize: '0.72rem',
-                fontWeight: '800',
-                color: '#3D2413',
+                fontSize: '0.74rem',
+                fontWeight: '900',
+                color: '#2E180C',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}
@@ -111,7 +111,7 @@ export default function LoginPage() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#6B4A2F',
+                  color: '#4A2F17',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -128,9 +128,9 @@ export default function LoginPage() {
             <Link
               to="/forgot-password"
               style={{
-                fontSize: '0.8rem',
-                color: '#244F21',
-                fontWeight: '700',
+                fontSize: '0.82rem',
+                color: '#1C4019',
+                fontWeight: '800',
                 textDecoration: 'none',
               }}
             >
@@ -148,8 +148,8 @@ export default function LoginPage() {
       {/* Social Logins OR Separator matching reference */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginTop: '0.2rem' }}>
         <div style={{ position: 'relative', textAlign: 'center' }}>
-          <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: '#E2D7C7' }} />
-          <span style={{ position: 'relative', backgroundColor: '#FBF9F4', padding: '0 0.75rem', fontSize: '0.72rem', color: '#8A7352', fontWeight: '700' }}>
+          <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1.5px', backgroundColor: '#D8CCB8' }} />
+          <span style={{ position: 'relative', backgroundColor: '#FBF9F4', padding: '0 0.75rem', fontSize: '0.74rem', color: '#5C4329', fontWeight: '800' }}>
             OR
           </span>
         </div>
@@ -161,11 +161,11 @@ export default function LoginPage() {
             style={{
               height: '42px',
               backgroundColor: '#FFFFFF',
-              border: '1px solid #E2D7C7',
+              border: '1.5px solid #D8CCB8',
               borderRadius: '10px',
               fontSize: '0.76rem',
-              fontWeight: '700',
-              color: '#3D2413',
+              fontWeight: '800',
+              color: '#2E180C',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -188,11 +188,11 @@ export default function LoginPage() {
             style={{
               height: '42px',
               backgroundColor: '#FFFFFF',
-              border: '1px solid #E2D7C7',
+              border: '1.5px solid #D8CCB8',
               borderRadius: '10px',
               fontSize: '0.76rem',
-              fontWeight: '700',
-              color: '#3D2413',
+              fontWeight: '800',
+              color: '#2E180C',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -209,9 +209,9 @@ export default function LoginPage() {
       </div>
 
       {/* Switch to Register */}
-      <div style={{ textAlign: 'center', fontSize: '0.86rem', color: '#5C3D20', fontWeight: '600', paddingTop: '0.2rem' }}>
+      <div style={{ textAlign: 'center', fontSize: '0.88rem', color: '#4A2F17', fontWeight: '700', paddingTop: '0.2rem' }}>
         Don't have an account?{' '}
-        <Link to="/register" style={{ color: '#244F21', fontWeight: '800', textDecoration: 'none' }}>
+        <Link to="/register" style={{ color: '#1C4019', fontWeight: '900', textDecoration: 'none' }}>
           Create one here
         </Link>
       </div>

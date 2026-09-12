@@ -139,7 +139,7 @@ export default function RegisterPage() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#6B4A2F',
+                  color: '#4A2F17',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -152,14 +152,14 @@ export default function RegisterPage() {
             }
           />
 
-          {/* Checklist Box matching Reference Image */}
+          {/* Checklist Box matching Reference Image with high contrast dark text (#3D2413 / #1C4019) */}
           <div
             style={{
               marginTop: '0.6rem',
               padding: '0.65rem 0.85rem',
-              backgroundColor: '#F5F1E8',
+              backgroundColor: '#F3EDE2',
               borderRadius: '12px',
-              border: '1px solid #E2D7C7',
+              border: '1.5px solid #D8CCB8',
               display: 'flex',
               flexDirection: 'column',
               gap: '0.35rem',
@@ -173,8 +173,8 @@ export default function RegisterPage() {
                   alignItems: 'center',
                   gap: '0.45rem',
                   fontSize: '0.74rem',
-                  color: req.pass ? '#244F21' : '#6B4A2F',
-                  fontWeight: req.pass ? '700' : '500',
+                  color: req.pass ? '#1C4019' : '#4A2F17',
+                  fontWeight: '800',
                 }}
               >
                 <div
@@ -182,14 +182,14 @@ export default function RegisterPage() {
                     width: '15px',
                     height: '15px',
                     borderRadius: '50%',
-                    backgroundColor: req.pass ? '#244F21' : '#E2D7C7',
+                    backgroundColor: req.pass ? '#1C4019' : '#C8BBA7',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
                   }}
                 >
-                  <CheckCircle2 size={11} color={req.pass ? '#FFFFFF' : '#8A7352'} />
+                  <CheckCircle2 size={11} color={req.pass ? '#FFFFFF' : '#4A2F17'} />
                 </div>
                 <span>{req.label}</span>
               </div>
@@ -204,9 +204,9 @@ export default function RegisterPage() {
       </form>
 
       {/* Switch to Login */}
-      <div style={{ textAlign: 'center', fontSize: '0.86rem', color: '#5C3D20', fontWeight: '600', paddingTop: '0.1rem' }}>
+      <div style={{ textAlign: 'center', fontSize: '0.88rem', color: '#4A2F17', fontWeight: '700', paddingTop: '0.1rem' }}>
         Already have an account?{' '}
-        <Link to="/login" style={{ color: '#244F21', fontWeight: '800', textDecoration: 'none' }}>
+        <Link to="/login" style={{ color: '#1C4019', fontWeight: '900', textDecoration: 'none' }}>
           Login here
         </Link>
       </div>
