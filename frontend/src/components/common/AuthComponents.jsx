@@ -1,10 +1,51 @@
 import React, { useState } from 'react';
-import { ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { ShieldAlert, CheckCircle2, Lock, Mail, User, Phone } from 'lucide-react';
 
 /**
- * Shared Auth Container Layout for MILASTY Authentication Pages
+ * Botanical Leaf Illustration Motif for top right corner of Auth Cards
  */
-export function AuthLayout({ badge, title, subtitle, children, trustBadges }) {
+function LeafMotif() {
+  return (
+    <svg
+      width="64"
+      height="64"
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{
+        position: 'absolute',
+        top: '12px',
+        right: '12px',
+        opacity: 0.45,
+        pointerEvents: 'none',
+      }}
+    >
+      <path
+        d="M56 8C40 8 26 20 22 36C20 28 14 18 4 14C12 28 20 38 28 42C26 48 24 54 22 60C28 52 36 44 44 40C52 38 60 24 56 8Z"
+        stroke="#8A7352"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M22 36C32 32 44 26 56 8"
+        stroke="#8A7352"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Shared Auth Container Layout matching reference image:
+ * - Warm cream/ivory background card (#FBF9F4)
+ * - Corner botanical flourish
+ * - Clear pill badge
+ * - Large serif title with natural line break support
+ * - Clean trust indicators footer
+ */
+export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, children, trustBadges }) {
   const defaultBadges = [
     { icon: '🔒', text: 'SSL Secured' },
     { icon: '🌿', text: '100% Natural' },
@@ -24,53 +65,57 @@ export function AuthLayout({ badge, title, subtitle, children, trustBadges }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '5rem 1.25rem 3.5rem',
+        padding: '3rem 1rem 3rem',
         position: 'relative',
         boxSizing: 'border-box',
       }}
     >
-      {/* Background Soft Dark Overlay for Maximum Contrast & Readability */}
+      {/* Background Soft Dark Overlay for background contrast */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundColor: 'rgba(25, 14, 8, 0.38)',
+          backgroundColor: 'rgba(25, 14, 8, 0.35)',
           pointerEvents: 'none',
           zIndex: 1,
         }}
       />
 
-      {/* Central Premium Card */}
+      {/* Central Card */}
       <div
         className="milasty-auth-card"
         style={{
           position: 'relative',
           zIndex: 2,
           width: '100%',
-          maxWidth: '480px',
-          backgroundColor: '#FFFDF9',
-          borderRadius: '24px',
-          border: '1.5px solid rgba(100, 65, 35, 0.16)',
-          boxShadow: '0 20px 50px rgba(30, 16, 8, 0.22), 0 4px 12px rgba(0, 0, 0, 0.06)',
+          maxWidth: '460px',
+          backgroundColor: '#FBF9F4',
+          borderRadius: '26px',
+          border: '1px solid rgba(138, 115, 82, 0.22)',
+          boxShadow: '0 20px 48px rgba(35, 20, 10, 0.22), 0 4px 14px rgba(0,0,0,0.05)',
           padding: '2.5rem 2.25rem 2rem',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.5rem',
+          gap: '1.25rem',
           boxSizing: 'border-box',
+          overflow: 'hidden',
         }}
       >
-        {/* Brand Header */}
-        <div style={{ textAlign: 'center', borderBottom: '1px solid rgba(100, 65, 35, 0.12)', paddingBottom: '1.35rem' }}>
+        {/* Leaf Motif */}
+        <LeafMotif />
+
+        {/* Header Header Header */}
+        <div style={{ textAlign: 'center', position: 'relative', zIndex: 2 }}>
           {badge && (
             <span
               style={{
-                fontSize: '0.68rem',
+                fontSize: '0.66rem',
                 fontWeight: '800',
                 textTransform: 'uppercase',
                 letterSpacing: '0.12em',
-                color: '#244f21',
-                backgroundColor: 'rgba(36, 79, 33, 0.08)',
-                padding: '0.35rem 0.85rem',
+                color: '#244F21',
+                backgroundColor: '#EAEFE6',
+                padding: '0.3rem 0.85rem',
                 borderRadius: '999px',
                 border: '1px solid rgba(36, 79, 33, 0.18)',
                 display: 'inline-block',
@@ -80,23 +125,41 @@ export function AuthLayout({ badge, title, subtitle, children, trustBadges }) {
               {badge}
             </span>
           )}
-          {title && (
-            <h1
+
+          {/* Large Editorial Serif Title */}
+          <h1
+            style={{
+              fontSize: '2.2rem',
+              fontFamily: 'var(--font-serif)',
+              color: '#26150F',
+              fontWeight: '800',
+              margin: '0 0 0.45rem',
+              letterSpacing: '-0.01em',
+              lineHeight: '1.15',
+            }}
+          >
+            {titleLine1 && titleLine2 ? (
+              <>
+                {titleLine1}
+                <br />
+                {titleLine2}
+              </>
+            ) : (
+              title
+            )}
+          </h1>
+
+          {subtitle && (
+            <p
               style={{
-                fontSize: '1.9rem',
-                fontFamily: 'var(--font-serif)',
-                color: '#24130D',
-                fontWeight: '800',
-                margin: '0 0 0.4rem',
-                letterSpacing: '-0.01em',
-                lineHeight: '1.25',
+                color: '#5C3D20',
+                fontSize: '0.88rem',
+                margin: 0,
+                fontWeight: '500',
+                lineHeight: '1.45',
+                padding: '0 0.5rem',
               }}
             >
-              {title}
-            </h1>
-          )}
-          {subtitle && (
-            <p style={{ color: '#5C3D20', fontSize: '0.9rem', margin: 0, fontWeight: '500', lineHeight: '1.5' }}>
               {subtitle}
             </p>
           )}
@@ -105,16 +168,17 @@ export function AuthLayout({ badge, title, subtitle, children, trustBadges }) {
         {/* Dynamic Form Content */}
         {children}
 
-        {/* Security / Value Indicators */}
+        {/* Security / Trust Badges */}
         {badgesToRender && badgesToRender.length > 0 && (
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '1rem',
+              gap: '0.85rem',
               paddingTop: '0.85rem',
-              borderTop: '1px solid rgba(100, 65, 35, 0.10)',
+              marginTop: '0.25rem',
+              borderTop: '1px solid rgba(138, 115, 82, 0.15)',
               flexWrap: 'wrap',
             }}
           >
@@ -122,12 +186,12 @@ export function AuthLayout({ badge, title, subtitle, children, trustBadges }) {
               <span
                 key={idx}
                 style={{
-                  fontSize: '0.72rem',
-                  color: '#6B4030',
+                  fontSize: '0.7rem',
+                  color: '#6B4A2F',
                   fontWeight: '700',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.35rem',
+                  gap: '0.3rem',
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -152,15 +216,15 @@ export function AuthAlert({ message, type = 'error' }) {
     <div
       role="alert"
       style={{
-        backgroundColor: isError ? 'rgba(184, 50, 30, 0.08)' : 'rgba(36, 79, 33, 0.08)',
-        border: `1.5px solid ${isError ? 'rgba(184, 50, 30, 0.30)' : 'rgba(36, 79, 33, 0.30)'}`,
-        color: isError ? '#8B2020' : '#244f21',
-        padding: '0.85rem 1rem',
+        backgroundColor: isError ? '#FDF2F0' : '#EFEFEE',
+        border: `1.5px solid ${isError ? '#E8B4AC' : '#244F21'}`,
+        color: isError ? '#9C2A1B' : '#244F21',
+        padding: '0.8rem 0.95rem',
         borderRadius: '12px',
-        fontSize: '0.85rem',
+        fontSize: '0.84rem',
         display: 'flex',
         alignItems: 'center',
-        gap: '0.6rem',
+        gap: '0.55rem',
         fontWeight: '600',
         lineHeight: '1.4',
       }}
@@ -172,7 +236,13 @@ export function AuthAlert({ message, type = 'error' }) {
 }
 
 /**
- * Standard Text / Email Input Component with strict padding to avoid icon overlap
+ * Input Component strictly matching reference image:
+ * - Off-white/cream input background (#F7F4EE)
+ * - Warm border (#E0D6C6)
+ * - Clear UPPERCASE label in dark brown (#4A2C10)
+ * - Dark readable placeholder (#8A7352)
+ * - Dark readable typed text (#26150F)
+ * - No icon/text overlap
  */
 export function AuthInput({
   label,
@@ -194,24 +264,25 @@ export function AuthInput({
   const inputId = id || (label ? label.toLowerCase().replace(/[^a-z0-9]/g, '-') : undefined);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
       {label && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <label
             htmlFor={inputId}
             style={{
-              fontSize: '0.74rem',
+              fontSize: '0.72rem',
               fontWeight: '800',
-              color: '#4A2C10',
+              color: '#3D2413',
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
+              letterSpacing: '0.06em',
             }}
           >
             {label}
           </label>
-          {hint && <span style={{ fontSize: '0.74rem', color: '#7A5535', fontWeight: '500' }}>{hint}</span>}
+          {hint && <span style={{ fontSize: '0.72rem', color: '#7A5535', fontWeight: '600' }}>{hint}</span>}
         </div>
       )}
+
       <div style={{ position: 'relative', width: '100%' }}>
         {Icon && (
           <div
@@ -224,7 +295,7 @@ export function AuthInput({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: isFocused ? '#244f21' : '#7A5535',
+              color: isFocused ? '#244F21' : '#6B4A2F',
               transition: 'color 0.2s',
               zIndex: 2,
             }}
@@ -245,18 +316,18 @@ export function AuthInput({
           onBlur={() => setIsFocused(false)}
           style={{
             width: '100%',
-            height: '50px',
-            paddingLeft: Icon ? '2.85rem' : '1rem',
+            height: '48px',
+            paddingLeft: Icon ? '2.75rem' : '1rem',
             paddingRight: rightElement ? '3rem' : '1rem',
             borderRadius: '12px',
             border: `1.5px solid ${
-              error ? '#B8321E' : isFocused ? '#244f21' : 'rgba(100, 65, 35, 0.25)'
+              error ? '#B8321E' : isFocused ? '#244F21' : '#E2D7C7'
             }`,
             boxShadow: isFocused ? '0 0 0 3px rgba(36, 79, 33, 0.12)' : 'none',
-            fontSize: '0.92rem',
+            fontSize: '0.9rem',
             outline: 'none',
-            backgroundColor: 'rgba(255, 252, 245, 0.90)',
-            color: '#24130D',
+            backgroundColor: '#F5F1E8',
+            color: '#26150F',
             transition: 'all 0.2s ease',
             fontFamily: 'inherit',
             boxSizing: 'border-box',
@@ -285,7 +356,7 @@ export function AuthInput({
 }
 
 /**
- * Standard High Contrast Primary Button Component
+ * Deep MILASTY Green Primary Button Component with WHITE High-Contrast Text
  */
 export function AuthButton({
   children,
@@ -304,24 +375,24 @@ export function AuthButton({
       onClick={onClick}
       style={{
         width: '100%',
-        height: '52px',
-        marginTop: '0.35rem',
-        backgroundColor: '#244f21',
+        height: '50px',
+        marginTop: '0.2rem',
+        backgroundColor: '#244F21',
         color: '#FFFFFF',
-        borderRadius: '14px',
+        borderRadius: '12px',
         border: 'none',
         fontWeight: '700',
-        fontSize: '0.98rem',
+        fontSize: '0.96rem',
         letterSpacing: '0.01em',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         gap: '0.5rem',
         cursor: disabled || loading ? 'not-allowed' : 'pointer',
-        opacity: disabled || loading ? 0.75 : 1,
+        opacity: disabled || loading ? 0.78 : 1,
         transition: 'all 0.2s ease',
         fontFamily: 'inherit',
-        boxShadow: '0 4px 14px rgba(36, 79, 33, 0.25)',
+        boxShadow: '0 4px 12px rgba(36, 79, 33, 0.22)',
         boxSizing: 'border-box',
         ...style,
       }}

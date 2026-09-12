@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, CheckCircle2, ArrowRight, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Mail, Check, ArrowRight, ArrowLeft, RefreshCw } from 'lucide-react';
 import api from '../api/axios';
 import { useToast } from '../context/ToastContext';
 import { AuthLayout, AuthInput, AuthButton, AuthAlert } from '../components/common/AuthComponents';
@@ -67,71 +67,48 @@ export default function ForgotPasswordPage() {
     handleSubmit();
   };
 
-  return (
-    <AuthLayout
-      badge="Account Security"
-      title="Forgot Password"
-      subtitle="Enter the email address associated with your MILASTY account and we'll send you a secure link to reset your password."
-      trustBadges={[
-        { icon: '🔒', text: '256-bit Encryption' },
-        { icon: '🌿', text: 'MILASTY Protection' },
-      ]}
-    >
-      {/* Error Alert */}
-      <AuthAlert message={error} type="error" />
-
-      {sent ? (
-        /* Polished Success View */
-        <div style={{ textAlign: 'center', padding: '0.25rem 0', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+  if (sent) {
+    /* Polished Success Card matching bottom box of Reference Image */
+    return (
+      <AuthLayout trustBadges={[]}>
+        <div style={{ textAlign: 'center', padding: '0.4rem 0', display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+          {/* Green Circle Check Badge */}
           <div
             style={{
-              width: '60px',
-              height: '60px',
+              width: '56px',
+              height: '56px',
               borderRadius: '50%',
-              backgroundColor: 'rgba(36, 79, 33, 0.10)',
-              color: '#244f21',
+              backgroundColor: '#D1E2CD',
+              color: '#244F21',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto',
             }}
           >
-            <CheckCircle2 size={34} color="#244f21" />
+            <Check size={28} color="#244F21" style={{ strokeWidth: 3 }} />
           </div>
 
           <div>
-            <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#24130D', fontWeight: '800', marginBottom: '0.4rem' }}>
+            <h1
+              style={{
+                fontSize: '1.9rem',
+                fontFamily: 'var(--font-serif)',
+                color: '#26150F',
+                fontWeight: '800',
+                margin: '0 0 0.45rem',
+              }}
+            >
               Check Your Email
-            </h3>
+            </h1>
             <p style={{ color: '#5C3D20', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
-              We've sent password reset instructions to <strong style={{ color: '#24130D' }}>{email}</strong>. Please check your inbox and follow the secure link.
+              We've sent password reset instructions to{' '}
+              <strong style={{ color: '#26150F', wordBreak: 'break-all' }}>{email}</strong>. Please check your inbox and follow the secure link.
             </p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.25rem' }}>
-            <Link
-              to="/login"
-              style={{
-                width: '100%',
-                height: '50px',
-                backgroundColor: '#244f21',
-                color: '#FFFFFF',
-                borderRadius: '14px',
-                fontWeight: '700',
-                fontSize: '0.95rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                textDecoration: 'none',
-                boxShadow: '0 4px 14px rgba(36, 79, 33, 0.25)',
-                boxSizing: 'border-box',
-              }}
-            >
-              <span>Back to Login</span>
-              <ArrowRight size={18} color="#FFFFFF" />
-            </Link>
-
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.2rem' }}>
+            {/* Resend Email Button matching Reference Image (#EAEFE6 outline button) */}
             <button
               type="button"
               onClick={handleResend}
@@ -139,16 +116,16 @@ export default function ForgotPasswordPage() {
               style={{
                 width: '100%',
                 height: '46px',
-                backgroundColor: 'transparent',
-                color: cooldown > 0 ? '#8B7865' : '#244f21',
+                backgroundColor: '#F5F1E8',
+                color: cooldown > 0 ? '#8A7352' : '#244F21',
                 borderRadius: '12px',
-                border: '1.5px solid rgba(36, 79, 33, 0.3)',
+                border: '1.5px solid #244F21',
                 fontWeight: '700',
-                fontSize: '0.85rem',
+                fontSize: '0.86rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '0.4rem',
+                gap: '0.45rem',
                 cursor: cooldown > 0 ? 'not-allowed' : 'pointer',
                 fontFamily: 'inherit',
               }}
@@ -156,40 +133,18 @@ export default function ForgotPasswordPage() {
               <RefreshCw size={15} style={{ animation: loading ? 'authSpinner 0.8s linear infinite' : 'none' }} />
               <span>{cooldown > 0 ? `Resend Email (${cooldown}s)` : 'Resend Email'}</span>
             </button>
-          </div>
-        </div>
-      ) : (
-        /* Form View */
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <AuthInput
-            label="Email Address"
-            type="email"
-            icon={Mail}
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (error) setError('');
-            }}
-            placeholder="Enter your registered email"
-            required
-            autoComplete="email"
-            id="forgot-email"
-          />
 
-          <AuthButton loading={loading} loadingText="Sending..." icon={ArrowRight}>
-            Send Reset Link
-          </AuthButton>
-
-          <div style={{ textAlign: 'center', paddingTop: '0.1rem' }}>
+            {/* Back to Login Link */}
             <Link
               to="/login"
               style={{
                 fontSize: '0.85rem',
-                color: '#244f21',
+                color: '#244F21',
                 fontWeight: '700',
                 textDecoration: 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '0.35rem',
               }}
             >
@@ -197,8 +152,60 @@ export default function ForgotPasswordPage() {
               <span>Back to Login</span>
             </Link>
           </div>
-        </form>
-      )}
+        </div>
+      </AuthLayout>
+    );
+  }
+
+  return (
+    <AuthLayout
+      badge="ACCOUNT SECURITY"
+      titleLine1="Forgot"
+      titleLine2="Password"
+      subtitle="Enter the email address associated with your MILASTY account and we'll send you a secure link to reset your password."
+    >
+      {/* Error Alert */}
+      <AuthAlert message={error} type="error" />
+
+      {/* Form View */}
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+        <AuthInput
+          label="EMAIL ADDRESS"
+          type="email"
+          icon={Mail}
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (error) setError('');
+          }}
+          placeholder="Enter your registered email"
+          required
+          autoComplete="email"
+          id="forgot-email"
+        />
+
+        <AuthButton loading={loading} loadingText="Sending..." icon={ArrowRight}>
+          Send Reset Link
+        </AuthButton>
+
+        <div style={{ textAlign: 'center', paddingTop: '0.1rem' }}>
+          <Link
+            to="/login"
+            style={{
+              fontSize: '0.85rem',
+              color: '#244F21',
+              fontWeight: '700',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+            }}
+          >
+            <ArrowLeft size={16} />
+            <span>Back to Login</span>
+          </Link>
+        </div>
+      </form>
     </AuthLayout>
   );
 }

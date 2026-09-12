@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Lock, Phone, ArrowRight, Eye, EyeOff, Check, X } from 'lucide-react';
+import { User, Mail, Lock, Phone, ArrowRight, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { AuthLayout, AuthInput, AuthButton, AuthAlert } from '../components/common/AuthComponents';
@@ -17,24 +17,13 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Password requirements calculation
+  // Password requirements checklist strictly matching reference image UI
   const requirements = [
     { label: 'At least 8 characters', pass: password.length >= 8 },
-    { label: 'One uppercase letter', pass: /[A-Z]/.test(password) },
-    { label: 'One lowercase letter', pass: /[a-z]/.test(password) },
-    { label: 'One number', pass: /\d/.test(password) },
+    { label: 'One uppercase letter (A-Z)', pass: /[A-Z]/.test(password) },
+    { label: 'One lowercase letter (a-z)', pass: /[a-z]/.test(password) },
+    { label: 'One number (0-9)', pass: /\d/.test(password) },
   ];
-  const metCount = requirements.filter((r) => r.pass).length;
-
-  const getStrengthLabel = () => {
-    if (password.length === 0) return null;
-    if (metCount <= 1) return { text: 'Weak', color: '#D96B5F', width: '25%' };
-    if (metCount === 2) return { text: 'Fair', color: '#D6A23F', width: '50%' };
-    if (metCount === 3) return { text: 'Good', color: '#8FAF5B', width: '75%' };
-    return { text: 'Strong', color: '#244f21', width: '100%' };
-  };
-
-  const strength = getStrengthLabel();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,18 +59,19 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout
-      badge="Join the MILASTY Family"
-      title="Create Your Account"
+      badge="JOIN THE MILASTY FAMILY"
+      titleLine1="Create Your"
+      titleLine2="Account"
       subtitle="Sign up to enjoy personalised millet bakery orders, tracking & exclusive offers."
     >
       {/* Error Alert */}
       <AuthAlert message={error} type="error" />
 
       {/* Registration Form */}
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.05rem' }}>
         {/* Full Name */}
         <AuthInput
-          label="Full Name *"
+          label="FULL NAME"
           type="text"
           icon={User}
           value={name}
@@ -89,7 +79,7 @@ export default function RegisterPage() {
             setName(e.target.value);
             if (error) setError('');
           }}
-          placeholder="Your full name"
+          placeholder="Enter your full name"
           required
           autoComplete="name"
           id="register-name"
@@ -97,7 +87,7 @@ export default function RegisterPage() {
 
         {/* Email Address */}
         <AuthInput
-          label="Email Address *"
+          label="EMAIL ADDRESS"
           type="email"
           icon={Mail}
           value={email}
@@ -105,7 +95,7 @@ export default function RegisterPage() {
             setEmail(e.target.value);
             if (error) setError('');
           }}
-          placeholder="email@example.com"
+          placeholder="Enter your email address"
           required
           autoComplete="email"
           id="register-email"
@@ -113,8 +103,7 @@ export default function RegisterPage() {
 
         {/* Mobile Number */}
         <AuthInput
-          label="Mobile Number"
-          hint="(Optional)"
+          label="MOBILE NUMBER (Optional)"
           type="tel"
           icon={Phone}
           value={phone}
@@ -122,15 +111,15 @@ export default function RegisterPage() {
             setPhone(e.target.value);
             if (error) setError('');
           }}
-          placeholder="+91 XXXXX XXXXX"
+          placeholder="+91 98765 43210"
           autoComplete="tel"
           id="register-phone"
         />
 
-        {/* Password Field */}
+        {/* Password */}
         <div>
           <AuthInput
-            label="Password *"
+            label="PASSWORD"
             type={showPassword ? 'text' : 'password'}
             icon={Lock}
             value={password}
@@ -150,7 +139,7 @@ export default function RegisterPage() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#7A5535',
+                  color: '#6B4A2F',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -163,85 +152,49 @@ export default function RegisterPage() {
             }
           />
 
-          {/* Compact Password Strength & Requirement Checklist */}
-          {password.length > 0 && (
-            <div
-              style={{
-                marginTop: '0.6rem',
-                padding: '0.65rem 0.85rem',
-                backgroundColor: 'rgba(100, 65, 35, 0.04)',
-                borderRadius: '10px',
-                border: '1px solid rgba(100, 65, 35, 0.10)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.4rem',
-              }}
-            >
-              {strength && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '0.72rem', color: '#5C3D20', fontWeight: '700' }}>
-                    Password strength
-                  </span>
-                  <span style={{ fontSize: '0.72rem', color: strength.color, fontWeight: '800' }}>
-                    {strength.text}
-                  </span>
-                </div>
-              )}
-
-              {/* Strength Bar */}
-              {strength && (
-                <div
-                  style={{
-                    height: '4px',
-                    width: '100%',
-                    backgroundColor: 'rgba(100, 65, 35, 0.15)',
-                    borderRadius: '2px',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div
-                    style={{
-                      height: '100%',
-                      width: strength.width,
-                      backgroundColor: strength.color,
-                      transition: 'all 0.3s ease',
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* Requirement indicators */}
+          {/* Checklist Box matching Reference Image */}
+          <div
+            style={{
+              marginTop: '0.6rem',
+              padding: '0.65rem 0.85rem',
+              backgroundColor: '#F5F1E8',
+              borderRadius: '12px',
+              border: '1px solid #E2D7C7',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.35rem',
+            }}
+          >
+            {requirements.map((req, idx) => (
               <div
+                key={idx}
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '0.25rem 0.5rem',
-                  marginTop: '0.2rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  fontSize: '0.74rem',
+                  color: req.pass ? '#244F21' : '#6B4A2F',
+                  fontWeight: req.pass ? '700' : '500',
                 }}
               >
-                {requirements.map((req, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      fontSize: '0.7rem',
-                      color: req.pass ? '#244f21' : '#7A5535',
-                      fontWeight: req.pass ? '700' : '500',
-                    }}
-                  >
-                    {req.pass ? (
-                      <Check size={12} color="#244f21" style={{ strokeWidth: 3 }} />
-                    ) : (
-                      <X size={12} color="#9C7756" />
-                    )}
-                    <span>{req.label}</span>
-                  </div>
-                ))}
+                <div
+                  style={{
+                    width: '15px',
+                    height: '15px',
+                    borderRadius: '50%',
+                    backgroundColor: req.pass ? '#244F21' : '#E2D7C7',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <CheckCircle2 size={11} color={req.pass ? '#FFFFFF' : '#8A7352'} />
+                </div>
+                <span>{req.label}</span>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
 
         {/* High Contrast Submit Button */}
@@ -251,9 +204,9 @@ export default function RegisterPage() {
       </form>
 
       {/* Switch to Login */}
-      <div style={{ textAlign: 'center', fontSize: '0.88rem', color: '#5C3D20', fontWeight: '600', paddingTop: '0.1rem' }}>
+      <div style={{ textAlign: 'center', fontSize: '0.86rem', color: '#5C3D20', fontWeight: '600', paddingTop: '0.1rem' }}>
         Already have an account?{' '}
-        <Link to="/login" style={{ color: '#244f21', fontWeight: '800', textDecoration: 'none' }}>
+        <Link to="/login" style={{ color: '#244F21', fontWeight: '800', textDecoration: 'none' }}>
           Login here
         </Link>
       </div>

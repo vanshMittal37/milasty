@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Lock, Mail, Eye, EyeOff, CheckCircle2, AlertTriangle, ArrowRight, ArrowLeft, Check, X } from 'lucide-react';
+import { Lock, Eye, EyeOff, CheckCircle2, AlertTriangle, ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import api from '../api/axios';
 import { useToast } from '../context/ToastContext';
 import { supabase } from '../config/supabase';
@@ -67,12 +67,12 @@ export default function ResetPasswordPage() {
     };
   }, [location]);
 
-  // Real-time password requirement checks
+  // Real-time password requirement checks matching reference image
   const requirements = [
     { label: 'At least 8 characters', pass: password.length >= 8 },
-    { label: 'One uppercase letter', pass: /[A-Z]/.test(password) },
-    { label: 'One lowercase letter', pass: /[a-z]/.test(password) },
-    { label: 'One number', pass: /\d/.test(password) },
+    { label: 'One uppercase letter (A-Z)', pass: /[A-Z]/.test(password) },
+    { label: 'One lowercase letter (a-z)', pass: /[a-z]/.test(password) },
+    { label: 'One number (0-9)', pass: /\d/.test(password) },
   ];
 
   const metCount = requirements.filter((r) => r.pass).length;
@@ -80,11 +80,11 @@ export default function ResetPasswordPage() {
   const passwordsMatch = password && confirmPassword && password === confirmPassword;
 
   const getStrengthLabel = () => {
-    if (password.length === 0) return null;
-    if (metCount <= 1) return { text: 'Weak', color: '#D96B5F', width: '25%' };
-    if (metCount === 2) return { text: 'Fair', color: '#D6A23F', width: '50%' };
-    if (metCount === 3) return { text: 'Good', color: '#8FAF5B', width: '75%' };
-    return { text: 'Strong', color: '#244f21', width: '100%' };
+    if (password.length === 0) return { text: 'Weak', color: '#8A7352', bars: 1 };
+    if (metCount <= 1) return { text: 'Weak', color: '#D96B5F', bars: 1 };
+    if (metCount === 2) return { text: 'Fair', color: '#D6A23F', bars: 2 };
+    if (metCount === 3) return { text: 'Good', color: '#8FAF5B', bars: 3 };
+    return { text: 'Strong', color: '#244F21', bars: 4 };
   };
 
   const strength = getStrengthLabel();
@@ -151,14 +151,14 @@ export default function ResetPasswordPage() {
 
   if (isExpired) {
     return (
-      <AuthLayout badge="Account Security" title="Reset Link Expired" subtitle="This password reset link is no longer valid or has expired. Please request a new link.">
+      <AuthLayout badge="ACCOUNT SECURITY" titleLine1="Reset Link" titleLine2="Expired" subtitle="This password reset link is no longer valid or has expired. Please request a new link.">
         <div style={{ textAlign: 'center', padding: '0.25rem 0', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div
             style={{
-              width: '60px',
-              height: '60px',
+              width: '56px',
+              height: '56px',
               borderRadius: '50%',
-              backgroundColor: 'rgba(184, 50, 30, 0.10)',
+              backgroundColor: '#FDF2F0',
               color: '#B8321E',
               display: 'flex',
               alignItems: 'center',
@@ -166,7 +166,7 @@ export default function ResetPasswordPage() {
               margin: '0 auto',
             }}
           >
-            <AlertTriangle size={34} color="#B8321E" />
+            <AlertTriangle size={32} color="#B8321E" />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.25rem' }}>
@@ -175,9 +175,9 @@ export default function ResetPasswordPage() {
               style={{
                 width: '100%',
                 height: '50px',
-                backgroundColor: '#244f21',
+                backgroundColor: '#244F21',
                 color: '#FFFFFF',
-                borderRadius: '14px',
+                borderRadius: '12px',
                 fontWeight: '700',
                 fontSize: '0.95rem',
                 display: 'flex',
@@ -185,7 +185,7 @@ export default function ResetPasswordPage() {
                 justifyContent: 'center',
                 gap: '0.5rem',
                 textDecoration: 'none',
-                boxShadow: '0 4px 14px rgba(36, 79, 33, 0.25)',
+                boxShadow: '0 4px 12px rgba(36, 79, 33, 0.22)',
                 boxSizing: 'border-box',
               }}
             >
@@ -197,7 +197,7 @@ export default function ResetPasswordPage() {
               to="/login"
               style={{
                 fontSize: '0.85rem',
-                color: '#244f21',
+                color: '#244F21',
                 fontWeight: '700',
                 textDecoration: 'none',
                 display: 'inline-flex',
@@ -216,23 +216,41 @@ export default function ResetPasswordPage() {
   }
 
   if (success) {
+    /* Reset Success Card matching bottom-right box of Reference Image */
     return (
-      <AuthLayout badge="Account Security" title="Password Updated" subtitle="Your password has been successfully updated. You can now sign in with your new credentials.">
-        <div style={{ textAlign: 'center', padding: '0.25rem 0', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <AuthLayout trustBadges={[]}>
+        <div style={{ textAlign: 'center', padding: '0.4rem 0', display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
           <div
             style={{
-              width: '60px',
-              height: '60px',
+              width: '56px',
+              height: '56px',
               borderRadius: '50%',
-              backgroundColor: 'rgba(36, 79, 33, 0.10)',
-              color: '#244f21',
+              backgroundColor: '#D1E2CD',
+              color: '#244F21',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto',
             }}
           >
-            <CheckCircle2 size={34} color="#244f21" />
+            <Check size={28} color="#244F21" style={{ strokeWidth: 3 }} />
+          </div>
+
+          <div>
+            <h1
+              style={{
+                fontSize: '1.9rem',
+                fontFamily: 'var(--font-serif)',
+                color: '#26150F',
+                fontWeight: '800',
+                margin: '0 0 0.45rem',
+              }}
+            >
+              Password Updated
+            </h1>
+            <p style={{ color: '#5C3D20', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
+              Your password has been successfully updated. You can now login with your new password.
+            </p>
           </div>
 
           <Link
@@ -240,9 +258,9 @@ export default function ResetPasswordPage() {
             style={{
               width: '100%',
               height: '50px',
-              backgroundColor: '#244f21',
+              backgroundColor: '#244F21',
               color: '#FFFFFF',
-              borderRadius: '14px',
+              borderRadius: '12px',
               fontWeight: '700',
               fontSize: '0.95rem',
               display: 'flex',
@@ -250,13 +268,12 @@ export default function ResetPasswordPage() {
               justifyContent: 'center',
               gap: '0.5rem',
               textDecoration: 'none',
-              marginTop: '0.25rem',
-              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.25)',
+              marginTop: '0.2rem',
+              boxShadow: '0 4px 12px rgba(36, 79, 33, 0.22)',
               boxSizing: 'border-box',
             }}
           >
-            <span>Back to Login</span>
-            <ArrowRight size={18} color="#FFFFFF" />
+            <span>Go to Login →</span>
           </Link>
         </div>
       </AuthLayout>
@@ -265,33 +282,33 @@ export default function ResetPasswordPage() {
 
   return (
     <AuthLayout
-      badge="New Credentials"
-      title="Reset Password"
+      badge="ACCOUNT SECURITY"
+      titleLine1="Reset"
+      titleLine2="Password"
       subtitle="Create a new secure password for your MILASTY account."
     >
       {/* Error Alert */}
       <AuthAlert message={error} type="error" />
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-        {/* Email Address (if present or editable) */}
-        {email && (
-          <AuthInput
-            label="Registered Email Address *"
-            type="email"
-            icon={Mail}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your registered email"
-            required
-            autoComplete="email"
-            id="reset-email"
-          />
-        )}
-
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.05rem' }}>
         {/* New Password */}
         <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <label
+              htmlFor="reset-password"
+              style={{
+                fontSize: '0.72rem',
+                fontWeight: '800',
+                color: '#3D2413',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
+            >
+              NEW PASSWORD
+            </label>
+          </div>
+
           <AuthInput
-            label="New Password *"
             type={showPassword ? 'text' : 'password'}
             icon={Lock}
             value={password}
@@ -299,7 +316,7 @@ export default function ResetPasswordPage() {
               setPassword(e.target.value);
               if (error) setError('');
             }}
-            placeholder="New password"
+            placeholder="Enter new password"
             required
             autoComplete="new-password"
             id="reset-password"
@@ -311,7 +328,7 @@ export default function ResetPasswordPage() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#7A5535',
+                  color: '#6B4A2F',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -324,91 +341,82 @@ export default function ResetPasswordPage() {
             }
           />
 
-          {/* Password Strength & Requirements Checklist */}
-          {password.length > 0 && (
-            <div
-              style={{
-                marginTop: '0.6rem',
-                padding: '0.65rem 0.85rem',
-                backgroundColor: 'rgba(100, 65, 35, 0.04)',
-                borderRadius: '10px',
-                border: '1px solid rgba(100, 65, 35, 0.10)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.4rem',
-              }}
-            >
-              {strength && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '0.72rem', color: '#5C3D20', fontWeight: '700' }}>
-                    Password strength
-                  </span>
-                  <span style={{ fontSize: '0.72rem', color: strength.color, fontWeight: '800' }}>
-                    {strength.text}
-                  </span>
-                </div>
-              )}
+          {/* Password Strength Indicator Header matching Reference Image */}
+          <div
+            style={{
+              marginTop: '0.6rem',
+              padding: '0.65rem 0.85rem',
+              backgroundColor: '#F5F1E8',
+              borderRadius: '12px',
+              border: '1px solid #E2D7C7',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.45rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.74rem', color: '#5C3D20', fontWeight: '700' }}>
+                Password strength
+              </span>
+              <span style={{ fontSize: '0.74rem', color: strength.color, fontWeight: '800' }}>
+                {strength.text}
+              </span>
+            </div>
 
-              {/* Strength Bar */}
-              {strength && (
+            {/* 4 Segmented Bars matching Reference Image */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px' }}>
+              {[1, 2, 3, 4].map((segment) => (
                 <div
+                  key={segment}
                   style={{
-                    height: '4px',
-                    width: '100%',
-                    backgroundColor: 'rgba(100, 65, 35, 0.15)',
+                    height: '5px',
                     borderRadius: '2px',
-                    overflow: 'hidden',
+                    backgroundColor: segment <= strength.bars ? strength.color : '#E2D7C7',
+                    transition: 'all 0.3s ease',
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Checklist Requirements matching Reference Image */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', marginTop: '0.2rem' }}>
+              {requirements.map((req, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    fontSize: '0.73rem',
+                    color: req.pass ? '#244F21' : '#6B4A2F',
+                    fontWeight: req.pass ? '700' : '500',
                   }}
                 >
                   <div
                     style={{
-                      height: '100%',
-                      width: strength.width,
-                      backgroundColor: strength.color,
-                      transition: 'all 0.3s ease',
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* Requirements list */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '0.25rem 0.5rem',
-                  marginTop: '0.2rem',
-                }}
-              >
-                {requirements.map((req, idx) => (
-                  <div
-                    key={idx}
-                    style={{
+                      width: '15px',
+                      height: '15px',
+                      borderRadius: '50%',
+                      backgroundColor: req.pass ? '#244F21' : '#E2D7C7',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.35rem',
-                      fontSize: '0.7rem',
-                      color: req.pass ? '#244f21' : '#7A5535',
-                      fontWeight: req.pass ? '700' : '500',
+                      justifyContent: 'center',
+                      flexShrink: 0,
                     }}
                   >
-                    {req.pass ? (
-                      <Check size={12} color="#244f21" style={{ strokeWidth: 3 }} />
-                    ) : (
-                      <X size={12} color="#9C7756" />
-                    )}
-                    <span>{req.label}</span>
+                    <CheckCircle2 size={11} color={req.pass ? '#FFFFFF' : '#8A7352'} />
                   </div>
-                ))}
-              </div>
+                  <span>{req.label}</span>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Confirm New Password */}
         <div>
           <AuthInput
-            label="Confirm New Password *"
+            label="CONFIRM NEW PASSWORD"
             type={showConfirmPassword ? 'text' : 'password'}
             icon={Lock}
             value={confirmPassword}
@@ -416,7 +424,7 @@ export default function ResetPasswordPage() {
               setConfirmPassword(e.target.value);
               if (error) setError('');
             }}
-            placeholder="Confirm password"
+            placeholder="Confirm new password"
             required
             autoComplete="new-password"
             id="reset-confirm-password"
@@ -428,7 +436,7 @@ export default function ResetPasswordPage() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#7A5535',
+                  color: '#6B4A2F',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -440,16 +448,29 @@ export default function ResetPasswordPage() {
               </button>
             }
           />
-          {confirmPassword && (
-            <div style={{ marginTop: '0.3rem', fontSize: '0.73rem', fontWeight: '700', color: passwordsMatch ? '#244f21' : '#B8321E' }}>
-              {passwordsMatch ? '✓ Passwords match' : '✕ Passwords do not match'}
-            </div>
-          )}
         </div>
 
         <AuthButton loading={loading} loadingText="Updating Password..." icon={ArrowRight}>
           Update Password
         </AuthButton>
+
+        <div style={{ textAlign: 'center', paddingTop: '0.1rem' }}>
+          <Link
+            to="/login"
+            style={{
+              fontSize: '0.85rem',
+              color: '#244F21',
+              fontWeight: '700',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+            }}
+          >
+            <ArrowLeft size={16} />
+            <span>Back to Login</span>
+          </Link>
+        </div>
       </form>
     </AuthLayout>
   );
