@@ -28,13 +28,12 @@ export default function CustomerLayout() {
     }
   }, [isAuthenticated, navigate]);
 
-  // Set dark body styling for customer portal (matches admin dark green theme)
+  // Toggle body class for customer portal dark green theme
+  // (class-based !important beats the global brown body !important)
   useEffect(() => {
-    document.body.style.backgroundColor = '#090D0A';
-    document.body.style.color = '#F0F4F1';
+    document.body.classList.add('customer-portal-body');
     return () => {
-      document.body.style.backgroundColor = '';
-      document.body.style.color = '';
+      document.body.classList.remove('customer-portal-body');
     };
   }, []);
 
@@ -119,8 +118,8 @@ export default function CustomerLayout() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div 
               style={{
-                width: '30px',
-                height: '30px',
+                width: '28px',
+                height: '28px',
                 borderRadius: '7px',
                 backgroundColor: '#274C37',
                 color: '#FFFFFF',
@@ -129,7 +128,7 @@ export default function CustomerLayout() {
                 justifyContent: 'center',
                 fontWeight: '900',
                 fontFamily: 'var(--font-serif)',
-                fontSize: '0.95rem',
+                fontSize: '0.85rem',
                 border: '1px solid rgba(255,255,255,0.15)',
                 flexShrink: 0
               }}
@@ -137,10 +136,10 @@ export default function CustomerLayout() {
               M
             </div>
             <div>
-              <h2 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.04em', margin: 0, color: '#F5F5F5', lineHeight: '1.1' }}>
+              <div style={{ fontSize: '0.92rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.04em', margin: 0, color: '#F5F5F5', lineHeight: '1.1' }}>
                 MILASTY
-              </h2>
-              <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#85B870', fontWeight: '800', marginTop: '0.1rem' }}>
+              </div>
+              <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#85B870', fontWeight: '800', marginTop: '0.1rem' }}>
                 Customer Portal
               </div>
             </div>

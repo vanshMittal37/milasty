@@ -92,6 +92,11 @@ body.admin-body {
   color: var(--admin-text-primary) !important;
 }
 
+body.customer-portal-body {
+  background-color: #090D0A !important;
+  color: #F0F4F1 !important;
+}
+
 /* Universal Page & Section Background Overrides for Cocoa Theme */
 .products-page,
 .shop-page,

@@ -385,7 +385,7 @@ export default function AccountDashboard() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '1.65rem',
-                        fontFamily: 'var(--font-serif)',
+                        fontFamily: 'var(--font-sans)',
                         fontWeight: '800',
                         border: '1px solid rgba(133, 184, 112, 0.3)',
                       }}
@@ -397,9 +397,9 @@ export default function AccountDashboard() {
                       <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#85B870', fontWeight: '800' }}>
                         GOOD MORNING 👋
                       </span>
-                      <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-sans)', color: '#F0F4F1', fontWeight: '800', margin: '0.1rem 0 0.35rem 0', letterSpacing: '-0.01em' }}>
+                      <div style={{ fontSize: '1.15rem', fontFamily: 'var(--font-sans)', color: '#F0F4F1', fontWeight: '800', margin: '0.1rem 0 0.35rem 0', letterSpacing: '-0.01em' }}>
                         Welcome back, {user?.name}
-                      </h2>
+                      </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.82rem', color: '#9EB0A2', fontWeight: '600' }}>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Mail size={14} color="#85B870" /> {user?.email}</span>
                         {user?.phone && <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Phone size={14} color="#85B870" /> {user.phone}</span>}
@@ -679,7 +679,7 @@ export default function AccountDashboard() {
                         }}
                       >
                         <Package size={34} color="#85B870" style={{ margin: '0 auto 0.65rem' }} />
-                        <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: '0 0 0.3rem 0' }}>
+                        <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-sans)', color: '#F0F4F1', fontWeight: '800', margin: '0 0 0.3rem 0' }}>
                           No orders yet
                         </h4>
                         <p style={{ color: '#9EB0A2', fontSize: '0.82rem', margin: '0 0 1.15rem 0', fontWeight: '500' }}>
@@ -780,7 +780,7 @@ export default function AccountDashboard() {
                     <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#85B870', fontWeight: '800', display: 'block' }}>
                       PERSONALIZED SELECTION
                     </span>
-                    <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-sans)', color: '#F5F5F5', fontWeight: '800', margin: '0.2rem 0 0 0' }}>
+                    <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-sans)', color: '#F5F5F5', fontWeight: '800', margin: '0.2rem 0 0 0' }}>
                       Made for Your Ritual
                     </h3>
                   </div>
@@ -919,7 +919,7 @@ export default function AccountDashboard() {
                 ) : filteredOrders.length === 0 ? (
                   <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#111613', borderRadius: '24px', border: '1px solid rgba(133, 184, 112, 0.22)' }}>
                     <Package size={42} color="#B99A5B" style={{ margin: '0 auto 1rem' }} />
-                    <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.4rem 0' }}>
+                    <h3 style={{ fontSize: '1.0rem', fontFamily: 'var(--font-sans)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.4rem 0' }}>
                       No orders found
                     </h3>
                     <p style={{ color: '#CDBFAE', fontSize: '0.88rem', margin: '0 0 1.5rem 0' }}>
@@ -1063,7 +1063,7 @@ export default function AccountDashboard() {
                 {wishlistItems.length === 0 ? (
                   <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#111613', borderRadius: '24px', border: '1px solid rgba(133, 184, 112, 0.22)' }}>
                     <Heart size={44} color="#D9534F" style={{ margin: '0 auto 1rem' }} />
-                    <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-sans)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
                       Your wishlist is empty
                     </h3>
                     <p style={{ color: '#CDBFAE', fontSize: '0.88rem', margin: '0 0 1.5rem 0', fontWeight: '500' }}>
@@ -1149,7 +1149,7 @@ export default function AccountDashboard() {
 
                           <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
                             <div>
-                              <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+                              <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-sans)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
                                 <Link to={`/product/${item.slug || pId}`} style={{ color: 'inherit', textDecoration: 'none' }}>{item.title}</Link>
                               </h4>
                               <p style={{ fontSize: '0.8rem', color: '#CDBFAE', margin: '0 0 1rem 0', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -1207,7 +1207,7 @@ export default function AccountDashboard() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                   <div>
-                    <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0 }}>
+                    <h3 style={{ fontSize: '1.0rem', fontFamily: 'var(--font-sans)', color: '#F7F0E4', fontWeight: '800', margin: 0 }}>
                       Saved Delivery Destinations
                     </h3>
                   </div>
@@ -1237,7 +1237,7 @@ export default function AccountDashboard() {
                 {user?.addresses?.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '3rem 1.5rem', backgroundColor: '#111613', borderRadius: '24px', border: '1px dashed rgba(245, 235, 221, 0.2)' }}>
                     <MapPin size={38} color="#B99A5B" style={{ margin: '0 auto 0.85rem' }} />
-                    <h4 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+                    <h4 style={{ fontSize: '0.92rem', fontFamily: 'var(--font-sans)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
                       No saved addresses
                     </h4>
                     <p style={{ color: '#CDBFAE', fontSize: '0.85rem', margin: '0 0 1.25rem 0' }}>
@@ -1338,7 +1338,7 @@ export default function AccountDashboard() {
                   maxWidth: '600px',
                 }}
               >
-                <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-sans)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1.5rem' }}>
                   Edit Profile Information
                 </h3>
 
@@ -1451,7 +1451,7 @@ export default function AccountDashboard() {
                   maxWidth: '600px',
                 }}
               >
-                <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-sans)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1.5rem' }}>
                   Update Password
                 </h3>
 
@@ -1648,7 +1648,7 @@ export default function AccountDashboard() {
               <X size={20} />
             </button>
 
-            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1.5rem' }}>
+            <h3 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-sans)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1.5rem' }}>
               {editingAddress ? 'Edit Delivery Address' : 'Add New Address'}
             </h3>
 
