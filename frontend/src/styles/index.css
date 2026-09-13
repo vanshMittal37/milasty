@@ -3263,4 +3263,165 @@ footer.transparent-blurred-footer {
     font-size: 1.85rem !important;
   }
 }
+
+/* ==================================================
+   MILASTY CUSTOMER DASHBOARD SIDEBAR & PORTAL STYLES
+   ================================================== */
+.milasty-dashboard-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  min-height: calc(100vh - 160px);
+}
+
+.milasty-dashboard-sidebar-container {
+  width: 260px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 145px;
+}
+
+.milasty-dashboard-sidebar {
+  background: linear-gradient(180deg, #24120B 0%, #1A0D07 100%);
+  border: 1px solid rgba(245, 235, 221, 0.16);
+  border-radius: 24px;
+  padding: 1.75rem 1.25rem;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.milasty-sidebar-section-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #B99A5B;
+  padding: 0 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.milasty-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.milasty-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  fontSize: 0.9rem;
+  font-weight: 700;
+  color: #CDBFAE;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.22s ease;
+}
+
+.milasty-sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #F7F0E4;
+}
+
+.milasty-sidebar-item.active {
+  background: #274C37 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(39, 76, 55, 0.4);
+}
+
+.milasty-sidebar-item.active svg {
+  color: #FFFFFF !important;
+}
+
+.milasty-sidebar-divider {
+  height: 1px;
+  background: rgba(245, 235, 221, 0.12);
+  margin: 0.25rem 0;
+}
+
+/* Stat Cards */
+.milasty-stat-card {
+  background: linear-gradient(135deg, rgba(36, 18, 11, 0.9) 0%, rgba(45, 22, 13, 0.8) 100%);
+  border: 1px solid rgba(245, 235, 221, 0.18);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.milasty-stat-card:hover {
+  transform: translateY(-3px);
+  border-color: #B99A5B;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.milasty-stat-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Skeleton Loading Animation */
+@keyframes milastyPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.85; }
+}
+
+.milasty-skeleton-pulse {
+  animation: milastyPulse 1.5s ease-in-out infinite;
+  background: rgba(245, 235, 221, 0.08);
+  border-radius: 10px;
+}
+
+/* Mobile Drawer Overlay */
+.milasty-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 7, 3, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1100;
+}
+
+.milasty-mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 290px;
+  max-width: 85vw;
+  height: 100vh;
+  background: linear-gradient(180deg, #24120B 0%, #160B06 100%);
+  z-index: 1110;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+  .milasty-dashboard-layout {
+    flex-direction: column;
+  }
+  .milasty-dashboard-sidebar-container {
+    display: none;
+  }
+}
+
 

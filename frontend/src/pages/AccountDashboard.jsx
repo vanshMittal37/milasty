@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  User, Package, Heart, MapPin, Plus, Trash2, LogOut, ShieldCheck, 
-  ShoppingBag, ChevronRight, Edit3, X, Mail, Phone, Calendar, ArrowRight, Lock
+  LayoutGrid, Package, Heart, MapPin, User, Lock, LogOut, Menu, X, 
+  ChevronRight, Plus, Trash2, Edit3, ShoppingBag, Search, Filter, 
+  Calendar, ArrowRight, ShieldCheck, CheckCircle2, RefreshCw, Check, 
+  ExternalLink, AlertCircle, Eye, EyeOff 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -12,20 +14,42 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 
+// Skeleton Loader Helper Component for smooth loading states
+function SkeletonBox({ height = '40px', width = '100%', borderRadius = '12px', className = '' }) {
+  return (
+    <div 
+      className={`milasty-skeleton-pulse ${className}`} 
+      style={{ height, width, borderRadius }}
+    />
+  );
+}
+
 export default function AccountDashboard() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout, addAddress, deleteAddress, updateProfile, updateAddress } = useAuth();
-  const { wishlistCount } = useWishlist();
+  const { wishlistItems, wishlistCount, toggleWishlist } = useWishlist();
   const { totalItemCount, setIsCartOpen, addToCart } = useCart();
   const { toast } = useToast();
 
-  // Local state
+  // Active navigation tab: 'overview', 'orders', 'wishlist', 'addresses', 'profile', 'password'
+  const [activeTab, setActiveTab] = useState('overview');
+
+  // Mobile drawer state
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+  // Logout confirmation modal state
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  // Orders State
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
+  const [orderSearch, setOrderSearch] = useState('');
+  const [orderStatusFilter, setOrderStatusFilter] = useState('All');
 
-  // Modals / Form toggles
+  // Modals & Forms State
   const [showAddressModal, setShowAddressModal] = useState(false);
-  const [editingAddress, setEditingAddress] = useState(null); // null means adding
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [deleteAddrTargetId, setDeleteAddrTargetId] = useState(null);
   const [addressForm, setAddressForm] = useState({
     fullName: '',
     phone: '',
@@ -37,55 +61,22 @@ export default function AccountDashboard() {
     addressType: 'Home',
   });
 
-  const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileForm, setProfileForm] = useState({
     name: '',
     email: '',
     phone: '',
   });
+  const [savingProfile, setSavingProfile] = useState(false);
 
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
-
-  const handleSavePassword = async (e) => {
-    e.preventDefault();
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      toast.error('New passwords do not match.');
-      return;
-    }
-    const reqs = [
-      passwordForm.newPassword.length >= 8,
-      /[A-Z]/.test(passwordForm.newPassword),
-      /[a-z]/.test(passwordForm.newPassword),
-      /\d/.test(passwordForm.newPassword),
-    ];
-    if (!reqs.every(Boolean)) {
-      toast.error('New password must be 8+ characters and contain uppercase, lowercase, and numbers.');
-      return;
-    }
-
-    setPasswordLoading(true);
-    try {
-      const res = await api.put('/auth/change-password', {
-        currentPassword: passwordForm.currentPassword,
-        newPassword: passwordForm.newPassword,
-      });
-      toast.success(res.data?.message || 'Password changed successfully.');
-      setShowPasswordModal(false);
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Error changing password.');
-    } finally {
-      setPasswordLoading(false);
-    }
-  };
-
-  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -93,12 +84,13 @@ export default function AccountDashboard() {
       return;
     }
     fetchOrders();
-    // Initialize profile form
-    setProfileForm({
-      name: user?.name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-    });
+    if (user) {
+      setProfileForm({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+      });
+    }
   }, [isAuthenticated, user]);
 
   const fetchOrders = async () => {
@@ -109,7 +101,6 @@ export default function AccountDashboard() {
         setOrders(res.data);
       }
     } catch (err) {
-      // Offline fallback: try mapping ORD-108134 if user email matches seed orders
       setOrders([]);
     } finally {
       setLoadingOrders(false);
@@ -119,6 +110,14 @@ export default function AccountDashboard() {
   if (!isAuthenticated) {
     return null;
   }
+
+  // Handle Logout Confirmation
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
+    logout();
+    toast.success('Logged out successfully from your MILASTY account.');
+    navigate('/', { replace: true });
+  };
 
   // Address Handlers
   const handleOpenAddAddress = () => {
@@ -151,8 +150,6 @@ export default function AccountDashboard() {
     setShowAddressModal(true);
   };
 
-  const [deleteAddrTargetId, setDeleteAddrTargetId] = useState(null);
-
   const handleSaveAddress = async (e) => {
     e.preventDefault();
     try {
@@ -161,11 +158,11 @@ export default function AccountDashboard() {
         toast.success('Address updated successfully.');
       } else {
         await addAddress(addressForm);
-        toast.success('Address added successfully.');
+        toast.success('New delivery address saved.');
       }
       setShowAddressModal(false);
     } catch (err) {
-      toast.error('Error saving address');
+      toast.error('Failed to save address. Please try again.');
     }
   };
 
@@ -173,648 +170,1738 @@ export default function AccountDashboard() {
     if (!deleteAddrTargetId) return;
     try {
       await deleteAddress(deleteAddrTargetId);
-      toast.success('Address deleted successfully.');
+      toast.success('Delivery address removed.');
       setDeleteAddrTargetId(null);
     } catch (err) {
-      toast.error('Error deleting address');
+      toast.error('Failed to delete address.');
     }
   };
 
-  // Profile Handlers
+  // Profile Save Handler
   const handleSaveProfile = async (e) => {
     e.preventDefault();
+    if (!profileForm.name.trim() || !profileForm.email.trim()) {
+      toast.error('Name and Email are required.');
+      return;
+    }
+    setSavingProfile(true);
     try {
       await updateProfile(profileForm);
-      setShowProfileModal(false);
+      toast.success('Profile details updated successfully.');
     } catch (err) {
-      console.error('Error updating profile', err);
+      toast.error(err.response?.data?.message || 'Failed to update profile.');
+    } finally {
+      setSavingProfile(false);
     }
   };
 
-  // Scroll to element helper
-  const handleScrollToSection = (elementId) => {
-    const el = document.getElementById(elementId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+  // Password Change Handler
+  const handleSavePassword = async (e) => {
+    e.preventDefault();
+    if (!passwordForm.currentPassword) {
+      toast.error('Please enter your current password.');
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error('New passwords do not match.');
+      return;
+    }
+    const passwordRequirements = [
+      passwordForm.newPassword.length >= 8,
+      /[A-Z]/.test(passwordForm.newPassword),
+      /[a-z]/.test(passwordForm.newPassword),
+      /\d/.test(passwordForm.newPassword),
+    ];
+    if (!passwordRequirements.every(Boolean)) {
+      toast.error('Password must be 8+ characters with uppercase, lowercase, and numbers.');
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const res = await api.put('/auth/change-password', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      });
+      toast.success(res.data?.message || 'Password changed successfully.');
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setActiveTab('overview');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Error updating password.');
+    } finally {
+      setPasswordLoading(false);
     }
   };
+
+  // Password Checklist Metrics
+  const passwordChecklist = [
+    { label: 'At least 8 characters', pass: passwordForm.newPassword.length >= 8 },
+    { label: 'One uppercase letter (A-Z)', pass: /[A-Z]/.test(passwordForm.newPassword) },
+    { label: 'One lowercase letter (a-z)', pass: /[a-z]/.test(passwordForm.newPassword) },
+    { label: 'One number (0-9)', pass: /\d/.test(passwordForm.newPassword) },
+  ];
 
   const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
   const recentOrders = orders.slice(0, 3);
   const recommendedProducts = initialProducts.slice(0, 3);
 
-  const handleLogout = () => {
-    logout();
-    toast.success('Successfully logged out.');
-    navigate('/', { replace: true });
-  };
+  // Filtered Orders for Orders Tab
+  const filteredOrders = orders.filter((order) => {
+    const orderIdStr = (order.orderNumber || order._id || '').toLowerCase();
+    const matchesSearch = orderIdStr.includes(orderSearch.toLowerCase());
+    if (orderStatusFilter === 'All') return matchesSearch;
+    return matchesSearch && (order.status === orderStatusFilter || order.orderStatus === orderStatusFilter);
+  });
+
+  // Navigation Items Definitions
+  const mainNavItems = [
+    { id: 'overview', label: 'Dashboard', icon: LayoutGrid },
+    { id: 'orders', label: 'My Orders', icon: Package, badge: orders.length },
+    { id: 'wishlist', label: 'Wishlist', icon: Heart, badge: wishlistCount },
+    { id: 'addresses', label: 'Addresses', icon: MapPin, badge: user?.addresses?.length || 0 },
+    { id: 'profile', label: 'Profile', icon: User },
+  ];
+
+  const accountNavItems = [
+    { id: 'password', label: 'Change Password', icon: Lock },
+  ];
+
+  // Helper renderer for Sidebar Links
+  const renderNavButtons = (closeDrawerOnSelect = false) => (
+    <>
+      <div className="milasty-sidebar-section-title">MAIN</div>
+      <div className="milasty-sidebar-nav">
+        {mainNavItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => {
+                setActiveTab(item.id);
+                if (closeDrawerOnSelect) setMobileDrawerOpen(false);
+              }}
+              className={`milasty-sidebar-item ${isActive ? 'active' : ''}`}
+            >
+              <Icon size={18} />
+              <span style={{ flexGrow: 1 }}>{item.label}</span>
+              {item.badge !== undefined && item.badge > 0 && (
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: '800',
+                    backgroundColor: isActive ? '#FFFFFF' : 'rgba(245, 235, 221, 0.15)',
+                    color: isActive ? '#274C37' : '#F7F0E4',
+                    padding: '0.15rem 0.5rem',
+                    borderRadius: '999px',
+                  }}
+                >
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="milasty-sidebar-divider" />
+
+      <div className="milasty-sidebar-section-title">ACCOUNT</div>
+      <div className="milasty-sidebar-nav">
+        {accountNavItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => {
+                setActiveTab(item.id);
+                if (closeDrawerOnSelect) setMobileDrawerOpen(false);
+              }}
+              className={`milasty-sidebar-item ${isActive ? 'active' : ''}`}
+            >
+              <Icon size={18} />
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
+
+        {/* Logout Button */}
+        <button
+          type="button"
+          onClick={() => {
+            if (closeDrawerOnSelect) setMobileDrawerOpen(false);
+            setShowLogoutModal(true);
+          }}
+          className="milasty-sidebar-item"
+          style={{ color: '#D9534F' }}
+        >
+          <LogOut size={18} color="#D9534F" />
+          <span>Logout</span>
+        </button>
+      </div>
+    </>
+  );
 
   return (
-    <div className="account-dashboard-page" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '2.5rem 0 6.5rem' }}>
-      <div className="container" style={{ maxWidth: '1150px' }}>
+    <div 
+      className="account-dashboard-page" 
+      style={{ 
+        backgroundColor: '#1E0F08', 
+        minHeight: '100vh', 
+        padding: '2rem 0 6rem',
+        color: '#F7F0E4'
+      }}
+    >
+      <div className="container" style={{ maxWidth: '1240px' }}>
         
-        {/* Navigation Tabs (Horizontal Bar) */}
+        {/* MOBILE TOP BAR WITH HAMBURGER BUTTON (Hidden on Desktop via CSS) */}
         <div 
-          style={{ 
-            display: 'flex', 
-            gap: '1.5rem', 
-            marginBottom: '2.5rem', 
-            borderBottom: '1px solid rgba(245, 235, 221, 0.15)', 
-            paddingBottom: '0.75rem',
-            overflowX: 'auto',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
-          }}
-        >
-          <button onClick={() => setActiveTab('overview')} style={{ background: 'none', border: 'none', padding: '0.5rem 0.25rem', fontSize: '0.85rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: activeTab === 'overview' ? 'var(--accent-gold)' : 'var(--text-muted)', borderBottom: activeTab === 'overview' ? '2.5px solid var(--accent-gold)' : '2.5px solid transparent', cursor: 'pointer', transition: 'all 0.2s' }}>Overview</button>
-          <Link to="/account/orders" style={{ textDecoration: 'none', background: 'none', border: 'none', padding: '0.5rem 0.25rem', fontSize: '0.85rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', borderBottom: '2.5px solid transparent', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>My Orders</Link>
-          <Link to="/wishlist" style={{ textDecoration: 'none', background: 'none', border: 'none', padding: '0.5rem 0.25rem', fontSize: '0.85rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', borderBottom: '2.5px solid transparent', cursor: 'pointer' }}>Wishlist</Link>
-          <button onClick={() => { setActiveTab('overview'); setTimeout(() => handleScrollToSection('saved-addresses-dashboard'), 150); }} style={{ background: 'none', border: 'none', padding: '0.5rem 0.25rem', fontSize: '0.85rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', borderBottom: '2.5px solid transparent', cursor: 'pointer' }}>Addresses</button>
-          <button onClick={() => setShowProfileModal(true)} style={{ background: 'none', border: 'none', padding: '0.5rem 0.25rem', fontSize: '0.85rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', borderBottom: '2.5px solid transparent', cursor: 'pointer' }}>Profile</button>
-        </div>
-
-        {/* 2. ACCOUNT HEADER */}
-        <section 
-          className="glass-card" 
-          style={{ 
-            padding: '3rem 2.5rem', 
-            backgroundColor: 'transparent', 
-            borderRadius: '24px', 
-            border: '1px solid rgba(245, 235, 221, 0.25)',
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+          style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '2rem',
-            marginBottom: '3rem'
+            marginBottom: '1.5rem',
+            padding: '1rem 1.25rem',
+            backgroundColor: '#24120B',
+            borderRadius: '18px',
+            border: '1px solid rgba(245, 235, 221, 0.16)',
+            boxShadow: '0 4px 18px rgba(0,0,0,0.3)'
           }}
+          className="lg:hidden"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.75rem', flexWrap: 'wrap' }}>
-            {/* Initial Circle Avatar */}
-            <div 
-              style={{ 
-                width: '74px', 
-                height: '74px', 
-                borderRadius: '50%', 
-                backgroundColor: 'var(--accent-gold)', 
-                color: '#24130D', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                fontSize: '1.8rem', 
-                fontFamily: 'var(--font-serif)',
-                fontWeight: '800',
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
+              type="button"
+              onClick={() => setMobileDrawerOpen(true)}
+              aria-label="Open Sidebar Navigation Menu"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 border: '1px solid rgba(245, 235, 221, 0.2)',
-                boxShadow: 'var(--shadow-sm)'
+                color: '#F7F0E4',
+                padding: '8px',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {userInitial}
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-              <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '800' }}>My Account</span>
-              <h1 style={{ fontSize: '1.85rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
-                Welcome back, {user?.name} 👋
-              </h1>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.86rem', color: 'var(--text-muted)', fontWeight: '600', marginTop: '0.15rem' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Mail size={13} /> {user?.email}</span>
-                {user?.phone && <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Phone size={13} /> {user.phone}</span>}
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <button 
-              onClick={() => setShowProfileModal(true)} 
-              className="btn-secondary" 
-              style={{ padding: '0.7rem 1.25rem', fontSize: '0.8rem', fontWeight: '800', borderRadius: '10px', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent' }}
-            >
-              <Edit3 size={14} />
-              <span>Edit Profile</span>
+              <Menu size={22} />
             </button>
-            <button 
-              onClick={() => setShowPasswordModal(true)} 
-              className="btn-secondary" 
-              style={{ padding: '0.7rem 1.25rem', fontSize: '0.8rem', fontWeight: '800', borderRadius: '10px', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent' }}
-            >
-              <Lock size={14} />
-              <span>Change Password</span>
-            </button>
-            <button 
-              onClick={handleLogout} 
-              className="btn-secondary" 
-              style={{ padding: '0.7rem 1.25rem', fontSize: '0.8rem', fontWeight: '800', borderRadius: '10px', borderColor: 'rgba(217, 83, 79, 0.2)', color: 'var(--accent-terracotta)', backgroundColor: 'rgba(217, 83, 79, 0.05)' }}
-            >
-              <LogOut size={14} />
-              <span>Logout</span>
-            </button>
-          </div>
-        </section>
 
-        {/* 3. ACCOUNT SUMMARY CARDS */}
-        <section 
-          style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
-            gap: '1.5rem', 
-            marginBottom: '4.5rem' 
-          }}
-        >
-          <div 
-            onClick={() => navigate('/account/orders')}
-            className="glass-card" 
-            style={{ padding: '1.75rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
-          >
-            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Package size={22} />
-            </div>
             <div>
-              <div style={{ fontSize: '1.25rem', fontWeight: '950', color: 'var(--text-light)' }}>{orders.length} {orders.length === 1 ? 'Order' : 'Orders'}</div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Track your purchases</div>
+              <span style={{ fontSize: '0.68rem', color: '#B99A5B', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block' }}>
+                CUSTOMER PORTAL
+              </span>
+              <h2 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0 }}>
+                MILASTY Account
+              </h2>
             </div>
           </div>
 
-          <div 
-            onClick={() => navigate('/wishlist')}
-            className="glass-card" 
-            style={{ padding: '1.75rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: '#B99A5B',
+              color: '#24120B',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: '800',
+              fontSize: '1rem',
+              fontFamily: 'var(--font-serif)',
+            }}
           >
-            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: 'rgba(217, 83, 79, 0.08)', color: 'var(--accent-terracotta)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Heart size={22} />
-            </div>
-            <div>
-              <div style={{ fontSize: '1.25rem', fontWeight: '950', color: 'var(--text-light)' }}>{wishlistCount} Saved</div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Favourite products</div>
-            </div>
+            {userInitial}
           </div>
+        </div>
 
-          <div 
-            onClick={() => handleScrollToSection('saved-addresses-dashboard')}
-            className="glass-card" 
-            style={{ padding: '1.75rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
-          >
-            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: 'rgba(39, 76, 55, 0.08)', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <MapPin size={22} />
-            </div>
-            <div>
-              <div style={{ fontSize: '1.25rem', fontWeight: '950', color: 'var(--text-light)' }}>{user?.addresses?.length || 0} {user?.addresses?.length === 1 ? 'Address' : 'Addresses'}</div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Saved delivery locations</div>
-            </div>
-          </div>
-
-          <div 
-            onClick={() => setIsCartOpen(true)}
-            className="glass-card" 
-            style={{ padding: '1.75rem', backgroundColor: 'transparent', borderRadius: '20px', border: '1px solid rgba(245, 235, 221, 0.25)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.25rem', transition: 'transform 0.2s' }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-3px)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
-          >
-            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: 'rgba(197, 160, 89, 0.08)', color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ShoppingBag size={22} />
-            </div>
-            <div>
-              <div style={{ fontSize: '1.25rem', fontWeight: '950', color: 'var(--text-light)' }}>{totalItemCount} {totalItemCount === 1 ? 'Item' : 'Items'}</div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: '600' }}>Items in your cart</div>
-            </div>
-          </div>
-        </section>
-
-        {/* Two-Column Grid: Quick Actions & Recent Orders */}
-        <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem', marginBottom: '5rem', alignItems: 'start' }}>
+        {/* MAIN DASHBOARD LAYOUT (SIDEBAR + MAIN CONTENT AREA) */}
+        <div className="milasty-dashboard-layout">
           
-          {/* Column A: Quick Actions */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>Quick Actions</h2>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              
-              <Link 
-                to="/account/orders" 
-                style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
-                onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-gold)'}
-                onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(245, 235, 221, 0.25)'}
-              >
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                  <Package size={18} color="var(--accent-gold)" />
-                  <div>
-                    <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--text-light)', margin: 0 }}>Track My Orders</h4>
-                    <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: 0, fontWeight: '500' }}>Live journey & dispatch updates</p>
-                  </div>
+          {/* DESKTOP SIDEBAR */}
+          <aside className="milasty-dashboard-sidebar-container">
+            <div className="milasty-dashboard-sidebar">
+              {/* Brand Header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0 0.5rem' }}>
+                <div 
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '10px',
+                    backgroundColor: '#274C37',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#F7F0E4',
+                    fontFamily: 'var(--font-serif)',
+                    fontWeight: '800',
+                    fontSize: '1.1rem',
+                  }}
+                >
+                  M
                 </div>
-                <ChevronRight size={16} color="var(--text-muted)" />
-              </Link>
-
-              <Link 
-                to="/wishlist" 
-                style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
-                onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-gold)'}
-                onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(245, 235, 221, 0.25)'}
-              >
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                  <Heart size={18} color="var(--accent-terracotta)" />
-                  <div>
-                    <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--text-light)', margin: 0 }}>View Wishlist</h4>
-                    <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: 0, fontWeight: '500' }}>Saved favorites & rituals</p>
-                  </div>
+                <div>
+                  <h3 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0, letterSpacing: '0.04em' }}>
+                    MILASTY
+                  </h3>
+                  <span style={{ fontSize: '0.68rem', color: '#CDBFAE', fontWeight: '600' }}>Customer Portal</span>
                 </div>
-                <ChevronRight size={16} color="var(--text-muted)" />
-              </Link>
-
-              <div 
-                onClick={() => handleScrollToSection('saved-addresses-dashboard')}
-                style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
-                onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-gold)'}
-                onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(245, 235, 221, 0.25)'}
-              >
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                  <MapPin size={18} color="var(--accent-gold)" />
-                  <div>
-                    <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--text-light)', margin: 0 }}>Manage Addresses</h4>
-                    <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: 0, fontWeight: '500' }}>Update shipping destinations</p>
-                  </div>
-                </div>
-                <ChevronRight size={16} color="var(--text-muted)" />
               </div>
 
-              <Link 
-                to="/shop" 
-                style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', transition: 'all 0.2s' }}
-                onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-gold)'}
-                onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(245, 235, 221, 0.25)'}
-              >
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                  <ShoppingBag size={18} color="var(--accent-gold)" />
-                  <div>
-                    <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--text-light)', margin: 0 }}>Continue Shopping</h4>
-                    <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: 0, fontWeight: '500' }}>Discover new clean bakes</p>
-                  </div>
-                </div>
-                <ChevronRight size={16} color="var(--text-muted)" />
-              </Link>
+              <div className="milasty-sidebar-divider" />
 
+              {/* Sidebar Menu Items */}
+              {renderNavButtons(false)}
             </div>
-          </div>
+          </aside>
 
-          {/* Column B: Recent Orders */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>Recent Orders</h2>
-              {orders.length > 0 && <Link to="/account/orders" style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', fontWeight: '800', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.04em' }}>View All ({orders.length})</Link>}
-            </div>
+          {/* MAIN CONTENT AREA */}
+          <main style={{ flexGrow: 1, minWidth: 0, width: '100%' }}>
+            
+            {/* TOP HEADER IN DASHBOARD CONTENT AREA */}
+            <div 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between', 
+                marginBottom: '2rem',
+                flexWrap: 'wrap',
+                gap: '1rem'
+              }}
+            >
+              <div>
+                <span style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#B99A5B', fontWeight: '800', display: 'block', marginBottom: '0.2rem' }}>
+                  {activeTab.toUpperCase()}
+                </span>
+                <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
+                  {activeTab === 'overview' && `Welcome back, ${user?.name || 'Customer'} 👋`}
+                  {activeTab === 'orders' && 'My Order History'}
+                  {activeTab === 'wishlist' && 'My Saved Wishlist'}
+                  {activeTab === 'addresses' && 'Saved Delivery Locations'}
+                  {activeTab === 'profile' && 'Account Profile Details'}
+                  {activeTab === 'password' && 'Security & Password Settings'}
+                </h1>
+                <p style={{ fontSize: '0.88rem', color: '#CDBFAE', margin: '0.3rem 0 0 0', fontWeight: '500' }}>
+                  Manage your orders, saved products, delivery addresses, and account security.
+                </p>
+              </div>
 
-            {loadingOrders ? (
-              <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', color: 'var(--text-muted)', fontSize: '0.88rem', fontWeight: '700' }}>Loading orders...</div>
-            ) : orders.length === 0 ? (
-              /* Empty orders state */
-              <div 
-                className="glass-card" 
-                style={{ 
-                  padding: '3rem 2rem', 
-                  textAlign: 'center', 
-                  backgroundColor: 'transparent', 
-                  borderRadius: '24px', 
-                  border: '1px solid rgba(245, 235, 221, 0.25)',
-                  boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)'
+              <Link
+                to="/shop"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: '12px',
+                  backgroundColor: '#274C37',
+                  color: '#FFFFFF',
+                  fontWeight: '700',
+                  fontSize: '0.85rem',
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 14px rgba(39, 76, 55, 0.3)',
+                  transition: 'all 0.2s',
                 }}
               >
-                <Package size={32} color="var(--accent-gold)" style={{ margin: '0 auto 1rem' }} />
-                <h4 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.35rem', margin: 0 }}>No orders yet</h4>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: '1.5', marginBottom: '1.75rem', marginTop: '0.35rem', fontWeight: '500' }}>Your MILASTY rituals are waiting for you.</p>
-                <Link to="/shop" className="btn-primary" style={{ padding: '0.75rem 2rem', fontSize: '0.84rem', textDecoration: 'none', borderRadius: '999px', backgroundColor: 'var(--accent-gold)', color: '#24130D', fontWeight: '800' }}>
-                  Explore Our Bakes →
-                </Link>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {recentOrders.map((order) => {
-                  const statusColors = {
-                    Pending: { bg: 'rgba(197, 160, 89, 0.1)', text: 'var(--accent-gold)' },
-                    Confirmed: { bg: 'rgba(39, 76, 55, 0.08)', text: 'var(--accent-gold)' },
-                    Processing: { bg: 'rgba(255, 255, 255, 0.05)', text: 'var(--text-light)' },
-                    Delivered: { bg: 'rgba(39, 76, 55, 0.1)', text: 'var(--accent-gold)' },
-                    Cancelled: { bg: 'rgba(217, 83, 79, 0.08)', text: 'var(--accent-terracotta)' }
-                  };
-                  const statusStyle = statusColors[order.status] || { bg: 'rgba(255,255,255,0.05)', text: 'var(--text-muted)' };
-                  const formattedDate = new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                <span>View Store</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
 
-                  return (
-                    <div 
-                      key={order._id}
-                      style={{ 
-                        backgroundColor: 'transparent', 
-                        borderRadius: '20px', 
-                        border: '1px solid rgba(245, 235, 221, 0.25)', 
-                        padding: '1.5rem',
+            {/* ==================================================
+                TAB 1: OVERVIEW / DASHBOARD MAIN
+               ================================================== */}
+            {activeTab === 'overview' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                
+                {/* 1. ACCOUNT HERO CARD */}
+                <div
+                  style={{
+                    background: 'linear-gradient(135deg, #24120B 0%, #1A0D07 100%)',
+                    borderRadius: '24px',
+                    border: '1px solid rgba(245, 235, 221, 0.18)',
+                    padding: '2.25rem 2rem',
+                    boxShadow: '0 10px 32px rgba(0, 0, 0, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '1.75rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                    <div
+                      style={{
+                        width: '72px',
+                        height: '72px',
+                        borderRadius: '50%',
+                        backgroundColor: '#B99A5B',
+                        color: '#24120B',
                         display: 'flex',
-                        flexDirection: 'column',
-                        gap: '1rem',
-                        transition: 'border-color 0.2s'
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '1.85rem',
+                        fontFamily: 'var(--font-serif)',
+                        fontWeight: '800',
+                        boxShadow: '0 6px 18px rgba(185, 154, 91, 0.3)',
                       }}
-                      onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-gold)'}
-                      onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(245, 235, 221, 0.25)'}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.75rem' }}>
-                        <div>
-                          <div style={{ fontSize: '0.88rem', fontWeight: '850', color: 'var(--text-light)' }}>ORDER #{order.orderNumber || order._id.slice(-8).toUpperCase()}</div>
-                          <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.15rem' }}><Calendar size={12} /> {formattedDate}</span>
-                        </div>
-                        <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: statusStyle.bg, color: statusStyle.text, padding: '0.35rem 0.75rem', borderRadius: '999px' }}>
-                          {order.status}
-                        </span>
-                      </div>
+                      {userInitial}
+                    </div>
 
-                      {order.items && order.items.length > 0 && (
-                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                          <img src={order.items[0].image} alt={order.items[0].title} style={{ width: '64px', height: '64px', borderRadius: '10px', objectFit: 'cover', border: '1px solid rgba(245, 235, 221, 0.15)' }} />
+                    <div>
+                      <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B99A5B', fontWeight: '800' }}>
+                        AUTHENTICATED CUSTOMER
+                      </span>
+                      <h2 style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0.1rem 0 0.4rem 0' }}>
+                        {user?.name}
+                      </h2>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.85rem', color: '#CDBFAE', fontWeight: '600' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Mail size={14} color="#B99A5B" /> {user?.email}</span>
+                        {user?.phone && <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Phone size={14} color="#B99A5B" /> {user.phone}</span>}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <button
+                      onClick={() => setActiveTab('profile')}
+                      style={{
+                        padding: '0.65rem 1.15rem',
+                        fontSize: '0.82rem',
+                        fontWeight: '700',
+                        borderRadius: '10px',
+                        border: '1px solid rgba(245, 235, 221, 0.25)',
+                        color: '#F7F0E4',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.45rem',
+                      }}
+                    >
+                      <Edit3 size={14} color="#B99A5B" />
+                      <span>Edit Profile</span>
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('password')}
+                      style={{
+                        padding: '0.65rem 1.15rem',
+                        fontSize: '0.82rem',
+                        fontWeight: '700',
+                        borderRadius: '10px',
+                        border: '1px solid rgba(245, 235, 221, 0.25)',
+                        color: '#F7F0E4',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.45rem',
+                      }}
+                    >
+                      <Lock size={14} color="#B99A5B" />
+                      <span>Change Password</span>
+                    </button>
+
+                    <button
+                      onClick={() => setShowLogoutModal(true)}
+                      style={{
+                        padding: '0.65rem 1.15rem',
+                        fontSize: '0.82rem',
+                        fontWeight: '700',
+                        borderRadius: '10px',
+                        border: '1px solid rgba(217, 83, 79, 0.3)',
+                        color: '#D9534F',
+                        backgroundColor: 'rgba(217, 83, 79, 0.08)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.45rem',
+                      }}
+                    >
+                      <LogOut size={14} color="#D9534F" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. STAT CARDS */}
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1rem' }}>
+                    Account Summary
+                  </h3>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+                    
+                    {/* Orders Card */}
+                    <div className="milasty-stat-card" onClick={() => setActiveTab('orders')}>
+                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(185, 154, 91, 0.12)', color: '#B99A5B' }}>
+                        <Package size={24} />
+                      </div>
+                      <div>
+                        {loadingOrders ? (
+                          <SkeletonBox height="24px" width="50px" />
+                        ) : (
+                          <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#F7F0E4' }}>{orders.length}</div>
+                        )}
+                        <div style={{ fontSize: '0.82rem', color: '#B99A5B', fontWeight: '700' }}>Orders</div>
+                        <div style={{ fontSize: '0.74rem', color: '#CDBFAE', fontWeight: '500' }}>Track purchases</div>
+                      </div>
+                    </div>
+
+                    {/* Wishlist Card */}
+                    <div className="milasty-stat-card" onClick={() => setActiveTab('wishlist')}>
+                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(217, 83, 79, 0.12)', color: '#D9534F' }}>
+                        <Heart size={24} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#F7F0E4' }}>{wishlistCount}</div>
+                        <div style={{ fontSize: '0.82rem', color: '#D9534F', fontWeight: '700' }}>Wishlist</div>
+                        <div style={{ fontSize: '0.74rem', color: '#CDBFAE', fontWeight: '500' }}>Favourite bakes</div>
+                      </div>
+                    </div>
+
+                    {/* Addresses Card */}
+                    <div className="milasty-stat-card" onClick={() => setActiveTab('addresses')}>
+                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(39, 76, 55, 0.18)', color: '#7AA34A' }}>
+                        <MapPin size={24} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#F7F0E4' }}>{user?.addresses?.length || 0}</div>
+                        <div style={{ fontSize: '0.82rem', color: '#7AA34A', fontWeight: '700' }}>Addresses</div>
+                        <div style={{ fontSize: '0.74rem', color: '#CDBFAE', fontWeight: '500' }}>Delivery locations</div>
+                      </div>
+                    </div>
+
+                    {/* Cart Card */}
+                    <div className="milasty-stat-card" onClick={() => setIsCartOpen(true)}>
+                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(185, 154, 91, 0.15)', color: '#B99A5B' }}>
+                        <ShoppingBag size={24} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#F7F0E4' }}>{totalItemCount}</div>
+                        <div style={{ fontSize: '0.82rem', color: '#B99A5B', fontWeight: '700' }}>Cart Items</div>
+                        <div style={{ fontSize: '0.74rem', color: '#CDBFAE', fontWeight: '500' }}>In active cart</div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* 3. TWO-COLUMN GRID: QUICK ACTIONS & RECENT ORDERS */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', alignItems: 'start' }}>
+                  
+                  {/* Column A: Quick Actions */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0 }}>
+                      Quick Actions
+                    </h3>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                      <div
+                        onClick={() => setActiveTab('orders')}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '1.1rem 1.35rem',
+                          backgroundColor: '#24120B',
+                          borderRadius: '16px',
+                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(185, 154, 91, 0.12)', color: '#B99A5B' }}>
+                            <Package size={20} />
+                          </div>
                           <div>
-                            <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: 'var(--text-light)', margin: '0 0 0.15rem 0' }}>{order.items[0].title}</h4>
-                            <span style={{ fontSize: '0.76rem', color: 'var(--text-muted)', fontWeight: '600' }}>Qty: {order.items[0].quantity} • {order.items[0].weight}</span>
+                            <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#F7F0E4', margin: 0 }}>Track My Orders</h4>
+                            <p style={{ fontSize: '0.76rem', color: '#CDBFAE', margin: 0, fontWeight: '500' }}>Live journey & dispatch updates</p>
                           </div>
                         </div>
-                      )}
+                        <ChevronRight size={18} color="#B99A5B" />
+                      </div>
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid rgba(245, 235, 221, 0.15)' }}>
-                        <div>
-                          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '700', display: 'block' }}>Total Amount</span>
-                          <span style={{ fontSize: '1.15rem', fontWeight: '900', color: 'var(--text-light)' }}>₹{order.totalAmount}</span>
+                      <div
+                        onClick={() => setActiveTab('wishlist')}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '1.1rem 1.35rem',
+                          backgroundColor: '#24120B',
+                          borderRadius: '16px',
+                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(217, 83, 79, 0.12)', color: '#D9534F' }}>
+                            <Heart size={20} />
+                          </div>
+                          <div>
+                            <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#F7F0E4', margin: 0 }}>View Wishlist</h4>
+                            <p style={{ fontSize: '0.76rem', color: '#CDBFAE', margin: 0, fontWeight: '500' }}>Saved favorites & rituals</p>
+                          </div>
                         </div>
-                        <Link 
-                          to={`/account/orders/${order._id}`} 
-                          style={{ 
-                            fontSize: '0.8rem', 
-                            color: 'var(--accent-gold)', 
-                            fontWeight: '800', 
+                        <ChevronRight size={18} color="#B99A5B" />
+                      </div>
+
+                      <div
+                        onClick={() => setActiveTab('addresses')}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '1.1rem 1.35rem',
+                          backgroundColor: '#24120B',
+                          borderRadius: '16px',
+                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(39, 76, 55, 0.18)', color: '#7AA34A' }}>
+                            <MapPin size={20} />
+                          </div>
+                          <div>
+                            <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#F7F0E4', margin: 0 }}>Manage Addresses</h4>
+                            <p style={{ fontSize: '0.76rem', color: '#CDBFAE', margin: 0, fontWeight: '500' }}>Update shipping destinations</p>
+                          </div>
+                        </div>
+                        <ChevronRight size={18} color="#B99A5B" />
+                      </div>
+
+                      <div
+                        onClick={() => setActiveTab('profile')}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '1.1rem 1.35rem',
+                          backgroundColor: '#24120B',
+                          borderRadius: '16px',
+                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.08)', color: '#F7F0E4' }}>
+                            <User size={20} />
+                          </div>
+                          <div>
+                            <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#F7F0E4', margin: 0 }}>Edit Profile</h4>
+                            <p style={{ fontSize: '0.76rem', color: '#CDBFAE', margin: 0, fontWeight: '500' }}>Name, email & phone details</p>
+                          </div>
+                        </div>
+                        <ChevronRight size={18} color="#B99A5B" />
+                      </div>
+
+                    </div>
+                  </div>
+
+                  {/* Column B: Recent Orders */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0 }}>
+                        Recent Orders
+                      </h3>
+                      {orders.length > 0 && (
+                        <button
+                          onClick={() => setActiveTab('orders')}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            fontSize: '0.78rem',
+                            color: '#B99A5B',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.06em',
+                          }}
+                        >
+                          View All ({orders.length})
+                        </button>
+                      )}
+                    </div>
+
+                    {loadingOrders ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                        <SkeletonBox height="110px" />
+                        <SkeletonBox height="110px" />
+                      </div>
+                    ) : orders.length === 0 ? (
+                      <div
+                        style={{
+                          padding: '2.5rem 1.5rem',
+                          textAlign: 'center',
+                          backgroundColor: '#24120B',
+                          borderRadius: '20px',
+                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                        }}
+                      >
+                        <Package size={36} color="#B99A5B" style={{ margin: '0 auto 0.75rem' }} />
+                        <h4 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+                          No orders yet
+                        </h4>
+                        <p style={{ color: '#CDBFAE', fontSize: '0.84rem', margin: '0 0 1.25rem 0', fontWeight: '500' }}>
+                          Your delicious MILASTY journey starts here.
+                        </p>
+                        <Link
+                          to="/shop"
+                          style={{
+                            padding: '0.65rem 1.5rem',
+                            fontSize: '0.82rem',
+                            fontWeight: '800',
+                            borderRadius: '999px',
+                            backgroundColor: '#274C37',
+                            color: '#FFFFFF',
                             textDecoration: 'none',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '0.25rem'
+                            gap: '0.4rem',
                           }}
                         >
-                          <span>View Order</span>
+                          <span>Explore MILASTY</span>
                           <ArrowRight size={14} />
                         </Link>
                       </div>
-                    </div>
-                  );
-                })}
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                        {recentOrders.map((order) => {
+                          const statusStyleMap = {
+                            Pending: { bg: 'rgba(185, 154, 91, 0.15)', text: '#B99A5B' },
+                            Confirmed: { bg: 'rgba(39, 76, 55, 0.25)', text: '#7AA34A' },
+                            Processing: { bg: 'rgba(39, 76, 55, 0.25)', text: '#7AA34A' },
+                            Delivered: { bg: 'rgba(39, 76, 55, 0.35)', text: '#A2C579' },
+                            Cancelled: { bg: 'rgba(217, 83, 79, 0.18)', text: '#D9534F' },
+                          };
+                          const currentStatus = order.status || order.orderStatus || 'Confirmed';
+                          const statusStyle = statusStyleMap[currentStatus] || { bg: 'rgba(255,255,255,0.08)', text: '#CDBFAE' };
+                          const formattedDate = new Date(order.createdAt || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                          return (
+                            <div
+                              key={order._id}
+                              style={{
+                                backgroundColor: '#24120B',
+                                borderRadius: '18px',
+                                border: '1px solid rgba(245, 235, 221, 0.16)',
+                                padding: '1.25rem',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.85rem',
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#F7F0E4' }}>
+                                    ORDER #{order.orderNumber || order._id.slice(-8).toUpperCase()}
+                                  </div>
+                                  <span style={{ fontSize: '0.74rem', color: '#CDBFAE', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.15rem' }}>
+                                    <Calendar size={12} color="#B99A5B" /> {formattedDate}
+                                  </span>
+                                </div>
+                                <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: statusStyle.bg, color: statusStyle.text, padding: '0.3rem 0.75rem', borderRadius: '999px' }}>
+                                  {currentStatus}
+                                </span>
+                              </div>
+
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.65rem', borderTop: '1px solid rgba(245, 235, 221, 0.12)' }}>
+                                <div>
+                                  <span style={{ fontSize: '0.7rem', color: '#CDBFAE', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '700', display: 'block' }}>Total Amount</span>
+                                  <span style={{ fontSize: '1.1rem', fontWeight: '900', color: '#F7F0E4' }}>₹{order.totalAmount}</span>
+                                </div>
+                                <Link
+                                  to={`/account/orders/${order._id}`}
+                                  style={{
+                                    fontSize: '0.8rem',
+                                    color: '#B99A5B',
+                                    fontWeight: '800',
+                                    textDecoration: 'none',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.25rem',
+                                  }}
+                                >
+                                  <span>View Order</span>
+                                  <ArrowRight size={14} />
+                                </Link>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 4. RECOMMENDED BAKES ("MADE FOR YOUR RITUAL") */}
+                <div style={{ borderTop: '1px solid rgba(245, 235, 221, 0.12)', paddingTop: '2.5rem' }}>
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#B99A5B', fontWeight: '800', display: 'block' }}>
+                      PERSONALIZED SELECTION
+                    </span>
+                    <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0.2rem 0 0 0' }}>
+                      Made for Your Ritual
+                    </h3>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+                    {recommendedProducts.map((p) => {
+                      const selectedVariant = p.variants?.[0];
+                      return (
+                        <div
+                          key={p._id || p.slug}
+                          style={{
+                            backgroundColor: '#24120B',
+                            borderRadius: '20px',
+                            border: '1px solid rgba(245, 235, 221, 0.16)',
+                            overflow: 'hidden',
+                            display: 'flex',
+                            flexDirection: 'column',
+                          }}
+                        >
+                          <div style={{ position: 'relative', paddingTop: '75%', backgroundColor: 'rgba(255, 255, 255, 0.04)' }}>
+                            <Link to={`/product/${p.slug}`}>
+                              <img
+                                src={p.image}
+                                alt={p.title}
+                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            </Link>
+                          </div>
+
+                          <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
+                            <div>
+                              <h4 style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+                                <Link to={`/product/${p.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{p.title}</Link>
+                              </h4>
+                              <p style={{ fontSize: '0.78rem', color: '#CDBFAE', margin: '0 0 0.85rem 0', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                {p.subtitle || p.description}
+                              </p>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid rgba(245, 235, 221, 0.12)' }}>
+                              <span style={{ fontSize: '1.1rem', fontWeight: '900', color: '#F7F0E4' }}>₹{selectedVariant?.price || p.price}</span>
+                              <button
+                                onClick={() => addToCart(p, selectedVariant)}
+                                style={{
+                                  padding: '0.55rem 1rem',
+                                  fontSize: '0.78rem',
+                                  fontWeight: '800',
+                                  borderRadius: '10px',
+                                  backgroundColor: '#274C37',
+                                  color: '#FFFFFF',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.35rem',
+                                }}
+                              >
+                                <ShoppingBag size={14} />
+                                <span>Add to Cart</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
               </div>
             )}
-          </div>
-        </section>
 
-        {/* 7. SAVED DELIVERY ADDRESSES SECTION */}
-        <section id="saved-addresses-dashboard" className="glass-card" style={{ padding: '3rem 2.5rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)', marginBottom: '5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <h2 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.25rem 0' }}>Saved Delivery Locations</h2>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0, fontWeight: '500' }}>Your preferred shipping destinations</p>
-            </div>
-            
-            <button 
-              onClick={handleOpenAddAddress}
-              className="btn-primary" 
-              style={{ 
-                padding: '0.75rem 1.5rem', 
-                fontSize: '0.82rem', 
-                fontWeight: '800', 
-                borderRadius: '12px', 
-                backgroundColor: 'var(--accent-gold)', 
-                color: '#24130D', 
-                border: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                cursor: 'pointer'
-              }}
-            >
-              <Plus size={15} />
-              <span>Add Address</span>
-            </button>
-          </div>
+            {/* ==================================================
+                TAB 2: MY ORDERS TAB
+               ================================================== */}
+            {activeTab === 'orders' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+                
+                {/* Search & Filter Bar */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#24120B', padding: '1.25rem', borderRadius: '18px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
+                  
+                  {/* Search input */}
+                  <div style={{ position: 'relative', flexGrow: 1, minWidth: '220px' }}>
+                    <Search size={16} color="#B99A5B" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="text"
+                      value={orderSearch}
+                      onChange={(e) => setOrderSearch(e.target.value)}
+                      placeholder="Search order ID..."
+                      style={{
+                        width: '100%',
+                        height: '42px',
+                        paddingLeft: '40px',
+                        paddingRight: '14px',
+                        borderRadius: '10px',
+                        border: '1px solid rgba(245, 235, 221, 0.2)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        color: '#F7F0E4',
+                        fontSize: '0.85rem',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
 
-          {user?.addresses?.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '2.5rem 1rem', border: '1px dashed rgba(245, 235, 221, 0.25)', borderRadius: '20px' }}>
-              <MapPin size={28} color="var(--accent-gold)" style={{ margin: '0 auto 0.75rem' }} />
-              <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.25rem 0' }}>No saved addresses</h4>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.84rem', margin: '0 0 1.25rem 0', fontWeight: '500' }}>Add your delivery address for faster checkouts.</p>
-              <button 
-                onClick={handleOpenAddAddress}
-                className="btn-secondary" 
-                style={{ padding: '0.55rem 1.25rem', fontSize: '0.8rem', borderRadius: '10px', fontWeight: '800', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent' }}
-              >
-                Add Address
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-              {user?.addresses?.map((addr) => (
-                <div 
-                  key={addr._id} 
-                  style={{ 
-                    border: '1px solid rgba(245, 235, 221, 0.15)', 
-                    borderRadius: '20px', 
-                    padding: '1.5rem', 
-                    backgroundColor: 'rgba(255, 255, 255, 0.03)', 
-                    position: 'relative',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    minHeight: '180px'
-                  }}
-                >
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-                      <span style={{ fontSize: '0.9rem', fontWeight: '850', color: 'var(--text-light)' }}>{addr.fullName}</span>
-                      <span 
-                        style={{ 
-                          fontSize: '0.62rem', 
-                          fontWeight: '800', 
-                          textTransform: 'uppercase', 
-                          letterSpacing: '0.04em',
-                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                          color: 'var(--text-light)',
-                          padding: '0.25rem 0.6rem',
-                          borderRadius: '6px'
+                  {/* Status filter buttons */}
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {['All', 'Confirmed', 'Processing', 'Delivered', 'Cancelled'].map((status) => (
+                      <button
+                        key={status}
+                        type="button"
+                        onClick={() => setOrderStatusFilter(status)}
+                        style={{
+                          padding: '0.45rem 0.85rem',
+                          fontSize: '0.78rem',
+                          fontWeight: '700',
+                          borderRadius: '8px',
+                          border: orderStatusFilter === status ? '1px solid #274C37' : '1px solid rgba(245, 235, 221, 0.16)',
+                          backgroundColor: orderStatusFilter === status ? '#274C37' : 'rgba(255, 255, 255, 0.04)',
+                          color: orderStatusFilter === status ? '#FFFFFF' : '#CDBFAE',
+                          cursor: 'pointer',
                         }}
                       >
-                        {addr.addressType || 'Home'}
-                      </span>
-                    </div>
-
-                    <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '1rem', fontWeight: '500' }}>
-                      {addr.building && `${addr.building}, `}{addr.addressLine}, {addr.city}, {addr.state} - {addr.pincode}
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '0.85rem' }}>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', fontWeight: '750' }}>Phone: {addr.phone}</span>
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
-                      <button 
-                        onClick={() => handleOpenEditAddress(addr)}
-                        style={{ background: 'none', border: 'none', color: 'var(--accent-gold)', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer' }}
-                      >
-                        Edit
+                        {status}
                       </button>
-                      <button 
-                        onClick={() => handleDeleteAddress(addr._id)}
-                        style={{ background: 'none', border: 'none', color: 'var(--accent-terracotta)', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer' }}
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
 
-        {/* 11. PERSONALIZED SHOPPING: MADE FOR YOUR RITUAL */}
-        <section style={{ borderTop: '1px solid rgba(245, 235, 221, 0.15)', paddingTop: '6rem' }}>
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Personalized Sourcing</span>
-            <h2 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
-              Made for Your Ritual
-            </h2>
-            <p style={{ fontSize: '0.96rem', color: 'var(--text-muted)', margin: '0.5rem 0 0 0', fontWeight: '500' }}>
-              Discover more handcrafted MILASTY bakes for your everyday moments.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2.5rem' }}>
-            {recommendedProducts.map((p) => {
-              const selectedVariant = p.variants?.[0];
-              return (
-                <div 
-                  key={p._id || p.slug}
-                  className="glass-card"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    borderRadius: '24px',
-                    overflow: 'hidden',
-                    backgroundColor: 'transparent',
-                    border: '1px solid rgba(245, 235, 221, 0.25)',
-                    position: 'relative'
-                  }}
-                >
-                  <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '80%', backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
-                    <Link to={`/product/${p.slug}`}>
-                      <img 
-                        src={p.image} 
-                        alt={p.title} 
-                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }}
-                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                        onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                      />
+                {/* Orders List */}
+                {loadingOrders ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <SkeletonBox height="140px" />
+                    <SkeletonBox height="140px" />
+                    <SkeletonBox height="140px" />
+                  </div>
+                ) : filteredOrders.length === 0 ? (
+                  <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#24120B', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
+                    <Package size={42} color="#B99A5B" style={{ margin: '0 auto 1rem' }} />
+                    <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.4rem 0' }}>
+                      No orders found
+                    </h3>
+                    <p style={{ color: '#CDBFAE', fontSize: '0.88rem', margin: '0 0 1.5rem 0' }}>
+                      {orderSearch || orderStatusFilter !== 'All' ? 'Try adjusting your search or status filter.' : 'You haven’t placed any orders yet.'}
+                    </p>
+                    <Link
+                      to="/shop"
+                      style={{
+                        padding: '0.7rem 1.75rem',
+                        fontSize: '0.85rem',
+                        fontWeight: '800',
+                        borderRadius: '999px',
+                        backgroundColor: '#274C37',
+                        color: '#FFFFFF',
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                      }}
+                    >
+                      <span>Explore Shop</span>
+                      <ArrowRight size={15} />
                     </Link>
                   </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    {filteredOrders.map((order) => {
+                      const formattedDate = new Date(order.createdAt || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                      const currentStatus = order.status || order.orderStatus || 'Confirmed';
 
-                  <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
-                    <div>
-                      <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.35rem' }}>
-                        <Link to={`/product/${p.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{p.title}</Link>
-                      </h3>
-                      <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1rem', lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: '500' }}>
-                        {p.subtitle || p.description}
-                      </p>
-                    </div>
+                      return (
+                        <div
+                          key={order._id}
+                          style={{
+                            backgroundColor: '#24120B',
+                            borderRadius: '20px',
+                            border: '1px solid rgba(245, 235, 221, 0.16)',
+                            padding: '1.5rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '1.15rem',
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid rgba(245, 235, 221, 0.12)', paddingBottom: '0.85rem' }}>
+                            <div>
+                              <div style={{ fontSize: '0.95rem', fontWeight: '850', color: '#F7F0E4' }}>
+                                ORDER #{order.orderNumber || order._id.slice(-8).toUpperCase()}
+                              </div>
+                              <span style={{ fontSize: '0.78rem', color: '#CDBFAE', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.2rem' }}>
+                                <Calendar size={13} color="#B99A5B" /> Placed on {formattedDate}
+                              </span>
+                            </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid rgba(245, 235, 221, 0.15)' }}>
-                      <span style={{ fontSize: '1.15rem', fontWeight: '900', color: 'var(--text-light)' }}>₹{selectedVariant?.price || p.price}</span>
-                      <button 
-                        onClick={() => addToCart(p, selectedVariant)}
-                        className="btn-primary"
-                        style={{ padding: '0.6rem 1.15rem', fontSize: '0.8rem', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', borderRadius: '10px', backgroundColor: 'var(--accent-gold)', color: '#24130D' }}
+                            <span
+                              style={{
+                                fontSize: '0.72rem',
+                                fontWeight: '800',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.04em',
+                                backgroundColor: currentStatus === 'Cancelled' ? 'rgba(217, 83, 79, 0.2)' : 'rgba(39, 76, 55, 0.3)',
+                                color: currentStatus === 'Cancelled' ? '#D9534F' : '#A2C579',
+                                padding: '0.35rem 0.85rem',
+                                borderRadius: '999px',
+                                border: `1px solid ${currentStatus === 'Cancelled' ? 'rgba(217, 83, 79, 0.3)' : 'rgba(39, 76, 55, 0.4)'}`
+                              }}
+                            >
+                              {currentStatus}
+                            </span>
+                          </div>
+
+                          {/* Items List Preview */}
+                          {order.items && order.items.length > 0 && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                              {order.items.map((item, idx) => (
+                                <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                  <img
+                                    src={item.image}
+                                    alt={item.title}
+                                    style={{ width: '54px', height: '54px', borderRadius: '10px', objectFit: 'cover', border: '1px solid rgba(245, 235, 221, 0.15)' }}
+                                  />
+                                  <div style={{ flexGrow: 1 }}>
+                                    <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#F7F0E4', margin: '0 0 0.15rem 0' }}>
+                                      {item.title}
+                                    </h4>
+                                    <span style={{ fontSize: '0.76rem', color: '#CDBFAE' }}>
+                                      Qty: {item.quantity} • {item.weight || 'Standard'}
+                                    </span>
+                                  </div>
+                                  <span style={{ fontSize: '0.9rem', fontWeight: '800', color: '#F7F0E4' }}>
+                                    ₹{item.price * item.quantity}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Total & Action Footer */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.85rem', borderTop: '1px solid rgba(245, 235, 221, 0.12)' }}>
+                            <div>
+                              <span style={{ fontSize: '0.72rem', color: '#CDBFAE', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '700' }}>
+                                Total Paid
+                              </span>
+                              <div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#F7F0E4' }}>
+                                ₹{order.totalAmount}
+                              </div>
+                            </div>
+
+                            <Link
+                              to={`/account/orders/${order._id}`}
+                              style={{
+                                padding: '0.6rem 1.25rem',
+                                fontSize: '0.82rem',
+                                fontWeight: '800',
+                                borderRadius: '10px',
+                                backgroundColor: '#274C37',
+                                color: '#FFFFFF',
+                                textDecoration: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.35rem',
+                              }}
+                            >
+                              <span>View Details</span>
+                              <ArrowRight size={14} />
+                            </Link>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+              </div>
+            )}
+
+            {/* ==================================================
+                TAB 3: WISHLIST TAB
+               ================================================== */}
+            {activeTab === 'wishlist' && (
+              <div>
+                {wishlistItems.length === 0 ? (
+                  <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#24120B', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
+                    <Heart size={44} color="#D9534F" style={{ margin: '0 auto 1rem' }} />
+                    <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+                      Your wishlist is empty
+                    </h3>
+                    <p style={{ color: '#CDBFAE', fontSize: '0.88rem', margin: '0 0 1.5rem 0', fontWeight: '500' }}>
+                      Save your favourite organic bakes to quickly re-order them later.
+                    </p>
+                    <Link
+                      to="/shop"
+                      style={{
+                        padding: '0.7rem 1.75rem',
+                        fontSize: '0.85rem',
+                        fontWeight: '800',
+                        borderRadius: '999px',
+                        backgroundColor: '#274C37',
+                        color: '#FFFFFF',
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                      }}
+                    >
+                      <span>Explore Shop</span>
+                      <ArrowRight size={15} />
+                    </Link>
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+                    {wishlistItems.map((item) => {
+                      const pId = item._id || item.slug;
+                      const selectedVariant = item.variants?.[0];
+                      const sellingPrice = selectedVariant?.price || item.price;
+                      const originalPrice = selectedVariant?.originalPrice || item.originalPrice;
+
+                      return (
+                        <div
+                          key={pId}
+                          style={{
+                            backgroundColor: '#24120B',
+                            borderRadius: '20px',
+                            border: '1px solid rgba(245, 235, 221, 0.16)',
+                            overflow: 'hidden',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            position: 'relative',
+                          }}
+                        >
+                          {/* Remove from wishlist button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              toggleWishlist(item);
+                              toast.info('Item removed from wishlist.');
+                            }}
+                            aria-label="Remove item from wishlist"
+                            style={{
+                              position: 'absolute',
+                              top: '12px',
+                              right: '12px',
+                              zIndex: 5,
+                              backgroundColor: 'rgba(20, 10, 5, 0.75)',
+                              border: 'none',
+                              color: '#D9534F',
+                              width: '34px',
+                              height: '34px',
+                              borderRadius: '50%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <Heart size={18} fill="#D9534F" color="#D9534F" />
+                          </button>
+
+                          <div style={{ position: 'relative', paddingTop: '75%', backgroundColor: 'rgba(255, 255, 255, 0.04)' }}>
+                            <Link to={`/product/${item.slug || pId}`}>
+                              <img
+                                src={item.image}
+                                alt={item.title}
+                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            </Link>
+                          </div>
+
+                          <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
+                            <div>
+                              <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+                                <Link to={`/product/${item.slug || pId}`} style={{ color: 'inherit', textDecoration: 'none' }}>{item.title}</Link>
+                              </h4>
+                              <p style={{ fontSize: '0.8rem', color: '#CDBFAE', margin: '0 0 1rem 0', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                {item.subtitle || item.description}
+                              </p>
+                            </div>
+
+                            {/* Dual Price Comparison logic */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid rgba(245, 235, 221, 0.12)' }}>
+                              <div>
+                                <span style={{ fontSize: '1.15rem', fontWeight: '900', color: '#F7F0E4' }}>
+                                  ₹{sellingPrice}
+                                </span>
+                                {originalPrice && originalPrice > sellingPrice && (
+                                  <span style={{ fontSize: '0.82rem', color: '#CDBFAE', textDecoration: 'line-through', marginLeft: '0.5rem' }}>
+                                    ₹{originalPrice}
+                                  </span>
+                                )}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => addToCart(item, selectedVariant)}
+                                style={{
+                                  padding: '0.55rem 1rem',
+                                  fontSize: '0.78rem',
+                                  fontWeight: '800',
+                                  borderRadius: '10px',
+                                  backgroundColor: '#274C37',
+                                  color: '#FFFFFF',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.35rem',
+                                }}
+                              >
+                                <ShoppingBag size={14} />
+                                <span>Add to Cart</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ==================================================
+                TAB 4: ADDRESSES TAB
+               ================================================== */}
+            {activeTab === 'addresses' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                  <div>
+                    <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0 }}>
+                      Saved Delivery Destinations
+                    </h3>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleOpenAddAddress}
+                    style={{
+                      padding: '0.65rem 1.25rem',
+                      fontSize: '0.82rem',
+                      fontWeight: '800',
+                      borderRadius: '12px',
+                      backgroundColor: '#274C37',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Plus size={16} />
+                    <span>Add New Address</span>
+                  </button>
+                </div>
+
+                {user?.addresses?.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '3rem 1.5rem', backgroundColor: '#24120B', borderRadius: '24px', border: '1px dashed rgba(245, 235, 221, 0.2)' }}>
+                    <MapPin size={38} color="#B99A5B" style={{ margin: '0 auto 0.85rem' }} />
+                    <h4 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+                      No saved addresses
+                    </h4>
+                    <p style={{ color: '#CDBFAE', fontSize: '0.85rem', margin: '0 0 1.25rem 0' }}>
+                      Add your preferred delivery addresses for instant checkout.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleOpenAddAddress}
+                      style={{
+                        padding: '0.6rem 1.35rem',
+                        fontSize: '0.8rem',
+                        fontWeight: '800',
+                        borderRadius: '10px',
+                        backgroundColor: '#274C37',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Add Address Now
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+                    {user?.addresses?.map((addr, idx) => (
+                      <div
+                        key={addr._id || idx}
+                        style={{
+                          backgroundColor: '#24120B',
+                          borderRadius: '20px',
+                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          padding: '1.5rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                        }}
                       >
-                        <ShoppingBag size={14} />
-                        <span>Add to Cart</span>
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                            <span style={{ fontSize: '0.95rem', fontWeight: '850', color: '#F7F0E4' }}>{addr.fullName}</span>
+                            <span
+                              style={{
+                                fontSize: '0.65rem',
+                                fontWeight: '800',
+                                textTransform: 'uppercase',
+                                backgroundColor: 'rgba(185, 154, 91, 0.15)',
+                                color: '#B99A5B',
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: '6px',
+                                border: '1px solid rgba(185, 154, 91, 0.25)',
+                              }}
+                            >
+                              {addr.addressType || 'Home'}
+                            </span>
+                          </div>
+
+                          <p style={{ fontSize: '0.85rem', color: '#CDBFAE', lineHeight: '1.6', margin: '0 0 1rem 0', fontWeight: '500' }}>
+                            {addr.building && `${addr.building}, `}{addr.addressLine}, {addr.city}, {addr.state} - {addr.pincode}
+                          </p>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.85rem', borderTop: '1px solid rgba(245, 235, 221, 0.12)' }}>
+                          <span style={{ fontSize: '0.78rem', color: '#F7F0E4', fontWeight: '700' }}>Phone: {addr.phone}</span>
+                          <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditAddress(addr)}
+                              style={{ background: 'none', border: 'none', color: '#B99A5B', fontSize: '0.8rem', fontWeight: '800', cursor: 'pointer' }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteAddrTargetId(addr._id)}
+                              style={{ background: 'none', border: 'none', color: '#D9534F', fontSize: '0.8rem', fontWeight: '800', cursor: 'pointer' }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ==================================================
+                TAB 5: PROFILE TAB
+               ================================================== */}
+            {activeTab === 'profile' && (
+              <div
+                style={{
+                  backgroundColor: '#24120B',
+                  borderRadius: '24px',
+                  border: '1px solid rgba(245, 235, 221, 0.16)',
+                  padding: '2.25rem 2rem',
+                  maxWidth: '600px',
+                }}
+              >
+                <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1.5rem' }}>
+                  Edit Profile Information
+                </h3>
+
+                <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={profileForm.name}
+                      onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                      style={{
+                        width: '100%',
+                        height: '48px',
+                        padding: '0 1rem',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(245, 235, 221, 0.2)',
+                        fontSize: '0.9rem',
+                        outline: 'none',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        color: '#F7F0E4',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={profileForm.email}
+                      onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                      style={{
+                        width: '100%',
+                        height: '48px',
+                        padding: '0 1rem',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(245, 235, 221, 0.2)',
+                        fontSize: '0.9rem',
+                        outline: 'none',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        color: '#F7F0E4',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Mobile Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={profileForm.phone}
+                      onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                      placeholder="+91 98765 43210"
+                      style={{
+                        width: '100%',
+                        height: '48px',
+                        padding: '0 1rem',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(245, 235, 221, 0.2)',
+                        fontSize: '0.9rem',
+                        outline: 'none',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        color: '#F7F0E4',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', marginTop: '0.75rem' }}>
+                    <button
+                      type="submit"
+                      disabled={savingProfile}
+                      style={{
+                        padding: '0.75rem 2rem',
+                        fontSize: '0.85rem',
+                        borderRadius: '12px',
+                        border: 'none',
+                        backgroundColor: '#274C37',
+                        color: '#FFFFFF',
+                        fontWeight: '800',
+                        cursor: savingProfile ? 'not-allowed' : 'pointer',
+                        opacity: savingProfile ? 0.75 : 1,
+                      }}
+                    >
+                      {savingProfile ? 'Saving Changes...' : 'Save Profile Changes'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* ==================================================
+                TAB 6: CHANGE PASSWORD TAB
+               ================================================== */}
+            {activeTab === 'password' && (
+              <div
+                style={{
+                  backgroundColor: '#24120B',
+                  borderRadius: '24px',
+                  border: '1px solid rgba(245, 235, 221, 0.16)',
+                  padding: '2.25rem 2rem',
+                  maxWidth: '600px',
+                }}
+              >
+                <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1.5rem' }}>
+                  Update Password
+                </h3>
+
+                <form onSubmit={handleSavePassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  
+                  {/* Current Password */}
+                  <div>
+                    <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Current Password *
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type={showCurrentPassword ? 'text' : 'password'}
+                        required
+                        value={passwordForm.currentPassword}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                        placeholder="Enter current password"
+                        style={{
+                          width: '100%',
+                          height: '48px',
+                          paddingLeft: '1rem',
+                          paddingRight: '44px',
+                          borderRadius: '12px',
+                          border: '1px solid rgba(245, 235, 221, 0.2)',
+                          fontSize: '0.9rem',
+                          outline: 'none',
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          color: '#F7F0E4',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#CDBFAE', cursor: 'pointer' }}
+                      >
+                        {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+
+                  {/* New Password */}
+                  <div>
+                    <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      New Password *
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        required
+                        value={passwordForm.newPassword}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                        placeholder="Enter new strong password"
+                        style={{
+                          width: '100%',
+                          height: '48px',
+                          paddingLeft: '1rem',
+                          paddingRight: '44px',
+                          borderRadius: '12px',
+                          border: '1px solid rgba(245, 235, 221, 0.2)',
+                          fontSize: '0.9rem',
+                          outline: 'none',
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          color: '#F7F0E4',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#CDBFAE', cursor: 'pointer' }}
+                      >
+                        {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+
+                    {/* Password Strength Checklist */}
+                    <div
+                      style={{
+                        marginTop: '0.75rem',
+                        padding: '0.75rem 1rem',
+                        backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(245, 235, 221, 0.12)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.35rem',
+                      }}
+                    >
+                      {passwordChecklist.map((req, idx) => (
+                        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.76rem', color: req.pass ? '#7AA34A' : '#CDBFAE', fontWeight: '700' }}>
+                          <div
+                            style={{
+                              width: '14px',
+                              height: '14px',
+                              borderRadius: '50%',
+                              backgroundColor: req.pass ? '#274C37' : 'rgba(245, 235, 221, 0.2)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}
+                          >
+                            <CheckCircle2 size={10} color={req.pass ? '#FFFFFF' : '#CDBFAE'} />
+                          </div>
+                          <span>{req.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Confirm New Password */}
+                  <div>
+                    <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Confirm New Password *
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        required
+                        value={passwordForm.confirmPassword}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                        placeholder="Re-enter new password"
+                        style={{
+                          width: '100%',
+                          height: '48px',
+                          paddingLeft: '1rem',
+                          paddingRight: '44px',
+                          borderRadius: '12px',
+                          border: '1px solid rgba(245, 235, 221, 0.2)',
+                          fontSize: '0.9rem',
+                          outline: 'none',
+                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                          color: '#F7F0E4',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#CDBFAE', cursor: 'pointer' }}
+                      >
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+                    <button
+                      type="submit"
+                      disabled={passwordLoading}
+                      style={{
+                        padding: '0.75rem 2rem',
+                        fontSize: '0.85rem',
+                        borderRadius: '12px',
+                        border: 'none',
+                        backgroundColor: '#274C37',
+                        color: '#FFFFFF',
+                        fontWeight: '800',
+                        cursor: passwordLoading ? 'not-allowed' : 'pointer',
+                        opacity: passwordLoading ? 0.75 : 1,
+                      }}
+                    >
+                      {passwordLoading ? 'Updating Password...' : 'Update Password'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+          </main>
+        </div>
 
       </div>
 
       {/* ==================================================
-          MODAL 1: ADD / EDIT ADDRESS MODAL
+          MOBILE SLIDE-OUT DRAWER
+         ================================================== */}
+      {mobileDrawerOpen && (
+        <>
+          <div className="milasty-drawer-backdrop" onClick={() => setMobileDrawerOpen(false)} />
+          <div className="milasty-mobile-drawer">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#274C37', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontFamily: 'var(--font-serif)' }}>
+                  M
+                </div>
+                <span style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800' }}>
+                  MILASTY
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setMobileDrawerOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#CDBFAE', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={22} />
+              </button>
+            </div>
+
+            <div className="milasty-sidebar-divider" />
+
+            {/* Mobile Drawer Menu Links */}
+            {renderNavButtons(true)}
+          </div>
+        </>
+      )}
+
+      {/* ==================================================
+          ADD / EDIT ADDRESS MODAL
          ================================================== */}
       {showAddressModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div 
-            className="glass-card" 
-            style={{ 
-              backgroundColor: 'rgba(50, 26, 18, 0.95)', 
-              borderRadius: '24px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)', 
-              width: '100%', 
-              maxWidth: '560px', 
-              padding: '2.5rem',
-              boxShadow: 'var(--shadow-lg)',
-              position: 'relative'
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(15, 7, 3, 0.8)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div
+            style={{
+              backgroundColor: '#24120B',
+              borderRadius: '24px',
+              border: '1px solid rgba(245, 235, 221, 0.25)',
+              width: '100%',
+              maxWidth: '540px',
+              padding: '2.25rem',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+              position: 'relative',
+              maxHeight: '90vh',
+              overflowY: 'auto',
             }}
           >
-            <button 
+            <button
               onClick={() => setShowAddressModal(false)}
-              style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+              style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', background: 'none', border: 'none', color: '#CDBFAE', cursor: 'pointer' }}
             >
               <X size={20} />
             </button>
 
-            <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem' }}>
+            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1.5rem' }}>
               {editingAddress ? 'Edit Delivery Address' : 'Add New Address'}
             </h3>
 
             <form onSubmit={handleSaveAddress} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Full Name *</label>
-                  <input type="text" required value={addressForm.fullName} onChange={(e) => setAddressForm({ ...addressForm, fullName: e.target.value })} style={{ width: '100%', height: '48px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Full Name *</label>
+                  <input type="text" required value={addressForm.fullName} onChange={(e) => setAddressForm({ ...addressForm, fullName: e.target.value })} style={{ width: '100%', height: '44px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#F7F0E4', boxSizing: 'border-box' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Phone Number *</label>
-                  <input type="tel" required value={addressForm.phone} onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })} style={{ width: '100%', height: '48px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Phone Number *</label>
+                  <input type="tel" required value={addressForm.phone} onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })} style={{ width: '100%', height: '44px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#F7F0E4', boxSizing: 'border-box' }} />
                 </div>
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Street Address *</label>
-                <input type="text" required value={addressForm.addressLine} onChange={(e) => setAddressForm({ ...addressForm, addressLine: e.target.value })} style={{ width: '100%', height: '48px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
+                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Street Address *</label>
+                <input type="text" required value={addressForm.addressLine} onChange={(e) => setAddressForm({ ...addressForm, addressLine: e.target.value })} style={{ width: '100%', height: '44px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#F7F0E4', boxSizing: 'border-box' }} />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Building / Flat / Apartment</label>
-                <input type="text" value={addressForm.building} onChange={(e) => setAddressForm({ ...addressForm, building: e.target.value })} style={{ width: '100%', height: '48px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
+                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Building / Flat / Apartment</label>
+                <input type="text" value={addressForm.building} onChange={(e) => setAddressForm({ ...addressForm, building: e.target.value })} style={{ width: '100%', height: '44px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#F7F0E4', boxSizing: 'border-box' }} />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>City *</label>
-                  <input type="text" required value={addressForm.city} onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })} style={{ width: '100%', height: '48px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>City *</label>
+                  <input type="text" required value={addressForm.city} onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })} style={{ width: '100%', height: '44px', padding: '0 0.75rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#F7F0E4', boxSizing: 'border-box' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>State *</label>
-                  <input type="text" required value={addressForm.state} onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })} style={{ width: '100%', height: '48px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>State *</label>
+                  <input type="text" required value={addressForm.state} onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })} style={{ width: '100%', height: '44px', padding: '0 0.75rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#F7F0E4', boxSizing: 'border-box' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pincode *</label>
-                  <input type="text" required value={addressForm.pincode} onChange={(e) => setAddressForm({ ...addressForm, pincode: e.target.value })} style={{ width: '100%', height: '48px', padding: '0 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pincode *</label>
+                  <input type="text" required value={addressForm.pincode} onChange={(e) => setAddressForm({ ...addressForm, pincode: e.target.value })} style={{ width: '100%', height: '44px', padding: '0 0.75rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#F7F0E4', boxSizing: 'border-box' }} />
                 </div>
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Address Type</label>
+                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#F7F0E4', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Address Type</label>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   {['Home', 'Work', 'Other'].map((t) => (
                     <button
@@ -822,15 +1909,14 @@ export default function AccountDashboard() {
                       type="button"
                       onClick={() => setAddressForm({ ...addressForm, addressType: t })}
                       style={{
-                        padding: '0.5rem 1.25rem',
-                        fontSize: '0.82rem',
+                        padding: '0.45rem 1.1rem',
+                        fontSize: '0.8rem',
                         fontWeight: '800',
                         borderRadius: '10px',
                         cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        backgroundColor: addressForm.addressType === t ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.05)',
-                        color: addressForm.addressType === t ? '#24130D' : 'var(--text-light)',
-                        border: addressForm.addressType === t ? '1px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.15)',
+                        backgroundColor: addressForm.addressType === t ? '#274C37' : 'rgba(255, 255, 255, 0.05)',
+                        color: addressForm.addressType === t ? '#FFFFFF' : '#F7F0E4',
+                        border: addressForm.addressType === t ? '1px solid #274C37' : '1px solid rgba(245, 235, 221, 0.16)',
                       }}
                     >
                       {t}
@@ -840,18 +1926,16 @@ export default function AccountDashboard() {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowAddressModal(false)}
-                  className="btn-secondary"
-                  style={{ padding: '0.7rem 1.5rem', fontSize: '0.82rem', borderRadius: '10px', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent' }}
+                  style={{ padding: '0.65rem 1.35rem', fontSize: '0.82rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', color: '#CDBFAE', backgroundColor: 'transparent', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
-                  className="btn-primary"
-                  style={{ padding: '0.7rem 2rem', fontSize: '0.82rem', borderRadius: '10px', border: 'none', backgroundColor: 'var(--accent-gold)', color: '#24130D', fontWeight: '800', cursor: 'pointer' }}
+                <button
+                  type="submit"
+                  style={{ padding: '0.65rem 1.75rem', fontSize: '0.82rem', borderRadius: '10px', border: 'none', backgroundColor: '#274C37', color: '#FFFFFF', fontWeight: '800', cursor: 'pointer' }}
                 >
                   Save Address
                 </button>
@@ -862,183 +1946,26 @@ export default function AccountDashboard() {
       )}
 
       {/* ==================================================
-          MODAL 2: EDIT PROFILE MODAL
+          LOGOUT CONFIRMATION MODAL
          ================================================== */}
-      {showProfileModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div 
-            className="glass-card" 
-            style={{ 
-              backgroundColor: 'rgba(50, 26, 18, 0.95)', 
-              borderRadius: '24px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)', 
-              width: '100%', 
-              maxWidth: '460px', 
-              padding: '2.5rem',
-              boxShadow: 'var(--shadow-lg)',
-              position: 'relative'
-            }}
-          >
-            <button 
-              onClick={() => setShowProfileModal(false)}
-              style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
-            >
-              <X size={20} />
-            </button>
-
-            <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem' }}>
-              Edit Profile Information
-            </h3>
-
-            <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Full Name</label>
-                <input 
-                  type="text" 
-                  required 
-                  value={profileForm.name} 
-                  onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })} 
-                  style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Address</label>
-                <input 
-                  type="email" 
-                  required 
-                  value={profileForm.email} 
-                  onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })} 
-                  style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Phone Number</label>
-                <input 
-                  type="tel" 
-                  value={profileForm.phone} 
-                  onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} 
-                  placeholder="No phone saved"
-                  style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.75rem' }}>
-                <button 
-                  type="button" 
-                  onClick={() => setShowProfileModal(false)}
-                  className="btn-secondary"
-                  style={{ padding: '0.7rem 1.5rem', fontSize: '0.82rem', borderRadius: '10px', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent' }}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="btn-primary"
-                  style={{ padding: '0.7rem 2rem', fontSize: '0.82rem', borderRadius: '10px', border: 'none', backgroundColor: 'var(--accent-gold)', color: '#24130D', fontWeight: '800', cursor: 'pointer' }}
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={showLogoutModal}
+        title="Logout from MILASTY?"
+        message="Are you sure you want to logout from your account?"
+        confirmText="Logout"
+        cancelText="Cancel"
+        isDanger={true}
+        onConfirm={confirmLogout}
+        onCancel={() => setShowLogoutModal(false)}
+      />
 
       {/* ==================================================
-          MODAL 3: CHANGE PASSWORD MODAL
+          DELETE ADDRESS CONFIRMATION MODAL
          ================================================== */}
-      {showPasswordModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div 
-            className="glass-card" 
-            style={{ 
-              backgroundColor: 'rgba(50, 26, 18, 0.95)', 
-              borderRadius: '24px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)', 
-              width: '100%', 
-              maxWidth: '460px', 
-              padding: '2.5rem',
-              boxShadow: 'var(--shadow-lg)',
-              position: 'relative'
-            }}
-          >
-            <button 
-              onClick={() => setShowPasswordModal(false)}
-              style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
-            >
-              <X size={20} />
-            </button>
-
-            <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem' }}>
-              Change Account Password
-            </h3>
-
-            <form onSubmit={handleSavePassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Current Password</label>
-                <input 
-                  type="password" 
-                  required 
-                  value={passwordForm.currentPassword} 
-                  onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })} 
-                  placeholder="Enter current password"
-                  style={{ width: '100%', height: '48px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>New Password</label>
-                <input 
-                  type="password" 
-                  required 
-                  value={passwordForm.newPassword} 
-                  onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })} 
-                  placeholder="At least 8 characters with A-Z, a-z, 0-9"
-                  style={{ width: '100%', height: '48px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Confirm New Password</label>
-                <input 
-                  type="password" 
-                  required 
-                  value={passwordForm.confirmPassword} 
-                  onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })} 
-                  placeholder="Re-enter new password"
-                  style={{ width: '100%', height: '48px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
-                <button 
-                  type="button" 
-                  onClick={() => setShowPasswordModal(false)}
-                  className="btn-secondary"
-                  style={{ padding: '0.7rem 1.5rem', fontSize: '0.82rem', borderRadius: '10px', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent' }}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  disabled={passwordLoading}
-                  className="btn-primary"
-                  style={{ padding: '0.7rem 2rem', fontSize: '0.82rem', borderRadius: '10px', border: 'none', backgroundColor: 'var(--accent-gold)', color: '#24130D', fontWeight: '800', cursor: passwordLoading ? 'not-allowed' : 'pointer', opacity: passwordLoading ? 0.7 : 1 }}
-                >
-                  {passwordLoading ? 'Updating...' : 'Update Password'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
       <ConfirmationModal
         isOpen={!!deleteAddrTargetId}
         title="Delete Address?"
-        message="Are you sure you want to delete this saved delivery address?"
+        message="Are you sure you want to remove this address?"
         confirmText="Delete Address"
         cancelText="Cancel"
         isDanger={true}
