@@ -172,8 +172,8 @@ export default function RegisterPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.45rem',
-                  fontSize: '0.74rem',
-                  color: req.pass ? '#1F5A28 !important' : '#5A4438 !important',
+                  fontSize: '0.76rem',
+                  color: req.pass ? '#1F5A28' : '#5A4438',
                   fontWeight: '700',
                 }}
               >
@@ -191,7 +191,7 @@ export default function RegisterPage() {
                 >
                   <CheckCircle2 size={11} color={req.pass ? '#FFFFFF' : '#5A4438'} />
                 </div>
-                <span>{req.pass ? `✓ ${req.label}` : `✓ ${req.label}`}</span>
+                <span>{req.label}</span>
               </div>
             ))}
           </div>
@@ -204,9 +204,9 @@ export default function RegisterPage() {
       </form>
 
       {/* Switch to Login */}
-      <div style={{ textAlign: 'center', fontSize: '0.88rem', color: '#5A4438 !important', fontWeight: '600', paddingTop: '0.1rem' }}>
+      <div style={{ textAlign: 'center', fontSize: '0.9rem', color: '#4A3525', fontWeight: '600', paddingTop: '0.2rem' }}>
         Already have an account?{' '}
-        <Link to="/login" style={{ color: '#1F5A28 !important', fontWeight: '800', textDecoration: 'none' }}>
+        <Link to="/login" style={{ color: '#1F5A28', fontWeight: '800', textDecoration: 'none' }}>
           Login here
         </Link>
       </div>

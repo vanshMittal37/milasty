@@ -176,7 +176,7 @@ export default function ResetPasswordPage() {
                 width: '100%',
                 height: '50px',
                 backgroundColor: '#1F5A28',
-                color: '#FFFFFF !important',
+                color: '#FFFFFF',
                 borderRadius: '12px',
                 fontWeight: '700',
                 fontSize: '0.95rem',
@@ -197,7 +197,7 @@ export default function ResetPasswordPage() {
               to="/login"
               style={{
                 fontSize: '0.86rem',
-                color: '#1F5A28 !important',
+                color: '#1F5A28',
                 fontWeight: '700',
                 textDecoration: 'none',
                 display: 'inline-flex',
@@ -242,14 +242,14 @@ export default function ResetPasswordPage() {
               style={{
                 fontSize: '1.9rem',
                 fontFamily: 'var(--font-serif)',
-                color: '#2B1710 !important',
+                color: '#2B1710',
                 fontWeight: '800',
                 margin: '0 0 0.45rem',
               }}
             >
               Password Updated
             </h1>
-            <p style={{ color: '#5A4438 !important', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
+            <p style={{ color: '#5A4438', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
               Your password has been successfully updated. You can now log in with your new password.
             </p>
           </div>
@@ -260,7 +260,7 @@ export default function ResetPasswordPage() {
               width: '100%',
               height: '50px',
               backgroundColor: '#1F5A28',
-              color: '#FFFFFF !important',
+              color: '#FFFFFF',
               borderRadius: '12px',
               fontWeight: '700',
               fontSize: '0.95rem',
@@ -301,7 +301,7 @@ export default function ResetPasswordPage() {
               style={{
                 fontSize: '0.74rem',
                 fontWeight: '700',
-                color: '#3A2922 !important',
+                color: '#3A2922',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}
@@ -357,7 +357,7 @@ export default function ResetPasswordPage() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.74rem', color: '#5A4438 !important', fontWeight: '700' }}>
+              <span style={{ fontSize: '0.74rem', color: '#5A4438', fontWeight: '700' }}>
                 Password strength
               </span>
               <span style={{ fontSize: '0.74rem', color: strength.color, fontWeight: '800' }}>
@@ -390,7 +390,7 @@ export default function ResetPasswordPage() {
                     alignItems: 'center',
                     gap: '0.45rem',
                     fontSize: '0.74rem',
-                    color: req.pass ? '#1F5A28 !important' : '#5A4438 !important',
+                    color: req.pass ? '#1F5A28' : '#5A4438',
                     fontWeight: '700',
                   }}
                 >
@@ -461,7 +461,7 @@ export default function ResetPasswordPage() {
             to="/login"
             style={{
               fontSize: '0.86rem',
-              color: '#1F5A28 !important',
+              color: '#1F5A28',
               fontWeight: '700',
               textDecoration: 'none',
               display: 'inline-flex',

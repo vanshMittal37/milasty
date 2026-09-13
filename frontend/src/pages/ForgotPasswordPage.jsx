@@ -95,16 +95,16 @@ export default function ForgotPasswordPage() {
               style={{
                 fontSize: '1.9rem',
                 fontFamily: 'var(--font-serif)',
-                color: '#2B1710 !important',
+                color: '#2B1710',
                 fontWeight: '800',
                 margin: '0 0 0.45rem',
               }}
             >
               Check Your Email
             </h1>
-            <p style={{ color: '#5A4438 !important', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
+            <p style={{ color: '#5A4438', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
               We've sent password reset instructions to{' '}
-              <strong style={{ color: '#2B1710 !important', wordBreak: 'break-all' }}>{email}</strong>. Please check your inbox and follow the secure link.
+              <strong style={{ color: '#2B1710', wordBreak: 'break-all' }}>{email}</strong>. Please check your inbox and follow the secure link.
             </p>
           </div>
 
@@ -118,7 +118,7 @@ export default function ForgotPasswordPage() {
                 width: '100%',
                 height: '46px',
                 backgroundColor: '#F3EDE2',
-                color: cooldown > 0 ? '#675449 !important' : '#1F5A28 !important',
+                color: cooldown > 0 ? '#675449' : '#1F5A28',
                 borderRadius: '12px',
                 border: '1.5px solid #1F5A28',
                 fontWeight: '700',
@@ -140,7 +140,7 @@ export default function ForgotPasswordPage() {
               to="/login"
               style={{
                 fontSize: '0.86rem',
-                color: '#1F5A28 !important',
+                color: '#1F5A28',
                 fontWeight: '700',
                 textDecoration: 'none',
                 display: 'inline-flex',
@@ -198,7 +198,7 @@ export default function ForgotPasswordPage() {
             to="/login"
             style={{
               fontSize: '0.86rem',
-              color: '#1F5A28 !important',
+              color: '#1F5A28',
               fontWeight: '700',
               textDecoration: 'none',
               display: 'inline-flex',

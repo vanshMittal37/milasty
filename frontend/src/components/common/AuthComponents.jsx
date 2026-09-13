@@ -83,7 +83,7 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
           position: 'relative',
           zIndex: 2,
           width: '100%',
-          maxWidth: '460px',
+          maxWidth: '520px',
           backgroundColor: '#F8F3E9',
           borderRadius: '26px',
           border: '1.5px solid #E2D7C7',
@@ -105,15 +105,15 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
             <span
               className="auth-badge"
               style={{
-                fontSize: '0.68rem',
+                fontSize: '0.7rem',
                 fontWeight: '800',
                 textTransform: 'uppercase',
                 letterSpacing: '0.12em',
-                color: '#355A3B !important',
-                backgroundColor: '#E8EFE3 !important',
-                padding: '0.35rem 0.9rem',
+                color: '#355A3B',
+                backgroundColor: '#E8EFE3',
+                padding: '0.35rem 0.95rem',
                 borderRadius: '999px',
-                border: '1px solid #C9D7C3 !important',
+                border: '1px solid #C9D7C3',
                 display: 'inline-block',
                 marginBottom: '0.85rem',
               }}
@@ -126,9 +126,9 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
           <h1
             className="auth-heading"
             style={{
-              fontSize: '2.2rem',
+              fontSize: '2.25rem',
               fontFamily: 'var(--font-serif)',
-              color: '#2B1710 !important',
+              color: '#2B1710',
               fontWeight: '800',
               margin: '0 0 0.45rem',
               letterSpacing: '-0.01em',
@@ -152,8 +152,8 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
             <p
               className="auth-subtitle"
               style={{
-                color: '#5A4438 !important',
-                fontSize: '0.88rem',
+                color: '#5A4438',
+                fontSize: '0.9rem',
                 margin: 0,
                 fontWeight: '500',
                 lineHeight: '1.45',
@@ -187,8 +187,8 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
                 key={idx}
                 className="auth-security-text"
                 style={{
-                  fontSize: '0.72rem',
-                  color: '#675449 !important',
+                  fontSize: '0.75rem',
+                  color: '#675449',
                   fontWeight: '700',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -219,7 +219,7 @@ export function AuthAlert({ message, type = 'error' }) {
       style={{
         backgroundColor: isError ? '#FDF2F0' : '#EAEFE6',
         border: `1.5px solid ${isError ? '#D9534F' : '#1F5A28'}`,
-        color: isError ? '#801B18 !important' : '#1F5A28 !important',
+        color: isError ? '#801B18' : '#1F5A28',
         padding: '0.8rem 0.95rem',
         borderRadius: '12px',
         fontSize: '0.85rem',
@@ -268,14 +268,14 @@ export function AuthInput({
             style={{
               fontSize: '0.74rem',
               fontWeight: '700',
-              color: '#3A2922 !important',
+              color: '#3A2922',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
             }}
           >
             {label}
           </label>
-          {hint && <span style={{ fontSize: '0.74rem', color: '#675449 !important', fontWeight: '600' }}>{hint}</span>}
+          {hint && <span style={{ fontSize: '0.74rem', color: '#675449', fontWeight: '600' }}>{hint}</span>}
         </div>
       )}
 
@@ -313,12 +313,10 @@ export function AuthInput({
           disabled={disabled}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          className="milasty-auth-input"
+          className={`milasty-auth-input ${Icon ? 'has-icon' : ''} ${rightElement ? 'has-right-element' : ''}`}
           style={{
             width: '100%',
             height: '48px',
-            paddingLeft: Icon ? '44px' : '14px',
-            paddingRight: rightElement ? '44px' : '14px',
             borderRadius: '12px',
             border: `1.5px solid ${
               error ? '#B8321E' : isFocused ? '#1F5A28' : '#D8CCB8'
@@ -328,7 +326,7 @@ export function AuthInput({
             fontWeight: '600',
             outline: 'none',
             backgroundColor: '#F3EDE2',
-            color: '#2B1710 !important',
+            color: '#2B1710',
             transition: 'all 0.2s ease',
             fontFamily: 'inherit',
             boxSizing: 'border-box',
@@ -381,7 +379,7 @@ export function AuthButton({
         height: '50px',
         marginTop: '0.2rem',
         backgroundColor: '#1F5A28',
-        color: '#FFFFFF !important',
+        color: '#FFFFFF',
         borderRadius: '12px',
         border: 'none',
         fontWeight: '700',
@@ -412,11 +410,11 @@ export function AuthButton({
               animation: 'authSpinner 0.8s linear infinite',
             }}
           />
-          <span style={{ color: '#FFFFFF !important', fontWeight: '700' }}>{loadingText}</span>
+          <span style={{ color: '#FFFFFF', fontWeight: '700' }}>{loadingText}</span>
         </div>
       ) : (
         <>
-          <span style={{ color: '#FFFFFF !important', fontWeight: '700' }}>{children}</span>
+          <span style={{ color: '#FFFFFF', fontWeight: '700' }}>{children}</span>
           {Icon && <Icon size={18} color="#FFFFFF" style={{ strokeWidth: 2.8 }} />}
         </>
       )}

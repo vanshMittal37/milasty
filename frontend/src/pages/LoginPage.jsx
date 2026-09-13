@@ -83,7 +83,7 @@ export default function LoginPage() {
               style={{
                 fontSize: '0.74rem',
                 fontWeight: '700',
-                color: '#3A2922 !important',
+                color: '#3A2922',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}
@@ -129,8 +129,8 @@ export default function LoginPage() {
             <Link
               to="/forgot-password"
               style={{
-                fontSize: '0.82rem',
-                color: '#1F5A28 !important',
+                fontSize: '0.84rem',
+                color: '#1F5A28',
                 fontWeight: '700',
                 textDecoration: 'none',
               }}
@@ -146,10 +146,10 @@ export default function LoginPage() {
         </AuthButton>
       </form>
 
-      {/* Switch to Register (NO Google/Apple/OR divider) */}
-      <div style={{ textAlign: 'center', fontSize: '0.88rem', color: '#5A4438 !important', fontWeight: '600', paddingTop: '0.2rem' }}>
+      {/* Switch to Register */}
+      <div style={{ textAlign: 'center', fontSize: '0.9rem', color: '#4A3525', fontWeight: '600', paddingTop: '0.2rem' }}>
         Don't have an account?{' '}
-        <Link to="/register" style={{ color: '#1F5A28 !important', fontWeight: '800', textDecoration: 'none' }}>
+        <Link to="/register" style={{ color: '#1F5A28', fontWeight: '800', textDecoration: 'none' }}>
           Create one here
         </Link>
       </div>

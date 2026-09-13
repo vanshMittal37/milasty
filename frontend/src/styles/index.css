@@ -850,9 +850,9 @@ a {
   }
 
   /* Inputs and fields spacing */
-  input,
-  textarea,
-  select {
+  input:not(.milasty-auth-input),
+  textarea:not(.milasty-auth-input),
+  select:not(.milasty-auth-input) {
     padding: 0.7rem 0.85rem !important;
     font-size: 0.88rem !important;
   }
@@ -3191,25 +3191,50 @@ footer.transparent-blurred-footer {
 }
 
 /* MILASTY Auth Input Placeholder & Contrast Overrides */
-.milasty-auth-input::placeholder {
-  color: #5C4329 !important;
+.milasty-auth-card {
+  color: #2B1710 !important;
+}
+
+.milasty-auth-card p,
+.milasty-auth-card label,
+.milasty-auth-card span {
+  color: #3A2922;
+}
+
+.milasty-auth-card a {
+  color: #1F5A28 !important;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.milasty-auth-card a:hover {
+  color: #16401C !important;
+  text-decoration: underline;
+}
+
+.milasty-auth-input {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  color: #2B1710 !important;
+  background-color: #F3EDE2 !important;
+  border-radius: 12px !important;
+}
+
+.milasty-auth-input.has-icon {
+  padding-left: 46px !important;
+}
+
+.milasty-auth-input.has-right-element {
+  padding-right: 46px !important;
+}
+
+.milasty-auth-input::placeholder,
+.milasty-auth-input::-webkit-input-placeholder,
+.milasty-auth-input::-moz-placeholder,
+.milasty-auth-input:-ms-input-placeholder {
+  color: #7A6252 !important;
   opacity: 1 !important;
   font-weight: 500 !important;
-}
-
-.milasty-auth-input::-webkit-input-placeholder {
-  color: #5C4329 !important;
-  opacity: 1 !important;
-}
-
-.milasty-auth-input::-moz-placeholder {
-  color: #5C4329 !important;
-  opacity: 1 !important;
-}
-
-.milasty-auth-input:-ms-input-placeholder {
-  color: #5C4329 !important;
-  opacity: 1 !important;
 }
 
 @media (max-width: 768px) {
@@ -3225,12 +3250,13 @@ footer.transparent-blurred-footer {
   }
 
   .milasty-auth-page {
-    padding: 3.5rem 0.85rem 2rem !important;
+    padding: 3rem 0.85rem 2rem !important;
   }
 
   .milasty-auth-card {
     padding: 1.85rem 1.25rem 1.5rem !important;
     border-radius: 20px !important;
+    max-width: 100% !important;
   }
 
   .milasty-auth-card h1 {
