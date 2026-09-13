@@ -398,7 +398,7 @@ export default function AccountDashboard() {
                       <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#85B870', fontWeight: '800' }}>
                         GOOD MORNING 👋
                       </span>
-                      <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: '0.1rem 0 0.35rem 0' }}>
+                      <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-sans)', color: '#F0F4F1', fontWeight: '800', margin: '0.1rem 0 0.35rem 0', letterSpacing: '-0.01em' }}>
                         Welcome back, {user?.name}
                       </h2>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.82rem', color: '#9EB0A2', fontWeight: '600' }}>
@@ -788,12 +788,12 @@ export default function AccountDashboard() {
                 </div>
 
                 {/* 4. RECOMMENDED BAKES ("MADE FOR YOUR RITUAL") */}
-                <div style={{ borderTop: '1px solid rgba(245, 235, 221, 0.12)', paddingTop: '2.5rem' }}>
-                  <div style={{ marginBottom: '1.5rem' }}>
-                    <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#B99A5B', fontWeight: '800', display: 'block' }}>
+                <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '2.5rem' }}>
+                  <div style={{ marginBottom: '1.25rem' }}>
+                    <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#85B870', fontWeight: '800', display: 'block' }}>
                       PERSONALIZED SELECTION
                     </span>
-                    <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0.2rem 0 0 0' }}>
+                    <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-sans)', color: '#F5F5F5', fontWeight: '800', margin: '0.2rem 0 0 0' }}>
                       Made for Your Ritual
                     </h3>
                   </div>
@@ -805,9 +805,9 @@ export default function AccountDashboard() {
                         <div
                           key={p._id || p.slug}
                           style={{
-                            backgroundColor: '#24120B',
-                            borderRadius: '20px',
-                            border: '1px solid rgba(245, 235, 221, 0.16)',
+                            backgroundColor: '#111613',
+                            borderRadius: '16px',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
                             overflow: 'hidden',
                             display: 'flex',
                             flexDirection: 'column',
@@ -823,12 +823,12 @@ export default function AccountDashboard() {
                             </Link>
                           </div>
 
-                          <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
+                          <div style={{ padding: '1.15rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
                             <div>
-                              <h4 style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+                              <h4 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-sans)', color: '#F5F5F5', fontWeight: '800', margin: '0 0 0.3rem 0' }}>
                                 <Link to={`/product/${p.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{p.title}</Link>
                               </h4>
-                              <p style={{ fontSize: '0.78rem', color: '#CDBFAE', margin: '0 0 0.85rem 0', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                              <p style={{ fontSize: '0.76rem', color: '#A7ADB8', margin: '0 0 0.85rem 0', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                 {p.subtitle || p.description}
                               </p>
                             </div>
@@ -872,7 +872,7 @@ export default function AccountDashboard() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
                 
                 {/* Search & Filter Bar */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#24120B', padding: '1.25rem', borderRadius: '18px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111613', padding: '1.25rem', borderRadius: '18px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
                   
                   {/* Search input */}
                   <div style={{ position: 'relative', flexGrow: 1, minWidth: '220px' }}>
@@ -930,7 +930,7 @@ export default function AccountDashboard() {
                     <SkeletonBox height="140px" />
                   </div>
                 ) : filteredOrders.length === 0 ? (
-                  <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#24120B', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
+                  <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#111613', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
                     <Package size={42} color="#B99A5B" style={{ margin: '0 auto 1rem' }} />
                     <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.4rem 0' }}>
                       No orders found
@@ -967,7 +967,7 @@ export default function AccountDashboard() {
                         <div
                           key={order._id}
                           style={{
-                            backgroundColor: '#24120B',
+                            backgroundColor: '#111613',
                             borderRadius: '20px',
                             border: '1px solid rgba(245, 235, 221, 0.16)',
                             padding: '1.5rem',
@@ -1074,7 +1074,7 @@ export default function AccountDashboard() {
             {activeTab === 'wishlist' && (
               <div>
                 {wishlistItems.length === 0 ? (
-                  <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#24120B', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
+                  <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#111613', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
                     <Heart size={44} color="#D9534F" style={{ margin: '0 auto 1rem' }} />
                     <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
                       Your wishlist is empty
@@ -1113,7 +1113,7 @@ export default function AccountDashboard() {
                         <div
                           key={pId}
                           style={{
-                            backgroundColor: '#24120B',
+                            backgroundColor: '#111613',
                             borderRadius: '20px',
                             border: '1px solid rgba(245, 235, 221, 0.16)',
                             overflow: 'hidden',
@@ -1248,7 +1248,7 @@ export default function AccountDashboard() {
                 </div>
 
                 {user?.addresses?.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '3rem 1.5rem', backgroundColor: '#24120B', borderRadius: '24px', border: '1px dashed rgba(245, 235, 221, 0.2)' }}>
+                  <div style={{ textAlign: 'center', padding: '3rem 1.5rem', backgroundColor: '#111613', borderRadius: '24px', border: '1px dashed rgba(245, 235, 221, 0.2)' }}>
                     <MapPin size={38} color="#B99A5B" style={{ margin: '0 auto 0.85rem' }} />
                     <h4 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
                       No saved addresses
@@ -1279,7 +1279,7 @@ export default function AccountDashboard() {
                       <div
                         key={addr._id || idx}
                         style={{
-                          backgroundColor: '#24120B',
+                          backgroundColor: '#111613',
                           borderRadius: '20px',
                           border: '1px solid rgba(245, 235, 221, 0.16)',
                           padding: '1.5rem',
@@ -1344,7 +1344,7 @@ export default function AccountDashboard() {
             {activeTab === 'profile' && (
               <div
                 style={{
-                  backgroundColor: '#24120B',
+                  backgroundColor: '#111613',
                   borderRadius: '24px',
                   border: '1px solid rgba(245, 235, 221, 0.16)',
                   padding: '2.25rem 2rem',
@@ -1457,7 +1457,7 @@ export default function AccountDashboard() {
             {activeTab === 'password' && (
               <div
                 style={{
-                  backgroundColor: '#24120B',
+                  backgroundColor: '#111613',
                   borderRadius: '24px',
                   border: '1px solid rgba(245, 235, 221, 0.16)',
                   padding: '2.25rem 2rem',
@@ -1642,7 +1642,7 @@ export default function AccountDashboard() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(15, 7, 3, 0.8)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div
             style={{
-              backgroundColor: '#24120B',
+              backgroundColor: '#111613',
               borderRadius: '24px',
               border: '1px solid rgba(245, 235, 221, 0.25)',
               width: '100%',

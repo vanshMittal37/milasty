@@ -425,7 +425,7 @@ export default function CustomerLayout() {
             <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7B8E80', fontWeight: '800', marginBottom: '0.2rem' }}>
               {category}
             </div>
-            <h1 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: '#F5F5F5', fontWeight: '800', margin: 0 }}>
+            <h1 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-sans)', color: '#F5F5F5', fontWeight: '800', margin: 0, letterSpacing: '-0.01em' }}>
               {title}
             </h1>
             <p style={{ fontSize: '0.85rem', color: '#A7ADB8', margin: '0.25rem 0 0 0', fontWeight: '500' }}>
