@@ -4,7 +4,7 @@ import {
   LayoutGrid, Package, Heart, MapPin, User, Lock, LogOut, Menu, X, 
   ChevronRight, Plus, Trash2, Edit3, ShoppingBag, Search, Filter, 
   Calendar, ArrowRight, ShieldCheck, CheckCircle2, RefreshCw, Check, 
-  ExternalLink, AlertCircle, Eye, EyeOff 
+  ExternalLink, AlertCircle, Eye, EyeOff, Mail, Phone 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
