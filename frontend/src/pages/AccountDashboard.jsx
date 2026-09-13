@@ -347,28 +347,27 @@ export default function AccountDashboard() {
     <div 
       className="account-dashboard-page" 
       style={{ 
-        backgroundColor: '#1E0F08', 
+        backgroundColor: '#090D0A', 
         minHeight: '100vh', 
         padding: '2rem 0 6rem',
-        color: '#F7F0E4'
+        color: '#F0F4F1'
       }}
     >
       <div className="container" style={{ maxWidth: '1240px' }}>
         
-        {/* MOBILE TOP BAR WITH HAMBURGER BUTTON (Hidden on Desktop via CSS) */}
+        {/* MOBILE TOP BAR WITH HAMBURGER BUTTON (Strictly Hidden on Desktop) */}
         <div 
+          className="milasty-mobile-header-bar"
           style={{
-            display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             marginBottom: '1.5rem',
-            padding: '1rem 1.25rem',
-            backgroundColor: '#24120B',
-            borderRadius: '18px',
-            border: '1px solid rgba(245, 235, 221, 0.16)',
+            padding: '0.85rem 1.15rem',
+            backgroundColor: '#0D120E',
+            borderRadius: '16px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             boxShadow: '0 4px 18px rgba(0,0,0,0.3)'
           }}
-          className="lg:hidden"
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <button
@@ -376,25 +375,25 @@ export default function AccountDashboard() {
               onClick={() => setMobileDrawerOpen(true)}
               aria-label="Open Sidebar Navigation Menu"
               style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(245, 235, 221, 0.2)',
-                color: '#F7F0E4',
-                padding: '8px',
-                borderRadius: '10px',
+                backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#F0F4F1',
+                padding: '7px',
+                borderRadius: '9px',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Menu size={22} />
+              <Menu size={20} />
             </button>
 
             <div>
-              <span style={{ fontSize: '0.68rem', color: '#B99A5B', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block' }}>
+              <span style={{ fontSize: '0.65rem', color: '#7B8E80', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'block' }}>
                 CUSTOMER PORTAL
               </span>
-              <h2 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0 }}>
+              <h2 style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: 0 }}>
                 MILASTY Account
               </h2>
             </div>
@@ -402,17 +401,18 @@ export default function AccountDashboard() {
 
           <div
             style={{
-              width: '40px',
-              height: '40px',
+              width: '36px',
+              height: '36px',
               borderRadius: '50%',
-              backgroundColor: '#B99A5B',
-              color: '#24120B',
+              backgroundColor: '#1D3B28',
+              color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: '800',
-              fontSize: '1rem',
+              fontSize: '0.95rem',
               fontFamily: 'var(--font-serif)',
+              border: '1px solid rgba(255, 255, 255, 0.12)'
             }}
           >
             {userInitial}
@@ -429,26 +429,26 @@ export default function AccountDashboard() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0 0.5rem' }}>
                 <div 
                   style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '10px',
-                    backgroundColor: '#274C37',
+                    width: '34px',
+                    height: '34px',
+                    borderRadius: '9px',
+                    backgroundColor: '#1D3B28',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#F7F0E4',
+                    color: '#FFFFFF',
                     fontFamily: 'var(--font-serif)',
                     fontWeight: '800',
-                    fontSize: '1.1rem',
+                    fontSize: '1rem',
                   }}
                 >
                   M
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0, letterSpacing: '0.04em' }}>
+                  <h3 style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: 0, letterSpacing: '0.04em' }}>
                     MILASTY
                   </h3>
-                  <span style={{ fontSize: '0.68rem', color: '#CDBFAE', fontWeight: '600' }}>Customer Portal</span>
+                  <span style={{ fontSize: '0.65rem', color: '#7B8E80', fontWeight: '600' }}>Customer Portal</span>
                 </div>
               </div>
 
@@ -462,31 +462,31 @@ export default function AccountDashboard() {
           {/* MAIN CONTENT AREA */}
           <main style={{ flexGrow: 1, minWidth: 0, width: '100%' }}>
             
-            {/* TOP HEADER IN DASHBOARD CONTENT AREA */}
+            {/* TOP HEADER IN DASHBOARD CONTENT AREA (Matching Image 2 Admin Header Style) */}
             <div 
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'space-between', 
-                marginBottom: '2rem',
+                marginBottom: '1.75rem',
                 flexWrap: 'wrap',
                 gap: '1rem'
               }}
             >
               <div>
-                <span style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#B99A5B', fontWeight: '800', display: 'block', marginBottom: '0.2rem' }}>
-                  {activeTab.toUpperCase()}
+                <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7B8E80', fontWeight: '800', display: 'block', marginBottom: '0.2rem' }}>
+                  ACCOUNT / {activeTab.toUpperCase()}
                 </span>
-                <h1 style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
-                  {activeTab === 'overview' && `Welcome back, ${user?.name || 'Customer'} 👋`}
-                  {activeTab === 'orders' && 'My Order History'}
-                  {activeTab === 'wishlist' && 'My Saved Wishlist'}
-                  {activeTab === 'addresses' && 'Saved Delivery Locations'}
-                  {activeTab === 'profile' && 'Account Profile Details'}
-                  {activeTab === 'password' && 'Security & Password Settings'}
+                <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: 0, lineHeight: '1.15' }}>
+                  {activeTab === 'overview' && 'Dashboard'}
+                  {activeTab === 'orders' && 'My Orders'}
+                  {activeTab === 'wishlist' && 'My Wishlist'}
+                  {activeTab === 'addresses' && 'Addresses'}
+                  {activeTab === 'profile' && 'Profile Details'}
+                  {activeTab === 'password' && 'Security & Password'}
                 </h1>
-                <p style={{ fontSize: '0.88rem', color: '#CDBFAE', margin: '0.3rem 0 0 0', fontWeight: '500' }}>
-                  Manage your orders, saved products, delivery addresses, and account security.
+                <p style={{ fontSize: '0.86rem', color: '#9EB0A2', margin: '0.25rem 0 0 0', fontWeight: '500' }}>
+                  Here's what's happening with your MILASTY account today.
                 </p>
               </div>
 
@@ -496,19 +496,19 @@ export default function AccountDashboard() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.45rem',
-                  padding: '0.65rem 1.25rem',
-                  borderRadius: '12px',
-                  backgroundColor: '#274C37',
-                  color: '#FFFFFF',
+                  padding: '0.55rem 1.15rem',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  color: '#F0F4F1',
                   fontWeight: '700',
-                  fontSize: '0.85rem',
+                  fontSize: '0.82rem',
                   textDecoration: 'none',
-                  boxShadow: '0 4px 14px rgba(39, 76, 55, 0.3)',
                   transition: 'all 0.2s',
                 }}
               >
-                <span>View Store</span>
-                <ArrowRight size={16} />
+                <span>VIEW STORE</span>
+                <ArrowRight size={15} color="#85B870" />
               </Link>
             </div>
 
@@ -516,103 +516,103 @@ export default function AccountDashboard() {
                 TAB 1: OVERVIEW / DASHBOARD MAIN
                ================================================== */}
             {activeTab === 'overview' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 
-                {/* 1. ACCOUNT HERO CARD */}
+                {/* 1. ACCOUNT HERO CARD (Customer Name shown ONCE here) */}
                 <div
                   style={{
-                    background: 'linear-gradient(135deg, #24120B 0%, #1A0D07 100%)',
-                    borderRadius: '24px',
-                    border: '1px solid rgba(245, 235, 221, 0.18)',
-                    padding: '2.25rem 2rem',
-                    boxShadow: '0 10px 32px rgba(0, 0, 0, 0.3)',
+                    background: '#111613',
+                    borderRadius: '20px',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    padding: '1.75rem 1.75rem',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     flexWrap: 'wrap',
-                    gap: '1.75rem',
+                    gap: '1.5rem',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
                     <div
                       style={{
-                        width: '72px',
-                        height: '72px',
+                        width: '64px',
+                        height: '64px',
                         borderRadius: '50%',
-                        backgroundColor: '#B99A5B',
-                        color: '#24120B',
+                        backgroundColor: '#1D3B28',
+                        color: '#FFFFFF',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '1.85rem',
+                        fontSize: '1.65rem',
                         fontFamily: 'var(--font-serif)',
                         fontWeight: '800',
-                        boxShadow: '0 6px 18px rgba(185, 154, 91, 0.3)',
+                        border: '1px solid rgba(133, 184, 112, 0.3)',
                       }}
                     >
                       {userInitial}
                     </div>
 
                     <div>
-                      <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B99A5B', fontWeight: '800' }}>
-                        AUTHENTICATED CUSTOMER
+                      <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#85B870', fontWeight: '800' }}>
+                        GOOD MORNING 👋
                       </span>
-                      <h2 style={{ fontSize: '1.65rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0.1rem 0 0.4rem 0' }}>
-                        {user?.name}
+                      <h2 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: '0.1rem 0 0.35rem 0' }}>
+                        Welcome back, {user?.name}
                       </h2>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.85rem', color: '#CDBFAE', fontWeight: '600' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Mail size={14} color="#B99A5B" /> {user?.email}</span>
-                        {user?.phone && <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Phone size={14} color="#B99A5B" /> {user.phone}</span>}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.82rem', color: '#9EB0A2', fontWeight: '600' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Mail size={14} color="#85B870" /> {user?.email}</span>
+                        {user?.phone && <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Phone size={14} color="#85B870" /> {user.phone}</span>}
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
                     <button
                       onClick={() => setActiveTab('profile')}
                       style={{
-                        padding: '0.65rem 1.15rem',
-                        fontSize: '0.82rem',
+                        padding: '0.55rem 1.05rem',
+                        fontSize: '0.8rem',
                         fontWeight: '700',
                         borderRadius: '10px',
-                        border: '1px solid rgba(245, 235, 221, 0.25)',
-                        color: '#F7F0E4',
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.12)',
+                        color: '#F0F4F1',
+                        backgroundColor: 'rgba(255, 255, 255, 0.04)',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.45rem',
+                        gap: '0.4rem',
                       }}
                     >
-                      <Edit3 size={14} color="#B99A5B" />
+                      <Edit3 size={14} color="#85B870" />
                       <span>Edit Profile</span>
                     </button>
 
                     <button
                       onClick={() => setActiveTab('password')}
                       style={{
-                        padding: '0.65rem 1.15rem',
-                        fontSize: '0.82rem',
+                        padding: '0.55rem 1.05rem',
+                        fontSize: '0.8rem',
                         fontWeight: '700',
                         borderRadius: '10px',
-                        border: '1px solid rgba(245, 235, 221, 0.25)',
-                        color: '#F7F0E4',
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.12)',
+                        color: '#F0F4F1',
+                        backgroundColor: 'rgba(255, 255, 255, 0.04)',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.45rem',
+                        gap: '0.4rem',
                       }}
                     >
-                      <Lock size={14} color="#B99A5B" />
+                      <Lock size={14} color="#85B870" />
                       <span>Change Password</span>
                     </button>
 
                     <button
                       onClick={() => setShowLogoutModal(true)}
                       style={{
-                        padding: '0.65rem 1.15rem',
-                        fontSize: '0.82rem',
+                        padding: '0.55rem 1.05rem',
+                        fontSize: '0.8rem',
                         fontWeight: '700',
                         borderRadius: '10px',
                         border: '1px solid rgba(217, 83, 79, 0.3)',
@@ -621,7 +621,7 @@ export default function AccountDashboard() {
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.45rem',
+                        gap: '0.4rem',
                       }}
                     >
                       <LogOut size={14} color="#D9534F" />
@@ -630,63 +630,63 @@ export default function AccountDashboard() {
                   </div>
                 </div>
 
-                {/* 2. STAT CARDS */}
+                {/* 2. STAT CARDS (Matching Image 2 Admin Dashboard Style) */}
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     Account Summary
                   </h3>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.15rem' }}>
                     
-                    {/* Orders Card */}
+                    {/* Orders Card (Green Accent) */}
                     <div className="milasty-stat-card" onClick={() => setActiveTab('orders')}>
-                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(185, 154, 91, 0.12)', color: '#B99A5B' }}>
-                        <Package size={24} />
+                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(29, 59, 40, 0.4)', color: '#85B870' }}>
+                        <Package size={22} />
                       </div>
                       <div>
+                        <div style={{ fontSize: '0.68rem', color: '#7B8E80', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em' }}>TOTAL ORDERS</div>
                         {loadingOrders ? (
                           <SkeletonBox height="24px" width="50px" />
                         ) : (
-                          <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#F7F0E4' }}>{orders.length}</div>
+                          <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#F0F4F1', margin: '0.1rem 0' }}>{orders.length}</div>
                         )}
-                        <div style={{ fontSize: '0.82rem', color: '#B99A5B', fontWeight: '700' }}>Orders</div>
-                        <div style={{ fontSize: '0.74rem', color: '#CDBFAE', fontWeight: '500' }}>Track purchases</div>
+                        <div style={{ fontSize: '0.74rem', color: '#85B870', fontWeight: '600' }}>Track purchases</div>
                       </div>
                     </div>
 
-                    {/* Wishlist Card */}
+                    {/* Wishlist Card (Red/Pink Accent) */}
                     <div className="milasty-stat-card" onClick={() => setActiveTab('wishlist')}>
-                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(217, 83, 79, 0.12)', color: '#D9534F' }}>
-                        <Heart size={24} />
+                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(217, 83, 79, 0.15)', color: '#D9534F' }}>
+                        <Heart size={22} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#F7F0E4' }}>{wishlistCount}</div>
-                        <div style={{ fontSize: '0.82rem', color: '#D9534F', fontWeight: '700' }}>Wishlist</div>
-                        <div style={{ fontSize: '0.74rem', color: '#CDBFAE', fontWeight: '500' }}>Favourite bakes</div>
+                        <div style={{ fontSize: '0.68rem', color: '#7B8E80', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em' }}>SAVED WISHLIST</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#F0F0F1', margin: '0.1rem 0' }}>{wishlistCount}</div>
+                        <div style={{ fontSize: '0.74rem', color: '#D9534F', fontWeight: '600' }}>Favourite bakes</div>
                       </div>
                     </div>
 
-                    {/* Addresses Card */}
+                    {/* Addresses Card (Yellow/Gold Accent) */}
                     <div className="milasty-stat-card" onClick={() => setActiveTab('addresses')}>
-                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(39, 76, 55, 0.18)', color: '#7AA34A' }}>
-                        <MapPin size={24} />
+                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(185, 154, 91, 0.15)', color: '#B99A5B' }}>
+                        <MapPin size={22} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#F7F0E4' }}>{user?.addresses?.length || 0}</div>
-                        <div style={{ fontSize: '0.82rem', color: '#7AA34A', fontWeight: '700' }}>Addresses</div>
-                        <div style={{ fontSize: '0.74rem', color: '#CDBFAE', fontWeight: '500' }}>Delivery locations</div>
+                        <div style={{ fontSize: '0.68rem', color: '#7B8E80', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em' }}>DELIVERY LOCATIONS</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#F0F4F1', margin: '0.1rem 0' }}>{user?.addresses?.length || 0}</div>
+                        <div style={{ fontSize: '0.74rem', color: '#B99A5B', fontWeight: '600' }}>Saved addresses</div>
                       </div>
                     </div>
 
-                    {/* Cart Card */}
+                    {/* Cart Card (Purple Accent) */}
                     <div className="milasty-stat-card" onClick={() => setIsCartOpen(true)}>
-                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(185, 154, 91, 0.15)', color: '#B99A5B' }}>
-                        <ShoppingBag size={24} />
+                      <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: 'rgba(111, 66, 193, 0.18)', color: '#A586E8' }}>
+                        <ShoppingBag size={22} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#F7F0E4' }}>{totalItemCount}</div>
-                        <div style={{ fontSize: '0.82rem', color: '#B99A5B', fontWeight: '700' }}>Cart Items</div>
-                        <div style={{ fontSize: '0.74rem', color: '#CDBFAE', fontWeight: '500' }}>In active cart</div>
+                        <div style={{ fontSize: '0.68rem', color: '#7B8E80', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em' }}>CART ITEMS</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#F0F4F1', margin: '0.1rem 0' }}>{totalItemCount}</div>
+                        <div style={{ fontSize: '0.74rem', color: '#A586E8', fontWeight: '600' }}>Active items</div>
                       </div>
                     </div>
 
@@ -694,39 +694,39 @@ export default function AccountDashboard() {
                 </div>
 
                 {/* 3. TWO-COLUMN GRID: QUICK ACTIONS & RECENT ORDERS */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', alignItems: 'start' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem', alignItems: 'start' }}>
                   
                   {/* Column A: Quick Actions */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                    <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: 0 }}>
                       Quick Actions
                     </h3>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                       <div
                         onClick={() => setActiveTab('orders')}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '1.1rem 1.35rem',
-                          backgroundColor: '#24120B',
-                          borderRadius: '16px',
-                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          padding: '1rem 1.25rem',
+                          backgroundColor: '#111613',
+                          borderRadius: '14px',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(185, 154, 91, 0.12)', color: '#B99A5B' }}>
-                            <Package size={20} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                          <div style={{ padding: '9px', borderRadius: '10px', backgroundColor: 'rgba(29, 59, 40, 0.4)', color: '#85B870' }}>
+                            <Package size={18} />
                           </div>
                           <div>
-                            <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#F7F0E4', margin: 0 }}>Track My Orders</h4>
-                            <p style={{ fontSize: '0.76rem', color: '#CDBFAE', margin: 0, fontWeight: '500' }}>Live journey & dispatch updates</p>
+                            <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#F0F4F1', margin: 0 }}>Track My Orders</h4>
+                            <p style={{ fontSize: '0.76rem', color: '#9EB0A2', margin: 0, fontWeight: '500' }}>Live journey & dispatch updates</p>
                           </div>
                         </div>
-                        <ChevronRight size={18} color="#B99A5B" />
+                        <ChevronRight size={18} color="#85B870" />
                       </div>
 
                       <div
@@ -735,24 +735,24 @@ export default function AccountDashboard() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '1.1rem 1.35rem',
-                          backgroundColor: '#24120B',
-                          borderRadius: '16px',
-                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          padding: '1rem 1.25rem',
+                          backgroundColor: '#111613',
+                          borderRadius: '14px',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(217, 83, 79, 0.12)', color: '#D9534F' }}>
-                            <Heart size={20} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                          <div style={{ padding: '9px', borderRadius: '10px', backgroundColor: 'rgba(217, 83, 79, 0.15)', color: '#D9534F' }}>
+                            <Heart size={18} />
                           </div>
                           <div>
-                            <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#F7F0E4', margin: 0 }}>View Wishlist</h4>
-                            <p style={{ fontSize: '0.76rem', color: '#CDBFAE', margin: 0, fontWeight: '500' }}>Saved favorites & rituals</p>
+                            <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#F0F4F1', margin: 0 }}>View Wishlist</h4>
+                            <p style={{ fontSize: '0.76rem', color: '#9EB0A2', margin: 0, fontWeight: '500' }}>Saved favorites & rituals</p>
                           </div>
                         </div>
-                        <ChevronRight size={18} color="#B99A5B" />
+                        <ChevronRight size={18} color="#85B870" />
                       </div>
 
                       <div
@@ -761,24 +761,24 @@ export default function AccountDashboard() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '1.1rem 1.35rem',
-                          backgroundColor: '#24120B',
-                          borderRadius: '16px',
-                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          padding: '1rem 1.25rem',
+                          backgroundColor: '#111613',
+                          borderRadius: '14px',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(39, 76, 55, 0.18)', color: '#7AA34A' }}>
-                            <MapPin size={20} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                          <div style={{ padding: '9px', borderRadius: '10px', backgroundColor: 'rgba(185, 154, 91, 0.15)', color: '#B99A5B' }}>
+                            <MapPin size={18} />
                           </div>
                           <div>
-                            <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#F7F0E4', margin: 0 }}>Manage Addresses</h4>
-                            <p style={{ fontSize: '0.76rem', color: '#CDBFAE', margin: 0, fontWeight: '500' }}>Update shipping destinations</p>
+                            <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#F0F4F1', margin: 0 }}>Manage Addresses</h4>
+                            <p style={{ fontSize: '0.76rem', color: '#9EB0A2', margin: 0, fontWeight: '500' }}>Update shipping destinations</p>
                           </div>
                         </div>
-                        <ChevronRight size={18} color="#B99A5B" />
+                        <ChevronRight size={18} color="#85B870" />
                       </div>
 
                       <div
@@ -787,33 +787,33 @@ export default function AccountDashboard() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '1.1rem 1.35rem',
-                          backgroundColor: '#24120B',
-                          borderRadius: '16px',
-                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          padding: '1rem 1.25rem',
+                          backgroundColor: '#111613',
+                          borderRadius: '14px',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.08)', color: '#F7F0E4' }}>
-                            <User size={20} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                          <div style={{ padding: '9px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.06)', color: '#F0F4F1' }}>
+                            <User size={18} />
                           </div>
                           <div>
-                            <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#F7F0E4', margin: 0 }}>Edit Profile</h4>
-                            <p style={{ fontSize: '0.76rem', color: '#CDBFAE', margin: 0, fontWeight: '500' }}>Name, email & phone details</p>
+                            <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#F0F4F1', margin: 0 }}>Edit Profile</h4>
+                            <p style={{ fontSize: '0.76rem', color: '#9EB0A2', margin: 0, fontWeight: '500' }}>Name, email & phone details</p>
                           </div>
                         </div>
-                        <ChevronRight size={18} color="#B99A5B" />
+                        <ChevronRight size={18} color="#85B870" />
                       </div>
 
                     </div>
                   </div>
 
                   {/* Column B: Recent Orders */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: 0 }}>
+                      <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: 0 }}>
                         Recent Orders
                       </h3>
                       {orders.length > 0 && (
@@ -822,8 +822,8 @@ export default function AccountDashboard() {
                           style={{
                             background: 'none',
                             border: 'none',
-                            fontSize: '0.78rem',
-                            color: '#B99A5B',
+                            fontSize: '0.76rem',
+                            color: '#85B870',
                             fontWeight: '800',
                             cursor: 'pointer',
                             textTransform: 'uppercase',
@@ -836,46 +836,115 @@ export default function AccountDashboard() {
                     </div>
 
                     {loadingOrders ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                        <SkeletonBox height="110px" />
-                        <SkeletonBox height="110px" />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        <SkeletonBox height="100px" />
+                        <SkeletonBox height="100px" />
                       </div>
                     ) : orders.length === 0 ? (
                       <div
                         style={{
-                          padding: '2.5rem 1.5rem',
+                          padding: '2.25rem 1.25rem',
                           textAlign: 'center',
-                          backgroundColor: '#24120B',
-                          borderRadius: '20px',
-                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          backgroundColor: '#111613',
+                          borderRadius: '16px',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
                         }}
                       >
-                        <Package size={36} color="#B99A5B" style={{ margin: '0 auto 0.75rem' }} />
-                        <h4 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
+                        <Package size={34} color="#85B870" style={{ margin: '0 auto 0.65rem' }} />
+                        <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: '0 0 0.3rem 0' }}>
                           No orders yet
                         </h4>
-                        <p style={{ color: '#CDBFAE', fontSize: '0.84rem', margin: '0 0 1.25rem 0', fontWeight: '500' }}>
+                        <p style={{ color: '#9EB0A2', fontSize: '0.82rem', margin: '0 0 1.15rem 0', fontWeight: '500' }}>
                           Your delicious MILASTY journey starts here.
                         </p>
                         <Link
                           to="/shop"
                           style={{
-                            padding: '0.65rem 1.5rem',
-                            fontSize: '0.82rem',
+                            padding: '0.55rem 1.35rem',
+                            fontSize: '0.8rem',
                             fontWeight: '800',
                             borderRadius: '999px',
-                            backgroundColor: '#274C37',
+                            backgroundColor: '#1D3B28',
                             color: '#FFFFFF',
                             textDecoration: 'none',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '0.4rem',
+                            gap: '0.35rem',
                           }}
                         >
                           <span>Explore MILASTY</span>
                           <ArrowRight size={14} />
                         </Link>
                       </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {recentOrders.map((order) => {
+                          const statusStyleMap = {
+                            Pending: { bg: 'rgba(185, 154, 91, 0.15)', text: '#B99A5B' },
+                            Confirmed: { bg: 'rgba(29, 59, 40, 0.4)', text: '#85B870' },
+                            Processing: { bg: 'rgba(29, 59, 40, 0.4)', text: '#85B870' },
+                            Delivered: { bg: 'rgba(29, 59, 40, 0.5)', text: '#A2D186' },
+                            Cancelled: { bg: 'rgba(217, 83, 79, 0.18)', text: '#D9534F' },
+                          };
+                          const currentStatus = order.status || order.orderStatus || 'Confirmed';
+                          const statusStyle = statusStyleMap[currentStatus] || { bg: 'rgba(255,255,255,0.08)', text: '#9EB0A2' };
+                          const formattedDate = new Date(order.createdAt || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                          return (
+                            <div
+                              key={order._id}
+                              style={{
+                                backgroundColor: '#111613',
+                                borderRadius: '14px',
+                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                padding: '1.15rem',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.75rem',
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#F0F4F1' }}>
+                                    ORDER #{order.orderNumber || order._id.slice(-8).toUpperCase()}
+                                  </div>
+                                  <span style={{ fontSize: '0.74rem', color: '#9EB0A2', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.15rem' }}>
+                                    <Calendar size={12} color="#85B870" /> {formattedDate}
+                                  </span>
+                                </div>
+                                <span style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.04em', backgroundColor: statusStyle.bg, color: statusStyle.text, padding: '0.25rem 0.65rem', borderRadius: '999px' }}>
+                                  {currentStatus}
+                                </span>
+                              </div>
+
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.6rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                                <div>
+                                  <span style={{ fontSize: '0.68rem', color: '#7B8E80', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '700', display: 'block' }}>Total Amount</span>
+                                  <span style={{ fontSize: '1.05rem', fontWeight: '900', color: '#F0F4F1' }}>₹{order.totalAmount}</span>
+                                </div>
+                                <Link
+                                  to={`/account/orders/${order._id}`}
+                                  style={{
+                                    fontSize: '0.78rem',
+                                    color: '#85B870',
+                                    fontWeight: '800',
+                                    textDecoration: 'none',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.25rem',
+                                  }}
+                                >
+                                  <span>View Order</span>
+                                  <ArrowRight size={13} />
+                                </Link>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                         {recentOrders.map((order) => {
