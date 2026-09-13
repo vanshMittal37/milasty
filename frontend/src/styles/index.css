@@ -117,6 +117,39 @@ main {
   flex-direction: column;
 }
 
+/* Override global serif heading rule inside customer portal & dashboard */
+.account-dashboard-page h1,
+.account-dashboard-page h2,
+.account-dashboard-page h3,
+.account-dashboard-page h4,
+.account-dashboard-page h5,
+.customer-main-area h1,
+.customer-main-area h2,
+.customer-main-area h3,
+.customer-main-area h4,
+.customer-main-area h5 {
+  font-family: var(--font-sans) !important;
+  font-weight: 800;
+  color: #F0F4F1 !important;
+}
+
+.customer-main-area h1 {
+  font-size: 1.3rem !important;
+}
+
+/* Green border card treatment for all dashboard cards */
+.milasty-dash-card {
+  background: #111613;
+  border: 1px solid rgba(133, 184, 112, 0.28);
+  border-radius: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.milasty-dash-card:hover {
+  border-color: rgba(133, 184, 112, 0.55);
+  box-shadow: 0 6px 20px rgba(29, 59, 40, 0.2);
+}
+
 main section,
 section,
 .products-trust-strip,

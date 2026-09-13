@@ -351,84 +351,7 @@ export default function AccountDashboard() {
   );
 
   return (
-    <div className="account-dashboard-page">
-
-      {/* ================================================
-          MOBILE HEADER BAR (hamburger + branding)
-         ================================================ */}
-      <div className="milasty-mobile-header-bar" style={{
-        background: '#0D120E',
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
-        padding: '0 1.25rem',
-        height: '60px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'sticky',
-        top: 0,
-        zIndex: 200,
-      }}>
-        <button
-          onClick={() => setMobileDrawerOpen(true)}
-          style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', padding: '0.45rem', cursor: 'pointer', color: '#F0F4F1', display: 'flex' }}
-        >
-          <Menu size={20} />
-        </button>
-        <span style={{ fontSize: '1rem', fontWeight: '900', color: '#F0F4F1', fontFamily: 'var(--font-serif)', letterSpacing: '0.06em' }}>MILASTY</span>
-        <span style={{ fontSize: '0.7rem', color: '#85B870', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Customer Portal</span>
-      </div>
-
-      {/* ================================================
-          MOBILE DRAWER OVERLAY
-         ================================================ */}
-      {mobileDrawerOpen && (
-        <div className="milasty-drawer-backdrop" onClick={() => setMobileDrawerOpen(false)} />
-      )}
-      {mobileDrawerOpen && (
-        <div className="milasty-mobile-drawer">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '1.05rem', fontWeight: '900', color: '#F0F4F1', fontFamily: 'var(--font-serif)', letterSpacing: '0.06em' }}>MILASTY</span>
-            <button onClick={() => setMobileDrawerOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9EB0A2' }}>
-              <X size={20} />
-            </button>
-          </div>
-          <div style={{ fontSize: '0.72rem', color: '#7B8E80', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem' }}>
-            Welcome, {user?.name?.split(' ')[0]}
-          </div>
-          {renderNavButtons(true)}
-        </div>
-      )}
-
-      {/* ================================================
-          MAIN BODY: SIDEBAR + CONTENT
-         ================================================ */}
-      <div className="milasty-dashboard-body">
-
-        {/* DESKTOP SIDEBAR */}
-        <div className="milasty-dashboard-sidebar-container">
-          <div className="milasty-dashboard-sidebar">
-            {/* Sidebar Brand */}
-            <div style={{ paddingBottom: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-              <div style={{ fontSize: '1rem', fontWeight: '900', color: '#F0F4F1', fontFamily: 'var(--font-serif)', letterSpacing: '0.05em', lineHeight: 1.2 }}>MILASTY</div>
-              <div style={{ fontSize: '0.65rem', color: '#7B8E80', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '0.2rem' }}>Customer Portal</div>
-            </div>
-            {/* User badge */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 0.75rem', background: 'rgba(255,255,255,0.04)', borderRadius: '12px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#1D3B28', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: '800', flexShrink: 0 }}>
-                {userInitial}
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#F0F4F1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name}</div>
-                <div style={{ fontSize: '0.68rem', color: '#7B8E80', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email}</div>
-              </div>
-            </div>
-            {/* Nav links */}
-            {renderNavButtons()}
-          </div>
-        </div>
-
-        {/* MAIN CONTENT AREA */}
-        <div className="milasty-dashboard-content">
+    <div className="account-dashboard-page" style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
 
             {/* ==================================================
                 TAB 1: OVERVIEW / DASHBOARD MAIN
@@ -438,17 +361,16 @@ export default function AccountDashboard() {
                 
                 {/* 1. ACCOUNT HERO CARD (Customer Name shown ONCE here) */}
                 <div
+                  className="milasty-dash-card"
                   style={{
-                    background: '#111613',
-                    borderRadius: '20px',
-                    border: '1px solid rgba(133, 184, 112, 0.22)',
-                    padding: '1.75rem 1.75rem',
+                    padding: '1.75rem',
                     boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     flexWrap: 'wrap',
                     gap: '1.5rem',
+                    borderRadius: '20px',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
@@ -550,7 +472,7 @@ export default function AccountDashboard() {
 
                 {/* 2. STAT CARDS (Matching Image 2 Admin Dashboard Style) */}
                 <div>
-                  <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <h3 style={{ fontSize: '0.78rem', fontFamily: 'var(--font-sans)', color: '#7B8E80', fontWeight: '800', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                     Account Summary
                   </h3>
 
@@ -616,23 +538,20 @@ export default function AccountDashboard() {
                   
                   {/* Column A: Quick Actions */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: 0 }}>
+                    <h3 style={{ fontSize: '0.78rem', fontFamily: 'var(--font-sans)', color: '#7B8E80', fontWeight: '800', margin: '0 0 0.5rem 0', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                       Quick Actions
                     </h3>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                       <div
                         onClick={() => setActiveTab('orders')}
+                        className="milasty-dash-card"
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '1rem 1.25rem',
-                          backgroundColor: '#111613',
-                          borderRadius: '14px',
-                          border: '1px solid rgba(133, 184, 112, 0.22)',
+                          padding: '0.9rem 1.15rem',
                           cursor: 'pointer',
-                          transition: 'all 0.2s',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
@@ -649,16 +568,13 @@ export default function AccountDashboard() {
 
                       <div
                         onClick={() => setActiveTab('wishlist')}
+                        className="milasty-dash-card"
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '1rem 1.25rem',
-                          backgroundColor: '#111613',
-                          borderRadius: '14px',
-                          border: '1px solid rgba(133, 184, 112, 0.22)',
+                          padding: '0.9rem 1.15rem',
                           cursor: 'pointer',
-                          transition: 'all 0.2s',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
@@ -675,16 +591,13 @@ export default function AccountDashboard() {
 
                       <div
                         onClick={() => setActiveTab('addresses')}
+                        className="milasty-dash-card"
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '1rem 1.25rem',
-                          backgroundColor: '#111613',
-                          borderRadius: '14px',
-                          border: '1px solid rgba(133, 184, 112, 0.22)',
+                          padding: '0.9rem 1.15rem',
                           cursor: 'pointer',
-                          transition: 'all 0.2s',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
@@ -701,16 +614,13 @@ export default function AccountDashboard() {
 
                       <div
                         onClick={() => setActiveTab('profile')}
+                        className="milasty-dash-card"
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '1rem 1.25rem',
-                          backgroundColor: '#111613',
-                          borderRadius: '14px',
-                          border: '1px solid rgba(133, 184, 112, 0.22)',
+                          padding: '0.9rem 1.15rem',
                           cursor: 'pointer',
-                          transition: 'all 0.2s',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
@@ -731,7 +641,7 @@ export default function AccountDashboard() {
                   {/* Column B: Recent Orders */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: 0 }}>
+                      <h3 style={{ fontSize: '0.78rem', fontFamily: 'var(--font-sans)', color: '#7B8E80', fontWeight: '800', margin: 0, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                         Recent Orders
                       </h3>
                       {orders.length > 0 && (
@@ -1823,10 +1733,6 @@ export default function AccountDashboard() {
           </div>
         </div>
       )}
-
-      </div>{/* end milasty-dashboard-content */}
-
-      </div>{/* end milasty-dashboard-body */}
 
       {/* ==================================================
           LOGOUT CONFIRMATION MODAL

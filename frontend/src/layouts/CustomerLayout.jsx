@@ -28,10 +28,10 @@ export default function CustomerLayout() {
     }
   }, [isAuthenticated, navigate]);
 
-  // Set dark body styling for customer portal
+  // Set dark body styling for customer portal (matches admin dark green theme)
   useEffect(() => {
-    document.body.style.backgroundColor = '#0F1115';
-    document.body.style.color = '#F5F5F5';
+    document.body.style.backgroundColor = '#090D0A';
+    document.body.style.color = '#F0F4F1';
     return () => {
       document.body.style.backgroundColor = '';
       document.body.style.color = '';
@@ -107,8 +107,8 @@ export default function CustomerLayout() {
         flexDirection: 'column', 
         height: '100%', 
         justifyContent: 'space-between',
-        backgroundColor: '#151922',
-        color: '#A7ADB8',
+        backgroundColor: '#0D120E',
+        color: '#9EB0A2',
         padding: '1.75rem 1.25rem',
         overflowY: 'auto'
       }}
@@ -275,7 +275,7 @@ export default function CustomerLayout() {
   );
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0F1115', color: '#F5F5F5' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#090D0A', color: '#F0F4F1' }}>
       
       {/* DESKTOP PERMANENT SIDEBAR */}
       <aside 
@@ -340,8 +340,8 @@ export default function CustomerLayout() {
         <header 
           style={{ 
             height: '64px', 
-            backgroundColor: '#151922', 
-            borderBottom: '1px solid rgba(255,255,255,0.10)', 
+            backgroundColor: '#0D120E', 
+            borderBottom: '1px solid rgba(255,255,255,0.07)', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'space-between', 
@@ -423,13 +423,13 @@ export default function CustomerLayout() {
           }}
         >
           <div>
-            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7B8E80', fontWeight: '800', marginBottom: '0.2rem' }}>
+            <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7B8E80', fontWeight: '800', marginBottom: '0.25rem' }}>
               {category}
             </div>
-            <h1 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-sans)', color: '#F5F5F5', fontWeight: '800', margin: 0, letterSpacing: '-0.01em' }}>
+            <h1 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-sans)', color: '#F0F4F1', fontWeight: '800', margin: 0, letterSpacing: '-0.01em', lineHeight: 1.2 }}>
               {title}
             </h1>
-            <p style={{ fontSize: '0.85rem', color: '#A7ADB8', margin: '0.25rem 0 0 0', fontWeight: '500' }}>
+            <p style={{ fontSize: '0.82rem', color: '#9EB0A2', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
               {subtitle}
             </p>
           </div>
