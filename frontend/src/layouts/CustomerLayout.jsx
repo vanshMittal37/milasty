@@ -119,9 +119,9 @@ export default function CustomerLayout() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div 
               style={{
-                width: '34px',
-                height: '34px',
-                borderRadius: '8px',
+                width: '30px',
+                height: '30px',
+                borderRadius: '7px',
                 backgroundColor: '#274C37',
                 color: '#FFFFFF',
                 display: 'flex',
@@ -129,17 +129,18 @@ export default function CustomerLayout() {
                 justifyContent: 'center',
                 fontWeight: '900',
                 fontFamily: 'var(--font-serif)',
-                fontSize: '1.1rem',
-                border: '1px solid rgba(255,255,255,0.15)'
+                fontSize: '0.95rem',
+                border: '1px solid rgba(255,255,255,0.15)',
+                flexShrink: 0
               }}
             >
               M
             </div>
             <div>
-              <h2 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.04em', margin: 0, color: '#F5F5F5' }}>
+              <h2 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.04em', margin: 0, color: '#F5F5F5', lineHeight: '1.1' }}>
                 MILASTY
               </h2>
-              <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#85B870', fontWeight: '800', marginTop: '0.1rem' }}>
+              <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#85B870', fontWeight: '800', marginTop: '0.1rem' }}>
                 Customer Portal
               </div>
             </div>

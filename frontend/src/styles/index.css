@@ -3366,7 +3366,7 @@ footer.transparent-blurred-footer {
 /* Stat Cards matching Image 2 */
 .milasty-stat-card {
   background: #111613;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(133, 184, 112, 0.25);
   border-radius: 16px;
   padding: 1.35rem;
   display: flex;
@@ -3379,8 +3379,8 @@ footer.transparent-blurred-footer {
 
 .milasty-stat-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(39, 76, 55, 0.6);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+  border-color: rgba(133, 184, 112, 0.6);
+  box-shadow: 0 10px 28px rgba(39, 76, 55, 0.25);
 }
 
 .milasty-stat-icon-wrapper {

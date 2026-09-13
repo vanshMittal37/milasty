@@ -364,7 +364,7 @@ export default function AccountDashboard() {
                   style={{
                     background: '#111613',
                     borderRadius: '20px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(133, 184, 112, 0.22)',
                     padding: '1.75rem 1.75rem',
                     boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
                     display: 'flex',
@@ -553,7 +553,7 @@ export default function AccountDashboard() {
                           padding: '1rem 1.25rem',
                           backgroundColor: '#111613',
                           borderRadius: '14px',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(133, 184, 112, 0.22)',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                         }}
@@ -579,7 +579,7 @@ export default function AccountDashboard() {
                           padding: '1rem 1.25rem',
                           backgroundColor: '#111613',
                           borderRadius: '14px',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(133, 184, 112, 0.22)',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                         }}
@@ -605,7 +605,7 @@ export default function AccountDashboard() {
                           padding: '1rem 1.25rem',
                           backgroundColor: '#111613',
                           borderRadius: '14px',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(133, 184, 112, 0.22)',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                         }}
@@ -631,7 +631,7 @@ export default function AccountDashboard() {
                           padding: '1rem 1.25rem',
                           backgroundColor: '#111613',
                           borderRadius: '14px',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(133, 184, 112, 0.22)',
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                         }}
@@ -688,7 +688,7 @@ export default function AccountDashboard() {
                           textAlign: 'center',
                           backgroundColor: '#111613',
                           borderRadius: '16px',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(133, 184, 112, 0.22)',
                         }}
                       >
                         <Package size={34} color="#85B870" style={{ margin: '0 auto 0.65rem' }} />
@@ -737,7 +737,7 @@ export default function AccountDashboard() {
                               style={{
                                 backgroundColor: '#111613',
                                 borderRadius: '14px',
-                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                border: '1px solid rgba(133, 184, 112, 0.22)',
                                 padding: '1.15rem',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -758,7 +758,7 @@ export default function AccountDashboard() {
                                 </span>
                               </div>
 
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.6rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.6rem', borderTop: '1px solid rgba(133, 184, 112, 0.22)' }}>
                                 <div>
                                   <span style={{ fontSize: '0.68rem', color: '#7B8E80', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '700', display: 'block' }}>Total Amount</span>
                                   <span style={{ fontSize: '1.05rem', fontWeight: '900', color: '#F0F4F1' }}>₹{order.totalAmount}</span>
@@ -788,7 +788,7 @@ export default function AccountDashboard() {
                 </div>
 
                 {/* 4. RECOMMENDED BAKES ("MADE FOR YOUR RITUAL") */}
-                <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '2.5rem' }}>
+                <div style={{ borderTop: '1px solid rgba(133, 184, 112, 0.22)', paddingTop: '2.5rem' }}>
                   <div style={{ marginBottom: '1.25rem' }}>
                     <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#85B870', fontWeight: '800', display: 'block' }}>
                       PERSONALIZED SELECTION
@@ -807,7 +807,7 @@ export default function AccountDashboard() {
                           style={{
                             backgroundColor: '#111613',
                             borderRadius: '16px',
-                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            border: '1px solid rgba(133, 184, 112, 0.22)',
                             overflow: 'hidden',
                             display: 'flex',
                             flexDirection: 'column',
@@ -872,7 +872,7 @@ export default function AccountDashboard() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
                 
                 {/* Search & Filter Bar */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111613', padding: '1.25rem', borderRadius: '18px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111613', padding: '1.25rem', borderRadius: '18px', border: '1px solid rgba(133, 184, 112, 0.22)' }}>
                   
                   {/* Search input */}
                   <div style={{ position: 'relative', flexGrow: 1, minWidth: '220px' }}>
@@ -910,7 +910,7 @@ export default function AccountDashboard() {
                           fontSize: '0.78rem',
                           fontWeight: '700',
                           borderRadius: '8px',
-                          border: orderStatusFilter === status ? '1px solid #274C37' : '1px solid rgba(245, 235, 221, 0.16)',
+                          border: orderStatusFilter === status ? '1px solid #274C37' : '1px solid rgba(133, 184, 112, 0.22)',
                           backgroundColor: orderStatusFilter === status ? '#274C37' : 'rgba(255, 255, 255, 0.04)',
                           color: orderStatusFilter === status ? '#FFFFFF' : '#CDBFAE',
                           cursor: 'pointer',
@@ -930,7 +930,7 @@ export default function AccountDashboard() {
                     <SkeletonBox height="140px" />
                   </div>
                 ) : filteredOrders.length === 0 ? (
-                  <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#111613', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
+                  <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#111613', borderRadius: '24px', border: '1px solid rgba(133, 184, 112, 0.22)' }}>
                     <Package size={42} color="#B99A5B" style={{ margin: '0 auto 1rem' }} />
                     <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.4rem 0' }}>
                       No orders found
@@ -969,7 +969,7 @@ export default function AccountDashboard() {
                           style={{
                             backgroundColor: '#111613',
                             borderRadius: '20px',
-                            border: '1px solid rgba(245, 235, 221, 0.16)',
+                            border: '1px solid rgba(133, 184, 112, 0.22)',
                             padding: '1.5rem',
                             display: 'flex',
                             flexDirection: 'column',
@@ -1074,7 +1074,7 @@ export default function AccountDashboard() {
             {activeTab === 'wishlist' && (
               <div>
                 {wishlistItems.length === 0 ? (
-                  <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#111613', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.16)' }}>
+                  <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', backgroundColor: '#111613', borderRadius: '24px', border: '1px solid rgba(133, 184, 112, 0.22)' }}>
                     <Heart size={44} color="#D9534F" style={{ margin: '0 auto 1rem' }} />
                     <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
                       Your wishlist is empty
@@ -1115,7 +1115,7 @@ export default function AccountDashboard() {
                           style={{
                             backgroundColor: '#111613',
                             borderRadius: '20px',
-                            border: '1px solid rgba(245, 235, 221, 0.16)',
+                            border: '1px solid rgba(133, 184, 112, 0.22)',
                             overflow: 'hidden',
                             display: 'flex',
                             flexDirection: 'column',
@@ -1281,7 +1281,7 @@ export default function AccountDashboard() {
                         style={{
                           backgroundColor: '#111613',
                           borderRadius: '20px',
-                          border: '1px solid rgba(245, 235, 221, 0.16)',
+                          border: '1px solid rgba(133, 184, 112, 0.22)',
                           padding: '1.5rem',
                           display: 'flex',
                           flexDirection: 'column',
@@ -1346,7 +1346,7 @@ export default function AccountDashboard() {
                 style={{
                   backgroundColor: '#111613',
                   borderRadius: '24px',
-                  border: '1px solid rgba(245, 235, 221, 0.16)',
+                  border: '1px solid rgba(133, 184, 112, 0.22)',
                   padding: '2.25rem 2rem',
                   maxWidth: '600px',
                 }}
@@ -1459,7 +1459,7 @@ export default function AccountDashboard() {
                 style={{
                   backgroundColor: '#111613',
                   borderRadius: '24px',
-                  border: '1px solid rgba(245, 235, 221, 0.16)',
+                  border: '1px solid rgba(133, 184, 112, 0.22)',
                   padding: '2.25rem 2rem',
                   maxWidth: '600px',
                 }}
@@ -1718,7 +1718,7 @@ export default function AccountDashboard() {
                         cursor: 'pointer',
                         backgroundColor: addressForm.addressType === t ? '#274C37' : 'rgba(255, 255, 255, 0.05)',
                         color: addressForm.addressType === t ? '#FFFFFF' : '#F7F0E4',
-                        border: addressForm.addressType === t ? '1px solid #274C37' : '1px solid rgba(245, 235, 221, 0.16)',
+                        border: addressForm.addressType === t ? '1px solid #274C37' : '1px solid rgba(133, 184, 112, 0.22)',
                       }}
                     >
                       {t}
