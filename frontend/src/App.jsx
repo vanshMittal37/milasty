@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import { AuthProvider } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { CartProvider, useCart } from './context/CartContext';
+import { ToastProvider } from './context/ToastContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
@@ -43,7 +44,11 @@ import AdminCustomerList from './pages/admin/AdminCustomerList';
 import AdminCouponList from './pages/admin/AdminCouponList';
 import AdminReviewList from './pages/admin/AdminReviewList';
 
+// Dedicated Customer Portal Layout
+import CustomerLayout from './layouts/CustomerLayout';
+
 import { CheckCircle2 } from 'lucide-react';
+import EdgeSwipeHandler from './components/EdgeSwipeHandler';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -83,8 +88,6 @@ function ToastNotification() {
     </div>
   );
 }
-
-import EdgeSwipeHandler from './components/EdgeSwipeHandler';
 
 const PAGE_BACKGROUNDS = {
   '/our-story': '/images/about_background_image.jpeg',
@@ -148,9 +151,6 @@ function MainLayout() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/account" element={<AccountDashboard />} />
-          <Route path="/account/orders" element={<OrderHistoryPage />} />
-          <Route path="/account/orders/:id" element={<CustomerOrderDetailPage />} />
         </Routes>
       </main>
       <Footer />
@@ -159,8 +159,6 @@ function MainLayout() {
     </div>
   );
 }
-
-import { ToastProvider } from './context/ToastContext';
 
 export default function App() {
   return (
@@ -182,6 +180,13 @@ export default function App() {
                   <Route path="customers" element={<AdminCustomerList />} />
                   <Route path="coupons" element={<AdminCouponList />} />
                   <Route path="reviews" element={<AdminReviewList />} />
+                </Route>
+
+                {/* Customer Portal (Separate Shell, No Website Navbar) */}
+                <Route element={<CustomerLayout />}>
+                  <Route path="/account" element={<AccountDashboard />} />
+                  <Route path="/account/orders" element={<OrderHistoryPage />} />
+                  <Route path="/account/orders/:id" element={<CustomerOrderDetailPage />} />
                 </Route>
 
                 {/* Public Website & Store */}

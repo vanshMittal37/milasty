@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutGrid, Package, Heart, MapPin, User, Lock, LogOut, Menu, X, 
   ChevronRight, Plus, Trash2, Edit3, ShoppingBag, Search, Filter, 
@@ -26,13 +26,20 @@ function SkeletonBox({ height = '40px', width = '100%', borderRadius = '12px', c
 
 export default function AccountDashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated, logout, addAddress, deleteAddress, updateProfile, updateAddress } = useAuth();
   const { wishlistItems, wishlistCount, toggleWishlist } = useWishlist();
   const { totalItemCount, setIsCartOpen, addToCart } = useCart();
   const { toast } = useToast();
 
-  // Active navigation tab: 'overview', 'orders', 'wishlist', 'addresses', 'profile', 'password'
-  const [activeTab, setActiveTab] = useState('overview');
+  const queryTab = new URLSearchParams(location.search).get('tab');
+  const [activeTab, setActiveTab] = useState(queryTab || 'overview');
+
+  useEffect(() => {
+    if (queryTab) {
+      setActiveTab(queryTab);
+    }
+  }, [queryTab]);
 
   // Mobile drawer state
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -96,7 +103,7 @@ export default function AccountDashboard() {
   const fetchOrders = async () => {
     setLoadingOrders(true);
     try {
-      const res = await api.get('/orders/myorders');
+      const res = await api.get('/orders/my-orders');
       if (res.data) {
         setOrders(res.data);
       }
@@ -344,173 +351,7 @@ export default function AccountDashboard() {
   );
 
   return (
-    <div 
-      className="account-dashboard-page" 
-      style={{ 
-        backgroundColor: '#090D0A', 
-        minHeight: '100vh', 
-        padding: '2rem 0 6rem',
-        color: '#F0F4F1'
-      }}
-    >
-      <div className="container" style={{ maxWidth: '1240px' }}>
-        
-        {/* MOBILE TOP BAR WITH HAMBURGER BUTTON (Strictly Hidden on Desktop) */}
-        <div 
-          className="milasty-mobile-header-bar"
-          style={{
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '1.5rem',
-            padding: '0.85rem 1.15rem',
-            backgroundColor: '#0D120E',
-            borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            boxShadow: '0 4px 18px rgba(0,0,0,0.3)'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <button
-              type="button"
-              onClick={() => setMobileDrawerOpen(true)}
-              aria-label="Open Sidebar Navigation Menu"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#F0F4F1',
-                padding: '7px',
-                borderRadius: '9px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Menu size={20} />
-            </button>
-
-            <div>
-              <span style={{ fontSize: '0.65rem', color: '#7B8E80', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'block' }}>
-                CUSTOMER PORTAL
-              </span>
-              <h2 style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: 0 }}>
-                MILASTY Account
-              </h2>
-            </div>
-          </div>
-
-          <div
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              backgroundColor: '#1D3B28',
-              color: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: '800',
-              fontSize: '0.95rem',
-              fontFamily: 'var(--font-serif)',
-              border: '1px solid rgba(255, 255, 255, 0.12)'
-            }}
-          >
-            {userInitial}
-          </div>
-        </div>
-
-        {/* MAIN DASHBOARD LAYOUT (SIDEBAR + MAIN CONTENT AREA) */}
-        <div className="milasty-dashboard-layout">
-          
-          {/* DESKTOP SIDEBAR */}
-          <aside className="milasty-dashboard-sidebar-container">
-            <div className="milasty-dashboard-sidebar">
-              {/* Brand Header */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0 0.5rem' }}>
-                <div 
-                  style={{
-                    width: '34px',
-                    height: '34px',
-                    borderRadius: '9px',
-                    backgroundColor: '#1D3B28',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#FFFFFF',
-                    fontFamily: 'var(--font-serif)',
-                    fontWeight: '800',
-                    fontSize: '1rem',
-                  }}
-                >
-                  M
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: 0, letterSpacing: '0.04em' }}>
-                    MILASTY
-                  </h3>
-                  <span style={{ fontSize: '0.65rem', color: '#7B8E80', fontWeight: '600' }}>Customer Portal</span>
-                </div>
-              </div>
-
-              <div className="milasty-sidebar-divider" />
-
-              {/* Sidebar Menu Items */}
-              {renderNavButtons(false)}
-            </div>
-          </aside>
-
-          {/* MAIN CONTENT AREA */}
-          <main style={{ flexGrow: 1, minWidth: 0, width: '100%' }}>
-            
-            {/* TOP HEADER IN DASHBOARD CONTENT AREA (Matching Image 2 Admin Header Style) */}
-            <div 
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'space-between', 
-                marginBottom: '1.75rem',
-                flexWrap: 'wrap',
-                gap: '1rem'
-              }}
-            >
-              <div>
-                <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7B8E80', fontWeight: '800', display: 'block', marginBottom: '0.2rem' }}>
-                  ACCOUNT / {activeTab.toUpperCase()}
-                </span>
-                <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: '#F0F4F1', fontWeight: '800', margin: 0, lineHeight: '1.15' }}>
-                  {activeTab === 'overview' && 'Dashboard'}
-                  {activeTab === 'orders' && 'My Orders'}
-                  {activeTab === 'wishlist' && 'My Wishlist'}
-                  {activeTab === 'addresses' && 'Addresses'}
-                  {activeTab === 'profile' && 'Profile Details'}
-                  {activeTab === 'password' && 'Security & Password'}
-                </h1>
-                <p style={{ fontSize: '0.86rem', color: '#9EB0A2', margin: '0.25rem 0 0 0', fontWeight: '500' }}>
-                  Here's what's happening with your MILASTY account today.
-                </p>
-              </div>
-
-              <Link
-                to="/shop"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  padding: '0.55rem 1.15rem',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#F0F4F1',
-                  fontWeight: '700',
-                  fontSize: '0.82rem',
-                  textDecoration: 'none',
-                  transition: 'all 0.2s',
-                }}
-              >
-                <span>VIEW STORE</span>
-                <ArrowRight size={15} color="#85B870" />
-              </Link>
-            </div>
+    <div className="account-dashboard-page" style={{ color: '#F5F5F5' }}>
 
             {/* ==================================================
                 TAB 1: OVERVIEW / DASHBOARD MAIN

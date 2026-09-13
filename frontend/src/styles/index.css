@@ -3441,5 +3441,40 @@ footer.transparent-blurred-footer {
   }
 }
 
+/* CUSTOMER PORTAL LAYOUT RESPONSIVENESS */
+@media (min-width: 1025px) {
+  .customer-desktop-sidebar {
+    display: block !important;
+  }
+  .customer-mobile-header-bar {
+    display: none !important;
+  }
+  .customer-mobile-drawer {
+    display: none !important;
+  }
+  .customer-mobile-close-btn {
+    display: none !important;
+  }
+  .customer-main-area {
+    margin-left: 260px !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .customer-desktop-sidebar {
+    display: none !important;
+  }
+  .customer-mobile-header-bar {
+    display: flex !important;
+  }
+  .customer-mobile-close-btn {
+    display: flex !important;
+  }
+  .customer-main-area {
+    margin-left: 0 !important;
+  }
+}
+
+
 
 
