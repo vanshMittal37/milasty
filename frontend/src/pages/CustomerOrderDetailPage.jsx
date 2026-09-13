@@ -61,7 +61,7 @@ export default function CustomerOrderDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ padding: '6rem 0', textAlign: 'center', backgroundColor: '#FBF8F2', minHeight: '80vh' }}>
+      <div style={{ padding: '4rem 0', textAlign: 'center', backgroundColor: 'transparent', minHeight: '60vh' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
           <Clock size={36} color="var(--accent-gold)" className="animate-float" />
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: '600' }}>Retrieving your order details...</p>
@@ -72,7 +72,7 @@ export default function CustomerOrderDetailPage() {
 
   if (!order) {
     return (
-      <div style={{ padding: '6rem 0', textAlign: 'center', backgroundColor: '#FBF8F2', minHeight: '80vh' }}>
+      <div style={{ padding: '4rem 0', textAlign: 'center', backgroundColor: 'transparent', minHeight: '60vh' }}>
         <div style={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem' }}>
           <ShieldAlert size={48} color="var(--accent-terracotta)" />
           <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--primary-dark)', fontSize: '1.8rem', fontWeight: '800' }}>Order Not Found</h2>
@@ -113,7 +113,7 @@ export default function CustomerOrderDetailPage() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="account-dashboard-page" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', padding: '2.5rem 0 5rem' }}>
+    <div className="account-dashboard-page" style={{ backgroundColor: 'transparent', minHeight: '100vh', padding: '0 0 3rem' }}>
       <div className="container" style={{ maxWidth: '1150px' }}>
         
         {/* Breadcrumb navigation */}
