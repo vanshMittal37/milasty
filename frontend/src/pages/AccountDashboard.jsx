@@ -1635,45 +1635,6 @@ export default function AccountDashboard() {
               </div>
             )}
 
-          </main>
-        </div>
-
-      </div>
-
-      {/* ==================================================
-          MOBILE SLIDE-OUT DRAWER
-         ================================================== */}
-      {mobileDrawerOpen && (
-        <>
-          <div className="milasty-drawer-backdrop" onClick={() => setMobileDrawerOpen(false)} />
-          <div className="milasty-mobile-drawer">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#274C37', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontFamily: 'var(--font-serif)' }}>
-                  M
-                </div>
-                <span style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F7F0E4', fontWeight: '800' }}>
-                  MILASTY
-                </span>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setMobileDrawerOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#CDBFAE', cursor: 'pointer', padding: '4px' }}
-              >
-                <X size={22} />
-              </button>
-            </div>
-
-            <div className="milasty-sidebar-divider" />
-
-            {/* Mobile Drawer Menu Links */}
-            {renderNavButtons(true)}
-          </div>
-        </>
-      )}
-
       {/* ==================================================
           ADD / EDIT ADDRESS MODAL
          ================================================== */}
