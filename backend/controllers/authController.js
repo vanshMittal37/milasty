@@ -654,4 +654,56 @@ export const resetPassword = async (req, res) => {
   }
 };
 
+// Sync registered Supabase Auth users to PostgreSQL public.users table safely
+export const syncAuthUsersToProfiles = async () => {
+  try {
+    const { data: authData, error: authErr } = await supabase.auth.admin.listUsers();
+    if (authErr || !authData?.users) {
+      if (authErr) console.warn('[SYNC] Supabase Auth listUsers warning:', authErr.message);
+      return;
+    }
+
+    const { data: dbUsers, error: dbErr } = await supabase.from('users').select('id, email');
+    if (dbErr) {
+      console.warn('[SYNC] Public users table fetch warning:', dbErr.message);
+      return;
+    }
+
+    const existingEmailsMap = new Map((dbUsers || []).map((u) => [u.email?.toLowerCase(), u.id]));
+
+    for (const authUser of authData.users) {
+      const cleanEmail = authUser.email?.toLowerCase();
+      if (!cleanEmail) continue;
+
+      if (!existingEmailsMap.has(cleanEmail)) {
+        const role = cleanEmail === 'admin@milasty.com' ? 'admin' : (authUser.user_metadata?.role || 'customer');
+        const name = authUser.user_metadata?.name || cleanEmail.split('@')[0];
+        const phone = authUser.user_metadata?.phone || authUser.phone || '';
+
+        const { error: insertErr } = await supabase.from('users').insert([
+          {
+            id: authUser.id,
+            name: name.trim(),
+            email: cleanEmail,
+            password_hash: '',
+            phone: phone ? phone.trim() : '',
+            role,
+            created_at: authUser.created_at || new Date(),
+            updated_at: new Date(),
+          },
+        ]);
+
+        if (insertErr) {
+          console.warn(`[SYNC] Failed to create profile for auth user ${cleanEmail}:`, insertErr.message);
+        } else {
+          console.log(`[SYNC] Successfully created profile for auth user: ${cleanEmail}`);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[SYNC] Exception during user profile sync:', err.message);
+  }
+};
+
+
 

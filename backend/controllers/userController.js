@@ -29,6 +29,7 @@ export const getCustomers = async (req, res) => {
         addresses: u.addresses || [],
         createdAt: u.created_at,
         orderCount,
+        totalOrders: orderCount,
         totalSpent,
       };
     });

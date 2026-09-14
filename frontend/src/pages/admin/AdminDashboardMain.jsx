@@ -137,8 +137,8 @@ export default function AdminDashboardMain() {
     },
     {
       label: 'Customers',
-      value: stats?.totalCustomers || 0,
-      sub: 'Registered users',
+      value: (stats?.totalCustomers !== undefined && stats?.totalCustomers !== null) ? stats.totalCustomers : '—',
+      sub: (stats?.totalCustomers !== undefined && stats?.totalCustomers !== null) ? 'Registered users' : 'Unable to load customer count',
       sub2: 'Supabase Auth',
       icon: Users,
       color: '#8B5CF6',

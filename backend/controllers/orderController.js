@@ -1,4 +1,5 @@
 import { supabase } from '../config/supabase.js';
+import { syncAuthUsersToProfiles } from './authController.js';
 
 // Create Direct Database Order (Without WhatsApp dependency)
 export const createOrder = async (req, res) => {
@@ -389,21 +390,42 @@ export const updateOrderStatus = async (req, res) => {
 // Admin: Get Analytics Summary
 export const getAdminAnalytics = async (req, res) => {
   try {
-    const { data: orders, error } = await supabase.from('orders').select('*');
-    if (error) throw error;
+    // 1. Sync any missing Auth users to public.users profiles table in background
+    await syncAuthUsersToProfiles();
 
-    const totalOrders = orders ? orders.length : 0;
-    const totalRevenue = orders ? orders.reduce((sum, o) => sum + Number(o.grand_total || 0), 0) : 0;
-    const pendingOrders = orders ? orders.filter((o) => o.order_status === 'pending').length : 0;
-    const deliveredOrders = orders ? orders.filter((o) => o.order_status === 'delivered').length : 0;
+    // 2. Fetch orders and customer user accounts in parallel
+    const [ordersRes, customersRes] = await Promise.all([
+      supabase.from('orders').select('*'),
+      supabase.from('users').select('id, role').eq('role', 'customer')
+    ]);
+
+    if (ordersRes.error) {
+      console.error('[ANALYTICS] Error fetching orders:', ordersRes.error.message);
+      throw ordersRes.error;
+    }
+
+    if (customersRes.error) {
+      console.error('[ANALYTICS] Error fetching customer count from users table:', customersRes.error.message);
+    }
+
+    const orders = ordersRes.data || [];
+    const customers = customersRes.data || null;
+
+    const totalOrders = orders.length;
+    const totalRevenue = orders.reduce((sum, o) => sum + Number(o.grand_total || 0), 0);
+    const pendingOrders = orders.filter((o) => o.order_status === 'pending').length;
+    const deliveredOrders = orders.filter((o) => o.order_status === 'delivered').length;
+    const totalCustomers = customers !== null ? customers.length : null;
 
     res.json({
       totalOrders,
       totalRevenue,
       pendingOrders,
       deliveredOrders,
+      totalCustomers,
     });
   } catch (error) {
+    console.error('[ANALYTICS] Server error:', error.message);
     res.status(500).json({ message: 'Error fetching admin analytics', error: error.message });
   }
 };
