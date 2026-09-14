@@ -21,6 +21,7 @@ export default function AdminProductForm() {
     discountType: 'none',
     discountValue: '',
     stock: '',
+    pieces: '',
     sku: '',
     status: 'active',
     isFeatured: true,
@@ -80,9 +81,12 @@ export default function AdminProductForm() {
       if (res.data) {
         setFormData({
           ...res.data,
-          price: res.data.price !== undefined ? res.data.price : '',
-          originalPrice: res.data.originalPrice !== undefined ? res.data.originalPrice : '',
-          stock: res.data.stock !== undefined ? res.data.stock : '',
+          price: res.data.price !== undefined && res.data.price !== null ? res.data.price : '',
+          originalPrice: res.data.originalPrice !== undefined && res.data.originalPrice !== null ? res.data.originalPrice : '',
+          stock: res.data.stock !== undefined && res.data.stock !== null ? res.data.stock : '',
+          pieces: res.data.pieces || res.data.nutritionFacts?.pieces || '',
+          image: res.data.image || '',
+          secondaryImage: res.data.secondaryImage || '',
           badges: Array.isArray(res.data.badges) ? res.data.badges.join(', ') : res.data.badges || '',
           ingredients: Array.isArray(res.data.ingredients) ? res.data.ingredients.join(', ') : res.data.ingredients || '',
           benefits: Array.isArray(res.data.benefits) ? res.data.benefits.join(', ') : res.data.benefits || '',
@@ -158,6 +162,7 @@ export default function AdminProductForm() {
 
     const payload = {
       ...formData,
+      pieces: formData.pieces ? String(formData.pieces).trim() : '',
       badges: typeof formData.badges === 'string' ? formData.badges.split(',').map((s) => s.trim()).filter(Boolean) : formData.badges,
       ingredients: typeof formData.ingredients === 'string' ? formData.ingredients.split(',').map((s) => s.trim()).filter(Boolean) : formData.ingredients,
       benefits: typeof formData.benefits === 'string' ? formData.benefits.split(',').map((s) => s.trim()).filter(Boolean) : formData.benefits,
@@ -382,8 +387,8 @@ export default function AdminProductForm() {
             </div>
           </div>
 
-          {/* Stock, SKU, Status */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem' }}>
+          {/* Stock, Pieces, SKU, Status */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1.25rem' }}>
             <div>
               <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Total Stock *
@@ -394,6 +399,18 @@ export default function AdminProductForm() {
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                 placeholder="Enter total stock"
+                className="admin-input"
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Pieces / Pack Count
+              </label>
+              <input
+                type="text"
+                value={formData.pieces}
+                onChange={(e) => setFormData({ ...formData, pieces: e.target.value })}
+                placeholder="e.g. 6 Pieces"
                 className="admin-input"
               />
             </div>

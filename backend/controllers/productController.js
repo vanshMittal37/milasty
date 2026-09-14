@@ -57,19 +57,20 @@ export const getProducts = async (req, res) => {
           subtitle: p.subtitle,
           description: p.description,
           category: p.category,
-          price: Number(variants[0]?.price || p.price || 0),
-          originalPrice: Number(variants[0]?.originalPrice || p.original_price || variants[0]?.price || p.price || 0),
+          price: Number(variants[0]?.price || 0),
+          originalPrice: Number(variants[0]?.originalPrice || variants[0]?.price || 0),
           stock: calculatedStock,
           sku: p.sku || 'MLS-PRD',
           status: p.is_active !== false ? 'active' : 'inactive',
           image: p.image_url,
-          secondaryImage: p.secondary_image_url || p.image_url,
+          secondaryImage: p.secondary_image_url || '',
           badges: p.badges || [],
           ingredients: p.ingredients || [],
           allergens: p.allergens || '',
           benefits: p.benefits || [],
           targetAudience: p.target_audience || '',
           nutritionFacts: p.nutrition_facts || {},
+          pieces: p.nutrition_facts?.pieces || p.pieces || '',
           labReportUrl: p.lab_report_url || '',
           isFeatured: p.is_featured !== false,
           rating: p.rating || 5.0,
@@ -161,19 +162,20 @@ export const getProductBySlugOrId = async (req, res) => {
         subtitle: p.subtitle,
         description: p.description,
         category: p.category,
-        price: Number(variants[0]?.price || p.price || 0),
-        originalPrice: Number(variants[0]?.originalPrice || p.original_price || variants[0]?.price || p.price || 0),
+        price: Number(variants[0]?.price || 0),
+        originalPrice: Number(variants[0]?.originalPrice || variants[0]?.price || 0),
         stock: calculatedStock,
         sku: p.sku || 'MLS-PRD',
         status: p.is_active !== false ? 'active' : 'inactive',
         image: p.image_url,
-        secondaryImage: p.secondary_image_url || p.image_url,
+        secondaryImage: p.secondary_image_url || '',
         badges: p.badges || [],
         ingredients: p.ingredients || [],
         allergens: p.allergens || '',
         benefits: p.benefits || [],
         targetAudience: p.target_audience || '',
         nutritionFacts: p.nutrition_facts || {},
+        pieces: p.nutrition_facts?.pieces || p.pieces || '',
         labReportUrl: p.lab_report_url || '',
         isFeatured: p.is_featured !== false,
         rating: p.rating || 5.0,
@@ -203,6 +205,7 @@ export const createProduct = async (req, res) => {
       price,
       originalPrice,
       stock,
+      pieces,
       sku,
       status,
       isFeatured,
@@ -246,6 +249,11 @@ export const createProduct = async (req, res) => {
       ? benefits 
       : (typeof benefits === 'string' ? benefits.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
+    const mergedNutritionFacts = {
+      ...(typeof nutritionFacts === 'object' && nutritionFacts !== null ? nutritionFacts : {}),
+      pieces: pieces || (typeof nutritionFacts === 'object' ? nutritionFacts?.pieces : '') || '',
+    };
+
     const insertPayload = {
       title: title.trim(),
       slug: finalSlug,
@@ -253,9 +261,9 @@ export const createProduct = async (req, res) => {
       description: description || '',
       category: category || 'daily',
       image_url: image || '',
-      secondary_image_url: secondaryImage || image || '',
+      secondary_image_url: secondaryImage || '',
       ingredients: parsedIngredients,
-      nutrition_facts: typeof nutritionFacts === 'object' ? nutritionFacts : {},
+      nutrition_facts: mergedNutritionFacts,
       badges: parsedBadges,
       allergens: allergens || '',
       benefits: parsedBenefits,
@@ -276,14 +284,13 @@ export const createProduct = async (req, res) => {
     }
 
     let insertedVariants = [];
-    if (variants && variants.length > 0) {
+    if (variants && Array.isArray(variants) && variants.length > 0) {
       const variantRows = variants.map((v) => ({
         product_id: product.id,
-        name: v.name,
-        weight: v.weight,
-        price: Number(v.price),
-        original_price: Number(v.originalPrice || v.price),
-        stock: Number(v.stock !== undefined && v.stock !== null ? v.stock : stock || 50),
+        name: v.name || 'Standard Pack',
+        weight: v.weight || 'Standard',
+        price: Number(v.price !== undefined && v.price !== '' ? v.price : price || 0),
+        original_price: Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : v.price || price || 0),
         in_stock: v.inStock !== false && Number(v.stock !== undefined && v.stock !== null ? v.stock : stock || 50) > 0,
       }));
       const { data: vData, error: vErr } = await supabase.from('product_variants').insert(variantRows).select();
@@ -291,19 +298,34 @@ export const createProduct = async (req, res) => {
         console.error('Supabase Variant Insert Error:', vErr);
       }
       if (vData) insertedVariants = vData;
+    } else {
+      // Auto-create a default variant if no variants array was supplied
+      const defaultVariantRow = {
+        product_id: product.id,
+        name: 'Standard Pack',
+        weight: 'Standard',
+        price: Number(price || 0),
+        original_price: Number(originalPrice || price || 0),
+        in_stock: Number(stock !== undefined && stock !== null && stock !== '' ? stock : 100) > 0,
+      };
+      const { data: vData, error: vErr } = await supabase.from('product_variants').insert([defaultVariantRow]).select();
+      if (vErr) {
+        console.error('Supabase Default Variant Insert Error:', vErr);
+      }
+      if (vData) insertedVariants = vData;
     }
 
     const totalStock = insertedVariants.length > 0 
-      ? insertedVariants.reduce((acc, v) => acc + (Number(v.stock) || 0), 0)
+      ? insertedVariants.reduce((acc, v) => acc + (v.in_stock ? 50 : 0), 0)
       : (stock !== undefined && stock !== null && stock !== '' ? Number(stock) : 100);
 
     const basePrice = insertedVariants.length > 0
       ? Number(insertedVariants[0].price)
-      : (req.body.price !== undefined && req.body.price !== '' ? Number(req.body.price) : 0);
+      : Number(price || 0);
 
     const baseOriginalPrice = insertedVariants.length > 0
       ? Number(insertedVariants[0].original_price)
-      : (req.body.originalPrice !== undefined && req.body.originalPrice !== '' ? Number(req.body.originalPrice) : basePrice);
+      : Number(originalPrice || basePrice);
 
     const formattedProduct = {
       _id: product.id,
@@ -315,17 +337,18 @@ export const createProduct = async (req, res) => {
       category: product.category,
       price: basePrice,
       originalPrice: baseOriginalPrice,
-      stock: totalStock,
-      sku: product.sku || 'MLS-PRD',
+      stock: stock !== undefined && stock !== '' ? Number(stock) : totalStock,
+      sku: sku || 'MLS-PRD',
       status: product.is_active !== false ? 'active' : 'inactive',
       image: product.image_url,
-      secondaryImage: product.secondary_image_url || product.image_url,
+      secondaryImage: product.secondary_image_url || '',
       badges: product.badges || [],
       ingredients: product.ingredients || [],
       allergens: product.allergens || '',
       benefits: product.benefits || [],
       targetAudience: product.target_audience || '',
       nutritionFacts: product.nutrition_facts || {},
+      pieces: product.nutrition_facts?.pieces || pieces || '',
       isFeatured: product.is_featured !== false,
       variants: insertedVariants.map((v) => ({
         id: v.id,
@@ -333,7 +356,7 @@ export const createProduct = async (req, res) => {
         weight: v.weight,
         price: Number(v.price),
         originalPrice: Number(v.original_price),
-        stock: Number(v.stock || 0),
+        stock: v.in_stock ? 50 : 0,
         inStock: v.in_stock,
       })),
     };
@@ -367,10 +390,10 @@ export const updateProduct = async (req, res) => {
       subtitle: updates.subtitle || '',
       description: updates.description,
       category: updates.category,
-      image_url: updates.image,
-      secondary_image_url: updates.secondaryImage || updates.image,
+      image_url: updates.image !== undefined ? updates.image : undefined,
+      secondary_image_url: updates.secondaryImage !== undefined ? updates.secondaryImage : undefined,
       ingredients: parsedIngredients,
-      nutrition_facts: updates.nutritionFacts || {},
+      nutrition_facts: updates.nutritionFacts || (updates.pieces ? { pieces: updates.pieces } : {}),
       badges: parsedBadges,
       allergens: updates.allergens || '',
       benefits: parsedBenefits,
@@ -379,6 +402,13 @@ export const updateProduct = async (req, res) => {
       is_active: updates.status === 'active',
       updated_at: new Date(),
     };
+
+    if (updates.pieces) {
+      updatePayload.nutrition_facts = {
+        ...(typeof updatePayload.nutrition_facts === 'object' ? updatePayload.nutrition_facts : {}),
+        pieces: updates.pieces,
+      };
+    }
 
     // Remove undefined keys
     Object.keys(updatePayload).forEach((key) => updatePayload[key] === undefined && delete updatePayload[key]);
@@ -402,19 +432,42 @@ export const updateProduct = async (req, res) => {
       if (updates.variants.length > 0) {
         const variantRows = updates.variants.map((v) => ({
           product_id: id,
-          name: v.name,
-          weight: v.weight,
-          price: Number(v.price),
-          original_price: Number(v.originalPrice || v.price),
-          stock: Number(v.stock !== undefined ? v.stock : updates.stock || 50),
-          in_stock: v.inStock !== false && Number(v.stock !== undefined ? v.stock : updates.stock || 50) > 0,
+          name: v.name || 'Standard Pack',
+          weight: v.weight || 'Standard',
+          price: Number(v.price !== undefined && v.price !== '' ? v.price : updates.price || 0),
+          original_price: Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : v.price || updates.price || 0),
+          in_stock: v.inStock !== false,
         }));
         const { data: vData } = await supabase.from('product_variants').insert(variantRows).select();
+        if (vData) updatedVariants = vData;
+      } else {
+        const defaultVariantRow = {
+          product_id: id,
+          name: 'Standard Pack',
+          weight: 'Standard',
+          price: Number(updates.price || 0),
+          original_price: Number(updates.originalPrice || updates.price || 0),
+          in_stock: true,
+        };
+        const { data: vData } = await supabase.from('product_variants').insert([defaultVariantRow]).select();
         if (vData) updatedVariants = vData;
       }
     } else {
       const { data: existingV } = await supabase.from('product_variants').select('*').eq('product_id', id);
-      if (existingV) updatedVariants = existingV;
+      if (existingV && existingV.length > 0) {
+        updatedVariants = existingV;
+      } else {
+        const defaultVariantRow = {
+          product_id: id,
+          name: 'Standard Pack',
+          weight: 'Standard',
+          price: Number(updates.price || 0),
+          original_price: Number(updates.originalPrice || updates.price || 0),
+          in_stock: true,
+        };
+        const { data: vData } = await supabase.from('product_variants').insert([defaultVariantRow]).select();
+        if (vData) updatedVariants = vData;
+      }
     }
 
     const formattedProduct = {
@@ -425,19 +478,20 @@ export const updateProduct = async (req, res) => {
       subtitle: product.subtitle,
       description: product.description,
       category: product.category,
-      price: Number(updatedVariants[0]?.price || 0),
-      originalPrice: Number(updatedVariants[0]?.original_price || 0),
-      stock: product.stock,
-      sku: product.sku,
+      price: Number(updatedVariants[0]?.price || updates.price || 0),
+      originalPrice: Number(updatedVariants[0]?.original_price || updates.originalPrice || updatedVariants[0]?.price || 0),
+      stock: updates.stock !== undefined && updates.stock !== '' ? Number(updates.stock) : 100,
+      sku: product.sku || updates.sku || 'MLS-PRD',
       status: product.is_active !== false ? 'active' : 'inactive',
       image: product.image_url,
-      secondaryImage: product.secondary_image_url || product.image_url,
+      secondaryImage: product.secondary_image_url || '',
       badges: product.badges || [],
       ingredients: product.ingredients || [],
       allergens: product.allergens || '',
       benefits: product.benefits || [],
       targetAudience: product.target_audience || '',
       nutritionFacts: product.nutrition_facts || {},
+      pieces: product.nutrition_facts?.pieces || updates.pieces || '',
       isFeatured: product.is_featured !== false,
       variants: updatedVariants.map((v) => ({
         id: v.id,
@@ -445,7 +499,7 @@ export const updateProduct = async (req, res) => {
         weight: v.weight,
         price: Number(v.price),
         originalPrice: Number(v.original_price),
-        stock: Number(v.stock || 0),
+        stock: v.in_stock ? 50 : 0,
         inStock: v.in_stock,
       })),
     };

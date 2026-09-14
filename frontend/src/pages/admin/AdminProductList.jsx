@@ -97,6 +97,7 @@ export default function AdminProductList() {
                 <th>Category</th>
                 <th>SKU</th>
                 <th>Pricing</th>
+                <th>Variants</th>
                 <th>Stock Level</th>
                 <th>Status</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
@@ -108,7 +109,7 @@ export default function AdminProductList() {
                   ? p.stock
                   : (p.variants && p.variants.length > 0 ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0) : 0);
                 const isLowStock = stockLevel <= 5;
-                const displayPrice = p.price || p.variants?.[0]?.price;
+                const displayPrice = p.price || p.variants?.[0]?.price || 0;
                 const displayOrigPrice = p.originalPrice || p.variants?.[0]?.originalPrice || displayPrice;
 
                 return (
@@ -124,6 +125,9 @@ export default function AdminProductList() {
                     <td style={{ fontFamily: 'monospace', color: 'var(--admin-text-muted)', fontSize: '0.78rem', fontWeight: '600' }}>{p.sku || 'MLS-PRD'}</td>
                     <td>
                       <PriceDisplay price={displayPrice} originalPrice={displayOrigPrice} size="small" />
+                    </td>
+                    <td style={{ fontWeight: '700', color: 'var(--admin-text-secondary)', fontSize: '0.82rem' }}>
+                      {p.variants ? p.variants.length : 0} {p.variants?.length === 1 ? 'Variant' : 'Variants'}
                     </td>
                     <td>
                       <span className={`admin-badge ${isLowStock ? 'admin-badge-danger' : 'admin-badge-success'}`}>
