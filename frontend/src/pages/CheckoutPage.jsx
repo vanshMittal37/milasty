@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, CreditCard, Truck, CheckCircle2, Lock, ArrowRight, ArrowLeft, ShoppingBag } from 'lucide-react';
+import { ShieldCheck, CreditCard, Truck, CheckCircle2, XCircle, Lock, ArrowRight, ArrowLeft, ShoppingBag, MapPin } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useDelivery } from '../context/DeliveryContext';
 import api from '../api/axios';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const { cartItems, subtotal, deliveryFee, grandTotal, appliedCoupon, couponDiscountAmount, clearCart } = useCart();
+  const { cartItems, subtotal, deliveryFee: defaultDeliveryFee, grandTotal: defaultGrandTotal, appliedCoupon, couponDiscountAmount, clearCart } = useCart();
   const { user } = useAuth();
+  const { deliveryInfo, checkPincode } = useDelivery();
 
   // Load Razorpay script dynamically
   useEffect(() => {
@@ -27,9 +29,9 @@ export default function CheckoutPage() {
     phone: user ? user.phone || '' : '',
     building: user?.addresses?.[0]?.building || '',
     addressLine: user?.addresses?.[0]?.addressLine || '',
-    city: user?.addresses?.[0]?.city || '',
-    state: user?.addresses?.[0]?.state || '',
-    pincode: user?.addresses?.[0]?.pincode || '',
+    city: user?.addresses?.[0]?.city || deliveryInfo?.city || '',
+    state: user?.addresses?.[0]?.state || deliveryInfo?.state || '',
+    pincode: user?.addresses?.[0]?.pincode || deliveryInfo?.pincode || '',
   });
 
   const [paymentMethod, setPaymentMethod] = useState('Razorpay'); // 'Razorpay' or 'COD'
@@ -38,6 +40,20 @@ export default function CheckoutPage() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [showSimulatedPaymentModal, setShowSimulatedPaymentModal] = useState(false);
   const [simulatePaymentData, setSimulatePaymentData] = useState(null);
+
+  // Auto check pincode on initial load if pincode present
+  useEffect(() => {
+    if (formData.pincode && formData.pincode.length === 6 && (!deliveryInfo || deliveryInfo.pincode !== formData.pincode)) {
+      checkPincode(formData.pincode.trim());
+    }
+  }, []);
+
+  // Calculate dynamic delivery fee based on verified deliveryInfo
+  const effectiveDeliveryFee = (deliveryInfo && deliveryInfo.isDeliverable && deliveryInfo.pincode === formData.pincode.trim())
+    ? (subtotal >= 499 ? 0 : Number(deliveryInfo.deliveryCharge))
+    : defaultDeliveryFee;
+
+  const effectiveGrandTotal = Math.max(0, subtotal - couponDiscountAmount + effectiveDeliveryFee);
 
   if (cartItems.length === 0) {
     return (
@@ -55,10 +71,26 @@ export default function CheckoutPage() {
   }
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
     setErrorMessage('');
-    if (fieldErrors[e.target.name]) {
-      setFieldErrors({ ...fieldErrors, [e.target.name]: '' });
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: '' }));
+    }
+
+    if (name === 'pincode') {
+      const cleanPin = value.trim();
+      if (cleanPin.length === 6 && /^\d{6}$/.test(cleanPin)) {
+        checkPincode(cleanPin).then(res => {
+          if (res && res.isDeliverable && res.city && res.state) {
+            setFormData(prev => ({
+              ...prev,
+              city: prev.city || res.city,
+              state: prev.state || res.state
+            }));
+          }
+        });
+      }
     }
   };
 
@@ -78,12 +110,14 @@ export default function CheckoutPage() {
     if (!formData.city.trim()) errors.city = 'City is required';
     if (!formData.state.trim()) errors.state = 'State is required';
     
-    // Pincode validation (6 digits)
+    // Pincode validation (6 digits + serviceability)
     const cleanPin = formData.pincode.trim();
     if (!cleanPin) {
       errors.pincode = 'Pincode is required';
     } else if (!/^\d{6}$/.test(cleanPin)) {
       errors.pincode = 'Please enter a valid 6-digit pincode';
+    } else if (deliveryInfo && deliveryInfo.pincode === cleanPin && !deliveryInfo.isDeliverable) {
+      errors.pincode = `Delivery unavailable to PIN code ${cleanPin}`;
     }
 
     setFieldErrors(errors);
@@ -132,10 +166,10 @@ export default function CheckoutPage() {
 
       // 2. Initiate Online Payment via Razorpay
       console.log("Creating Razorpay order on backend", {
-        amount: grandTotal,
+        amount: effectiveGrandTotal,
         orderId
       });
-      const payRes = await api.post('/payments/create', { amount: grandTotal, orderId });
+      const payRes = await api.post('/payments/create', { amount: effectiveGrandTotal, orderId });
       const { keyId, razorpayOrderId, amount, currency } = payRes.data;
 
       console.log("Razorpay order created", {
@@ -382,13 +416,21 @@ export default function CheckoutPage() {
                     <input 
                       type="text" 
                       required 
+                      maxLength={6}
                       name="pincode" 
                       value={formData.pincode} 
                       onChange={handleInputChange} 
-                      placeholder="201306" 
-                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '10px', border: fieldErrors.pincode ? '1.5px solid var(--accent-terracotta)' : '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
+                      placeholder="263153" 
+                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '10px', border: fieldErrors.pincode ? '1.5px solid var(--accent-terracotta)' : '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
                     />
                     {fieldErrors.pincode && <span style={{ fontSize: '0.72rem', color: 'var(--accent-terracotta)', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.pincode}</span>}
+                    
+                    {deliveryInfo && deliveryInfo.pincode === formData.pincode.trim() && (
+                      <div style={{ marginTop: '0.35rem', fontSize: '0.72rem', fontWeight: '700', color: deliveryInfo.isDeliverable ? '#22c55e' : 'var(--accent-terracotta)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        {deliveryInfo.isDeliverable ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+                        {deliveryInfo.isDeliverable ? `Serviceable (${deliveryInfo.city})` : 'Not serviceable'}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -456,8 +498,8 @@ export default function CheckoutPage() {
                     style={{ accentColor: 'var(--accent-gold)', width: '17px', height: '17px' }}
                   />
                   <div>
-                    <div style={{ fontWeight: '800', color: 'var(--text-light)', fontSize: '0.95rem' }}>Cash on Delivery (COD)</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>Pay in cash at your doorstep when products arrive</div>
+                    <div style={{ fontWeight: '800', color: 'var(--text-light)', fontSize: '0.95rem' }}>Cash / Pay on Delivery (COD)</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>Pay cash or UPI upon delivery</div>
                   </div>
                 </label>
               </div>
@@ -506,9 +548,9 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
-                  <span>Pan-India Delivery</span>
-                  <span style={{ fontWeight: '700', color: deliveryFee === 0 ? 'var(--accent-gold)' : 'var(--text-light)' }}>
-                    {deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}
+                  <span>Delivery Charge</span>
+                  <span style={{ fontWeight: '700', color: effectiveDeliveryFee === 0 ? 'var(--accent-gold)' : 'var(--text-light)' }}>
+                    {effectiveDeliveryFee === 0 ? 'FREE' : `₹${effectiveDeliveryFee}`}
                   </span>
                 </div>
               </div>
@@ -516,7 +558,7 @@ export default function CheckoutPage() {
               {/* Grand Total */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 0 1rem', marginBottom: '1.5rem' }}>
                 <span style={{ fontSize: '1.05rem', fontWeight: '850', color: 'var(--text-light)' }}>Total to Pay</span>
-                <span style={{ fontSize: '1.4rem', fontWeight: '900', color: 'var(--text-light)' }}>₹{grandTotal}</span>
+                <span style={{ fontSize: '1.4rem', fontWeight: '900', color: 'var(--text-light)' }}>₹{effectiveGrandTotal}</span>
               </div>
 
               {errorMessage && (
@@ -555,12 +597,12 @@ export default function CheckoutPage() {
                 ) : paymentMethod === 'COD' ? (
                   <>
                     <CheckCircle2 size={15} />
-                    <span>Place Order (₹{grandTotal})</span>
+                    <span>Place Order (₹{effectiveGrandTotal})</span>
                   </>
                 ) : (
                   <>
                     <Lock size={15} />
-                    <span>Pay ₹{grandTotal} Securely</span>
+                    <span>Pay ₹{effectiveGrandTotal} Securely</span>
                   </>
                 )}
               </button>

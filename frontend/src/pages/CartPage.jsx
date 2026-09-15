@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Trash2, Plus, Minus, Tag, ArrowRight, Truck, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, Trash2, Plus, Minus, Tag, ArrowRight, Truck, ShieldCheck, MapPin, CheckCircle2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useDelivery } from '../context/DeliveryContext';
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -11,16 +12,23 @@ export default function CartPage() {
     removeFromCart,
     clearCart,
     subtotal,
-    deliveryFee,
-    grandTotal,
+    deliveryFee: defaultDeliveryFee,
+    grandTotal: defaultGrandTotal,
     appliedCoupon,
     couponDiscountAmount,
     applyCoupon,
     removeCoupon,
   } = useCart();
+  const { deliveryInfo } = useDelivery();
 
   const [couponInput, setCouponInput] = useState('');
   const [couponStatus, setCouponStatus] = useState(null);
+
+  const effectiveDeliveryFee = (deliveryInfo && deliveryInfo.isDeliverable)
+    ? (subtotal >= 499 ? 0 : Number(deliveryInfo.deliveryCharge))
+    : defaultDeliveryFee;
+
+  const effectiveGrandTotal = Math.max(0, subtotal - couponDiscountAmount + effectiveDeliveryFee);
 
   const handleApplyCoupon = async (e) => {
     e.preventDefault();
@@ -228,6 +236,18 @@ export default function CartPage() {
                 </div>
               )}
 
+              {/* Delivery Location Indicator */}
+              {deliveryInfo && deliveryInfo.isDeliverable && (
+                <div style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.25)', borderRadius: '10px', padding: '0.65rem 0.85rem', marginBottom: '1rem', fontSize: '0.8rem', color: '#1a3d18' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: '800', color: '#244f21' }}>
+                    <MapPin size={14} /> Delivering to PIN {deliveryInfo.pincode}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#5C3D20', marginTop: '0.15rem' }}>
+                    {deliveryInfo.city}, {deliveryInfo.state} ({deliveryInfo.deliveryCharge === 0 ? 'FREE Delivery' : `₹${deliveryInfo.deliveryCharge} Shipping`})
+                  </div>
+                </div>
+              )}
+
               {/* Price Rows */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.93rem', color: '#5C3D20', borderBottom: '1.5px solid rgba(100, 65, 35, 0.15)', paddingBottom: '1rem', marginBottom: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -241,14 +261,16 @@ export default function CartPage() {
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Estimated Shipping</span>
-                  <span style={{ fontWeight: '700', color: deliveryFee === 0 ? '#244f21' : '#24130D' }}>{deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}</span>
+                  <span>Shipping Fee</span>
+                  <span style={{ fontWeight: '700', color: effectiveDeliveryFee === 0 ? '#244f21' : '#24130D' }}>
+                    {effectiveDeliveryFee === 0 ? 'FREE' : `₹${effectiveDeliveryFee}`}
+                  </span>
                 </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '1.35rem', color: '#24130D', marginBottom: '1.5rem' }}>
                 <span>Grand Total</span>
-                <span>₹{grandTotal}</span>
+                <span>₹{effectiveGrandTotal}</span>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(36, 79, 33, 0.07)', padding: '0.65rem 0.9rem', borderRadius: '10px', marginBottom: '1.25rem', fontSize: '0.82rem', color: '#1a3d18', fontWeight: '600' }}>

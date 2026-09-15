@@ -14,6 +14,7 @@ import couponRoutes from './routes/couponRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import deliveryAreaRoutes from './routes/deliveryAreaRoutes.js';
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', userRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/delivery-areas', deliveryAreaRoutes);
 app.use('/api', reviewRoutes);
 
 // Health Check Endpoint (Required by Railway & Specs)

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { 
   LayoutDashboard, Package, Tags, ShoppingCart, Users, Ticket, Star, 
-  LogOut, Menu, Bell, ChevronDown, Globe, KeyRound, UserCheck, X
+  LogOut, Menu, Bell, ChevronDown, Globe, KeyRound, UserCheck, X, Truck
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -70,6 +70,12 @@ export default function AdminLayout() {
       ]
     },
     {
+      title: 'Fulfillment',
+      items: [
+        { label: 'Delivery Areas', path: '/admin/delivery-areas', icon: Truck },
+      ]
+    },
+    {
       title: 'Customers',
       items: [
         { label: 'Customers', path: '/admin/customers', icon: Users },
@@ -93,6 +99,7 @@ export default function AdminLayout() {
     if (path.includes('/admin/products/edit')) return { title: 'Edit Product', breadcrumb: 'Products / Edit' };
     if (path.includes('/admin/products')) return { title: 'Products', breadcrumb: 'Inventory / Products' };
     if (path.includes('/admin/categories')) return { title: 'Categories', breadcrumb: 'Inventory / Categories' };
+    if (path.includes('/admin/delivery-areas')) return { title: 'Delivery Areas', breadcrumb: 'Fulfillment / Delivery Areas' };
     if (path.includes('/admin/orders')) return { title: 'Orders Log', breadcrumb: 'Sales / Orders Log' };
     if (path.includes('/admin/customers')) return { title: 'Customers', breadcrumb: 'Users / Customer List' };
     if (path.includes('/admin/coupons')) return { title: 'Coupons', breadcrumb: 'Promotions / Coupons' };

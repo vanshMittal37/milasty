@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Star, Heart, ChevronRight, ChevronLeft, CheckCircle2, ShieldCheck, Truck, Sparkles, AlertTriangle, Plus, Minus, Info } from 'lucide-react';
+import { ShoppingBag, Star, Heart, ChevronRight, ChevronLeft, CheckCircle2, XCircle, ShieldCheck, Truck, Sparkles, AlertTriangle, Plus, Minus, Info } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useDelivery } from '../context/DeliveryContext';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 import ProductCard from '../components/ProductCard';
@@ -15,6 +16,7 @@ export default function ProductDetail() {
 
   const { addToCart, showToast } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { deliveryInfo, checkPincode, clearDeliveryInfo } = useDelivery();
 
   const [product, setProduct] = useState(null);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -24,15 +26,21 @@ export default function ProductDetail() {
   const [btnText, setBtnText] = useState('Add to Cart');
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('nutrition');
-  const [pincode, setPincode] = useState('');
-  const [deliveryMsg, setDeliveryMsg] = useState('');
+  
+  const [inputPincode, setInputPincode] = useState('');
+  const [checkingPincode, setCheckingPincode] = useState(false);
+  const [pincodeError, setPincodeError] = useState('');
 
-  const checkDelivery = () => {
-    if (pincode.trim().length === 6 && /^\d+$/.test(pincode.trim())) {
-      setDeliveryMsg('⚡ Express Delivery Available: 2–4 Business Days');
-    } else {
-      setDeliveryMsg('Please enter a valid 6-digit Indian Pincode');
+  const handleCheckPincode = async () => {
+    const clean = inputPincode.trim();
+    if (!clean || clean.length !== 6 || !/^\d{6}$/.test(clean)) {
+      setPincodeError('Please enter a valid 6-digit PIN code');
+      return;
     }
+    setPincodeError('');
+    setCheckingPincode(true);
+    await checkPincode(clean);
+    setCheckingPincode(false);
   };
 
   useEffect(() => {
@@ -571,54 +579,105 @@ export default function ProductDetail() {
             <div 
               style={{ 
                 marginTop: '1.25rem', 
-                padding: '1rem', 
+                padding: '1.1rem', 
                 borderRadius: '14px', 
                 backgroundColor: 'rgba(255, 255, 255, 0.04)', 
                 border: '1px solid rgba(255, 255, 255, 0.1)' 
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.5rem', fontSize: '0.82rem', fontWeight: '800', color: '#b9cd94' }}>
-                <Truck size={16} />
-                <span>Check Delivery Availability</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.85rem', fontWeight: '800', color: '#b9cd94' }}>
+                  <Truck size={17} />
+                  <span>Check Delivery Availability</span>
+                </div>
+                {deliveryInfo && (
+                  <button 
+                    type="button"
+                    onClick={() => clearDeliveryInfo()} 
+                    style={{ background: 'none', border: 'none', color: '#b9cd94', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline' }}
+                  >
+                    Change PIN
+                  </button>
+                )}
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input
-                  type="text"
-                  maxLength={6}
-                  value={pincode}
-                  onChange={(e) => setPincode(e.target.value)}
-                  placeholder="Enter 6-digit Pincode"
-                  style={{
-                    flex: 1,
-                    padding: '0.45rem 0.75rem',
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: '#FFFDF9',
-                    fontSize: '0.85rem'
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={checkDelivery}
-                  style={{
-                    padding: '0.45rem 0.95rem',
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(36, 79, 33, 0.6)',
-                    border: '1px solid #b9cd94',
-                    color: '#FFFDF9',
-                    fontSize: '0.82rem',
-                    fontWeight: '750',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Check
-                </button>
-              </div>
-              {deliveryMsg && (
-                <p style={{ marginTop: '0.45rem', fontSize: '0.78rem', color: deliveryMsg.includes('⚡') ? '#b9cd94' : '#f59e0b', margin: '0.45rem 0 0 0', fontWeight: '600' }}>
-                  {deliveryMsg}
-                </p>
+
+              {!deliveryInfo || !deliveryInfo.checked ? (
+                <div>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      value={inputPincode}
+                      onChange={(e) => setInputPincode(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Enter 6-digit Pincode"
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleCheckPincode(); }}
+                      style={{
+                        flex: 1,
+                        padding: '0.55rem 0.85rem',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        color: '#FFFDF9',
+                        fontSize: '0.88rem',
+                        fontFamily: 'monospace',
+                        fontWeight: '700'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleCheckPincode}
+                      disabled={checkingPincode}
+                      style={{
+                        padding: '0.55rem 1.1rem',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(36, 79, 33, 0.8)',
+                        border: '1px solid #b9cd94',
+                        color: '#FFFDF9',
+                        fontSize: '0.82rem',
+                        fontWeight: '800',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.35rem'
+                      }}
+                    >
+                      {checkingPincode ? 'Checking...' : 'Check'}
+                    </button>
+                  </div>
+                  {pincodeError && (
+                    <p style={{ marginTop: '0.45rem', fontSize: '0.78rem', color: '#ef4444', margin: '0.45rem 0 0 0', fontWeight: '600' }}>
+                      {pincodeError}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  {(deliveryInfo.available ?? deliveryInfo.isDeliverable) ? (
+                    <div style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '10px', padding: '0.85rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#22c55e', fontWeight: '800', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+                        <CheckCircle2 size={16} />
+                        <span>Delivery Available to {deliveryInfo.pincode}</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', fontSize: '0.78rem', color: '#F5EBDD', paddingLeft: '1.4rem' }}>
+                        <div>Location: <strong style={{ color: '#FFFDF9' }}>{deliveryInfo.city}, {deliveryInfo.state}</strong></div>
+                        <div>Delivery Fee: <strong style={{ color: Number(deliveryInfo.deliveryCharge) === 0 ? '#22c55e' : '#b9cd94' }}>
+                          {Number(deliveryInfo.deliveryCharge) === 0 ? 'FREE DELIVERY' : `₹${deliveryInfo.deliveryCharge}`}
+                        </strong></div>
+                        <div>Estimated Delivery: <strong style={{ color: '#FFFDF9' }}>{deliveryInfo.estimatedDays || '3-5'} business days</strong></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '10px', padding: '0.85rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#ef4444', fontWeight: '800', fontSize: '0.85rem', marginBottom: '0.25rem' }}>
+                        <XCircle size={16} />
+                        <span>Delivery Not Available</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: '0.78rem', color: '#F5EBDD', paddingLeft: '1.4rem' }}>
+                        {deliveryInfo.message || `We do not currently deliver to PIN code ${deliveryInfo.pincode}.`}
+                      </p>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
@@ -712,11 +771,4 @@ export default function ProductDetail() {
               {relatedProducts.map((relProduct) => (
                 <ProductCard key={relProduct._id || relProduct.id || relProduct.slug} product={relProduct} />
               ))}
-            </div>
-          </div>
-        )}
-
-      </div>
-    </div>
-  );
-}
+          

@@ -161,6 +161,10 @@ function MainLayout() {
   );
 }
 
+import { CategoryProvider } from './context/CategoryContext';
+import { DeliveryProvider } from './context/DeliveryContext';
+import AdminDeliveryAreas from './pages/admin/AdminDeliveryAreas';
+
 export default function App() {
   return (
     <ToastProvider>
@@ -168,33 +172,36 @@ export default function App() {
         <WishlistProvider>
           <CartProvider>
             <CategoryProvider>
-              <Router>
-                <ScrollToTop />
-                <Routes>
-                  {/* Admin Separate Portal */}
-                  <Route path="/admin" element={<AdminLayout />}>
-                    <Route path="dashboard" element={<AdminDashboardMain />} />
-                    <Route path="products" element={<AdminProductList />} />
-                    <Route path="products/add" element={<AdminProductForm />} />
-                    <Route path="products/edit/:id" element={<AdminProductForm />} />
-                    <Route path="categories" element={<AdminCategories />} />
-                    <Route path="orders" element={<AdminOrderList />} />
-                    <Route path="customers" element={<AdminCustomerList />} />
-                    <Route path="coupons" element={<AdminCouponList />} />
-                    <Route path="reviews" element={<AdminReviewList />} />
-                  </Route>
+              <DeliveryProvider>
+                <Router>
+                  <ScrollToTop />
+                  <Routes>
+                    {/* Admin Separate Portal */}
+                    <Route path="/admin" element={<AdminLayout />}>
+                      <Route path="dashboard" element={<AdminDashboardMain />} />
+                      <Route path="products" element={<AdminProductList />} />
+                      <Route path="products/add" element={<AdminProductForm />} />
+                      <Route path="products/edit/:id" element={<AdminProductForm />} />
+                      <Route path="categories" element={<AdminCategories />} />
+                      <Route path="delivery-areas" element={<AdminDeliveryAreas />} />
+                      <Route path="orders" element={<AdminOrderList />} />
+                      <Route path="customers" element={<AdminCustomerList />} />
+                      <Route path="coupons" element={<AdminCouponList />} />
+                      <Route path="reviews" element={<AdminReviewList />} />
+                    </Route>
 
-                  {/* Customer Portal (Separate Shell, No Website Navbar) */}
-                  <Route element={<CustomerLayout />}>
-                    <Route path="/account" element={<AccountDashboard />} />
-                    <Route path="/account/orders" element={<OrderHistoryPage />} />
-                    <Route path="/account/orders/:id" element={<CustomerOrderDetailPage />} />
-                  </Route>
+                    {/* Customer Portal (Separate Shell, No Website Navbar) */}
+                    <Route element={<CustomerLayout />}>
+                      <Route path="/account" element={<AccountDashboard />} />
+                      <Route path="/account/orders" element={<OrderHistoryPage />} />
+                      <Route path="/account/orders/:id" element={<CustomerOrderDetailPage />} />
+                    </Route>
 
-                  {/* Public Website & Store */}
-                  <Route path="/*" element={<MainLayout />} />
-                </Routes>
-              </Router>
+                    {/* Public Website & Store */}
+                    <Route path="/*" element={<MainLayout />} />
+                  </Routes>
+                </Router>
+              </DeliveryProvider>
             </CategoryProvider>
           </CartProvider>
         </WishlistProvider>

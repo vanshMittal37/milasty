@@ -107,6 +107,7 @@ export default function AdminOrderList() {
               <tr>
                 <th>Order ID</th>
                 <th>Customer</th>
+                <th>Delivery Location</th>
                 <th>Amount</th>
                 <th>Current Status</th>
                 <th>Date</th>
@@ -120,6 +121,11 @@ export default function AdminOrderList() {
                 else if (o.orderStatus === 'Cancelled') badgeClass = 'admin-badge-danger';
                 else if (['Pending', 'Packed', 'Shipped', 'Out for Delivery'].includes(o.orderStatus)) badgeClass = 'admin-badge-warning';
 
+                const pin = o.deliveryPincode || o.shippingAddress?.pincode;
+                const city = o.deliveryCity || o.shippingAddress?.city;
+                const state = o.deliveryState || o.shippingAddress?.state;
+                const fee = o.deliveryFee !== undefined && o.deliveryFee !== null ? o.deliveryFee : (o.delivery_fee !== undefined ? o.delivery_fee : 0);
+
                 return (
                   <tr key={o._id}>
                     <td style={{ fontFamily: 'monospace', fontWeight: '800', color: 'var(--admin-text-primary)' }}>
@@ -128,6 +134,15 @@ export default function AdminOrderList() {
                     <td>
                       <div style={{ fontWeight: '700', color: 'var(--admin-text-primary)' }}>{o.user?.name || o.shippingAddress?.fullName || 'Guest'}</div>
                       <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>{o.user?.email || o.shippingAddress?.phone || 'N/A'}</div>
+                    </td>
+                    <td>
+                      <div style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--admin-text-primary)' }}>
+                        {city ? `${city}, ${state || ''}` : 'N/A'}
+                      </div>
+                      <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                        <span style={{ fontFamily: 'monospace', fontWeight: '700', color: 'var(--admin-accent)' }}>{pin || 'No PIN'}</span>
+                        • Fee: {Number(fee) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `₹${fee}`}
+                      </div>
                     </td>
                     <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>
                       ₹{o.totalAmount}

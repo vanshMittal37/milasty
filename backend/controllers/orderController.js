@@ -138,7 +138,31 @@ export const createOrder = async (req, res) => {
       });
     }
 
-    const deliveryFee = subtotal >= 499 || subtotal === 0 ? 0 : 49;
+    // SERVER-ENFORCED SERVICEABILITY & DELIVERY CHARGE TRUTH
+    let deliveryFee = 0;
+    let deliveryCity = shippingAddress?.city || '';
+    let deliveryState = shippingAddress?.state || '';
+
+    if (finalPincode) {
+      const { data: areaData } = await supabase
+        .from('delivery_areas')
+        .select('*')
+        .eq('pincode', finalPincode)
+        .eq('status', 'active')
+        .maybeSingle();
+
+      if (areaData) {
+        deliveryFee = Number(areaData.delivery_charge || 0);
+        if (!deliveryCity) deliveryCity = areaData.city;
+        if (!deliveryState) deliveryState = areaData.state;
+      } else {
+        // Fallback rule if unseeded: subtotal >= 499 is free delivery, otherwise 49
+        deliveryFee = subtotal >= 499 || subtotal === 0 ? 0 : 49;
+      }
+    } else {
+      deliveryFee = subtotal >= 499 || subtotal === 0 ? 0 : 49;
+    }
+
     const grandTotal = subtotal + deliveryFee;
     const orderNumber = `MIL-${Date.now().toString().slice(-6)}`;
 
@@ -156,6 +180,8 @@ export const createOrder = async (req, res) => {
             customer_phone: finalPhone,
             shipping_address: formattedAddress,
             pincode: finalPincode,
+            delivery_city: deliveryCity,
+            delivery_state: deliveryState,
             subtotal,
             delivery_fee: deliveryFee,
             grand_total: grandTotal,
