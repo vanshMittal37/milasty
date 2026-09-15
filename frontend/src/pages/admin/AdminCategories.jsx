@@ -166,7 +166,7 @@ export default function AdminCategories() {
           </p>
         </div>
 
-        <button onClick={fetchCategories} className="admin-btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.78rem' }}>
+        <button onClick={refreshCategories} className="admin-btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.78rem' }}>
           <RefreshCw size={14} className={fetching ? 'animate-spin' : ''} />
           <span>Refresh</span>
         </button>
