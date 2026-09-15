@@ -9,6 +9,7 @@ import ProductCard from '../components/ProductCard';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 import { useCart } from '../context/CartContext';
+import { useCategories } from '../context/CategoryContext';
 
 export default function Shop() {
   const { addToCart } = useCart();
@@ -50,28 +51,24 @@ export default function Shop() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const [categories, setCategories] = useState([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const { categories, categoriesLoading } = useCategories();
   const [exploreModalOpen, setExploreModalOpen] = useState(false);
 
   useEffect(() => {
     fetchProducts();
-    fetchCategories();
   }, []);
 
-  const fetchCategories = async () => {
-    setCategoriesLoading(true);
-    try {
-      const res = await api.get('/categories');
-      if (res.data && Array.isArray(res.data)) {
-        setCategories(res.data.filter((c) => c.is_active !== false));
-      }
-    } catch (e) {
-      console.error('Error fetching categories:', e);
-    } finally {
-      setCategoriesLoading(false);
+  // Lock background body scroll when modals open
+  useEffect(() => {
+    if (exploreModalOpen || filterModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
-  };
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [exploreModalOpen, filterModalOpen]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -1045,6 +1042,8 @@ export default function Shop() {
 
       {/* EXPLORE ALL CATEGORIES MODAL (Triggered when clicking Explore More Categories button) */}
       {exploreModalOpen && (
+      {/* EXPLORE MORE CATEGORIES POPUP MODAL */}
+      {exploreModalOpen && (
         <div 
           style={{ 
             position: 'fixed', 
@@ -1052,81 +1051,90 @@ export default function Shop() {
             backgroundColor: 'rgba(0, 0, 0, 0.8)', 
             backdropFilter: 'blur(10px)', 
             WebkitBackdropFilter: 'blur(10px)', 
-            zIndex: 110, 
+            zIndex: 2000, 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            padding: '1.5rem' 
+            padding: '1rem' 
           }}
           onClick={() => setExploreModalOpen(false)}
         >
           <div 
             onClick={(e) => e.stopPropagation()}
             style={{ 
-              backgroundColor: 'rgba(35, 21, 13, 0.96)', 
+              backgroundColor: 'rgba(26, 14, 8, 0.96)', 
               borderRadius: '24px', 
               border: '1.5px solid var(--accent-gold)', 
-              padding: isMobile ? '1.5rem 1.15rem' : '2.25rem 2rem', 
+              padding: isMobile ? '1.25rem 1rem' : '2.25rem 2rem', 
               maxWidth: '720px', 
               width: '100%', 
               maxHeight: '85vh',
-              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
               color: '#FFFDF9',
-              boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
+              boxShadow: '0 24px 60px rgba(0,0,0,0.85)',
               position: 'relative'
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', paddingBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', paddingBottom: '1rem' }}>
               <div>
                 <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', margin: 0, fontWeight: '850', color: '#FFFDF9' }}>Explore All Collections</h3>
                 <span style={{ fontSize: '0.78rem', color: '#b9cd94', fontWeight: '700', marginTop: '0.2rem', display: 'block' }}>Showing {categories.length} dynamic store collections</span>
               </div>
               <button 
                 onClick={() => setExploreModalOpen(false)}
-                style={{ backgroundColor: 'transparent', border: 'none', color: '#FFFDF9', cursor: 'pointer', padding: '0.35rem', fontSize: '1.2rem', fontWeight: '900' }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: '50%', color: '#FFFDF9', cursor: 'pointer', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: '900' }}
               >
                 ✕
               </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '1.25rem' }}>
-              {categories.map((cat, idx) => {
-                const catIdOrSlug = cat.slug || cat.id;
-                const isSelected = selectedCategory === catIdOrSlug || selectedCategory === cat.id;
-                const img = cat.image_url || cat.image || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500';
+            <div style={{ overflowY: 'auto', flex: 1, paddingRight: '0.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '1.25rem' }}>
+                {categories.map((cat, idx) => {
+                  const catIdOrSlug = cat.slug || cat.id;
+                  const isSelected = selectedCategory === catIdOrSlug || selectedCategory === cat.id;
+                  const img = cat.image_url || cat.image || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500';
+                  const pCount = cat.productCount || 0;
 
-                return (
-                  <div
-                    key={cat.id || cat.slug || idx}
-                    onClick={() => handleCategoryClick(catIdOrSlug)}
-                    style={{
-                      padding: '1rem',
-                      borderRadius: '16px',
-                      backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.6)' : 'rgba(20, 10, 5, 0.7)',
-                      border: isSelected ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.15)',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      textAlign: 'center',
-                      transition: 'all 0.25s ease'
-                    }}
-                  >
-                    <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', marginBottom: '0.75rem', border: '1.5px solid #b9cd94' }}>
-                      <img src={img} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  return (
+                    <div
+                      key={cat.id || cat.slug || idx}
+                      onClick={() => handleCategoryClick(catIdOrSlug)}
+                      style={{
+                        padding: '1.15rem 1rem',
+                        borderRadius: '18px',
+                        backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.65)' : 'rgba(35, 21, 13, 0.65)',
+                        border: isSelected ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.15)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        transition: 'all 0.25s ease'
+                      }}
+                    >
+                      <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', marginBottom: '0.75rem', border: isSelected ? '2px solid #b9cd94' : '1.5px solid rgba(255,255,255,0.2)', position: 'relative' }}>
+                        <img src={img} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {isSelected && (
+                          <div style={{ position: 'absolute', bottom: '4px', right: '4px', backgroundColor: '#244f21', borderRadius: '50%', padding: '2px', border: '1px solid #b9cd94' }}>
+                            <Check size={12} color="#b9cd94" strokeWidth={3} />
+                          </div>
+                        )}
+                      </div>
+                      <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', color: isSelected ? '#b9cd94' : 'var(--accent-gold)', fontWeight: '850', textTransform: 'uppercase' }}>
+                        {String(idx + 1).padStart(2, '0')}
+                      </span>
+                      <div style={{ fontSize: '0.88rem', fontWeight: '800', fontFamily: 'var(--font-serif)', color: isSelected ? '#b9cd94' : '#FFFDF9', marginTop: '0.2rem', textTransform: 'uppercase' }}>
+                        {cat.name}
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: '#F5EBDD', opacity: 0.85, marginTop: '0.25rem', fontWeight: '700' }}>
+                        {pCount} {pCount === 1 ? 'Product' : 'Products'}
+                      </span>
                     </div>
-                    <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '850', textTransform: 'uppercase' }}>
-                      {String(idx + 1).padStart(2, '0')}
-                    </span>
-                    <div style={{ fontSize: '0.88rem', fontWeight: '800', fontFamily: 'var(--font-serif)', color: '#FFFDF9', marginTop: '0.2rem', textTransform: 'uppercase' }}>
-                      {cat.name}
-                    </div>
-                    <span style={{ fontSize: '0.72rem', color: '#F5EBDD', opacity: 0.8, marginTop: '0.25rem' }}>
-                      {cat.productCount || 0} Products
-                    </span>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -1138,48 +1146,53 @@ export default function Shop() {
           style={{ 
             position: 'fixed', 
             inset: 0, 
-            backgroundColor: 'rgba(0, 0, 0, 0.75)', 
-            backdropFilter: 'blur(8px)', 
-            WebkitBackdropFilter: 'blur(8px)', 
-            zIndex: 100, 
+            backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+            backdropFilter: 'blur(10px)', 
+            WebkitBackdropFilter: 'blur(10px)', 
+            zIndex: 2000, 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            padding: '1.5rem' 
+            padding: '1rem' 
           }}
           onClick={() => setFilterModalOpen(false)}
         >
           <div 
             onClick={(e) => e.stopPropagation()}
             style={{ 
-              backgroundColor: 'rgba(35, 21, 13, 0.95)', 
+              backgroundColor: 'rgba(26, 14, 8, 0.96)', 
               borderRadius: '24px', 
               border: '1.5px solid var(--accent-gold)', 
-              padding: '2rem 1.75rem', 
-              maxWidth: '420px', 
+              padding: isMobile ? '1.5rem 1.15rem' : '2rem 1.75rem', 
+              maxWidth: '450px', 
               width: '100%', 
+              maxHeight: '85vh',
+              display: 'flex',
+              flexDirection: 'column',
               color: '#FFFDF9',
-              boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.85)',
               position: 'relative'
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', paddingBottom: '0.85rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', paddingBottom: '0.85rem' }}>
               <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', margin: 0, fontWeight: '800', color: 'var(--accent-gold)' }}>Filter Categories</h3>
               <button 
                 onClick={() => setFilterModalOpen(false)}
-                style={{ backgroundColor: 'transparent', border: 'none', color: '#FFFDF9', cursor: 'pointer', padding: '0.25rem' }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: '50%', color: '#FFFDF9', cursor: 'pointer', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: '900' }}
               >
                 ✕
               </button>
             </div>
 
-            <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.8)', marginBottom: '1.25rem', fontWeight: '500' }}>
+            <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', marginBottom: '1rem', fontWeight: '500' }}>
               Select a category filter to explore bakes:
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
+            <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem', paddingRight: '0.2rem' }}>
               {modalCategoryList.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
+                const pCount = cat.id === 'all' ? products.length : (cat.productCount || 0);
+
                 return (
                   <button
                     key={cat.id}
@@ -1187,9 +1200,9 @@ export default function Shop() {
                     style={{
                       padding: '0.85rem 1.25rem',
                       borderRadius: '16px',
-                      backgroundColor: isSelected ? '#244f21' : 'rgba(20, 10, 5, 0.60)',
+                      backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
                       border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.2)',
-                      color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.85)',
+                      color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.9)',
                       fontWeight: '800',
                       fontSize: '0.9rem',
                       display: 'flex',
@@ -1199,11 +1212,16 @@ export default function Shop() {
                       transition: 'all 0.25s ease'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '0.72rem', color: isSelected ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)', fontWeight: '800' }}>{cat.number}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: isSelected ? '#b9cd94' : 'var(--accent-gold)', fontWeight: '850' }}>{cat.number}</span>
                       <span>{cat.label}</span>
                     </div>
-                    {isSelected && <Check size={16} color="#b9cd94" />}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                      <span style={{ fontSize: '0.74rem', color: isSelected ? '#FFFDF9' : 'rgba(255,255,255,0.6)', fontWeight: '600' }}>
+                        {pCount} {pCount === 1 ? 'Product' : 'Products'}
+                      </span>
+                      {isSelected && <Check size={16} color="#b9cd94" strokeWidth={3} />}
+                    </div>
                   </button>
                 );
               })}

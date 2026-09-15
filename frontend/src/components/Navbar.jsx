@@ -98,7 +98,7 @@ export default function Navbar() {
           top: 0,
           left: 0,
           right: 0,
-          zIndex: 1000,
+          zIndex: 500,
           width: '100%',
           boxSizing: 'border-box'
         }}

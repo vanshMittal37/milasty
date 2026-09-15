@@ -4,12 +4,14 @@ import { ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus } 
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
 import { LOW_STOCK_THRESHOLD } from '../../config/constants';
+import { useCategories } from '../../context/CategoryContext';
 
 export default function AdminProductForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEdit = !!id;
   const { toast } = useToast();
+  const { categories: ctxCategories, refreshCategories } = useCategories();
 
   const emptyForm = {
     title: '',
@@ -53,7 +55,14 @@ export default function AdminProductForm() {
   const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
-    fetchCategories();
+    if (ctxCategories && ctxCategories.length > 0) {
+      setCategories(ctxCategories);
+    } else {
+      fetchCategories();
+    }
+  }, [ctxCategories]);
+
+  useEffect(() => {
     if (isEdit) {
       fetchProductDetails();
     } else {
@@ -66,7 +75,7 @@ export default function AdminProductForm() {
       const res = await api.get('/categories');
       if (res.data) setCategories(res.data);
     } catch (e) {
-      setCategories([
+      setCategories(ctxCategories && ctxCategories.length > 0 ? ctxCategories : [
         { name: 'STARTER BOX', slug: 'starter' },
         { name: 'DAILY BAKES', slug: 'daily' },
         { name: 'GIFTING HAMPER', slug: 'gifting' },
@@ -214,6 +223,7 @@ export default function AdminProductForm() {
         await api.post('/products', payload);
         toast.success('Product created successfully.');
       }
+      refreshCategories();
       navigate('/admin/products');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save product');

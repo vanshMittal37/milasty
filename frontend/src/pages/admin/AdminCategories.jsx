@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, Trash2, Tags, RefreshCw, Upload, Image as ImageIcon, Edit3, ShieldAlert, CheckCircle, Package, Layers, X } from 'lucide-react';
 import api from '../../api/axios';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import { useToast } from '../../context/ToastContext';
+import { useCategories } from '../../context/CategoryContext';
 
 export default function AdminCategories() {
-  const [categories, setCategories] = useState([]);
-  const [fetching, setFetching] = useState(true);
+  const { categories, categoriesLoading: fetching, refreshCategories } = useCategories();
   
   // Create Category Form State
   const [name, setName] = useState('');
@@ -25,22 +25,6 @@ export default function AdminCategories() {
   const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   const { toast } = useToast();
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    setFetching(true);
-    try {
-      const res = await api.get('/categories');
-      setCategories(res.data || []);
-    } catch (e) {
-      toast.error('Unable to fetch categories');
-    } finally {
-      setFetching(false);
-    }
-  };
 
   // Image File Upload Helper using Cloudinary Endpoint
   const handleFileUpload = (e, isEdit = false) => {
@@ -104,7 +88,7 @@ export default function AdminCategories() {
       setName('');
       setDescription('');
       setImage('');
-      fetchCategories();
+      refreshCategories();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error creating category.');
     } finally {
@@ -137,7 +121,7 @@ export default function AdminCategories() {
       toast.success('Category updated successfully.');
       setEditModalOpen(false);
       setEditCategoryData(null);
-      fetchCategories();
+      refreshCategories();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error updating category.');
     } finally {
@@ -151,9 +135,10 @@ export default function AdminCategories() {
       const res = await api.delete(`/categories/${deleteTargetId}`);
       toast.success(res.data?.message || 'Category deleted successfully.');
       setDeleteTargetId(null);
-      fetchCategories();
+      refreshCategories();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error deleting category.');
+    } finally {
       setDeleteTargetId(null);
     }
   };

@@ -44,7 +44,8 @@ export const getCategories = async (req, res) => {
   try {
     let { data: categories, error } = await supabase
       .from('categories')
-      .select('*');
+      .select('*')
+      .order('created_at', { ascending: true });
 
     if (error || !categories || categories.length === 0) {
       console.log('Seeding default categories to Supabase...');
@@ -57,29 +58,59 @@ export const getCategories = async (req, res) => {
           image_url: cat.image_url,
         }, { onConflict: 'slug' });
       }
-      const { data: seeded } = await supabase.from('categories').select('*');
+      const { data: seeded } = await supabase.from('categories').select('*').order('created_at', { ascending: true });
       categories = seeded || INITIAL_CATEGORIES;
     }
 
-    // Calculate product counts per category dynamically
-    const { data: dbProducts } = await supabase.from('products').select('id, category, category_id');
+    // Safely query products
+    const { data: dbProducts, error: prodError } = await supabase.from('products').select('*');
+    if (prodError) {
+      console.error('Error fetching products for category count:', prodError);
+    }
+
+    // Compute dynamic product counts per category (each product counted once)
     const countsMap = {};
+    (categories || []).forEach(cat => {
+      const key = cat.id || cat._id || cat.slug;
+      if (key) countsMap[key] = 0;
+      if (cat.slug) countsMap[cat.slug] = 0;
+    });
+
     (dbProducts || []).forEach((p) => {
-      if (p.category_id) countsMap[p.category_id] = (countsMap[p.category_id] || 0) + 1;
-      if (p.category) {
-        countsMap[p.category] = (countsMap[p.category] || 0) + 1;
-        countsMap[p.category.toLowerCase()] = (countsMap[p.category.toLowerCase()] || 0) + 1;
+      const pCat = (p.category || '').toString().toLowerCase().trim();
+      const pCatId = (p.category_id || '').toString().toLowerCase().trim();
+
+      const matchedCat = (categories || []).find(cat => {
+        const cId = (cat.id || cat._id || '').toString().toLowerCase().trim();
+        const cSlug = (cat.slug || '').toString().toLowerCase().trim();
+        const cName = (cat.name || '').toString().toLowerCase().trim();
+
+        if (pCatId && (pCatId === cId || pCatId === cSlug)) return true;
+        if (pCat) {
+          if (pCat === cId || pCat === cSlug || pCat === cName) return true;
+          // Alias matching for gifts vs gifting
+          if (pCat === 'gifts' && (cSlug === 'gifting' || cSlug === 'gifts')) return true;
+          if (pCat === 'gifting' && (cSlug === 'gifting' || cSlug === 'gifts')) return true;
+        }
+        return false;
+      });
+
+      if (matchedCat) {
+        const key = matchedCat.id || matchedCat._id || matchedCat.slug;
+        if (key) countsMap[key] = (countsMap[key] || 0) + 1;
+        if (matchedCat.slug && matchedCat.slug !== key) countsMap[matchedCat.slug] = (countsMap[matchedCat.slug] || 0) + 1;
       }
     });
 
     const formatted = categories.map((cat, idx) => {
       const defaultDesc = INITIAL_CATEGORIES.find(c => c.slug === cat.slug)?.description || 'Wholesome artisanal bakes collection';
       const img = cat.image_url || cat.image || INITIAL_CATEGORIES[idx % 4]?.image_url || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600';
-      const catCount = (countsMap[cat.id] || 0) + (countsMap[cat.slug] || 0) + (countsMap[cat.name] || 0) + (countsMap[cat.name?.toLowerCase()] || 0);
+      const key = cat.id || cat._id || cat.slug;
+      const catCount = countsMap[key] !== undefined ? countsMap[key] : (countsMap[cat.slug] || 0);
 
       return {
-        _id: cat.id || cat.slug,
-        id: cat.id || cat.slug,
+        _id: cat.id || cat._id || cat.slug,
+        id: cat.id || cat._id || cat.slug,
         name: cat.name,
         label: cat.label || cat.name,
         slug: cat.slug,

@@ -8,9 +8,11 @@ import ProductCard from '../components/ProductCard';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 import { useCart } from '../context/CartContext';
+import { useCategories } from '../context/CategoryContext';
 
 export default function CataloguePage() {
   const { addToCart } = useCart();
+  const { categories: dbCategories } = useCategories();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategoryParam = searchParams.get('category') || 'all';
 
@@ -18,12 +20,15 @@ export default function CataloguePage() {
   const [selectedCategory, setSelectedCategory] = useState(activeCategoryParam);
   const [loading, setLoading] = useState(true);
 
-  // Define Category Taxonomy
+  // Dynamic Category Taxonomy
   const categories = [
     { id: 'all', name: 'ALL PRODUCTS', desc: 'Browse our complete range of handcrafted millet bakes.' },
-    { id: 'starter', name: 'STARTER FAVOURITES', desc: 'Curated box & signature favorites for new MILASTY discoverers.' },
-    { id: 'daily', name: 'DAILY RITUAL', desc: 'Earthy, low-GI millet cookies slow baked for your daily tea time.' },
-    { id: 'gifting', name: 'GIFTING HAMPERS', desc: 'Luxury handcrafted hampers crafted for celebrations & warm memories.' },
+    ...dbCategories.map(c => ({
+      id: c.slug || c.id,
+      name: c.name,
+      desc: c.description || c.subtitle || '',
+      productCount: c.productCount || 0
+    }))
   ];
 
   useEffect(() => {
