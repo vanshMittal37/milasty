@@ -1040,8 +1040,6 @@ export default function Shop() {
         </div>
       </section>
 
-      {/* EXPLORE ALL CATEGORIES MODAL (Triggered when clicking Explore More Categories button) */}
-      {exploreModalOpen && (
       {/* EXPLORE MORE CATEGORIES POPUP MODAL */}
       {exploreModalOpen && (
         <div 
