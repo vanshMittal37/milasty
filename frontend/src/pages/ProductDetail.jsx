@@ -1,167 +1,95 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Star, ShieldCheck, Heart, ChevronRight, ChevronLeft, CheckCircle, Plus, Minus } from 'lucide-react';
+import { ShoppingBag, Star, Heart, ChevronRight, ChevronLeft, CheckCircle2, ShieldCheck, Truck, Sparkles, AlertTriangle, Plus, Minus, Info } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 import ProductCard from '../components/ProductCard';
 import PriceDisplay from '../components/PriceDisplay';
-
 import { LOW_STOCK_THRESHOLD } from '../config/constants';
 
 export default function ProductDetail() {
-  const { slug } = useParams();
+  const { slug, id } = useParams();
+  const identifier = slug || id;
+
   const { addToCart, showToast } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-
-  const relatedRef = useRef(null);
-
-  const scrollLeft = (ref) => {
-    if (ref.current) {
-      ref.current.scrollBy({ left: -320, behavior: 'smooth' });
-    }
-  };
-
-  const scrollRight = (ref) => {
-    if (ref.current) {
-      ref.current.scrollBy({ left: 320, behavior: 'smooth' });
-    }
-  };
 
   const [product, setProduct] = useState(null);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState('');
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [btnText, setBtnText] = useState('Add to Cart');
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [activeTab, setActiveTab] = useState('nutrition');
   const [pincode, setPincode] = useState('');
   const [deliveryMsg, setDeliveryMsg] = useState('');
 
   const checkDelivery = () => {
-    if (pincode.length === 6) {
-      setDeliveryMsg('⚡ Delivery Available: Estimated in 2–4 Business Days');
+    if (pincode.trim().length === 6 && /^\d+$/.test(pincode.trim())) {
+      setDeliveryMsg('⚡ Express Delivery Available: 2–4 Business Days');
     } else {
-      setDeliveryMsg('Please enter a valid 6-digit Pincode');
+      setDeliveryMsg('Please enter a valid 6-digit Indian Pincode');
     }
   };
 
-  const [isRelatedHovered, setIsRelatedHovered] = useState(false);
-  const [relatedIndex, setRelatedIndex] = useState(0);
-  const [relatedTouchStartX, setRelatedTouchStartX] = useState(null);
-  const [relatedTouchStartY, setRelatedTouchStartY] = useState(null);
-
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Auto-scroll Related Products ("You May Also Like") mobile 2-card slider (every 2.0s with hover/touch pause)
-  useEffect(() => {
-    if (!isMobile || isRelatedHovered || relatedProducts.length <= 2) return;
-    const maxIdx = Math.max(0, relatedProducts.length - 2);
-    const timer = setInterval(() => {
-      setRelatedIndex((prev) => (prev >= maxIdx ? 0 : prev + 1));
-    }, 2000);
-    return () => clearInterval(timer);
-  }, [isMobile, isRelatedHovered, relatedProducts.length]);
-
-  useEffect(() => {
-    fetchProduct();
-  }, [slug]);
+    if (identifier) {
+      fetchProduct();
+    }
+  }, [identifier]);
 
   const fetchProduct = async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/products/${slug}`);
+      const res = await api.get(`/products/${identifier}`);
       if (res.data) {
         setProduct(res.data);
-        setSelectedImage(res.data.image);
-        // Automatically select first available variant if available
+        setSelectedImageIndex(0);
+
         if (res.data.variants && res.data.variants.length > 0) {
           const availIdx = res.data.variants.findIndex((v) => (v.stock !== undefined ? v.stock : 50) > 0);
           setSelectedVariantIndex(availIdx >= 0 ? availIdx : 0);
         }
-        fetchRelated(res.data.category);
+        fetchRelated(res.data.category, res.data._id || res.data.slug);
       }
     } catch (err) {
-      const found = initialProducts.find((p) => p.slug === slug || p._id === slug);
+      const found = initialProducts.find((p) => p.slug === identifier || p._id === identifier);
       if (found) {
         setProduct(found);
-        setSelectedImage(found.image);
-        const allFiltered = initialProducts.filter((p) => p.slug !== slug && p._id !== slug);
+        setSelectedImageIndex(0);
+        const allFiltered = initialProducts.filter((p) => p.slug !== identifier && p._id !== identifier);
         const sameCategory = allFiltered.filter(p => p.category === found.category);
-        const otherCategory = allFiltered.filter(p => p.category !== found.category);
-        setRelatedProducts(sameCategory.length > 0 ? [...sameCategory, ...otherCategory] : allFiltered);
+        setRelatedProducts(sameCategory.length > 0 ? sameCategory : allFiltered);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchRelated = async (category) => {
+  const fetchRelated = async (category, currentId) => {
     try {
       const res = await api.get('/products?limit=100');
       if (res.data && res.data.products && res.data.products.length > 0) {
-        const allFiltered = res.data.products.filter((p) => p.slug !== slug && p._id !== slug);
+        const allFiltered = res.data.products.filter((p) => p.slug !== currentId && p._id !== currentId);
         const sameCategory = allFiltered.filter(p => p.category === category);
         const otherCategory = allFiltered.filter(p => p.category !== category);
-        setRelatedProducts(sameCategory.length > 0 ? [...sameCategory, ...otherCategory] : allFiltered);
-      } else {
-        const allFiltered = initialProducts.filter((p) => p.slug !== slug && p._id !== slug);
-        const sameCategory = allFiltered.filter(p => p.category === category);
-        const otherCategory = allFiltered.filter(p => p.category !== category);
-        setRelatedProducts(sameCategory.length > 0 ? [...sameCategory, ...otherCategory] : allFiltered);
+        setRelatedProducts(sameCategory.length > 0 ? [...sameCategory, ...otherCategory].slice(0, 4) : allFiltered.slice(0, 4));
       }
     } catch (e) {
-      const allFiltered = initialProducts.filter((p) => p.slug !== slug && p._id !== slug);
-      const sameCategory = allFiltered.filter(p => p.category === category);
-      const otherCategory = allFiltered.filter(p => p.category !== category);
-      setRelatedProducts(sameCategory.length > 0 ? [...sameCategory, ...otherCategory] : allFiltered);
+      const allFiltered = initialProducts.filter((p) => p.slug !== currentId && p._id !== currentId);
+      setRelatedProducts(allFiltered.slice(0, 4));
     }
   };
 
   if (loading) {
     return (
-      <div style={{
-        backgroundImage: 'url(/images/ritiual_background_image.jpeg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        minHeight: '100vh',
-        padding: '6rem 0',
-        textAlign: 'center',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative'
-      }}>
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'linear-gradient(135deg, rgba(15, 8, 4, 0.42) 0%, rgba(28, 14, 9, 0.32) 100%)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
-        <div style={{
-          position: 'relative',
-          zIndex: 1,
-          backgroundColor: 'rgba(20, 10, 5, 0.65)',
-          backdropFilter: 'blur(18px)',
-          WebkitBackdropFilter: 'blur(18px)',
-          padding: '3rem 2.5rem',
-          borderRadius: '24px',
-          border: '1px solid rgba(245, 220, 180, 0.2)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '0.85rem'
-        }}>
-          <ShoppingBag size={36} color="#b9cd94" className="animate-float" />
-          <p style={{ color: '#FFFDF9', fontSize: '1rem', fontWeight: '800', margin: 0 }}>Gathering product details...</p>
+      <div style={{ minHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#140A05' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', color: '#FFFDF9' }}>
+          <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid rgba(185, 205, 148, 0.2)', borderTopColor: '#b9cd94', borderRadius: '50%' }} />
+          <span style={{ fontSize: '0.95rem', fontWeight: '600', letterSpacing: '0.05em' }}>Loading Product Details...</span>
         </div>
       </div>
     );
@@ -169,778 +97,626 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div style={{
-        backgroundImage: 'url(/images/ritiual_background_image.jpeg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        minHeight: '100vh',
-        padding: '6rem 0',
-        textAlign: 'center',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative'
-      }}>
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'linear-gradient(135deg, rgba(15, 8, 4, 0.42) 0%, rgba(28, 14, 9, 0.32) 100%)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
-        <div style={{
-          position: 'relative',
-          zIndex: 1,
-          backgroundColor: 'rgba(20, 10, 5, 0.65)',
-          backdropFilter: 'blur(18px)',
-          WebkitBackdropFilter: 'blur(18px)',
-          maxWidth: '440px',
-          margin: '0 auto',
-          padding: '3rem 2rem',
-          borderRadius: '24px',
-          border: '1px solid rgba(245, 220, 180, 0.2)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1.25rem'
-        }}>
-          <h2 style={{ fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontSize: '1.8rem', fontWeight: '800', margin: 0 }}>Product Not Found</h2>
-          <Link to="/shop" style={{ padding: '0.85rem 2.25rem', textDecoration: 'none', borderRadius: '999px', backgroundColor: '#244f21', color: '#FFFFFF', fontWeight: '800', fontSize: '0.9rem', border: '1px solid #b9cd94' }}>
-            Back to Shop
-          </Link>
-        </div>
+      <div style={{ minHeight: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#140A05', color: '#FFFDF9', textAlign: 'center', padding: '2rem' }}>
+        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '1rem' }}>Product Not Found</h2>
+        <p style={{ color: '#F5EBDD', marginBottom: '1.5rem' }}>The product you are looking for does not exist or has been removed.</p>
+        <Link to="/shop" className="btn-primary" style={{ padding: '0.75rem 1.5rem', borderRadius: '999px', backgroundColor: '#244f21', color: '#FFF', textDecoration: 'none' }}>
+          Back to Shop Catalog
+        </Link>
       </div>
     );
   }
 
-  const selectedVariant = product?.variants?.[selectedVariantIndex] || product?.variants?.[0] || {};
-  const unitPrice = selectedVariant?.price || product?.finalPrice || product?.price || 0;
-  const wishlisted = isInWishlist(product?._id || product?.slug);
-  const currentStock = selectedVariant?.stock !== undefined && selectedVariant?.stock !== null
-    ? Number(selectedVariant.stock)
-    : (product?.stock !== undefined && product?.stock !== null ? Number(product.stock) : 50);
+  // Deduplicate gallery images so single images are never rendered twice
+  const rawImages = [product.image, product.secondaryImage].filter((img) => Boolean(img) && typeof img === 'string' && img.trim() !== '');
+  const images = Array.from(new Set(rawImages));
 
-  const isOutOfStock = currentStock <= 0;
-  const isLowStock = currentStock > 0 && currentStock <= LOW_STOCK_THRESHOLD;
+  const hasVariants = product.variants && product.variants.length > 0;
+  const selectedVariant = hasVariants ? (product.variants[selectedVariantIndex] || product.variants[0]) : null;
 
-  const handleVariantSelect = (idx) => {
-    setSelectedVariantIndex(idx);
-    const newVariant = product?.variants?.[idx] || {};
-    const newStock = newVariant.stock !== undefined && newVariant.stock !== null
-      ? Number(newVariant.stock)
-      : (product?.stock !== undefined ? Number(product.stock) : 50);
-    
-    if (newStock <= 0) {
-      setQuantity(1);
-    } else if (quantity > newStock) {
-      setQuantity(newStock);
-    }
-  };
+  // Variant stock resolution
+  const currentStock = hasVariants
+    ? (selectedVariant?.stock !== undefined && selectedVariant?.stock !== null ? Number(selectedVariant.stock) : 50)
+    : (product.stock !== undefined && product.stock !== null ? Number(product.stock) : 50);
 
-  const handleIncreaseQty = () => {
+  const currentPrice = hasVariants ? Number(selectedVariant?.price || 0) : Number(product.price || 0);
+  const currentOriginalPrice = hasVariants
+    ? Number(selectedVariant?.originalPrice || selectedVariant?.price || 0)
+    : Number(product.originalPrice || product.price || 0);
+
+  const hasDiscount = currentOriginalPrice > currentPrice;
+  const discountPercent = hasDiscount ? Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100) : 0;
+
+  const wishlisted = isInWishlist(product._id || product.slug);
+
+  const handleQuantityIncrease = () => {
     if (quantity >= currentStock) {
       if (showToast) showToast(`Only ${currentStock} packs are available.`);
       return;
     }
-    setQuantity((q) => Math.min(currentStock, q + 1));
+    setQuantity((prev) => prev + 1);
   };
 
-  const handleDecreaseQty = () => {
-    setQuantity((q) => Math.max(1, q - 1));
+  const handleQuantityDecrease = () => {
+    if (quantity > 1) {
+      setQuantity((prev) => prev - 1);
+    }
   };
 
   const handleAddToCart = async () => {
-    if (isOutOfStock) return;
+    if (currentStock <= 0) {
+      if (showToast) showToast('This item is currently out of stock.');
+      return;
+    }
+
     setBtnText('Adding...');
     try {
       await addToCart(product, selectedVariant, quantity);
-      setBtnText('✓ Added');
-      setTimeout(() => setBtnText('Add to Cart'), 1500);
+      setBtnText('✓ Added to Cart');
+      setTimeout(() => setBtnText('Add to Cart'), 2000);
     } catch (e) {
-      setBtnText('Unable to add');
+      setBtnText('Unable to Add');
       setTimeout(() => setBtnText('Add to Cart'), 2000);
     }
   };
 
+  // Safe nutrition facts entries (skipping variant_stocks and object values to fix React Error #31)
+  const safeNutritionFacts = product.nutritionFacts
+    ? Object.entries(product.nutritionFacts).filter(
+        ([k, v]) => k !== 'variant_stocks' && k !== 'pieces' && v !== null && v !== undefined && v !== '' && typeof v !== 'object'
+      )
+    : [];
+
   return (
-    <div style={{
-      backgroundImage: 'url(/images/ritiual_background_image.jpeg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-      minHeight: '100vh',
-      padding: isMobile ? '1.25rem 0 3rem' : '2.5rem 0 5rem',
-      position: 'relative'
-    }}>
-      {/* Dark overlay for readability matching Shop */}
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'linear-gradient(135deg, rgba(15, 8, 4, 0.42) 0%, rgba(28, 14, 9, 0.32) 100%)',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }} />
-
-      <div className="container" style={{ maxWidth: '1150px', position: 'relative', zIndex: 1, padding: isMobile ? '0 0.85rem' : '0 1.5rem' }}>
+    <div style={{ backgroundColor: '#140A05', color: '#FFFDF9', minHeight: '100vh', paddingTop: '1rem', paddingBottom: '5rem' }}>
+      
+      {/* Maximum Container Width */}
+      <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1.25rem' }}>
         
-        {/* Breadcrumb */}
-        <div style={{
-          fontSize: isMobile ? '0.72rem' : '0.78rem',
-          fontWeight: '700',
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          color: '#F5EBDD',
-          marginBottom: isMobile ? '1.25rem' : '2rem',
-          backgroundColor: 'rgba(20, 10, 5, 0.65)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          padding: isMobile ? '0.45rem 0.95rem' : '0.6rem 1.2rem',
-          borderRadius: '999px',
-          display: 'inline-flex',
-          alignItems: 'center',
-          border: '1px solid rgba(185, 205, 148, 0.35)',
-          maxWidth: '100%',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-          textOverflow: 'ellipsis'
-        }}>
-          <Link to="/" style={{ color: '#F5EBDD', textDecoration: 'none' }}>Home</Link>
-          <span style={{ margin: '0 0.4rem', color: '#b9cd94' }}>/</span>
-          <Link to="/shop" style={{ color: '#F5EBDD', textDecoration: 'none' }}>Shop</Link>
-          <span style={{ margin: '0 0.4rem', color: '#b9cd94' }}>/</span>
-          <span style={{ color: '#b9cd94', fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.title}</span>
-        </div>
-
-        {/* Main Details Panel */}
-        <div
-          className="glass-card"
-          style={{
-            backgroundColor: 'rgba(20, 10, 5, 0.55)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            borderRadius: isMobile ? '20px' : '28px',
-            border: '1px solid rgba(245, 220, 180, 0.18)',
-            boxShadow: '0 16px 48px rgba(0,0,0,0.4)',
-            padding: isMobile ? '1.25rem 1rem' : '2.5rem',
-            marginBottom: isMobile ? '2rem' : '3.5rem'
+        {/* Breadcrumbs Navigation */}
+        <nav 
+          aria-label="Breadcrumb"
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.5rem', 
+            fontSize: '0.85rem', 
+            color: '#F5EBDD', 
+            marginBottom: '2rem',
+            flexWrap: 'wrap'
           }}
         >
-          <div 
-            className="product-detail-layout"
-            style={{ 
-              display: 'grid', 
-              gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', 
-              gap: isMobile ? '1.5rem' : '3.5rem', 
-              alignItems: 'start'
-            }}
-          >
-            {/* Left Column: Image gallery */}
-            <div>
-              <div 
-                style={{ 
-                  borderRadius: isMobile ? '16px' : '20px', 
-                  overflow: 'hidden', 
-                  backgroundColor: 'rgba(20, 10, 5, 0.65)', 
-                  border: '1.5px solid rgba(245, 220, 180, 0.22)',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
-                  position: 'relative'
-                }}
-              >
-                <img 
-                  src={selectedImage} 
-                  alt={product.title} 
-                  className="product-main-image"
-                  style={{ width: '100%', height: isMobile ? '260px' : '440px', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} 
-                  onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                  onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                />
-              </div>
-              
-              {/* Gallery Thumbnails */}
-              <div style={{ display: 'flex', gap: isMobile ? '0.5rem' : '0.75rem', marginTop: isMobile ? '0.75rem' : '1rem' }}>
-                <img
-                  src={product.image}
-                  alt="Thumbnail primary"
-                  onClick={() => setSelectedImage(product.image)}
-                  style={{
-                    width: isMobile ? '58px' : '74px',
-                    height: isMobile ? '58px' : '74px',
-                    objectFit: 'cover',
-                    borderRadius: isMobile ? '10px' : '12px',
-                    cursor: 'pointer',
-                    border: selectedImage === product.image ? '2.5px solid #b9cd94' : '1.5px solid rgba(245, 220, 180, 0.25)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-                  }}
-                />
-                {product.secondaryImage && product.secondaryImage !== product.image && (
-                  <img
-                    src={product.secondaryImage}
-                    alt="Thumbnail secondary"
-                    onClick={() => setSelectedImage(product.secondaryImage)}
-                    style={{
-                      width: isMobile ? '58px' : '74px',
-                      height: isMobile ? '58px' : '74px',
-                      objectFit: 'cover',
-                      borderRadius: isMobile ? '10px' : '12px',
-                      cursor: 'pointer',
-                      border: selectedImage === product.secondaryImage ? '2.5px solid #b9cd94' : '1.5px solid rgba(245, 220, 180, 0.25)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-                    }}
-                  />
-                )}
-              </div>
-            </div>
+          <Link to="/" style={{ color: '#F5EBDD', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = '#b9cd94'} onMouseOut={(e) => e.target.style.color = '#F5EBDD'}>
+            Home
+          </Link>
+          <ChevronRight size={14} color="rgba(245, 235, 221, 0.4)" />
+          <Link to="/shop" style={{ color: '#F5EBDD', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = '#b9cd94'} onMouseOut={(e) => e.target.style.color = '#F5EBDD'}>
+            Shop
+          </Link>
+          <ChevronRight size={14} color="rgba(245, 235, 221, 0.4)" />
+          <span style={{ color: '#b9cd94', fontWeight: '700' }}>{product.title}</span>
+        </nav>
 
-            {/* Right Column: Details & Actions */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.85rem' : '1.2rem' }}>
-              
-              {/* Badges / Stock */}
-              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                {product.badges?.slice(0, isMobile ? 1 : 2).map((badge, idx) => (
-                  <span 
-                    key={idx} 
-                    style={{
-                      fontSize: '0.68rem',
-                      fontWeight: '800',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.04em',
-                      color: '#b9cd94',
-                      backgroundColor: 'rgba(36, 79, 33, 0.85)',
-                      border: '1px solid rgba(185, 205, 148, 0.4)',
-                      padding: '0.25rem 0.65rem',
-                      borderRadius: '999px',
-                    }}
-                  >
-                    {badge}
-                  </span>
-                ))}
-                
-                {/* Variant Stock Status Badge */}
-                <span 
-                  style={{ 
-                    fontSize: '0.68rem',
-                    fontWeight: '800',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em',
-                    backgroundColor: isOutOfStock 
-                      ? 'rgba(184, 50, 30, 0.30)' 
-                      : (isLowStock ? 'rgba(234, 179, 8, 0.25)' : 'rgba(36, 79, 33, 0.30)'), 
-                    color: isOutOfStock 
-                      ? '#ff9e88' 
-                      : (isLowStock ? '#FACC15' : '#b9cd94'),
-                    border: isOutOfStock 
-                      ? '1px solid rgba(184, 50, 30, 0.4)' 
-                      : (isLowStock ? '1px solid rgba(234, 179, 8, 0.4)' : '1px solid rgba(185, 205, 148, 0.4)'),
-                    padding: '0.25rem 0.65rem',
-                    borderRadius: '999px'
-                  }}
-                >
-                  {isOutOfStock ? 'Out of Stock' : (isLowStock ? 'Low Stock' : 'In Stock')}
-                </span>
-              </div>
-
-              {/* Title & Description */}
-              <div>
-                <h1 style={{ fontSize: isMobile ? '1.45rem' : '2.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', margin: '0 0 0.3rem 0', lineHeight: '1.2' }}>{product.title}</h1>
-                <p style={{ fontSize: isMobile ? '0.88rem' : '1rem', color: '#F5EBDD', lineHeight: '1.45', margin: 0, fontWeight: '500' }}>
-                  {product.subtitle || product.description}
-                </p>
-              </div>
-
-              {/* Ratings & Stock Alert Signal */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: isMobile ? '0.78rem' : '0.85rem', color: '#F5EBDD', fontWeight: '600' }}>
-                  <div style={{ display: 'flex', color: '#b9cd94' }}>
-                    <Star size={14} fill="#b9cd94" color="#b9cd94" />
-                  </div>
-                  <span style={{ color: '#FFFDF9', fontWeight: '800' }}>{product.rating}</span>
-                  <span style={{ color: '#F5EBDD' }}>({product.reviewCount || 24} reviews)</span>
-                </div>
-                
-                {/* Detailed Stock Alert Signal */}
-                {isOutOfStock ? (
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.2rem 0.55rem', borderRadius: '6px', backgroundColor: 'rgba(184, 50, 30, 0.25)', border: '1px solid rgba(184, 50, 30, 0.5)', color: '#ff9e88', fontSize: '0.74rem', fontWeight: '800' }}>
-                    <span>Out of Stock</span>
-                  </div>
-                ) : isLowStock ? (
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.2rem 0.55rem', borderRadius: '6px', backgroundColor: 'rgba(234, 179, 8, 0.15)', border: '1px solid rgba(234, 179, 8, 0.4)', color: '#FACC15', fontSize: '0.74rem', fontWeight: '800' }}>
-                    <span>
-                      {currentStock <= 5 ? `Only ${currentStock} packs left — order soon!` : `Only ${currentStock} packs left!`}
-                    </span>
-                  </div>
-                ) : (
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.2rem 0.55rem', borderRadius: '6px', backgroundColor: 'rgba(36, 79, 33, 0.2)', border: '1px solid rgba(185, 205, 148, 0.35)', color: '#b9cd94', fontSize: '0.74rem', fontWeight: '800' }}>
-                    <span>{currentStock} packs available</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Price section */}
-              <PriceDisplay 
-                price={unitPrice} 
-                originalPrice={selectedVariant.originalPrice} 
-                size="large" 
-              />
-
-              {/* Pack Size Selectors */}
-              {product.variants && product.variants.length > 1 && (
-                <div style={{ padding: '0.1rem 0' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#FFFDF9', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.4rem' }}>Select Pack Size</span>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    {product.variants.map((v, idx) => {
-                      const vStock = v.stock !== undefined && v.stock !== null ? Number(v.stock) : 50;
-                      const vOutOfStock = vStock <= 0;
-                      const isSelected = selectedVariantIndex === idx;
-
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => handleVariantSelect(idx)}
-                          style={{
-                            padding: isMobile ? '0.5rem 0.85rem' : '0.65rem 1.15rem',
-                            borderRadius: '12px',
-                            fontWeight: '800',
-                            fontSize: isMobile ? '0.78rem' : '0.85rem',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            backgroundColor: isSelected 
-                              ? '#244f21' 
-                              : (vOutOfStock ? 'rgba(40, 20, 15, 0.45)' : 'rgba(20, 10, 5, 0.65)'),
-                            color: isSelected 
-                              ? '#FFFFFF' 
-                              : (vOutOfStock ? '#a08575' : '#F5EBDD'),
-                            border: isSelected 
-                              ? '1.5px solid #b9cd94' 
-                              : (vOutOfStock ? '1.5px dashed rgba(184, 50, 30, 0.35)' : '1.5px solid rgba(185, 205, 148, 0.35)'),
-                            boxShadow: isSelected ? '0 4px 14px rgba(36, 79, 33, 0.35)' : 'none',
-                            opacity: vOutOfStock ? 0.75 : 1,
-                            display: 'inline-flex',
-                            flexDirection: 'column',
-                            alignItems: 'flex-start',
-                            gap: '0.1rem',
-                          }}
-                        >
-                          <div>{v.name} ({v.weight}) • ₹{v.price}</div>
-                          <div style={{ fontSize: '0.68rem', fontWeight: '600', color: vOutOfStock ? '#ff7e65' : (vStock <= LOW_STOCK_THRESHOLD ? '#FACC15' : '#b9cd94') }}>
-                            {vOutOfStock ? 'Out of Stock' : (vStock <= LOW_STOCK_THRESHOLD ? `Only ${vStock} left` : `${vStock} available`)}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Quantity Selector & Main Buttons */}
-              <div style={{ display: 'flex', gap: isMobile ? '0.65rem' : '1rem', alignItems: 'center', flexWrap: 'wrap', paddingTop: '0.2rem' }}>
-                {/* Qty count */}
-                <div style={{ display: 'inline-flex', alignItems: 'center', border: '1.5px solid rgba(185, 205, 148, 0.35)', borderRadius: '999px', backgroundColor: 'rgba(20, 10, 5, 0.65)', padding: isMobile ? '0.25rem 0.55rem' : '0.35rem 0.75rem', opacity: isOutOfStock ? 0.4 : 1 }}>
-                  <button 
-                    onClick={handleDecreaseQty} 
-                    disabled={isOutOfStock || quantity <= 1}
-                    style={{ padding: '0.2rem 0.45rem', background: 'none', border: 'none', cursor: isOutOfStock ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', color: '#FFFDF9' }}
-                  >
-                    <Minus size={14} />
-                  </button>
-                  <span style={{ padding: '0 0.65rem', fontWeight: '900', color: '#FFFDF9', fontSize: isMobile ? '0.88rem' : '0.95rem' }}>{isOutOfStock ? 0 : quantity}</span>
-                  <button 
-                    onClick={handleIncreaseQty} 
-                    disabled={isOutOfStock || quantity >= currentStock}
-                    style={{ padding: '0.2rem 0.45rem', background: 'none', border: 'none', cursor: (isOutOfStock || quantity >= currentStock) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', color: '#FFFDF9' }}
-                  >
-                    <Plus size={14} />
-                  </button>
-                </div>
-
-                {/* Add to cart */}
-                <button
-                  onClick={handleAddToCart}
-                  disabled={isOutOfStock}
-                  style={{
-                    padding: isMobile ? '0.75rem 1.4rem' : '0.9rem 2.25rem',
-                    fontSize: isMobile ? '0.85rem' : '0.92rem',
-                    backgroundColor: isOutOfStock ? '#4a3b35' : '#244f21',
-                    color: isOutOfStock ? '#a08575' : '#FFFFFF',
-                    border: isOutOfStock ? '1px solid #6e5246' : '1px solid #b9cd94',
-                    borderRadius: '999px',
-                    fontWeight: '800',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    cursor: isOutOfStock ? 'not-allowed' : 'pointer',
-                    boxShadow: isOutOfStock ? 'none' : '0 4px 16px rgba(36, 79, 33, 0.35)',
-                    flexGrow: isMobile ? 1 : 0
-                  }}
-                >
-                  <ShoppingBag size={16} color={isOutOfStock ? '#a08575' : '#FFFFFF'} />
-                  <span>{isOutOfStock ? 'Out of Stock' : btnText}</span>
-                </button>
-
-                {/* Wishlist toggle */}
-                <button
-                  onClick={() => toggleWishlist(product)}
-                  style={{
-                    width: isMobile ? '40px' : '46px',
-                    height: isMobile ? '40px' : '46px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                    border: '1.5px solid rgba(185, 205, 148, 0.35)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    color: wishlisted ? '#b9cd94' : '#F5EBDD',
-                    transition: 'all 0.2s',
-                    flexShrink: 0
-                  }}
-                  title="Add to Wishlist"
-                >
-                  <Heart size={18} fill={wishlisted ? '#b9cd94' : 'none'} color={wishlisted ? '#b9cd94' : '#F5EBDD'} />
-                </button>
-              </div>
-
-              {/* Pincode Delivery Checker */}
-              <div style={{ marginTop: '0.4rem', paddingTop: '0.65rem', borderTop: '1px solid rgba(255, 255, 255, 0.12)' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#FFFDF9', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.35rem' }}>
-                  Delivery Availability
-                </span>
-                <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '320px' }}>
-                  <input
-                    type="text"
-                    maxLength={6}
-                    placeholder="Enter 6-digit Pincode..."
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
-                    style={{
-                      padding: '0.4rem 0.75rem',
-                      borderRadius: '8px',
-                      border: '1px solid rgba(255, 255, 255, 0.22)',
-                      backgroundColor: 'rgba(20, 10, 5, 0.65)',
-                      color: '#FFFDF9',
-                      fontSize: '0.78rem',
-                      flexGrow: 1
-                    }}
-                  />
-                  <button
-                    onClick={checkDelivery}
-                    style={{
-                      padding: '0.4rem 0.85rem',
-                      borderRadius: '8px',
-                      backgroundColor: '#244f21',
-                      border: '1px solid #b9cd94',
-                      color: '#FFFDF9',
-                      fontSize: '0.76rem',
-                      fontWeight: '800',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Check
-                  </button>
-                </div>
-                {deliveryMsg && (
-                  <div style={{ fontSize: '0.74rem', color: deliveryMsg.includes('⚡') ? '#b9cd94' : '#f87171', fontWeight: '700', marginTop: '0.35rem' }}>
-                    {deliveryMsg}
-                  </div>
-                )}
-              </div>
-
-              {/* Custom Brand Trust bullet strip */}
-              <div style={{ marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.45rem', borderTop: '1.5px solid rgba(255, 255, 255, 0.12)', paddingTop: '0.75rem', fontSize: isMobile ? '0.78rem' : '0.85rem', color: '#F5EBDD', fontWeight: '600' }}>
-                <ShieldCheck size={15} color="#b9cd94" />
-                <span>100% Maida-Free • Cow Desi Ghee &amp; Jaggery</span>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        {/* Section 2: Nutrition Facts & Ingredients tables */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '2.5rem', marginBottom: '4.5rem' }}>
+        {/* 2-Column Product Detail Layout */}
+        <div 
+          style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+            gap: '3rem',
+            alignItems: 'start',
+            marginBottom: '4rem'
+          }}
+        >
           
-          <div className="glass-card" style={{
-            padding: '2.25rem 2rem',
-            backgroundColor: 'rgba(20, 10, 5, 0.55)',
-            backdropFilter: 'blur(18px)',
-            WebkitBackdropFilter: 'blur(18px)',
-            borderRadius: '24px',
-            border: '1px solid rgba(245, 220, 180, 0.18)',
-            boxShadow: '0 8px 30px rgba(0,0,0,0.3)'
-          }}>
-            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>Ingredients &amp; Allergens</h3>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '1.25rem 0 0 0', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {product.ingredients?.map((ing, idx) => (
-                <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.94rem', color: '#F5EBDD', fontWeight: '600' }}>
-                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#b9cd94', flexShrink: 0 }} />
-                  <span>{ing}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="glass-card" style={{
-            padding: '2.25rem 2rem',
-            backgroundColor: 'rgba(20, 10, 5, 0.55)',
-            backdropFilter: 'blur(18px)',
-            WebkitBackdropFilter: 'blur(18px)',
-            borderRadius: '24px',
-            border: '1px solid rgba(245, 220, 180, 0.18)',
-            boxShadow: '0 8px 30px rgba(0,0,0,0.3)'
-          }}>
-            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '1.25rem', margin: 0 }}>Accredited Nutritional Facts</h3>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', marginTop: '1.25rem' }}>
-              <tbody>
-                {product.nutritionFacts &&
-                  Object.entries(product.nutritionFacts).map(([k, v], idx) => (
-                    <tr key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.12)', backgroundColor: idx % 2 === 0 ? 'rgba(36, 79, 33, 0.15)' : 'transparent' }}>
-                      <td style={{ padding: '0.7rem 0.65rem', fontWeight: '700', color: '#F5EBDD', textTransform: 'capitalize' }}>{k.replace(/([A-Z])/g, ' $1')}</td>
-                      <td style={{ padding: '0.7rem 0.65rem', fontWeight: '900', textAlign: 'right', color: '#b9cd94' }}>{v}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Section 3: Related Products recommendations with 2-card animated mobile slider */}
-        {relatedProducts.length > 0 && (
-          <section style={{ borderTop: '1px solid rgba(245, 220, 180, 0.18)', paddingTop: '4.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
-                <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Discover More</span>
-                <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', margin: 0 }}>
-                  You May Also Like
-                </h2>
-              </div>
-              {!isMobile && (
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button
-                    onClick={() => scrollLeft(relatedRef)}
-                    aria-label="Scroll left"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <button
-                    onClick={() => scrollRight(relatedRef)}
-                    aria-label="Scroll right"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    <ChevronRight size={16} />
-                  </button>
+          {/* LEFT COLUMN: Product Image Gallery */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            
+            {/* Main Dominant Image Container */}
+            <div 
+              style={{ 
+                position: 'relative', 
+                width: '100%', 
+                paddingTop: '100%', // 1:1 Aspect Ratio Square Box
+                borderRadius: '20px', 
+                overflow: 'hidden', 
+                backgroundColor: 'rgba(20, 10, 5, 0.4)', 
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                boxShadow: '0 16px 40px rgba(0,0,0,0.35)'
+              }}
+            >
+              <img 
+                src={images[selectedImageIndex] || product.image} 
+                alt={product.title} 
+                style={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  left: 0, 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'cover',
+                  transition: 'transform 0.4s ease'
+                }} 
+              />
+              {/* Discount Ribbon Badge */}
+              {hasDiscount && (
+                <div 
+                  style={{ 
+                    position: 'absolute', 
+                    top: '16px', 
+                    left: '16px', 
+                    backgroundColor: '#244f21', 
+                    color: '#FFFDF9', 
+                    border: '1px solid #b9cd94',
+                    padding: '0.35rem 0.85rem', 
+                    borderRadius: '999px', 
+                    fontSize: '0.75rem', 
+                    fontWeight: '800',
+                    letterSpacing: '0.05em',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                  }}
+                >
+                  SAVE {discountPercent}%
                 </div>
               )}
             </div>
 
-            {isMobile ? (
-              <div style={{ width: '100%', overflow: 'hidden' }}>
-                <div
-                  onMouseEnter={() => setIsRelatedHovered(true)}
-                  onMouseLeave={() => setIsRelatedHovered(false)}
-                  onTouchStart={(e) => {
-                    setIsRelatedHovered(true);
-                    const touch = e.touches[0];
-                    setRelatedTouchStartX(touch.clientX);
-                    setRelatedTouchStartY(touch.clientY);
-                  }}
-                  onTouchMove={(e) => {
-                    if (relatedTouchStartX === null) return;
-                    const touch = e.touches[0];
-                    const diffX = relatedTouchStartX - touch.clientX;
-                    const diffY = Math.abs(relatedTouchStartY - touch.clientY);
-                    if (Math.abs(diffX) > diffY && Math.abs(diffX) > 10) {
-                      if (e.cancelable) e.preventDefault();
-                    }
-                  }}
-                  onTouchEnd={(e) => {
-                    setIsRelatedHovered(false);
-                    if (relatedTouchStartX === null) return;
-                    const touch = e.changedTouches[0];
-                    const diffX = relatedTouchStartX - touch.clientX;
-                    const diffY = Math.abs(relatedTouchStartY - touch.clientY);
-                    const maxIdx = Math.max(0, relatedProducts.length - 2);
-                    if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
-                      if (diffX > 0) {
-                        // Swiped left -> next
-                        setRelatedIndex((prev) => (prev >= maxIdx ? 0 : prev + 1));
-                      } else {
-                        // Swiped right -> prev
-                        setRelatedIndex((prev) => (prev <= 0 ? maxIdx : prev - 1));
-                      }
-                    }
-                    setRelatedTouchStartX(null);
-                    setRelatedTouchStartY(null);
-                  }}
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'nowrap',
-                    gap: '0.65rem',
-                    transform: `translateX(calc(-${relatedIndex} * (50% + 0.325rem)))`,
-                    transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                    width: '100%',
-                    touchAction: 'pan-y',
-                    userSelect: 'none',
-                    WebkitUserSelect: 'none'
-                  }}
-                >
-                  {relatedProducts.map((p) => (
-                    <div
-                      key={p._id || p.slug}
-                      style={{
-                        flex: '0 0 calc(50% - 0.325rem)',
-                        minWidth: 'calc(50% - 0.325rem)',
-                        maxWidth: 'calc(50% - 0.325rem)',
-                        boxSizing: 'border-box'
-                      }}
-                    >
-                      <ProductCard product={p} />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Pagination Dots & Navigation Controls */}
-                <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.85rem' }}>
-                  {/* Dots */}
-                  <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
-                    {Array.from({ length: Math.max(1, relatedProducts.length - 1) }).map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setRelatedIndex(idx)}
-                        style={{
-                          width: relatedIndex === idx ? '22px' : '8px',
-                          height: '8px',
-                          borderRadius: '999px',
-                          backgroundColor: relatedIndex === idx ? '#b9cd94' : 'rgba(255, 255, 255, 0.25)',
-                          border: 'none',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s ease'
-                        }}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Left / Right Chevron Buttons */}
-                  <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center' }}>
+            {/* Thumbnails Row — ONLY RENDERED IF THERE ARE MULTIPLE UNIQUE IMAGES */}
+            {images.length > 1 && (
+              <div style={{ display: 'flex', gap: '0.85rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                {images.map((img, idx) => {
+                  const isActive = idx === selectedImageIndex;
+                  return (
                     <button
-                      onClick={() => {
-                        const maxIdx = Math.max(0, relatedProducts.length - 2);
-                        setRelatedIndex((prev) => (prev <= 0 ? maxIdx : prev - 1));
-                      }}
-                      aria-label="Previous product"
+                      key={idx}
+                      onClick={() => setSelectedImageIndex(idx)}
                       style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: '50%',
-                        backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                        border: '1px solid rgba(255, 255, 255, 0.25)',
-                        color: '#FFFDF9',
+                        width: '72px',
+                        height: '72px',
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        padding: 0,
+                        backgroundColor: 'transparent',
+                        border: isActive ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
                         cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                        transition: 'all 0.2s',
+                        boxShadow: isActive ? '0 0 12px rgba(185, 205, 148, 0.4)' : 'none',
+                        flexShrink: 0
                       }}
                     >
-                      <ChevronLeft size={18} />
+                      <img src={img} alt={`Thumbnail ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </button>
-                    <button
-                      onClick={() => {
-                        const maxIdx = Math.max(0, relatedProducts.length - 2);
-                        setRelatedIndex((prev) => (prev >= maxIdx ? 0 : prev + 1));
-                      }}
-                      aria-label="Next product"
-                      style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: '50%',
-                        backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                        border: '1px solid rgba(255, 255, 255, 0.25)',
-                        color: '#FFFDF9',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-                      }}
-                    >
-                      <ChevronRight size={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div
-                ref={relatedRef}
-                className="horizontal-scroll-container"
-                style={{
-                  display: 'flex',
-                  flexWrap: 'nowrap',
-                  gap: '1.5rem',
-                  overflowX: 'auto',
-                  scrollBehavior: 'smooth',
-                  paddingBottom: '1.25rem',
-                  WebkitOverflowScrolling: 'touch',
-                  width: '100%'
-                }}
-              >
-                {relatedProducts.map((p) => (
-                  <div key={p._id || p.slug} style={{ flex: '0 0 280px', minWidth: '280px', width: '280px', boxSizing: 'border-box' }}>
-                    <ProductCard product={p} />
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
-          </section>
+          </div>
+
+          {/* RIGHT COLUMN: Product Details & Purchase Actions */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            
+            {/* Category / Badges Row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span 
+                style={{ 
+                  fontSize: '0.72rem', 
+                  fontWeight: '800', 
+                  textTransform: 'uppercase', 
+                  letterSpacing: '0.08em', 
+                  color: '#b9cd94', 
+                  backgroundColor: 'rgba(36, 79, 33, 0.4)', 
+                  padding: '0.25rem 0.75rem', 
+                  borderRadius: '999px',
+                  border: '1px solid rgba(185, 205, 148, 0.3)'
+                }}
+              >
+                {product.category || 'Milasty Bakes'}
+              </span>
+
+              {/* Product Badges */}
+              {Array.isArray(product.badges) && product.badges.map((b, i) => (
+                <span 
+                  key={i} 
+                  style={{ 
+                    fontSize: '0.72rem', 
+                    fontWeight: '700', 
+                    textTransform: 'uppercase', 
+                    letterSpacing: '0.05em', 
+                    color: '#F5EBDD', 
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)', 
+                    padding: '0.25rem 0.75rem', 
+                    borderRadius: '999px',
+                    border: '1px solid rgba(255, 255, 255, 0.12)'
+                  }}
+                >
+                  {b}
+                </span>
+              ))}
+            </div>
+
+            {/* Product Title */}
+            <h1 
+              style={{ 
+                fontFamily: 'var(--font-serif)', 
+                fontSize: 'clamp(1.85rem, 3.5vw, 2.5rem)', 
+                fontWeight: '850', 
+                color: '#FFFDF9', 
+                margin: 0, 
+                lineHeight: '1.2' 
+              }}
+            >
+              {product.title}
+            </h1>
+
+            {/* Subtitle / Tagline (Hidden if empty) */}
+            {product.subtitle && product.subtitle.trim() !== '' && (
+              <p style={{ fontSize: '1rem', color: '#F5EBDD', margin: 0, fontWeight: '500', opacity: 0.9 }}>
+                {product.subtitle}
+              </p>
+            )}
+
+            {/* Rating / Review Info */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', color: '#b9cd94' }}>
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={15} fill="#b9cd94" color="#b9cd94" />
+                ))}
+              </div>
+              <span style={{ fontSize: '0.88rem', fontWeight: '750', color: '#FFFDF9' }}>
+                {product.rating || 5.0}
+              </span>
+              <span style={{ fontSize: '0.82rem', color: '#F5EBDD', opacity: 0.8 }}>
+                {product.reviewCount ? `(${product.reviewCount} Reviews)` : '(No reviews yet)'}
+              </span>
+            </div>
+
+            {/* Description */}
+            {product.description && (
+              <p style={{ fontSize: '0.95rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, opacity: 0.95 }}>
+                {product.description}
+              </p>
+            )}
+
+            {/* Price Section */}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.85rem', marginTop: '0.5rem', marginBottom: '0.25rem' }}>
+              <span style={{ fontSize: '2rem', fontWeight: '900', color: '#FFFDF9' }}>
+                ₹{currentPrice}
+              </span>
+              {hasDiscount && (
+                <span style={{ fontSize: '1.2rem', color: 'rgba(245, 235, 221, 0.5)', textDecoration: 'line-through', fontWeight: '600' }}>
+                  ₹{currentOriginalPrice}
+                </span>
+              )}
+            </div>
+
+            {/* Variant Pack Size Selector */}
+            {hasVariants && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#b9cd94' }}>
+                  Select Pack Size
+                </label>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  {product.variants.map((v, index) => {
+                    const isSelected = index === selectedVariantIndex;
+                    const vStock = v.stock !== undefined && v.stock !== null ? Number(v.stock) : 50;
+                    const isVOut = vStock <= 0;
+
+                    return (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => {
+                          setSelectedVariantIndex(index);
+                          setQuantity(1);
+                        }}
+                        style={{
+                          padding: '0.65rem 1.15rem',
+                          borderRadius: '12px',
+                          border: isSelected ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
+                          backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.45)' : 'rgba(20, 10, 5, 0.3)',
+                          color: isSelected ? '#FFFDF9' : '#F5EBDD',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '0.15rem',
+                          transition: 'all 0.2s',
+                          boxShadow: isSelected ? '0 4px 14px rgba(36, 79, 33, 0.4)' : 'none',
+                          opacity: isVOut ? 0.6 : 1
+                        }}
+                      >
+                        <span style={{ fontSize: '0.9rem', fontWeight: '800' }}>{v.weight || v.name}</span>
+                        <span style={{ fontSize: '0.78rem', color: isSelected ? '#b9cd94' : '#F5EBDD', fontWeight: '700' }}>₹{v.price}</span>
+                        {isVOut && (
+                          <span style={{ fontSize: '0.62rem', color: '#ff6b6b', fontWeight: '800', textTransform: 'uppercase' }}>Out of Stock</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Independent Stock Alert Badge */}
+            <div style={{ marginTop: '0.25rem' }}>
+              {currentStock <= 0 ? (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: 'rgba(220, 38, 38, 0.15)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '800' }}>
+                  <AlertTriangle size={15} />
+                  <span>Out of Stock</span>
+                </div>
+              ) : currentStock <= 5 ? (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: 'rgba(217, 119, 6, 0.18)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.35)', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '800' }}>
+                  <Sparkles size={15} />
+                  <span>⚡ Only {currentStock} packs left — order soon!</span>
+                </div>
+              ) : currentStock <= LOW_STOCK_THRESHOLD ? (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: 'rgba(217, 119, 6, 0.12)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.25)', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '750' }}>
+                  <Sparkles size={15} />
+                  <span>⚡ Only {currentStock} packs left</span>
+                </div>
+              ) : (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', color: '#b9cd94', fontSize: '0.85rem', fontWeight: '700' }}>
+                  <CheckCircle2 size={16} />
+                  <span>In Stock ({currentStock} available)</span>
+                </div>
+              )}
+            </div>
+
+            {/* Quantity Selector & Add to Cart Action Row */}
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap' }}>
+              
+              {/* Quantity Counter */}
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)', 
+                  border: '1px solid rgba(255, 255, 255, 0.15)', 
+                  borderRadius: '999px',
+                  padding: '0.25rem 0.5rem'
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={handleQuantityDecrease}
+                  disabled={quantity <= 1 || currentStock <= 0}
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: quantity <= 1 || currentStock <= 0 ? 'rgba(255, 255, 255, 0.25)' : '#FFFDF9',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: quantity <= 1 || currentStock <= 0 ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  <Minus size={14} />
+                </button>
+                <span style={{ padding: '0 0.85rem', fontWeight: '800', fontSize: '0.95rem', minWidth: '32px', textAlign: 'center' }}>
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleQuantityIncrease}
+                  disabled={quantity >= currentStock || currentStock <= 0}
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: quantity >= currentStock || currentStock <= 0 ? 'rgba(255, 255, 255, 0.25)' : '#FFFDF9',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: quantity >= currentStock || currentStock <= 0 ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+
+              {/* Primary Add to Cart Button */}
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                disabled={currentStock <= 0}
+                style={{
+                  flex: 1,
+                  minWidth: '200px',
+                  padding: '0.85rem 1.75rem',
+                  borderRadius: '999px',
+                  backgroundColor: currentStock <= 0 ? 'rgba(255, 255, 255, 0.1)' : '#244f21',
+                  color: currentStock <= 0 ? 'rgba(255, 255, 255, 0.4)' : '#FFFFFF',
+                  border: currentStock <= 0 ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid #b9cd94',
+                  fontSize: '0.95rem',
+                  fontWeight: '850',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  cursor: currentStock <= 0 ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s',
+                  boxShadow: currentStock > 0 ? '0 6px 20px rgba(36, 79, 33, 0.4)' : 'none'
+                }}
+              >
+                <ShoppingBag size={18} color={currentStock > 0 ? '#b9cd94' : 'rgba(255, 255, 255, 0.4)'} />
+                <span>{currentStock <= 0 ? 'Out of Stock' : btnText}</span>
+              </button>
+
+              {/* Wishlist Heart Button */}
+              <button
+                type="button"
+                onClick={() => toggleWishlist(product)}
+                aria-label="Wishlist"
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: wishlisted ? '#b9cd94' : '#FFFDF9',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <Heart size={20} fill={wishlisted ? '#b9cd94' : 'none'} color={wishlisted ? '#b9cd94' : '#FFFDF9'} />
+              </button>
+            </div>
+
+            {/* Pincode Serviceability Check Box */}
+            <div 
+              style={{ 
+                marginTop: '1.25rem', 
+                padding: '1rem', 
+                borderRadius: '14px', 
+                backgroundColor: 'rgba(255, 255, 255, 0.04)', 
+                border: '1px solid rgba(255, 255, 255, 0.1)' 
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.5rem', fontSize: '0.82rem', fontWeight: '800', color: '#b9cd94' }}>
+                <Truck size={16} />
+                <span>Check Delivery Availability</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  maxLength={6}
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value)}
+                  placeholder="Enter 6-digit Pincode"
+                  style={{
+                    flex: 1,
+                    padding: '0.45rem 0.75rem',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: '#FFFDF9',
+                    fontSize: '0.85rem'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={checkDelivery}
+                  style={{
+                    padding: '0.45rem 0.95rem',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(36, 79, 33, 0.6)',
+                    border: '1px solid #b9cd94',
+                    color: '#FFFDF9',
+                    fontSize: '0.82rem',
+                    fontWeight: '750',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Check
+                </button>
+              </div>
+              {deliveryMsg && (
+                <p style={{ marginTop: '0.45rem', fontSize: '0.78rem', color: deliveryMsg.includes('⚡') ? '#b9cd94' : '#f59e0b', margin: '0.45rem 0 0 0', fontWeight: '600' }}>
+                  {deliveryMsg}
+                </p>
+              )}
+            </div>
+
+          </div>
+        </div>
+
+        {/* Accordions / Information Tabs Section */}
+        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.12)', paddingTop: '3rem', marginBottom: '4rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.12)', marginBottom: '1.5rem', overflowX: 'auto' }}>
+            <button
+              onClick={() => setActiveTab('nutrition')}
+              style={{
+                padding: '0.75rem 1.25rem',
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: activeTab === 'nutrition' ? '#b9cd94' : '#F5EBDD',
+                borderBottom: activeTab === 'nutrition' ? '2px solid #b9cd94' : '2px solid transparent',
+                fontWeight: '800',
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Nutritional Facts
+            </button>
+            <button
+              onClick={() => setActiveTab('ingredients')}
+              style={{
+                padding: '0.75rem 1.25rem',
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: activeTab === 'ingredients' ? '#b9cd94' : '#F5EBDD',
+                borderBottom: activeTab === 'ingredients' ? '2px solid #b9cd94' : '2px solid transparent',
+                fontWeight: '800',
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Ingredients & Craft
+            </button>
+          </div>
+
+          {/* Tab 1: Accredited Nutritional Facts Table */}
+          {activeTab === 'nutrition' && (
+            <div style={{ maxWidth: '680px' }}>
+              {safeNutritionFacts.length > 0 ? (
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                  <tbody>
+                    {safeNutritionFacts.map(([k, v], idx) => (
+                      <tr key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: idx % 2 === 0 ? 'rgba(36, 79, 33, 0.15)' : 'transparent' }}>
+                        <td style={{ padding: '0.75rem 0.85rem', fontWeight: '700', color: '#F5EBDD', textTransform: 'capitalize' }}>
+                          {k.replace(/([A-Z])/g, ' $1')}
+                        </td>
+                        <td style={{ padding: '0.75rem 0.85rem', fontWeight: '900', textAlign: 'right', color: '#b9cd94' }}>
+                          {String(v)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p style={{ color: '#F5EBDD', opacity: 0.8 }}>No nutritional information listed for this product.</p>
+              )}
+            </div>
+          )}
+
+          {/* Tab 2: Ingredients */}
+          {activeTab === 'ingredients' && (
+            <div style={{ maxWidth: '680px', color: '#F5EBDD', lineHeight: '1.7' }}>
+              {Array.isArray(product.ingredients) && product.ingredients.length > 0 ? (
+                <ul style={{ paddingLeft: '1.25rem', margin: 0 }}>
+                  {product.ingredients.map((ing, i) => (
+                    <li key={i} style={{ marginBottom: '0.35rem' }}>{ing}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>{product.ingredients || 'Crafted with premium natural ingredients and zero artificial preservatives.'}</p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Related Products Section */}
+        {relatedProducts.length > 0 && (
+          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.12)', paddingTop: '3rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: '#FFFDF9', fontWeight: '800', marginBottom: '1.5rem' }}>
+              You May Also Like
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.5rem' }}>
+              {relatedProducts.map((relProduct) => (
+                <ProductCard key={relProduct._id || relProduct.id || relProduct.slug} product={relProduct} />
+              ))}
+            </div>
+          </div>
         )}
 
       </div>
-
-      {/* Sticky Bottom Action Bar for Mobile Viewports */}
-      {isMobile && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            backgroundColor: 'rgba(20, 10, 5, 0.94)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            borderTop: '1px solid rgba(185, 205, 148, 0.35)',
-            padding: '0.65rem 1.15rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            zIndex: 100,
-            boxShadow: '0 -8px 24px rgba(0, 0, 0, 0.4)'
-          }}
-        >
-          <div>
-            <div style={{ fontSize: '0.68rem', color: '#F5EBDD', fontWeight: '600' }}>Price</div>
-            <div style={{ fontSize: '1.05rem', fontWeight: '900', color: '#b9cd94' }}>₹{unitPrice}</div>
-          </div>
-          <button
-            onClick={handleAddToCart}
-            style={{
-              padding: '0.6rem 1.45rem',
-              backgroundColor: '#244f21',
-              color: '#FFFFFF',
-              border: '1px solid #b9cd94',
-              borderRadius: '999px',
-              fontWeight: '850',
-              fontSize: '0.82rem',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem'
-            }}
-          >
-            <ShoppingBag size={15} />
-            <span>{btnText}</span>
-          </button>
-        </div>
-      )}
     </div>
   );
 }

@@ -162,6 +162,37 @@ export default function AdminProductForm() {
       return;
     }
 
+    const basePriceNum = formData.price !== '' && formData.price !== null ? Number(formData.price) : null;
+    const isVariantProduct = formData.variants && formData.variants.length > 0;
+
+    if (!isVariantProduct) {
+      if (basePriceNum === null || isNaN(basePriceNum)) {
+        toast.error('Please enter a base price or add at least one variant.');
+        return;
+      }
+      if (formData.stock === '' || formData.stock === null || formData.stock === undefined) {
+        toast.error('Please enter total stock for this product.');
+        return;
+      }
+    } else {
+      // Validate variants independently
+      for (let i = 0; i < formData.variants.length; i++) {
+        const v = formData.variants[i];
+        if (!v.name && !v.weight) {
+          toast.error(`Variant #${i + 1} requires a Name or Weight.`);
+          return;
+        }
+        if (v.price === '' || v.price === null || v.price === undefined) {
+          toast.error(`Variant #${i + 1} (${v.name || v.weight}) requires a price.`);
+          return;
+        }
+        if (v.stock === '' || v.stock === null || v.stock === undefined) {
+          toast.error(`Variant #${i + 1} (${v.name || v.weight}) requires stock quantity.`);
+          return;
+        }
+      }
+    }
+
     setLoading(true);
 
     const payload = {
@@ -170,9 +201,9 @@ export default function AdminProductForm() {
       badges: typeof formData.badges === 'string' ? formData.badges.split(',').map((s) => s.trim()).filter(Boolean) : formData.badges,
       ingredients: typeof formData.ingredients === 'string' ? formData.ingredients.split(',').map((s) => s.trim()).filter(Boolean) : formData.ingredients,
       benefits: typeof formData.benefits === 'string' ? formData.benefits.split(',').map((s) => s.trim()).filter(Boolean) : formData.benefits,
-      price: formData.price !== '' ? Number(formData.price) : 0,
-      originalPrice: formData.originalPrice !== '' ? Number(formData.originalPrice) : Number(formData.price || 0),
-      stock: formData.stock !== '' ? Number(formData.stock) : 100,
+      price: basePriceNum,
+      originalPrice: formData.originalPrice !== '' && formData.originalPrice !== null ? Number(formData.originalPrice) : null,
+      stock: formData.stock !== '' && formData.stock !== null ? Number(formData.stock) : (isVariantProduct ? formData.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) : null),
     };
 
     try {
@@ -329,64 +360,96 @@ export default function AdminProductForm() {
               padding: '1.25rem', 
               borderRadius: '12px', 
               border: '1px solid var(--admin-border)',
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
+              display: 'flex',
+              flexDirection: 'column',
               gap: '1rem',
-              alignItems: 'center'
             }}
           >
-            <div>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Base Price (₹) *
-              </label>
-              <input
-                type="number"
-                required
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="Enter base price"
-                className="admin-input"
-              />
-            </div>
-            <div>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Discount Type
-              </label>
-              <select
-                value={formData.discountType}
-                onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
-                className="admin-input"
-                style={{ cursor: 'pointer' }}
-              >
-                <option value="none">No Discount</option>
-                <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Flat (₹)</option>
-              </select>
-            </div>
-            <div>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Discount Value
-              </label>
-              <input
-                type="number"
-                value={formData.discountValue}
-                onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
-                placeholder="Enter discount"
-                className="admin-input"
-              />
-            </div>
+            {/* Dynamic Status Helper Banner */}
             <div 
-              style={{ 
-                backgroundColor: 'var(--admin-surface-card)', 
-                padding: '0.85rem 1rem', 
-                borderRadius: '10px', 
-                border: '1px solid var(--admin-border)', 
-                textAlign: 'center'
+              style={{
+                padding: '0.65rem 0.9rem',
+                borderRadius: '8px',
+                fontSize: '0.78rem',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                backgroundColor: formData.variants && formData.variants.length > 0 ? 'rgba(39, 76, 55, 0.15)' : 'rgba(217, 119, 6, 0.12)',
+                color: formData.variants && formData.variants.length > 0 ? '#b9cd94' : '#f59e0b',
+                border: `1px solid ${formData.variants && formData.variants.length > 0 ? 'rgba(185, 205, 148, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`,
               }}
             >
-              <div style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.15rem' }}>Selling Price:</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--admin-accent)' }}>
-                ₹{calculatedFinalPrice || 0}
+              <span>
+                {formData.variants && formData.variants.length > 0 
+                  ? '✓ Variants are being used. Base price is optional.' 
+                  : '⚠️ Add a base price because this product has no variants.'}
+              </span>
+            </div>
+
+            <div 
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
+                gap: '1rem',
+                alignItems: 'start'
+              }}
+            >
+              <div>
+                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Base Price (₹)
+                </label>
+                <input
+                  type="number"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="Enter base price if no variants"
+                  className="admin-input"
+                />
+                <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', marginTop: '0.35rem', display: 'block' }}>
+                  Optional when using variants. Required if this product has no variants.
+                </span>
+              </div>
+              <div>
+                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Discount Type
+                </label>
+                <select
+                  value={formData.discountType}
+                  onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
+                  className="admin-input"
+                  style={{ cursor: 'pointer' }}
+                >
+                  <option value="none">No Discount</option>
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="fixed">Fixed Flat (₹)</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Discount Value
+                </label>
+                <input
+                  type="number"
+                  value={formData.discountValue}
+                  onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
+                  placeholder="Enter discount"
+                  className="admin-input"
+                />
+              </div>
+              <div 
+                style={{ 
+                  backgroundColor: 'var(--admin-surface-card)', 
+                  padding: '0.85rem 1rem', 
+                  borderRadius: '10px', 
+                  border: '1px solid var(--admin-border)', 
+                  textAlign: 'center'
+                }}
+              >
+                <div style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.15rem' }}>Selling Price:</div>
+                <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--admin-accent)' }}>
+                  ₹{calculatedFinalPrice || 0}
+                </div>
               </div>
             </div>
           </div>
@@ -395,16 +458,18 @@ export default function AdminProductForm() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1.25rem' }}>
             <div>
               <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Total Stock *
+                Total Stock {formData.variants && formData.variants.length > 0 ? '(Auto / Optional)' : '*'}
               </label>
               <input
                 type="number"
-                required
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                placeholder="Enter total stock"
+                placeholder={formData.variants && formData.variants.length > 0 ? "Calculated from variants" : "Enter total stock"}
                 className="admin-input"
               />
+              <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', marginTop: '0.35rem', display: 'block' }}>
+                {formData.variants && formData.variants.length > 0 ? 'Automatically aggregated from variants' : 'Required for simple products'}
+              </span>
             </div>
             <div>
               <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>

@@ -6,6 +6,7 @@ export default function PriceDisplay({
   size = 'medium',
   className = '',
   style = {},
+  prefix = '',
 }) {
   const currentPrice = Number(price || 0);
   const origPrice = Number(originalPrice || 0);
@@ -36,7 +37,7 @@ export default function PriceDisplay({
           color: 'var(--text-primary, #ffffff)',
         }}
       >
-        ₹{currentPrice}
+        {prefix}₹{currentPrice}
       </span>
       {hasDiscount && (
         <span

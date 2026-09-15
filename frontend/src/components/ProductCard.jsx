@@ -219,6 +219,7 @@ export default function ProductCard({ product }) {
         {/* Pricing & Actions Bottom Divider */}
         <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.55rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
           <PriceDisplay 
+            prefix={product?.variants && product.variants.length > 0 ? 'From ' : ''}
             price={selectedVariant.price !== undefined ? selectedVariant.price : (product.price || 0)} 
             originalPrice={selectedVariant.originalPrice !== undefined ? selectedVariant.originalPrice : (product.originalPrice || selectedVariant.price || product.price || 0)} 
             size="small" 
