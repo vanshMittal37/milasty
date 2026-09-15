@@ -101,13 +101,25 @@ export default function AdminDeliveryAreas() {
     setIsModalOpen(true);
   };
 
+  const checkIsActive = (area) => {
+    if (!area) return false;
+    if (typeof area.is_deliverable === 'boolean') return area.is_deliverable;
+    if (typeof area.isDeliverable === 'boolean') return area.isDeliverable;
+    if (area.status) {
+      const s = String(area.status).toLowerCase();
+      return s === 'active' || s === 'true';
+    }
+    return true;
+  };
+
   const openEditModal = (area) => {
+    const active = checkIsActive(area);
     setEditingId(area.id);
     setPincode(area.pincode || '');
     setCity(area.city || '');
     setState(area.state || 'Uttarakhand');
     setDeliveryCharge(area.delivery_charge !== undefined ? String(area.delivery_charge) : '0');
-    setStatus(area.status || (area.is_deliverable ? 'Active' : 'Inactive'));
+    setStatus(active ? 'Active' : 'Inactive');
     setEstimatedDays(area.estimated_days || '3-5');
     setNotes(area.notes || '');
     setIsModalOpen(true);
@@ -144,7 +156,7 @@ export default function AdminDeliveryAreas() {
         city: cleanCity,
         state: cleanState,
         deliveryCharge: chargeVal,
-        status: status,
+        status: status === 'Active' ? 'active' : 'inactive',
         isDeliverable: status === 'Active',
         estimatedDays: estimatedDays.trim() || '3-5',
         notes: notes.trim()
@@ -169,14 +181,21 @@ export default function AdminDeliveryAreas() {
   };
 
   const handleToggleStatus = async (area) => {
-    const newStatus = (area.status === 'Active' || area.is_deliverable) ? 'Inactive' : 'Active';
+    const currentActive = checkIsActive(area);
+    const newStatusStr = currentActive ? 'inactive' : 'active';
+    const newIsDeliverable = !currentActive;
+
     try {
       await api.put(`/delivery-areas/${area.id}`, {
-        status: newStatus,
-        isDeliverable: newStatus === 'Active'
+        status: newStatusStr,
+        isDeliverable: newIsDeliverable
       });
-      toast.success(`PIN ${area.pincode} status changed to ${newStatus}`);
-      setAreas(prev => (Array.isArray(prev) ? prev : []).map(item => item.id === area.id ? { ...item, status: newStatus, is_deliverable: newStatus === 'Active' } : item));
+      toast.success(`PIN ${area.pincode} status changed to ${newStatusStr === 'active' ? 'Active' : 'Inactive'}`);
+      setAreas(prev => (Array.isArray(prev) ? prev : []).map(item => 
+        item.id === area.id 
+          ? { ...item, status: newStatusStr, is_deliverable: newIsDeliverable, isDeliverable: newIsDeliverable } 
+          : item
+      ));
     } catch (e) {
       toast.error('Failed to update status');
     }
@@ -207,18 +226,20 @@ export default function AdminDeliveryAreas() {
       (area.city && area.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (area.state && area.state.toLowerCase().includes(searchTerm.toLowerCase()));
     
+    const active = checkIsActive(area);
+
     if (statusFilter === 'ACTIVE') {
-      return matchesSearch && (area.status === 'Active' || area.status === 'active' || area.is_deliverable);
+      return matchesSearch && active;
     }
     if (statusFilter === 'INACTIVE') {
-      return matchesSearch && (area.status === 'Inactive' || area.status === 'inactive' || !area.is_deliverable);
+      return matchesSearch && !active;
     }
     return matchesSearch;
   });
 
   // Calculate Metrics
   const totalAreasCount = areaList.length;
-  const activeAreasCount = areaList.filter(a => a.status === 'Active' || a.status === 'active' || a.is_deliverable).length;
+  const activeAreasCount = areaList.filter(a => checkIsActive(a)).length;
   const inactiveAreasCount = totalAreasCount - activeAreasCount;
   const freeDeliveryCount = areaList.filter(a => Number(a.delivery_charge) === 0).length;
 
@@ -410,7 +431,7 @@ export default function AdminDeliveryAreas() {
               </thead>
               <tbody>
                 {filteredAreas.map(area => {
-                  const isActive = area.status === 'Active' || area.is_deliverable;
+                  const isActive = checkIsActive(area);
                   const charge = Number(area.delivery_charge);
 
                   return (
@@ -446,7 +467,7 @@ export default function AdminDeliveryAreas() {
                         )}
                       </td>
                       <td style={{ padding: '0.9rem 1.25rem', color: 'var(--admin-text-secondary)', fontSize: '0.78rem' }}>
-                        {area.estimated_days || '3-5'} business days
+                        {area.estimated_days ? (area.estimated_days.includes('days') ? area.estimated_days : `${area.estimated_days} business days`) : '3-5 business days'}
                       </td>
                       <td style={{ padding: '0.9rem 1.25rem' }}>
                         <button
