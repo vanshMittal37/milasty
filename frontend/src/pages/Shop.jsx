@@ -50,9 +50,28 @@ export default function Shop() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [exploreModalOpen, setExploreModalOpen] = useState(false);
+
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    setCategoriesLoading(true);
+    try {
+      const res = await api.get('/categories');
+      if (res.data && Array.isArray(res.data)) {
+        setCategories(res.data.filter((c) => c.is_active !== false));
+      }
+    } catch (e) {
+      console.error('Error fetching categories:', e);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -70,64 +89,52 @@ export default function Shop() {
     }
   };
 
-  // Single Source of Truth for Categories
-  const categoriesList = [
-    { 
-      id: 'starter', 
-      number: '01',
-      name: 'STARTER FAVOURITES', 
-      label: 'Starter Favourites', 
-      subtitle: 'Curated tasting boxes & best sellers',
-      image: '/images/image1.jpeg' 
-    },
-    { 
-      id: 'daily', 
-      number: '02',
-      name: 'DAILY RITUAL', 
-      label: 'Daily Ritual', 
-      subtitle: 'Guilt-free everyday tea companions',
-      image: '/images/bajra.jpeg' 
-    },
-    { 
-      id: 'gifts', 
-      number: '03',
-      name: 'GIFTING HAMPERS', 
-      label: 'Gifting Hampers', 
-      subtitle: 'Luxury artisanal gift hampers',
-      image: '/images/image2.jpeg' 
-    },
-    { 
-      id: 'cookies', 
-      number: '04',
-      name: 'COOKIES', 
-      label: 'Cookies', 
-      subtitle: 'Pure Desi Ghee millet cookies',
-      image: '/images/jowar.jpeg' 
-    },
-  ];
+  // Helper function to check product category match against live database categories
+  const matchesCategoryFilter = (p, catIdOrSlug) => {
+    if (!catIdOrSlug || catIdOrSlug === 'all') return true;
+    
+    const catObj = categories.find(c => c.id === catIdOrSlug || c.slug === catIdOrSlug || c._id === catIdOrSlug || c.name === catIdOrSlug);
+    const targetSlug = catObj ? catObj.slug : catIdOrSlug;
+    const targetId = catObj ? catObj.id : catIdOrSlug;
+    const targetName = catObj ? catObj.name : catIdOrSlug;
 
-  // Helper function to check product category match
-  const matchesCategoryFilter = (p, catId) => {
-    if (catId === 'all') return true;
-    if (p.category === catId) return true;
-    if (catId === 'gifts' && (p.category === 'gifting' || p.title.toLowerCase().includes('hamper') || p.title.toLowerCase().includes('box'))) return true;
-    if (catId === 'cookies' && (p.category === 'daily' || p.title.toLowerCase().includes('cookies') || p.slug.includes('cookies'))) return true;
-    if (catId === 'starter' && (p.category === 'starter' || p.isFeatured || p.title.toLowerCase().includes('trio'))) return true;
+    const pCat = p.category || '';
+    const pCatId = p.category_id || p.categoryId || '';
+
+    if (pCatId && (pCatId === targetId || pCatId === catIdOrSlug)) return true;
+    if (pCat && (pCat.toLowerCase() === targetSlug.toLowerCase() || pCat.toLowerCase() === targetName.toLowerCase())) return true;
+    
     return false;
   };
 
-  // Filter categories to ensure only categories with at least 1 matching product are active
-  const activeCategoryList = categoriesList.filter(cat => 
-    products.some(p => matchesCategoryFilter(p, cat.id))
-  );
+  const handleCategoryClick = (catIdOrSlug) => {
+    setSelectedCategory(catIdOrSlug);
+    setFilterModalOpen(false);
+    setExploreModalOpen(false);
+    const element = document.getElementById('browse-milasty-collection');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
-  // Full category list including "ALL BAKES" for filter modal & catalogue
+  // First 4 Categories to render on Shop page main section
+  const firstFourCategories = categories.slice(0, 4);
+
+  // Full category list for filter popup modal including "ALL BAKES"
   const modalCategoryList = [
     { id: 'all', number: '00', name: 'ALL BAKES', label: 'All Bakes', subtitle: 'Explore the complete MILASTY collection' },
-    ...activeCategoryList
+    ...categories.map((c, idx) => ({
+      id: c.slug || c.id,
+      number: String(idx + 1).padStart(2, '0'),
+      name: c.name,
+      label: c.label || c.name,
+      subtitle: c.description || c.subtitle || '',
+      image: c.image_url || c.image,
+      productCount: c.productCount || 0,
+    }))
   ];
 
-  // Featured Products (Normal Product Cards, NOT circular)
+  // Featured Products
   const featuredProducts = products.filter(p => p.isFeatured || p.category === 'starter');
 
   // Filtered Catalogue Products
@@ -670,24 +677,27 @@ export default function Shop() {
             </p>
           </div>
 
-          {/* Circular Category Grid: 2x2 on Mobile | Clean Horizontal Row on Desktop */}
+          {/* Circular Category Grid: First 4 Active Categories */}
           <div 
             style={{ 
               display: 'grid', 
-              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${activeCategoryList.length}, 1fr)`, 
+              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${Math.min(firstFourCategories.length || 1, 4)}, 1fr)`, 
               gap: isMobile ? '1.75rem 1rem' : '2.5rem 2rem',
               alignItems: 'start',
               justifyItems: 'center',
-              maxWidth: isMobile ? '380px' : `${activeCategoryList.length * 240}px`,
+              maxWidth: isMobile ? '380px' : `${Math.min(firstFourCategories.length || 1, 4) * 240}px`,
               margin: '0 auto'
             }}
           >
-            {activeCategoryList.map((cat) => {
-              const isSelected = selectedCategory === cat.id;
+            {firstFourCategories.map((cat, idx) => {
+              const catIdOrSlug = cat.slug || cat.id;
+              const isSelected = selectedCategory === catIdOrSlug || selectedCategory === cat.id || selectedCategory === cat.slug;
+              const img = cat.image_url || cat.image || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500';
+
               return (
                 <div
-                  key={cat.id}
-                  onClick={() => handleCategoryClick(cat.id)}
+                  key={cat.id || cat.slug || idx}
+                  onClick={() => handleCategoryClick(catIdOrSlug)}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -697,26 +707,6 @@ export default function Shop() {
                     maxWidth: isMobile ? '160px' : '200px',
                     cursor: 'pointer',
                     transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-                  }}
-                  onMouseOver={(e) => {
-                    const circle = e.currentTarget.querySelector('.category-circle-wrap');
-                    const title = e.currentTarget.querySelector('.category-circle-title');
-                    if (circle) {
-                      circle.style.transform = 'scale(1.08)';
-                      circle.style.borderColor = '#b9cd94';
-                      circle.style.boxShadow = '0 12px 30px rgba(36, 79, 33, 0.5), 0 0 20px rgba(185, 205, 148, 0.3)';
-                    }
-                    if (title) title.style.color = 'var(--accent-gold)';
-                  }}
-                  onMouseOut={(e) => {
-                    const circle = e.currentTarget.querySelector('.category-circle-wrap');
-                    const title = e.currentTarget.querySelector('.category-circle-title');
-                    if (circle) {
-                      circle.style.transform = 'scale(1)';
-                      circle.style.borderColor = isSelected ? '#b9cd94' : 'rgba(185, 205, 148, 0.45)';
-                      circle.style.boxShadow = isSelected ? '0 10px 25px rgba(36, 79, 33, 0.4)' : '0 8px 24px rgba(0, 0, 0, 0.35)';
-                    }
-                    if (title) title.style.color = isSelected ? 'var(--accent-gold)' : '#FFFDF9';
                   }}
                 >
                   {/* Circle Image Wrapper */}
@@ -737,8 +727,8 @@ export default function Shop() {
                     }}
                   >
                     <img
-                      src={cat.image}
-                      alt={cat.name}
+                      src={img}
+                      alt={`${cat.name} category`}
                       style={{
                         width: '100%',
                         height: '100%',
@@ -770,7 +760,7 @@ export default function Shop() {
                     )}
                   </div>
 
-                  {/* Category Name Centered Below Circle */}
+                  {/* Category Number & Name */}
                   <span 
                     style={{ 
                       fontSize: '0.68rem', 
@@ -781,7 +771,7 @@ export default function Shop() {
                       display: 'block'
                     }}
                   >
-                    {cat.number}
+                    {String(idx + 1).padStart(2, '0')}
                   </span>
                   <h3
                     className="category-circle-title"
@@ -803,6 +793,35 @@ export default function Shop() {
               );
             })}
           </div>
+
+          {/* Conditional "Explore More Categories" CTA Button if categories.length > 4 */}
+          {categories.length > 4 && (
+            <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+              <button
+                onClick={() => setExploreModalOpen(true)}
+                className="btn-primary"
+                style={{
+                  padding: '0.85rem 2.25rem',
+                  borderRadius: '999px',
+                  backgroundColor: 'rgba(36, 79, 33, 0.75)',
+                  border: '1.5px solid #b9cd94',
+                  color: '#FFFDF9',
+                  fontWeight: '850',
+                  fontSize: '0.92rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.6rem',
+                  boxShadow: '0 8px 24px rgba(36, 79, 33, 0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <span>Explore More Categories ({categories.length - 4} More)</span>
+                <ArrowRight size={16} color="#b9cd94" />
+              </button>
+            </div>
+          )}
+
         </div>
       </section>
 
@@ -921,12 +940,16 @@ export default function Shop() {
               <ProductCard key={product._id || product.slug} product={product} />
             ))
           ) : (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.5)', borderRadius: '24px' }}>
-              <p style={{ fontSize: '1.1rem', fontWeight: '600' }}>No bakes found matching your filter criteria.</p>
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.65)', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '24px' }}>
+              <Sparkles size={32} color="var(--accent-gold)" style={{ marginBottom: '0.75rem' }} />
+              <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', margin: '0 0 0.4rem 0', fontWeight: '800' }}>No products yet</h3>
+              <p style={{ fontSize: '0.95rem', color: '#F5EBDD', margin: '0 auto 1.5rem', maxWidth: '480px', lineHeight: '1.5', opacity: 0.9 }}>
+                We're preparing something delicious for this collection. Check back soon.
+              </p>
               <button 
                 onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
                 className="btn-primary" 
-                style={{ marginTop: '1rem', padding: '0.65rem 1.5rem', backgroundColor: '#c89b3c', color: '#FFF', borderRadius: '999px', border: 'none' }}
+                style={{ padding: '0.75rem 1.75rem', backgroundColor: '#244f21', color: '#FFF', borderRadius: '999px', border: '1px solid #b9cd94', fontWeight: '800', cursor: 'pointer' }}
               >
                 Reset All Filters
               </button>
@@ -1030,6 +1053,95 @@ export default function Shop() {
           )}
         </div>
       </section>
+
+      {/* EXPLORE ALL CATEGORIES MODAL (Triggered when clicking Explore More Categories button) */}
+      {exploreModalOpen && (
+        <div 
+          style={{ 
+            position: 'fixed', 
+            inset: 0, 
+            backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+            backdropFilter: 'blur(10px)', 
+            WebkitBackdropFilter: 'blur(10px)', 
+            zIndex: 110, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            padding: '1.5rem' 
+          }}
+          onClick={() => setExploreModalOpen(false)}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              backgroundColor: 'rgba(35, 21, 13, 0.96)', 
+              borderRadius: '24px', 
+              border: '1.5px solid var(--accent-gold)', 
+              padding: isMobile ? '1.5rem 1.15rem' : '2.25rem 2rem', 
+              maxWidth: '720px', 
+              width: '100%', 
+              maxHeight: '85vh',
+              overflowY: 'auto',
+              color: '#FFFDF9',
+              boxShadow: '0 24px 60px rgba(0,0,0,0.7)',
+              position: 'relative'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', paddingBottom: '1rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', margin: 0, fontWeight: '850', color: '#FFFDF9' }}>Explore All Collections</h3>
+                <span style={{ fontSize: '0.78rem', color: '#b9cd94', fontWeight: '700', marginTop: '0.2rem', display: 'block' }}>Showing {categories.length} dynamic store collections</span>
+              </div>
+              <button 
+                onClick={() => setExploreModalOpen(false)}
+                style={{ backgroundColor: 'transparent', border: 'none', color: '#FFFDF9', cursor: 'pointer', padding: '0.35rem', fontSize: '1.2rem', fontWeight: '900' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '1.25rem' }}>
+              {categories.map((cat, idx) => {
+                const catIdOrSlug = cat.slug || cat.id;
+                const isSelected = selectedCategory === catIdOrSlug || selectedCategory === cat.id;
+                const img = cat.image_url || cat.image || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500';
+
+                return (
+                  <div
+                    key={cat.id || cat.slug || idx}
+                    onClick={() => handleCategoryClick(catIdOrSlug)}
+                    style={{
+                      padding: '1rem',
+                      borderRadius: '16px',
+                      backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.6)' : 'rgba(20, 10, 5, 0.7)',
+                      border: isSelected ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.15)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      transition: 'all 0.25s ease'
+                    }}
+                  >
+                    <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', marginBottom: '0.75rem', border: '1.5px solid #b9cd94' }}>
+                      <img src={img} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '850', textTransform: 'uppercase' }}>
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <div style={{ fontSize: '0.88rem', fontWeight: '800', fontFamily: 'var(--font-serif)', color: '#FFFDF9', marginTop: '0.2rem', textTransform: 'uppercase' }}>
+                      {cat.name}
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: '#F5EBDD', opacity: 0.8, marginTop: '0.25rem' }}>
+                      {cat.productCount || 0} Products
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* FILTER POPUP MODAL (Synchronized with single category source) */}
       {filterModalOpen && (

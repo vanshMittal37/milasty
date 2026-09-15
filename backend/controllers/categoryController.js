@@ -1,42 +1,154 @@
 import { supabase } from '../config/supabase.js';
 
+// Default categories to seed DB if categories table is currently empty
+const INITIAL_CATEGORIES = [
+  { 
+    slug: 'starter', 
+    name: 'STARTER FAVOURITES', 
+    label: 'Starter Favourites', 
+    subtitle: 'Curated tasting boxes & best sellers',
+    description: 'Curated tasting boxes & best sellers',
+    display_order: 1,
+    image_url: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600' 
+  },
+  { 
+    slug: 'daily', 
+    name: 'DAILY RITUAL', 
+    label: 'Daily Ritual', 
+    subtitle: 'Guilt-free everyday tea companions',
+    description: 'Guilt-free everyday tea companions',
+    display_order: 2,
+    image_url: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600' 
+  },
+  { 
+    slug: 'gifting', 
+    name: 'GIFTING HAMPERS', 
+    label: 'Gifting Hampers', 
+    subtitle: 'Luxury artisanal gift hampers',
+    description: 'Luxury artisanal gift hampers',
+    display_order: 3,
+    image_url: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600' 
+  },
+  { 
+    slug: 'cookies', 
+    name: 'COOKIES', 
+    label: 'Cookies', 
+    subtitle: 'Pure Desi Ghee millet cookies',
+    description: 'Pure Desi Ghee millet cookies',
+    display_order: 4,
+    image_url: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600' 
+  },
+];
+
 export const getCategories = async (req, res) => {
   try {
-    const { data: categories, error } = await supabase
+    let { data: categories, error } = await supabase
       .from('categories')
-      .select('*')
-      .order('display_order', { ascending: true });
+      .select('*');
 
-    if (!error && categories && categories.length > 0) {
-      return res.json(categories);
+    if (error || !categories || categories.length === 0) {
+      console.log('Seeding default categories to Supabase...');
+      for (const cat of INITIAL_CATEGORIES) {
+        await supabase.from('categories').upsert({
+          name: cat.name,
+          label: cat.label || cat.name,
+          slug: cat.slug,
+          subtitle: cat.subtitle,
+          image_url: cat.image_url,
+        }, { onConflict: 'slug' });
+      }
+      const { data: seeded } = await supabase.from('categories').select('*');
+      categories = seeded || INITIAL_CATEGORIES;
     }
 
-    // Fallback static categories
-    res.json([
-      { id: '1', slug: 'starter', name: 'STARTER BOX', label: 'Starter Box', subtitle: 'Curated luxury ritual box' },
-      { id: '2', slug: 'daily', name: 'DAILY BAKES', label: 'Daily Bakes', subtitle: 'Everyday healthy tea break snacks' },
-      { id: '3', slug: 'gifting', name: 'GIFTING HAMPER', label: 'Gifting Hamper', subtitle: 'Artisanal gift boxes' },
-      { id: '4', slug: 'cookies', name: 'COOKIES', label: 'Cookies', subtitle: 'Pure Desi Ghee millet cookies' },
-    ]);
+    // Calculate product counts per category dynamically
+    const { data: dbProducts } = await supabase.from('products').select('id, category, category_id');
+    const countsMap = {};
+    (dbProducts || []).forEach((p) => {
+      if (p.category_id) countsMap[p.category_id] = (countsMap[p.category_id] || 0) + 1;
+      if (p.category) {
+        countsMap[p.category] = (countsMap[p.category] || 0) + 1;
+        countsMap[p.category.toLowerCase()] = (countsMap[p.category.toLowerCase()] || 0) + 1;
+      }
+    });
+
+    const formatted = categories.map((cat, idx) => {
+      const defaultDesc = INITIAL_CATEGORIES.find(c => c.slug === cat.slug)?.description || 'Wholesome artisanal bakes collection';
+      const img = cat.image_url || cat.image || INITIAL_CATEGORIES[idx % 4]?.image_url || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600';
+      const catCount = (countsMap[cat.id] || 0) + (countsMap[cat.slug] || 0) + (countsMap[cat.name] || 0) + (countsMap[cat.name?.toLowerCase()] || 0);
+
+      return {
+        _id: cat.id || cat.slug,
+        id: cat.id || cat.slug,
+        name: cat.name,
+        label: cat.label || cat.name,
+        slug: cat.slug,
+        description: cat.subtitle || cat.description || defaultDesc,
+        subtitle: cat.subtitle || cat.description || defaultDesc,
+        image_url: img,
+        image: img,
+        display_order: cat.display_order !== undefined ? cat.display_order : idx + 1,
+        is_active: cat.is_active !== false,
+        productCount: catCount,
+        created_at: cat.created_at || new Date().toISOString(),
+      };
+    });
+
+    return res.json(formatted);
   } catch (error) {
+    console.error('getCategories error:', error);
     res.status(500).json({ message: 'Error fetching categories', error: error.message });
   }
 };
 
 export const createCategory = async (req, res) => {
   try {
-    const { name, description, image, label, subtitle } = req.body;
-    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    const { name, description, image, image_url, label, subtitle, status } = req.body;
+    const finalImage = image_url || image;
 
-    const { data: category, error } = await supabase
-      .from('categories')
-      .insert([{ name, slug, label: label || name, subtitle: subtitle || description, image_url: image }])
-      .select()
-      .single();
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Category name is required' });
+    }
 
-    if (error) throw error;
-    res.status(201).json(category);
+    if (!finalImage || !finalImage.trim()) {
+      return res.status(400).json({ message: 'Category image is required. Please upload an image.' });
+    }
+
+    let slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    if (!slug) slug = `category-${Date.now()}`;
+
+    // Check slug collision
+    const { data: existing } = await supabase.from('categories').select('id').eq('slug', slug).maybeSingle();
+    if (existing) {
+      slug = `${slug}-${Date.now().toString().slice(-4)}`;
+    }
+
+    const payload = {
+      name: name.trim(),
+      label: label || name.trim(),
+      slug: slug,
+      subtitle: description || subtitle || name.trim(),
+      image_url: finalImage,
+    };
+
+    let { data: category, error } = await supabase.from('categories').insert([payload]).select().single();
+
+    if (error) {
+      console.error('Supabase Category Insert Error:', error);
+      return res.status(400).json({ message: error.message || 'Database error creating category' });
+    }
+
+    return res.status(201).json({
+      ...category,
+      _id: category.id,
+      description: description || subtitle || '',
+      subtitle: subtitle || description || '',
+      image: category.image_url,
+      image_url: category.image_url,
+      productCount: 0,
+    });
   } catch (error) {
+    console.error('createCategory error:', error);
     res.status(500).json({ message: 'Error creating category', error: error.message });
   }
 };
@@ -44,16 +156,50 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
+    const { name, description, image, image_url, status, is_active } = req.body;
+    const finalImage = image_url || image;
+
+    const updatePayload = {};
+
+    if (name) {
+      updatePayload.name = name.trim();
+      updatePayload.label = name.trim();
+      updatePayload.slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
+    if (description !== undefined) {
+      updatePayload.subtitle = description;
+    }
+
+    if (finalImage) {
+      updatePayload.image_url = finalImage;
+    }
+
+    if (status !== undefined) {
+      updatePayload.is_active = status === 'active';
+    } else if (is_active !== undefined) {
+      updatePayload.is_active = is_active;
+    }
+
     const { data: category, error } = await supabase
       .from('categories')
-      .update(req.body)
+      .update(updatePayload)
       .eq('id', id)
       .select()
-      .single();
+      .maybeSingle();
 
-    if (error) throw error;
-    res.json(category);
+    if (error) {
+      return res.status(400).json({ message: error.message || 'Database error updating category' });
+    }
+
+    return res.json({
+      ...(category || { id, name }),
+      description: description || '',
+      image_url: finalImage || category?.image_url,
+      image: finalImage || category?.image_url,
+    });
   } catch (error) {
+    console.error('updateCategory error:', error);
     res.status(500).json({ message: 'Error updating category', error: error.message });
   }
 };
@@ -61,10 +207,30 @@ export const updateCategory = async (req, res) => {
 export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Fetch target category details
+    const { data: cat } = await supabase.from('categories').select('*').eq('id', id).maybeSingle();
+    const catSlug = cat?.slug || id;
+    const catName = cat?.name || id;
+
+    // Check if any products are assigned to this category
+    const { data: dbProducts } = await supabase.from('products').select('id, category, category_id');
+    const assignedProducts = (dbProducts || []).filter(
+      p => p.category_id === id || p.category === catSlug || p.category === catName || (p.category && p.category.toLowerCase() === catSlug.toLowerCase())
+    );
+
+    if (assignedProducts && assignedProducts.length > 0) {
+      return res.status(400).json({
+        message: `This category contains ${assignedProducts.length} product(s). Please reassign or delete these products before deleting this category.`
+      });
+    }
+
     const { error } = await supabase.from('categories').delete().eq('id', id);
     if (error) throw error;
-    res.json({ message: 'Category deleted successfully' });
+
+    return res.json({ message: 'Category deleted successfully' });
   } catch (error) {
+    console.error('deleteCategory error:', error);
     res.status(500).json({ message: 'Error deleting category', error: error.message });
   }
 };
