@@ -165,6 +165,8 @@ export const createOrder = async (req, res) => {
 
     const grandTotal = subtotal + deliveryFee;
     const orderNumber = `MIL-${Date.now().toString().slice(-6)}`;
+    const cleanPaymentMethod = (paymentMethod || 'razorpay').toLowerCase();
+    const isCod = cleanPaymentMethod === 'cod';
 
     let order = null;
 
@@ -174,21 +176,19 @@ export const createOrder = async (req, res) => {
         .insert([
           {
             order_number: orderNumber,
-            user_id: req.user ? req.user.id : null,
-            customer_name: customerName,
-            customer_email: finalEmail,
-            customer_phone: finalPhone,
+            user_id: req.user ? (req.user.id || req.user._id) : null,
+            customer_name: customerName || req.user?.name || 'Customer',
+            customer_email: finalEmail || req.user?.email || '',
+            customer_phone: finalPhone || req.user?.phone || '',
             shipping_address: formattedAddress,
             pincode: finalPincode,
-            delivery_city: deliveryCity,
-            delivery_state: deliveryState,
             subtotal,
             delivery_fee: deliveryFee,
             grand_total: grandTotal,
-            payment_method: paymentMethod,
-            payment_id: paymentId,
+            payment_method: cleanPaymentMethod,
+            payment_id: paymentId || null,
             payment_status: paymentId ? 'paid' : 'pending',
-            order_status: 'confirmed',
+            order_status: isCod ? 'confirmed' : 'pending',
           },
         ])
         .select()
@@ -200,105 +200,111 @@ export const createOrder = async (req, res) => {
           ...v,
           order_id: order.id,
         }));
-        await supabase.from('order_items').insert(orderItemsRows);
+        const { data: insertedItems } = await supabase
+          .from('order_items')
+          .insert(orderItemsRows)
+          .select();
+          
+        if (insertedItems) {
+          order.order_items = insertedItems;
+        }
+      } else if (orderErr) {
+        console.error('Supabase order insert error:', orderErr.message);
       }
     } catch (e) {
-      console.warn('Supabase order table insert error, utilizing fallback order receipt:', e.message);
+      console.warn('Supabase order table insert exception:', e.message);
     }
 
-    // Realtime Stock Deduction: Decrement stock ONLY for selected variant & update parent product
-    for (const item of items) {
-      const targetId = item.productId || item.product_id;
-      const vName = item.variantName || item.variant_name;
-      const vId = item.variantId || item.variant_id;
-      const vWeight = item.variantWeight || item.variant_weight;
+    // For COD orders, perform immediate stock deduction
+    if (isCod) {
+      for (const item of items) {
+        const targetId = item.productId || item.product_id;
+        const vName = item.variantName || item.variant_name;
+        const vId = item.variantId || item.variant_id;
+        const vWeight = item.variantWeight || item.variant_weight;
 
-      if (targetId) {
-        const { data: dbProduct } = await supabase
-          .from('products')
-          .select('*, product_variants(*)')
-          .eq('id', targetId)
-          .maybeSingle();
-
-        if (dbProduct) {
-          const dbVariant = (dbProduct.product_variants || []).find((v) => 
-            (vId && v.id === vId) || 
-            (vWeight && (v.weight === vWeight || v.name === vWeight)) || 
-            (vName && (v.name === vName || v.weight === vName))
-          );
-
-          const variantStocksMap = { ...(dbProduct.nutrition_facts?.variant_stocks || {}) };
-          const keyName = vId || vWeight || vName || dbVariant?.id || dbVariant?.weight || dbVariant?.name;
-
-          const currentStock = dbVariant && dbVariant.stock !== undefined && dbVariant.stock !== null
-            ? Number(dbVariant.stock)
-            : (keyName && variantStocksMap[keyName] !== undefined 
-              ? Number(variantStocksMap[keyName]) 
-              : (dbVariant?.in_stock ? 50 : 0));
-
-          const newStock = Math.max(0, currentStock - (item.quantity || 1));
-
-          if (keyName) variantStocksMap[keyName] = newStock;
-          if (vWeight) variantStocksMap[vWeight] = newStock;
-          if (vName) variantStocksMap[vName] = newStock;
-          if (vId) variantStocksMap[vId] = newStock;
-          if (dbVariant) {
-            if (dbVariant.id) variantStocksMap[dbVariant.id] = newStock;
-            if (dbVariant.weight) variantStocksMap[dbVariant.weight] = newStock;
-            if (dbVariant.name) variantStocksMap[dbVariant.name] = newStock;
-          }
-
-          // Update nutrition_facts.variant_stocks in products table
-          const updatedNutritionFacts = {
-            ...(typeof dbProduct.nutrition_facts === 'object' && dbProduct.nutrition_facts !== null ? dbProduct.nutrition_facts : {}),
-            variant_stocks: variantStocksMap,
-          };
-
-          await supabase
+        if (targetId) {
+          const { data: dbProduct } = await supabase
             .from('products')
-            .update({ nutrition_facts: updatedNutritionFacts })
-            .eq('id', dbProduct.id);
+            .select('*, product_variants(*)')
+            .eq('id', targetId)
+            .maybeSingle();
 
-          // Update product_variants row if found
-          if (dbVariant) {
-            const updatePayload = { in_stock: newStock > 0 };
-            if (dbVariant.stock !== undefined && dbVariant.stock !== null) {
-              updatePayload.stock = newStock;
-            }
+          if (dbProduct) {
+            const dbVariant = (dbProduct.product_variants || []).find((v) => 
+              (vId && v.id === vId) || 
+              (vWeight && (v.weight === vWeight || v.name === vWeight)) || 
+              (vName && (v.name === vName || v.weight === vName))
+            );
+
+            const variantStocksMap = { ...(dbProduct.nutrition_facts?.variant_stocks || {}) };
+            const keyName = vId || vWeight || vName || dbVariant?.id || dbVariant?.weight || dbVariant?.name;
+
+            const currentStock = dbVariant && dbVariant.stock !== undefined && dbVariant.stock !== null
+              ? Number(dbVariant.stock)
+              : (keyName && variantStocksMap[keyName] !== undefined 
+                ? Number(variantStocksMap[keyName]) 
+                : (dbVariant?.in_stock ? 50 : 0));
+
+            const newStock = Math.max(0, currentStock - (item.quantity || 1));
+
+            if (keyName) variantStocksMap[keyName] = newStock;
+            if (vWeight) variantStocksMap[vWeight] = newStock;
+            if (vName) variantStocksMap[vName] = newStock;
+            if (vId) variantStocksMap[vId] = newStock;
+
+            const updatedNutritionFacts = {
+              ...(typeof dbProduct.nutrition_facts === 'object' && dbProduct.nutrition_facts !== null ? dbProduct.nutrition_facts : {}),
+              variant_stocks: variantStocksMap,
+            };
+
             await supabase
-              .from('product_variants')
-              .update(updatePayload)
-              .eq('id', dbVariant.id);
+              .from('products')
+              .update({ nutrition_facts: updatedNutritionFacts })
+              .eq('id', dbProduct.id);
+
+            if (dbVariant) {
+              const updatePayload = { in_stock: newStock > 0 };
+              if (dbVariant.stock !== undefined && dbVariant.stock !== null) {
+                updatePayload.stock = newStock;
+              }
+              await supabase
+                .from('product_variants')
+                .update(updatePayload)
+                .eq('id', dbVariant.id);
+            }
           }
         }
       }
     }
 
-    // Fallback response object if table does not exist yet
+    // Fallback response object if DB record not returned
     if (!order) {
       order = {
         id: `ord_${Date.now()}`,
         order_number: orderNumber,
+        customer_name: customerName,
+        customer_email: finalEmail,
+        customer_phone: finalPhone,
+        shipping_address: formattedAddress,
+        pincode: finalPincode,
+        subtotal,
+        delivery_fee: deliveryFee,
         grand_total: grandTotal,
-        order_status: 'confirmed',
+        order_status: isCod ? 'confirmed' : 'pending',
         payment_status: paymentId ? 'paid' : 'pending',
+        payment_method: cleanPaymentMethod,
+        order_items: validatedItems,
       };
     }
 
     return res.status(201).json({
       success: true,
       message: 'Order created successfully',
-      order: {
-        id: order.id,
-        _id: order.id,
-        orderId: order.id,
-        orderNumber: order.order_number,
-        grandTotal: order.grand_total,
-        orderStatus: order.order_status,
-        paymentStatus: order.payment_status,
-      },
+      order: formatOrderPayload(order),
     });
   } catch (error) {
+    console.error('Error in createOrder:', error);
     res.status(500).json({ message: 'Error creating order', error: error.message });
   }
 };
@@ -306,24 +312,33 @@ export const createOrder = async (req, res) => {
 // Format raw DB order payload into frontend expected format
 const formatOrderPayload = (o) => {
   if (!o) return null;
+  const isRazorpay = String(o.payment_method || '').toLowerCase() === 'razorpay';
+  const displayPaymentMethod = isRazorpay ? 'Razorpay' : 'Cash on Delivery';
+
   return {
     ...o,
     orderId: o.id || o.order_number,
     _id: o.id,
     id: o.id,
-    orderNumber: o.order_number,
-    customerName: o.customer_name,
-    customerEmail: o.customer_email,
-    customerPhone: o.customer_phone,
-    shippingAddress: o.shipping_address,
+    orderNumber: o.order_number || `MIL-${String(o.id || '').slice(-6)}`,
+    customerName: o.customer_name || 'Customer',
+    customerEmail: o.customer_email || '',
+    customerPhone: o.customer_phone || '',
+    shippingAddress: o.shipping_address || '',
+    pincode: o.pincode || '',
+    deliveryCity: o.delivery_city || '',
+    deliveryState: o.delivery_state || '',
     subtotal: Number(o.subtotal || 0),
     deliveryFee: Number(o.delivery_fee || 0),
     discountAmount: Number(o.discount_amount || 0),
     grandTotal: Number(o.grand_total || 0),
-    orderStatus: o.order_status || 'Confirmed',
+    totalAmount: Number(o.grand_total || 0),
+    orderStatus: o.order_status || 'confirmed',
     paymentStatus: o.payment_status || 'pending',
-    paymentMethod: o.payment_method || 'cod',
-    createdAt: o.created_at,
+    paymentMethod: displayPaymentMethod,
+    rawPaymentMethod: o.payment_method || 'razorpay',
+    paymentId: o.payment_id || null,
+    createdAt: o.created_at || new Date().toISOString(),
     items: (o.order_items || []).map((item) => ({
       ...item,
       productId: item.product_id,

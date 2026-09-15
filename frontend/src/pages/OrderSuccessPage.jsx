@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle2, Truck, ArrowRight, ShoppingBag, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Truck, ShieldCheck } from 'lucide-react';
 import api from '../api/axios';
 
 export default function OrderSuccessPage() {
@@ -9,19 +9,26 @@ export default function OrderSuccessPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchOrder();
+    fetchOrderDetails();
   }, [orderId]);
 
-  const fetchOrder = async () => {
+  const fetchOrderDetails = async () => {
     try {
       const res = await api.get(`/orders/detail/${orderId}`);
       setOrder(res.data);
-    } catch (e) {
-      console.error('Error fetching order', e);
+    } catch (err) {
+      console.error('Error fetching order details:', err);
     } finally {
       setLoading(false);
     }
   };
+
+  const formattedAddressString = typeof order?.shippingAddress === 'object' && order?.shippingAddress !== null
+    ? [order.shippingAddress.building, order.shippingAddress.addressLine, order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.pincode].filter(Boolean).join(', ')
+    : String(order?.shippingAddress || 'Delivery Address Provided');
+
+  const isPaid = String(order?.paymentStatus || '').toLowerCase() === 'paid';
+  const displayPaymentStatus = isPaid ? '✓ PAID SUCCESSFULLY' : String(order?.paymentStatus || 'Pending').toUpperCase();
 
   return (
     <div style={{ backgroundColor: 'var(--bg-main)', minHeight: '90vh', padding: '5rem 0 6rem', display: 'flex', alignItems: 'center' }}>
@@ -44,12 +51,12 @@ export default function OrderSuccessPage() {
               border: '1px solid rgba(245, 235, 221, 0.15)'
             }}
           >
-            <span style={{ color: 'var(--accent-gold)' }}>✓ Cart</span>
+            <span style={{ color: '#b9cd94' }}>✓ Cart</span>
             <span style={{ color: 'var(--text-muted)' }}>•</span>
-            <span style={{ color: 'var(--accent-gold)' }}>✓ Delivery & Payment</span>
+            <span style={{ color: '#b9cd94' }}>✓ Delivery & Payment</span>
             <span style={{ color: 'var(--text-muted)' }}>•</span>
             <span style={{ color: 'var(--text-light)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-gold)' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#b9cd94' }} />
               Confirmation
             </span>
           </div>
@@ -70,23 +77,23 @@ export default function OrderSuccessPage() {
           }}
         >
           {/* Animated decorative sparks */}
-          <div style={{ position: 'absolute', top: '1rem', left: '1rem', color: 'var(--accent-gold)', opacity: 0.3 }}>✦</div>
-          <div style={{ position: 'absolute', bottom: '1.5rem', right: '1.5rem', color: 'var(--accent-gold)', opacity: 0.3 }}>✦</div>
+          <div style={{ position: 'absolute', top: '1rem', left: '1rem', color: '#b9cd94', opacity: 0.3 }}>✦</div>
+          <div style={{ position: 'absolute', bottom: '1.5rem', right: '1.5rem', color: '#b9cd94', opacity: 0.3 }}>✦</div>
 
-          {/* Animated Checkmark Badge */}
+          {/* Checkmark Badge */}
           <div 
             style={{ 
               width: '80px', 
               height: '80px', 
               borderRadius: '50%', 
-              backgroundColor: 'rgba(197, 160, 89, 0.08)', 
-              color: 'var(--accent-gold)', 
+              backgroundColor: 'rgba(185, 205, 148, 0.12)', 
+              color: '#b9cd94', 
               display: 'inline-flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
               marginBottom: '1.75rem',
-              border: '2px solid rgba(197, 160, 89, 0.15)',
-              boxShadow: '0 4px 12px rgba(197, 160, 89, 0.05)'
+              border: '2px solid rgba(185, 205, 148, 0.25)',
+              boxShadow: '0 4px 12px rgba(185, 205, 148, 0.08)'
             }}
           >
             <CheckCircle2 size={44} strokeWidth={1.5} />
@@ -96,7 +103,7 @@ export default function OrderSuccessPage() {
             Order Confirmed
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.98rem', lineHeight: '1.6', marginBottom: '2.25rem', maxWidth: '480px', margin: '0 auto 2.25rem' }}>
-            Thank you for choosing MILASTY. Your payment was verified successfully and your order has been queued for fresh small-batch baking.
+            Thank you for choosing MILASTY. Your order has been placed successfully and queued for fresh artisan baking.
           </p>
 
           {/* Details summary block */}
@@ -111,29 +118,48 @@ export default function OrderSuccessPage() {
                   borderRadius: '16px', 
                   textAlign: 'left', 
                   marginBottom: '2.5rem', 
-                  border: '1px solid rgba(245, 235, 221, 0.15)' 
+                  border: '1px solid rgba(245, 235, 221, 0.15)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.85rem'
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.85rem', marginBottom: '0.85rem', fontSize: '0.9rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.12)', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Order ID:</span>
-                  <span style={{ fontWeight: '800', color: 'var(--text-light)' }}>#{order.orderId}</span>
+                  <span style={{ fontWeight: '800', color: 'var(--text-light)' }}>#{order.orderNumber || order.orderId}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.85rem', marginBottom: '0.85rem', fontSize: '0.9rem' }}>
+                {order.customerName && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.12)', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
+                    <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Customer:</span>
+                    <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>{order.customerName}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.12)', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Payment Method:</span>
+                  <span style={{ fontWeight: '800', color: '#b9cd94' }}>{order.paymentMethod}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.12)', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Payment Status:</span>
-                  <span style={{ fontWeight: '800', color: 'var(--accent-gold)', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <span style={{ fontWeight: '800', color: isPaid ? '#81c784' : '#e5c158', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                     <ShieldCheck size={14} />
-                    {order.paymentStatus === 'Paid' ? 'PAID SUCCESSFULLY' : order.paymentStatus.toUpperCase()}
+                    {displayPaymentStatus}
                   </span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '0.85rem', marginBottom: '0.85rem', fontSize: '0.9rem' }}>
-                  <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Delivery Address:</span>
-                  <span style={{ fontWeight: '700', color: 'var(--text-light)', textAlign: 'right', maxWidth: '280px', fontSize: '0.85rem' }}>
-                    {order.shippingAddress.addressLine}, {order.shippingAddress.city}, {order.shippingAddress.pincode}
+                {order.paymentId && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.12)', paddingBottom: '0.65rem', fontSize: '0.85rem' }}>
+                    <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Payment ID:</span>
+                    <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>{order.paymentId}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(245, 235, 221, 0.12)', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Delivery To:</span>
+                  <span style={{ fontWeight: '700', color: 'var(--text-light)', textAlign: 'right', maxWidth: '300px', fontSize: '0.85rem' }}>
+                    {formattedAddressString}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.4rem', fontSize: '1.1rem', fontWeight: '900', color: 'var(--text-light)' }}>
-                  <span>Total Amount Paid:</span>
-                  <span>₹{order.totalAmount}</span>
+                  <span>Total Amount:</span>
+                  <span>₹{order.totalAmount || order.grandTotal || 0}</span>
                 </div>
               </div>
             )
@@ -142,13 +168,13 @@ export default function OrderSuccessPage() {
           {/* Action CTAs */}
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link 
-              to={order ? `/account/orders/${orderId || order._id}` : '/account/orders'} 
+              to="/account/orders" 
               className="btn-primary" 
               style={{ 
                 padding: '0.85rem 1.75rem', 
-                backgroundColor: 'var(--accent-gold)', 
-                color: '#24130D',
-                border: 'none',
+                backgroundColor: '#244f21', 
+                color: '#FFFDF9',
+                border: '1px solid #b9cd94',
                 borderRadius: '12px',
                 fontWeight: '800',
                 display: 'inline-flex',
@@ -166,7 +192,7 @@ export default function OrderSuccessPage() {
               style={{ 
                 padding: '0.85rem 1.75rem',
                 borderColor: 'rgba(245, 235, 221, 0.25)',
-                color: 'var(--accent-gold)',
+                color: '#b9cd94',
                 borderRadius: '12px',
                 fontWeight: '800',
                 display: 'inline-flex',

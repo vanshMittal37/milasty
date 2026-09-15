@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import { supabase } from '../config/supabase.js';
 
 export const protect = async (req, res, next) => {
   let token;
@@ -8,18 +8,38 @@ export const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'milasty_super_secret_jwt_key_2026');
       
+      const targetId = decoded.id || decoded._id || decoded.userId;
+
       try {
-        req.user = await User.findById(decoded.id).select('-password');
+        const { data: dbUser } = await supabase
+          .from('users')
+          .select('id, name, email, phone, role, addresses')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (dbUser) {
+          req.user = {
+            ...dbUser,
+            _id: dbUser.id,
+            id: dbUser.id,
+          };
+        } else {
+          req.user = {
+            id: targetId,
+            _id: targetId,
+            role: decoded.role || 'customer',
+          };
+        }
       } catch (e) {
-        req.user = decoded; // Fallback for memory users
+        req.user = {
+          id: targetId,
+          _id: targetId,
+          role: decoded.role || 'customer',
+        };
       }
 
-      if (!req.user) {
+      if (!req.user || !req.user.id) {
         return res.status(401).json({ message: 'User account not found' });
-      }
-
-      if (req.user.status === 'disabled') {
-        return res.status(403).json({ message: 'Your account has been disabled by the admin' });
       }
 
       return next();
@@ -47,10 +67,34 @@ export const optionalProtect = async (req, res, next) => {
       const token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'milasty_super_secret_jwt_key_2026');
       
+      const targetId = decoded.id || decoded._id || decoded.userId;
+
       try {
-        req.user = await User.findById(decoded.id).select('-password');
+        const { data: dbUser } = await supabase
+          .from('users')
+          .select('id, name, email, phone, role, addresses')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (dbUser) {
+          req.user = {
+            ...dbUser,
+            _id: dbUser.id,
+            id: dbUser.id,
+          };
+        } else {
+          req.user = {
+            id: targetId,
+            _id: targetId,
+            role: decoded.role || 'customer',
+          };
+        }
       } catch (e) {
-        req.user = decoded;
+        req.user = {
+          id: targetId,
+          _id: targetId,
+          role: decoded.role || 'customer',
+        };
       }
     } catch (error) {
       // Ignore token failure for optional verification
@@ -58,3 +102,4 @@ export const optionalProtect = async (req, res, next) => {
   }
   next();
 };
+

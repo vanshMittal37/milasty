@@ -276,21 +276,22 @@ export default function OrderHistoryPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
             {filteredOrders.map((order) => {
               const totalItems = order.items?.reduce((acc, i) => acc + i.quantity, 0) || 0;
-              const isCancelled = order.orderStatus === 'Cancelled';
+              const isCancelled = String(order.orderStatus).toLowerCase() === 'cancelled';
+              const isPaid = String(order.paymentStatus).toLowerCase() === 'paid';
               
-              // Get first item image preview
-              const firstItemImage = order.items?.[0]?.productId?.image || order.items?.[0]?.image || '/images/image1.jpeg';
+              const firstItem = order.items?.[0] || {};
+              const firstItemImage = firstItem.image || firstItem.product_image || '/images/image1.jpeg';
 
               return (
                 <div 
-                  key={order._id || order.orderId} 
+                  key={order._id || order.id || order.orderId} 
                   className="glass-card" 
                   style={{ 
-                    padding: '2rem', 
-                    backgroundColor: 'transparent', 
-                    borderRadius: '24px', 
-                    border: '1px solid rgba(245, 235, 221, 0.25)',
-                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+                    padding: '1.75rem', 
+                    backgroundColor: 'rgba(50, 26, 18, 0.40)', 
+                    borderRadius: '20px', 
+                    border: '1px solid rgba(245, 235, 221, 0.2)',
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.25)',
                     transition: 'transform 0.2s',
                   }}
                   onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
@@ -298,28 +299,48 @@ export default function OrderHistoryPage() {
                 >
                   
                   {/* Order Card Top Bar */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(245, 235, 221, 0.12)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
                     <div>
-                      <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.15rem' }}>Order Number</span>
-                      <span style={{ fontSize: '1.2rem', fontWeight: '850', color: 'var(--text-light)' }}>#{order.orderId}</span>
+                      <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#b9cd94', fontWeight: '800', display: 'block', marginBottom: '0.15rem' }}>Order Number</span>
+                      <span style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9' }}>#{order.orderNumber || order.orderId}</span>
                     </div>
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
                       <span 
-                        className="badge-pill" 
                         style={{ 
-                          backgroundColor: isCancelled ? 'rgba(217, 83, 79, 0.08)' : 'rgba(39, 76, 55, 0.08)', 
-                          color: isCancelled ? 'var(--accent-terracotta)' : 'var(--accent-gold)',
-                          border: isCancelled ? '1px solid rgba(217, 83, 79, 0.15)' : '1px solid rgba(245, 235, 221, 0.25)',
+                          backgroundColor: isCancelled ? 'rgba(217, 83, 79, 0.15)' : 'rgba(36, 79, 33, 0.25)', 
+                          color: isCancelled ? '#ef5350' : '#b9cd94',
+                          border: isCancelled ? '1px solid rgba(217, 83, 79, 0.3)' : '1px solid rgba(185, 205, 148, 0.3)',
                           fontSize: '0.72rem',
                           fontWeight: '800',
                           textTransform: 'uppercase',
                           letterSpacing: '0.04em',
-                          padding: '0.2rem 0.6rem'
+                          padding: '0.25rem 0.65rem',
+                          borderRadius: '999px'
                         }}
                       >
-                        {order.orderStatus}
+                        {order.orderStatus || 'Confirmed'}
                       </span>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: '600' }}>
+
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          fontWeight: '700',
+                          color: isPaid ? '#81c784' : '#e5c158',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                          backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                          padding: '0.25rem 0.65rem',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(255, 255, 255, 0.1)'
+                        }}
+                      >
+                        <ShieldCheck size={13} />
+                        {order.paymentMethod} · {isPaid ? 'Paid' : 'Pending'}
+                      </span>
+
+                      <div style={{ fontSize: '0.8rem', color: 'rgba(255, 253, 249, 0.6)', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: '600' }}>
                         <Clock size={13} />
                         <span>{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                       </div>
@@ -336,31 +357,36 @@ export default function OrderHistoryPage() {
                         style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.15)' }} 
                       />
                       <div>
-                        <div style={{ fontSize: '0.92rem', color: 'var(--text-light)', fontWeight: '800', marginBottom: '0.15rem' }}>
-                          {order.items?.[0]?.title || 'Millet Bakery Item'}
+                        <div style={{ fontSize: '0.95rem', color: '#FFFDF9', fontWeight: '800', marginBottom: '0.15rem' }}>
+                          {firstItem.title || firstItem.product_title || 'Millet Bakery Item'}
+                          {firstItem.variantName && firstItem.variantName !== 'default' && (
+                            <span style={{ fontSize: '0.8rem', color: '#b9cd94', marginLeft: '0.4rem', fontWeight: '600' }}>
+                              ({firstItem.variantName})
+                            </span>
+                          )}
                         </div>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: '600' }}>
-                          {totalItems} {totalItems === 1 ? 'item' : 'items'} in this order
-                          {order.items?.length > 1 && ` (including ${order.items?.[1]?.title || 'others'})`}
+                        <div style={{ fontSize: '0.78rem', color: 'rgba(255, 253, 249, 0.65)', fontWeight: '600' }}>
+                          {totalItems} {totalItems === 1 ? 'pack' : 'packs'} in this order
+                          {order.items?.length > 1 && ` (and ${order.items.length - 1} other item${order.items.length > 2 ? 's' : ''})`}
                         </div>
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                       <div style={{ textAlign: 'right' }}>
-                        <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: '700', display: 'block', marginBottom: '0.15rem' }}>Total Amount</span>
-                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--text-light)' }}>₹{order.totalAmount}</div>
+                        <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'rgba(255, 253, 249, 0.6)', fontWeight: '700', display: 'block', marginBottom: '0.15rem' }}>Total Amount</span>
+                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#FFFDF9' }}>₹{order.totalAmount || order.grandTotal || 0}</div>
                       </div>
                       
                       <Link 
-                        to={`/account/orders/${order.orderId}`} 
+                        to={`/account/orders/${order.id || order.orderId}`} 
                         className="btn-secondary" 
                         style={{ 
                           padding: '0.65rem 1.15rem', 
                           fontSize: '0.82rem',
                           borderRadius: '10px',
                           border: '1px solid rgba(245, 235, 221, 0.25)',
-                          color: 'var(--accent-gold)',
+                          color: '#b9cd94',
                           fontWeight: '800',
                           display: 'inline-flex',
                           alignItems: 'center',
@@ -375,7 +401,7 @@ export default function OrderHistoryPage() {
                   </div>
 
                   {/* Compact Timeline display in card */}
-                  <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(245, 235, 221, 0.15)' }}>
+                  <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(245, 235, 221, 0.12)' }}>
                     {renderCompactTimeline(order.orderStatus)}
                   </div>
 
@@ -389,3 +415,4 @@ export default function OrderHistoryPage() {
     </div>
   );
 }
+
