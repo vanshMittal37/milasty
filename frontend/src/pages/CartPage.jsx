@@ -25,9 +25,7 @@ export default function CartPage() {
   const [couponStatus, setCouponStatus] = useState(null);
 
   const isDeliverable = deliveryInfo && (deliveryInfo.available ?? deliveryInfo.isDeliverable);
-  const effectiveDeliveryFee = isDeliverable
-    ? (subtotal >= 499 ? 0 : Number(deliveryInfo.deliveryCharge))
-    : defaultDeliveryFee;
+  const effectiveDeliveryFee = isDeliverable ? Number(deliveryInfo.deliveryCharge || 0) : 0;
 
   const effectiveGrandTotal = Math.max(0, subtotal - couponDiscountAmount + effectiveDeliveryFee);
 
@@ -37,8 +35,6 @@ export default function CartPage() {
     const res = await applyCoupon(couponInput.trim());
     setCouponStatus(res);
   };
-
-  const amountNeededForFreeShip = Math.max(0, 499 - subtotal);
 
   return (
     <div style={{
@@ -104,28 +100,6 @@ export default function CartPage() {
 
             {/* ── Left: Items List ── */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-
-              {/* Free Shipping Progress Banner */}
-              <div style={{
-                backgroundColor: 'rgba(36, 79, 33, 0.09)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                padding: '0.9rem 1.25rem',
-                borderRadius: '14px',
-                border: '1px solid rgba(36, 79, 33, 0.20)',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', marginBottom: '0.4rem', color: '#1a3d18', fontSize: '0.88rem' }}>
-                  <Truck size={18} color="#244f21" />
-                  <span>
-                    {amountNeededForFreeShip === 0
-                      ? '🎉 Complimentary Free Pan-India Shipping Unlocked!'
-                      : `Add ₹${amountNeededForFreeShip} more to qualify for FREE Shipping!`}
-                  </span>
-                </div>
-                <div style={{ height: '6px', backgroundColor: 'rgba(36,79,33,0.15)', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${Math.min(100, (subtotal / 499) * 100)}%`, backgroundColor: '#244f21', borderRadius: '3px', transition: 'width 0.4s ease' }}></div>
-                </div>
-              </div>
 
               {/* Item Cards */}
               {cartItems.map((item) => (

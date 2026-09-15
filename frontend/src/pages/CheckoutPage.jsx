@@ -51,8 +51,8 @@ export default function CheckoutPage() {
   // Calculate dynamic delivery fee based on verified deliveryInfo
   const isDeliverable = deliveryInfo && (deliveryInfo.available ?? deliveryInfo.isDeliverable);
   const effectiveDeliveryFee = (isDeliverable && deliveryInfo.pincode === formData.pincode.trim())
-    ? (subtotal >= 499 ? 0 : Number(deliveryInfo.deliveryCharge))
-    : defaultDeliveryFee;
+    ? Number(deliveryInfo.deliveryCharge || 0)
+    : 0;
 
   const effectiveGrandTotal = Math.max(0, subtotal - couponDiscountAmount + effectiveDeliveryFee);
 

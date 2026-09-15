@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Plus, Minus, Trash2, ShoppingBag, Truck, ArrowRight } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, CheckCircle2, XCircle, Lock, MapPin } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useDelivery } from '../context/DeliveryContext';
 
 export default function CartDrawer() {
   const navigate = useNavigate();
@@ -13,13 +14,28 @@ export default function CartDrawer() {
     updateQuantity,
     removeFromCart,
     subtotal,
-    deliveryFee,
-    grandTotal,
+    showToast,
   } = useCart();
 
+  const {
+    deliveryInfo,
+    checkPincode,
+    loading: checkingDelivery,
+  } = useDelivery();
+
+  const [pincodeInput, setPincodeInput] = useState('');
+  const [pinError, setPinError] = useState('');
+  const [isEditingPin, setIsEditingPin] = useState(false);
   const touchStartRef = useRef(null);
 
-  // Close navigation drawer whenever cart opens to enforce mutual exclusion
+  // Synchronize pincode input when deliveryInfo changes
+  useEffect(() => {
+    if (deliveryInfo && deliveryInfo.pincode) {
+      setPincodeInput(deliveryInfo.pincode);
+    }
+  }, [deliveryInfo]);
+
+  // Lock body scroll when drawer is open
   useEffect(() => {
     if (isCartOpen) {
       setMobileNavOpen(false);
@@ -50,7 +66,7 @@ export default function CartDrawer() {
     };
   }, [isCartOpen, setIsCartOpen]);
 
-  // Touch gesture listeners inside cart drawer for swiping right to close
+  // Touch gesture handler for swiping right to close on mobile
   const handleTouchStart = (e) => {
     const touch = e.touches[0];
     if (touch) {
@@ -64,7 +80,6 @@ export default function CartDrawer() {
     if (!touch) return;
     const diffX = touch.clientX - touchStartRef.current.x;
     const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
-    // If predominantly swiping horizontally to the right (closing gesture)
     if (diffX > 10 && diffX > diffY) {
       if (e.cancelable) e.preventDefault();
     }
@@ -76,7 +91,6 @@ export default function CartDrawer() {
     if (touch) {
       const diffX = touch.clientX - touchStartRef.current.x;
       const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
-      // Swiping right by > 45px closes the drawer
       if (diffX > 45 && diffX > diffY) {
         setIsCartOpen(false);
       }
@@ -86,8 +100,36 @@ export default function CartDrawer() {
 
   if (!isCartOpen) return null;
 
-  const amountNeededForFreeShip = Math.max(0, 499 - subtotal);
   const totalItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  const isDeliveryChecked = deliveryInfo && deliveryInfo.checked;
+  const isDeliverable = isDeliveryChecked && (deliveryInfo.available ?? deliveryInfo.isDeliverable);
+  const deliveryCharge = isDeliverable ? Number(deliveryInfo.deliveryCharge || 0) : 0;
+  const totalAmount = subtotal + (isDeliverable ? deliveryCharge : 0);
+
+  const handleCheckPinSubmit = async (e) => {
+    if (e) e.preventDefault();
+    setPinError('');
+    const cleanPin = pincodeInput.trim();
+    if (!cleanPin || !/^\d{6}$/.test(cleanPin)) {
+      setPinError('Enter a valid 6-digit Indian PIN code.');
+      return;
+    }
+    const res = await checkPincode(cleanPin);
+    if (res) {
+      setIsEditingPin(false);
+      if (!res.available && !res.isDeliverable) {
+        setPinError("We currently don't deliver to this PIN code.");
+      }
+    }
+  };
+
+  const handleRemoveItem = (item) => {
+    removeFromCart(item.key);
+    if (showToast) {
+      showToast(`${item.title} removed from cart.`);
+    }
+  };
 
   return (
     <div
@@ -97,7 +139,7 @@ export default function CartDrawer() {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(20, 10, 5, 0.65)', // Deep chocolate backdrop tint
+        backgroundColor: 'rgba(14, 7, 4, 0.75)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         zIndex: 1000,
@@ -109,17 +151,18 @@ export default function CartDrawer() {
     >
       <div
         style={{
-          width: '75vw',
-          maxWidth: '360px',
-          height: '100%',
-          backgroundColor: 'var(--bg-main)', // Dark chocolate background
+          width: '100%',
+          maxWidth: '440px',
+          height: '100dvh',
+          backgroundColor: '#140A05',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '-8px 0 35px rgba(0, 0, 0, 0.5)',
-          borderLeft: '1px solid rgba(245, 235, 221, 0.15)',
+          boxShadow: '-8px 0 35px rgba(0, 0, 0, 0.6)',
+          borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
           touchAction: 'pan-y',
           userSelect: 'none',
-          WebkitUserSelect: 'none'
+          WebkitUserSelect: 'none',
+          position: 'relative',
         }}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
@@ -127,292 +170,633 @@ export default function CartDrawer() {
         onTouchEnd={handleTouchEnd}
         className="animate-slide-right cart-drawer-panel"
       >
-        {/* Drawer Header */}
+        {/* Header */}
         <div
           style={{
             padding: '1.25rem 1.5rem',
-            borderBottom: '1px solid rgba(245, 235, 221, 0.15)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            backgroundColor: 'var(--bg-main)',
+            backgroundColor: '#140A05',
+            flexShrink: 0,
           }}
         >
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            <h2
+              style={{
+                fontSize: '1.15rem',
+                fontFamily: 'var(--font-serif, Georgia, serif)',
+                color: '#FFFDF9',
+                fontWeight: '800',
+                margin: 0,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+              }}
+            >
               Your Cart
             </h2>
-            <div style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.15rem' }}>
-              {totalItemCount} {totalItemCount === 1 ? 'Item' : 'Items'}
+            <div
+              style={{
+                fontSize: '0.78rem',
+                color: '#b9cd94',
+                fontWeight: '600',
+                marginTop: '0.2rem',
+              }}
+            >
+              {totalItemCount} {totalItemCount === 1 ? 'item' : 'items'}
             </div>
           </div>
           <button
             onClick={() => setIsCartOpen(false)}
+            aria-label="Close Cart"
             style={{
               background: 'none',
               border: 'none',
-              color: 'var(--text-light)',
-              padding: '0.4rem',
+              color: '#FFFDF9',
+              width: '36px',
+              height: '36px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: '50%',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              transition: 'background-color 0.2s'
+              backgroundColor: 'rgba(255, 255, 255, 0.06)',
+              transition: 'background-color 0.2s',
             }}
-            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
-            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)')}
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* Free Shipping Progress Indicator */}
-        <div style={{ backgroundColor: 'rgba(197, 160, 89, 0.05)', padding: '1rem 1.5rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <Truck size={17} color="var(--accent-gold)" />
-            <span style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-light)' }}>
-              {amountNeededForFreeShip === 0
-                ? "✓ You've unlocked FREE Pan-India Delivery"
-                : `🚚 Add ₹${amountNeededForFreeShip} more for FREE Pan-India Delivery`}
-            </span>
-          </div>
-          <div style={{ height: '6px', backgroundColor: 'rgba(255, 255, 255, 0.06)', borderRadius: '999px', overflow: 'hidden', position: 'relative' }}>
-            <div
-              style={{
-                height: '100%',
-                width: `${Math.min(100, (subtotal / 499) * 100)}%`,
-                backgroundColor: 'var(--accent-gold)',
-                transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-              }}
-            ></div>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600', marginTop: '0.35rem' }}>
-            <span>₹{subtotal}</span>
-            <span>Threshold: ₹499</span>
-          </div>
-          {amountNeededForFreeShip > 0 && (
-            <div
-              style={{
-                marginTop: '0.65rem',
-                padding: '0.55rem 0.75rem',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(36, 79, 33, 0.25)',
-                border: '1px solid rgba(185, 205, 148, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '0.5rem'
-              }}
-            >
-              <div style={{ fontSize: '0.74rem', color: '#FFFDF9', fontWeight: '600' }}>
-                <span style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>Trial Snack Box</span> — ₹99
-              </div>
-              <button
-                onClick={() => {
-                  addToCart({
-                    _id: 'trial-pack-99',
-                    title: 'Trial Snack Box (100g)',
-                    slug: 'trial-snack-box',
-                    image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500&auto=format&fit=crop&q=80',
-                    variants: [{ weight: '100g', price: 99, originalPrice: 120 }]
-                  }, { weight: '100g', price: 99 });
-                }}
-                style={{
-                  padding: '0.25rem 0.65rem',
-                  fontSize: '0.7rem',
-                  backgroundColor: '#244f21',
-                  color: '#FFFFFF',
-                  border: '1px solid #b9cd94',
-                  borderRadius: '999px',
-                  fontWeight: '800',
-                  cursor: 'pointer'
-                }}
-              >
-                + Add (₹99)
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Cart Items List */}
+        {/* Scrollable Content Area */}
         <div
           style={{
             flexGrow: 1,
             overflowY: 'auto',
-            padding: '1.5rem',
+            padding: '1.25rem 1.5rem',
             display: 'flex',
             flexDirection: 'column',
-            gap: '1rem',
+            gap: '1.25rem',
           }}
         >
           {cartItems.length === 0 ? (
+            /* Empty Cart View */
             <div
               style={{
                 textAlign: 'center',
                 padding: '4rem 1rem',
-                color: 'var(--text-muted)',
+                color: 'rgba(255, 253, 249, 0.65)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 gap: '1.25rem',
+                margin: 'auto 0',
               }}
             >
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ShoppingBag size={38} color="var(--accent-gold)" />
+              <div
+                style={{
+                  width: '72px',
+                  height: '72px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(185, 205, 148, 0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <ShoppingBag size={34} color="#b9cd94" />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '700', margin: 0 }}>Your Cart is Empty</h3>
-              <p style={{ fontSize: '0.88rem', lineHeight: '1.5', maxWidth: '280px', margin: 0 }}>Your next wholesome snack is waiting. Begin your MILASTY ritual.</p>
+              <div>
+                <h3
+                  style={{
+                    fontSize: '1.25rem',
+                    fontFamily: 'var(--font-serif, Georgia, serif)',
+                    color: '#FFFDF9',
+                    fontWeight: '700',
+                    margin: '0 0 0.4rem 0',
+                  }}
+                >
+                  Your Cart is Empty
+                </h3>
+                <p style={{ fontSize: '0.88rem', lineHeight: '1.5', margin: 0, maxWidth: '260px' }}>
+                  Looks like you haven't added anything yet.
+                </p>
+              </div>
               <button
                 onClick={() => {
                   setIsCartOpen(false);
                   navigate('/shop');
                 }}
-                className="btn-primary"
                 style={{
                   marginTop: '0.5rem',
-                  padding: '0.8rem 1.75rem',
-                  backgroundColor: 'var(--accent-gold)',
+                  padding: '0.75rem 1.5rem',
+                  backgroundColor: '#244f21',
+                  color: '#FFFDF9',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
-                  border: 'none',
+                  border: '1px solid #b9cd94',
                   borderRadius: '999px',
-                  color: '#24130D',
                   cursor: 'pointer',
                   fontWeight: '700',
-                  fontSize: '0.9rem'
+                  fontSize: '0.88rem',
+                  transition: 'background-color 0.2s',
                 }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2e652a')}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#244f21')}
               >
-                <span>Explore Fresh Bakes</span>
+                <span>Explore the Collection</span>
                 <ArrowRight size={16} />
               </button>
             </div>
           ) : (
-            cartItems.map((item) => (
-              <div
-                key={item.key}
-                style={{
-                  display: 'flex',
-                  gap: '1rem',
-                  padding: '1rem',
-                  borderRadius: '16px',
-                  backgroundColor: 'rgba(50, 26, 18, 0.60)',
-                  border: '1px solid rgba(245, 235, 221, 0.25)',
-                  boxShadow: 'var(--shadow-sm)',
-                  alignItems: 'center',
-                }}
-              >
-                {/* Product Image */}
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  style={{
-                    width: '84px',
-                    height: '84px',
-                    objectFit: 'cover',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(245, 235, 221, 0.15)'
-                  }}
-                />
+            <>
+              {/* Cart Items List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                {cartItems.map((item) => {
+                  const displayVariant =
+                    item.variantName &&
+                    item.variantName !== 'default' &&
+                    item.variantName !== 'Standard Pack'
+                      ? item.variantName
+                      : item.weight
+                      ? item.weight
+                      : item.variantName === 'Standard Pack'
+                      ? 'Standard Pack'
+                      : null;
 
-                {/* Info & Quantity controls */}
-                <div style={{ flexGrow: 1 }}>
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--text-light)', margin: '0 0 0.15rem 0', lineHeight: '1.25' }}>{item.title}</h4>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-                    {item.variantName} ({item.weight})
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    {/* Quantity selectors */}
+                  const isMaxStockReached =
+                    item.availableStock !== undefined && item.quantity >= item.availableStock;
+
+                  return (
                     <div
+                      key={item.key}
                       style={{
-                        display: 'inline-flex',
+                        display: 'flex',
+                        gap: '0.9rem',
+                        padding: '0.9rem',
+                        borderRadius: '14px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
                         alignItems: 'center',
-                        border: '1px solid rgba(245, 235, 221, 0.2)',
-                        borderRadius: '8px',
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                        overflow: 'hidden'
                       }}
                     >
-                      <button
-                        onClick={() => updateQuantity(item.key, -1)}
-                        style={{ padding: '0.3rem 0.5rem', background: 'none', border: 'none', color: 'var(--text-light)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                      {/* Item Image */}
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        style={{
+                          width: '72px',
+                          height: '72px',
+                          objectFit: 'cover',
+                          borderRadius: '10px',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          flexShrink: 0,
+                        }}
+                      />
+
+                      {/* Item Info */}
+                      <div style={{ flexGrow: 1, minWidth: 0 }}>
+                        <h4
+                          style={{
+                            fontSize: '0.92rem',
+                            fontWeight: '700',
+                            color: '#FFFDF9',
+                            margin: '0 0 0.15rem 0',
+                            lineHeight: '1.3',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {item.title}
+                        </h4>
+                        {displayVariant && (
+                          <div
+                            style={{
+                              fontSize: '0.75rem',
+                              color: 'rgba(255, 253, 249, 0.6)',
+                              marginBottom: '0.4rem',
+                            }}
+                          >
+                            {displayVariant}
+                          </div>
+                        )}
+                        <div
+                          style={{
+                            fontSize: '0.88rem',
+                            color: '#b9cd94',
+                            fontWeight: '700',
+                            marginBottom: '0.45rem',
+                          }}
+                        >
+                          ₹{item.price}
+                        </div>
+
+                        {/* Controls Row */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <div
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              border: '1px solid rgba(255, 255, 255, 0.12)',
+                              borderRadius: '6px',
+                              backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <button
+                              onClick={() => updateQuantity(item.key, -1)}
+                              aria-label="Decrease Quantity"
+                              style={{
+                                padding: '0.25rem 0.45rem',
+                                background: 'none',
+                                border: 'none',
+                                color: '#FFFDF9',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                              }}
+                            >
+                              <Minus size={12} />
+                            </button>
+                            <span
+                              style={{
+                                padding: '0 0.4rem',
+                                fontSize: '0.82rem',
+                                fontWeight: '700',
+                                color: '#FFFDF9',
+                              }}
+                            >
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => updateQuantity(item.key, 1)}
+                              disabled={isMaxStockReached}
+                              aria-label="Increase Quantity"
+                              style={{
+                                padding: '0.25rem 0.45rem',
+                                background: 'none',
+                                border: 'none',
+                                color: isMaxStockReached ? 'rgba(255, 255, 255, 0.25)' : '#FFFDF9',
+                                cursor: isMaxStockReached ? 'not-allowed' : 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                              }}
+                            >
+                              <Plus size={12} />
+                            </button>
+                          </div>
+
+                          <button
+                            onClick={() => handleRemoveItem(item)}
+                            aria-label="Remove Item"
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: 'rgba(239, 83, 80, 0.85)',
+                              padding: '0.25rem',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              borderRadius: '4px',
+                            }}
+                            title="Remove item"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                        {isMaxStockReached && (
+                          <div
+                            style={{
+                              fontSize: '0.68rem',
+                              color: '#e5c158',
+                              marginTop: '0.25rem',
+                              fontWeight: '600',
+                            }}
+                          >
+                            Max available quantity reached
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Item Total Price */}
+                      <div
+                        style={{
+                          textAlign: 'right',
+                          fontWeight: '800',
+                          color: '#FFFDF9',
+                          fontSize: '0.98rem',
+                          flexShrink: 0,
+                        }}
                       >
-                        <Minus size={11} />
+                        ₹{item.totalPrice}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Delivery Section */}
+              <div
+                style={{
+                  padding: '1rem 1.15rem',
+                  borderRadius: '14px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.025)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.65rem',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: '0.82rem',
+                      fontWeight: '700',
+                      color: '#FFFDF9',
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    Delivery
+                  </span>
+                </div>
+
+                {!isDeliveryChecked || isEditingPin ? (
+                  /* Form to enter PIN */
+                  <div>
+                    <div
+                      style={{
+                        fontSize: '0.78rem',
+                        color: 'rgba(255, 253, 249, 0.7)',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
+                      Check delivery availability
+                    </div>
+                    <form
+                      onSubmit={handleCheckPinSubmit}
+                      style={{ display: 'flex', gap: '0.5rem' }}
+                    >
+                      <input
+                        type="text"
+                        placeholder="Enter PIN code"
+                        maxLength={6}
+                        value={pincodeInput}
+                        onChange={(e) => {
+                          setPincodeInput(e.target.value.replace(/\D/g, ''));
+                          setPinError('');
+                        }}
+                        style={{
+                          flexGrow: 1,
+                          padding: '0.5rem 0.75rem',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                          color: '#FFFDF9',
+                          fontSize: '0.82rem',
+                          outline: 'none',
+                        }}
+                      />
+                      <button
+                        type="submit"
+                        disabled={checkingDelivery}
+                        style={{
+                          padding: '0.5rem 0.9rem',
+                          borderRadius: '8px',
+                          backgroundColor: '#244f21',
+                          color: '#FFFDF9',
+                          border: '1px solid #b9cd94',
+                          fontSize: '0.8rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {checkingDelivery ? 'Checking...' : 'Check'}
                       </button>
-                      <span style={{ padding: '0 0.4rem', fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-light)' }}>
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.key, 1)}
-                        style={{ padding: '0.3rem 0.5rem', background: 'none', border: 'none', color: 'var(--text-light)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                    </form>
+                    {pinError && (
+                      <div
+                        style={{
+                          color: '#ef5350',
+                          fontSize: '0.74rem',
+                          marginTop: '0.4rem',
+                          fontWeight: '500',
+                        }}
                       >
-                        <Plus size={11} />
+                        {pinError}
+                      </div>
+                    )}
+                  </div>
+                ) : isDeliverable ? (
+                  /* Verified & Available State */
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          color: '#81c784',
+                          fontSize: '0.82rem',
+                          fontWeight: '700',
+                        }}
+                      >
+                        <CheckCircle2 size={15} />
+                        <span>Delivery available</span>
+                      </div>
+                      <button
+                        onClick={() => setIsEditingPin(true)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#b9cd94',
+                          fontSize: '0.78rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                          padding: 0,
+                        }}
+                      >
+                        Change
                       </button>
                     </div>
-
-                    {/* Trash Button */}
-                    <button
-                      onClick={() => removeFromCart(item.key)}
-                      style={{ background: 'none', border: 'none', color: 'var(--accent-terracotta)', padding: '0.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: '50%', backgroundColor: 'rgba(217, 83, 79, 0.05)' }}
-                      title="Remove item"
+                    <div
+                      style={{
+                        fontSize: '0.82rem',
+                        color: '#FFFDF9',
+                        fontWeight: '600',
+                        paddingLeft: '1.35rem',
+                      }}
                     >
-                      <Trash2 size={14} />
-                    </button>
+                      {deliveryInfo.pincode}
+                      {(deliveryInfo.city || deliveryInfo.state) && (
+                        <span>
+                          {' · '}
+                          {deliveryInfo.city}
+                          {deliveryInfo.state ? `, ${deliveryInfo.state}` : ''}
+                        </span>
+                      )}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '0.78rem',
+                        color: 'rgba(255, 253, 249, 0.65)',
+                        paddingLeft: '1.35rem',
+                      }}
+                    >
+                      Delivery charge:{' '}
+                      <strong style={{ color: deliveryCharge === 0 ? '#81c784' : '#FFFDF9' }}>
+                        {deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`}
+                      </strong>
+                    </div>
                   </div>
-                </div>
-
-                {/* Subtotal Item Price */}
-                <div style={{ textAlign: 'right', fontWeight: '800', color: 'var(--text-light)', fontSize: '1.05rem', minWidth: '60px' }}>
-                  ₹{item.totalPrice}
-                </div>
+                ) : (
+                  /* Checked & Unavailable State */
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          color: '#ef5350',
+                          fontSize: '0.82rem',
+                          fontWeight: '700',
+                        }}
+                      >
+                        <XCircle size={15} />
+                        <span>Delivery unavailable</span>
+                      </div>
+                      <button
+                        onClick={() => setIsEditingPin(true)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#b9cd94',
+                          fontSize: '0.78rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                          padding: 0,
+                        }}
+                      >
+                        Change
+                      </button>
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '0.78rem',
+                        color: 'rgba(255, 253, 249, 0.65)',
+                        paddingLeft: '1.35rem',
+                      }}
+                    >
+                      We currently don't deliver to PIN code {deliveryInfo.pincode}.
+                    </div>
+                  </div>
+                )}
               </div>
-            ))
+            </>
           )}
         </div>
 
-        {/* Sticky Footer */}
+        {/* Sticky Summary / Footer */}
         {cartItems.length > 0 && (
           <div
             style={{
-              borderTop: '1px solid rgba(245, 235, 221, 0.15)',
-              padding: '1.5rem',
-              backgroundColor: 'var(--bg-main)',
-              boxShadow: '0 -8px 24px rgba(0, 0, 0, 0.3)'
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              padding: '1.25rem 1.5rem',
+              backgroundColor: '#140A05',
+              boxShadow: '0 -8px 24px rgba(0, 0, 0, 0.4)',
+              flexShrink: 0,
             }}
           >
             {/* Calculation summary */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBottom: '1.25rem', fontSize: '0.88rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.45rem',
+                marginBottom: '1rem',
+                fontSize: '0.88rem',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  color: 'rgba(255, 253, 249, 0.65)',
+                }}
+              >
                 <span>Subtotal</span>
-                <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>₹{subtotal}</span>
+                <span style={{ fontWeight: '700', color: '#FFFDF9' }}>₹{subtotal}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
-                <span>Pan-India Delivery</span>
-                <span style={{ fontWeight: '700', color: deliveryFee === 0 ? 'var(--accent-gold)' : 'var(--text-light)' }}>
-                  {deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  color: 'rgba(255, 253, 249, 0.65)',
+                }}
+              >
+                <span>Delivery</span>
+                <span
+                  style={{
+                    fontWeight: '700',
+                    color: isDeliverable
+                      ? deliveryCharge === 0
+                        ? '#81c784'
+                        : '#FFFDF9'
+                      : 'rgba(255, 253, 249, 0.5)',
+                  }}
+                >
+                  {!isDeliverable
+                    ? '—'
+                    : deliveryCharge === 0
+                    ? 'FREE'
+                    : `₹${deliveryCharge}`}
                 </span>
               </div>
               <div
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
-                  fontWeight: '900',
-                  fontSize: '1.2rem',
-                  color: 'var(--text-light)',
-                  paddingTop: '0.65rem',
-                  marginTop: '0.25rem',
-                  borderTop: '1px solid rgba(245, 235, 221, 0.15)',
+                  fontWeight: '800',
+                  fontSize: '1.15rem',
+                  color: '#FFFDF9',
+                  paddingTop: '0.55rem',
+                  marginTop: '0.2rem',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                 }}
               >
                 <span>Total</span>
-                <span>₹{grandTotal}</span>
+                <span>₹{totalAmount}</span>
               </div>
             </div>
 
-            {/* Main Proceed CTA */}
+            {/* Main Proceed to Checkout CTA */}
             <button
               onClick={() => {
                 setIsCartOpen(false);
@@ -420,34 +804,45 @@ export default function CartDrawer() {
               }}
               style={{
                 width: '100%',
-                justifyContent: 'center',
-                padding: '0.95rem',
+                padding: '0.9rem',
                 fontSize: '0.9rem',
-                backgroundColor: 'var(--accent-gold)',
-                color: '#24130D',
-                border: 'none',
+                backgroundColor: '#244f21',
+                color: '#FFFDF9',
+                border: '1px solid #b9cd94',
                 borderRadius: '12px',
                 fontWeight: '800',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '0.5rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
-                boxShadow: 'var(--shadow-sm)',
-                transition: 'transform 0.2s, background-color 0.2s'
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)',
+                transition: 'background-color 0.2s',
               }}
-              onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-              onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2e652a')}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#244f21')}
             >
               <span>Proceed to Checkout</span>
               <ArrowRight size={16} />
             </button>
-            <div style={{ textAlign: 'center', marginTop: '0.65rem', fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600', letterSpacing: '0.02em', display: 'flex', flexDirection: 'column', gap: '0.35rem', alignItems: 'center' }}>
-              <span>🔒 100% Encrypted & Safe Checkout</span>
-              <div style={{ display: 'flex', gap: '0.4rem', fontSize: '0.68rem', color: 'var(--accent-gold)', fontWeight: '700', letterSpacing: '0.05em' }}>
-                <span>UPI</span> • <span>GPay</span> • <span>PhonePe</span> • <span>Cards</span> • <span>NetBanking</span>
-              </div>
+
+            {/* Clean Single Line Security Message */}
+            <div
+              style={{
+                textAlign: 'center',
+                marginTop: '0.75rem',
+                fontSize: '0.75rem',
+                color: 'rgba(255, 253, 249, 0.6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.35rem',
+              }}
+            >
+              <Lock size={13} color="#b9cd94" />
+              <span>Secure checkout</span>
             </div>
           </div>
         )}
@@ -455,3 +850,4 @@ export default function CartDrawer() {
     </div>
   );
 }
+

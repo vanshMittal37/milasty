@@ -140,8 +140,8 @@ export const CartProvider = ({ children }) => {
   };
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
-  const deliveryFee = subtotal >= 499 || subtotal === 0 ? 0 : 49;
-  const grandTotal = Math.max(0, subtotal - couponDiscountAmount + deliveryFee);
+  const deliveryFee = 0;
+  const grandTotal = Math.max(0, subtotal - couponDiscountAmount);
   const totalItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const applyCoupon = async (code) => {
