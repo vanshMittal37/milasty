@@ -322,17 +322,6 @@ export default function Shop() {
     },
   ];
 
-  // Category Click Handler → Auto Select Filter & Smooth Scroll to Catalogue
-  const handleCategoryClick = (catId) => {
-    setSelectedCategory(catId);
-    setFilterModalOpen(false);
-    
-    // Smooth scroll to product catalogue section
-    const targetEl = document.getElementById('browse-milasty-collection');
-    if (targetEl) {
-      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
 
   const handleScrollToSection = (id) => {
     const el = document.getElementById(id);
