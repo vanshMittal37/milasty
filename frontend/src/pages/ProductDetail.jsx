@@ -771,4 +771,11 @@ export default function ProductDetail() {
               {relatedProducts.map((relProduct) => (
                 <ProductCard key={relProduct._id || relProduct.id || relProduct.slug} product={relProduct} />
               ))}
-          
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}

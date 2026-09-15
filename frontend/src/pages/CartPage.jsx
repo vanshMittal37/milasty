@@ -24,7 +24,8 @@ export default function CartPage() {
   const [couponInput, setCouponInput] = useState('');
   const [couponStatus, setCouponStatus] = useState(null);
 
-  const effectiveDeliveryFee = (deliveryInfo && deliveryInfo.isDeliverable)
+  const isDeliverable = deliveryInfo && (deliveryInfo.available ?? deliveryInfo.isDeliverable);
+  const effectiveDeliveryFee = isDeliverable
     ? (subtotal >= 499 ? 0 : Number(deliveryInfo.deliveryCharge))
     : defaultDeliveryFee;
 
@@ -237,7 +238,7 @@ export default function CartPage() {
               )}
 
               {/* Delivery Location Indicator */}
-              {deliveryInfo && deliveryInfo.isDeliverable && (
+              {deliveryInfo && isDeliverable && (
                 <div style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.25)', borderRadius: '10px', padding: '0.65rem 0.85rem', marginBottom: '1rem', fontSize: '0.8rem', color: '#1a3d18' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: '800', color: '#244f21' }}>
                     <MapPin size={14} /> Delivering to PIN {deliveryInfo.pincode}

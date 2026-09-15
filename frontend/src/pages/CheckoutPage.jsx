@@ -49,7 +49,8 @@ export default function CheckoutPage() {
   }, []);
 
   // Calculate dynamic delivery fee based on verified deliveryInfo
-  const effectiveDeliveryFee = (deliveryInfo && deliveryInfo.isDeliverable && deliveryInfo.pincode === formData.pincode.trim())
+  const isDeliverable = deliveryInfo && (deliveryInfo.available ?? deliveryInfo.isDeliverable);
+  const effectiveDeliveryFee = (isDeliverable && deliveryInfo.pincode === formData.pincode.trim())
     ? (subtotal >= 499 ? 0 : Number(deliveryInfo.deliveryCharge))
     : defaultDeliveryFee;
 
@@ -82,7 +83,7 @@ export default function CheckoutPage() {
       const cleanPin = value.trim();
       if (cleanPin.length === 6 && /^\d{6}$/.test(cleanPin)) {
         checkPincode(cleanPin).then(res => {
-          if (res && res.isDeliverable && res.city && res.state) {
+          if (res && (res.available || res.isDeliverable) && res.city && res.state) {
             setFormData(prev => ({
               ...prev,
               city: prev.city || res.city,
@@ -116,7 +117,7 @@ export default function CheckoutPage() {
       errors.pincode = 'Pincode is required';
     } else if (!/^\d{6}$/.test(cleanPin)) {
       errors.pincode = 'Please enter a valid 6-digit pincode';
-    } else if (deliveryInfo && deliveryInfo.pincode === cleanPin && !deliveryInfo.isDeliverable) {
+    } else if (deliveryInfo && deliveryInfo.pincode === cleanPin && !(deliveryInfo.available ?? deliveryInfo.isDeliverable)) {
       errors.pincode = `Delivery unavailable to PIN code ${cleanPin}`;
     }
 
@@ -426,9 +427,9 @@ export default function CheckoutPage() {
                     {fieldErrors.pincode && <span style={{ fontSize: '0.72rem', color: 'var(--accent-terracotta)', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.pincode}</span>}
                     
                     {deliveryInfo && deliveryInfo.pincode === formData.pincode.trim() && (
-                      <div style={{ marginTop: '0.35rem', fontSize: '0.72rem', fontWeight: '700', color: deliveryInfo.isDeliverable ? '#22c55e' : 'var(--accent-terracotta)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                        {deliveryInfo.isDeliverable ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                        {deliveryInfo.isDeliverable ? `Serviceable (${deliveryInfo.city})` : 'Not serviceable'}
+                      <div style={{ marginTop: '0.35rem', fontSize: '0.72rem', fontWeight: '700', color: (deliveryInfo.available ?? deliveryInfo.isDeliverable) ? '#22c55e' : 'var(--accent-terracotta)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        {(deliveryInfo.available ?? deliveryInfo.isDeliverable) ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+                        {(deliveryInfo.available ?? deliveryInfo.isDeliverable) ? `Serviceable (${deliveryInfo.city})` : 'Not serviceable'}
                       </div>
                     )}
                   </div>

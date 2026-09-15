@@ -5,6 +5,7 @@ import { WishlistProvider } from './context/WishlistContext';
 import { CartProvider, useCart } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
 import { CategoryProvider } from './context/CategoryContext';
+import { DeliveryProvider } from './context/DeliveryContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
@@ -40,6 +41,7 @@ import AdminDashboardMain from './pages/admin/AdminDashboardMain';
 import AdminProductList from './pages/admin/AdminProductList';
 import AdminProductForm from './pages/admin/AdminProductForm';
 import AdminCategories from './pages/admin/AdminCategories';
+import AdminDeliveryAreas from './pages/admin/AdminDeliveryAreas';
 import AdminOrderList from './pages/admin/AdminOrderList';
 import AdminCustomerList from './pages/admin/AdminCustomerList';
 import AdminCouponList from './pages/admin/AdminCouponList';
@@ -160,10 +162,6 @@ function MainLayout() {
     </div>
   );
 }
-
-import { CategoryProvider } from './context/CategoryContext';
-import { DeliveryProvider } from './context/DeliveryContext';
-import AdminDeliveryAreas from './pages/admin/AdminDeliveryAreas';
 
 export default function App() {
   return (
