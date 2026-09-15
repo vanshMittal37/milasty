@@ -119,6 +119,24 @@ export default function AdminDashboardMain() {
   lowStockItems.sort((a, b) => a.stock - b.stock);
   outOfStockItems.sort((a, b) => a.stock - b.stock);
 
+  const activityEvents = [
+    ...(stats?.recentOrders || []).slice(0, 3).map((o) => ({
+      title: `Order #${String(o.orderId || o.id || o._id || '0000').slice(-6).toUpperCase()}`,
+      desc: `${o.shippingAddress?.fullName || o.customerName || 'Customer'} • ₹${(o.totalAmount || 0).toLocaleString('en-IN')}`,
+      time: 'Recent Order',
+    })),
+    ...outOfStockItems.slice(0, 2).map((item) => ({
+      title: 'Out of Stock Alert',
+      desc: `${item.title} ${item.variantName ? `(${item.variantName})` : ''}`,
+      time: 'Inventory Alert',
+    })),
+    ...lowStockItems.slice(0, 2).map((item) => ({
+      title: 'Low Stock Warning',
+      desc: `${item.title} ${item.variantName ? `(${item.variantName})` : ''} - ${item.stock} left`,
+      time: 'Inventory Warning',
+    })),
+  ].slice(0, 5);
+
   const recentOrdersForChart = stats?.recentOrders ? [...stats.recentOrders].reverse() : [];
   const chartPoints = recentOrdersForChart.map((o, idx) => ({ x: idx, y: o.totalAmount || 0 }));
   const maxVal = chartPoints.length > 0 ? Math.max(...chartPoints.map(p => p.y), 1) : 1;
