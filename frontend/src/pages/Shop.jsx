@@ -86,11 +86,15 @@ export default function Shop() {
     }
   };
 
+  // Safe Array Wrappers
+  const safeCategories = Array.isArray(categories) ? categories : [];
+  const safeProducts = Array.isArray(products) ? products : [];
+
   // Helper function to check product category match against live database categories
   const matchesCategoryFilter = (p, catIdOrSlug) => {
     if (!catIdOrSlug || catIdOrSlug === 'all') return true;
     
-    const catObj = categories.find(c => c.id === catIdOrSlug || c.slug === catIdOrSlug || c._id === catIdOrSlug || c.name === catIdOrSlug);
+    const catObj = safeCategories.find(c => c.id === catIdOrSlug || c.slug === catIdOrSlug || c._id === catIdOrSlug || c.name === catIdOrSlug);
     const targetSlug = catObj ? catObj.slug : catIdOrSlug;
     const targetId = catObj ? catObj.id : catIdOrSlug;
     const targetName = catObj ? catObj.name : catIdOrSlug;
@@ -115,12 +119,12 @@ export default function Shop() {
   };
 
   // First 4 Categories to render on Shop page main section
-  const firstFourCategories = categories.slice(0, 4);
+  const firstFourCategories = safeCategories.slice(0, 4);
 
   // Full category list for filter popup modal including "ALL BAKES"
   const modalCategoryList = [
     { id: 'all', number: '00', name: 'ALL BAKES', label: 'All Bakes', subtitle: 'Explore the complete MILASTY collection' },
-    ...categories.map((c, idx) => ({
+    ...safeCategories.map((c, idx) => ({
       id: c.slug || c.id,
       number: String(idx + 1).padStart(2, '0'),
       name: c.name,
@@ -132,10 +136,10 @@ export default function Shop() {
   ];
 
   // Featured Products
-  const featuredProducts = products.filter(p => p.isFeatured || p.category === 'starter');
+  const featuredProducts = safeProducts.filter(p => p.isFeatured || p.category === 'starter');
 
   // Filtered Catalogue Products
-  const displayedProducts = products.filter(p => {
+  const displayedProducts = safeProducts.filter(p => {
     const matchesCat = matchesCategoryFilter(p, selectedCategory);
     const matchesSearch = !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.description.toLowerCase().includes(search.toLowerCase());
     return matchesCat && matchesSearch;

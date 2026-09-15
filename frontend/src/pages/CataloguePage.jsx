@@ -23,7 +23,7 @@ export default function CataloguePage() {
   // Dynamic Category Taxonomy
   const categories = [
     { id: 'all', name: 'ALL PRODUCTS', desc: 'Browse our complete range of handcrafted millet bakes.' },
-    ...dbCategories.map(c => ({
+    ...(Array.isArray(dbCategories) ? dbCategories : []).map(c => ({
       id: c.slug || c.id,
       name: c.name,
       desc: c.description || c.subtitle || '',

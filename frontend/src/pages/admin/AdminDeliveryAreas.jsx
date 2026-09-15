@@ -48,9 +48,17 @@ export default function AdminDeliveryAreas() {
     setLoading(true);
     try {
       const res = await api.get('/delivery-areas');
-      setAreas(res.data || []);
+      const data = res.data;
+      if (Array.isArray(data)) {
+        setAreas(data);
+      } else if (data && Array.isArray(data.areas)) {
+        setAreas(data.areas);
+      } else {
+        setAreas([]);
+      }
     } catch (e) {
       toast.error('Failed to fetch delivery areas');
+      setAreas([]);
     } finally {
       setLoading(false);
     }
@@ -168,7 +176,7 @@ export default function AdminDeliveryAreas() {
         isDeliverable: newStatus === 'Active'
       });
       toast.success(`PIN ${area.pincode} status changed to ${newStatus}`);
-      setAreas(prev => prev.map(item => item.id === area.id ? { ...item, status: newStatus, is_deliverable: newStatus === 'Active' } : item));
+      setAreas(prev => (Array.isArray(prev) ? prev : []).map(item => item.id === area.id ? { ...item, status: newStatus, is_deliverable: newStatus === 'Active' } : item));
     } catch (e) {
       toast.error('Failed to update status');
     }
@@ -189,27 +197,30 @@ export default function AdminDeliveryAreas() {
     }
   };
 
+  // Safe Areas Array
+  const areaList = Array.isArray(areas) ? areas : [];
+
   // Filter Areas
-  const filteredAreas = areas.filter(area => {
+  const filteredAreas = areaList.filter(area => {
     const matchesSearch = 
       (area.pincode && area.pincode.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (area.city && area.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (area.state && area.state.toLowerCase().includes(searchTerm.toLowerCase()));
     
     if (statusFilter === 'ACTIVE') {
-      return matchesSearch && (area.status === 'Active' || area.is_deliverable);
+      return matchesSearch && (area.status === 'Active' || area.status === 'active' || area.is_deliverable);
     }
     if (statusFilter === 'INACTIVE') {
-      return matchesSearch && (area.status === 'Inactive' || !area.is_deliverable);
+      return matchesSearch && (area.status === 'Inactive' || area.status === 'inactive' || !area.is_deliverable);
     }
     return matchesSearch;
   });
 
   // Calculate Metrics
-  const totalAreasCount = areas.length;
-  const activeAreasCount = areas.filter(a => a.status === 'Active' || a.is_deliverable).length;
+  const totalAreasCount = areaList.length;
+  const activeAreasCount = areaList.filter(a => a.status === 'Active' || a.status === 'active' || a.is_deliverable).length;
   const inactiveAreasCount = totalAreasCount - activeAreasCount;
-  const freeDeliveryCount = areas.filter(a => Number(a.delivery_charge) === 0).length;
+  const freeDeliveryCount = areaList.filter(a => Number(a.delivery_charge) === 0).length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

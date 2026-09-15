@@ -11,9 +11,17 @@ export function CategoryProvider({ children }) {
     try {
       setCategoriesLoading(true);
       const res = await api.get('/categories');
-      setCategories(res.data || []);
+      const data = res.data;
+      if (Array.isArray(data)) {
+        setCategories(data);
+      } else if (data && Array.isArray(data.categories)) {
+        setCategories(data.categories);
+      } else {
+        setCategories([]);
+      }
     } catch (err) {
       console.error('Error fetching dynamic categories:', err);
+      setCategories([]);
     } finally {
       setCategoriesLoading(false);
     }

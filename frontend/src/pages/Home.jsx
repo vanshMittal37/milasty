@@ -311,8 +311,11 @@ export default function Home() {
 
     api.get('/categories')
       .then(res => {
-        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
-          setCategories(res.data);
+        const data = res.data;
+        if (Array.isArray(data) && data.length > 0) {
+          setCategories(data);
+        } else if (data && Array.isArray(data.categories) && data.categories.length > 0) {
+          setCategories(data.categories);
         } else {
           setCategories(defaultCategoryList);
         }
