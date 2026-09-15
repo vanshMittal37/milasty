@@ -137,6 +137,11 @@ export default function AdminDashboardMain() {
     })),
   ].slice(0, 5);
 
+  const isCatalogConnected = !error && Array.isArray(products);
+  const isCustomersConnected = !error && stats !== null;
+  const isOrdersConnected = !error && stats !== null;
+  const isReviewsConnected = !error && Array.isArray(reviews);
+
   const recentOrdersForChart = stats?.recentOrders ? [...stats.recentOrders].reverse() : [];
   const chartPoints = recentOrdersForChart.map((o, idx) => ({ x: idx, y: o.totalAmount || 0 }));
   const maxVal = chartPoints.length > 0 ? Math.max(...chartPoints.map(p => p.y), 1) : 1;
