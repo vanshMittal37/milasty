@@ -5,6 +5,7 @@ import api from '../../api/axios';
 import PriceDisplay from '../../components/PriceDisplay';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import { useToast } from '../../context/ToastContext';
+import { LOW_STOCK_THRESHOLD } from '../../config/constants';
 
 export default function AdminProductList() {
   const [products, setProducts] = useState([]);
@@ -105,10 +106,21 @@ export default function AdminProductList() {
             </thead>
             <tbody>
               {products.map((p) => {
-                const stockLevel = p.stock !== undefined && p.stock !== null
-                  ? p.stock
-                  : (p.variants && p.variants.length > 0 ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0) : 0);
-                const isLowStock = stockLevel <= 5;
+                const hasVariants = Array.isArray(p.variants) && p.variants.length > 0;
+                let lowStockVariantCount = 0;
+                let outOfStockVariantCount = 0;
+                let totalVariantStock = 0;
+
+                if (hasVariants) {
+                  p.variants.forEach((v) => {
+                    const stk = Number(v.stock !== undefined && v.stock !== null ? v.stock : (v.in_stock ? 50 : 0));
+                    totalVariantStock += stk;
+                    if (stk === 0) outOfStockVariantCount++;
+                    else if (stk <= LOW_STOCK_THRESHOLD) lowStockVariantCount++;
+                  });
+                }
+
+                const productStock = Number(p.stock !== undefined && p.stock !== null ? p.stock : totalVariantStock);
                 const displayPrice = p.price || p.variants?.[0]?.price || 0;
                 const displayOrigPrice = p.originalPrice || p.variants?.[0]?.originalPrice || displayPrice;
 
@@ -126,13 +138,37 @@ export default function AdminProductList() {
                     <td>
                       <PriceDisplay price={displayPrice} originalPrice={displayOrigPrice} size="small" />
                     </td>
-                    <td style={{ fontWeight: '700', color: 'var(--admin-text-secondary)', fontSize: '0.82rem' }}>
-                      {p.variants ? p.variants.length : 0} {p.variants?.length === 1 ? 'Variant' : 'Variants'}
+                    <td>
+                      {hasVariants ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                          <span style={{ fontWeight: '800', color: 'var(--admin-text-primary)', fontSize: '0.82rem' }}>
+                            {p.variants.length} {p.variants.length === 1 ? 'Variant' : 'Variants'}
+                          </span>
+                          {lowStockVariantCount > 0 && (
+                            <span style={{ fontSize: '0.68rem', color: '#F59E0B', fontWeight: '700' }}>
+                              {lowStockVariantCount} Low Stock
+                            </span>
+                          )}
+                          {outOfStockVariantCount > 0 && (
+                            <span style={{ fontSize: '0.68rem', color: 'var(--admin-danger)', fontWeight: '700' }}>
+                              {outOfStockVariantCount} Out of Stock
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem' }}>No Variants</span>
+                      )}
                     </td>
                     <td>
-                      <span className={`admin-badge ${isLowStock ? 'admin-badge-danger' : 'admin-badge-success'}`}>
-                        {stockLevel} units
-                      </span>
+                      {hasVariants ? (
+                        <span className={`admin-badge ${outOfStockVariantCount > 0 || lowStockVariantCount > 0 ? (outOfStockVariantCount === p.variants.length ? 'admin-badge-danger' : 'admin-badge-warning') : 'admin-badge-success'}`}>
+                          {totalVariantStock} total units
+                        </span>
+                      ) : (
+                        <span className={`admin-badge ${productStock === 0 ? 'admin-badge-danger' : productStock <= LOW_STOCK_THRESHOLD ? 'admin-badge-warning' : 'admin-badge-success'}`}>
+                          {productStock} units
+                        </span>
+                      )}
                     </td>
                     <td>
                       <span className="admin-badge admin-badge-success">

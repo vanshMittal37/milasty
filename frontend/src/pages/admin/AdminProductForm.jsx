@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus } from 'lucide-react';
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
+import { LOW_STOCK_THRESHOLD } from '../../config/constants';
 
 export default function AdminProductForm() {
   const { id } = useParams();
@@ -90,7 +91,10 @@ export default function AdminProductForm() {
           badges: Array.isArray(res.data.badges) ? res.data.badges.join(', ') : res.data.badges || '',
           ingredients: Array.isArray(res.data.ingredients) ? res.data.ingredients.join(', ') : res.data.ingredients || '',
           benefits: Array.isArray(res.data.benefits) ? res.data.benefits.join(', ') : res.data.benefits || '',
-          variants: res.data.variants || [],
+          variants: (res.data.variants || []).map(v => ({
+            ...v,
+            stock: v.stock !== undefined && v.stock !== null ? v.stock : (v.in_stock ? 50 : 0)
+          })),
         });
       }
     } catch (e) {
@@ -647,89 +651,100 @@ export default function AdminProductForm() {
 
             {formData.variants && formData.variants.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                {formData.variants.map((v, index) => (
-                  <div 
-                    key={index} 
-                    style={{ 
-                      display: 'grid', 
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr)) 44px', 
-                      gap: '0.85rem', 
-                      alignItems: 'end',
-                      padding: '1rem',
-                      borderRadius: '12px',
-                      backgroundColor: 'var(--admin-surface-elevated)',
-                      border: '1px solid var(--admin-border)'
-                    }}
-                  >
-                    <div>
-                      <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Variant Name</label>
-                      <input 
-                        type="text" 
-                        required 
-                        value={v.name} 
-                        onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
-                        placeholder="e.g. Regular Pack" 
-                        className="admin-input"
-                        style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Weight</label>
-                      <input 
-                        type="text" 
-                        required 
-                        value={v.weight} 
-                        onChange={(e) => handleVariantChange(index, 'weight', e.target.value)}
-                        placeholder="e.g. 100g" 
-                        className="admin-input"
-                        style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Price (₹)</label>
-                      <input 
-                        type="number" 
-                        required 
-                        value={v.price} 
-                        onChange={(e) => handleVariantChange(index, 'price', e.target.value)}
-                        placeholder="Enter price"
-                        className="admin-input"
-                        style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Original Price</label>
-                      <input 
-                        type="number" 
-                        value={v.originalPrice} 
-                        onChange={(e) => handleVariantChange(index, 'originalPrice', e.target.value)}
-                        placeholder="Original price"
-                        className="admin-input"
-                        style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Stock</label>
-                      <input 
-                        type="number" 
-                        required 
-                        value={v.stock} 
-                        onChange={(e) => handleVariantChange(index, 'stock', e.target.value)}
-                        placeholder="Stock"
-                        className="admin-input"
-                        style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
-                      />
-                    </div>
-                    <button 
-                      type="button" 
-                      onClick={() => removeVariant(index)}
-                      className="admin-icon-btn"
-                      style={{ color: 'var(--admin-danger)', height: '36px', width: '36px', borderRadius: '6px' }}
+                {formData.variants.map((v, index) => {
+                  const numStock = Number(v.stock !== undefined && v.stock !== '' ? v.stock : 0);
+                  const isOut = numStock === 0;
+                  const isLow = numStock > 0 && numStock <= LOW_STOCK_THRESHOLD;
+
+                  return (
+                    <div 
+                      key={index} 
+                      style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr)) 100px 44px', 
+                        gap: '0.85rem', 
+                        alignItems: 'end',
+                        padding: '1rem',
+                        borderRadius: '12px',
+                        backgroundColor: 'var(--admin-surface-elevated)',
+                        border: '1px solid var(--admin-border)'
+                      }}
                     >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                ))}
+                      <div>
+                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Variant Name</label>
+                        <input 
+                          type="text" 
+                          required 
+                          value={v.name} 
+                          onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                          placeholder="e.g. Regular Pack" 
+                          className="admin-input"
+                          style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Weight</label>
+                        <input 
+                          type="text" 
+                          required 
+                          value={v.weight} 
+                          onChange={(e) => handleVariantChange(index, 'weight', e.target.value)}
+                          placeholder="e.g. 100g" 
+                          className="admin-input"
+                          style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Price (₹)</label>
+                        <input 
+                          type="number" 
+                          required 
+                          value={v.price} 
+                          onChange={(e) => handleVariantChange(index, 'price', e.target.value)}
+                          placeholder="Enter price"
+                          className="admin-input"
+                          style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Original Price</label>
+                        <input 
+                          type="number" 
+                          value={v.originalPrice} 
+                          onChange={(e) => handleVariantChange(index, 'originalPrice', e.target.value)}
+                          placeholder="Original price"
+                          className="admin-input"
+                          style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Stock</label>
+                        <input 
+                          type="number" 
+                          required 
+                          value={v.stock} 
+                          onChange={(e) => handleVariantChange(index, 'stock', e.target.value)}
+                          placeholder="Stock"
+                          className="admin-input"
+                          style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '36px' }}>
+                        <span className={`admin-badge ${isOut ? 'admin-badge-danger' : isLow ? 'admin-badge-warning' : 'admin-badge-success'}`} style={{ fontSize: '0.65rem', width: '100%', textAlign: 'center' }}>
+                          {isOut ? 'Out of Stock' : isLow ? 'Low Stock' : 'In Stock'}
+                        </span>
+                      </div>
+                      <button 
+                        type="button" 
+                        onClick={() => removeVariant(index)}
+                        className="admin-icon-btn"
+                        style={{ color: 'var(--admin-danger)', height: '36px', width: '36px', borderRadius: '6px' }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div style={{ padding: '2rem', textAlign: 'center', border: '1px dashed var(--admin-border)', borderRadius: '12px', color: 'var(--admin-text-muted)', fontSize: '0.82rem' }}>

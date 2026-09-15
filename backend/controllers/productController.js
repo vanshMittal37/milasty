@@ -1,5 +1,6 @@
 import { supabase } from '../config/supabase.js';
 import { initialProducts } from '../data/seedData.js';
+import { LOW_STOCK_THRESHOLD } from '../config/constants.js';
 
 export const getProducts = async (req, res) => {
   try {
@@ -35,19 +36,34 @@ export const getProducts = async (req, res) => {
     if (!error && dbProducts && dbProducts.length > 0) {
       // Map DB schema to frontend expected format
       const formatted = dbProducts.map((p) => {
-        const variants = (p.product_variants || []).map((v) => ({
-          id: v.id,
-          name: v.name,
-          weight: v.weight,
-          price: Number(v.price),
-          originalPrice: Number(v.original_price),
-          stock: v.stock !== undefined && v.stock !== null ? Number(v.stock) : (v.in_stock ? 50 : 0),
-          inStock: v.in_stock !== false,
-        }));
+        const variantStocksMap = p.nutrition_facts?.variant_stocks || {};
+        const variants = (p.product_variants || []).map((v) => {
+          const stockFromMap = variantStocksMap[v.id] !== undefined
+            ? Number(variantStocksMap[v.id])
+            : (variantStocksMap[v.weight] !== undefined
+              ? Number(variantStocksMap[v.weight])
+              : (variantStocksMap[v.name] !== undefined
+                ? Number(variantStocksMap[v.name])
+                : undefined));
 
-        const calculatedStock = p.stock !== undefined && p.stock !== null
-          ? Number(p.stock)
-          : (variants.length > 0 ? variants.reduce((sum, v) => sum + (v.stock || 0), 0) : 100);
+          const varStock = (v.stock !== undefined && v.stock !== null)
+            ? Number(v.stock)
+            : (stockFromMap !== undefined ? stockFromMap : (v.in_stock !== false ? 50 : 0));
+
+          return {
+            id: v.id,
+            name: v.name,
+            weight: v.weight,
+            price: Number(v.price),
+            originalPrice: Number(v.original_price || v.price),
+            stock: varStock,
+            inStock: varStock > 0,
+          };
+        });
+
+        const calculatedStock = variants.length > 0
+          ? variants.reduce((sum, v) => sum + (v.stock || 0), 0)
+          : (p.stock !== undefined && p.stock !== null ? Number(p.stock) : 100);
 
         return {
           _id: p.id,
@@ -125,7 +141,7 @@ export const getProducts = async (req, res) => {
 
 export const getProductBySlugOrId = async (req, res) => {
   try {
-    const { identifier } = req.params;
+    const identifier = req.params.identifier || req.params.id;
 
     // Determine if identifier is a UUID or slug to avoid PostgreSQL syntax errors
     const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(identifier);
@@ -140,19 +156,34 @@ export const getProductBySlugOrId = async (req, res) => {
     const { data: p, error } = await query.maybeSingle();
 
     if (!error && p) {
-      const variants = (p.product_variants || []).map((v) => ({
-        id: v.id,
-        name: v.name,
-        weight: v.weight,
-        price: Number(v.price),
-        originalPrice: Number(v.original_price),
-        stock: v.stock !== undefined && v.stock !== null ? Number(v.stock) : (v.in_stock ? 50 : 0),
-        inStock: v.in_stock !== false,
-      }));
+      const variantStocksMap = p.nutrition_facts?.variant_stocks || {};
+      const variants = (p.product_variants || []).map((v) => {
+        const stockFromMap = variantStocksMap[v.id] !== undefined
+          ? Number(variantStocksMap[v.id])
+          : (variantStocksMap[v.weight] !== undefined
+            ? Number(variantStocksMap[v.weight])
+            : (variantStocksMap[v.name] !== undefined
+              ? Number(variantStocksMap[v.name])
+              : undefined));
 
-      const calculatedStock = p.stock !== undefined && p.stock !== null
-        ? Number(p.stock)
-        : (variants.length > 0 ? variants.reduce((sum, v) => sum + (v.stock || 0), 0) : 100);
+        const varStock = (v.stock !== undefined && v.stock !== null)
+          ? Number(v.stock)
+          : (stockFromMap !== undefined ? stockFromMap : (v.in_stock !== false ? 50 : 0));
+
+        return {
+          id: v.id,
+          name: v.name,
+          weight: v.weight,
+          price: Number(v.price),
+          originalPrice: Number(v.original_price || v.price),
+          stock: varStock,
+          inStock: varStock > 0,
+        };
+      });
+
+      const calculatedStock = variants.length > 0
+        ? variants.reduce((sum, v) => sum + (v.stock || 0), 0)
+        : (p.stock !== undefined && p.stock !== null ? Number(p.stock) : 100);
 
       const formatted = {
         _id: p.id,
@@ -192,6 +223,20 @@ export const getProductBySlugOrId = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error fetching product', error: error.message });
   }
+};
+
+// Helper for safe variant insertion supporting schema with/without stock column
+const safeInsertVariants = async (variantRows) => {
+  let { data, error } = await supabase.from('product_variants').insert(variantRows).select();
+  if (error && error.message && error.message.toLowerCase().includes('stock')) {
+    const fallbackRows = variantRows.map(({ stock, ...rest }) => rest);
+    const { data: fData, error: fErr } = await supabase.from('product_variants').insert(fallbackRows).select();
+    if (fErr) console.error('Supabase Variant Insert Fallback Error:', fErr);
+    if (fData) {
+      data = fData.map((v, i) => ({ ...v, stock: variantRows[i]?.stock }));
+    }
+  }
+  return data || [];
 };
 
 export const createProduct = async (req, res) => {
@@ -249,9 +294,20 @@ export const createProduct = async (req, res) => {
       ? benefits 
       : (typeof benefits === 'string' ? benefits.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
+    const variantStocksMap = {};
+    if (variants && Array.isArray(variants)) {
+      variants.forEach((v) => {
+        const vStock = Number(v.stock !== undefined && v.stock !== null && v.stock !== '' ? v.stock : 50);
+        if (v.weight) variantStocksMap[v.weight] = vStock;
+        if (v.name) variantStocksMap[v.name] = vStock;
+        if (v.id) variantStocksMap[v.id] = vStock;
+      });
+    }
+
     const mergedNutritionFacts = {
       ...(typeof nutritionFacts === 'object' && nutritionFacts !== null ? nutritionFacts : {}),
       pieces: pieces || (typeof nutritionFacts === 'object' ? nutritionFacts?.pieces : '') || '',
+      variant_stocks: variantStocksMap,
     };
 
     const insertPayload = {
@@ -285,46 +341,79 @@ export const createProduct = async (req, res) => {
 
     let insertedVariants = [];
     if (variants && Array.isArray(variants) && variants.length > 0) {
-      const variantRows = variants.map((v) => ({
-        product_id: product.id,
-        name: v.name || 'Standard Pack',
-        weight: v.weight || 'Standard',
-        price: Number(v.price !== undefined && v.price !== '' ? v.price : price || 0),
-        original_price: Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : v.price || price || 0),
-        in_stock: v.inStock !== false && Number(v.stock !== undefined && v.stock !== null ? v.stock : stock || 50) > 0,
-      }));
-      const { data: vData, error: vErr } = await supabase.from('product_variants').insert(variantRows).select();
-      if (vErr) {
-        console.error('Supabase Variant Insert Error:', vErr);
-      }
-      if (vData) insertedVariants = vData;
+      const variantRows = variants.map((v) => {
+        const vStock = Number(v.stock !== undefined && v.stock !== null && v.stock !== '' ? v.stock : 50);
+        return {
+          product_id: product.id,
+          name: v.name || 'Standard Pack',
+          weight: v.weight || 'Standard',
+          price: Number(v.price !== undefined && v.price !== '' ? v.price : price || 0),
+          original_price: Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : v.price || price || 0),
+          stock: vStock,
+          in_stock: v.inStock !== false && vStock > 0,
+        };
+      });
+      insertedVariants = await safeInsertVariants(variantRows);
     } else {
       // Auto-create a default variant if no variants array was supplied
+      const defaultStock = Number(stock !== undefined && stock !== null && stock !== '' ? stock : 100);
       const defaultVariantRow = {
         product_id: product.id,
         name: 'Standard Pack',
         weight: 'Standard',
         price: Number(price || 0),
         original_price: Number(originalPrice || price || 0),
-        in_stock: Number(stock !== undefined && stock !== null && stock !== '' ? stock : 100) > 0,
+        stock: defaultStock,
+        in_stock: defaultStock > 0,
       };
-      const { data: vData, error: vErr } = await supabase.from('product_variants').insert([defaultVariantRow]).select();
-      if (vErr) {
-        console.error('Supabase Default Variant Insert Error:', vErr);
-      }
-      if (vData) insertedVariants = vData;
+      insertedVariants = await safeInsertVariants([defaultVariantRow]);
     }
 
-    const totalStock = insertedVariants.length > 0 
-      ? insertedVariants.reduce((acc, v) => acc + (v.in_stock ? 50 : 0), 0)
+    const finalVariantStocksMap = {};
+    insertedVariants.forEach((v, idx) => {
+      const origV = variants && variants[idx];
+      const stk = Number(origV && origV.stock !== undefined && origV.stock !== null && origV.stock !== '' ? origV.stock : (v.stock !== undefined ? v.stock : 50));
+      if (v.id) finalVariantStocksMap[v.id] = stk;
+      if (v.weight) finalVariantStocksMap[v.weight] = stk;
+      if (v.name) finalVariantStocksMap[v.name] = stk;
+    });
+
+    await supabase
+      .from('products')
+      .update({
+        nutrition_facts: {
+          ...mergedNutritionFacts,
+          variant_stocks: finalVariantStocksMap,
+        },
+      })
+      .eq('id', product.id);
+
+    const formattedVariants = insertedVariants.map((v, idx) => {
+      const origV = variants && variants[idx];
+      const vStock = finalVariantStocksMap[v.id] !== undefined
+        ? finalVariantStocksMap[v.id]
+        : (finalVariantStocksMap[v.weight] !== undefined ? finalVariantStocksMap[v.weight] : (v.in_stock ? 50 : 0));
+      return {
+        id: v.id,
+        name: v.name,
+        weight: v.weight,
+        price: Number(v.price),
+        originalPrice: Number(v.original_price || v.price),
+        stock: vStock,
+        inStock: vStock > 0,
+      };
+    });
+
+    const totalStock = formattedVariants.length > 0 
+      ? formattedVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
       : (stock !== undefined && stock !== null && stock !== '' ? Number(stock) : 100);
 
-    const basePrice = insertedVariants.length > 0
-      ? Number(insertedVariants[0].price)
+    const basePrice = formattedVariants.length > 0
+      ? Number(formattedVariants[0].price)
       : Number(price || 0);
 
-    const baseOriginalPrice = insertedVariants.length > 0
-      ? Number(insertedVariants[0].original_price)
+    const baseOriginalPrice = formattedVariants.length > 0
+      ? Number(formattedVariants[0].originalPrice)
       : Number(originalPrice || basePrice);
 
     const formattedProduct = {
@@ -337,7 +426,7 @@ export const createProduct = async (req, res) => {
       category: product.category,
       price: basePrice,
       originalPrice: baseOriginalPrice,
-      stock: stock !== undefined && stock !== '' ? Number(stock) : totalStock,
+      stock: totalStock,
       sku: sku || 'MLS-PRD',
       status: product.is_active !== false ? 'active' : 'inactive',
       image: product.image_url,
@@ -350,15 +439,7 @@ export const createProduct = async (req, res) => {
       nutritionFacts: product.nutrition_facts || {},
       pieces: product.nutrition_facts?.pieces || pieces || '',
       isFeatured: product.is_featured !== false,
-      variants: insertedVariants.map((v) => ({
-        id: v.id,
-        name: v.name,
-        weight: v.weight,
-        price: Number(v.price),
-        originalPrice: Number(v.original_price),
-        stock: v.in_stock ? 50 : 0,
-        inStock: v.in_stock,
-      })),
+      variants: formattedVariants,
     };
 
     return res.status(201).json(formattedProduct);
@@ -385,6 +466,16 @@ export const updateProduct = async (req, res) => {
       ? updates.benefits 
       : (typeof updates.benefits === 'string' ? updates.benefits.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
+    const variantStocksMap = {};
+    if (updates.variants && Array.isArray(updates.variants)) {
+      updates.variants.forEach((v) => {
+        const vStock = Number(v.stock !== undefined && v.stock !== null && v.stock !== '' ? v.stock : 50);
+        if (v.weight) variantStocksMap[v.weight] = vStock;
+        if (v.name) variantStocksMap[v.name] = vStock;
+        if (v.id) variantStocksMap[v.id] = vStock;
+      });
+    }
+
     const updatePayload = {
       title: updates.title,
       subtitle: updates.subtitle || '',
@@ -393,7 +484,11 @@ export const updateProduct = async (req, res) => {
       image_url: updates.image !== undefined ? updates.image : undefined,
       secondary_image_url: updates.secondaryImage !== undefined ? updates.secondaryImage : undefined,
       ingredients: parsedIngredients,
-      nutrition_facts: updates.nutritionFacts || (updates.pieces ? { pieces: updates.pieces } : {}),
+      nutrition_facts: {
+        ...(typeof updates.nutritionFacts === 'object' && updates.nutritionFacts !== null ? updates.nutritionFacts : {}),
+        pieces: updates.pieces || (typeof updates.nutritionFacts === 'object' ? updates.nutritionFacts?.pieces : '') || '',
+        variant_stocks: Object.keys(variantStocksMap).length > 0 ? variantStocksMap : updates.nutritionFacts?.variant_stocks,
+      },
       badges: parsedBadges,
       allergens: updates.allergens || '',
       benefits: parsedBenefits,
@@ -430,45 +525,91 @@ export const updateProduct = async (req, res) => {
       await supabase.from('product_variants').delete().eq('product_id', id);
 
       if (updates.variants.length > 0) {
-        const variantRows = updates.variants.map((v) => ({
-          product_id: id,
-          name: v.name || 'Standard Pack',
-          weight: v.weight || 'Standard',
-          price: Number(v.price !== undefined && v.price !== '' ? v.price : updates.price || 0),
-          original_price: Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : v.price || updates.price || 0),
-          in_stock: v.inStock !== false,
-        }));
-        const { data: vData } = await supabase.from('product_variants').insert(variantRows).select();
-        if (vData) updatedVariants = vData;
+        const variantRows = updates.variants.map((v) => {
+          const vStock = Number(v.stock !== undefined && v.stock !== null && v.stock !== '' ? v.stock : 50);
+          return {
+            product_id: id,
+            name: v.name || 'Standard Pack',
+            weight: v.weight || 'Standard',
+            price: Number(v.price !== undefined && v.price !== '' ? v.price : updates.price || 0),
+            original_price: Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : v.price || updates.price || 0),
+            stock: vStock,
+            in_stock: v.inStock !== false && vStock > 0,
+          };
+        });
+        updatedVariants = await safeInsertVariants(variantRows);
       } else {
+        const defaultStock = Number(updates.stock !== undefined && updates.stock !== null && updates.stock !== '' ? updates.stock : 100);
         const defaultVariantRow = {
           product_id: id,
           name: 'Standard Pack',
           weight: 'Standard',
           price: Number(updates.price || 0),
           original_price: Number(updates.originalPrice || updates.price || 0),
-          in_stock: true,
+          stock: defaultStock,
+          in_stock: defaultStock > 0,
         };
-        const { data: vData } = await supabase.from('product_variants').insert([defaultVariantRow]).select();
-        if (vData) updatedVariants = vData;
+        updatedVariants = await safeInsertVariants([defaultVariantRow]);
       }
     } else {
       const { data: existingV } = await supabase.from('product_variants').select('*').eq('product_id', id);
       if (existingV && existingV.length > 0) {
         updatedVariants = existingV;
       } else {
+        const defaultStock = Number(updates.stock !== undefined && updates.stock !== null && updates.stock !== '' ? updates.stock : 100);
         const defaultVariantRow = {
           product_id: id,
           name: 'Standard Pack',
           weight: 'Standard',
           price: Number(updates.price || 0),
           original_price: Number(updates.originalPrice || updates.price || 0),
-          in_stock: true,
+          stock: defaultStock,
+          in_stock: defaultStock > 0,
         };
-        const { data: vData } = await supabase.from('product_variants').insert([defaultVariantRow]).select();
-        if (vData) updatedVariants = vData;
+        updatedVariants = await safeInsertVariants([defaultVariantRow]);
       }
     }
+
+    const finalVariantStocksMap = {};
+    updatedVariants.forEach((v, idx) => {
+      const origV = updates.variants && updates.variants[idx];
+      const stk = Number(origV && origV.stock !== undefined && origV.stock !== null && origV.stock !== '' ? origV.stock : (v.stock !== undefined ? v.stock : 50));
+      if (v.id) finalVariantStocksMap[v.id] = stk;
+      if (v.weight) finalVariantStocksMap[v.weight] = stk;
+      if (v.name) finalVariantStocksMap[v.name] = stk;
+    });
+
+    if (Object.keys(finalVariantStocksMap).length > 0) {
+      await supabase
+        .from('products')
+        .update({
+          nutrition_facts: {
+            ...(typeof product.nutrition_facts === 'object' && product.nutrition_facts !== null ? product.nutrition_facts : {}),
+            variant_stocks: finalVariantStocksMap,
+          },
+        })
+        .eq('id', id);
+    }
+
+    const formattedVariants = updatedVariants.map((v, idx) => {
+      const origV = updates.variants && updates.variants[idx];
+      const vStock = finalVariantStocksMap[v.id] !== undefined
+        ? finalVariantStocksMap[v.id]
+        : (finalVariantStocksMap[v.weight] !== undefined ? finalVariantStocksMap[v.weight] : (v.in_stock ? 50 : 0));
+      return {
+        id: v.id,
+        name: v.name,
+        weight: v.weight,
+        price: Number(v.price),
+        originalPrice: Number(v.original_price || v.price),
+        stock: vStock,
+        inStock: vStock > 0,
+      };
+    });
+
+    const totalStock = formattedVariants.length > 0 
+      ? formattedVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
+      : (updates.stock !== undefined && updates.stock !== null && updates.stock !== '' ? Number(updates.stock) : 100);
 
     const formattedProduct = {
       _id: product.id,
@@ -478,9 +619,9 @@ export const updateProduct = async (req, res) => {
       subtitle: product.subtitle,
       description: product.description,
       category: product.category,
-      price: Number(updatedVariants[0]?.price || updates.price || 0),
-      originalPrice: Number(updatedVariants[0]?.original_price || updates.originalPrice || updatedVariants[0]?.price || 0),
-      stock: updates.stock !== undefined && updates.stock !== '' ? Number(updates.stock) : 100,
+      price: Number(formattedVariants[0]?.price || updates.price || 0),
+      originalPrice: Number(formattedVariants[0]?.originalPrice || updates.originalPrice || formattedVariants[0]?.price || 0),
+      stock: totalStock,
       sku: product.sku || updates.sku || 'MLS-PRD',
       status: product.is_active !== false ? 'active' : 'inactive',
       image: product.image_url,
@@ -493,15 +634,7 @@ export const updateProduct = async (req, res) => {
       nutritionFacts: product.nutrition_facts || {},
       pieces: product.nutrition_facts?.pieces || updates.pieces || '',
       isFeatured: product.is_featured !== false,
-      variants: updatedVariants.map((v) => ({
-        id: v.id,
-        name: v.name,
-        weight: v.weight,
-        price: Number(v.price),
-        originalPrice: Number(v.original_price),
-        stock: v.in_stock ? 50 : 0,
-        inStock: v.in_stock,
-      })),
+      variants: formattedVariants,
     };
 
     return res.json(formattedProduct);

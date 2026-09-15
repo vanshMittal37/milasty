@@ -49,25 +49,50 @@ export const createOrder = async (req, res) => {
 
     // SERVER-SIDE PRICE & STOCK VALIDATION TRUTH
     // Fetch product pricing & stock directly from Supabase
-    const productIds = items.map((i) => i.productId).filter(Boolean);
+    const productIds = items.map((i) => i.productId || i.product_id).filter(Boolean);
     const { data: dbProducts, error: prodErr } = await supabase
       .from('products')
-      .select('id, title, stock, product_variants(*)')
+      .select('*, product_variants(*)')
       .in('id', productIds);
 
     // Pre-check stock for all requested items
     for (const item of items) {
-      if (item.productId) {
-        const dbProduct = dbProducts ? dbProducts.find((p) => p.id === item.productId) : null;
+      const targetId = item.productId || item.product_id;
+      if (targetId) {
+        const dbProduct = dbProducts ? dbProducts.find((p) => p.id === targetId || p.slug === targetId) : null;
         if (dbProduct) {
-          const dbVariant = (dbProduct.product_variants || []).find((v) => v.name === item.variantName);
+          const vName = item.variantName || item.variant_name;
+          const vId = item.variantId || item.variant_id;
+          const vWeight = item.variantWeight || item.variant_weight;
+
+          const dbVariant = (dbProduct.product_variants || []).find((v) => 
+            (vId && v.id === vId) || 
+            (vWeight && (v.weight === vWeight || v.name === vWeight)) || 
+            (vName && (v.name === vName || v.weight === vName))
+          );
+
+          const variantStocksMap = dbProduct.nutrition_facts?.variant_stocks || {};
+          const stockFromMap = vId && variantStocksMap[vId] !== undefined
+            ? Number(variantStocksMap[vId])
+            : (vWeight && variantStocksMap[vWeight] !== undefined
+              ? Number(variantStocksMap[vWeight])
+              : (vName && variantStocksMap[vName] !== undefined
+                ? Number(variantStocksMap[vName])
+                : (dbVariant && variantStocksMap[dbVariant.id] !== undefined
+                  ? Number(variantStocksMap[dbVariant.id])
+                  : (dbVariant && variantStocksMap[dbVariant.weight] !== undefined
+                    ? Number(variantStocksMap[dbVariant.weight])
+                    : (dbVariant && variantStocksMap[dbVariant.name] !== undefined
+                      ? Number(variantStocksMap[dbVariant.name])
+                      : undefined)))));
+
           const availableStock = dbVariant && dbVariant.stock !== undefined && dbVariant.stock !== null
             ? Number(dbVariant.stock)
-            : (dbProduct.stock !== undefined && dbProduct.stock !== null ? Number(dbProduct.stock) : 100);
+            : (stockFromMap !== undefined ? stockFromMap : (dbProduct.stock !== undefined && dbProduct.stock !== null ? Number(dbProduct.stock) : 50));
 
           if (availableStock < (item.quantity || 1)) {
             return res.status(400).json({ 
-              message: `Insufficient stock available for ${dbProduct.title} (${item.variantName || 'Standard Pack'}). Available: ${availableStock}, Requested: ${item.quantity}` 
+              message: `Insufficient stock available for ${dbProduct.title} (${vWeight || vName || 'Standard Pack'}). Available: ${availableStock}, Requested: ${item.quantity}` 
             });
           }
         }
@@ -78,13 +103,23 @@ export const createOrder = async (req, res) => {
     const validatedItems = [];
 
     for (const item of items) {
-      const dbProduct = dbProducts ? dbProducts.find((p) => p.id === item.productId) : null;
-      let unitPrice = 149; // fallback if product not seeded
+      const targetId = item.productId || item.product_id;
+      const dbProduct = dbProducts ? dbProducts.find((p) => p.id === targetId || p.slug === targetId) : null;
+      let unitPrice = Number(item.unit_price || item.unitPrice || 149);
       let title = item.title || 'MILASTY Artisan Cookie';
 
       if (dbProduct) {
         title = dbProduct.title;
-        const dbVariant = (dbProduct.product_variants || []).find((v) => v.name === item.variantName);
+        const vName = item.variantName || item.variant_name;
+        const vId = item.variantId || item.variant_id;
+        const vWeight = item.variantWeight || item.variant_weight;
+
+        const dbVariant = (dbProduct.product_variants || []).find((v) => 
+          (vId && v.id === vId) || 
+          (vWeight && (v.weight === vWeight || v.name === vWeight)) || 
+          (vName && (v.name === vName || v.weight === vName))
+        );
+
         if (dbVariant) {
           unitPrice = Number(dbVariant.price);
         }
@@ -96,7 +131,7 @@ export const createOrder = async (req, res) => {
       validatedItems.push({
         product_id: dbProduct ? dbProduct.id : null,
         product_title: title,
-        variant_name: item.variantName || 'Standard Pack',
+        variant_name: item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard Pack',
         unit_price: unitPrice,
         quantity: item.quantity,
         total_price: itemTotal,
@@ -140,46 +175,77 @@ export const createOrder = async (req, res) => {
           order_id: order.id,
         }));
         await supabase.from('order_items').insert(orderItemsRows);
-
-        // Realtime Stock Deduction: Decrement stock for purchased products & variants
-        for (const item of items) {
-          if (item.productId) {
-            // Decrement product_variant stock if found
-            const { data: varData } = await supabase
-              .from('product_variants')
-              .select('id, stock')
-              .eq('product_id', item.productId)
-              .eq('name', item.variantName || 'Standard Pack')
-              .maybeSingle();
-
-            if (varData) {
-              const currentVarStock = varData.stock !== undefined && varData.stock !== null ? Number(varData.stock) : 50;
-              const newVarStock = Math.max(0, currentVarStock - (item.quantity || 1));
-              await supabase
-                .from('product_variants')
-                .update({ stock: newVarStock, in_stock: newVarStock > 0 })
-                .eq('id', varData.id);
-            }
-
-            // Decrement main product stock
-            const { data: prodData } = await supabase
-              .from('products')
-              .select('id, stock')
-              .eq('id', item.productId)
-              .maybeSingle();
-
-            if (prodData && prodData.stock !== undefined && prodData.stock !== null) {
-              const newProdStock = Math.max(0, Number(prodData.stock) - (item.quantity || 1));
-              await supabase
-                .from('products')
-                .update({ stock: newProdStock })
-                .eq('id', prodData.id);
-            }
-          }
-        }
       }
     } catch (e) {
       console.warn('Supabase order table insert error, utilizing fallback order receipt:', e.message);
+    }
+
+    // Realtime Stock Deduction: Decrement stock ONLY for selected variant & update parent product
+    for (const item of items) {
+      const targetId = item.productId || item.product_id;
+      const vName = item.variantName || item.variant_name;
+      const vId = item.variantId || item.variant_id;
+      const vWeight = item.variantWeight || item.variant_weight;
+
+      if (targetId) {
+        const { data: dbProduct } = await supabase
+          .from('products')
+          .select('*, product_variants(*)')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (dbProduct) {
+          const dbVariant = (dbProduct.product_variants || []).find((v) => 
+            (vId && v.id === vId) || 
+            (vWeight && (v.weight === vWeight || v.name === vWeight)) || 
+            (vName && (v.name === vName || v.weight === vName))
+          );
+
+          const variantStocksMap = { ...(dbProduct.nutrition_facts?.variant_stocks || {}) };
+          const keyName = vId || vWeight || vName || dbVariant?.id || dbVariant?.weight || dbVariant?.name;
+
+          const currentStock = dbVariant && dbVariant.stock !== undefined && dbVariant.stock !== null
+            ? Number(dbVariant.stock)
+            : (keyName && variantStocksMap[keyName] !== undefined 
+              ? Number(variantStocksMap[keyName]) 
+              : (dbVariant?.in_stock ? 50 : 0));
+
+          const newStock = Math.max(0, currentStock - (item.quantity || 1));
+
+          if (keyName) variantStocksMap[keyName] = newStock;
+          if (vWeight) variantStocksMap[vWeight] = newStock;
+          if (vName) variantStocksMap[vName] = newStock;
+          if (vId) variantStocksMap[vId] = newStock;
+          if (dbVariant) {
+            if (dbVariant.id) variantStocksMap[dbVariant.id] = newStock;
+            if (dbVariant.weight) variantStocksMap[dbVariant.weight] = newStock;
+            if (dbVariant.name) variantStocksMap[dbVariant.name] = newStock;
+          }
+
+          // Update nutrition_facts.variant_stocks in products table
+          const updatedNutritionFacts = {
+            ...(typeof dbProduct.nutrition_facts === 'object' && dbProduct.nutrition_facts !== null ? dbProduct.nutrition_facts : {}),
+            variant_stocks: variantStocksMap,
+          };
+
+          await supabase
+            .from('products')
+            .update({ nutrition_facts: updatedNutritionFacts })
+            .eq('id', dbProduct.id);
+
+          // Update product_variants row if found
+          if (dbVariant) {
+            const updatePayload = { in_stock: newStock > 0 };
+            if (dbVariant.stock !== undefined && dbVariant.stock !== null) {
+              updatePayload.stock = newStock;
+            }
+            await supabase
+              .from('product_variants')
+              .update(updatePayload)
+              .eq('id', dbVariant.id);
+          }
+        }
+      }
     }
 
     // Fallback response object if table does not exist yet

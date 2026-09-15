@@ -8,9 +8,11 @@ import { initialProducts } from '../data/seedData';
 import ProductCard from '../components/ProductCard';
 import PriceDisplay from '../components/PriceDisplay';
 
+import { LOW_STOCK_THRESHOLD } from '../config/constants';
+
 export default function ProductDetail() {
   const { slug } = useParams();
-  const { addToCart } = useCart();
+  const { addToCart, showToast } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const relatedRef = useRef(null);
@@ -78,6 +80,11 @@ export default function ProductDetail() {
       if (res.data) {
         setProduct(res.data);
         setSelectedImage(res.data.image);
+        // Automatically select first available variant if available
+        if (res.data.variants && res.data.variants.length > 0) {
+          const availIdx = res.data.variants.findIndex((v) => (v.stock !== undefined ? v.stock : 50) > 0);
+          setSelectedVariantIndex(availIdx >= 0 ? availIdx : 0);
+        }
         fetchRelated(res.data.category);
       }
     } catch (err) {
@@ -210,9 +217,41 @@ export default function ProductDetail() {
   const selectedVariant = product?.variants?.[selectedVariantIndex] || product?.variants?.[0] || {};
   const unitPrice = selectedVariant?.price || product?.finalPrice || product?.price || 0;
   const wishlisted = isInWishlist(product?._id || product?.slug);
-  const currentStock = selectedVariant?.stock || product?.stock || 50;
+  const currentStock = selectedVariant?.stock !== undefined && selectedVariant?.stock !== null
+    ? Number(selectedVariant.stock)
+    : (product?.stock !== undefined && product?.stock !== null ? Number(product.stock) : 50);
+
+  const isOutOfStock = currentStock <= 0;
+  const isLowStock = currentStock > 0 && currentStock <= LOW_STOCK_THRESHOLD;
+
+  const handleVariantSelect = (idx) => {
+    setSelectedVariantIndex(idx);
+    const newVariant = product?.variants?.[idx] || {};
+    const newStock = newVariant.stock !== undefined && newVariant.stock !== null
+      ? Number(newVariant.stock)
+      : (product?.stock !== undefined ? Number(product.stock) : 50);
+    
+    if (newStock <= 0) {
+      setQuantity(1);
+    } else if (quantity > newStock) {
+      setQuantity(newStock);
+    }
+  };
+
+  const handleIncreaseQty = () => {
+    if (quantity >= currentStock) {
+      if (showToast) showToast(`Only ${currentStock} packs are available.`);
+      return;
+    }
+    setQuantity((q) => Math.min(currentStock, q + 1));
+  };
+
+  const handleDecreaseQty = () => {
+    setQuantity((q) => Math.max(1, q - 1));
+  };
 
   const handleAddToCart = async () => {
+    if (isOutOfStock) return;
     setBtnText('Adding...');
     try {
       await addToCart(product, selectedVariant, quantity);
@@ -376,20 +415,28 @@ export default function ProductDetail() {
                     {badge}
                   </span>
                 ))}
+                
+                {/* Variant Stock Status Badge */}
                 <span 
                   style={{ 
                     fontSize: '0.68rem',
                     fontWeight: '800',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
-                    backgroundColor: currentStock > 5 ? 'rgba(36, 79, 33, 0.30)' : 'rgba(184, 50, 30, 0.30)', 
-                    color: currentStock > 5 ? '#b9cd94' : '#ff9e88',
-                    border: currentStock > 5 ? '1px solid rgba(185, 205, 148, 0.4)' : '1px solid rgba(184, 50, 30, 0.4)',
+                    backgroundColor: isOutOfStock 
+                      ? 'rgba(184, 50, 30, 0.30)' 
+                      : (isLowStock ? 'rgba(234, 179, 8, 0.25)' : 'rgba(36, 79, 33, 0.30)'), 
+                    color: isOutOfStock 
+                      ? '#ff9e88' 
+                      : (isLowStock ? '#FACC15' : '#b9cd94'),
+                    border: isOutOfStock 
+                      ? '1px solid rgba(184, 50, 30, 0.4)' 
+                      : (isLowStock ? '1px solid rgba(234, 179, 8, 0.4)' : '1px solid rgba(185, 205, 148, 0.4)'),
                     padding: '0.25rem 0.65rem',
                     borderRadius: '999px'
                   }}
                 >
-                  {currentStock > 5 ? 'In Stock' : 'Low Stock'}
+                  {isOutOfStock ? 'Out of Stock' : (isLowStock ? 'Low Stock' : 'In Stock')}
                 </span>
               </div>
 
@@ -401,7 +448,7 @@ export default function ProductDetail() {
                 </p>
               </div>
 
-              {/* Ratings & reviews */}
+              {/* Ratings & Stock Alert Signal */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: isMobile ? '0.78rem' : '0.85rem', color: '#F5EBDD', fontWeight: '600' }}>
                   <div style={{ display: 'flex', color: '#b9cd94' }}>
@@ -410,10 +457,23 @@ export default function ProductDetail() {
                   <span style={{ color: '#FFFDF9', fontWeight: '800' }}>{product.rating}</span>
                   <span style={{ color: '#F5EBDD' }}>({product.reviewCount || 24} reviews)</span>
                 </div>
-                {/* Stock Scarcity Signal */}
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.2rem 0.55rem', borderRadius: '6px', backgroundColor: 'rgba(234, 179, 8, 0.15)', border: '1px solid rgba(234, 179, 8, 0.4)', color: '#FACC15', fontSize: '0.74rem', fontWeight: '800' }}>
-                  <span>⚡ Limited Batch: Only {currentStock || 8} left!</span>
-                </div>
+                
+                {/* Detailed Stock Alert Signal */}
+                {isOutOfStock ? (
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.2rem 0.55rem', borderRadius: '6px', backgroundColor: 'rgba(184, 50, 30, 0.25)', border: '1px solid rgba(184, 50, 30, 0.5)', color: '#ff9e88', fontSize: '0.74rem', fontWeight: '800' }}>
+                    <span>Out of Stock</span>
+                  </div>
+                ) : isLowStock ? (
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.2rem 0.55rem', borderRadius: '6px', backgroundColor: 'rgba(234, 179, 8, 0.15)', border: '1px solid rgba(234, 179, 8, 0.4)', color: '#FACC15', fontSize: '0.74rem', fontWeight: '800' }}>
+                    <span>
+                      {currentStock <= 5 ? `Only ${currentStock} packs left — order soon!` : `Only ${currentStock} packs left!`}
+                    </span>
+                  </div>
+                ) : (
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.2rem 0.55rem', borderRadius: '6px', backgroundColor: 'rgba(36, 79, 33, 0.2)', border: '1px solid rgba(185, 205, 148, 0.35)', color: '#b9cd94', fontSize: '0.74rem', fontWeight: '800' }}>
+                    <span>{currentStock} packs available</span>
+                  </div>
+                )}
               </div>
 
               {/* Price section */}
@@ -428,26 +488,46 @@ export default function ProductDetail() {
                 <div style={{ padding: '0.1rem 0' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#FFFDF9', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.4rem' }}>Select Pack Size</span>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    {product.variants.map((v, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedVariantIndex(idx)}
-                        style={{
-                          padding: isMobile ? '0.5rem 0.85rem' : '0.65rem 1.15rem',
-                          borderRadius: '12px',
-                          fontWeight: '800',
-                          fontSize: isMobile ? '0.78rem' : '0.85rem',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                          backgroundColor: selectedVariantIndex === idx ? '#244f21' : 'rgba(20, 10, 5, 0.65)',
-                          color: selectedVariantIndex === idx ? '#FFFFFF' : '#F5EBDD',
-                          border: selectedVariantIndex === idx ? '1.5px solid #b9cd94' : '1.5px solid rgba(185, 205, 148, 0.35)',
-                          boxShadow: selectedVariantIndex === idx ? '0 4px 14px rgba(36, 79, 33, 0.35)' : 'none',
-                        }}
-                      >
-                        {v.name} ({v.weight}) • ₹{v.price}
-                      </button>
-                    ))}
+                    {product.variants.map((v, idx) => {
+                      const vStock = v.stock !== undefined && v.stock !== null ? Number(v.stock) : 50;
+                      const vOutOfStock = vStock <= 0;
+                      const isSelected = selectedVariantIndex === idx;
+
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => handleVariantSelect(idx)}
+                          style={{
+                            padding: isMobile ? '0.5rem 0.85rem' : '0.65rem 1.15rem',
+                            borderRadius: '12px',
+                            fontWeight: '800',
+                            fontSize: isMobile ? '0.78rem' : '0.85rem',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            backgroundColor: isSelected 
+                              ? '#244f21' 
+                              : (vOutOfStock ? 'rgba(40, 20, 15, 0.45)' : 'rgba(20, 10, 5, 0.65)'),
+                            color: isSelected 
+                              ? '#FFFFFF' 
+                              : (vOutOfStock ? '#a08575' : '#F5EBDD'),
+                            border: isSelected 
+                              ? '1.5px solid #b9cd94' 
+                              : (vOutOfStock ? '1.5px dashed rgba(184, 50, 30, 0.35)' : '1.5px solid rgba(185, 205, 148, 0.35)'),
+                            boxShadow: isSelected ? '0 4px 14px rgba(36, 79, 33, 0.35)' : 'none',
+                            opacity: vOutOfStock ? 0.75 : 1,
+                            display: 'inline-flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            gap: '0.1rem',
+                          }}
+                        >
+                          <div>{v.name} ({v.weight}) • ₹{v.price}</div>
+                          <div style={{ fontSize: '0.68rem', fontWeight: '600', color: vOutOfStock ? '#ff7e65' : (vStock <= LOW_STOCK_THRESHOLD ? '#FACC15' : '#b9cd94') }}>
+                            {vOutOfStock ? 'Out of Stock' : (vStock <= LOW_STOCK_THRESHOLD ? `Only ${vStock} left` : `${vStock} available`)}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -455,34 +535,47 @@ export default function ProductDetail() {
               {/* Quantity Selector & Main Buttons */}
               <div style={{ display: 'flex', gap: isMobile ? '0.65rem' : '1rem', alignItems: 'center', flexWrap: 'wrap', paddingTop: '0.2rem' }}>
                 {/* Qty count */}
-                <div style={{ display: 'inline-flex', alignItems: 'center', border: '1.5px solid rgba(185, 205, 148, 0.35)', borderRadius: '999px', backgroundColor: 'rgba(20, 10, 5, 0.65)', padding: isMobile ? '0.25rem 0.55rem' : '0.35rem 0.75rem' }}>
-                  <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} style={{ padding: '0.2rem 0.45rem', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#FFFDF9' }}><Minus size={14} /></button>
-                  <span style={{ padding: '0 0.65rem', fontWeight: '900', color: '#FFFDF9', fontSize: isMobile ? '0.88rem' : '0.95rem' }}>{quantity}</span>
-                  <button onClick={() => setQuantity((q) => Math.min(currentStock, q + 1))} style={{ padding: '0.2rem 0.45rem', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#FFFDF9' }}><Plus size={14} /></button>
+                <div style={{ display: 'inline-flex', alignItems: 'center', border: '1.5px solid rgba(185, 205, 148, 0.35)', borderRadius: '999px', backgroundColor: 'rgba(20, 10, 5, 0.65)', padding: isMobile ? '0.25rem 0.55rem' : '0.35rem 0.75rem', opacity: isOutOfStock ? 0.4 : 1 }}>
+                  <button 
+                    onClick={handleDecreaseQty} 
+                    disabled={isOutOfStock || quantity <= 1}
+                    style={{ padding: '0.2rem 0.45rem', background: 'none', border: 'none', cursor: isOutOfStock ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', color: '#FFFDF9' }}
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span style={{ padding: '0 0.65rem', fontWeight: '900', color: '#FFFDF9', fontSize: isMobile ? '0.88rem' : '0.95rem' }}>{isOutOfStock ? 0 : quantity}</span>
+                  <button 
+                    onClick={handleIncreaseQty} 
+                    disabled={isOutOfStock || quantity >= currentStock}
+                    style={{ padding: '0.2rem 0.45rem', background: 'none', border: 'none', cursor: (isOutOfStock || quantity >= currentStock) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', color: '#FFFDF9' }}
+                  >
+                    <Plus size={14} />
+                  </button>
                 </div>
 
                 {/* Add to cart */}
                 <button
                   onClick={handleAddToCart}
+                  disabled={isOutOfStock}
                   style={{
                     padding: isMobile ? '0.75rem 1.4rem' : '0.9rem 2.25rem',
                     fontSize: isMobile ? '0.85rem' : '0.92rem',
-                    backgroundColor: '#244f21',
-                    color: '#FFFFFF',
-                    border: '1px solid #b9cd94',
+                    backgroundColor: isOutOfStock ? '#4a3b35' : '#244f21',
+                    color: isOutOfStock ? '#a08575' : '#FFFFFF',
+                    border: isOutOfStock ? '1px solid #6e5246' : '1px solid #b9cd94',
                     borderRadius: '999px',
                     fontWeight: '800',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 16px rgba(36, 79, 33, 0.35)',
+                    cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                    boxShadow: isOutOfStock ? 'none' : '0 4px 16px rgba(36, 79, 33, 0.35)',
                     flexGrow: isMobile ? 1 : 0
                   }}
                 >
-                  <ShoppingBag size={16} color="#FFFFFF" />
-                  <span>{btnText}</span>
+                  <ShoppingBag size={16} color={isOutOfStock ? '#a08575' : '#FFFFFF'} />
+                  <span>{isOutOfStock ? 'Out of Stock' : btnText}</span>
                 </button>
 
                 {/* Wishlist toggle */}

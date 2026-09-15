@@ -45,35 +45,61 @@ export const CartProvider = ({ children }) => {
     const selectedVariant = variant || product?.variants?.[0] || {};
     const itemKey = `${product?._id || product?.slug}-${selectedVariant?.name || 'default'}`;
     const unitPrice = selectedVariant?.price || product?.finalPrice || product?.price || 0;
+    const availableStock = selectedVariant?.stock !== undefined && selectedVariant?.stock !== null
+      ? Number(selectedVariant.stock)
+      : (product?.stock !== undefined && product?.stock !== null ? Number(product.stock) : 50);
+
+    if (availableStock <= 0) {
+      showToast('This variant is currently Out of Stock.');
+      return;
+    }
 
     setCartItems((prevItems) => {
       const existingIndex = prevItems.findIndex((item) => item.key === itemKey);
       if (existingIndex > -1) {
+        const existingQty = prevItems[existingIndex].quantity;
+        const requestedQty = existingQty + qty;
+        if (requestedQty > availableStock) {
+          showToast(`Only ${availableStock} packs are available.`);
+          const cappedQty = Math.min(requestedQty, availableStock);
+          const updated = [...prevItems];
+          updated[existingIndex].quantity = cappedQty;
+          updated[existingIndex].availableStock = availableStock;
+          updated[existingIndex].totalPrice = cappedQty * unitPrice;
+          return updated;
+        }
         const updated = [...prevItems];
-        updated[existingIndex].quantity += qty;
-        updated[existingIndex].totalPrice = updated[existingIndex].quantity * unitPrice;
+        updated[existingIndex].quantity = requestedQty;
+        updated[existingIndex].availableStock = availableStock;
+        updated[existingIndex].totalPrice = requestedQty * unitPrice;
         return updated;
       } else {
+        const cappedQty = Math.min(qty, availableStock);
+        if (qty > availableStock) {
+          showToast(`Only ${availableStock} packs are available.`);
+        }
         return [
           ...prevItems,
           {
             key: itemKey,
-            productId: product._id || product.slug,
+            productId: product._id || product.id || product.slug,
+            variantId: selectedVariant.id || selectedVariant._id || null,
             slug: product.slug,
             title: product.title,
-            variantName: selectedVariant.name,
-            weight: selectedVariant.weight,
+            variantName: selectedVariant.name || 'Standard Pack',
+            weight: selectedVariant.weight || '',
             price: unitPrice,
             originalPrice: selectedVariant.originalPrice || unitPrice,
             image: product.image,
-            quantity: qty,
-            totalPrice: unitPrice * qty,
+            availableStock: availableStock,
+            quantity: cappedQty,
+            totalPrice: unitPrice * cappedQty,
           },
         ];
       }
     });
 
-    showToast(`Added "${product.title} (${selectedVariant.weight})"` );
+    showToast(`Added "${product.title} (${selectedVariant.weight || selectedVariant.name})"` );
   };
 
   const updateQuantity = (itemKey, delta) => {
@@ -83,6 +109,14 @@ export const CartProvider = ({ children }) => {
           if (item.key === itemKey) {
             const newQty = item.quantity + delta;
             if (newQty <= 0) return null;
+            if (item.availableStock !== undefined && newQty > item.availableStock) {
+              showToast(`Only ${item.availableStock} packs are available.`);
+              return {
+                ...item,
+                quantity: item.availableStock,
+                totalPrice: item.availableStock * item.price,
+              };
+            }
             return {
               ...item,
               quantity: newQty,

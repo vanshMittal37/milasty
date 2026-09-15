@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, Package, ShoppingBag, Users, AlertTriangle, ArrowUpRight, 
-  Plus, RefreshCw, CheckCircle, TrendingUp, ChevronRight, Activity, MessageSquare, Ticket
+  Plus, RefreshCw, CheckCircle, TrendingUp, ChevronRight, Activity, MessageSquare, Ticket, AlertCircle, XCircle
 } from 'lucide-react';
 import api from '../../api/axios';
+import { LOW_STOCK_THRESHOLD } from '../../config/constants';
 
 export default function AdminDashboardMain() {
   const [stats, setStats] = useState(null);
@@ -72,37 +73,55 @@ export default function AdminDashboardMain() {
     );
   }
 
-  const lowStockItems = products.filter(p => (p.stock !== undefined ? p.stock : 50) <= 5);
+  // Parse products & variants for exact stock alerts
+  const lowStockItems = [];
+  const outOfStockItems = [];
+
+  products.forEach((p) => {
+    const hasVariants = Array.isArray(p.variants) && p.variants.length > 0;
+    if (hasVariants) {
+      p.variants.forEach((v) => {
+        const vStock = Number(v.stock !== undefined && v.stock !== null ? v.stock : (v.in_stock ? 50 : 0));
+        const item = {
+          productId: p._id || p.slug,
+          title: p.title,
+          variantName: v.name || v.weight || 'Variant',
+          weight: v.weight || '',
+          price: v.price || p.price,
+          stock: vStock,
+          image: p.image,
+        };
+        if (vStock === 0) {
+          outOfStockItems.push(item);
+        } else if (vStock <= LOW_STOCK_THRESHOLD) {
+          lowStockItems.push(item);
+        }
+      });
+    } else {
+      const pStock = Number(p.stock !== undefined && p.stock !== null ? p.stock : 0);
+      const item = {
+        productId: p._id || p.slug,
+        title: p.title,
+        variantName: null,
+        weight: '',
+        price: p.price,
+        stock: pStock,
+        image: p.image,
+      };
+      if (pStock === 0) {
+        outOfStockItems.push(item);
+      } else if (pStock <= LOW_STOCK_THRESHOLD) {
+        lowStockItems.push(item);
+      }
+    }
+  });
+
+  lowStockItems.sort((a, b) => a.stock - b.stock);
+  outOfStockItems.sort((a, b) => a.stock - b.stock);
+
   const recentOrdersForChart = stats?.recentOrders ? [...stats.recentOrders].reverse() : [];
   const chartPoints = recentOrdersForChart.map((o, idx) => ({ x: idx, y: o.totalAmount || 0 }));
   const maxVal = chartPoints.length > 0 ? Math.max(...chartPoints.map(p => p.y), 1) : 1;
-
-  const isCatalogConnected = products.length > 0;
-  const isCustomersConnected = (stats?.totalCustomers || 0) > 0;
-  const isOrdersConnected = (stats?.totalOrders || 0) > 0;
-  const isReviewsConnected = reviews.length > 0;
-
-  const activityEvents = [];
-  if (stats?.recentOrders?.length > 0) {
-    stats.recentOrders.slice(0, 3).forEach(o => {
-      activityEvents.push({
-        type: 'order',
-        title: 'New order received',
-        desc: `${o.orderId} · ₹${o.totalAmount} by ${o.customerName}`,
-        time: new Date(o.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      });
-    });
-  }
-  if (products.length > 0) {
-    products.slice(0, 2).forEach(p => {
-      activityEvents.push({ type: 'product', title: 'Product catalog active', desc: `${p.title} loaded in store catalog`, time: 'Catalog Sync' });
-    });
-  }
-  if (reviews.length > 0) {
-    reviews.slice(0, 1).forEach(r => {
-      activityEvents.push({ type: 'review', title: 'Review submitted', desc: `"${r.comment?.slice(0, 35)}…" by ${r.name}`, time: 'Pending review' });
-    });
-  }
 
   const kpiData = [
     {
@@ -116,34 +135,34 @@ export default function AdminDashboardMain() {
       topColor: 'var(--admin-accent)',
     },
     {
-      label: 'Total Orders',
-      value: stats?.totalOrders || 0,
-      sub: `${stats?.pendingOrders || 0} Pending`,
-      sub2: `${stats?.deliveredOrders || 0} Delivered`,
-      icon: ShoppingBag,
+      label: 'Total Products',
+      value: products.length,
+      sub: `${products.length} Catalog Items`,
+      sub2: 'Live in store',
+      icon: Package,
       color: '#3B82F6',
       bg: 'rgba(59,130,246,0.12)',
       topColor: '#3B82F6',
     },
     {
-      label: 'Low Stock Alert',
+      label: 'Low Stock Variants',
       value: lowStockItems.length,
-      sub: lowStockItems.length > 0 ? 'Action Required' : 'Stock Optimal',
-      sub2: 'Threshold ≤ 5 units',
+      sub: lowStockItems.length > 0 ? `${lowStockItems.length} Need Restock` : 'Stock Optimal',
+      sub2: `Threshold ≤ ${LOW_STOCK_THRESHOLD} units`,
       icon: AlertTriangle,
-      color: lowStockItems.length > 0 ? 'var(--admin-danger)' : 'var(--admin-success)',
-      bg: lowStockItems.length > 0 ? 'var(--admin-danger-bg)' : 'var(--admin-success-bg)',
-      topColor: lowStockItems.length > 0 ? 'var(--admin-danger)' : 'var(--admin-success)',
+      color: lowStockItems.length > 0 ? '#F59E0B' : 'var(--admin-success)',
+      bg: lowStockItems.length > 0 ? 'rgba(245,158,11,0.12)' : 'var(--admin-success-bg)',
+      topColor: lowStockItems.length > 0 ? '#F59E0B' : 'var(--admin-success)',
     },
     {
-      label: 'Customers',
-      value: (stats?.totalCustomers !== undefined && stats?.totalCustomers !== null) ? stats.totalCustomers : '—',
-      sub: (stats?.totalCustomers !== undefined && stats?.totalCustomers !== null) ? 'Registered users' : 'Unable to load customer count',
-      sub2: 'Supabase Auth',
-      icon: Users,
-      color: '#8B5CF6',
-      bg: 'rgba(139,92,246,0.12)',
-      topColor: '#8B5CF6',
+      label: 'Out of Stock Variants',
+      value: outOfStockItems.length,
+      sub: outOfStockItems.length > 0 ? `${outOfStockItems.length} Unavailable` : 'All Available',
+      sub2: 'Stock = 0 units',
+      icon: XCircle,
+      color: outOfStockItems.length > 0 ? 'var(--admin-danger)' : 'var(--admin-success)',
+      bg: outOfStockItems.length > 0 ? 'var(--admin-danger-bg)' : 'var(--admin-success-bg)',
+      topColor: outOfStockItems.length > 0 ? 'var(--admin-danger)' : 'var(--admin-success)',
     },
   ];
 
@@ -310,41 +329,89 @@ export default function AdminDashboardMain() {
           )}
         </div>
 
-        {/* Low Stock */}
-        <div className="admin-card" style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ marginBottom: '1rem' }}>
-            <h3 style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', color: '#F2F4EF', fontWeight: '800', margin: 0 }}>Low Stock Alert</h3>
-            <p style={{ fontSize: '0.72rem', color: '#AEB6AE', margin: '0.2rem 0 0', fontWeight: '500' }}>Inventory requiring attention</p>
-          </div>
+        {/* Inventory Attention Alerts */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          
+          {/* Out of stock box */}
+          {outOfStockItems.length > 0 && (
+            <div className="admin-card" style={{ display: 'flex', flexDirection: 'column', borderColor: 'rgba(239, 68, 68, 0.4)' }}>
+              <div style={{ marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#EF4444', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <XCircle size={15} color="#EF4444" /> OUT OF STOCK
+                  </h3>
+                  <p style={{ fontSize: '0.7rem', color: '#AEB6AE', margin: '0.15rem 0 0', fontWeight: '500' }}>
+                    {outOfStockItems.length} {outOfStockItems.length === 1 ? 'variant is unavailable' : 'variants are unavailable'}
+                  </p>
+                </div>
+              </div>
 
-          <div style={{ flexGrow: 1 }}>
-            {lowStockItems.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {lowStockItems.slice(0, 4).map((p) => (
-                  <div key={p._id || p.slug} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.6rem', background: '#181F1B', borderRadius: '9px', border: '1px solid #2C3730' }}>
-                    <img src={p.image} alt={p.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '7px', border: '1px solid #2C3730' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                {outOfStockItems.slice(0, 3).map((item, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.6rem', background: '#181F1B', borderRadius: '9px', border: '1px solid #2C3730' }}>
+                    <img src={item.image} alt={item.title} style={{ width: '36px', height: '36px', objectFit: 'cover', borderRadius: '7px', border: '1px solid #2C3730' }} />
                     <div style={{ flexGrow: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#F4F5F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.title}</div>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--admin-danger)', fontWeight: '700', marginTop: '0.1rem' }}>
-                        {p.stock !== undefined ? p.stock : 0} left
+                      <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#F4F5F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {item.title}
+                      </div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--admin-danger)', fontWeight: '700' }}>
+                        {item.variantName ? `${item.variantName} · ` : ''}Out of Stock
                       </div>
                     </div>
-                    <span className="admin-badge admin-badge-danger">{p.stock <= 0 ? 'Out' : 'Low'}</span>
+                    <Link to={`/admin/products/edit/${item.productId}`} className="admin-btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.68rem', textDecoration: 'none' }}>
+                      Manage Product →
+                    </Link>
                   </div>
                 ))}
               </div>
-            ) : (
-              <div style={{ padding: '2rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem', backgroundColor: 'var(--admin-success-bg)', borderRadius: '10px', border: '1.5px dashed rgba(111,166,106,0.2)' }}>
-                <CheckCircle size={26} color="var(--admin-success)" />
-                <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#B8CC7A' }}>Inventory looks healthy</span>
-                <span style={{ fontSize: '0.7rem', color: '#B2BAB2', fontWeight: '500' }}>No products need restocking.</span>
-              </div>
-            )}
+            </div>
+          )}
+
+          {/* Low Stock Alert Box */}
+          <div className="admin-card" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+            <div style={{ marginBottom: '0.75rem' }}>
+              <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#F2F4EF', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <AlertTriangle size={15} color="#F59E0B" /> LOW STOCK ALERT
+              </h3>
+              <p style={{ fontSize: '0.7rem', color: '#AEB6AE', margin: '0.15rem 0 0', fontWeight: '500' }}>
+                {lowStockItems.length} {lowStockItems.length === 1 ? 'variant needs attention' : 'variants need attention'}
+              </p>
+            </div>
+
+            <div style={{ flexGrow: 1 }}>
+              {lowStockItems.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  {lowStockItems.slice(0, 4).map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.6rem', background: '#181F1B', borderRadius: '9px', border: '1px solid #2C3730' }}>
+                      <img src={item.image} alt={item.title} style={{ width: '36px', height: '36px', objectFit: 'cover', borderRadius: '7px', border: '1px solid #2C3730' }} />
+                      <div style={{ flexGrow: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#F4F5F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {item.title}
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#F59E0B', fontWeight: '700' }}>
+                          {item.variantName ? `${item.variantName} · ` : ''}Only {item.stock} left (₹{item.price})
+                        </div>
+                      </div>
+                      <Link to={`/admin/products/edit/${item.productId}`} className="admin-btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.68rem', textDecoration: 'none' }}>
+                        Manage Product →
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ padding: '1.5rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', backgroundColor: 'var(--admin-success-bg)', borderRadius: '10px', border: '1.5px dashed rgba(111,166,106,0.2)' }}>
+                  <CheckCircle size={22} color="var(--admin-success)" />
+                  <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#B8CC7A' }}>Inventory looks healthy</span>
+                  <span style={{ fontSize: '0.68rem', color: '#B2BAB2', fontWeight: '500' }}>No variant products are low on stock.</span>
+                </div>
+              )}
+            </div>
+
+            <Link to="/admin/products" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-accent)', textDecoration: 'none', marginTop: '0.85rem', borderTop: '1px solid var(--admin-border)', paddingTop: '0.75rem' }}>
+              Manage Inventory <ArrowUpRight size={13} />
+            </Link>
           </div>
 
-          <Link to="/admin/products" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-accent)', textDecoration: 'none', marginTop: '1rem', borderTop: '1px solid var(--admin-border)', paddingTop: '0.9rem' }}>
-            Manage Inventory <ArrowUpRight size={13} />
-          </Link>
         </div>
       </div>
 
