@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Star, Heart, ChevronRight, ChevronLeft, CheckCircle2, XCircle, ShieldCheck, Truck, Sparkles, AlertTriangle, Plus, Minus, Info } from 'lucide-react';
+import { ShoppingBag, Star, Heart, ChevronRight, ChevronLeft, CheckCircle2, XCircle, ShieldCheck, Truck, Sparkles, AlertTriangle, Plus, Minus, Info, MapPin, Save } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useDelivery } from '../context/DeliveryContext';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import { initialProducts } from '../data/seedData';
 import ProductCard from '../components/ProductCard';
 import PriceDisplay from '../components/PriceDisplay';
+import AuthPromptModal from '../components/AuthPromptModal';
 import { LOW_STOCK_THRESHOLD } from '../config/constants';
 
 export default function ProductDetail() {
@@ -17,6 +19,7 @@ export default function ProductDetail() {
   const { addToCart, showToast } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { deliveryInfo, checkPincode, clearDeliveryInfo } = useDelivery();
+  const { user, isAuthenticated, addAddress } = useAuth();
 
   const [product, setProduct] = useState(null);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -30,18 +33,9 @@ export default function ProductDetail() {
   const [inputPincode, setInputPincode] = useState('');
   const [checkingPincode, setCheckingPincode] = useState(false);
   const [pincodeError, setPincodeError] = useState('');
-
-  const handleCheckPincode = async () => {
-    const clean = inputPincode.trim();
-    if (!clean || clean.length !== 6 || !/^\d{6}$/.test(clean)) {
-      setPincodeError('Please enter a valid 6-digit PIN code');
-      return;
-    }
-    setPincodeError('');
-    setCheckingPincode(true);
-    await checkPincode(clean);
-    setCheckingPincode(false);
-  };
+  const [isChangingPin, setIsChangingPin] = useState(false);
+  const [savingAddress, setSavingAddress] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     if (identifier) {
@@ -92,6 +86,42 @@ export default function ProductDetail() {
     }
   };
 
+  const handleCheckPincode = async () => {
+    const clean = inputPincode.trim();
+    if (!clean || clean.length !== 6 || !/^\d{6}$/.test(clean)) {
+      setPincodeError('Please enter a valid 6-digit Indian PIN code.');
+      return;
+    }
+    setPincodeError('');
+    setCheckingPincode(true);
+    await checkPincode(clean, { isTemp: true, isSavedAddress: false });
+    setCheckingPincode(false);
+    setIsChangingPin(false);
+  };
+
+  const handleSaveTempPinToAddress = async () => {
+    if (!isAuthenticated || !deliveryInfo.pincode) return;
+    setSavingAddress(true);
+    try {
+      await addAddress({
+        fullName: user?.name || 'Customer',
+        phone: user?.phone || '',
+        addressLine: 'Delivery Location',
+        building: '',
+        city: deliveryInfo.city || 'City',
+        state: deliveryInfo.state || 'State',
+        pincode: deliveryInfo.pincode,
+        addressType: 'Home',
+        isDefault: true,
+      });
+      if (showToast) showToast('Address & PIN saved to your account!');
+    } catch (err) {
+      if (showToast) showToast('Failed to save address.');
+    } finally {
+      setSavingAddress(false);
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ minHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#140A05' }}>
@@ -115,7 +145,7 @@ export default function ProductDetail() {
     );
   }
 
-  // Deduplicate gallery images so single images are never rendered twice
+  // Deduplicate gallery images
   const rawImages = [product.image, product.secondaryImage].filter((img) => Boolean(img) && typeof img === 'string' && img.trim() !== '');
   const images = Array.from(new Set(rawImages));
 
@@ -151,7 +181,13 @@ export default function ProductDetail() {
     }
   };
 
+  // Requirement 8: Enforce Login Prompt for Logged-Out Users
   const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+
     if (currentStock <= 0) {
       if (showToast) showToast('This item is currently out of stock.');
       return;
@@ -168,7 +204,7 @@ export default function ProductDetail() {
     }
   };
 
-  // Safe nutrition facts entries (skipping variant_stocks and object values to fix React Error #31)
+  // Safe nutrition facts entries
   const safeNutritionFacts = product.nutritionFacts
     ? Object.entries(product.nutritionFacts).filter(
         ([k, v]) => k !== 'variant_stocks' && k !== 'pieces' && v !== null && v !== undefined && v !== '' && typeof v !== 'object'
@@ -178,6 +214,14 @@ export default function ProductDetail() {
   return (
     <div style={{ backgroundColor: '#140A05', color: '#FFFDF9', minHeight: '100vh', paddingTop: '1rem', paddingBottom: '5rem' }}>
       
+      {/* Auth Prompt Modal for Logged-Out Guest Purchases */}
+      <AuthPromptModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        title="Login Required to Purchase"
+        message="Please log in or create an account to purchase MILASTY handcrafted products and proceed to checkout."
+      />
+
       {/* Maximum Container Width */}
       <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1.25rem' }}>
         
@@ -224,7 +268,7 @@ export default function ProductDetail() {
               style={{ 
                 position: 'relative', 
                 width: '100%', 
-                paddingTop: '100%', // 1:1 Aspect Ratio Square Box
+                paddingTop: '100%', 
                 borderRadius: '20px', 
                 overflow: 'hidden', 
                 backgroundColor: 'rgba(20, 10, 5, 0.4)', 
@@ -245,7 +289,6 @@ export default function ProductDetail() {
                   transition: 'transform 0.4s ease'
                 }} 
               />
-              {/* Discount Ribbon Badge */}
               {hasDiscount && (
                 <div 
                   style={{ 
@@ -268,7 +311,7 @@ export default function ProductDetail() {
               )}
             </div>
 
-            {/* Thumbnails Row — ONLY RENDERED IF THERE ARE MULTIPLE UNIQUE IMAGES */}
+            {/* Thumbnails Row */}
             {images.length > 1 && (
               <div style={{ display: 'flex', gap: '0.85rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
                 {images.map((img, idx) => {
@@ -320,7 +363,6 @@ export default function ProductDetail() {
                 {product.category || 'Milasty Bakes'}
               </span>
 
-              {/* Product Badges */}
               {Array.isArray(product.badges) && product.badges.map((b, i) => (
                 <span 
                   key={i} 
@@ -355,7 +397,6 @@ export default function ProductDetail() {
               {product.title}
             </h1>
 
-            {/* Subtitle / Tagline (Hidden if empty) */}
             {product.subtitle && product.subtitle.trim() !== '' && (
               <p style={{ fontSize: '1rem', color: '#F5EBDD', margin: 0, fontWeight: '500', opacity: 0.9 }}>
                 {product.subtitle}
@@ -457,7 +498,7 @@ export default function ProductDetail() {
                   <span>⚡ Only {currentStock} packs left — order soon!</span>
                 </div>
               ) : currentStock <= LOW_STOCK_THRESHOLD ? (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: 'rgba(217, 119, 6, 0.12)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.25)', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '750' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: 'rgba(217, 119, 6, 0.12)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.25)', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.75rem' }}>
                   <Sparkles size={15} />
                   <span>⚡ Only {currentStock} packs left</span>
                 </div>
@@ -471,8 +512,6 @@ export default function ProductDetail() {
 
             {/* Quantity Selector & Add to Cart Action Row */}
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap' }}>
-              
-              {/* Quantity Counter */}
               <div 
                 style={{ 
                   display: 'flex', 
@@ -579,29 +618,46 @@ export default function ProductDetail() {
             <div 
               style={{ 
                 marginTop: '1.25rem', 
-                padding: '1.1rem', 
-                borderRadius: '14px', 
+                padding: '1.2rem', 
+                borderRadius: '16px', 
                 backgroundColor: 'rgba(255, 255, 255, 0.04)', 
                 border: '1px solid rgba(255, 255, 255, 0.1)' 
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.85rem', fontWeight: '800', color: '#b9cd94' }}>
-                  <Truck size={17} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', fontWeight: '800', color: '#b9cd94' }}>
+                  <Truck size={18} />
                   <span>Check Delivery Availability</span>
                 </div>
-                {deliveryInfo && (
+                {deliveryInfo && deliveryInfo.checked && (
                   <button 
                     type="button"
-                    onClick={() => clearDeliveryInfo()} 
-                    style={{ background: 'none', border: 'none', color: '#b9cd94', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => {
+                      setIsChangingPin(!isChangingPin);
+                      setInputPincode('');
+                      setPincodeError('');
+                    }} 
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#b9cd94',
+                      fontSize: '0.8rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                    }}
                   >
-                    Change PIN
+                    <MapPin size={13} />
+                    <span>{isChangingPin ? 'Cancel' : 'Change PIN'}</span>
                   </button>
                 )}
               </div>
 
-              {!deliveryInfo || !deliveryInfo.checked ? (
+              {/* Display Mode A: Input Mode */}
+              {(!deliveryInfo || !deliveryInfo.checked || isChangingPin) ? (
                 <div>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <input
@@ -609,18 +665,19 @@ export default function ProductDetail() {
                       maxLength={6}
                       value={inputPincode}
                       onChange={(e) => setInputPincode(e.target.value.replace(/\D/g, ''))}
-                      placeholder="Enter 6-digit Pincode"
+                      placeholder="Enter 6-digit Indian PIN code"
                       onKeyDown={(e) => { if (e.key === 'Enter') handleCheckPincode(); }}
                       style={{
                         flex: 1,
-                        padding: '0.55rem 0.85rem',
-                        borderRadius: '8px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        padding: '0.6rem 0.85rem',
+                        borderRadius: '10px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                        border: pincodeError ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.2)',
                         color: '#FFFDF9',
-                        fontSize: '0.88rem',
+                        fontSize: '0.9rem',
                         fontFamily: 'monospace',
-                        fontWeight: '700'
+                        fontWeight: '700',
+                        outline: 'none',
                       }}
                     />
                     <button
@@ -628,17 +685,17 @@ export default function ProductDetail() {
                       onClick={handleCheckPincode}
                       disabled={checkingPincode}
                       style={{
-                        padding: '0.55rem 1.1rem',
-                        borderRadius: '8px',
-                        backgroundColor: 'rgba(36, 79, 33, 0.8)',
+                        padding: '0.6rem 1.25rem',
+                        borderRadius: '10px',
+                        backgroundColor: '#244f21',
                         border: '1px solid #b9cd94',
                         color: '#FFFDF9',
-                        fontSize: '0.82rem',
+                        fontSize: '0.85rem',
                         fontWeight: '800',
-                        cursor: 'pointer',
+                        cursor: checkingPincode ? 'not-allowed' : 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.35rem'
+                        gap: '0.35rem',
                       }}
                     >
                       {checkingPincode ? 'Checking...' : 'Check'}
@@ -651,29 +708,59 @@ export default function ProductDetail() {
                   )}
                 </div>
               ) : (
+                /* Display Mode B: Checked Result Mode */
                 <div>
-                  {(deliveryInfo.available ?? deliveryInfo.isDeliverable) ? (
-                    <div style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '10px', padding: '0.85rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#22c55e', fontWeight: '800', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
-                        <CheckCircle2 size={16} />
-                        <span>Delivery Available to {deliveryInfo.pincode}</span>
+                  {deliveryInfo.available ? (
+                    <div style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '12px', padding: '0.9rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#22c55e', fontWeight: '800', fontSize: '0.9rem', marginBottom: '0.35rem' }}>
+                        <CheckCircle2 size={17} />
+                        <span>
+                          {deliveryInfo.isSavedAddress ? '✓ Delivery available to your address' : `✓ Delivery available to PIN ${deliveryInfo.pincode}`}
+                        </span>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', fontSize: '0.78rem', color: '#F5EBDD', paddingLeft: '1.4rem' }}>
-                        <div>Location: <strong style={{ color: '#FFFDF9' }}>{deliveryInfo.city}, {deliveryInfo.state}</strong></div>
-                        <div>Delivery Fee: <strong style={{ color: Number(deliveryInfo.deliveryCharge) === 0 ? '#22c55e' : '#b9cd94' }}>
-                          {Number(deliveryInfo.deliveryCharge) === 0 ? 'FREE DELIVERY' : `₹${deliveryInfo.deliveryCharge}`}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.82rem', color: '#F5EBDD', paddingLeft: '1.5rem' }}>
+                        <div>Location: <strong style={{ color: '#FFFDF9' }}>{deliveryInfo.pincode}{deliveryInfo.city ? `, ${deliveryInfo.city}` : ''}{deliveryInfo.state ? `, ${deliveryInfo.state}` : ''}</strong></div>
+                        <div>Delivery Charge: <strong style={{ color: Number(deliveryInfo.deliveryCharge) === 0 ? '#22c55e' : '#b9cd94' }}>
+                          {Number(deliveryInfo.deliveryCharge) === 0 ? 'FREE Delivery' : `₹${deliveryInfo.deliveryCharge}`}
                         </strong></div>
-                        <div>Estimated Delivery: <strong style={{ color: '#FFFDF9' }}>{deliveryInfo.estimatedDays || '3-5'} business days</strong></div>
+                        <div>Estimated Dispatch: <strong style={{ color: '#FFFDF9' }}>{deliveryInfo.estimatedDays || '3–5 business days'}</strong></div>
                       </div>
+
+                      {/* If user checked a temporary PIN while logged in, offer to save it */}
+                      {isAuthenticated && deliveryInfo.isTemp && (
+                        <div style={{ marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px dashed rgba(34, 197, 94, 0.25)', display: 'flex', justifyContent: 'flex-end' }}>
+                          <button
+                            type="button"
+                            onClick={handleSaveTempPinToAddress}
+                            disabled={savingAddress}
+                            style={{
+                              background: 'rgba(34, 197, 94, 0.18)',
+                              border: '1px solid rgba(34, 197, 94, 0.4)',
+                              color: '#22c55e',
+                              fontSize: '0.75rem',
+                              fontWeight: '800',
+                              padding: '0.3rem 0.75rem',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.3rem',
+                            }}
+                          >
+                            <Save size={13} />
+                            <span>{savingAddress ? 'Saving...' : 'Save this PIN to my addresses'}</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ) : (
-                    <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '10px', padding: '0.85rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#ef4444', fontWeight: '800', fontSize: '0.85rem', marginBottom: '0.25rem' }}>
-                        <XCircle size={16} />
-                        <span>Delivery Not Available</span>
+                    <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', padding: '0.9rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#ef4444', fontWeight: '800', fontSize: '0.9rem', marginBottom: '0.35rem' }}>
+                        <XCircle size={17} />
+                        <span>Delivery is currently unavailable at {deliveryInfo.pincode}</span>
                       </div>
-                      <p style={{ margin: 0, fontSize: '0.78rem', color: '#F5EBDD', paddingLeft: '1.4rem' }}>
-                        {deliveryInfo.message || `We do not currently deliver to PIN code ${deliveryInfo.pincode}.`}
+                      <p style={{ margin: 0, fontSize: '0.8rem', color: '#F5EBDD', paddingLeft: '1.5rem', lineHeight: '1.4' }}>
+                        {deliveryInfo.message || `Sorry, we do not currently deliver to PIN code ${deliveryInfo.pincode}.`}
                       </p>
                     </div>
                   )}
@@ -717,59 +804,45 @@ export default function ProductDetail() {
                 whiteSpace: 'nowrap'
               }}
             >
-              Ingredients & Craft
+              Ingredients &amp; Craft
             </button>
           </div>
 
-          {/* Tab 1: Accredited Nutritional Facts Table */}
           {activeTab === 'nutrition' && (
-            <div style={{ maxWidth: '680px' }}>
+            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
               {safeNutritionFacts.length > 0 ? (
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                  <tbody>
-                    {safeNutritionFacts.map(([k, v], idx) => (
-                      <tr key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: idx % 2 === 0 ? 'rgba(36, 79, 33, 0.15)' : 'transparent' }}>
-                        <td style={{ padding: '0.75rem 0.85rem', fontWeight: '700', color: '#F5EBDD', textTransform: 'capitalize' }}>
-                          {k.replace(/([A-Z])/g, ' $1')}
-                        </td>
-                        <td style={{ padding: '0.75rem 0.85rem', fontWeight: '900', textAlign: 'right', color: '#b9cd94' }}>
-                          {String(v)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                  {safeNutritionFacts.map(([k, v], idx) => (
+                    <div key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#b9cd94', textTransform: 'uppercase', fontWeight: '700', display: 'block' }}>{k.replace(/_/g, ' ')}</span>
+                      <span style={{ fontSize: '1rem', fontWeight: '800', color: '#FFFDF9' }}>{String(v)}</span>
+                    </div>
+                  ))}
+                </div>
               ) : (
-                <p style={{ color: '#F5EBDD', opacity: 0.8 }}>No nutritional information listed for this product.</p>
+                <p style={{ color: '#F5EBDD', margin: 0 }}>Rich in fiber, vitamins, deshi ghee goodness, and essential minerals.</p>
               )}
             </div>
           )}
 
-          {/* Tab 2: Ingredients */}
           {activeTab === 'ingredients' && (
-            <div style={{ maxWidth: '680px', color: '#F5EBDD', lineHeight: '1.7' }}>
-              {Array.isArray(product.ingredients) && product.ingredients.length > 0 ? (
-                <ul style={{ paddingLeft: '1.25rem', margin: 0 }}>
-                  {product.ingredients.map((ing, i) => (
-                    <li key={i} style={{ marginBottom: '0.35rem' }}>{ing}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p>{product.ingredients || 'Crafted with premium natural ingredients and zero artificial preservatives.'}</p>
-              )}
+            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <p style={{ color: '#F5EBDD', lineHeight: '1.6', margin: 0 }}>
+                Handcrafted using 100% natural ingredients, organic millets, Desi Cow Ghee, and unrefined organic jaggery. No refined palm oil, no artificial preservatives, zero maida.
+              </p>
             </div>
           )}
         </div>
 
         {/* Related Products Section */}
         {relatedProducts.length > 0 && (
-          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.12)', paddingTop: '3rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: '#FFFDF9', fontWeight: '800', marginBottom: '1.5rem' }}>
+          <div>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: '800', color: '#FFFDF9', marginBottom: '1.5rem' }}>
               You May Also Like
-            </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.5rem' }}>
-              {relatedProducts.map((relProduct) => (
-                <ProductCard key={relProduct._id || relProduct.id || relProduct.slug} product={relProduct} />
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
+              {relatedProducts.map((p) => (
+                <ProductCard key={p._id || p.slug} product={p} />
               ))}
             </div>
           </div>

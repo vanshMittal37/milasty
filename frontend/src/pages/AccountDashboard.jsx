@@ -159,12 +159,23 @@ export default function AccountDashboard() {
 
   const handleSaveAddress = async (e) => {
     e.preventDefault();
+    const cleanPin = (addressForm.pincode || '').trim();
+    if (!cleanPin || !/^\d{6}$/.test(cleanPin)) {
+      toast.error('Please enter a valid 6-digit Indian PIN code.');
+      return;
+    }
     try {
+      const isFirst = (!user?.addresses || user.addresses.length === 0);
+      const payload = {
+        ...addressForm,
+        pincode: cleanPin,
+        isDefault: editingAddress ? (editingAddress.isDefault ?? true) : (isFirst || addressForm.isDefault || false),
+      };
       if (editingAddress) {
-        await updateAddress(editingAddress._id, addressForm);
+        await updateAddress(editingAddress._id || editingAddress.id, payload);
         toast.success('Address updated successfully.');
       } else {
-        await addAddress(addressForm);
+        await addAddress(payload);
         toast.success('New delivery address saved.');
       }
       setShowAddressModal(false);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -7,6 +7,7 @@ import { AuthLayout, AuthInput, AuthButton, AuthAlert } from '../components/comm
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
@@ -32,11 +33,8 @@ export default function LoginPage() {
     try {
       const user = await login(email.trim(), password);
       toast.success(`Welcome back, ${user?.name || 'Customer'}!`);
-      if (user?.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/account');
-      }
+      const returnTarget = location.state?.from || (user?.role === 'admin' ? '/admin/dashboard' : '/account');
+      navigate(returnTarget, { replace: true });
     } catch (err) {
       const msg = err.response?.data?.message || 'Invalid email or password. Please try again.';
       setError(msg);

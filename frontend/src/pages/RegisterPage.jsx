@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { User, Mail, Lock, Phone, ArrowRight, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -7,6 +7,7 @@ import { AuthLayout, AuthInput, AuthButton, AuthAlert } from '../components/comm
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { register } = useAuth();
   const { toast } = useToast();
   const [name, setName] = useState('');
@@ -45,9 +46,10 @@ export default function RegisterPage() {
     setError('');
 
     try {
-      await register(name.trim(), email.trim(), password, phone.trim());
+      const user = await register(name.trim(), email.trim(), password, phone.trim());
       toast.success('Account created successfully! Welcome to MILASTY.');
-      navigate('/account');
+      const returnTarget = location.state?.from || (user?.role === 'admin' ? '/admin/dashboard' : '/account');
+      navigate(returnTarget, { replace: true });
     } catch (err) {
       const msg = err.response?.data?.message || 'Error creating account. Please try again.';
       setError(msg);

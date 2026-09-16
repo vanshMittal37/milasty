@@ -1,11 +1,14 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../api/axios';
+import { useAuth } from './AuthContext';
 
 const DeliveryContext = createContext();
 
 const SESSION_STORAGE_KEY = 'milasty_delivery_info';
 
 export function DeliveryProvider({ children }) {
+  const { user, isAuthenticated } = useAuth();
+
   const [deliveryInfo, setDeliveryInfo] = useState(() => {
     try {
       const saved = sessionStorage.getItem(SESSION_STORAGE_KEY);
@@ -26,15 +29,19 @@ export function DeliveryProvider({ children }) {
       estimatedDays: '3–5 business days',
       deliveryNote: '',
       message: '',
+      isSavedAddress: false,
+      isTemp: false,
+      savedAddressLabel: '',
     };
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Synchronize with Session Storage
   useEffect(() => {
     try {
-      if (deliveryInfo.checked) {
+      if (deliveryInfo && deliveryInfo.checked) {
         sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(deliveryInfo));
       } else {
         sessionStorage.removeItem(SESSION_STORAGE_KEY);
@@ -44,7 +51,8 @@ export function DeliveryProvider({ children }) {
     }
   }, [deliveryInfo]);
 
-  const checkPincode = async (pincodeInput) => {
+  // Perform serviceability check against backend DB API
+  const checkPincode = useCallback(async (pincodeInput, options = {}) => {
     const pincode = String(pincodeInput || '').trim();
 
     if (!pincode || !/^\d{6}$/.test(pincode)) {
@@ -59,6 +67,9 @@ export function DeliveryProvider({ children }) {
         estimatedDays: '3–5 business days',
         deliveryNote: '',
         message: 'Please enter a valid 6-digit Indian PIN code.',
+        isSavedAddress: options.isSavedAddress || false,
+        isTemp: options.isTemp || false,
+        savedAddressLabel: options.savedAddressLabel || '',
       };
       setError('Please enter a valid 6-digit Indian PIN code.');
       return invalidState;
@@ -82,6 +93,9 @@ export function DeliveryProvider({ children }) {
         estimatedDays: data.estimatedDays || '3–5 business days',
         deliveryNote: data.deliveryNote || 'Delivered within 3–5 business days',
         message: data.message || (data.available ? `Delivery available in ${data.city}, ${data.state}` : "Sorry, we currently don't deliver to this area."),
+        isSavedAddress: !!options.isSavedAddress,
+        isTemp: !!options.isTemp,
+        savedAddressLabel: options.savedAddressLabel || '',
       };
 
       setDeliveryInfo(resultState);
@@ -99,6 +113,9 @@ export function DeliveryProvider({ children }) {
         estimatedDays: '3–5 business days',
         deliveryNote: '',
         message: err.response?.data?.message || 'Unable to check delivery availability. Please try again.',
+        isSavedAddress: !!options.isSavedAddress,
+        isTemp: !!options.isTemp,
+        savedAddressLabel: options.savedAddressLabel || '',
       };
       setError(fallbackState.message);
       setDeliveryInfo(fallbackState);
@@ -106,7 +123,36 @@ export function DeliveryProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Automatic saved address detection on login / profile load
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // Requirement 18: Privacy - Clear customer's saved address upon logout
+      if (deliveryInfo.isSavedAddress || (deliveryInfo.checked && !deliveryInfo.isTemp)) {
+        clearDeliveryInfo();
+      }
+      return;
+    }
+
+    // Customer is logged in — fetch default address PIN
+    const addresses = user?.addresses || [];
+    if (addresses.length > 0) {
+      const defaultAddr = addresses.find((a) => (a.isDefault || a.is_default) && a.pincode && /^\d{6}$/.test(String(a.pincode).trim()))
+        || addresses.find((a) => a.pincode && /^\d{6}$/.test(String(a.pincode).trim()))
+        || null;
+
+      if (defaultAddr && defaultAddr.pincode) {
+        // If user hasn't explicitly entered a temporary PIN during this session, auto-check default saved PIN
+        if (!deliveryInfo.isTemp || !deliveryInfo.checked) {
+          checkPincode(defaultAddr.pincode, {
+            isSavedAddress: true,
+            savedAddressLabel: defaultAddr.addressType || defaultAddr.fullName || 'Saved Address',
+          });
+        }
+      }
+    }
+  }, [user, isAuthenticated, checkPincode]);
 
   const clearDeliveryInfo = () => {
     const resetState = {
@@ -120,6 +166,9 @@ export function DeliveryProvider({ children }) {
       estimatedDays: '3–5 business days',
       deliveryNote: '',
       message: '',
+      isSavedAddress: false,
+      isTemp: false,
+      savedAddressLabel: '',
     };
     setDeliveryInfo(resetState);
     setError(null);
