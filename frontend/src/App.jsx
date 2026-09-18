@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { CartProvider, useCart } from './context/CartContext';
@@ -127,34 +127,7 @@ function MainLayout() {
       <EdgeSwipeHandler />
       <Navbar />
       <main style={{ flexGrow: 1, position: 'relative', zIndex: 1, paddingTop: '135px' }}>
-        <Routes>
-          {/* Company Portfolio Pages */}
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Navigate to="/shop" replace />} />
-          <Route path="/product/:slug" element={<ProductDetail />} />
-          <Route path="/nutrition" element={<Nutrition />} />
-          <Route path="/our-story" element={<OurStory />} />
-          <Route path="/reviews" element={<TestimonialsPage />} />
-          <Route path="/testimonials" element={<TestimonialsPage />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/shipping" element={<LegalPage />} />
-          <Route path="/refund" element={<LegalPage />} />
-          <Route path="/privacy" element={<LegalPage />} />
-          <Route path="/terms" element={<LegalPage />} />
-
-          {/* Customer E-commerce System */}
-          <Route path="/catalogue" element={<Navigate to="/shop" replace />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/shop/product/:id" element={<ShopProductDetail />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/wishlist" element={<WishlistPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/order-success/:orderId" element={<OrderSuccessPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-        </Routes>
+        <Outlet />
       </main>
       <Footer />
       <CartDrawer />
@@ -196,7 +169,34 @@ export default function App() {
                     </Route>
 
                     {/* Public Website & Store */}
-                    <Route path="/*" element={<MainLayout />} />
+                    <Route element={<MainLayout />}>
+                      {/* Company Portfolio Pages */}
+                      <Route path="/" element={<Home />} />
+                      <Route path="/products" element={<Navigate to="/shop" replace />} />
+                      <Route path="/product/:slug" element={<ProductDetail />} />
+                      <Route path="/nutrition" element={<Nutrition />} />
+                      <Route path="/our-story" element={<OurStory />} />
+                      <Route path="/reviews" element={<TestimonialsPage />} />
+                      <Route path="/testimonials" element={<TestimonialsPage />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/shipping" element={<LegalPage />} />
+                      <Route path="/refund" element={<LegalPage />} />
+                      <Route path="/privacy" element={<LegalPage />} />
+                      <Route path="/terms" element={<LegalPage />} />
+
+                      {/* Customer E-commerce System */}
+                      <Route path="/catalogue" element={<Navigate to="/shop" replace />} />
+                      <Route path="/shop" element={<Shop />} />
+                      <Route path="/shop/product/:id" element={<ShopProductDetail />} />
+                      <Route path="/cart" element={<CartPage />} />
+                      <Route path="/wishlist" element={<WishlistPage />} />
+                      <Route path="/checkout" element={<CheckoutPage />} />
+                      <Route path="/order-success/:orderId" element={<OrderSuccessPage />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/register" element={<RegisterPage />} />
+                      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                      <Route path="/reset-password" element={<ResetPasswordPage />} />
+                    </Route>
                   </Routes>
                 </Router>
               </DeliveryProvider>
@@ -207,3 +207,4 @@ export default function App() {
     </ToastProvider>
   );
 }
+
