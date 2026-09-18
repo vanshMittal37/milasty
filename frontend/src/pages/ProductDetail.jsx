@@ -165,7 +165,7 @@ export default function ProductDetail() {
   const hasDiscount = currentOriginalPrice > currentPrice;
   const discountPercent = hasDiscount ? Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100) : 0;
 
-  const wishlisted = isInWishlist(product._id || product.slug);
+  const wishlisted = isInWishlist(product._id || product.id || product.slug);
 
   const handleQuantityIncrease = () => {
     if (quantity >= currentStock) {

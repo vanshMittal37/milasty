@@ -1123,10 +1123,7 @@ export default function AccountDashboard() {
                           {/* Remove from wishlist button */}
                           <button
                             type="button"
-                            onClick={() => {
-                              toggleWishlist(item);
-                              toast.info('Item removed from wishlist.');
-                            }}
+                            onClick={() => toggleWishlist(item)}
                             aria-label="Remove item from wishlist"
                             style={{
                               position: 'absolute',

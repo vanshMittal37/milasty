@@ -9,10 +9,8 @@ export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
-  const [btnText, setBtnText] = useState('Add to Cart');
-
   const selectedVariant = product?.variants?.[selectedVariantIndex] || product?.variants?.[0] || {};
-  const wishlisted = isInWishlist(product?._id || product?.slug);
+  const wishlisted = isInWishlist(product?._id || product?.id || product?.slug);
 
   const handleAddToCart = async () => {
     setBtnText('Adding...');
@@ -78,7 +76,11 @@ export default function ProductCard({ product }) {
 
         {/* Wishlist Heart Icon overlay */}
         <button
-          onClick={() => toggleWishlist(product)}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            toggleWishlist(product);
+          }}
           aria-label="Toggle Wishlist"
           className="card-wishlist-btn"
           style={{
