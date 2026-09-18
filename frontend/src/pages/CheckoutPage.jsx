@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, CreditCard, Truck, CheckCircle2, XCircle, Lock, ArrowRight, ArrowLeft, ShoppingBag, MapPin } from 'lucide-react';
+import { ShieldCheck, CreditCard, Truck, CheckCircle2, XCircle, Lock, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useDelivery } from '../context/DeliveryContext';
@@ -52,7 +52,7 @@ export default function CheckoutPage() {
   const isDeliverable = deliveryInfo && (deliveryInfo.available ?? deliveryInfo.isDeliverable);
   const effectiveDeliveryFee = (isDeliverable && deliveryInfo.pincode === formData.pincode.trim())
     ? Number(deliveryInfo.deliveryCharge || 0)
-    : 0;
+    : (subtotal >= 499 || subtotal === 0 ? 0 : 49);
 
   const effectiveGrandTotal = Math.max(0, subtotal - couponDiscountAmount + effectiveDeliveryFee);
 
@@ -99,7 +99,7 @@ export default function CheckoutPage() {
     const errors = {};
     if (!formData.customerName.trim()) errors.customerName = 'Full name is required';
     
-    // Phone validation (exactly 10 digits)
+    // Phone validation
     const cleanPhone = formData.phone.trim();
     if (!cleanPhone) {
       errors.phone = 'Mobile number is required';
@@ -111,7 +111,7 @@ export default function CheckoutPage() {
     if (!formData.city.trim()) errors.city = 'City is required';
     if (!formData.state.trim()) errors.state = 'State is required';
     
-    // Pincode validation (6 digits + serviceability)
+    // Pincode validation
     const cleanPin = formData.pincode.trim();
     if (!cleanPin) {
       errors.pincode = 'Pincode is required';
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
     setErrorMessage('');
 
     try {
-      const orderPayload = {
+      const checkoutPayload = {
         customerName: formData.customerName,
         email: formData.email,
         phone: formData.phone,
@@ -149,64 +149,64 @@ export default function CheckoutPage() {
           country: 'India',
           pincode: formData.pincode,
         },
+        pincode: formData.pincode,
         items: cartItems,
         couponCode: appliedCoupon ? appliedCoupon.code : null,
         paymentMethod,
       };
 
-      // 1. Create Order on Backend (Set to Pending Payment for Razorpay)
-      const orderRes = await api.post('/orders', orderPayload);
-      const order = orderRes.data.order;
-      const orderId = order.orderId;
-
+      // COD FLOW: Immediately create confirmed COD order
       if (paymentMethod === 'COD') {
+        const orderRes = await api.post('/orders', checkoutPayload);
+        const order = orderRes.data.order;
+        const orderId = order.id || order.orderId;
+
         clearCart();
         navigate(`/order-success/${orderId}`);
         return;
       }
 
-      // 2. Initiate Online Payment via Razorpay
-      console.log("Creating Razorpay order on backend", {
-        amount: effectiveGrandTotal,
-        orderId
-      });
-      const payRes = await api.post('/payments/create', { amount: effectiveGrandTotal, orderId });
-      const { keyId, razorpayOrderId, amount, currency } = payRes.data;
+      // ONLINE RAZORPAY FLOW: Create payment session (No order in DB yet!)
+      console.log('Initiating payment session on server...');
+      const sessionRes = await api.post('/payments/create-session', checkoutPayload);
+      const { keyId, razorpayOrderId, amount, currency, grandTotal, deliveryFee } = sessionRes.data;
 
-      console.log("Razorpay order created", {
-        orderId: razorpayOrderId,
-        amount,
-        currency
+      console.log('Razorpay payment session created on backend', {
+        razorpayOrderId,
+        amountPaise: amount,
+        grandTotalRupees: grandTotal,
+        deliveryFee,
       });
 
       const options = {
         key: keyId,
-        amount,
+        amount, // In Paise (exact subtotal - discount + delivery_fee)
         currency,
         name: 'MILASTY Foods',
-        description: `Order #${orderId}`,
+        description: 'Artisan Millet Bakes Purchase',
         image: '/images/image3.jpeg',
         order_id: razorpayOrderId,
         handler: async function (response) {
-          console.log("Razorpay payment response captured", response);
+          console.log('Razorpay payment response captured:', response);
           try {
-            // Verify payment signature
+            // Verify payment signature & amount server-side
             const verifyRes = await api.post('/payments/verify', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              orderId,
             });
 
             if (verifyRes.data.success) {
               clearCart();
-              navigate(`/order-success/${orderId}`);
+              navigate(`/order-success/${verifyRes.data.orderId}`);
             } else {
               setErrorMessage('Payment verification failed. Please contact Milasty support.');
+              setLoading(false);
             }
           } catch (err) {
-            console.error("Razorpay payment verification failed on backend", err);
-            setErrorMessage('Error verifying payment. If amount was debited, contact our helpline.');
+            console.error('Razorpay payment verification failed on backend:', err);
+            setErrorMessage('Error verifying payment signature. If amount was debited, contact our helpline.');
+            setLoading(false);
           }
         },
         prefill: {
@@ -219,8 +219,9 @@ export default function CheckoutPage() {
         },
         modal: {
           ondismiss: function () {
-            console.error("Razorpay payment cancelled by user");
-            setErrorMessage('Payment was cancelled. You can retry below.');
+            console.warn('Razorpay checkout dismissed/cancelled by user');
+            api.post('/payments/cancel', { razorpay_order_id: razorpayOrderId }).catch(() => {});
+            setErrorMessage('Payment was cancelled. Your order has not been placed. You can try again whenever you\'re ready.');
             setLoading(false);
           }
         }
@@ -228,27 +229,17 @@ export default function CheckoutPage() {
 
       const isDummyKey = keyId.startsWith('rzp_test_MILASTY');
       if (window.Razorpay && !isDummyKey) {
-        console.log("Opening Razorpay Checkout", {
-          keyId,
-          orderId: razorpayOrderId,
-          amount,
-          currency
-        });
+        console.log('Opening Razorpay Checkout Popup...');
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else {
-        // Show our beautiful custom simulation payment modal!
-        console.warn("Using simulated sandbox payment since Key ID is dummy/mock.", {
-          keyId,
-          orderId: razorpayOrderId,
-          amount,
-          currency
-        });
+        // Show sandbox payment simulator modal if dummy key
+        console.warn('Opening Sandbox Payment Simulator...');
         setSimulatePaymentData({
-          orderId,
           razorpayOrderId,
           amount,
           currency,
+          grandTotal,
           customerName: formData.customerName,
           email: formData.email,
           phone: formData.phone,
@@ -257,7 +248,7 @@ export default function CheckoutPage() {
         setShowSimulatedPaymentModal(true);
       }
     } catch (error) {
-      console.error("Razorpay payment failed", error);
+      console.error('Razorpay payment session failed:', error);
       setErrorMessage(error.response?.data?.message || 'Error processing your order. Please try again.');
       setLoading(false);
     }
@@ -298,7 +289,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* Checkout Columns */}
+        {/* Checkout Form */}
         <form onSubmit={handlePlaceOrder} className="checkout-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '2.5rem', alignItems: 'start' }}>
           
           {/* LEFT: Shipping Form & Payments */}
@@ -563,7 +554,7 @@ export default function CheckoutPage() {
               </div>
 
               {errorMessage && (
-                <div style={{ backgroundColor: 'rgba(217, 83, 79, 0.08)', border: '1px solid var(--accent-terracotta)', color: 'var(--accent-terracotta)', padding: '0.85rem 1rem', borderRadius: '10px', fontSize: '0.82rem', marginBottom: '1.5rem', fontWeight: '600' }}>
+                <div style={{ backgroundColor: 'rgba(217, 83, 79, 0.12)', border: '1px solid var(--accent-terracotta)', color: '#FF7B7B', padding: '0.85rem 1rem', borderRadius: '10px', fontSize: '0.85rem', marginBottom: '1.5rem', fontWeight: '600', lineHeight: '1.4' }}>
                   {errorMessage}
                 </div>
               )}
@@ -621,11 +612,11 @@ export default function CheckoutPage() {
 
       {/* Simulated Payment Modal */}
       {showSimulatedPaymentModal && simulatePaymentData && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.7)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.75)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div 
             className="glass-card" 
             style={{ 
-              backgroundColor: 'rgba(50, 26, 18, 0.95)', 
+              backgroundColor: 'rgba(42, 21, 14, 0.98)', 
               borderRadius: '24px', 
               border: '1px solid rgba(245, 235, 221, 0.25)', 
               width: '100%', 
@@ -649,30 +640,12 @@ export default function CheckoutPage() {
                 <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>{simulatePaymentData.customerName}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Order ID</span>
-                <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>{simulatePaymentData.orderId}</span>
+                <span style={{ color: 'var(--text-muted)' }}>Razorpay Order ID</span>
+                <span style={{ fontWeight: '700', color: 'var(--text-light)', fontFamily: 'monospace' }}>{simulatePaymentData.razorpayOrderId}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Amount to Pay</span>
-                <span style={{ fontWeight: '850', color: 'var(--text-light)', fontSize: '1.05rem' }}>₹{simulatePaymentData.amount / 100}</span>
-              </div>
-            </div>
-
-            {/* Simulated Payment Card Fields */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.75rem' }}>
-              <div>
-                <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Card Number</label>
-                <input type="text" readOnly value="4111 1111 1111 1111" style={{ width: '100%', height: '42px', padding: '0 0.75rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)', letterSpacing: '0.05em' }} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                <div>
-                  <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Expiry</label>
-                  <input type="text" readOnly value="12/29" style={{ width: '100%', height: '42px', padding: '0 0.75rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.7rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>CVV</label>
-                  <input type="password" readOnly value="•••" style={{ width: '100%', height: '42px', padding: '0 0.75rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} />
-                </div>
+                <span style={{ color: 'var(--text-muted)' }}>Exact Amount to Pay</span>
+                <span style={{ fontWeight: '850', color: 'var(--accent-gold)', fontSize: '1.1rem' }}>₹{simulatePaymentData.grandTotal}</span>
               </div>
             </div>
 
@@ -683,7 +656,7 @@ export default function CheckoutPage() {
                   setShowSimulatedPaymentModal(false);
                   const response = {
                     razorpay_order_id: simulatePaymentData.razorpayOrderId,
-                    razorpay_payment_id: 'pay_test_' + Math.random().toString(36).substring(2, 10),
+                    razorpay_payment_id: 'pay_simulated_' + Math.random().toString(36).substring(2, 10),
                     razorpay_signature: 'test_signature'
                   };
                   await simulatePaymentData.options.handler(response);
@@ -691,18 +664,15 @@ export default function CheckoutPage() {
                 className="btn-primary"
                 style={{ width: '100%', height: '48px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--accent-gold)', border: 'none', color: '#24130D', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
               >
-                Simulate Success Payment
+                Simulate Successful Payment
               </button>
               <button 
                 type="button"
                 onClick={async () => {
                   setShowSimulatedPaymentModal(false);
-                  const response = {
-                    razorpay_order_id: simulatePaymentData.razorpayOrderId,
-                    razorpay_payment_id: 'pay_failed',
-                    razorpay_signature: 'invalid_signature'
-                  };
-                  await simulatePaymentData.options.handler(response);
+                  await api.post('/payments/fail', { razorpay_order_id: simulatePaymentData.razorpayOrderId }).catch(() => {});
+                  setErrorMessage('Payment failed. Your order has not been placed.');
+                  setLoading(false);
                 }}
                 className="btn-primary"
                 style={{ width: '100%', height: '48px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--accent-terracotta)', border: 'none', color: '#FFFFFF', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
@@ -718,7 +688,7 @@ export default function CheckoutPage() {
                 className="btn-secondary"
                 style={{ width: '100%', height: '44px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '800' }}
               >
-                Cancel / Close
+                Cancel / Close (No Order Created)
               </button>
             </div>
           </div>

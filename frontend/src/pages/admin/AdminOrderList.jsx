@@ -4,6 +4,17 @@ import api from '../../api/axios';
 
 const STAGES = ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'];
 
+const STATUS_DISPLAY_MAP = {
+  'pending': 'Pending',
+  'confirmed': 'Confirmed',
+  'processing': 'Processing',
+  'packed': 'Packed',
+  'shipped': 'Shipped',
+  'out_for_delivery': 'Out for Delivery',
+  'delivered': 'Delivered',
+  'cancelled': 'Cancelled',
+};
+
 export default function AdminOrderList() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,13 +44,18 @@ export default function AdminOrderList() {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await api.put(`/orders/admin/${orderId}/status`, { orderStatus: newStatus });
-      fetchOrders();
-      if (selectedOrder && (selectedOrder.id === orderId || selectedOrder._id === orderId)) {
-        setSelectedOrder((prev) => prev ? { ...prev, orderStatus: newStatus, status: newStatus } : null);
+      const res = await api.put(`/orders/admin/${orderId}/status`, { orderStatus: newStatus });
+      if (res.data && res.data.success) {
+        fetchOrders();
+        if (selectedOrder && (selectedOrder.id === orderId || selectedOrder._id === orderId)) {
+          setSelectedOrder((prev) => prev ? { ...prev, orderStatus: res.data.order.orderStatus, status: res.data.order.orderStatus } : null);
+        }
+      } else {
+        alert(res.data?.message || 'Error updating order status');
       }
     } catch (e) {
-      alert('Error updating order status');
+      console.error('Error updating order status:', e);
+      alert(e.response?.data?.message || 'Unable to update order status. Please try again.');
     }
   };
 
@@ -178,13 +194,13 @@ export default function AdminOrderList() {
                 const fee = o.deliveryFee !== undefined ? o.deliveryFee : 0;
                 const total = o.grandTotal || o.totalAmount || 0;
 
-                const rawStatus = (o.orderStatus || o.status || 'Confirmed');
-                const capitalizedStatus = rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1);
+                const rawStatus = (o.orderStatus || o.status || 'confirmed').toLowerCase();
+                const displayStatus = STATUS_DISPLAY_MAP[rawStatus] || rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1);
 
                 let statusBadgeClass = 'admin-badge-neutral';
-                if (capitalizedStatus === 'Delivered') statusBadgeClass = 'admin-badge-success';
-                else if (capitalizedStatus === 'Cancelled') statusBadgeClass = 'admin-badge-danger';
-                else if (['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery'].includes(capitalizedStatus)) statusBadgeClass = 'admin-badge-warning';
+                if (displayStatus === 'Delivered') statusBadgeClass = 'admin-badge-success';
+                else if (displayStatus === 'Cancelled') statusBadgeClass = 'admin-badge-danger';
+                else if (['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery'].includes(displayStatus)) statusBadgeClass = 'admin-badge-warning';
 
                 const payStatus = (o.paymentStatus || o.payment_status || 'pending').toLowerCase();
                 const payMethod = o.paymentMethod || o.payment_method || 'Cash on Delivery';
@@ -222,7 +238,7 @@ export default function AdminOrderList() {
                     </td>
                     <td>
                       <span className={`admin-badge ${statusBadgeClass}`}>
-                        {capitalizedStatus}
+                        {displayStatus}
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
@@ -237,7 +253,7 @@ export default function AdminOrderList() {
                           <span>View</span>
                         </button>
                         <select
-                          value={capitalizedStatus}
+                          value={displayStatus}
                           onChange={(e) => handleStatusChange(o.id || o._id, e.target.value)}
                           className="admin-input"
                           style={{ width: 'auto', padding: '0.28rem 0.5rem', fontSize: '0.75rem' }}
@@ -362,7 +378,7 @@ export default function AdminOrderList() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <span style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)' }}>Status:</span>
                 <select
-                  value={selectedOrder.orderStatus || selectedOrder.status || 'Confirmed'}
+                  value={STATUS_DISPLAY_MAP[(selectedOrder.orderStatus || selectedOrder.status || 'confirmed').toLowerCase()] || 'Confirmed'}
                   onChange={(e) => handleStatusChange(selectedOrder.id || selectedOrder._id, e.target.value)}
                   className="admin-input"
                   style={{ width: 'auto', padding: '0.4rem 0.75rem', fontSize: '0.8rem', fontWeight: '700' }}

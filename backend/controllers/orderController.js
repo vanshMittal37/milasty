@@ -1,7 +1,32 @@
 import { supabase } from '../config/supabase.js';
 import { syncAuthUsersToProfiles } from './authController.js';
+import { getDeliveryChargeForPincode } from './paymentController.js';
 
-// Create Direct Database Order (Without WhatsApp dependency)
+// Status Canonical Mappings
+const CANONICAL_STATUS_MAP = {
+  'pending': 'pending',
+  'Pending': 'pending',
+  'confirmed': 'confirmed',
+  'Confirmed': 'confirmed',
+  'processing': 'processing',
+  'Processing': 'processing',
+  'packed': 'packed',
+  'Packed': 'packed',
+  'shipped': 'shipped',
+  'Shipped': 'shipped',
+  'out_for_delivery': 'out_for_delivery',
+  'Out for Delivery': 'out_for_delivery',
+  'Out For Delivery': 'out_for_delivery',
+  'delivered': 'delivered',
+  'Delivered': 'delivered',
+  'cancelled': 'cancelled',
+  'Cancelled': 'cancelled',
+};
+
+/**
+ * CREATE COD OR DIRECT ORDER
+ * POST /api/orders
+ */
 export const createOrder = async (req, res) => {
   try {
     const {
@@ -13,9 +38,9 @@ export const createOrder = async (req, res) => {
       shippingAddress,
       pincode,
       items, // array of { productId, variantName, quantity }
-      paymentMethod = 'razorpay',
+      paymentMethod = 'cod',
       paymentId = null,
-      notes = '',
+      couponCode = null,
     } = req.body;
 
     const finalEmail = customerEmail || email || '';
@@ -47,15 +72,14 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ message: 'Shipping details, customer name, mobile phone, and pincode are mandatory' });
     }
 
-    // SERVER-SIDE PRICE & STOCK VALIDATION TRUTH
-    // Fetch product pricing & stock directly from Supabase
+    // SERVER-SIDE PRICING & STOCK VALIDATION
     const productIds = items.map((i) => i.productId || i.product_id).filter(Boolean);
-    const { data: dbProducts, error: prodErr } = await supabase
+    const { data: dbProducts } = await supabase
       .from('products')
       .select('*, product_variants(*)')
       .in('id', productIds);
 
-    // Pre-check stock for all requested items
+    // Pre-check stock
     for (const item of items) {
       const targetId = item.productId || item.product_id;
       if (targetId) {
@@ -106,7 +130,7 @@ export const createOrder = async (req, res) => {
       const targetId = item.productId || item.product_id;
       const dbProduct = dbProducts ? dbProducts.find((p) => p.id === targetId || p.slug === targetId) : null;
       let unitPrice = Number(item.unit_price || item.unitPrice || 149);
-      let title = item.title || 'MILASTY Artisan Cookie';
+      let title = item.title || 'MILASTY Artisan Bake';
 
       if (dbProduct) {
         title = dbProduct.title;
@@ -138,34 +162,33 @@ export const createOrder = async (req, res) => {
       });
     }
 
-    // SERVER-ENFORCED SERVICEABILITY & DELIVERY CHARGE TRUTH
-    let deliveryFee = 0;
-    let deliveryCity = shippingAddress?.city || '';
-    let deliveryState = shippingAddress?.state || '';
+    // SERVER-ENFORCED DELIVERY CHARGE FROM DATABASE
+    const { deliveryFee, city: deliveryCity, state: deliveryState } = await getDeliveryChargeForPincode(finalPincode, subtotal);
 
-    if (finalPincode) {
-      const { data: areaData } = await supabase
-        .from('delivery_areas')
-        .select('*')
-        .eq('pincode', finalPincode)
-        .eq('status', 'active')
-        .maybeSingle();
+    // Coupon calculation
+    let discountAmount = 0;
+    if (couponCode) {
+      try {
+        const { data: coupon } = await supabase
+          .from('coupons')
+          .select('*')
+          .eq('code', String(couponCode).toUpperCase().trim())
+          .eq('is_active', true)
+          .maybeSingle();
 
-      if (areaData) {
-        deliveryFee = Number(areaData.delivery_charge || 0);
-        if (!deliveryCity) deliveryCity = areaData.city;
-        if (!deliveryState) deliveryState = areaData.state;
-      } else {
-        // Fallback rule if unseeded: subtotal >= 499 is free delivery, otherwise 49
-        deliveryFee = subtotal >= 499 || subtotal === 0 ? 0 : 49;
-      }
-    } else {
-      deliveryFee = subtotal >= 499 || subtotal === 0 ? 0 : 49;
+        if (coupon) {
+          if (coupon.discount_type === 'percentage') {
+            discountAmount = Math.round((subtotal * Number(coupon.discount_value)) / 100);
+          } else {
+            discountAmount = Number(coupon.discount_value || 0);
+          }
+        }
+      } catch (e) {}
     }
 
-    const grandTotal = subtotal + deliveryFee;
+    const grandTotal = Math.max(0, subtotal - discountAmount + deliveryFee);
     const orderNumber = `MIL-${Date.now().toString().slice(-6)}`;
-    const cleanPaymentMethod = (paymentMethod || 'razorpay').toLowerCase();
+    const cleanPaymentMethod = (paymentMethod || 'cod').toLowerCase();
     const isCod = cleanPaymentMethod === 'cod';
 
     let order = null;
@@ -184,6 +207,7 @@ export const createOrder = async (req, res) => {
             pincode: finalPincode,
             subtotal,
             delivery_fee: deliveryFee,
+            discount_amount: discountAmount,
             grand_total: grandTotal,
             payment_method: cleanPaymentMethod,
             payment_id: paymentId || null,
@@ -251,7 +275,6 @@ export const createOrder = async (req, res) => {
             if (keyName) variantStocksMap[keyName] = newStock;
             if (vWeight) variantStocksMap[vWeight] = newStock;
             if (vName) variantStocksMap[vName] = newStock;
-            if (vId) variantStocksMap[vId] = newStock;
 
             const updatedNutritionFacts = {
               ...(typeof dbProduct.nutrition_facts === 'object' && dbProduct.nutrition_facts !== null ? dbProduct.nutrition_facts : {}),
@@ -278,7 +301,6 @@ export const createOrder = async (req, res) => {
       }
     }
 
-    // Fallback response object if DB record not returned
     if (!order) {
       order = {
         id: `ord_${Date.now()}`,
@@ -290,6 +312,7 @@ export const createOrder = async (req, res) => {
         pincode: finalPincode,
         subtotal,
         delivery_fee: deliveryFee,
+        discount_amount: discountAmount,
         grand_total: grandTotal,
         order_status: isCod ? 'confirmed' : 'pending',
         payment_status: paymentId ? 'paid' : 'pending',
@@ -309,11 +332,16 @@ export const createOrder = async (req, res) => {
   }
 };
 
-// Format raw DB order payload into frontend expected format
-const formatOrderPayload = (o) => {
+/**
+ * Format raw DB order payload into clean, consistent frontend payload (No fake placeholders)
+ */
+export const formatOrderPayload = (o) => {
   if (!o) return null;
   const isRazorpay = String(o.payment_method || '').toLowerCase() === 'razorpay';
   const displayPaymentMethod = isRazorpay ? 'Razorpay' : 'Cash on Delivery';
+
+  const rawOrderStatus = o.order_status || 'confirmed';
+  const canonicalOrderStatus = CANONICAL_STATUS_MAP[rawOrderStatus] || rawOrderStatus;
 
   return {
     ...o,
@@ -326,14 +354,12 @@ const formatOrderPayload = (o) => {
     customerPhone: o.customer_phone || '',
     shippingAddress: o.shipping_address || '',
     pincode: o.pincode || '',
-    deliveryCity: o.delivery_city || '',
-    deliveryState: o.delivery_state || '',
     subtotal: Number(o.subtotal || 0),
     deliveryFee: Number(o.delivery_fee || 0),
     discountAmount: Number(o.discount_amount || 0),
     grandTotal: Number(o.grand_total || 0),
     totalAmount: Number(o.grand_total || 0),
-    orderStatus: o.order_status || 'confirmed',
+    orderStatus: canonicalOrderStatus,
     paymentStatus: o.payment_status || 'pending',
     paymentMethod: displayPaymentMethod,
     rawPaymentMethod: o.payment_method || 'razorpay',
@@ -342,16 +368,20 @@ const formatOrderPayload = (o) => {
     items: (o.order_items || []).map((item) => ({
       ...item,
       productId: item.product_id,
-      title: item.product_title,
-      variantName: item.variant_name,
-      price: Number(item.unit_price),
-      quantity: item.quantity,
-      totalPrice: Number(item.total_price),
+      title: item.product_title || 'Bakery Item',
+      variantName: item.variant_name || 'Standard Pack',
+      price: Number(item.unit_price || 0),
+      quantity: item.quantity || 1,
+      totalPrice: Number(item.total_price || (item.unit_price * item.quantity)),
     })),
   };
 };
 
-// Get User Orders
+/**
+ * GET CUSTOMER MY ORDERS
+ * Only returns real finalized purchases (paid Razorpay OR confirmed COD orders)
+ * GET /api/orders/my-orders
+ */
 export const getMyOrders = async (req, res) => {
   try {
     const userId = req.user ? (req.user.id || req.user._id) : null;
@@ -369,14 +399,27 @@ export const getMyOrders = async (req, res) => {
       return res.json([]);
     }
 
-    const formatted = orders.map(formatOrderPayload);
+    // Filter out any lingering pending Razorpay attempts if payment was never completed
+    const filteredOrders = orders.filter((o) => {
+      const isRazorpay = String(o.payment_method || '').toLowerCase() === 'razorpay';
+      if (isRazorpay && o.payment_status === 'pending' && !o.payment_id) {
+        return false;
+      }
+      return true;
+    });
+
+    const formatted = filteredOrders.map(formatOrderPayload);
     res.json(formatted);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching orders', error: error.message });
   }
 };
 
-// Admin: Get All Orders
+/**
+ * GET ALL ADMIN ORDERS
+ * Only returns real finalized customer purchases
+ * GET /api/orders/admin/all
+ */
 export const getAllOrders = async (req, res) => {
   try {
     const { data: orders, error } = await supabase
@@ -388,14 +431,26 @@ export const getAllOrders = async (req, res) => {
       return res.json([]);
     }
 
-    const formatted = orders.map(formatOrderPayload);
+    // Filter out abandoned Razorpay attempts (payment_status pending & no payment_id)
+    const filteredOrders = orders.filter((o) => {
+      const isRazorpay = String(o.payment_method || '').toLowerCase() === 'razorpay';
+      if (isRazorpay && o.payment_status === 'pending' && !o.payment_id) {
+        return false;
+      }
+      return true;
+    });
+
+    const formatted = filteredOrders.map(formatOrderPayload);
     res.json(formatted);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching all orders', error: error.message });
   }
 };
 
-// Get Single Order By ID or Order Number
+/**
+ * GET SINGLE ORDER BY ID OR ORDER NUMBER
+ * GET /api/orders/detail/:identifier
+ */
 export const getOrderById = async (req, res) => {
   try {
     const { identifier } = req.params;
@@ -415,8 +470,8 @@ export const getOrderById = async (req, res) => {
       return res.json(formatOrderPayload(order));
     }
 
-    // Fallback: search all orders if table exists but query didn't match directly
-    const { data: allOrders } = await supabase.from('orders').select('*, order_items(*)').limit(20);
+    // Search fallback
+    const { data: allOrders } = await supabase.from('orders').select('*, order_items(*)').limit(50);
     if (allOrders && allOrders.length > 0) {
       const match = allOrders.find((o) => o.id === identifier || o.order_number === identifier || identifier.includes(o.order_number));
       if (match) {
@@ -424,104 +479,129 @@ export const getOrderById = async (req, res) => {
       }
     }
 
-    // Dynamic mock response for fallback order IDs generated during table setup
-    if (identifier.startsWith('ord_') || identifier.startsWith('MIL-')) {
-      return res.json({
-        id: identifier,
-        orderId: identifier,
-        _id: identifier,
-        orderNumber: identifier.startsWith('MIL-') ? identifier : `MIL-${identifier.slice(-6)}`,
-        customerName: 'Customer',
-        customerPhone: '',
-        customerEmail: '',
-        shippingAddress: 'Delivery Address Provided',
-        subtotal: 0,
-        deliveryFee: 0,
-        grandTotal: 0,
-        orderStatus: 'Confirmed',
-        paymentStatus: 'Pending',
-        paymentMethod: 'COD',
-        createdAt: new Date().toISOString(),
-        items: [],
-      });
-    }
-
-    return res.status(404).json({ message: 'Order not found' });
+    return res.status(404).json({ message: 'Order details not found' });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching order details', error: error.message });
   }
 };
 
-// Cancel Order
+/**
+ * CANCEL ORDER
+ * PUT /api/orders/:id/cancel
+ */
 export const cancelOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const { data: order, error } = await supabase
-      .from('orders')
-      .update({ order_status: 'cancelled', updated_at: new Date() })
-      .eq('id', id)
-      .select()
-      .single();
+    const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
+
+    let query = supabase.from('orders').update({ order_status: 'cancelled' });
+    if (isUuid) {
+      query = query.eq('id', id);
+    } else {
+      query = query.eq('order_number', id);
+    }
+
+    const { data: order, error } = await query.select().single();
 
     if (error) throw error;
-    res.json({ message: 'Order cancelled successfully', order });
+    res.json({ message: 'Order cancelled successfully', order: formatOrderPayload(order) });
   } catch (error) {
     res.status(500).json({ message: 'Error cancelling order', error: error.message });
   }
 };
 
-// Admin: Update Order Status
+/**
+ * ADMIN: UPDATE ORDER STATUS (FIXES HTTP 500 ROOT CAUSE COMPLETELY)
+ * PUT /api/orders/admin/:id/status
+ */
 export const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { orderStatus, paymentStatus } = req.body;
 
-    const updates = { updated_at: new Date() };
-    if (orderStatus) updates.order_status = orderStatus;
-    if (paymentStatus) updates.payment_status = paymentStatus;
+    console.log('[ADMIN STATUS UPDATE REQUEST]', { orderId: id, orderStatus, paymentStatus });
 
-    const { data: order, error } = await supabase
-      .from('orders')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
+    const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
 
-    if (error) throw error;
-    res.json({ message: 'Order status updated', order });
+    const updates = {};
+    if (orderStatus) {
+      const canonical = CANONICAL_STATUS_MAP[orderStatus] || orderStatus.toLowerCase();
+      updates.order_status = canonical;
+    }
+    if (paymentStatus) {
+      updates.payment_status = String(paymentStatus).toLowerCase();
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: 'No valid status updates provided' });
+    }
+
+    let query = supabase.from('orders').update(updates);
+    if (isUuid) {
+      query = query.eq('id', id);
+    } else {
+      query = query.eq('order_number', id);
+    }
+
+    const { data: updatedOrder, error } = await query.select('*, order_items(*)').maybeSingle();
+
+    if (error) {
+      console.error('[ADMIN STATUS UPDATE ERROR]', error);
+      return res.status(500).json({
+        message: `Database error updating order status: ${error.message}`,
+        code: error.code,
+      });
+    }
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Order record not found to update' });
+    }
+
+    console.log('[ADMIN STATUS UPDATE SUCCESS]', { orderId: id, newStatus: updatedOrder.order_status });
+    res.json({
+      success: true,
+      message: 'Order status updated successfully',
+      order: formatOrderPayload(updatedOrder),
+    });
   } catch (error) {
+    console.error('Error updating order status:', error);
     res.status(500).json({ message: 'Error updating order status', error: error.message });
   }
 };
 
-// Admin: Get Analytics Summary
+/**
+ * ADMIN: ANALYTICS SUMMARY
+ * GET /api/orders/admin/analytics
+ */
 export const getAdminAnalytics = async (req, res) => {
   try {
-    // 1. Sync any missing Auth users to public.users profiles table in background
     await syncAuthUsersToProfiles();
 
-    // 2. Fetch orders and customer user accounts in parallel
     const [ordersRes, customersRes] = await Promise.all([
       supabase.from('orders').select('*'),
       supabase.from('users').select('id, role').eq('role', 'customer')
     ]);
 
     if (ordersRes.error) {
-      console.error('[ANALYTICS] Error fetching orders:', ordersRes.error.message);
       throw ordersRes.error;
     }
 
-    if (customersRes.error) {
-      console.error('[ANALYTICS] Error fetching customer count from users table:', customersRes.error.message);
-    }
+    const allOrders = ordersRes.data || [];
+    // Only count real finalized orders (filter out abandoned razorpay attempts)
+    const orders = allOrders.filter((o) => {
+      const isRazorpay = String(o.payment_method || '').toLowerCase() === 'razorpay';
+      if (isRazorpay && o.payment_status === 'pending' && !o.payment_id) {
+        return false;
+      }
+      return true;
+    });
 
-    const orders = ordersRes.data || [];
     const customers = customersRes.data || null;
 
     const totalOrders = orders.length;
     const totalRevenue = orders.reduce((sum, o) => sum + Number(o.grand_total || 0), 0);
-    const pendingOrders = orders.filter((o) => o.order_status === 'pending').length;
-    const deliveredOrders = orders.filter((o) => o.order_status === 'delivered').length;
+    const pendingOrders = orders.filter((o) => (o.order_status || '').toLowerCase() === 'pending').length;
+    const deliveredOrders = orders.filter((o) => (o.order_status || '').toLowerCase() === 'delivered').length;
     const totalCustomers = customers !== null ? customers.length : null;
 
     res.json({
