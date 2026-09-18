@@ -42,20 +42,43 @@ export default function AdminOrderList() {
     }
   };
 
+  // Instant local status update without re-fetching all orders
   const handleStatusChange = async (orderId, newStatus) => {
+    // 1. Update state locally immediately (instant response, no loading spinner)
+    setOrders((prevOrders) =>
+      prevOrders.map((o) => {
+        if (o.id === orderId || o._id === orderId || o.orderId === orderId) {
+          return {
+            ...o,
+            orderStatus: newStatus,
+            status: newStatus,
+            order_status: newStatus.toLowerCase(),
+          };
+        }
+        return o;
+      })
+    );
+
+    if (selectedOrder && (selectedOrder.id === orderId || selectedOrder._id === orderId || selectedOrder.orderId === orderId)) {
+      setSelectedOrder((prev) => (prev ? { ...prev, orderStatus: newStatus, status: newStatus } : null));
+    }
+
+    // 2. Perform backend update silently
     try {
       const res = await api.put(`/orders/admin/${orderId}/status`, { orderStatus: newStatus });
-      if (res.data && res.data.success) {
-        fetchOrders();
-        if (selectedOrder && (selectedOrder.id === orderId || selectedOrder._id === orderId)) {
-          setSelectedOrder((prev) => prev ? { ...prev, orderStatus: res.data.order.orderStatus, status: res.data.order.orderStatus } : null);
-        }
-      } else {
-        alert(res.data?.message || 'Error updating order status');
+      if (res.data && res.data.success && res.data.order) {
+        const updated = res.data.order;
+        setOrders((prevOrders) =>
+          prevOrders.map((o) =>
+            o.id === orderId || o._id === orderId || o.orderId === orderId ? { ...o, ...updated } : o
+          )
+        );
       }
     } catch (e) {
       console.error('Error updating order status:', e);
-      alert(e.response?.data?.message || 'Unable to update order status. Please try again.');
+      alert(e.response?.data?.message || 'Unable to update order status on server.');
+      // Revert if API failed
+      fetchOrders();
     }
   };
 
