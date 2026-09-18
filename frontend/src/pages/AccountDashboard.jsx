@@ -27,7 +27,7 @@ function SkeletonBox({ height = '40px', width = '100%', borderRadius = '12px', c
 export default function AccountDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAuthenticated, logout, addAddress, deleteAddress, updateProfile, updateAddress } = useAuth();
+  const { user, isAuthenticated, logout, addAddress, deleteAddress, updateProfile, updateAddress, setDefaultAddress } = useAuth();
   const { wishlistItems, wishlistCount, toggleWishlist } = useWishlist();
   const { totalItemCount, setIsCartOpen, addToCart } = useCart();
   const { toast } = useToast();
@@ -192,6 +192,15 @@ export default function AccountDashboard() {
       setDeleteAddrTargetId(null);
     } catch (err) {
       toast.error('Failed to delete address.');
+    }
+  };
+
+  const handleSetDefault = async (addrId) => {
+    try {
+      await setDefaultAddress(addrId);
+      toast.success('Default delivery address updated.');
+    } catch (err) {
+      toast.error('Failed to update default address.');
     }
   };
 
@@ -1272,20 +1281,39 @@ export default function AccountDashboard() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
                     {user?.addresses?.map((addr, idx) => (
                       <div
-                        key={addr._id || idx}
+                        key={addr._id || addr.id || idx}
                         style={{
                           backgroundColor: '#111613',
                           borderRadius: '20px',
-                          border: '1px solid rgba(133, 184, 112, 0.22)',
+                          border: addr.isDefault ? '1.5px solid #85B870' : '1px solid rgba(133, 184, 112, 0.22)',
                           padding: '1.5rem',
                           display: 'flex',
                           flexDirection: 'column',
                           justifyContent: 'space-between',
+                          position: 'relative',
                         }}
                       >
                         <div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                            <span style={{ fontSize: '0.95rem', fontWeight: '850', color: '#F7F0E4' }}>{addr.fullName}</span>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', gap: '0.5rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <span style={{ fontSize: '0.95rem', fontWeight: '850', color: '#F7F0E4' }}>{addr.fullName}</span>
+                              {addr.isDefault && (
+                                <span
+                                  style={{
+                                    fontSize: '0.62rem',
+                                    fontWeight: '800',
+                                    textTransform: 'uppercase',
+                                    backgroundColor: 'rgba(39, 76, 55, 0.4)',
+                                    color: '#85B870',
+                                    padding: '0.15rem 0.5rem',
+                                    borderRadius: '999px',
+                                    border: '1px solid rgba(133, 184, 112, 0.4)',
+                                  }}
+                                >
+                                  Default
+                                </span>
+                              )}
+                            </div>
                             <span
                               style={{
                                 fontSize: '0.65rem',
@@ -1307,9 +1335,18 @@ export default function AccountDashboard() {
                           </p>
                         </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.85rem', borderTop: '1px solid rgba(245, 235, 221, 0.12)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.85rem', borderTop: '1px solid rgba(245, 235, 221, 0.12)', flexWrap: 'wrap', gap: '0.5rem' }}>
                           <span style={{ fontSize: '0.78rem', color: '#F7F0E4', fontWeight: '700' }}>Phone: {addr.phone}</span>
-                          <div style={{ display: 'flex', gap: '0.75rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            {!addr.isDefault && (
+                              <button
+                                type="button"
+                                onClick={() => handleSetDefault(addr._id || addr.id)}
+                                style={{ background: 'none', border: 'none', color: '#85B870', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0 }}
+                              >
+                                Set as Default
+                              </button>
+                            )}
                             <button
                               type="button"
                               onClick={() => handleOpenEditAddress(addr)}
@@ -1319,7 +1356,7 @@ export default function AccountDashboard() {
                             </button>
                             <button
                               type="button"
-                              onClick={() => setDeleteAddrTargetId(addr._id)}
+                              onClick={() => setDeleteAddrTargetId(addr._id || addr.id)}
                               style={{ background: 'none', border: 'none', color: '#D9534F', fontSize: '0.8rem', fontWeight: '800', cursor: 'pointer' }}
                             >
                               Delete

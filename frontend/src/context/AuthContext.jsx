@@ -96,6 +96,13 @@ export const AuthProvider = ({ children }) => {
     return updatedAddresses;
   };
 
+  const setDefaultAddress = async (addressId) => {
+    const res = await api.put(`/auth/address/${addressId}/default`);
+    const updatedAddresses = res.data;
+    setUser((prev) => ({ ...prev, addresses: updatedAddresses }));
+    return updatedAddresses;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -110,6 +117,7 @@ export const AuthProvider = ({ children }) => {
         deleteAddress,
         updateProfile,
         updateAddress,
+        setDefaultAddress,
       }}
     >
       {children}

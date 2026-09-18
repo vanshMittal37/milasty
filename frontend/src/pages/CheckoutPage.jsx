@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, CreditCard, Truck, CheckCircle2, XCircle, Lock, ShoppingBag } from 'lucide-react';
+import { ShieldCheck, CreditCard, Truck, CheckCircle2, XCircle, Lock, ShoppingBag, MapPin, Plus, Edit3, Check, X, AlertTriangle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useDelivery } from '../context/DeliveryContext';
@@ -9,8 +9,10 @@ import api from '../api/axios';
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cartItems, subtotal, deliveryFee: defaultDeliveryFee, grandTotal: defaultGrandTotal, appliedCoupon, couponDiscountAmount, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, addAddress, updateAddress } = useAuth();
   const { deliveryInfo, checkPincode } = useDelivery();
+
+  const savedAddresses = user?.addresses || [];
 
   // Load Razorpay script dynamically
   useEffect(() => {
@@ -23,16 +25,46 @@ export default function CheckoutPage() {
     };
   }, []);
 
+  // Determine initial selected address ID (default address first, or first row)
+  const getInitialSelectedId = () => {
+    if (!savedAddresses || savedAddresses.length === 0) return null;
+    const def = savedAddresses.find(a => a.isDefault);
+    return def ? (def._id || def.id) : (savedAddresses[0]._id || savedAddresses[0].id);
+  };
+
+  const [selectedAddressId, setSelectedAddressId] = useState(getInitialSelectedId);
+  const [showAddressSelectModal, setShowAddressSelectModal] = useState(false);
+  const [showAddEditAddressModal, setShowAddEditAddressModal] = useState(false);
+  const [editingAddrTarget, setEditingAddrTarget] = useState(null);
+
+  // Derive current selected address object
+  const selectedAddress = savedAddresses.find(
+    a => (a._id === selectedAddressId || a.id === selectedAddressId)
+  ) || (savedAddresses.length > 0 ? savedAddresses[0] : null);
+
   const [formData, setFormData] = useState({
-    customerName: user ? user.name : '',
-    email: user ? user.email : '',
-    phone: user ? user.phone || '' : '',
-    building: user?.addresses?.[0]?.building || '',
-    addressLine: user?.addresses?.[0]?.addressLine || '',
-    city: user?.addresses?.[0]?.city || deliveryInfo?.city || '',
-    state: user?.addresses?.[0]?.state || deliveryInfo?.state || '',
-    pincode: user?.addresses?.[0]?.pincode || deliveryInfo?.pincode || '',
+    customerName: user?.name || selectedAddress?.fullName || '',
+    email: user?.email || '',
+    phone: selectedAddress?.phone || user?.phone || '',
+    building: selectedAddress?.building || '',
+    addressLine: selectedAddress?.addressLine || '',
+    city: selectedAddress?.city || deliveryInfo?.city || '',
+    state: selectedAddress?.state || deliveryInfo?.state || '',
+    pincode: selectedAddress?.pincode || deliveryInfo?.pincode || '',
   });
+
+  // Inline Add / Edit Address Form State
+  const [addressModalForm, setAddressModalForm] = useState({
+    fullName: '',
+    phone: '',
+    building: '',
+    addressLine: '',
+    city: '',
+    state: '',
+    pincode: '',
+    addressType: 'Home',
+  });
+  const [savingAddress, setSavingAddress] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState('Razorpay'); // 'Razorpay' or 'COD'
   const [loading, setLoading] = useState(false);
@@ -41,16 +73,135 @@ export default function CheckoutPage() {
   const [showSimulatedPaymentModal, setShowSimulatedPaymentModal] = useState(false);
   const [simulatePaymentData, setSimulatePaymentData] = useState(null);
 
+  // Sync formData when selectedAddressId or user addresses change
+  useEffect(() => {
+    if (savedAddresses.length > 0) {
+      let target = savedAddresses.find(a => (a._id === selectedAddressId || a.id === selectedAddressId));
+      if (!target) {
+        target = savedAddresses.find(a => a.isDefault) || savedAddresses[0];
+        if (target) {
+          setSelectedAddressId(target._id || target.id);
+        }
+      }
+      if (target) {
+        setFormData(prev => ({
+          ...prev,
+          customerName: prev.customerName || target.fullName || user?.name || '',
+          email: prev.email || user?.email || '',
+          phone: target.phone || prev.phone || user?.phone || '',
+          building: target.building || '',
+          addressLine: target.addressLine || '',
+          city: target.city || '',
+          state: target.state || '',
+          pincode: target.pincode || '',
+        }));
+        if (target.pincode && target.pincode.length === 6) {
+          checkPincode(target.pincode.trim());
+        }
+      }
+    }
+  }, [selectedAddressId, user?.addresses]);
+
   // Auto check pincode on initial load if pincode present
   useEffect(() => {
-    if (formData.pincode && formData.pincode.length === 6 && (!deliveryInfo || deliveryInfo.pincode !== formData.pincode)) {
+    if (formData.pincode && formData.pincode.length === 6) {
       checkPincode(formData.pincode.trim());
     }
   }, []);
 
-  // Calculate dynamic delivery fee based on verified deliveryInfo
+  // Handle switching selected address
+  const handleSelectAddress = (addr) => {
+    const addrId = addr._id || addr.id;
+    setSelectedAddressId(addrId);
+    setFormData(prev => ({
+      ...prev,
+      customerName: addr.fullName || prev.customerName,
+      phone: addr.phone || prev.phone,
+      building: addr.building || '',
+      addressLine: addr.addressLine || '',
+      city: addr.city || '',
+      state: addr.state || '',
+      pincode: addr.pincode || '',
+    }));
+    setShowAddressSelectModal(false);
+    setErrorMessage('');
+    if (addr.pincode && addr.pincode.length === 6) {
+      checkPincode(addr.pincode.trim());
+    }
+  };
+
+  // Open modal for adding a new address inline
+  const handleOpenAddAddressInline = () => {
+    setEditingAddrTarget(null);
+    setAddressModalForm({
+      fullName: user?.name || '',
+      phone: user?.phone || '',
+      building: '',
+      addressLine: '',
+      city: '',
+      state: '',
+      pincode: '',
+      addressType: 'Home',
+    });
+    setShowAddressSelectModal(false);
+    setShowAddEditAddressModal(true);
+  };
+
+  // Open modal for editing an address inline
+  const handleOpenEditAddressInline = (addr) => {
+    setEditingAddrTarget(addr);
+    setAddressModalForm({
+      fullName: addr.fullName || '',
+      phone: addr.phone || '',
+      building: addr.building || '',
+      addressLine: addr.addressLine || '',
+      city: addr.city || '',
+      state: addr.state || '',
+      pincode: addr.pincode || '',
+      addressType: addr.addressType || 'Home',
+    });
+    setShowAddressSelectModal(false);
+    setShowAddEditAddressModal(true);
+  };
+
+  // Save new / edited address inline
+  const handleSaveAddressInline = async (e) => {
+    e.preventDefault();
+    const cleanPin = (addressModalForm.pincode || '').trim();
+    if (!cleanPin || !/^\d{6}$/.test(cleanPin)) {
+      setErrorMessage('Please enter a valid 6-digit Indian PIN code.');
+      return;
+    }
+
+    setSavingAddress(true);
+    try {
+      let updatedList;
+      if (editingAddrTarget) {
+        const targetId = editingAddrTarget._id || editingAddrTarget.id;
+        updatedList = await updateAddress(targetId, addressModalForm);
+        setSelectedAddressId(targetId);
+      } else {
+        updatedList = await addAddress(addressModalForm);
+        if (updatedList && updatedList.length > 0) {
+          const newlyAdded = updatedList[updatedList.length - 1];
+          setSelectedAddressId(newlyAdded._id || newlyAdded.id);
+        }
+      }
+      setShowAddEditAddressModal(false);
+      checkPincode(cleanPin);
+    } catch (err) {
+      setErrorMessage('Failed to save address. Please try again.');
+    } finally {
+      setSavingAddress(false);
+    }
+  };
+
+  // Calculate dynamic delivery fee based on verified deliveryInfo for selected PIN
+  const cleanPin = (formData.pincode || '').trim();
   const isDeliverable = deliveryInfo && (deliveryInfo.available ?? deliveryInfo.isDeliverable);
-  const effectiveDeliveryFee = (isDeliverable && deliveryInfo.pincode === formData.pincode.trim())
+  const isCurrentPinChecked = deliveryInfo && deliveryInfo.pincode === cleanPin;
+  
+  const effectiveDeliveryFee = (isCurrentPinChecked && isDeliverable)
     ? Number(deliveryInfo.deliveryCharge || 0)
     : (subtotal >= 499 || subtotal === 0 ? 0 : 49);
 
@@ -80,9 +231,9 @@ export default function CheckoutPage() {
     }
 
     if (name === 'pincode') {
-      const cleanPin = value.trim();
-      if (cleanPin.length === 6 && /^\d{6}$/.test(cleanPin)) {
-        checkPincode(cleanPin).then(res => {
+      const pin = value.trim();
+      if (pin.length === 6 && /^\d{6}$/.test(pin)) {
+        checkPincode(pin).then(res => {
           if (res && (res.available || res.isDeliverable) && res.city && res.state) {
             setFormData(prev => ({
               ...prev,
@@ -100,10 +251,10 @@ export default function CheckoutPage() {
     if (!formData.customerName.trim()) errors.customerName = 'Full name is required';
     
     // Phone validation
-    const cleanPhone = formData.phone.trim();
-    if (!cleanPhone) {
+    const phoneVal = formData.phone.trim();
+    if (!phoneVal) {
       errors.phone = 'Mobile number is required';
-    } else if (!/^\d{10}$/.test(cleanPhone.replace(/[\s-+]/g, '').slice(-10))) {
+    } else if (!/^\d{10}$/.test(phoneVal.replace(/[\s-+]/g, '').slice(-10))) {
       errors.phone = 'Please enter a valid 10-digit mobile number';
     }
 
@@ -112,13 +263,13 @@ export default function CheckoutPage() {
     if (!formData.state.trim()) errors.state = 'State is required';
     
     // Pincode validation
-    const cleanPin = formData.pincode.trim();
-    if (!cleanPin) {
+    const pinVal = formData.pincode.trim();
+    if (!pinVal) {
       errors.pincode = 'Pincode is required';
-    } else if (!/^\d{6}$/.test(cleanPin)) {
+    } else if (!/^\d{6}$/.test(pinVal)) {
       errors.pincode = 'Please enter a valid 6-digit pincode';
-    } else if (deliveryInfo && deliveryInfo.pincode === cleanPin && !(deliveryInfo.available ?? deliveryInfo.isDeliverable)) {
-      errors.pincode = `Delivery unavailable to PIN code ${cleanPin}`;
+    } else if (isCurrentPinChecked && !isDeliverable) {
+      errors.pincode = `Delivery currently unavailable to PIN code ${pinVal}`;
     }
 
     setFieldErrors(errors);
@@ -133,6 +284,11 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (isCurrentPinChecked && !isDeliverable) {
+      setErrorMessage(`We do not deliver to PIN code ${cleanPin}. Please select or add a serviceable delivery address.`);
+      return;
+    }
+
     setLoading(true);
     setErrorMessage('');
 
@@ -142,8 +298,8 @@ export default function CheckoutPage() {
         email: formData.email,
         phone: formData.phone,
         shippingAddress: {
-          addressLine: formData.addressLine,
           building: formData.building,
+          addressLine: formData.addressLine,
           city: formData.city,
           state: formData.state,
           country: 'India',
@@ -153,6 +309,7 @@ export default function CheckoutPage() {
         items: cartItems,
         couponCode: appliedCoupon ? appliedCoupon.code : null,
         paymentMethod,
+        selectedAddressId: selectedAddressId || null,
       };
 
       // COD FLOW: Immediately create confirmed COD order
@@ -292,17 +449,184 @@ export default function CheckoutPage() {
         {/* Checkout Form */}
         <form onSubmit={handlePlaceOrder} className="checkout-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '2.5rem', alignItems: 'start' }}>
           
-          {/* LEFT: Shipping Form & Payments */}
+          {/* LEFT: Shipping Details & Payments */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             
             {/* Delivery address details card */}
             <div className="glass-card" style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.25)', boxShadow: 'var(--shadow-sm)' }}>
-              <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-                <Truck size={20} color="var(--accent-gold)" />
-                <span>1. Shipping Details</span>
-              </h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                  <Truck size={20} color="var(--accent-gold)" />
+                  <span>1. Delivery Address</span>
+                </h2>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem' }}>
+                {savedAddresses.length > 0 && (
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddressSelectModal(true)}
+                      style={{
+                        padding: '0.45rem 0.95rem',
+                        fontSize: '0.78rem',
+                        fontWeight: '800',
+                        borderRadius: '999px',
+                        border: '1px solid var(--accent-gold)',
+                        backgroundColor: 'rgba(197, 160, 89, 0.12)',
+                        color: 'var(--accent-gold)',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                      }}
+                    >
+                      <MapPin size={13} />
+                      <span>Change Address ({savedAddresses.length})</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleOpenAddAddressInline}
+                      style={{
+                        padding: '0.45rem 0.85rem',
+                        fontSize: '0.78rem',
+                        fontWeight: '800',
+                        borderRadius: '999px',
+                        border: '1px solid rgba(245, 235, 221, 0.2)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        color: 'var(--text-light)',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                      }}
+                    >
+                      <Plus size={13} />
+                      <span>Add New</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* SAVED ADDRESS SELECTOR CARD */}
+              {savedAddresses.length > 0 && selectedAddress ? (
+                <div 
+                  style={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.03)', 
+                    borderRadius: '14px', 
+                    padding: '1.25rem', 
+                    border: (isCurrentPinChecked && !isDeliverable) 
+                      ? '1.5px solid var(--accent-terracotta)' 
+                      : '1.5px solid var(--accent-gold)', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: '0.85rem',
+                    marginBottom: '1.5rem',
+                    transition: 'border-color 0.2s'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(197, 160, 89, 0.2)', color: 'var(--accent-gold)', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                        {selectedAddress.addressType || 'Home'}
+                      </span>
+                      {selectedAddress.isDefault && (
+                        <span style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(39, 76, 55, 0.4)', color: '#85B870', padding: '0.15rem 0.5rem', borderRadius: '999px', border: '1px solid rgba(133, 184, 112, 0.3)' }}>
+                          Default Address
+                        </span>
+                      )}
+                      <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#22c55e', display: 'inline-flex', alignItems: 'center', gap: '0.2rem', marginLeft: '0.25rem' }}>
+                        <CheckCircle2 size={13} /> Selected
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.6rem' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => handleOpenEditAddressInline(selectedAddress)} 
+                        style={{ background: 'none', border: 'none', color: '#B99A5B', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0 }}
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setShowAddressSelectModal(true)} 
+                        style={{ background: 'none', border: 'none', color: 'var(--accent-gold)', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+                      >
+                        Change
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: '850', color: 'var(--text-light)', fontSize: '0.98rem' }}>
+                      {selectedAddress.fullName || formData.customerName}
+                    </div>
+                    <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: '1.5', marginTop: '0.25rem' }}>
+                      {selectedAddress.building && `${selectedAddress.building}, `}{selectedAddress.addressLine}, {selectedAddress.city}, {selectedAddress.state} - <strong style={{ color: 'var(--text-light)', fontFamily: 'monospace' }}>{selectedAddress.pincode}</strong>
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.3rem', fontWeight: '600' }}>
+                      Phone: {selectedAddress.phone || formData.phone}
+                    </div>
+                  </div>
+
+                  {/* Delivery Serviceability Status Badge for Selected Address */}
+                  {isCurrentPinChecked && (
+                    <div style={{
+                      padding: '0.65rem 0.85rem',
+                      borderRadius: '10px',
+                      fontSize: '0.8rem',
+                      fontWeight: '700',
+                      backgroundColor: isDeliverable ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.15)',
+                      color: isDeliverable ? '#22c55e' : '#ef4444',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      border: isDeliverable ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)'
+                    }}>
+                      {isDeliverable ? (
+                        <>
+                          <CheckCircle2 size={16} />
+                          <span>Delivery available to {deliveryInfo.city || selectedAddress.city} (Delivery Fee: {effectiveDeliveryFee === 0 ? 'FREE' : `₹${effectiveDeliveryFee}`})</span>
+                        </>
+                      ) : (
+                        <>
+                          <AlertTriangle size={16} />
+                          <span>⚠ Delivery unavailable to PIN code {selectedAddress.pincode}. Please select another saved address or add a new address.</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : savedAddresses.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '1.5rem', backgroundColor: 'rgba(255, 255, 255, 0.03)', borderRadius: '14px', border: '1px dashed rgba(245, 235, 221, 0.2)', marginBottom: '1.5rem' }}>
+                  <MapPin size={32} color="var(--accent-gold)" style={{ margin: '0 auto 0.5rem' }} />
+                  <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--text-light)', marginBottom: '0.25rem' }}>No saved delivery addresses found</div>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 1rem 0' }}>Add a delivery address below to proceed with your order.</p>
+                  <button
+                    type="button"
+                    onClick={handleOpenAddAddressInline}
+                    style={{
+                      padding: '0.65rem 1.35rem',
+                      fontSize: '0.82rem',
+                      fontWeight: '800',
+                      borderRadius: '10px',
+                      backgroundColor: 'var(--accent-gold)',
+                      color: '#24130D',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    <Plus size={15} />
+                    <span>Add New Address</span>
+                  </button>
+                </div>
+              ) : null}
+
+              {/* Form Input Fields */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 
                 {/* Full name input */}
                 <div>
@@ -416,13 +740,6 @@ export default function CheckoutPage() {
                       style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '10px', border: fieldErrors.pincode ? '1.5px solid var(--accent-terracotta)' : '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }} 
                     />
                     {fieldErrors.pincode && <span style={{ fontSize: '0.72rem', color: 'var(--accent-terracotta)', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.pincode}</span>}
-                    
-                    {deliveryInfo && deliveryInfo.pincode === formData.pincode.trim() && (
-                      <div style={{ marginTop: '0.35rem', fontSize: '0.72rem', fontWeight: '700', color: (deliveryInfo.available ?? deliveryInfo.isDeliverable) ? '#22c55e' : 'var(--accent-terracotta)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                        {(deliveryInfo.available ?? deliveryInfo.isDeliverable) ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
-                        {(deliveryInfo.available ?? deliveryInfo.isDeliverable) ? `Serviceable (${deliveryInfo.city})` : 'Not serviceable'}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -562,30 +879,33 @@ export default function CheckoutPage() {
               {/* Submit Checkout Button */}
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || (isCurrentPinChecked && !isDeliverable)}
                 className="btn-primary"
                 style={{ 
                   width: '100%', 
                   justifyContent: 'center', 
                   padding: '1rem', 
                   fontSize: '0.95rem', 
-                  backgroundColor: 'var(--accent-gold)', 
+                  backgroundColor: (isCurrentPinChecked && !isDeliverable) ? 'rgba(255, 255, 255, 0.15)' : 'var(--accent-gold)', 
                   border: 'none',
                   borderRadius: '12px',
                   fontWeight: '800',
-                  color: '#24130D',
-                  cursor: 'pointer',
+                  color: (isCurrentPinChecked && !isDeliverable) ? 'var(--text-muted)' : '#24130D',
+                  cursor: (isCurrentPinChecked && !isDeliverable) ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
                   boxShadow: 'var(--shadow-sm)',
-                  transition: 'opacity 0.2s'
+                  transition: 'all 0.2s',
+                  opacity: loading ? 0.7 : 1
                 }}
               >
                 {loading ? (
                   <span>{paymentMethod === 'COD' ? 'Placing Order...' : 'Initiating Secure Checkout...'}</span>
+                ) : (isCurrentPinChecked && !isDeliverable) ? (
+                  <span>Delivery Unavailable to {cleanPin}</span>
                 ) : paymentMethod === 'COD' ? (
                   <>
                     <CheckCircle2 size={15} />
@@ -609,6 +929,368 @@ export default function CheckoutPage() {
 
         </form>
       </div>
+
+      {/* ==================================================
+          MODAL 1: SELECT ADDRESS MODAL
+         ================================================== */}
+      {showAddressSelectModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.75)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div 
+            className="glass-card" 
+            style={{ 
+              backgroundColor: 'rgba(32, 17, 10, 0.98)', 
+              borderRadius: '24px', 
+              border: '1px solid rgba(245, 235, 221, 0.25)', 
+              width: '100%', 
+              maxWidth: '560px', 
+              maxHeight: '90vh',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: 'var(--shadow-lg)',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
+                  Select Delivery Address
+                </h3>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0.2rem 0 0 0' }}>
+                  Choose which address to deliver this order to
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowAddressSelectModal(false)}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.25rem' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Address Cards Scrollable Area */}
+            <div style={{ padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', flexGrow: 1 }}>
+              {savedAddresses.map((addr) => {
+                const addrId = addr._id || addr.id;
+                const isSelected = addrId === selectedAddressId;
+
+                return (
+                  <div
+                    key={addrId}
+                    onClick={() => handleSelectAddress(addr)}
+                    style={{
+                      backgroundColor: isSelected ? 'rgba(197, 160, 89, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                      borderRadius: '16px',
+                      border: isSelected ? '2px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.15)',
+                      padding: '1.15rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.75rem',
+                      position: 'relative',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(197, 160, 89, 0.2)', color: 'var(--accent-gold)', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                          {addr.addressType || 'Home'}
+                        </span>
+                        {addr.isDefault && (
+                          <span style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(39, 76, 55, 0.4)', color: '#85B870', padding: '0.15rem 0.5rem', borderRadius: '999px', border: '1px solid rgba(133, 184, 112, 0.3)' }}>
+                            Default
+                          </span>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEditAddressInline(addr);
+                          }}
+                          style={{ background: 'none', border: 'none', color: '#B99A5B', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0 }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSelectAddress(addr);
+                          }}
+                          style={{
+                            padding: '0.35rem 0.85rem',
+                            fontSize: '0.75rem',
+                            fontWeight: '800',
+                            borderRadius: '999px',
+                            backgroundColor: isSelected ? 'var(--accent-gold)' : 'transparent',
+                            color: isSelected ? '#24130D' : 'var(--text-light)',
+                            border: isSelected ? 'none' : '1px solid rgba(245, 235, 221, 0.25)',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {isSelected ? 'Selected ✓' : 'Deliver Here'}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontWeight: '850', color: 'var(--text-light)', fontSize: '0.95rem' }}>
+                        {addr.fullName}
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', marginTop: '0.2rem' }}>
+                        {addr.building && `${addr.building}, `}{addr.addressLine}, {addr.city}, {addr.state} - <strong style={{ color: 'var(--text-light)', fontFamily: 'monospace' }}>{addr.pincode}</strong>
+                      </div>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                        Phone: {addr.phone}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid rgba(245, 235, 221, 0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.15)' }}>
+              <button
+                type="button"
+                onClick={handleOpenAddAddressInline}
+                style={{
+                  padding: '0.6rem 1.2rem',
+                  fontSize: '0.82rem',
+                  fontWeight: '800',
+                  borderRadius: '10px',
+                  backgroundColor: 'var(--accent-gold)',
+                  color: '#24130D',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                }}
+              >
+                <Plus size={15} />
+                <span>Add New Address</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowAddressSelectModal(false)}
+                style={{
+                  padding: '0.6rem 1.2rem',
+                  fontSize: '0.82rem',
+                  fontWeight: '800',
+                  borderRadius: '10px',
+                  backgroundColor: 'transparent',
+                  color: 'var(--text-muted)',
+                  border: '1px solid rgba(245, 235, 221, 0.2)',
+                  cursor: 'pointer',
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================
+          MODAL 2: INLINE ADD / EDIT ADDRESS MODAL
+         ================================================== */}
+      {showAddEditAddressModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.75)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div 
+            className="glass-card" 
+            style={{ 
+              backgroundColor: 'rgba(32, 17, 10, 0.98)', 
+              borderRadius: '24px', 
+              border: '1px solid rgba(245, 235, 221, 0.25)', 
+              width: '100%', 
+              maxWidth: '520px', 
+              maxHeight: '90vh',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: 'var(--shadow-lg)',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
+                {editingAddrTarget ? 'Edit Delivery Address' : 'Add New Delivery Address'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowAddEditAddressModal(false)}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.25rem' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Form Content */}
+            <form onSubmit={handleSaveAddressInline} style={{ padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', flexGrow: 1 }}>
+              
+              {/* Address Type Selector */}
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Address Label</label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {['Home', 'Work', 'Other'].map(type => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setAddressModalForm(prev => ({ ...prev, addressType: type }))}
+                      style={{
+                        padding: '0.45rem 1rem',
+                        fontSize: '0.8rem',
+                        fontWeight: '800',
+                        borderRadius: '8px',
+                        border: addressModalForm.addressType === type ? '1.5px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.15)',
+                        backgroundColor: addressModalForm.addressType === type ? 'rgba(197, 160, 89, 0.15)' : 'transparent',
+                        color: addressModalForm.addressType === type ? 'var(--accent-gold)' : 'var(--text-muted)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Full Name */}
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Recipient Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={addressModalForm.fullName}
+                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, fullName: e.target.value }))}
+                  placeholder="Yash Mittal"
+                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+                />
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Mobile Phone *</label>
+                <input
+                  type="tel"
+                  required
+                  value={addressModalForm.phone}
+                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="9876543210"
+                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+                />
+              </div>
+
+              {/* Building / Flat */}
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>House / Flat / Building</label>
+                <input
+                  type="text"
+                  value={addressModalForm.building}
+                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, building: e.target.value }))}
+                  placeholder="Sikandrabad / Kaziwara"
+                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+                />
+              </div>
+
+              {/* Street Address */}
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Street Address *</label>
+                <textarea
+                  rows={2}
+                  required
+                  value={addressModalForm.addressLine}
+                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, addressLine: e.target.value }))}
+                  placeholder="Main Road, Near Landmark"
+                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)', resize: 'none' }}
+                />
+              </div>
+
+              {/* City, State, Pincode */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>City *</label>
+                  <input
+                    type="text"
+                    required
+                    value={addressModalForm.city}
+                    onChange={(e) => setAddressModalForm(prev => ({ ...prev, city: e.target.value }))}
+                    placeholder="Bulandshahr"
+                    style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>State *</label>
+                  <input
+                    type="text"
+                    required
+                    value={addressModalForm.state}
+                    onChange={(e) => setAddressModalForm(prev => ({ ...prev, state: e.target.value }))}
+                    placeholder="Uttar Pradesh"
+                    style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Pincode *</label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    value={addressModalForm.pincode}
+                    onChange={(e) => setAddressModalForm(prev => ({ ...prev, pincode: e.target.value }))}
+                    placeholder="203205"
+                    style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+                  />
+                </div>
+              </div>
+
+              {/* Modal Submit Buttons */}
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem' }}>
+                <button
+                  type="submit"
+                  disabled={savingAddress}
+                  style={{
+                    flexGrow: 1,
+                    padding: '0.85rem',
+                    fontSize: '0.88rem',
+                    fontWeight: '800',
+                    borderRadius: '10px',
+                    backgroundColor: 'var(--accent-gold)',
+                    color: '#24130D',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {savingAddress ? 'Saving Address...' : (editingAddrTarget ? 'Save & Select Address' : 'Add & Select Address')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddEditAddressModal(false)}
+                  style={{
+                    padding: '0.85rem 1.2rem',
+                    fontSize: '0.88rem',
+                    fontWeight: '800',
+                    borderRadius: '10px',
+                    backgroundColor: 'transparent',
+                    color: 'var(--text-muted)',
+                    border: '1px solid rgba(245, 235, 221, 0.2)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Simulated Payment Modal */}
       {showSimulatedPaymentModal && simulatePaymentData && (

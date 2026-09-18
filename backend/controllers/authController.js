@@ -288,7 +288,22 @@ export const addAddress = async (req, res) => {
 
     const currentAddresses = user.addresses || [];
     const addressId = Date.now().toString();
-    const updatedAddresses = [...currentAddresses, { ...newAddress, _id: addressId, id: addressId }];
+    const shouldBeDefault = currentAddresses.length === 0 || !!newAddress.isDefault;
+
+    // Enforce single default address
+    const cleanedExisting = currentAddresses.map((addr) => ({
+      ...addr,
+      isDefault: shouldBeDefault ? false : (addr.isDefault ?? false),
+    }));
+
+    const addedItem = {
+      ...newAddress,
+      _id: addressId,
+      id: addressId,
+      isDefault: shouldBeDefault,
+    };
+
+    const updatedAddresses = [...cleanedExisting, addedItem];
 
     const { error: updateErr } = await supabase
       .from('users')
@@ -321,12 +336,23 @@ export const updateAddress = async (req, res) => {
     }
 
     const currentAddresses = user.addresses || [];
-    const updatedAddresses = currentAddresses.map((addr) => {
-      if (addr._id === addressId || addr.id === addressId) {
-        return { ...addr, ...addressData };
+    const isSettingDefault = !!addressData.isDefault;
+
+    let updatedAddresses = currentAddresses.map((addr) => {
+      const isTarget = addr._id === addressId || addr.id === addressId;
+      if (isTarget) {
+        return { ...addr, ...addressData, isDefault: isSettingDefault ? true : (addr.isDefault ?? false) };
       }
-      return addr;
+      return {
+        ...addr,
+        isDefault: isSettingDefault ? false : (addr.isDefault ?? false),
+      };
     });
+
+    // Ensure at least one default address exists if list non-empty
+    if (updatedAddresses.length > 0 && !updatedAddresses.some((a) => a.isDefault)) {
+      updatedAddresses[0].isDefault = true;
+    }
 
     const { error: updateErr } = await supabase
       .from('users')
@@ -338,6 +364,41 @@ export const updateAddress = async (req, res) => {
     res.json(updatedAddresses);
   } catch (error) {
     res.status(500).json({ message: 'Error updating address', error: error.message });
+  }
+};
+
+// Set Default Address
+export const setDefaultAddress = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { addressId } = req.params;
+
+    const { data: user, error: fetchErr } = await supabase
+      .from('users')
+      .select('addresses')
+      .eq('id', userId)
+      .single();
+
+    if (fetchErr || !user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const currentAddresses = user.addresses || [];
+    const updatedAddresses = currentAddresses.map((addr) => ({
+      ...addr,
+      isDefault: addr._id === addressId || addr.id === addressId,
+    }));
+
+    const { error: updateErr } = await supabase
+      .from('users')
+      .update({ addresses: updatedAddresses, updated_at: new Date() })
+      .eq('id', userId);
+
+    if (updateErr) throw updateErr;
+
+    res.json(updatedAddresses);
+  } catch (error) {
+    res.status(500).json({ message: 'Error setting default address', error: error.message });
   }
 };
 
@@ -358,7 +419,12 @@ export const deleteAddress = async (req, res) => {
     }
 
     const currentAddresses = user.addresses || [];
-    const updatedAddresses = currentAddresses.filter((addr) => addr._id !== addressId && addr.id !== addressId);
+    let updatedAddresses = currentAddresses.filter((addr) => addr._id !== addressId && addr.id !== addressId);
+
+    // If remaining addresses exist and none is default, set first one as default
+    if (updatedAddresses.length > 0 && !updatedAddresses.some((a) => a.isDefault)) {
+      updatedAddresses[0].isDefault = true;
+    }
 
     const { error: updateErr } = await supabase
       .from('users')
