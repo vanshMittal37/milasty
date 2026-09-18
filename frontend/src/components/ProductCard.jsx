@@ -6,6 +6,7 @@ import { useWishlist } from '../context/WishlistContext';
 import PriceDisplay from './PriceDisplay';
 
 export default function ProductCard({ product }) {
+  if (!product) return null;
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -56,7 +57,7 @@ export default function ProductCard({ product }) {
     >
       {/* Image Area with Badge & Wishlist Button */}
       <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: 'transparent' }} className="card-image-wrap">
-        <Link to={`/product/${product.slug}`}>
+        <Link to={`/product/${product.slug || product._id || product.id}`}>
           <img
             src={product.image}
             alt={product.title}
@@ -194,7 +195,7 @@ export default function ProductCard({ product }) {
               color: '#FFFDF9',
             }}
           >
-            <Link to={`/product/${product.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <Link to={`/product/${product.slug || product._id || product.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
               {product.title}
             </Link>
           </h3>

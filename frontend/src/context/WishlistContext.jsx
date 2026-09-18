@@ -231,7 +231,21 @@ export const WishlistProvider = ({ children }) => {
 export const useWishlist = () => {
   const context = useContext(WishlistContext);
   if (!context) {
-    throw new Error('useWishlist must be used within a WishlistProvider');
+    return {
+      wishlistItems: [],
+      wishlistProductIds: new Set(),
+      wishlistCount: 0,
+      wishlistLoading: false,
+      isWishlistLoading: false,
+      isInWishlist: () => false,
+      isProductInWishlist: () => false,
+      toggleWishlist: () => {},
+      addToWishlist: () => {},
+      removeFromWishlist: () => {},
+      getUserWishlist: () => {},
+      showAuthModal: false,
+      setShowAuthModal: () => {},
+    };
   }
   return context;
 };

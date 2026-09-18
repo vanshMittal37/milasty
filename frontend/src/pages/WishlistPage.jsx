@@ -281,7 +281,7 @@ export default function WishlistPage() {
         return priceB - priceA;
       });
     } else if (sortBy === 'alpha') {
-      sorted.sort((a, b) => a.title.localeCompare(b.title));
+      sorted.sort((a, b) => (a?.title || '').localeCompare(b?.title || ''));
     }
     return sorted;
   };
