@@ -37,6 +37,8 @@ export const getWishlist = async (req, res) => {
           products = dbProducts.map((p) => ({
             ...p,
             _id: p.id,
+            image: p.image_url || p.image || p.primary_image || (Array.isArray(p.images) ? p.images[0] : null) || '/images/image1.jpeg',
+            image_url: p.image_url || p.image || '/images/image1.jpeg',
             variants: p.product_variants || [],
           }));
         }
@@ -122,6 +124,8 @@ export const toggleWishlist = async (req, res) => {
           products = dbProducts.map((p) => ({
             ...p,
             _id: p.id,
+            image: p.image_url || p.image || p.primary_image || (Array.isArray(p.images) ? p.images[0] : null) || '/images/image1.jpeg',
+            image_url: p.image_url || p.image || '/images/image1.jpeg',
             variants: p.product_variants || [],
           }));
         }

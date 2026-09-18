@@ -60,8 +60,8 @@ export default function ProductCard({ product }) {
       <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: 'transparent' }} className="card-image-wrap">
         <Link to={`/product/${product.slug || product._id || product.id}`}>
           <img
-            src={product.image}
-            alt={product.title}
+            src={product.image || product.image_url || product.primary_image || '/images/image1.jpeg'}
+            alt={product.title || 'MILASTY Bake'}
             style={{
               position: 'absolute',
               top: 0,

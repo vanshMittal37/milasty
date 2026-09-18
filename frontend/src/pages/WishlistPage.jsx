@@ -475,11 +475,12 @@ export default function WishlistPage() {
               
               <div 
                 ref={recRef}
-                className="horizontal-scroll-container wishlist-recommendations-grid"
+                className="wishlist-recommendations-grid"
                 style={{ 
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
                   gap: '1.5rem',
+                  width: '100%',
                 }}
               >
                 {recommendations.map((p) => (
@@ -603,7 +604,13 @@ export default function WishlistPage() {
 
               <div 
                 ref={recRef} 
-                className="horizontal-scroll-container wishlist-recommendations-grid"
+                className="wishlist-recommendations-grid"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+                  gap: '1.5rem',
+                  width: '100%',
+                }}
               >
                 {recommendations.map((p) => (
                   <ProductCard key={`rec-${p._id || p.slug}`} product={p} />
