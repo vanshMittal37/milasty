@@ -138,13 +138,13 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <ToastProvider>
-      <AuthProvider>
-        <WishlistProvider>
-          <CartProvider>
-            <CategoryProvider>
-              <DeliveryProvider>
-                <Router>
+    <Router>
+      <ToastProvider>
+        <AuthProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <CategoryProvider>
+                <DeliveryProvider>
                   <ScrollToTop />
                   <Routes>
                     {/* Admin Separate Portal */}
@@ -198,13 +198,13 @@ export default function App() {
                       <Route path="/reset-password" element={<ResetPasswordPage />} />
                     </Route>
                   </Routes>
-                </Router>
-              </DeliveryProvider>
-            </CategoryProvider>
-          </CartProvider>
-        </WishlistProvider>
-      </AuthProvider>
-    </ToastProvider>
+                </DeliveryProvider>
+              </CategoryProvider>
+            </CartProvider>
+          </WishlistProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </Router>
   );
 }
 
