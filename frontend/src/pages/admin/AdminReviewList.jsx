@@ -59,6 +59,9 @@ export default function AdminReviewList() {
   const [tContent, setTContent] = useState('');
   const [tImage, setTImage] = useState('');
   const [tIsPublished, setTIsPublished] = useState(true);
+  const [tShowOnHome, setTShowOnHome] = useState(true);
+  const [tShowOnShop, setTShowOnShop] = useState(true);
+  const [tProductId, setTProductId] = useState('');
   const [uploadingTImage, setUploadingTImage] = useState(false);
 
   // Edit Testimonial Form State
@@ -68,6 +71,9 @@ export default function AdminReviewList() {
   const [editTContent, setEditTContent] = useState('');
   const [editTImage, setEditTImage] = useState('');
   const [editTIsPublished, setEditTIsPublished] = useState(true);
+  const [editTShowOnHome, setEditTShowOnHome] = useState(true);
+  const [editTShowOnShop, setEditTShowOnShop] = useState(true);
+  const [editTProductId, setEditTProductId] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -244,6 +250,9 @@ export default function AdminReviewList() {
         content: tContent,
         imageUrl: tImage,
         isPublished: tIsPublished,
+        showOnHome: tShowOnHome,
+        showOnShop: tShowOnShop,
+        productId: tProductId || null,
       });
       toast.success('Testimonial created successfully.');
       setShowAddTestimonialModal(false);
@@ -252,6 +261,7 @@ export default function AdminReviewList() {
       setTContent('');
       setTImage('');
       setTRating(5);
+      setTProductId('');
       fetchTestimonials();
     } catch (e) {
       toast.error(e.response?.data?.message || 'Error creating testimonial.');
@@ -264,7 +274,7 @@ export default function AdminReviewList() {
     const newVal = !testimonial.isPublished;
     try {
       await api.put(`/testimonials/${id}`, { isPublished: newVal });
-      toast.success(newVal ? 'Testimonial published to homepage.' : 'Testimonial hidden from homepage.');
+      toast.success(newVal ? 'Testimonial published.' : 'Testimonial hidden.');
       fetchTestimonials();
     } catch (e) {
       toast.error('Error updating testimonial status.');
@@ -284,6 +294,9 @@ export default function AdminReviewList() {
         content: editTContent,
         imageUrl: editTImage,
         isPublished: editTIsPublished,
+        showOnHome: editTShowOnHome,
+        showOnShop: editTShowOnShop,
+        productId: editTProductId || null,
       });
       toast.success('Testimonial updated successfully.');
       setEditingTestimonial(null);
@@ -725,7 +738,10 @@ export default function AdminReviewList() {
                           setEditTRating(testim.rating || 5);
                           setEditTContent(testim.content || '');
                           setEditTImage(testim.imageUrl || '');
-                          setEditTIsPublished(testim.isPublished);
+                          setEditTIsPublished(testim.isPublished !== false);
+                          setEditTShowOnHome(testim.showOnHome !== false);
+                          setEditTShowOnShop(testim.showOnShop !== false);
+                          setEditTProductId(testim.productId || testim.product_id || '');
                         }}
                         style={{ background: 'none', border: 'none', color: 'var(--admin-text-secondary)', cursor: 'pointer', padding: '0.25rem' }}
                       >
@@ -992,6 +1008,21 @@ export default function AdminReviewList() {
               </div>
 
               <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Associated Product (Optional)</label>
+                <select
+                  value={tProductId}
+                  onChange={(e) => setTProductId(e.target.value)}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                >
+                  <option value="">-- No Specific Product Linked --</option>
+                  {safeProducts.map((p) => {
+                    const pVal = p.id || p._id || p.slug;
+                    return <option key={pVal} value={pVal}>{p.title}</option>;
+                  })}
+                </select>
+              </div>
+
+              <div>
                 <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Photo (Optional)</label>
                 <input
                   type="file"
@@ -1002,10 +1033,19 @@ export default function AdminReviewList() {
                 {uploadingTImage && <span style={{ fontSize: '0.75rem', color: 'var(--admin-accent-gold)' }}>Uploading photo...</span>}
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--admin-text-primary)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--admin-border)' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)' }}>Display Placement</span>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={tShowOnHome} onChange={(e) => setTShowOnHome(e.target.checked)} />
+                  Show on Homepage Carousel
+                </label>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={tShowOnShop} onChange={(e) => setTShowOnShop(e.target.checked)} />
+                  Show on Shop Page "Loved by MILASTY Customers"
+                </label>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
                   <input type="checkbox" checked={tIsPublished} onChange={(e) => setTIsPublished(e.target.checked)} />
-                  Show on Homepage ON
+                  Active / Published
                 </label>
               </div>
 
@@ -1050,6 +1090,21 @@ export default function AdminReviewList() {
               </div>
 
               <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Associated Product (Optional)</label>
+                <select
+                  value={editTProductId}
+                  onChange={(e) => setEditTProductId(e.target.value)}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                >
+                  <option value="">-- No Specific Product Linked --</option>
+                  {safeProducts.map((p) => {
+                    const pVal = p.id || p._id || p.slug;
+                    return <option key={pVal} value={pVal}>{p.title}</option>;
+                  })}
+                </select>
+              </div>
+
+              <div>
                 <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Testimonial Text</label>
                 <textarea
                   rows={3}
@@ -1060,10 +1115,19 @@ export default function AdminReviewList() {
                 />
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--admin-text-primary)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--admin-border)' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)' }}>Display Placement</span>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={editTShowOnHome} onChange={(e) => setEditTShowOnHome(e.target.checked)} />
+                  Show on Homepage Carousel
+                </label>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={editTShowOnShop} onChange={(e) => setEditTShowOnShop(e.target.checked)} />
+                  Show on Shop Page "Loved by MILASTY Customers"
+                </label>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
                   <input type="checkbox" checked={editTIsPublished} onChange={(e) => setEditTIsPublished(e.target.checked)} />
-                  Show on Homepage ON
+                  Active / Published
                 </label>
               </div>
 

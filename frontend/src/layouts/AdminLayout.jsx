@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { 
   LayoutDashboard, Package, Tags, ShoppingCart, Users, Ticket, Star, 
-  LogOut, Menu, Bell, ChevronDown, Globe, KeyRound, UserCheck, X, Truck, MessageSquare
+  LogOut, Menu, Bell, ChevronDown, Globe, KeyRound, UserCheck, X, Truck, MessageSquare, Clock, HelpCircle, Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -61,32 +61,34 @@ export default function AdminLayout() {
 
   const sections = [
     {
-      title: 'Main',
+      title: 'Catalog',
       items: [
         { label: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
         { label: 'Products', path: '/admin/products', icon: Package },
         { label: 'Categories', path: '/admin/categories', icon: Tags },
-        { label: 'Orders Log', path: '/admin/orders', icon: ShoppingCart },
+        { label: 'Pre-Bookings', path: '/admin/prebookings', icon: Clock },
       ]
     },
     {
-      title: 'Fulfillment',
+      title: 'Sales & Fulfillment',
       items: [
+        { label: 'Orders Log', path: '/admin/orders', icon: ShoppingCart },
+        { label: 'Coupons', path: '/admin/coupons', icon: Ticket },
         { label: 'Delivery Areas', path: '/admin/delivery-areas', icon: Truck },
       ]
     },
     {
-      title: 'Customers',
+      title: 'Customers & Support',
       items: [
         { label: 'Customers', path: '/admin/customers', icon: Users },
         { label: 'Inquiries', path: '/admin/inquiries', icon: MessageSquare },
-        { label: 'Coupons', path: '/admin/coupons', icon: Ticket },
-        { label: 'Reviews', path: '/admin/reviews', icon: Star },
+        { label: 'Reviews & Testimonials', path: '/admin/reviews', icon: Star },
       ]
     },
     {
-      title: 'System',
+      title: 'Content & Discovery',
       items: [
+        { label: 'Recommendation Quiz', path: '/admin/recommendation-quiz', icon: HelpCircle },
         { label: 'View Website', path: '/', icon: Globe },
       ]
     }
@@ -98,14 +100,16 @@ export default function AdminLayout() {
     if (path.includes('/admin/dashboard')) return { title: 'Dashboard', breadcrumb: 'Home / Dashboard' };
     if (path.includes('/admin/products/add')) return { title: 'Add Product', breadcrumb: 'Products / Add New' };
     if (path.includes('/admin/products/edit')) return { title: 'Edit Product', breadcrumb: 'Products / Edit' };
-    if (path.includes('/admin/products')) return { title: 'Products', breadcrumb: 'Inventory / Products' };
-    if (path.includes('/admin/categories')) return { title: 'Categories', breadcrumb: 'Inventory / Categories' };
+    if (path.includes('/admin/products')) return { title: 'Products', breadcrumb: 'Catalog / Products' };
+    if (path.includes('/admin/categories')) return { title: 'Categories', breadcrumb: 'Catalog / Categories' };
+    if (path.includes('/admin/prebookings')) return { title: 'Pre-Booking Products', breadcrumb: 'Catalog / Pre-Bookings' };
     if (path.includes('/admin/delivery-areas')) return { title: 'Delivery Areas', breadcrumb: 'Fulfillment / Delivery Areas' };
     if (path.includes('/admin/orders')) return { title: 'Orders Log', breadcrumb: 'Sales / Orders Log' };
     if (path.includes('/admin/customers')) return { title: 'Customers', breadcrumb: 'Users / Customer List' };
     if (path.includes('/admin/inquiries')) return { title: 'Customer Inquiries', breadcrumb: 'Support / Customer Inquiries' };
     if (path.includes('/admin/coupons')) return { title: 'Coupons', breadcrumb: 'Promotions / Coupons' };
     if (path.includes('/admin/reviews')) return { title: 'Reviews Moderation', breadcrumb: 'Feedback / Reviews' };
+    if (path.includes('/admin/recommendation-quiz')) return { title: 'Recommendation Quiz', breadcrumb: 'Content / Product Quiz' };
     return { title: 'Admin Panel', breadcrumb: 'MILASTY / Admin' };
   };
 

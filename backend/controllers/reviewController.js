@@ -860,18 +860,27 @@ export const deleteReview = async (req, res) => {
 };
 
 /**
- * 9. PUBLIC: GET TESTIMONIALS FOR HOMEPAGE
+ * 9. PUBLIC: GET TESTIMONIALS FOR HOMEPAGE & SHOP
  * GET /api/testimonials
  */
 export const getPublicTestimonials = async (req, res) => {
   try {
+    const { placement } = req.query; // 'home' | 'shop'
     let dbTestimonials = [];
 
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('testimonials')
         .select('*')
-        .eq('is_published', true)
+        .eq('is_published', true);
+
+      if (placement === 'shop') {
+        query = query.eq('show_on_shop', true);
+      } else if (placement === 'home') {
+        query = query.eq('show_on_home', true);
+      }
+
+      const { data, error } = await query
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false });
 
@@ -880,7 +889,12 @@ export const getPublicTestimonials = async (req, res) => {
       console.warn('Supabase getPublicTestimonials notice:', e.message);
     }
 
-    const memTestimonials = Array.from(memoryTestimonials.values()).filter((t) => t.is_published !== false);
+    const memTestimonials = Array.from(memoryTestimonials.values()).filter((t) => {
+      if (t.is_published === false) return false;
+      if (placement === 'shop' && t.show_on_shop === false) return false;
+      if (placement === 'home' && t.show_on_home === false) return false;
+      return true;
+    });
 
     const tMap = new Map();
     dbTestimonials.forEach((t) => { if (t && t.id) tMap.set(String(t.id), t); });
@@ -888,20 +902,32 @@ export const getPublicTestimonials = async (req, res) => {
 
     let testimonials = Array.from(tMap.values());
 
-    if (testimonials.length === 0) {
+    if (testimonials.length === 0 && !placement) {
       testimonials = getInitialTestimonialsSeed();
     }
 
-    const formatted = testimonials.map((t) => ({
-      id: t.id,
-      name: t.name,
-      role: t.role || 'Valued Customer',
-      rating: Number(t.rating || 5),
-      content: t.content,
-      imageUrl: t.image_url || t.imageUrl || '',
-      isPublished: Boolean(t.is_published ?? true),
-      createdAt: t.created_at,
-    }));
+    const productsMap = await getProductsLookupMap();
+
+    const formatted = testimonials.map((t) => {
+      const pidStr = String(t.product_id || t.productId || '').trim();
+      let p = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
+
+      return {
+        id: t.id,
+        name: t.name,
+        role: t.role || 'Valued Customer',
+        rating: Number(t.rating || 5),
+        content: t.content,
+        imageUrl: t.image_url || t.imageUrl || '',
+        isPublished: Boolean(t.is_published ?? true),
+        showOnHome: Boolean(t.show_on_home ?? true),
+        showOnShop: Boolean(t.show_on_shop ?? true),
+        productId: t.product_id || t.productId || null,
+        productTitle: p.title || p.name || '',
+        verified: Boolean(t.verified ?? true),
+        createdAt: t.created_at,
+      };
+    });
 
     return res.json(formatted);
   } catch (error) {
@@ -940,18 +966,30 @@ export const getAllAdminTestimonials = async (req, res) => {
       testimonials = getInitialTestimonialsSeed();
     }
 
-    const formatted = testimonials.map((t) => ({
-      id: t.id,
-      _id: t.id,
-      name: t.name,
-      role: t.role || 'Valued Customer',
-      rating: Number(t.rating || 5),
-      content: t.content,
-      imageUrl: t.image_url || t.imageUrl || '',
-      isPublished: Boolean(t.is_published ?? true),
-      sortOrder: t.sort_order || 0,
-      createdAt: t.created_at,
-    }));
+    const productsMap = await getProductsLookupMap();
+
+    const formatted = testimonials.map((t) => {
+      const pidStr = String(t.product_id || t.productId || '').trim();
+      let p = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
+
+      return {
+        id: t.id,
+        _id: t.id,
+        name: t.name,
+        role: t.role || 'Valued Customer',
+        rating: Number(t.rating || 5),
+        content: t.content,
+        imageUrl: t.image_url || t.imageUrl || '',
+        isPublished: Boolean(t.is_published ?? true),
+        showOnHome: Boolean(t.show_on_home ?? true),
+        showOnShop: Boolean(t.show_on_shop ?? true),
+        productId: t.product_id || t.productId || null,
+        productTitle: p.title || p.name || '',
+        verified: Boolean(t.verified ?? true),
+        sortOrder: t.sort_order || 0,
+        createdAt: t.created_at,
+      };
+    });
 
     return res.json(formatted);
   } catch (error) {
@@ -965,11 +1003,27 @@ export const getAllAdminTestimonials = async (req, res) => {
  */
 export const createTestimonial = async (req, res) => {
   try {
-    const { name, role = 'Valued Customer', rating = 5, content, imageUrl = '', image_url = '', isPublished = true } = req.body;
+    const {
+      name,
+      role = 'Valued Customer',
+      rating = 5,
+      content,
+      imageUrl = '',
+      image_url = '',
+      isPublished = true,
+      showOnHome = true,
+      showOnShop = true,
+      productId = null,
+      product_id = null,
+      verified = true,
+      sortOrder = 0,
+    } = req.body;
 
     if (!name || !content) {
       return res.status(400).json({ message: 'Name and testimonial content are required' });
     }
+
+    const finalProductId = productId || product_id || null;
 
     const newRecord = {
       name: String(name).trim(),
@@ -978,7 +1032,11 @@ export const createTestimonial = async (req, res) => {
       content: String(content).trim(),
       image_url: imageUrl || image_url || '',
       is_published: Boolean(isPublished),
-      sort_order: 0,
+      show_on_home: Boolean(showOnHome),
+      show_on_shop: Boolean(showOnShop),
+      product_id: finalProductId ? String(finalProductId) : null,
+      verified: Boolean(verified),
+      sort_order: Number(sortOrder || 0),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -1022,7 +1080,21 @@ export const createTestimonial = async (req, res) => {
 export const updateTestimonial = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, role, rating, content, imageUrl, image_url, isPublished } = req.body;
+    const {
+      name,
+      role,
+      rating,
+      content,
+      imageUrl,
+      image_url,
+      isPublished,
+      showOnHome,
+      showOnShop,
+      productId,
+      product_id,
+      verified,
+      sortOrder,
+    } = req.body;
 
     const updates = { updated_at: new Date().toISOString() };
     if (name !== undefined) updates.name = name;
@@ -1031,6 +1103,14 @@ export const updateTestimonial = async (req, res) => {
     if (content !== undefined) updates.content = content;
     if (imageUrl !== undefined || image_url !== undefined) updates.image_url = imageUrl || image_url;
     if (isPublished !== undefined) updates.is_published = Boolean(isPublished);
+    if (showOnHome !== undefined) updates.show_on_home = Boolean(showOnHome);
+    if (showOnShop !== undefined) updates.show_on_shop = Boolean(showOnShop);
+    if (productId !== undefined || product_id !== undefined) {
+      const pVal = productId !== undefined ? productId : product_id;
+      updates.product_id = pVal ? String(pVal) : null;
+    }
+    if (verified !== undefined) updates.verified = Boolean(verified);
+    if (sortOrder !== undefined) updates.sort_order = Number(sortOrder);
 
     let updated = null;
 

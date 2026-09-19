@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Trash2, Plus, Minus, Tag, ArrowRight, Truck, ShieldCheck, MapPin, CheckCircle2 } from 'lucide-react';
+import { ShoppingBag, Trash2, Plus, Minus, Tag, ArrowRight, Truck, ShieldCheck, MapPin, CheckCircle2, Calendar } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useDelivery } from '../context/DeliveryContext';
 
@@ -104,7 +104,7 @@ export default function CartPage() {
               {/* Item Cards */}
               {cartItems.map((item) => (
                 <div
-                  key={item.key}
+                  key={item.key || item.cartItemId || item.id}
                   style={{
                     padding: '1.25rem',
                     display: 'flex',
@@ -122,10 +122,16 @@ export default function CartPage() {
 
                   <div style={{ flexGrow: 1 }}>
                     <h4 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#24130D', marginBottom: '0.2rem', fontWeight: '700' }}>
-                      <Link to={`/shop/product/${item.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{item.title}</Link>
+                      <Link to={`/shop/product/${item.slug || item.productId}`} style={{ color: 'inherit', textDecoration: 'none' }}>{item.title}</Link>
                     </h4>
+                    {(item.is_preorder || item.isPreorder) && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', backgroundColor: 'rgba(36, 79, 33, 0.12)', color: '#244f21', border: '1px solid rgba(36, 79, 33, 0.3)', padding: '0.2rem 0.5rem', borderRadius: '6px', fontWeight: '700', marginBottom: '0.4rem' }}>
+                        <Calendar size={12} color="#244f21" />
+                        <span>Pre-order {item.expected_ship_date || item.expectedShipDate || item.launchDate ? `• Ships from: ${item.expected_ship_date || item.expectedShipDate || item.launchDate}` : ''}</span>
+                      </div>
+                    )}
                     <div style={{ fontSize: '0.82rem', color: '#7A5535', marginBottom: '0.55rem', fontWeight: '500' }}>
-                      Pack: <strong style={{ color: '#4A2C10' }}>{item.variantName} ({item.weight})</strong>
+                      Pack: <strong style={{ color: '#4A2C10' }}>{item.variantName} {item.weight ? `(${item.weight})` : ''}</strong>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>

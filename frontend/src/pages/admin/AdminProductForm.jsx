@@ -30,6 +30,7 @@ export default function AdminProductForm() {
     isFeatured: true,
     image: '',
     secondaryImage: '',
+    labReportUrl: '',
     badges: '',
     ingredients: '',
     allergens: '',
@@ -52,6 +53,7 @@ export default function AdminProductForm() {
   const [loading, setLoading] = useState(false);
   const [uploadingMain, setUploadingMain] = useState(false);
   const [uploadingSec, setUploadingSec] = useState(false);
+  const [uploadingReport, setUploadingReport] = useState(false);
   const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
@@ -97,6 +99,7 @@ export default function AdminProductForm() {
           pieces: res.data.pieces || res.data.nutritionFacts?.pieces || '',
           image: res.data.image || '',
           secondaryImage: res.data.secondaryImage || '',
+          labReportUrl: res.data.labReportUrl || res.data.lab_report_url || '',
           badges: Array.isArray(res.data.badges) ? res.data.badges.join(', ') : res.data.badges || '',
           ingredients: Array.isArray(res.data.ingredients) ? res.data.ingredients.join(', ') : res.data.ingredients || '',
           benefits: Array.isArray(res.data.benefits) ? res.data.benefits.join(', ') : res.data.benefits || '',
@@ -117,18 +120,26 @@ export default function AdminProductForm() {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!file.type.match(/^image\/(jpeg|jpg|png|webp)$/i)) {
-      toast.error('Only JPG, JPEG, PNG, or WEBP images are supported');
-      return;
+    if (fieldName === 'labReportUrl') {
+      if (!file.type.match(/^(application\/pdf|image\/(jpeg|jpg|png|webp))$/i)) {
+        toast.error('Only PDF documents and image files are supported for Lab Reports');
+        return;
+      }
+    } else {
+      if (!file.type.match(/^image\/(jpeg|jpg|png|webp)$/i)) {
+        toast.error('Only JPG, JPEG, PNG, or WEBP images are supported');
+        return;
+      }
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('File size exceeds 5MB limit');
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error('File size exceeds 15MB limit');
       return;
     }
 
     if (fieldName === 'image') setUploadingMain(true);
-    else setUploadingSec(true);
+    else if (fieldName === 'secondaryImage') setUploadingSec(true);
+    else if (fieldName === 'labReportUrl') setUploadingReport(true);
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -138,17 +149,18 @@ export default function AdminProductForm() {
         const res = await api.post('/upload', { image: base64Data });
         if (res.data && res.data.url) {
           setFormData((prev) => ({ ...prev, [fieldName]: res.data.url }));
-          toast.success('Image uploaded successfully!');
+          toast.success(fieldName === 'labReportUrl' ? 'Lab report uploaded successfully!' : 'Image uploaded successfully!');
         } else {
-          toast.error('Cloudinary upload failed');
+          toast.error('File upload failed');
         }
       } catch (err) {
-        console.error('Image upload error:', err);
-        const serverMsg = err.response?.data?.message || err.message || 'Image upload failed';
-        toast.error(`Image upload failed: ${serverMsg}`);
+        console.error('File upload error:', err);
+        const serverMsg = err.response?.data?.message || err.message || 'Upload failed';
+        toast.error(`Upload failed: ${serverMsg}`);
       } finally {
         if (fieldName === 'image') setUploadingMain(false);
-        else setUploadingSec(false);
+        else if (fieldName === 'secondaryImage') setUploadingSec(false);
+        else if (fieldName === 'labReportUrl') setUploadingReport(false);
       }
     };
   };
@@ -675,6 +687,101 @@ export default function AdminProductForm() {
                   </div>
                 ) : null}
               </div>
+            </div>
+          </div>
+
+          {/* Laboratory Report Management (Part 1 Requirement) */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid var(--admin-border)', padding: '1.25rem', borderRadius: '12px', backgroundColor: 'var(--admin-surface-elevated)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '0.92rem', color: 'var(--admin-text-primary)', fontWeight: '700' }}>Lab Report PDF / Document</h4>
+                <p style={{ margin: '0.15rem 0 0 0', fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>
+                  Upload official laboratory analysis report (PDF or image). Only products with uploaded lab reports will show the "Download Lab Report" button on the Nutrition page.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  value={formData.labReportUrl || ''}
+                  onChange={(e) => setFormData({ ...formData, labReportUrl: e.target.value })}
+                  placeholder="Enter lab report URL or upload file..."
+                  className="admin-input"
+                  style={{ flex: 1, minWidth: '220px' }}
+                />
+
+                <label 
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    padding: '0.6rem 1rem',
+                    backgroundColor: 'var(--admin-accent)',
+                    color: '#ffffff',
+                    borderRadius: '8px',
+                    fontSize: '0.78rem',
+                    fontWeight: '700',
+                    cursor: uploadingReport ? 'not-allowed' : 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <Upload size={14} />
+                  <span>{uploadingReport ? 'Uploading...' : (formData.labReportUrl ? 'Replace Report' : 'Upload Lab Report')}</span>
+                  <input
+                    type="file"
+                    accept="application/pdf,image/jpeg,image/png,image/webp"
+                    onChange={(e) => handleFileUpload(e, 'labReportUrl')}
+                    style={{ display: 'none' }}
+                    disabled={uploadingReport}
+                  />
+                </label>
+
+                {formData.labReportUrl && (
+                  <>
+                    <a
+                      href={formData.labReportUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="admin-btn-secondary"
+                      style={{ padding: '0.6rem 0.95rem', fontSize: '0.78rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                    >
+                      View Report
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, labReportUrl: '' })}
+                      style={{
+                        padding: '0.6rem 0.85rem',
+                        backgroundColor: 'var(--admin-danger-bg)',
+                        color: 'var(--admin-danger)',
+                        border: '1px solid var(--admin-danger)',
+                        borderRadius: '8px',
+                        fontSize: '0.78rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem'
+                      }}
+                    >
+                      <Trash2 size={13} />
+                      <span>Remove Report</span>
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {formData.labReportUrl ? (
+                <div style={{ fontSize: '0.74rem', color: 'var(--admin-accent)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  ✓ Lab report active & ready for public download on Nutrition page.
+                </div>
+              ) : (
+                <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>
+                  No lab report uploaded. Nutrition page will display "Not available" for this product.
+                </div>
+              )}
             </div>
           </div>
 

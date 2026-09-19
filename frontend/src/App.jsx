@@ -49,6 +49,8 @@ import AdminCustomerList from './pages/admin/AdminCustomerList';
 import AdminCouponList from './pages/admin/AdminCouponList';
 import AdminReviewList from './pages/admin/AdminReviewList';
 import AdminInquiryList from './pages/admin/AdminInquiryList';
+import AdminPrebookingList from './pages/admin/AdminPrebookingList';
+import AdminQuizManagement from './pages/admin/AdminQuizManagement';
 
 // Dedicated Customer Portal Layout
 import CustomerLayout from './layouts/CustomerLayout';
@@ -163,6 +165,8 @@ export default function App() {
                       <Route path="inquiries" element={<AdminInquiryList />} />
                       <Route path="coupons" element={<AdminCouponList />} />
                       <Route path="reviews" element={<AdminReviewList />} />
+                      <Route path="prebookings" element={<AdminPrebookingList />} />
+                      <Route path="recommendation-quiz" element={<AdminQuizManagement />} />
                     </Route>
 
                     {/* Customer Portal (Separate Shell, No Website Navbar) */}

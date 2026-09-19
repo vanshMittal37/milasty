@@ -22,19 +22,23 @@ export default function Shop() {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [recSelectedOption, setRecSelectedOption] = useState(null);
 
-  // Reviews Carousel State & Automatic Auto-play (every 2.0s with hover/swipe pause)
+  // Pre-booking State (Database-backed)
+  const [prebookingProducts, setPrebookingProducts] = useState([]);
+  const [prebookingLoading, setPrebookingLoading] = useState(true);
+
+  // Testimonials State (Database-backed)
+  const [testimonials, setTestimonials] = useState([]);
+  const [testimonialsLoading, setTestimonialsLoading] = useState(true);
   const [reviewIndex, setReviewIndex] = useState(0);
   const [isReviewHovered, setIsReviewHovered] = useState(false);
   const [reviewTouchStartX, setReviewTouchStartX] = useState(null);
   const [reviewTouchStartY, setReviewTouchStartY] = useState(null);
 
-  useEffect(() => {
-    if (isReviewHovered) return;
-    const timer = setInterval(() => {
-      setReviewIndex((prev) => (prev + 1) % 5);
-    }, 2000);
-    return () => clearInterval(timer);
-  }, [isReviewHovered]);
+  // Recommendation Quiz State (Database-backed)
+  const [quizQuestions, setQuizQuestions] = useState([]);
+  const [quizSelectedOption, setQuizSelectedOption] = useState(null);
+  const [quizRecommendations, setQuizRecommendations] = useState([]);
+  const [quizLoading, setQuizLoading] = useState(true);
 
   // Mobile Products Carousel Index State
   const [shopProductsIndex, setShopProductsIndex] = useState(0);
@@ -56,7 +60,61 @@ export default function Shop() {
 
   useEffect(() => {
     fetchProducts();
+    fetchPrebookings();
+    fetchTestimonials();
+    fetchQuiz();
   }, []);
+
+  const fetchPrebookings = async () => {
+    setPrebookingLoading(true);
+    try {
+      const res = await api.get('/prebookings/active');
+      if (res.data?.success && Array.isArray(res.data.prebookings)) {
+        setPrebookingProducts(res.data.prebookings);
+      }
+    } catch (err) {
+      console.error('Error loading prebooking products:', err);
+    } finally {
+      setPrebookingLoading(false);
+    }
+  };
+
+  const fetchTestimonials = async () => {
+    setTestimonialsLoading(true);
+    try {
+      const res = await api.get('/testimonials?placement=shop');
+      if (res.data?.success && Array.isArray(res.data.testimonials)) {
+        setTestimonials(res.data.testimonials);
+      }
+    } catch (err) {
+      console.error('Error loading testimonials:', err);
+    } finally {
+      setTestimonialsLoading(false);
+    }
+  };
+
+  const fetchQuiz = async () => {
+    setQuizLoading(true);
+    try {
+      const res = await api.get('/quiz/active');
+      if (res.data?.success && Array.isArray(res.data.questions)) {
+        setQuizQuestions(res.data.questions);
+      }
+    } catch (err) {
+      console.error('Error loading recommendation quiz:', err);
+    } finally {
+      setQuizLoading(false);
+    }
+  };
+
+  // Testimonials Auto-play
+  useEffect(() => {
+    if (isReviewHovered || testimonials.length <= 1) return;
+    const timer = setInterval(() => {
+      setReviewIndex((prev) => (prev + 1) % testimonials.length);
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [isReviewHovered, testimonials.length]);
 
   // Lock background body scroll when modals open
   useEffect(() => {
@@ -362,285 +420,270 @@ export default function Shop() {
       {/* ================================================================== */}
       {/* 2. FUTURE FAVOURITES / WHAT'S NEXT FROM MILASTY                     */}
       {/* ================================================================== */}
-      <section 
-        id="future-favourites-section" 
-        style={{ 
-          padding: isMobile ? '2.5rem 1rem 3.5rem' : '4.5rem 1.5rem 5rem', 
-          maxWidth: '1280px', 
-          margin: '0 auto', 
-          boxSizing: 'border-box' 
-        }}
-      >
-        {/* Header */}
-        <div style={{ textAlign: 'center', maxWidth: '780px', margin: isMobile ? '0 auto 2rem' : '0 auto 3rem' }}>
-          <span 
-            style={{ 
-              fontSize: '0.8rem', 
-              textTransform: 'uppercase', 
-              letterSpacing: '0.18em', 
-              color: '#A3B580', 
-              fontWeight: '800', 
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              marginBottom: '0.65rem'
-            }}
-          >
-            <Leaf size={14} color="#A3B580" /> FUTURE FAVOURITES <Leaf size={14} color="#A3B580" />
-          </span>
-          <h2 
-            style={{ 
-              fontSize: isMobile ? '2.2rem' : '3.4rem', 
-              fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif', 
-              color: '#FFFDF9', 
-              fontWeight: '800', 
-              margin: '0 0 0.85rem 0', 
-              lineHeight: '1.2' 
-            }}
-          >
-            What's Next from <span style={{ color: '#A3B580' }}>MILASTY</span>
-          </h2>
-          <p 
-            style={{ 
-              fontSize: isMobile ? '0.92rem' : '1.08rem', 
-              color: '#EADEC9', 
-              margin: '0 auto 1.5rem', 
-              fontWeight: '500',
-              lineHeight: '1.6',
-              maxWidth: '620px'
-            }}
-          >
-            Exciting new bakes, handcrafted with the goodness you love.<br />
-            Pre-book your favourites now and be the first to enjoy!
-          </p>
-
-          <span
-            style={{
-              backgroundColor: 'rgba(36, 79, 33, 0.45)',
-              color: '#EADEC9',
-              border: '1.5px solid rgba(163, 181, 128, 0.45)',
-              padding: '0.45rem 1.25rem',
-              borderRadius: '25px',
-              fontSize: '0.78rem',
-              fontWeight: '700',
-              letterSpacing: '0.08em',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.25)'
-            }}
-          >
-            <Calendar size={14} color="#A3B580" /> NOW OPEN FOR PRE-BOOKING
-          </span>
-        </div>
-
-        {/* 4 Custom Product Cards Grid (Short, Compact & Concise Design) */}
-        <div 
+      {prebookingProducts.length > 0 && (
+        <section 
+          id="future-favourites-section" 
           style={{ 
-            display: 'grid', 
-            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', 
-            gap: isMobile ? '0.65rem' : '1.15rem', 
-            alignItems: 'stretch' 
+            padding: isMobile ? '2.5rem 1rem 3.5rem' : '4.5rem 1.5rem 5rem', 
+            maxWidth: '1280px', 
+            margin: '0 auto', 
+            boxSizing: 'border-box' 
           }}
         >
-          {customFutureFavourites.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                background: item.bgGradient,
-                borderRadius: isMobile ? '14px' : '20px',
-                border: `1.5px solid ${item.borderColor}`,
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
-                padding: isMobile ? '0.65rem 0.55rem 0.6rem' : '1.15rem 1rem 1rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                position: 'relative',
-                overflow: 'hidden',
-                boxSizing: 'border-box',
-                transition: 'transform 0.3s ease, border-color 0.3s ease',
+          {/* Header */}
+          <div style={{ textAlign: 'center', maxWidth: '780px', margin: isMobile ? '0 auto 2rem' : '0 auto 3rem' }}>
+            <span 
+              style={{ 
+                fontSize: '0.8rem', 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.18em', 
+                color: '#A3B580', 
+                fontWeight: '800', 
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '0.65rem'
               }}
             >
-              <div>
-                {/* Top Badge */}
-                <div style={{ marginBottom: isMobile ? '0.35rem' : '0.75rem' }}>
-                  <span
-                    style={{
-                      background: item.badgeBg,
-                      color: item.badgeColor,
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      padding: isMobile ? '0.18rem 0.45rem' : '0.3rem 0.8rem',
-                      borderRadius: '20px',
-                      fontSize: isMobile ? '0.54rem' : '0.7rem',
-                      fontWeight: '800',
-                      letterSpacing: '0.03em',
-                      textTransform: 'uppercase',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.2rem',
-                    }}
-                  >
-                    {item.badgeText}
-                  </span>
-                </div>
+              <Leaf size={14} color="#A3B580" /> FUTURE FAVOURITES <Leaf size={14} color="#A3B580" />
+            </span>
+            <h2 
+              style={{ 
+                fontSize: isMobile ? '2.2rem' : '3.4rem', 
+                fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif', 
+                color: '#FFFDF9', 
+                fontWeight: '800', 
+                margin: '0 0 0.85rem 0', 
+                lineHeight: '1.2' 
+              }}
+            >
+              What's Next from <span style={{ color: '#A3B580' }}>MILASTY</span>
+            </h2>
+            <p 
+              style={{ 
+                fontSize: isMobile ? '0.92rem' : '1.08rem', 
+                color: '#EADEC9', 
+                margin: '0 auto 1.5rem', 
+                fontWeight: '500',
+                lineHeight: '1.6',
+                maxWidth: '620px'
+              }}
+            >
+              Exciting new bakes, handcrafted with the goodness you love.<br />
+              Pre-book your favourites now and be the first to enjoy!
+            </p>
 
-                {/* Card Title & Side Thumbnail Image Layout */}
-                <div 
-                  style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: isMobile ? '1fr 55px' : '1fr 85px', 
-                    gap: isMobile ? '0.35rem' : '0.65rem', 
-                    alignItems: 'center', 
-                    marginBottom: isMobile ? '0.35rem' : '0.75rem' 
+            <span
+              style={{
+                backgroundColor: 'rgba(36, 79, 33, 0.45)',
+                color: '#EADEC9',
+                border: '1.5px solid rgba(163, 181, 128, 0.45)',
+                padding: '0.45rem 1.25rem',
+                borderRadius: '25px',
+                fontSize: '0.78rem',
+                fontWeight: '700',
+                letterSpacing: '0.08em',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.25)'
+              }}
+            >
+              <Calendar size={14} color="#A3B580" /> NOW OPEN FOR PRE-BOOKING
+            </span>
+          </div>
+
+          {/* Dynamic Product Cards Grid */}
+          <div 
+            style={{ 
+              display: 'grid', 
+              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${Math.min(prebookingProducts.length, 4)}, 1fr)`, 
+              gap: isMobile ? '0.65rem' : '1.15rem', 
+              alignItems: 'stretch' 
+            }}
+          >
+            {prebookingProducts.map((item, idx) => {
+              const theme = cardThemes[idx % cardThemes.length];
+              const pId = item.productId || item.product_id || item.id;
+              const title = item.productTitle || item.title || 'Upcoming Bake';
+              const price = item.productPrice || item.price || 0;
+              const image = item.productImage || item.image || '/images/image1.jpeg';
+              const description = item.productDescription || item.description || 'Pre-book your package today.';
+              const formattedDate = formatLaunchDate(item.launchDate || item.launch_date);
+
+              return (
+                <div
+                  key={item.id || idx}
+                  style={{
+                    background: theme.bgGradient,
+                    borderRadius: isMobile ? '14px' : '20px',
+                    border: `1.5px solid ${theme.borderColor}`,
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                    padding: isMobile ? '0.65rem 0.55rem 0.6rem' : '1.15rem 1rem 1rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    boxSizing: 'border-box',
+                    transition: 'transform 0.3s ease, border-color 0.3s ease',
                   }}
                 >
                   <div>
-                    <h3
-                      style={{
-                        margin: 0,
-                        fontSize: isMobile ? '0.85rem' : '1.1rem',
-                        fontWeight: '800',
-                        color: item.titleColor,
-                        fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
-                        lineHeight: '1.2',
-                      }}
-                    >
-                      {item.title}
-                    </h3>
-                  </div>
-                  <div 
-                    style={{ 
-                      width: isMobile ? '55px' : '85px', 
-                      height: isMobile ? '55px' : '85px', 
-                      borderRadius: isMobile ? '8px' : '12px', 
-                      overflow: 'hidden', 
-                      boxShadow: '0 4px 10px rgba(0,0,0,0.3)', 
-                      border: '1px solid rgba(255,255,255,0.15)', 
-                      flexShrink: 0 
-                    }}
-                  >
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    />
-                  </div>
-                </div>
-
-                {/* Description */}
-                <p
-                  style={{
-                    fontSize: isMobile ? '0.68rem' : '0.82rem',
-                    color: item.descColor || 'rgba(255, 255, 255, 0.82)',
-                    lineHeight: '1.3',
-                    marginBottom: isMobile ? '0.35rem' : '0.85rem',
-                    fontWeight: '400',
-                    margin: isMobile ? '0 0 0.35rem 0' : '0 0 0.85rem 0',
-                  }}
-                >
-                  {item.desc}
-                </p>
-
-                {/* 3 Feature Badges */}
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: '0.1rem',
-                    marginBottom: isMobile ? '0.45rem' : '0.85rem',
-                    textAlign: 'center',
-                    padding: isMobile ? '0.25rem 0.15rem' : '0.5rem 0.3rem',
-                    backgroundColor: item.featuresBg || 'rgba(0, 0, 0, 0.22)',
-                    borderRadius: isMobile ? '8px' : '10px',
-                    border: `1px solid ${item.featuresBorder || 'rgba(255, 255, 255, 0.08)'}`,
-                  }}
-                >
-                  {item.features.map((feat, idx) => {
-                    const FeatIcon = feat.icon;
-                    return (
-                      <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.1rem' }}>
-                        <FeatIcon size={isMobile ? 11 : 15} color={item.featureIconColor || '#A3B580'} />
-                        <span style={{ fontSize: isMobile ? '0.52rem' : '0.64rem', color: item.featureTextColor || '#FFFDF9', fontWeight: '600', lineHeight: '1.1' }}>
-                          {feat.label}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                {/* Collection Card Action Row: Price & Add Button */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: isMobile ? '0.2rem' : '0.5rem', marginBottom: isMobile ? '0.45rem' : '0.85rem', paddingTop: '0.25rem', width: '100%', boxSizing: 'border-box' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '0.2rem' : '0.4rem', flexWrap: 'nowrap' }}>
-                      <span style={{ fontSize: isMobile ? '0.92rem' : '1.35rem', fontWeight: '950', color: '#FFFDF9', textShadow: '0 2px 4px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>
-                        {item.preBookPrice}
-                      </span>
-                      <span style={{ fontSize: isMobile ? '0.65rem' : '0.88rem', textDecoration: 'line-through', color: 'rgba(255, 255, 255, 0.65)', fontWeight: '600', whiteSpace: 'nowrap' }}>
-                        {item.originalPrice}
+                    {/* Top Badge */}
+                    <div style={{ marginBottom: isMobile ? '0.35rem' : '0.75rem' }}>
+                      <span
+                        style={{
+                          background: theme.badgeBg,
+                          color: theme.badgeColor,
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          padding: isMobile ? '0.18rem 0.45rem' : '0.3rem 0.8rem',
+                          borderRadius: '20px',
+                          fontSize: isMobile ? '0.54rem' : '0.7rem',
+                          fontWeight: '800',
+                          letterSpacing: '0.03em',
+                          textTransform: 'uppercase',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.2rem',
+                        }}
+                      >
+                        🔥 PRE-ORDER
                       </span>
                     </div>
+
+                    {/* Card Title & Side Thumbnail Image Layout */}
+                    <div 
+                      style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: isMobile ? '1fr 55px' : '1fr 85px', 
+                        gap: isMobile ? '0.35rem' : '0.65rem', 
+                        alignItems: 'center', 
+                        marginBottom: isMobile ? '0.35rem' : '0.75rem' 
+                      }}
+                    >
+                      <div>
+                        <h3
+                          style={{
+                            margin: 0,
+                            fontSize: isMobile ? '0.85rem' : '1.1rem',
+                            fontWeight: '800',
+                            color: theme.titleColor,
+                            fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
+                            lineHeight: '1.2',
+                          }}
+                        >
+                          {title}
+                        </h3>
+                      </div>
+                      <div 
+                        style={{ 
+                          width: isMobile ? '55px' : '85px', 
+                          height: isMobile ? '55px' : '85px', 
+                          borderRadius: isMobile ? '8px' : '12px', 
+                          overflow: 'hidden', 
+                          boxShadow: '0 4px 10px rgba(0,0,0,0.3)', 
+                          border: '1px solid rgba(255,255,255,0.15)', 
+                          flexShrink: 0 
+                        }}
+                      >
+                        <img
+                          src={image}
+                          alt={title}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <p
+                      style={{
+                        fontSize: isMobile ? '0.68rem' : '0.82rem',
+                        color: 'rgba(255, 255, 255, 0.82)',
+                        lineHeight: '1.3',
+                        marginBottom: isMobile ? '0.35rem' : '0.85rem',
+                        fontWeight: '400',
+                        margin: isMobile ? '0 0 0.35rem 0' : '0 0 0.85rem 0',
+                      }}
+                    >
+                      {description}
+                    </p>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      addToCart({
-                        _id: item.id,
-                        title: item.title,
-                        price: parseInt(item.preBookPrice.replace('₹', '')),
-                        image: item.image,
-                        category: 'cookies',
-                        quantity: 1
-                      });
-                    }}
-                    className="btn-primary"
-                    style={{
-                      backgroundColor: '#244f21',
-                      color: '#FFFFFF',
-                      border: '1px solid #b9cd94',
-                      padding: isMobile ? '0.35rem 0.5rem' : '0.8rem 1.4rem',
-                      borderRadius: '999px',
-                      fontSize: isMobile ? '0.68rem' : '0.92rem',
-                      fontWeight: '850',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: isMobile ? '0.15rem' : '0.45rem',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
-                      transition: 'all 0.25s ease',
-                      flexShrink: 0
-                    }}
-                  >
-                    <ShoppingBag size={isMobile ? 11 : 17} color="#b9cd94" />
-                    <span>Add</span>
-                  </button>
+                  <div>
+                    {/* Collection Card Action Row: Price & Pre-book Button */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: isMobile ? '0.2rem' : '0.5rem', marginBottom: isMobile ? '0.45rem' : '0.85rem', paddingTop: '0.25rem', width: '100%', boxSizing: 'border-box' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '0.2rem' : '0.4rem', flexWrap: 'nowrap' }}>
+                          <span style={{ fontSize: isMobile ? '0.92rem' : '1.35rem', fontWeight: '950', color: '#FFFDF9', textShadow: '0 2px 4px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>
+                            ₹{price}
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          addToCart({
+                            _id: pId,
+                            id: pId,
+                            title: title,
+                            price: Number(price),
+                            image: image,
+                            category: 'cookies',
+                            quantity: 1,
+                            is_preorder: true,
+                            expected_ship_date: formattedDate
+                          });
+                        }}
+                        className="btn-primary"
+                        style={{
+                          backgroundColor: '#244f21',
+                          color: '#FFFFFF',
+                          border: '1px solid #b9cd94',
+                          padding: isMobile ? '0.35rem 0.5rem' : '0.8rem 1.4rem',
+                          borderRadius: '999px',
+                          fontSize: isMobile ? '0.68rem' : '0.92rem',
+                          fontWeight: '850',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: isMobile ? '0.15rem' : '0.45rem',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
+                          transition: 'all 0.25s ease',
+                          flexShrink: 0
+                        }}
+                      >
+                        <ShoppingBag size={isMobile ? 11 : 17} color="#b9cd94" />
+                        <span>Pre-book</span>
+                      </button>
+                    </div>
+
+                    {/* Shipping Starts Date Pill */}
+                    {formattedDate && (
+                      <div style={{ textAlign: 'center' }}>
+                        <span
+                          style={{
+                            fontSize: isMobile ? '0.52rem' : '0.66rem',
+                            color: 'rgba(255, 255, 255, 0.75)',
+                            fontWeight: '700',
+                            letterSpacing: '0.03em',
+                            textTransform: 'uppercase',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.2rem',
+                          }}
+                        >
+                          <Calendar size={isMobile ? 9 : 12} color="rgba(255, 255, 255, 0.75)" /> SHIPPING STARTS {formattedDate}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-
-                {/* Shipping Starts Date Pill */}
-                <div style={{ textAlign: 'center' }}>
-                  <span
-                    style={{
-                      fontSize: isMobile ? '0.52rem' : '0.66rem',
-                      color: item.descColor ? 'rgba(44, 26, 14, 0.8)' : 'rgba(255, 255, 255, 0.75)',
-                      fontWeight: '700',
-                      letterSpacing: '0.03em',
-                      textTransform: 'uppercase',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.2rem',
-                    }}
-                  >
-                    <Calendar size={isMobile ? 9 : 12} color={item.descColor ? 'rgba(44, 26, 14, 0.8)' : 'rgba(255, 255, 255, 0.75)'} /> {item.shippingDate}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-
-      </section>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* ================================================================== */}
       {/* 3. EXPLORE BY CATEGORY (Circular Category Design) */}
@@ -949,100 +992,116 @@ export default function Shop() {
       </section>
 
       {/* ================================================================== */}
-      {/* 5. FIND YOUR PERFECT MILASTY BAKE (Single Question Recommendation) */}
+      {/* 5. FIND YOUR PERFECT MILASTY BAKE (Database-backed Quiz) */}
       {/* ================================================================== */}
-      <section 
-        id="recommendation-section"
-        style={{ padding: isMobile ? '2.5rem 1rem' : '4.5rem 1.5rem', maxWidth: '850px', margin: '0 auto', boxSizing: 'border-box' }}
-      >
-        <div 
-          className="glass-card"
-          style={{ 
-            padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem', 
-            borderRadius: '24px', 
-            backgroundColor: 'rgba(35, 21, 13, 0.75)',
-            border: '1.5px solid var(--accent-gold)',
-            boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
-            textAlign: 'center'
-          }}
+      {quizQuestions.length > 0 && (
+        <section 
+          id="recommendation-section"
+          style={{ padding: isMobile ? '2.5rem 1rem' : '4.5rem 1.5rem', maxWidth: '850px', margin: '0 auto', boxSizing: 'border-box' }}
         >
-          <span style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
-            NOT SURE WHAT TO CHOOSE?
-          </span>
+          <div 
+            className="glass-card"
+            style={{ 
+              padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem', 
+              borderRadius: '24px', 
+              backgroundColor: 'rgba(35, 21, 13, 0.75)',
+              border: '1.5px solid var(--accent-gold)',
+              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
+              textAlign: 'center'
+            }}
+          >
+            <span style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+              NOT SURE WHAT TO CHOOSE?
+            </span>
 
-          <h2 style={{ fontSize: isMobile ? '1.75rem' : '2.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 1.5rem', lineHeight: '1.25' }}>
-            Find Your Perfect <span style={{ color: 'var(--accent-gold)' }}>MILASTY Bake</span>
-          </h2>
+            <h2 style={{ fontSize: isMobile ? '1.75rem' : '2.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 1.5rem', lineHeight: '1.25' }}>
+              Find Your Perfect <span style={{ color: 'var(--accent-gold)' }}>MILASTY Bake</span>
+            </h2>
 
-          <p style={{ fontSize: isMobile ? '0.95rem' : '1.05rem', color: '#F5EBDD', marginBottom: '1.5rem', fontWeight: '600' }}>
-            What are you looking for?
-          </p>
+            {/* Questions Render */}
+            {quizQuestions.map((q) => (
+              <div key={q.id} style={{ marginBottom: '2rem' }}>
+                <p style={{ fontSize: isMobile ? '0.95rem' : '1.05rem', color: '#F5EBDD', marginBottom: '1.25rem', fontWeight: '600' }}>
+                  {q.questionText}
+                </p>
 
-          {/* Option Buttons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '420px', margin: '0 auto 1.5rem' }}>
-            {[
-              { label: 'Everyday Chai Snacking', catId: 'daily' },
-              { label: 'Something for Gifting', catId: 'gifts' },
-              { label: 'A Light Evening Snack', catId: 'daily' }
-            ].map((option) => {
-              const isOptionSelected = recSelectedOption?.label === option.label;
-              return (
-                <button
-                  key={option.label}
-                  onClick={() => setRecSelectedOption(option)}
-                  style={{
-                    padding: isMobile ? '0.85rem 1.1rem' : '0.95rem 1.35rem',
-                    borderRadius: '999px',
-                    backgroundColor: isOptionSelected ? '#244f21' : 'rgba(20, 10, 5, 0.65)',
-                    border: isOptionSelected ? '2px solid #b9cd94' : '1.5px solid rgba(255, 255, 255, 0.25)',
-                    color: '#FFFDF9',
-                    fontWeight: '800',
-                    fontSize: isMobile ? '0.88rem' : '0.95rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.25s ease',
-                    boxShadow: isOptionSelected ? '0 6px 20px rgba(36, 79, 33, 0.5)' : '0 4px 12px rgba(0, 0, 0, 0.25)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  {isOptionSelected && <Check size={16} color="#b9cd94" />}
-                  <span>{option.label}</span>
-                </button>
-              );
-            })}
+                {/* Option Buttons */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '420px', margin: '0 auto' }}>
+                  {(q.options || []).map((option) => {
+                    const isOptionSelected = quizSelectedOption?.id === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        onClick={() => {
+                          setQuizSelectedOption(option);
+                          const recs = option.recommendedProducts || option.mappedProducts || [];
+                          setQuizRecommendations(recs);
+                        }}
+                        style={{
+                          padding: isMobile ? '0.85rem 1.1rem' : '0.95rem 1.35rem',
+                          borderRadius: '999px',
+                          backgroundColor: isOptionSelected ? '#244f21' : 'rgba(20, 10, 5, 0.65)',
+                          border: isOptionSelected ? '2px solid #b9cd94' : '1.5px solid rgba(255, 255, 255, 0.25)',
+                          color: '#FFFDF9',
+                          fontWeight: '800',
+                          fontSize: isMobile ? '0.88rem' : '0.95rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.25s ease',
+                          boxShadow: isOptionSelected ? '0 6px 20px rgba(36, 79, 33, 0.5)' : '0 4px 12px rgba(0, 0, 0, 0.25)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.5rem'
+                        }}
+                      >
+                        {isOptionSelected && <Check size={16} color="#b9cd94" />}
+                        <span>{option.optionText}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+
+            {/* Recommended Products Result Box */}
+            {quizSelectedOption && (
+              <div style={{ marginTop: '2rem', borderTop: '1px dashed rgba(255,255,255,0.2)', paddingTop: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.2rem', color: '#b9cd94', fontFamily: 'var(--font-serif)', marginBottom: '1rem', fontWeight: '800' }}>
+                  Recommended for You ({quizRecommendations.length})
+                </h3>
+
+                {quizRecommendations.length > 0 ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '1rem' }}>
+                    {quizRecommendations.map((prod) => (
+                      <div key={prod.id || prod._id} style={{ backgroundColor: 'rgba(20, 10, 5, 0.85)', padding: '1rem', borderRadius: '16px', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', gap: '0.85rem', alignItems: 'center', textAlign: 'left' }}>
+                        <img src={prod.image || prod.primary_image || '/images/image1.jpeg'} alt={prod.title} style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '10px' }} />
+                        <div style={{ flexGrow: 1, minWidth: 0 }}>
+                          <div style={{ fontWeight: '800', color: '#FFFDF9', fontSize: '0.95rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {prod.title}
+                          </div>
+                          <div style={{ color: '#b9cd94', fontWeight: '800', fontSize: '0.9rem', marginTop: '0.2rem' }}>
+                            ₹{prod.price}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => addToCart(prod, null, 1)}
+                          style={{ backgroundColor: '#244f21', color: '#FFF', border: '1px solid #b9cd94', padding: '0.45rem 0.85rem', borderRadius: '999px', fontWeight: '800', fontSize: '0.78rem', cursor: 'pointer', flexShrink: 0 }}
+                        >
+                          + Add
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>
+                    No specific bakes mapped for this option yet.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
-
-          {/* Explore Bakes Button (Appears after selecting an option) */}
-          {recSelectedOption && (
-            <div style={{ marginTop: '1.25rem' }}>
-              <button
-                onClick={() => handleCategoryClick(recSelectedOption.catId)}
-                className="btn-primary"
-                style={{
-                  padding: isMobile ? '0.85rem 2rem' : '1rem 2.5rem',
-                  fontSize: isMobile ? '0.9rem' : '1rem',
-                  backgroundColor: '#c89b3c',
-                  color: '#FFFFFF',
-                  border: 'none',
-                  fontWeight: '850',
-                  borderRadius: '999px',
-                  cursor: 'pointer',
-                  boxShadow: '0 8px 24px rgba(200, 155, 60, 0.4)',
-                  transition: 'all 0.3s ease',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
-              >
-                <span>Explore Recommended Bakes</span>
-                <ArrowRight size={18} />
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* EXPLORE MORE CATEGORIES POPUP MODAL */}
       {exploreModalOpen && (
@@ -1284,162 +1343,164 @@ export default function Shop() {
           </div>
         </div>
       </section>
-
+      {/* 7. REVIEWS (Database-backed Testimonials) */}
       {/* ================================================================== */}
-      {/* 7. REVIEWS */}
-      {/* ================================================================== */}
-      <section 
-        style={{ padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', maxWidth: '900px', margin: '0 auto', boxSizing: 'border-box' }}
-      >
-        <div style={{ textAlign: 'center', marginBottom: isMobile ? '2rem' : '3.5rem' }}>
-          <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
-            CUSTOMER REVIEWS
-          </span>
-          <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
-            Loved by <span style={{ color: '#b9cd94' }}>MILASTY Customers</span>
-          </h2>
-        </div>
+      {testimonials.length > 0 && (
+        <section 
+          style={{ padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', maxWidth: '900px', margin: '0 auto', boxSizing: 'border-box' }}
+        >
+          <div style={{ textAlign: 'center', marginBottom: isMobile ? '2rem' : '3.5rem' }}>
+            <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+              CUSTOMER REVIEWS
+            </span>
+            <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
+              Loved by <span style={{ color: '#b9cd94' }}>MILASTY Customers</span>
+            </h2>
+          </div>
 
-        {/* Reviews Showcase with Touch Swipe Support */}
-        <div style={{ width: '100%', maxWidth: isMobile ? '380px' : '750px', margin: '0 auto' }}>
-          {(() => {
-            const rev = dummyReviews[reviewIndex];
-            return (
-              <div
-                className="glass-card"
-                onMouseEnter={() => setIsReviewHovered(true)}
-                onMouseLeave={() => setIsReviewHovered(false)}
-                onTouchStart={(e) => {
-                  setIsReviewHovered(true);
-                  const touch = e.touches[0];
-                  setReviewTouchStartX(touch.clientX);
-                  setReviewTouchStartY(touch.clientY);
-                }}
-                onTouchMove={(e) => {
-                  if (reviewTouchStartX === null) return;
-                  const touch = e.touches[0];
-                  const diffX = reviewTouchStartX - touch.clientX;
-                  const diffY = Math.abs(reviewTouchStartY - touch.clientY);
-                  // Prevent vertical scroll interference if horizontal swipe is intentional
-                  if (Math.abs(diffX) > diffY && Math.abs(diffX) > 10) {
-                    if (e.cancelable) e.preventDefault();
-                  }
-                }}
-                onTouchEnd={(e) => {
-                  setIsReviewHovered(false);
-                  if (reviewTouchStartX === null) return;
-                  const touch = e.changedTouches[0];
-                  const diffX = reviewTouchStartX - touch.clientX;
-                  const diffY = Math.abs(reviewTouchStartY - touch.clientY);
-                  if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
-                    if (diffX > 0) {
-                      // Swiped left -> next
-                      setReviewIndex((prev) => (prev + 1) % dummyReviews.length);
-                    } else {
-                      // Swiped right -> prev
-                      setReviewIndex((prev) => (prev === 0 ? dummyReviews.length - 1 : prev - 1));
+          {/* Reviews Showcase with Touch Swipe Support */}
+          <div style={{ width: '100%', maxWidth: isMobile ? '380px' : '750px', margin: '0 auto' }}>
+            {(() => {
+              const rev = testimonials[reviewIndex % testimonials.length];
+              if (!rev) return null;
+              return (
+                <div
+                  className="glass-card"
+                  onMouseEnter={() => setIsReviewHovered(true)}
+                  onMouseLeave={() => setIsReviewHovered(false)}
+                  onTouchStart={(e) => {
+                    setIsReviewHovered(true);
+                    const touch = e.touches[0];
+                    setReviewTouchStartX(touch.clientX);
+                    setReviewTouchStartY(touch.clientY);
+                  }}
+                  onTouchMove={(e) => {
+                    if (reviewTouchStartX === null) return;
+                    const touch = e.touches[0];
+                    const diffX = reviewTouchStartX - touch.clientX;
+                    const diffY = Math.abs(reviewTouchStartY - touch.clientY);
+                    if (Math.abs(diffX) > diffY && Math.abs(diffX) > 10) {
+                      if (e.cancelable) e.preventDefault();
                     }
-                  }
-                  setReviewTouchStartX(null);
-                  setReviewTouchStartY(null);
-                }}
-                style={{
-                  padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
-                  borderRadius: '24px',
-                  backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.18)',
-                  boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
-                  textAlign: 'center',
-                  boxSizing: 'border-box',
-                  width: '100%',
-                  margin: '0 auto',
-                  touchAction: 'pan-y',
-                  userSelect: 'none',
-                  WebkitUserSelect: 'none'
-                }}
-              >
-                {/* Rating Stars */}
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.25rem', marginBottom: '1.25rem' }}>
-                  {[...Array(rev.rating)].map((_, i) => (
-                    <Star key={i} size={18} fill="var(--accent-gold)" color="var(--accent-gold)" />
+                  }}
+                  onTouchEnd={(e) => {
+                    setIsReviewHovered(false);
+                    if (reviewTouchStartX === null) return;
+                    const touch = e.changedTouches[0];
+                    const diffX = reviewTouchStartX - touch.clientX;
+                    const diffY = Math.abs(reviewTouchStartY - touch.clientY);
+                    if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
+                      if (diffX > 0) {
+                        setReviewIndex((prev) => (prev + 1) % testimonials.length);
+                      } else {
+                        setReviewIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
+                      }
+                    }
+                    setReviewTouchStartX(null);
+                    setReviewTouchStartY(null);
+                  }}
+                  style={{
+                    padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
+                    borderRadius: '24px',
+                    backgroundColor: 'rgba(35, 21, 13, 0.75)',
+                    border: '1.5px solid rgba(255, 255, 255, 0.18)',
+                    boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                    textAlign: 'center',
+                    boxSizing: 'border-box',
+                    width: '100%',
+                    margin: '0 auto',
+                    touchAction: 'pan-y',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none'
+                  }}
+                >
+                  {/* Rating Stars */}
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '0.25rem', marginBottom: '1.25rem' }}>
+                    {[...Array(Number(rev.rating || 5))].map((_, i) => (
+                      <Star key={i} size={18} fill="var(--accent-gold)" color="var(--accent-gold)" />
+                    ))}
+                  </div>
+
+                  {/* Review Text */}
+                  <p style={{ fontSize: isMobile ? '0.95rem' : '1.15rem', color: '#FFFDF9', lineHeight: '1.65', marginBottom: '1.5rem', fontWeight: '500', fontStyle: 'italic' }}>
+                    "{rev.testimonialText || rev.content}"
+                  </p>
+
+                  {/* Author Info */}
+                  <div>
+                    <h4 style={{ fontSize: '1rem', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.2rem' }}>
+                      — {rev.customerName || rev.name}
+                    </h4>
+                    <span style={{ fontSize: '0.78rem', color: '#b9cd94', fontWeight: '700' }}>
+                      {rev.verified !== false ? 'Verified Customer' : 'Customer'}{rev.productTitle ? ` • ${rev.productTitle}` : ''}
+                    </span>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Dots Indicator & Navigation Arrows */}
+            {testimonials.length > 1 && (
+              <div style={{ marginTop: '1.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  {testimonials.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setReviewIndex(idx)}
+                      style={{
+                        width: (reviewIndex % testimonials.length) === idx ? '24px' : '8px',
+                        height: '8px',
+                        borderRadius: '999px',
+                        backgroundColor: (reviewIndex % testimonials.length) === idx ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.25)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                    />
                   ))}
                 </div>
 
-                {/* Review Text */}
-                <p style={{ fontSize: isMobile ? '0.95rem' : '1.15rem', color: '#FFFDF9', lineHeight: '1.65', marginBottom: '1.5rem', fontWeight: '500', fontStyle: 'italic' }}>
-                  "{rev.comment}"
-                </p>
-
-                {/* Author Info */}
-                <div>
-                  <h4 style={{ fontSize: '1rem', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.2rem' }}>
-                    — {rev.name}
-                  </h4>
-                  <span style={{ fontSize: '0.78rem', color: '#b9cd94', fontWeight: '700' }}>
-                    {rev.role} • {rev.product}
-                  </span>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <button
+                    onClick={() => setReviewIndex(prev => (prev === 0 ? testimonials.length - 1 : prev - 1))}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(35, 21, 13, 0.75)',
+                      border: '1.5px solid rgba(255, 255, 255, 0.25)',
+                      color: '#FFFDF9',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <button
+                    onClick={() => setReviewIndex(prev => (prev === testimonials.length - 1 ? 0 : prev + 1))}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(35, 21, 13, 0.75)',
+                      border: '1.5px solid rgba(255, 255, 255, 0.25)',
+                      color: '#FFFDF9',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <ChevronRight size={18} />
+                  </button>
                 </div>
               </div>
-            );
-          })()}
-
-          {/* Dots Indicator & Navigation Arrows */}
-          <div style={{ marginTop: '1.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              {dummyReviews.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setReviewIndex(idx)}
-                  style={{
-                    width: reviewIndex === idx ? '24px' : '8px',
-                    height: '8px',
-                    borderRadius: '999px',
-                    backgroundColor: reviewIndex === idx ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.25)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                />
-              ))}
-            </div>
-
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button
-                onClick={() => setReviewIndex(prev => (prev === 0 ? dummyReviews.length - 1 : prev - 1))}
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
-                  color: '#FFFDF9',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <ChevronLeft size={18} />
-              </button>
-              <button
-                onClick={() => setReviewIndex(prev => (prev === dummyReviews.length - 1 ? 0 : prev + 1))}
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
-                  color: '#FFFDF9',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <ChevronRight size={18} />
-              </button>
-            </div>
+            )}
           </div>
+        </section>
+      )}     </div>
         </div>
       </section>
 

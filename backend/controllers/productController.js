@@ -363,6 +363,7 @@ export const createProduct = async (req, res) => {
       category: category || 'daily',
       image_url: image || '',
       secondary_image_url: secondaryImage || '',
+      lab_report_url: req.body.labReportUrl || req.body.lab_report_url || '',
       ingredients: parsedIngredients,
       nutrition_facts: mergedNutritionFacts,
       badges: parsedBadges,
@@ -528,6 +529,7 @@ export const updateProduct = async (req, res) => {
       category: updates.category,
       image_url: updates.image !== undefined ? updates.image : undefined,
       secondary_image_url: updates.secondaryImage !== undefined ? updates.secondaryImage : undefined,
+      lab_report_url: updates.labReportUrl !== undefined ? updates.labReportUrl : (updates.lab_report_url !== undefined ? updates.lab_report_url : undefined),
       ingredients: parsedIngredients,
       nutrition_facts: {
         ...(typeof updates.nutritionFacts === 'object' && updates.nutritionFacts !== null ? updates.nutritionFacts : {}),

@@ -43,7 +43,8 @@ export default function Nutrition() {
     fetchProducts();
   }, []);
 
-  const dailyProducts = products.filter((p) => p.category === 'daily');
+  const displayProducts = products && products.length > 0 ? products : initialProducts;
+  const dailyProducts = displayProducts.filter((p) => p.category === 'daily' || p.category === 'cookies' || p.labReportUrl || p.lab_report_url).slice(0, 5);
 
   const [isGlanceHovered, setIsGlanceHovered] = useState(false);
   const [isIngredientsHovered, setIsIngredientsHovered] = useState(false);
@@ -367,11 +368,14 @@ export default function Nutrition() {
                     <span>Energy (kcal)</span>
                   </div>
                 </td>
-                {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
-                    {p.nutritionFacts.energyKcal} <span style={{ fontSize: '0.78rem', color: '#F5EBDD' }}>per 100g</span>
-                  </td>
-                ))}
+                {dailyProducts.map((p, idx) => {
+                  const val = p.nutritionFacts?.energyKcal;
+                  return (
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
+                      {val !== undefined && val !== null && val !== '' ? `${val} kcal` : '—'}
+                    </td>
+                  );
+                })}
               </tr>
 
               <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'transparent' }}>
@@ -381,11 +385,14 @@ export default function Nutrition() {
                     <span>Protein (g)</span>
                   </div>
                 </td>
-                {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
-                    {p.nutritionFacts.proteinG}g
-                  </td>
-                ))}
+                {dailyProducts.map((p, idx) => {
+                  const val = p.nutritionFacts?.proteinG;
+                  return (
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
+                      {val !== undefined && val !== null && val !== '' ? `${val}g` : '—'}
+                    </td>
+                  );
+                })}
               </tr>
 
               <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
@@ -395,11 +402,14 @@ export default function Nutrition() {
                     <span>Carbohydrates (g)</span>
                   </div>
                 </td>
-                {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
-                    {p.nutritionFacts.carbohydrateG}g
-                  </td>
-                ))}
+                {dailyProducts.map((p, idx) => {
+                  const val = p.nutritionFacts?.carbohydrateG;
+                  return (
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
+                      {val !== undefined && val !== null && val !== '' ? `${val}g` : '—'}
+                    </td>
+                  );
+                })}
               </tr>
 
               <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'transparent' }}>
@@ -437,11 +447,14 @@ export default function Nutrition() {
                     <span>Dietary Fiber (g)</span>
                   </div>
                 </td>
-                {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
-                    {p.nutritionFacts.dietaryFiberG}g
-                  </td>
-                ))}
+                {dailyProducts.map((p, idx) => {
+                  const val = p.nutritionFacts?.dietaryFiberG;
+                  return (
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
+                      {val !== undefined && val !== null && val !== '' ? `${val}g` : '—'}
+                    </td>
+                  );
+                })}
               </tr>
 
               <tr style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
@@ -451,35 +464,38 @@ export default function Nutrition() {
                     <span>Official Lab Report</span>
                   </div>
                 </td>
-                {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.5rem 1.5rem' }}>
-                    {p.labReportUrl ? (
-                      <button
-                        onClick={() => handleDownload(p.labReportUrl, `${p.title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
-                        className="btn-primary"
-                        style={{ 
-                          padding: '0.55rem 1rem', 
-                          fontSize: '0.8rem', 
-                          fontWeight: '850', 
-                          backgroundColor: '#244f21', 
-                          color: '#FFFFFF',
-                          borderRadius: '10px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.35rem',
-                          textDecoration: 'none',
-                          border: 'none',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <Download size={13} />
-                        <span>Download Lab Report</span>
-                      </button>
-                    ) : (
-                      <span style={{ fontSize: '0.8rem', color: '#F5EBDD', fontWeight: '600' }}>Unavailable</span>
-                    )}
-                  </td>
-                ))}
+                {dailyProducts.map((p, idx) => {
+                  const reportUrl = p.labReportUrl || p.lab_report_url || '';
+                  return (
+                    <td key={idx} style={{ padding: '1.5rem 1.5rem' }}>
+                      {reportUrl ? (
+                        <button
+                          onClick={() => handleDownload(reportUrl, `${p.title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
+                          className="btn-primary"
+                          style={{ 
+                            padding: '0.55rem 1rem', 
+                            fontSize: '0.8rem', 
+                            fontWeight: '850', 
+                            backgroundColor: '#244f21', 
+                            color: '#FFFFFF',
+                            borderRadius: '10px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                            textDecoration: 'none',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Download size={13} />
+                          <span>Download Lab Report</span>
+                        </button>
+                      ) : (
+                        <span style={{ fontSize: '0.8rem', color: '#F5EBDD', fontWeight: '600', opacity: 0.7 }}>Not available</span>
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             </tbody>
           </table>

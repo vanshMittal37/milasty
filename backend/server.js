@@ -16,6 +16,8 @@ import userRoutes from './routes/userRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import deliveryAreaRoutes from './routes/deliveryAreaRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
+import prebookingRoutes from './routes/prebookingRoutes.js';
+import quizRoutes from './routes/quizRoutes.js';
 
 dotenv.config();
 
@@ -66,6 +68,8 @@ app.use('/api/admin', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/delivery-areas', deliveryAreaRoutes);
 app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/prebookings', prebookingRoutes);
+app.use('/api/quiz', quizRoutes);
 app.use('/api', reviewRoutes);
 
 // Health Check Endpoint

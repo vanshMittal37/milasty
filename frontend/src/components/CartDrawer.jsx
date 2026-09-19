@@ -409,6 +409,12 @@ export default function CartDrawer() {
                         >
                           {item.title}
                         </h4>
+                        {(item.is_preorder || item.isPreorder) && (
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.68rem', backgroundColor: 'rgba(212, 175, 55, 0.2)', color: '#D4AF37', border: '1px solid rgba(212, 175, 55, 0.4)', padding: '0.15rem 0.45rem', borderRadius: '4px', fontWeight: '700', marginBottom: '0.35rem' }}>
+                            <Calendar size={10} color="#D4AF37" />
+                            <span>Pre-order {item.expected_ship_date || item.expectedShipDate || item.launchDate ? `• Ships from: ${item.expected_ship_date || item.expectedShipDate || item.launchDate}` : ''}</span>
+                          </div>
+                        )}
                         {displayVariant && (
                           <div
                             style={{
