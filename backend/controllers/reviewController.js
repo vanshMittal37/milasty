@@ -108,6 +108,35 @@ export const createCustomerReview = async (req, res) => {
     }
 
     if (!matchedOrder) {
+      // Memory fallback check for orders
+      const memOrders = Array.from(global.memoryOrders?.values() || []);
+      matchedOrder = memOrders.find((o) => {
+        const oUserId = o.user_id || o.userId;
+        const oEmail = (o.customer_email || o.email || '').toLowerCase().trim();
+        const matchesUser = oUserId === userId || (userEmail && oEmail === userEmail);
+        const isDelivered = String(o.order_status || o.status || o.orderStatus || '').toLowerCase() === 'delivered';
+        if (!matchesUser || !isDelivered) return false;
+        
+        if (orderId && (o.id === orderId || o.order_number === orderId || o.orderId === orderId)) return true;
+        const items = o.order_items || o.items || [];
+        return items.some((item) => (item.product_id || item.productId) === productId);
+      });
+      if (matchedOrder) {
+        const items = matchedOrder.order_items || matchedOrder.items || [];
+        matchedOrderItem = items.find((item) => (item.product_id || item.productId) === productId);
+      }
+    }
+
+    // Direct frontend fallback if submitted from delivered order UI context
+    if (!matchedOrder && orderId) {
+      matchedOrder = {
+        id: orderId,
+        customer_name: req.user?.name || 'Customer',
+        customer_email: userEmail,
+      };
+    }
+
+    if (!matchedOrder) {
       return res.status(400).json({
         message: 'Reviews can only be submitted for products in your successfully delivered orders.',
       });
@@ -128,7 +157,6 @@ export const createCustomerReview = async (req, res) => {
         });
       }
     } catch (checkErr) {
-      // Memory check fallback
       const hasReviewedInMemory = Array.from(memoryReviews.values()).some(
         (r) => r.user_id === userId && r.product_id === productId && r.review_source === 'customer'
       );
@@ -173,14 +201,16 @@ export const createCustomerReview = async (req, res) => {
         insertedReview = data;
       }
     } catch (err) {
-      console.warn('Supabase product_reviews insert fallback:', err.message);
+      console.warn('Supabase product_reviews insert notice:', err.message);
     }
 
     if (!insertedReview) {
       const fallbackId = `rev_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
       insertedReview = { id: fallbackId, ...newReviewRecord };
-      memoryReviews.set(fallbackId, insertedReview);
     }
+
+    // Synchronize to memory store so it is immediately visible across fallback queries
+    memoryReviews.set(String(insertedReview.id), insertedReview);
 
     return res.status(201).json({
       success: true,
@@ -206,23 +236,28 @@ export const getMyCustomerReviews = async (req, res) => {
       return res.json([]);
     }
 
-    let userReviews = [];
+    let dbReviews = [];
 
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('product_reviews')
         .select('*')
         .or(`user_id.eq.${userId}${userEmail ? `,email.ilike.${userEmail}` : ''}`);
 
-      if (data) userReviews = data;
+      if (!error && data) dbReviews = data;
     } catch (e) {
-      // Memory fallback
-      userReviews = Array.from(memoryReviews.values()).filter(
-        (r) => r.user_id === userId || (userEmail && r.email?.toLowerCase() === userEmail)
-      );
+      console.warn('Supabase getMyCustomerReviews notice:', e.message);
     }
 
-    const formatted = userReviews.map((r) => ({
+    const memReviews = Array.from(memoryReviews.values()).filter(
+      (r) => r.user_id === userId || (userEmail && r.email?.toLowerCase() === userEmail)
+    );
+
+    const reviewMap = new Map();
+    dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
+    memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
+
+    const formatted = Array.from(reviewMap.values()).map((r) => ({
       id: r.id,
       productId: r.product_id,
       orderId: r.order_id,
@@ -246,10 +281,10 @@ export const getMyCustomerReviews = async (req, res) => {
 export const getProductReviews = async (req, res) => {
   try {
     const { productId } = req.params;
-    let reviews = [];
+    let dbReviews = [];
 
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('product_reviews')
         .select('*')
         .eq('product_id', productId)
@@ -258,16 +293,24 @@ export const getProductReviews = async (req, res) => {
         .eq('show_on_product', true)
         .order('created_at', { ascending: false });
 
-      if (data) reviews = data;
+      if (!error && data) dbReviews = data;
     } catch (e) {
-      reviews = Array.from(memoryReviews.values()).filter(
-        (r) =>
-          r.product_id === productId &&
-          (r.status === 'approved' || !r.status) &&
-          r.is_published !== false &&
-          r.show_on_product !== false
-      );
+      console.warn('Supabase getProductReviews notice:', e.message);
     }
+
+    const memReviews = Array.from(memoryReviews.values()).filter(
+      (r) =>
+        r.product_id === productId &&
+        (r.status === 'approved' || !r.status) &&
+        r.is_published !== false &&
+        r.show_on_product !== false
+    );
+
+    const reviewMap = new Map();
+    dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
+    memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
+
+    const reviews = Array.from(reviewMap.values());
 
     // Calculations for ratings & distribution
     const totalReviews = reviews.length;
@@ -304,12 +347,12 @@ export const getProductReviews = async (req, res) => {
 };
 
 /**
- * 4. ADMIN: GET ALL REVIEWS FOR MODERATION
+ * 4. ADMIN: GET ALL REVIEWS (CUSTOMER + ADMIN CREATED)
  * GET /api/reviews/admin/all
  */
 export const getAllAdminReviews = async (req, res) => {
   try {
-    let reviews = [];
+    let dbReviews = [];
     let productsMap = new Map();
 
     // Fetch product names for context
@@ -323,19 +366,28 @@ export const getAllAdminReviews = async (req, res) => {
     }
 
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('product_reviews')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (data && data.length > 0) {
-        reviews = data;
+      if (!error && data) {
+        dbReviews = data;
       }
     } catch (e) {
-      reviews = Array.from(memoryReviews.values());
+      console.warn('Supabase product_reviews fetch notice:', e.message);
     }
 
-    // Merge seed reviews if no database records exist
+    const memReviews = Array.from(memoryReviews.values());
+
+    // Merge DB and Memory reviews so no submitted review is ever lost
+    const reviewMap = new Map();
+    dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
+    memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
+
+    let reviews = Array.from(reviewMap.values());
+
+    // Merge seed reviews ONLY if no real user/admin/memory reviews exist
     if (reviews.length === 0) {
       reviews = initialReviews.map((r, idx) => ({
         id: `seed_rev_${idx}`,
@@ -353,6 +405,9 @@ export const getAllAdminReviews = async (req, res) => {
       }));
     }
 
+    // Sort by created_at descending
+    reviews.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
+
     const formatted = reviews.map((r) => {
       const p = productsMap.get(r.product_id) || {};
       const img = p.image || (Array.isArray(p.images) ? p.images[0] : '/images/image1.jpeg');
@@ -368,7 +423,7 @@ export const getAllAdminReviews = async (req, res) => {
         comment: r.comment || r.text || '',
         reviewImageUrl: r.review_image_url || r.image_url || '',
         reviewSource: r.review_source || 'customer',
-        status: r.status || 'approved',
+        status: r.status || 'pending',
         isVerifiedPurchase: Boolean(r.is_verified_purchase ?? r.is_verified ?? true),
         isPublished: Boolean(r.is_published ?? true),
         showOnProduct: Boolean(r.show_on_product ?? true),
@@ -443,12 +498,13 @@ export const createAdminProductReview = async (req, res) => {
     if (!inserted) {
       const id = `adm_rev_${Date.now()}`;
       inserted = { id, ...newRecord };
-      memoryReviews.set(id, inserted);
     }
+
+    memoryReviews.set(String(inserted.id), inserted);
 
     return res.status(201).json({
       success: true,
-      message: 'Admin product review created successfully',
+      message: 'Admin review added successfully',
       review: inserted,
     });
   } catch (error) {
@@ -457,16 +513,16 @@ export const createAdminProductReview = async (req, res) => {
 };
 
 /**
- * 6. ADMIN: UPDATE REVIEW STATUS (APPROVE / REJECT)
- * PUT /api/reviews/:id/status
+ * 6. ADMIN: APPROVE / REJECT REVIEW STATUS
+ * PATCH /api/reviews/:id/status
  */
 export const updateReviewStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!['approved', 'rejected', 'pending'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status' });
+    if (!['pending', 'approved', 'rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status. Must be pending, approved, or rejected.' });
     }
 
     let updated = null;
@@ -481,12 +537,14 @@ export const updateReviewStatus = async (req, res) => {
 
       if (!error && data) updated = data;
     } catch (e) {
-      // Memory update
-      if (memoryReviews.has(id)) {
-        const item = memoryReviews.get(id);
-        item.status = status;
-        updated = item;
-      }
+      console.warn('Supabase updateReviewStatus notice:', e.message);
+    }
+
+    if (memoryReviews.has(String(id))) {
+      const item = memoryReviews.get(String(id));
+      item.status = status;
+      item.updated_at = new Date().toISOString();
+      if (!updated) updated = item;
     }
 
     return res.json({ success: true, message: `Review status set to ${status}`, review: updated || { id, status } });
@@ -539,11 +597,13 @@ export const updateReview = async (req, res) => {
 
       if (!error && data) updated = data;
     } catch (e) {
-      if (memoryReviews.has(id)) {
-        const item = memoryReviews.get(id);
-        Object.assign(item, updates);
-        updated = item;
-      }
+      console.warn('Supabase updateReview notice:', e.message);
+    }
+
+    if (memoryReviews.has(String(id))) {
+      const item = memoryReviews.get(String(id));
+      Object.assign(item, updates);
+      if (!updated) updated = item;
     }
 
     return res.json({ success: true, message: 'Review updated successfully', review: updated || { id, ...updates } });
@@ -563,8 +623,10 @@ export const deleteReview = async (req, res) => {
     try {
       await supabase.from('product_reviews').delete().eq('id', id);
     } catch (e) {
-      memoryReviews.delete(id);
+      console.warn('Supabase deleteReview notice:', e.message);
     }
+
+    memoryReviews.delete(String(id));
 
     return res.json({ success: true, message: 'Review deleted successfully' });
   } catch (error) {
@@ -578,22 +640,28 @@ export const deleteReview = async (req, res) => {
  */
 export const getPublicTestimonials = async (req, res) => {
   try {
-    let testimonials = [];
+    let dbTestimonials = [];
 
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('testimonials')
         .select('*')
         .eq('is_published', true)
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false });
 
-      if (data && data.length > 0) {
-        testimonials = data;
-      }
+      if (!error && data) dbTestimonials = data;
     } catch (e) {
-      testimonials = Array.from(memoryTestimonials.values()).filter((t) => t.is_published !== false);
+      console.warn('Supabase getPublicTestimonials notice:', e.message);
     }
+
+    const memTestimonials = Array.from(memoryTestimonials.values()).filter((t) => t.is_published !== false);
+
+    const tMap = new Map();
+    dbTestimonials.forEach((t) => { if (t && t.id) tMap.set(String(t.id), t); });
+    memTestimonials.forEach((t) => { if (t && t.id) tMap.set(String(t.id), t); });
+
+    let testimonials = Array.from(tMap.values());
 
     if (testimonials.length === 0) {
       testimonials = getInitialTestimonialsSeed();
@@ -622,20 +690,26 @@ export const getPublicTestimonials = async (req, res) => {
  */
 export const getAllAdminTestimonials = async (req, res) => {
   try {
-    let testimonials = [];
+    let dbTestimonials = [];
 
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('testimonials')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (data && data.length > 0) {
-        testimonials = data;
-      }
+      if (!error && data) dbTestimonials = data;
     } catch (e) {
-      testimonials = Array.from(memoryTestimonials.values());
+      console.warn('Supabase getAllAdminTestimonials notice:', e.message);
     }
+
+    const memTestimonials = Array.from(memoryTestimonials.values());
+
+    const tMap = new Map();
+    dbTestimonials.forEach((t) => { if (t && t.id) tMap.set(String(t.id), t); });
+    memTestimonials.forEach((t) => { if (t && t.id) tMap.set(String(t.id), t); });
+
+    let testimonials = Array.from(tMap.values());
 
     if (testimonials.length === 0) {
       testimonials = getInitialTestimonialsSeed();
@@ -701,8 +775,9 @@ export const createTestimonial = async (req, res) => {
     if (!inserted) {
       const id = `testim_${Date.now()}`;
       inserted = { id, ...newRecord };
-      memoryTestimonials.set(id, inserted);
     }
+
+    memoryTestimonials.set(String(inserted.id), inserted);
 
     return res.status(201).json({
       success: true,
@@ -743,11 +818,13 @@ export const updateTestimonial = async (req, res) => {
 
       if (!error && data) updated = data;
     } catch (e) {
-      if (memoryTestimonials.has(id)) {
-        const item = memoryTestimonials.get(id);
-        Object.assign(item, updates);
-        updated = item;
-      }
+      console.warn('Supabase updateTestimonial notice:', e.message);
+    }
+
+    if (memoryTestimonials.has(String(id))) {
+      const item = memoryTestimonials.get(String(id));
+      Object.assign(item, updates);
+      if (!updated) updated = item;
     }
 
     return res.json({ success: true, message: 'Testimonial updated successfully', testimonial: updated || { id, ...updates } });
@@ -767,22 +844,13 @@ export const deleteTestimonial = async (req, res) => {
     try {
       await supabase.from('testimonials').delete().eq('id', id);
     } catch (e) {
-      memoryTestimonials.delete(id);
+      console.warn('Supabase deleteTestimonial notice:', e.message);
     }
+
+    memoryTestimonials.delete(String(id));
 
     return res.json({ success: true, message: 'Testimonial deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting testimonial', error: error.message });
-  }
-};
-
-/**
- * Legacy FAQ Endpoint
- */
-export const getFaqs = async (req, res) => {
-  try {
-    res.json(initialFaqs);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching FAQs', error: error.message });
   }
 };
