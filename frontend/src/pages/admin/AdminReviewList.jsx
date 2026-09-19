@@ -36,6 +36,7 @@ export default function AdminReviewList() {
   const [uploadingRevImage, setUploadingRevImage] = useState(false);
 
   // Edit Review Form State
+  const [editRevProductId, setEditRevProductId] = useState('');
   const [editRevName, setEditRevName] = useState('');
   const [editRevRating, setEditRevRating] = useState(5);
   const [editRevComment, setEditRevComment] = useState('');
@@ -197,6 +198,7 @@ export default function AdminReviewList() {
     const id = editingReview.id || editingReview._id;
     try {
       await api.put(`/reviews/${id}`, {
+        productId: editRevProductId,
         reviewerName: editRevName,
         rating: Number(editRevRating),
         comment: editRevComment,
@@ -577,6 +579,7 @@ export default function AdminReviewList() {
                         <button
                           onClick={() => {
                             setEditingReview(rev);
+                            setEditRevProductId(rev.productId || rev.product_id || '');
                             setEditRevName(rev.reviewerName || '');
                             setEditRevRating(rev.rating || 5);
                             setEditRevComment(rev.comment || '');
@@ -821,6 +824,19 @@ export default function AdminReviewList() {
             </div>
 
             <form onSubmit={handleUpdateReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Product *</label>
+                <select
+                  value={editRevProductId}
+                  onChange={(e) => setEditRevProductId(e.target.value)}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                >
+                  {safeProducts.map((p) => (
+                    <option key={p.id || p._id} value={p.id || p._id}>{p.title}</option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Reviewer Name</label>
                 <input

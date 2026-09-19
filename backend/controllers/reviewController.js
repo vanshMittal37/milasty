@@ -1,5 +1,5 @@
 import { supabase } from '../config/supabase.js';
-import { initialReviews, initialFaqs } from '../data/seedData.js';
+import { initialProducts, initialReviews, initialFaqs } from '../data/seedData.js';
 
 // In-memory fallback store for development environment when database table is bootstrapping
 const memoryReviews = new Map();
@@ -44,6 +44,34 @@ const getInitialTestimonialsSeed = () => [
 
 // Initialize memory seed
 getInitialTestimonialsSeed().forEach(t => memoryTestimonials.set(t.id, t));
+
+// Helper to build comprehensive product lookup map across seed data and DB
+const getProductsLookupMap = async () => {
+  const map = new Map();
+
+  // Populate from initialProducts seed first
+  initialProducts.forEach((p) => {
+    if (p.id) map.set(String(p.id), p);
+    if (p._id) map.set(String(p._id), p);
+    if (p.slug) map.set(String(p.slug), p);
+  });
+
+  // Populate/override from Supabase products table
+  try {
+    const { data: products } = await supabase.from('products').select('*');
+    if (products && products.length > 0) {
+      products.forEach((p) => {
+        if (p.id) map.set(String(p.id), p);
+        if (p._id) map.set(String(p._id), p);
+        if (p.slug) map.set(String(p.slug), p);
+      });
+    }
+  } catch (err) {
+    console.warn('Products map fetch notice:', err.message);
+  }
+
+  return map;
+};
 
 /**
  * 1. CUSTOMER: CREATE PRODUCT REVIEW (DELIVERED ORDER ONLY + UNIQUE CHECK)
@@ -95,12 +123,12 @@ export const createCustomerReview = async (req, res) => {
           
           // Check if order contains product
           const items = o.order_items || [];
-          return items.some((item) => item.product_id === productId || item.productId === productId);
+          return items.some((item) => (item.product_id || item.productId) === productId);
         });
 
         if (matchedOrder) {
           const items = matchedOrder.order_items || [];
-          matchedOrderItem = items.find((item) => item.product_id === productId || item.productId === productId);
+          matchedOrderItem = items.find((item) => (item.product_id || item.productId) === productId);
         }
       }
     } catch (dbErr) {
@@ -167,9 +195,14 @@ export const createCustomerReview = async (req, res) => {
       }
     }
 
+    const productsMap = await getProductsLookupMap();
+    const resolvedProduct = productsMap.get(String(productId)) || {};
+    const productTitle = matchedOrderItem?.title || matchedOrderItem?.product_title || matchedOrderItem?.name || resolvedProduct.title || 'MILASTY Product';
+
     const finalImageUrl = reviewImageUrl || image_url || '';
     const newReviewRecord = {
       product_id: productId,
+      product_title: productTitle,
       user_id: userId,
       order_id: matchedOrder.id,
       order_item_id: matchedOrderItem?.id || orderItemId || null,
@@ -209,7 +242,7 @@ export const createCustomerReview = async (req, res) => {
       insertedReview = { id: fallbackId, ...newReviewRecord };
     }
 
-    // Synchronize to memory store so it is immediately visible across fallback queries
+    // Synchronize to memory store so it is immediately visible
     memoryReviews.set(String(insertedReview.id), insertedReview);
 
     return res.status(201).json({
@@ -260,6 +293,7 @@ export const getMyCustomerReviews = async (req, res) => {
     const formatted = Array.from(reviewMap.values()).map((r) => ({
       id: r.id,
       productId: r.product_id,
+      productTitle: r.product_title || r.productTitle || '',
       orderId: r.order_id,
       rating: r.rating,
       comment: r.comment,
@@ -300,7 +334,7 @@ export const getProductReviews = async (req, res) => {
 
     const memReviews = Array.from(memoryReviews.values()).filter(
       (r) =>
-        r.product_id === productId &&
+        String(r.product_id) === String(productId) &&
         (r.status === 'approved' || !r.status) &&
         r.is_published !== false &&
         r.show_on_product !== false
@@ -353,17 +387,7 @@ export const getProductReviews = async (req, res) => {
 export const getAllAdminReviews = async (req, res) => {
   try {
     let dbReviews = [];
-    let productsMap = new Map();
-
-    // Fetch product names for context
-    try {
-      const { data: products } = await supabase.from('products').select('id, title, image, images');
-      if (products) {
-        products.forEach((p) => productsMap.set(p.id, p));
-      }
-    } catch (pErr) {
-      console.warn('Products fetch notice:', pErr.message);
-    }
+    const productsMap = await getProductsLookupMap();
 
     try {
       const { data, error } = await supabase
@@ -392,6 +416,7 @@ export const getAllAdminReviews = async (req, res) => {
       reviews = initialReviews.map((r, idx) => ({
         id: `seed_rev_${idx}`,
         product_id: r.productId || null,
+        product_title: r.productTitle || '',
         reviewer_name: r.name || 'Customer',
         email: r.email || '',
         rating: r.rating || 5,
@@ -409,13 +434,26 @@ export const getAllAdminReviews = async (req, res) => {
     reviews.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
 
     const formatted = reviews.map((r) => {
-      const p = productsMap.get(r.product_id) || {};
-      const img = p.image || (Array.isArray(p.images) ? p.images[0] : '/images/image1.jpeg');
+      const pidStr = String(r.product_id || r.productId || '');
+      const p = productsMap.get(pidStr) || productsMap.get(r.product_id) || {};
+
+      const resolvedTitle =
+        r.product_title ||
+        r.productTitle ||
+        p.title ||
+        p.name ||
+        (pidStr ? `Product (#${pidStr.slice(0, 8)})` : 'MILASTY Artisan Bake');
+
+      const img =
+        r.product_image ||
+        p.image ||
+        (Array.isArray(p.images) ? p.images[0] : '/images/image1.jpeg');
+
       return {
         id: r.id,
         _id: r.id,
         productId: r.product_id,
-        productTitle: p.title || 'MILASTY Artisan Bake',
+        productTitle: resolvedTitle,
         productImage: img,
         reviewerName: r.reviewer_name || r.name || 'Customer',
         email: r.email || '',
@@ -462,8 +500,13 @@ export const createAdminProductReview = async (req, res) => {
       return res.status(400).json({ message: 'Product ID is required' });
     }
 
+    const productsMap = await getProductsLookupMap();
+    const resolvedProduct = productsMap.get(String(productId)) || {};
+    const productTitle = resolvedProduct.title || resolvedProduct.name || 'MILASTY Artisan Bake';
+
     const newRecord = {
       product_id: productId,
+      product_title: productTitle,
       user_id: null,
       order_id: null,
       order_item_id: null,
@@ -561,6 +604,8 @@ export const updateReview = async (req, res) => {
   try {
     const { id } = req.params;
     const {
+      productId,
+      product_id,
       rating,
       comment,
       reviewerName,
@@ -573,7 +618,16 @@ export const updateReview = async (req, res) => {
       showOnProduct,
     } = req.body;
 
+    const targetProductId = productId || product_id;
     const updates = { updated_at: new Date().toISOString() };
+
+    if (targetProductId) {
+      updates.product_id = targetProductId;
+      const productsMap = await getProductsLookupMap();
+      const p = productsMap.get(String(targetProductId)) || {};
+      if (p.title) updates.product_title = p.title;
+    }
+
     if (rating !== undefined) updates.rating = Number(rating);
     if (comment !== undefined) updates.comment = comment;
     if (reviewerName || name) updates.reviewer_name = reviewerName || name;
