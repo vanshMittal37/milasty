@@ -159,10 +159,11 @@ export default function CartDrawer() {
     }
   };
 
-  const handleRemoveItem = (item) => {
-    removeFromCart(item.key);
+  const handleRemoveItem = (itemKey, title) => {
+    if (!itemKey) return;
+    removeFromCart(itemKey);
     if (showToast) {
-      showToast(`${item.title} removed from cart.`);
+      showToast(`${title || 'Item'} removed from cart.`);
     }
   };
 
@@ -178,32 +179,28 @@ export default function CartDrawer() {
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         zIndex: 99990,
-        display: 'flex',
-        justifyContent: 'flex-end',
       }}
       onClick={() => setIsCartOpen(false)}
-      className="animate-fade-in cart-drawer-backdrop"
     >
       <div
+        className="cart-drawer-panel"
         style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          bottom: 0,
           width: '100%',
-          maxWidth: '440px',
-          height: '100dvh',
-          backgroundColor: '#140A05',
+          maxWidth: '420px',
+          backgroundColor: '#1C0E07',
+          boxShadow: '-10px 0 30px rgba(0, 0, 0, 0.5)',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '-8px 0 35px rgba(0, 0, 0, 0.6)',
-          borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
-          touchAction: 'pan-y',
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
-          position: 'relative',
+          zIndex: 99991,
+          boxSizing: 'border-box',
         }}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        className="animate-slide-right cart-drawer-panel"
       >
         {/* Header */}
         <div
@@ -351,7 +348,10 @@ export default function CartDrawer() {
             <>
               {/* Cart Items List */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                {cartItems.map((item) => {
+                {cartItems.map((item, idx) => {
+                  const itemKey = item.cartItemId || item.key || item._id || item.id || `cart_item_${idx}`;
+                  const unitPrice = item.unitPrice !== undefined ? item.unitPrice : (item.price || 0);
+
                   const displayVariant =
                     item.variantName &&
                     item.variantName !== 'default' &&
@@ -368,7 +368,7 @@ export default function CartDrawer() {
 
                   return (
                     <div
-                      key={item.key}
+                      key={itemKey}
                       style={{
                         display: 'flex',
                         gap: '0.9rem',
@@ -428,7 +428,7 @@ export default function CartDrawer() {
                             marginBottom: '0.45rem',
                           }}
                         >
-                          ₹{item.price}
+                          ₹{unitPrice}
                         </div>
 
                         {/* Controls Row */}
@@ -444,7 +444,7 @@ export default function CartDrawer() {
                             }}
                           >
                             <button
-                              onClick={() => updateQuantity(item.key, -1)}
+                              onClick={() => updateQuantity(itemKey, item.quantity - 1)}
                               aria-label="Decrease Quantity"
                               style={{
                                 padding: '0.25rem 0.45rem',
@@ -469,7 +469,7 @@ export default function CartDrawer() {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => updateQuantity(item.key, 1)}
+                              onClick={() => updateQuantity(itemKey, item.quantity + 1)}
                               disabled={isMaxStockReached}
                               aria-label="Increase Quantity"
                               style={{
@@ -487,7 +487,7 @@ export default function CartDrawer() {
                           </div>
 
                           <button
-                            onClick={() => handleRemoveItem(item)}
+                            onClick={() => handleRemoveItem(itemKey, item.title)}
                             aria-label="Remove Item"
                             style={{
                               background: 'none',
