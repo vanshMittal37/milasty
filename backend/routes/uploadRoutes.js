@@ -6,6 +6,11 @@ dotenv.config();
 
 const router = express.Router();
 
+// Explicit preflight handler for OPTIONS /api/upload
+router.options('/', (req, res) => {
+  res.sendStatus(200);
+});
+
 router.post('/', async (req, res) => {
   try {
     const { image } = req.body;

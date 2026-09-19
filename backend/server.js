@@ -21,7 +21,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Universal CORS Middleware for Railway & Vercel
+// Standard CORS Package Integration
+app.use(cors({
+  origin: true, // Echo request origin (allows https://milasty.vercel.app, localhost, etc.)
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+}));
+
+// Fallback Explicit CORS Headers for all requests & preflights
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (origin) {
@@ -39,8 +47,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
+// Increased Body Parser Limit for high-resolution base64 photo uploads
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -57,7 +66,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/delivery-areas', deliveryAreaRoutes);
 app.use('/api', reviewRoutes);
 
-// Health Check Endpoint (Required by Railway & Specs)
+// Health Check Endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -67,10 +76,25 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Centralized Error Handling Middleware
+// Centralized Error Handling Middleware (Preserves CORS headers on errors)
 app.use((err, req, res, next) => {
   console.error('API Error:', err);
-  res.status(err.status || 500).json({
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({
+      success: false,
+      message: 'Uploaded image file size is too large. Please upload an image under 20MB.',
+    });
+  }
+
+  res.status(err.status || err.statusCode || 500).json({
     success: false,
     message: err.message || 'Internal Server Error',
   });
