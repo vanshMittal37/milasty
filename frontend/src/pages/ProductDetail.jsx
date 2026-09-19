@@ -36,18 +36,33 @@ export default function ProductDetail() {
     try {
       const res = await api.get(`/reviews/product/${targetId}`);
       if (res.data && typeof res.data === 'object') {
+        const reviewsArr = Array.isArray(res.data.reviews)
+          ? res.data.reviews
+          : (Array.isArray(res.data) ? res.data : []);
+
+        const count = reviewsArr.length;
+        const avg = count > 0
+          ? (reviewsArr.reduce((sum, r) => sum + Number(r.rating || 5), 0) / count).toFixed(1)
+          : 0;
+
+        const dist = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        reviewsArr.forEach((r) => {
+          const rnum = Math.round(Number(r.rating || 5));
+          if (dist[rnum] !== undefined) dist[rnum] += 1;
+        });
+
         setReviewsData({
-          averageRating: Number(res.data.averageRating || 0),
-          totalReviews: Number(res.data.totalReviews || 0),
-          ratingDistribution: res.data.ratingDistribution || {},
-          reviews: Array.isArray(res.data.reviews) ? res.data.reviews : (Array.isArray(res.data) ? res.data : []),
+          averageRating: Number(res.data.averageRating || avg),
+          totalReviews: Number(res.data.totalReviews !== undefined ? res.data.totalReviews : count),
+          ratingDistribution: res.data.ratingDistribution || dist,
+          reviews: reviewsArr,
         });
       }
     } catch (e) {
       console.warn('Error fetching product reviews:', e.message);
     }
   };
-  
+
   const [inputPincode, setInputPincode] = useState('');
   const [checkingPincode, setCheckingPincode] = useState(false);
   const [pincodeError, setPincodeError] = useState('');
@@ -84,6 +99,7 @@ export default function ProductDetail() {
         const allFiltered = initialProducts.filter((p) => p.slug !== identifier && p._id !== identifier);
         const sameCategory = allFiltered.filter(p => p.category === found.category);
         setRelatedProducts(sameCategory.length > 0 ? sameCategory : allFiltered);
+        fetchProductReviews(found._id || found.id || found.slug || identifier);
       }
     } finally {
       setLoading(false);

@@ -382,13 +382,39 @@ export const getMyCustomerReviews = async (req, res) => {
 export const getProductReviews = async (req, res) => {
   try {
     const { productId } = req.params;
+    const pidStr = String(productId || '').trim();
+    const pidLower = pidStr.toLowerCase();
+
+    const productsMap = await getProductsLookupMap();
+    let targetProduct = productsMap.get(pidStr) || productsMap.get(pidLower) || {};
+
+    if (!targetProduct.title) {
+      targetProduct = Array.from(productsMap.values()).find(
+        (p) =>
+          String(p.id) === pidStr ||
+          String(p._id) === pidStr ||
+          String(p.slug || '').toLowerCase() === pidLower ||
+          String(p.title || '').toLowerCase() === pidLower
+      ) || {};
+    }
+
+    const targetIds = new Set(
+      [
+        pidStr,
+        pidLower,
+        String(targetProduct.id || ''),
+        String(targetProduct._id || ''),
+        String(targetProduct.slug || '').toLowerCase(),
+        String(targetProduct.title || '').toLowerCase(),
+      ].filter(Boolean)
+    );
+
     let dbReviews = [];
 
     try {
       const { data, error } = await supabase
         .from('product_reviews')
         .select('*')
-        .eq('product_id', String(productId))
         .eq('status', 'approved')
         .eq('is_published', true)
         .eq('show_on_product', true)
@@ -401,7 +427,6 @@ export const getProductReviews = async (req, res) => {
 
     const memReviews = Array.from(memoryReviews.values()).filter(
       (r) =>
-        String(r.product_id || r.productId) === String(productId) &&
         r.status === 'approved' &&
         r.is_published !== false &&
         r.show_on_product !== false
@@ -411,20 +436,51 @@ export const getProductReviews = async (req, res) => {
     dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
     memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
 
-    let reviews = Array.from(reviewMap.values());
+    const allApprovedReviews = Array.from(reviewMap.values());
 
-    const formatted = reviews.map((r) => ({
+    // Match reviews against target product identifiers
+    const matchedReviews = allApprovedReviews.filter((r) => {
+      const rPid = String(r.product_id || r.productId || '').trim().toLowerCase();
+      const rTitle = String(r.product_title || r.productTitle || '').trim().toLowerCase();
+
+      if (targetIds.has(rPid)) return true;
+      if (rTitle && targetIds.has(rTitle)) return true;
+      if (targetProduct.title && rTitle && (rTitle.includes(targetProduct.title.toLowerCase()) || targetProduct.title.toLowerCase().includes(rTitle))) return true;
+
+      return false;
+    });
+
+    const formatted = matchedReviews.map((r) => ({
       id: r.id,
       name: r.reviewer_name || r.name || 'Customer',
+      reviewerName: r.reviewer_name || r.name || 'Customer',
       rating: Number(r.rating || 5),
       comment: r.comment || r.text || '',
       reviewImageUrl: r.review_image_url || r.image_url || '',
       isVerified: Boolean(r.is_verified_purchase ?? r.is_verified ?? true),
+      isVerifiedPurchase: Boolean(r.is_verified_purchase ?? r.is_verified ?? true),
       reviewSource: r.review_source || 'customer',
       createdAt: r.created_at || new Date().toISOString(),
     }));
 
-    return res.json(formatted);
+    const totalReviews = formatted.length;
+    const averageRating = totalReviews > 0
+      ? Number((formatted.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1))
+      : 0;
+
+    const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    formatted.forEach((r) => {
+      const rStar = Math.round(r.rating);
+      if (ratingDistribution[rStar] !== undefined) ratingDistribution[rStar] += 1;
+    });
+
+    return res.json({
+      success: true,
+      totalReviews,
+      averageRating,
+      ratingDistribution,
+      reviews: formatted,
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching product reviews', error: error.message });
   }
