@@ -40,28 +40,6 @@ export default function CartDrawer() {
     }
   }, [deliveryInfo]);
 
-  const isDeliveryChecked = deliveryInfo?.checked;
-  const isDeliverable = deliveryInfo?.available;
-  const deliveryCharge = deliveryInfo?.deliveryCharge || 0;
-
-  const handleCheckPinSubmit = async (e) => {
-    e.preventDefault();
-    if (!pincodeInput || pincodeInput.length !== 6) {
-      setPinError('Please enter a valid 6-digit PIN code.');
-      return;
-    }
-    setPinError('');
-    try {
-      const res = await checkPincode(pincodeInput, { subtotal });
-      if (res && res.checked) {
-        setIsEditingPin(false);
-      } else if (res && res.message) {
-        setPinError(res.message);
-      }
-    } catch (err) {
-      setPinError('Error checking delivery PIN.');
-    }
-  };
 
   // Coupon State
   const [couponInputCode, setCouponInputCode] = useState('');
