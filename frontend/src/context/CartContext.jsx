@@ -6,7 +6,15 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
-  const [cartItems, setCartItems] = useState([]);
+  // Load cart from localStorage
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem('milasty_cart_items');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
@@ -21,6 +29,13 @@ export const CartProvider = ({ children }) => {
 
   const [couponDiscountAmount, setCouponDiscountAmount] = useState(0);
 
+  // Sync cartItems with localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('milasty_cart_items', JSON.stringify(cartItems));
+    } catch (e) {}
+  }, [cartItems]);
+
   // Sync appliedCoupon with Session Storage
   useEffect(() => {
     try {
@@ -31,6 +46,93 @@ export const CartProvider = ({ children }) => {
       }
     } catch (e) {}
   }, [appliedCoupon]);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
+
+  const addToCart = async (product, variant, qty = 1) => {
+    if (!product) return;
+
+    const selectedVariant = variant || (product.variants && product.variants[0]) || {};
+    const unitPrice = selectedVariant.price !== undefined ? Number(selectedVariant.price) : Number(product.price || 0);
+    const variantName = selectedVariant.weight || selectedVariant.name || selectedVariant.variantWeight || 'Standard Pack';
+    const variantId = selectedVariant.id || selectedVariant._id || variantName;
+    const pId = product._id || product.id || product.slug || 'item';
+    const cartItemId = `${pId}_${variantId}`;
+    const image = product.image || product.image_url || product.primary_image || '/images/image1.jpeg';
+    const title = product.title || product.name || 'MILASTY Bake';
+
+    setCartItems((prevItems) => {
+      const existingIdx = prevItems.findIndex((item) => item.cartItemId === cartItemId || (item.productId === pId && item.variantName === variantName));
+
+      if (existingIdx > -1) {
+        const updated = [...prevItems];
+        const newQty = updated[existingIdx].quantity + qty;
+        updated[existingIdx] = {
+          ...updated[existingIdx],
+          quantity: newQty,
+          totalPrice: updated[existingIdx].unitPrice * newQty,
+        };
+        return updated;
+      }
+
+      return [
+        ...prevItems,
+        {
+          cartItemId,
+          productId: pId,
+          title,
+          image,
+          variantName,
+          variantId: selectedVariant.id || selectedVariant._id || null,
+          unitPrice,
+          originalPrice: selectedVariant.originalPrice || product.originalPrice || unitPrice,
+          quantity: qty,
+          totalPrice: unitPrice * qty,
+        },
+      ];
+    });
+
+    showToast(`✓ Added ${title} (${variantName}) to cart`);
+    setIsCartOpen(true);
+  };
+
+  const updateQuantity = (cartItemId, newQty) => {
+    if (newQty <= 0) {
+      removeFromCart(cartItemId);
+      return;
+    }
+    setCartItems((prev) =>
+      prev.map((item) => {
+        if (item.cartItemId === cartItemId || item._id === cartItemId || item.id === cartItemId) {
+          return {
+            ...item,
+            quantity: newQty,
+            totalPrice: item.unitPrice * newQty,
+          };
+        }
+        return item;
+      })
+    );
+  };
+
+  const removeFromCart = (cartItemId) => {
+    setCartItems((prev) => prev.filter((item) => item.cartItemId !== cartItemId && item._id !== cartItemId && item.id !== cartItemId));
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+    setAppliedCoupon(null);
+    setCouponDiscountAmount(0);
+    try {
+      localStorage.removeItem('milasty_cart_items');
+      sessionStorage.removeItem('milasty_applied_coupon');
+    } catch (e) {}
+  };
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
 
@@ -118,7 +220,6 @@ export const CartProvider = ({ children }) => {
     } catch (e) {}
     showToast('Coupon removed');
   };
-
 
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
