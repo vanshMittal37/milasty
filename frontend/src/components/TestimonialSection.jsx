@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Star, CheckCircle2, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 
+import api from '../api/axios';
+
 export default function TestimonialSection() {
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' ? window.innerWidth < 992 : false
@@ -8,6 +10,7 @@ export default function TestimonialSection() {
 
   const [activeMobileIdx, setActiveMobileIdx] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [dbTestimonials, setDbTestimonials] = useState([]);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -19,8 +22,23 @@ export default function TestimonialSection() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Bottom 3 Customer Reviews Data
-  const customerReviews = [
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
+
+  const fetchTestimonials = async () => {
+    try {
+      const res = await api.get('/testimonials');
+      if (res.data && res.data.length > 0) {
+        setDbTestimonials(res.data);
+      }
+    } catch (e) {
+      console.warn('Error fetching testimonials from API:', e.message);
+    }
+  };
+
+  // Bottom Customer Reviews Data (Dynamic from API if available)
+  const defaultReviews = [
     {
       id: 1,
       name: 'Harshita Mishra',
@@ -52,6 +70,17 @@ export default function TestimonialSection() {
       verified: true,
     },
   ];
+
+  const customerReviews = dbTestimonials.length > 0
+    ? dbTestimonials.map((t) => ({
+        id: t.id,
+        name: t.name,
+        quote: t.content,
+        rating: Number(t.rating || 5),
+        avatar: t.imageUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+        verified: true,
+      }))
+    : defaultReviews;
 
   // Automatic scrolling for mobile view (every 3.5s)
   useEffect(() => {

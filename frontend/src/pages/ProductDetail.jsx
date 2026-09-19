@@ -29,6 +29,19 @@ export default function ProductDetail() {
   const [btnText, setBtnText] = useState('Add to Cart');
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('nutrition');
+  const [reviewsData, setReviewsData] = useState({ averageRating: 0, totalReviews: 0, ratingDistribution: {}, reviews: [] });
+  const [selectedModalImage, setSelectedModalImage] = useState(null);
+
+  const fetchProductReviews = async (targetId) => {
+    try {
+      const res = await api.get(`/reviews/product/${targetId}`);
+      if (res.data) {
+        setReviewsData(res.data);
+      }
+    } catch (e) {
+      console.warn('Error fetching product reviews:', e.message);
+    }
+  };
   
   const [inputPincode, setInputPincode] = useState('');
   const [checkingPincode, setCheckingPincode] = useState(false);
@@ -56,6 +69,7 @@ export default function ProductDetail() {
           setSelectedVariantIndex(availIdx >= 0 ? availIdx : 0);
         }
         fetchRelated(res.data.category, res.data._id || res.data.slug);
+        fetchProductReviews(res.data._id || res.data.id || res.data.slug);
       }
     } catch (err) {
       const found = initialProducts.find((p) => p.slug === identifier || p._id === identifier);
@@ -806,6 +820,22 @@ export default function ProductDetail() {
             >
               Ingredients &amp; Craft
             </button>
+            <button
+              onClick={() => setActiveTab('reviews')}
+              style={{
+                padding: '0.75rem 1.25rem',
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: activeTab === 'reviews' ? '#b9cd94' : '#F5EBDD',
+                borderBottom: activeTab === 'reviews' ? '2px solid #b9cd94' : '2px solid transparent',
+                fontWeight: '800',
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Customer Reviews ({reviewsData.totalReviews || 0})
+            </button>
           </div>
 
           {activeTab === 'nutrition' && (
@@ -830,6 +860,105 @@ export default function ProductDetail() {
               <p style={{ color: '#F5EBDD', lineHeight: '1.6', margin: 0 }}>
                 Handcrafted using 100% natural ingredients, organic millets, Desi Cow Ghee, and unrefined organic jaggery. No refined palm oil, no artificial preservatives, zero maida.
               </p>
+            </div>
+          )}
+
+          {activeTab === 'reviews' && (
+            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              {/* Reviews Summary Header */}
+              <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '2rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <div style={{ textAlign: 'center', paddingRight: '2rem', borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                  <div style={{ fontSize: '3rem', fontWeight: '900', color: '#FFFDF9', lineHeight: 1 }}>
+                    {reviewsData.averageRating || '0.0'}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', margin: '0.4rem 0', color: '#b9cd94' }}>
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} size={16} fill={s <= Math.round(reviewsData.averageRating || 0) ? '#b9cd94' : 'none'} color="#b9cd94" />
+                    ))}
+                  </div>
+                  <span style={{ fontSize: '0.8rem', color: '#F5EBDD', opacity: 0.8, fontWeight: '600' }}>
+                    Based on {reviewsData.totalReviews || 0} reviews
+                  </span>
+                </div>
+
+                {/* Rating Distribution Breakdown */}
+                <div style={{ flex: 1, minWidth: '220px', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  {[5, 4, 3, 2, 1].map((num) => {
+                    const count = reviewsData.ratingDistribution?.[num] || 0;
+                    const pct = reviewsData.totalReviews > 0 ? (count / reviewsData.totalReviews) * 100 : 0;
+                    return (
+                      <div key={num} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem', color: '#F5EBDD' }}>
+                        <span style={{ width: '24px', fontWeight: '700' }}>{num}★</span>
+                        <div style={{ flex: 1, height: '6px', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '999px', overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', backgroundColor: '#b9cd94', borderRadius: '999px', transition: 'width 0.5s ease-out' }} />
+                        </div>
+                        <span style={{ width: '24px', textAlign: 'right', opacity: 0.7, fontWeight: '600' }}>{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Reviews List */}
+              {reviewsData.reviews && reviewsData.reviews.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {reviewsData.reviews.map((rev) => (
+                    <div key={rev.id} style={{ padding: '1.25rem', backgroundColor: 'rgba(0, 0, 0, 0.25)', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <strong style={{ fontSize: '0.95rem', color: '#FFFDF9' }}>{rev.reviewerName}</strong>
+                          {rev.isVerifiedPurchase && (
+                            <span style={{ fontSize: '0.72rem', backgroundColor: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '0.15rem 0.5rem', borderRadius: '999px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                              <CheckCircle2 size={11} /> Verified Purchase
+                            </span>
+                          )}
+                        </div>
+                        <span style={{ fontSize: '0.78rem', color: 'rgba(245, 235, 221, 0.6)' }}>
+                          {new Date(rev.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', color: '#b9cd94', marginBottom: '0.5rem' }}>
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star key={s} size={14} fill={s <= rev.rating ? '#b9cd94' : 'none'} color="#b9cd94" />
+                        ))}
+                      </div>
+
+                      {rev.comment && (
+                        <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.5', margin: '0 0 0.5rem 0' }}>
+                          {rev.comment}
+                        </p>
+                      )}
+
+                      {/* Photo Thumbnail */}
+                      {rev.reviewImageUrl && (
+                        <img 
+                          src={rev.reviewImageUrl} 
+                          alt="Customer review photo" 
+                          onClick={() => setSelectedModalImage(rev.reviewImageUrl)}
+                          style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.2)', cursor: 'pointer', marginTop: '0.5rem' }} 
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+                  <Star size={36} color="var(--accent-gold)" style={{ margin: '0 auto 0.75rem', opacity: 0.8 }} />
+                  <h4 style={{ fontSize: '1.1rem', color: '#FFFDF9', fontWeight: '800', margin: '0 0 0.35rem 0' }}>No reviews yet</h4>
+                  <p style={{ fontSize: '0.88rem', color: '#F5EBDD', opacity: 0.7, margin: 0 }}>Be the first to share your experience with this artisan millet bake!</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Photo Lightbox Modal */}
+          {selectedModalImage && (
+            <div 
+              onClick={() => setSelectedModalImage(null)}
+              style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}
+            >
+              <img src={selectedModalImage} alt="Review photo full" style={{ maxWidth: '90vw', maxHeight: '85vh', borderRadius: '16px', objectFit: 'contain' }} />
             </div>
           )}
         </div>

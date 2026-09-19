@@ -172,17 +172,27 @@ export default function ProductCard({ product }) {
         }}
       >
         <div>
-          {/* Rating stars */}
-          <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.35rem' }}>
-            <div style={{ display: 'flex', color: '#b9cd94' }}>
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={11} fill="#b9cd94" color="#b9cd94" />
-              ))}
+          {/* Rating stars (Dynamic based on product.show_rating & real DB reviews) */}
+          {(product.show_rating !== false && product.showRating !== false) && (
+            <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.35rem' }}>
+              {product.rating > 0 && (product.reviewCount > 0 || product.reviews_count > 0 || product.totalReviews > 0) ? (
+                <>
+                  <div style={{ display: 'flex', color: '#b9cd94' }}>
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={11} fill={i < Math.round(product.rating) ? '#b9cd94' : 'none'} color="#b9cd94" />
+                    ))}
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: '#F5EBDD', fontWeight: '750' }}>
+                    {Number(product.rating).toFixed(1)} ({product.reviewCount || product.reviews_count || product.totalReviews})
+                  </span>
+                </>
+              ) : (
+                <span style={{ fontSize: '0.72rem', color: 'rgba(245, 235, 221, 0.6)', fontWeight: '600' }}>
+                  No reviews yet
+                </span>
+              )}
             </div>
-            <span style={{ fontSize: '0.72rem', color: '#F5EBDD', fontWeight: '750' }}>
-              {product.rating} ({product.reviewCount || 12})
-            </span>
-          </div>
+          )}
 
           {/* Title */}
           <h3
