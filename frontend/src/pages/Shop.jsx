@@ -1500,9 +1500,7 @@ export default function Shop() {
             )}
           </div>
         </section>
-      )}     </div>
-        </div>
-      </section>
+      )}
 
       {/* ================================================================== */}
       {/* 8. BACK TO TOP BUTTON */}
