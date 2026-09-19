@@ -201,11 +201,13 @@ export const createCustomerReview = async (req, res) => {
     const pidStr = String(productId).trim();
     const resolvedProduct = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
     const productTitle = matchedOrderItem?.title || matchedOrderItem?.product_title || matchedOrderItem?.name || resolvedProduct.title || 'MILASTY Product';
+    const productImage = matchedOrderItem?.image || matchedOrderItem?.product_image || resolvedProduct.image || (Array.isArray(resolvedProduct.images) ? resolvedProduct.images[0] : '');
 
     const finalImageUrl = reviewImageUrl || image_url || '';
     const newReviewRecord = {
       product_id: productId,
       product_title: productTitle,
+      product_image: productImage,
       user_id: userId,
       order_id: matchedOrder.id,
       order_item_id: matchedOrderItem?.id || orderItemId || null,
@@ -297,6 +299,7 @@ export const getMyCustomerReviews = async (req, res) => {
       id: r.id,
       productId: r.product_id,
       productTitle: r.product_title || r.productTitle || '',
+      productImage: r.product_image || '',
       orderId: r.order_id,
       rating: r.rating,
       comment: r.comment,
@@ -439,23 +442,25 @@ export const getAllAdminReviews = async (req, res) => {
     const formatted = reviews.map((r) => {
       const pidRaw = r.product_id || r.productId || '';
       const pidStr = String(pidRaw).trim();
+      const searchTitle = (r.product_title || r.productTitle || '').trim();
 
       // Find matching product across map keys or title search
       let p = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
-      if (!p.title && pidStr) {
-        const lowerPid = pidStr.toLowerCase();
+      if (!p.title) {
+        const lowerSearch = (searchTitle || pidStr).toLowerCase();
         p = Array.from(productsMap.values()).find(
           (item) =>
             String(item.id) === pidStr ||
             String(item._id) === pidStr ||
-            String(item.slug).toLowerCase() === lowerPid ||
-            String(item.title).toLowerCase() === lowerPid
+            String(item.slug).toLowerCase() === lowerSearch ||
+            String(item.title).toLowerCase() === lowerSearch ||
+            (item.title && lowerSearch && item.title.toLowerCase().includes(lowerSearch)) ||
+            (searchTitle && item.title && searchTitle.toLowerCase().includes(item.title.toLowerCase()))
         ) || {};
       }
 
       const resolvedTitle =
-        (r.product_title && r.product_title.trim()) ||
-        (r.productTitle && r.productTitle.trim()) ||
+        searchTitle ||
         p.title ||
         p.name ||
         'MILASTY Artisan Bake';
@@ -520,12 +525,19 @@ export const createAdminProductReview = async (req, res) => {
 
     const productsMap = await getProductsLookupMap();
     const pidStr = String(productId).trim();
-    const resolvedProduct = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
+    let resolvedProduct = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
+    if (!resolvedProduct.title) {
+      resolvedProduct = Array.from(productsMap.values()).find(
+        (p) => String(p.id) === pidStr || String(p._id) === pidStr || String(p.slug).toLowerCase() === pidStr.toLowerCase()
+      ) || {};
+    }
     const productTitle = resolvedProduct.title || resolvedProduct.name || 'MILASTY Artisan Bake';
+    const productImage = resolvedProduct.image || (Array.isArray(resolvedProduct.images) ? resolvedProduct.images[0] : '');
 
     const newRecord = {
       product_id: productId,
       product_title: productTitle,
+      product_image: productImage,
       user_id: null,
       order_id: null,
       order_item_id: null,
@@ -645,8 +657,15 @@ export const updateReview = async (req, res) => {
     if (targetProductId) {
       updates.product_id = targetProductId;
       const productsMap = await getProductsLookupMap();
-      const p = productsMap.get(String(targetProductId)) || productsMap.get(String(targetProductId).toLowerCase()) || {};
+      const pidStr = String(targetProductId).trim();
+      let p = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
+      if (!p.title) {
+        p = Array.from(productsMap.values()).find(
+          (item) => String(item.id) === pidStr || String(item._id) === pidStr || String(item.slug).toLowerCase() === pidStr.toLowerCase()
+        ) || {};
+      }
       if (p.title) updates.product_title = p.title;
+      if (p.image) updates.product_image = p.image;
     }
 
     if (rating !== undefined) updates.rating = Number(rating);
