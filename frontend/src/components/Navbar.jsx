@@ -8,6 +8,7 @@ import Logo from './Logo';
 
 import ConfirmationModal from './ConfirmationModal';
 import { useToast } from '../context/ToastContext';
+import api from '../api/axios';
 
 export default function Navbar() {
   const navigate = useNavigate();

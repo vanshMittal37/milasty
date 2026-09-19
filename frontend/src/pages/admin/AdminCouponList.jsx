@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Ticket, Tag, RefreshCw, Star, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Trash2, Ticket, Tag, RefreshCw, Star, CheckCircle, XCircle, Pencil, X } from 'lucide-react';
 import api from '../../api/axios';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import { useToast } from '../../context/ToastContext';
@@ -8,7 +8,9 @@ export default function AdminCouponList() {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [editingCoupon, setEditingCoupon] = useState(null);
   const { toast } = useToast();
 
   const [code, setCode] = useState('');
@@ -18,6 +20,16 @@ export default function AdminCouponList() {
   const [maxDiscountAmount, setMaxDiscountAmount] = useState(200);
   const [isFeatured, setIsFeatured] = useState(true);
   const [description, setDescription] = useState('');
+
+  // Edit Form State
+  const [editCode, setEditCode] = useState('');
+  const [editDiscountType, setEditDiscountType] = useState('percentage');
+  const [editDiscountValue, setEditDiscountValue] = useState(10);
+  const [editMinOrderAmount, setEditMinOrderAmount] = useState(0);
+  const [editMaxDiscountAmount, setEditMaxDiscountAmount] = useState(0);
+  const [editIsFeatured, setEditIsFeatured] = useState(false);
+  const [editIsActive, setEditIsActive] = useState(true);
+  const [editDescription, setEditDescription] = useState('');
 
   useEffect(() => {
     fetchCoupons();
@@ -53,7 +65,7 @@ export default function AdminCouponList() {
         description,
         isActive: true,
       });
-      toast.success('Coupon created successfully.');
+      toast.success('Coupon created / updated successfully.');
       setCode('');
       setDescription('');
       fetchCoupons();
@@ -64,10 +76,52 @@ export default function AdminCouponList() {
     }
   };
 
+  const openEditModal = (coupon) => {
+    setEditingCoupon(coupon);
+    setEditCode(coupon.code || '');
+    setEditDiscountType(coupon.discount_type || coupon.discountType || 'percentage');
+    setEditDiscountValue(Number(coupon.discount_value || coupon.discountValue || 0));
+    setEditMinOrderAmount(Number(coupon.min_order_amount || coupon.minOrderAmount || 0));
+    setEditMaxDiscountAmount(Number(coupon.max_discount || coupon.maxDiscountAmount || 0));
+    setEditIsFeatured(coupon.is_featured ?? coupon.isFeatured ?? false);
+    setEditIsActive(coupon.is_active ?? coupon.isActive ?? true);
+    setEditDescription(coupon.description || '');
+  };
+
+  const handleUpdateCouponSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingCoupon) return;
+    if (!editCode.trim()) {
+      toast.error('Please enter a coupon code.');
+      return;
+    }
+    setUpdating(true);
+    try {
+      const targetId = editingCoupon.id || editingCoupon._id || editingCoupon.code;
+      await api.put(`/coupons/${targetId}`, {
+        code: editCode.toUpperCase().trim(),
+        discount_type: editDiscountType,
+        discount_value: Number(editDiscountValue),
+        min_order_amount: Number(editMinOrderAmount || 0),
+        max_discount: Number(editMaxDiscountAmount || 0),
+        is_featured: editIsFeatured,
+        is_active: editIsActive,
+        description: editDescription,
+      });
+      toast.success(`Coupon ${editCode} updated successfully.`);
+      setEditingCoupon(null);
+      fetchCoupons();
+    } catch (e) {
+      toast.error(e.response?.data?.message || 'Error updating coupon.');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const handleToggleActive = async (coupon) => {
     try {
       const newStatus = !coupon.is_active;
-      await api.put(`/coupons/${coupon.id || coupon._id}`, { is_active: newStatus });
+      await api.put(`/coupons/${coupon.id || coupon._id || coupon.code}`, { is_active: newStatus });
       toast.success(`Coupon ${coupon.code} is now ${newStatus ? 'Active' : 'Inactive'}.`);
       fetchCoupons();
     } catch (e) {
@@ -78,7 +132,7 @@ export default function AdminCouponList() {
   const handleToggleFeatured = async (coupon) => {
     try {
       const newFeatured = !coupon.is_featured;
-      await api.put(`/coupons/${coupon.id || coupon._id}`, { is_featured: newFeatured });
+      await api.put(`/coupons/${coupon.id || coupon._id || coupon.code}`, { is_featured: newFeatured });
       toast.success(`Coupon ${coupon.code} ${newFeatured ? 'featured on top announcement bar' : 'unfeatured'}.`);
       fetchCoupons();
     } catch (e) {
@@ -223,7 +277,7 @@ export default function AdminCouponList() {
               style={{ width: '100%', marginTop: '0.5rem' }}
             >
               <Plus size={15} />
-              <span>{creating ? 'Creating...' : 'Create Coupon'}</span>
+              <span>{creating ? 'Saving...' : 'Create / Save Coupon'}</span>
             </button>
           </form>
         </div>
@@ -287,6 +341,15 @@ export default function AdminCouponList() {
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <button
+                          onClick={() => openEditModal(c)}
+                          className="admin-icon-btn"
+                          style={{ color: '#b9cd94' }}
+                          title="Edit Coupon Details"
+                        >
+                          <Pencil size={15} />
+                        </button>
+
+                        <button
                           onClick={() => handleToggleActive(c)}
                           style={{
                             padding: '0.35rem 0.75rem',
@@ -339,6 +402,184 @@ export default function AdminCouponList() {
         </div>
 
       </div>
+
+      {/* Edit Coupon Modal */}
+      {editingCoupon && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+          }}
+        >
+          <div
+            className="admin-card"
+            style={{
+              width: '100%',
+              maxWidth: '520px',
+              backgroundColor: 'var(--admin-surface)',
+              border: '1px solid var(--admin-border)',
+              borderRadius: '16px',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+              position: 'relative',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0 }}>
+                Edit Coupon — {editingCoupon.code}
+              </h3>
+              <button
+                onClick={() => setEditingCoupon(null)}
+                style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', padding: '0.2rem' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateCouponSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Coupon Code *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editCode}
+                  onChange={(e) => setEditCode(e.target.value)}
+                  className="admin-input"
+                  style={{ textTransform: 'uppercase', fontWeight: '800', letterSpacing: '0.05em' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Discount Type
+                  </label>
+                  <select
+                    value={editDiscountType}
+                    onChange={(e) => setEditDiscountType(e.target.value)}
+                    className="admin-input"
+                  >
+                    <option value="percentage">Percentage (%)</option>
+                    <option value="fixed">Fixed Flat (₹)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Discount Value *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={editDiscountValue}
+                    onChange={(e) => setEditDiscountValue(Number(e.target.value))}
+                    className="admin-input"
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Min Order (₹)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={editMinOrderAmount}
+                    onChange={(e) => setEditMinOrderAmount(Number(e.target.value))}
+                    className="admin-input"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Max Cap (₹)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={editMaxDiscountAmount}
+                    onChange={(e) => setEditMaxDiscountAmount(Number(e.target.value))}
+                    className="admin-input"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Description
+                </label>
+                <input
+                  type="text"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  className="admin-input"
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.2rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.84rem', color: 'var(--admin-text-primary)', fontWeight: '600' }}>
+                  <input
+                    type="checkbox"
+                    checked={editIsFeatured}
+                    onChange={(e) => setEditIsFeatured(e.target.checked)}
+                    style={{ width: '16px', height: '16px', accentColor: 'var(--admin-accent)' }}
+                  />
+                  <span>Feature on Top Announcement Bar</span>
+                </label>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.84rem', color: 'var(--admin-text-primary)', fontWeight: '600' }}>
+                  <input
+                    type="checkbox"
+                    checked={editIsActive}
+                    onChange={(e) => setEditIsActive(e.target.checked)}
+                    style={{ width: '16px', height: '16px', accentColor: 'var(--admin-accent)' }}
+                  />
+                  <span>Coupon Is Active</span>
+                </label>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingCoupon(null)}
+                  style={{
+                    flex: 1,
+                    padding: '0.65rem',
+                    borderRadius: '8px',
+                    border: '1px solid var(--admin-border)',
+                    backgroundColor: 'transparent',
+                    color: 'var(--admin-text-secondary)',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updating}
+                  className="admin-btn-primary"
+                  style={{ flex: 1 }}
+                >
+                  {updating ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <ConfirmationModal
         isOpen={!!deleteTargetId}

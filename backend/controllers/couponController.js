@@ -430,11 +430,32 @@ export const createCoupon = async (req, res) => {
       updated_at: new Date().toISOString(),
     };
 
-    const { data: coupon, error } = await supabase
+    // Check if coupon code already exists to update instead of erroring out
+    const { data: existing } = await supabase
       .from('coupons')
-      .insert([payload])
-      .select()
-      .single();
+      .select('id')
+      .eq('code', cleanCode)
+      .maybeSingle();
+
+    let coupon, error;
+    if (existing) {
+      const res = await supabase
+        .from('coupons')
+        .update(payload)
+        .eq('id', existing.id)
+        .select()
+        .single();
+      coupon = res.data;
+      error = res.error;
+    } else {
+      const res = await supabase
+        .from('coupons')
+        .insert([payload])
+        .select()
+        .single();
+      coupon = res.data;
+      error = res.error;
+    }
 
     if (error) throw error;
     return res.status(201).json(coupon);
@@ -468,17 +489,32 @@ export const updateCoupon = async (req, res) => {
     if (body.is_active !== undefined) updatePayload.is_active = !!body.is_active;
     if (body.isFeatured !== undefined) updatePayload.is_featured = !!body.isFeatured;
     if (body.is_featured !== undefined) updatePayload.is_featured = !!body.is_featured;
+    if (body.description !== undefined) updatePayload.description = String(body.description || '').trim();
     if (body.expiresAt !== undefined) updatePayload.expires_at = body.expiresAt ? new Date(body.expiresAt).toISOString() : null;
     if (body.expires_at !== undefined) updatePayload.expires_at = body.expires_at ? new Date(body.expires_at).toISOString() : null;
 
-    const { data: coupon, error } = await supabase
+    let { data: coupon, error } = await supabase
       .from('coupons')
       .update(updatePayload)
       .eq('id', id)
       .select()
-      .single();
+      .maybeSingle();
+
+    if (!coupon) {
+      const { data: couponByCode, error: errByCode } = await supabase
+        .from('coupons')
+        .update(updatePayload)
+        .eq('code', String(id).toUpperCase())
+        .select()
+        .maybeSingle();
+      coupon = couponByCode;
+      error = errByCode;
+    }
 
     if (error) throw error;
+    if (!coupon) {
+      return res.status(404).json({ message: 'Coupon not found to update.' });
+    }
     return res.json(coupon);
   } catch (error) {
     console.error('updateCoupon error:', error);
