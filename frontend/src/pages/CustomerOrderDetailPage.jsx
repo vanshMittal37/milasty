@@ -404,12 +404,22 @@ export default function CustomerOrderDetailPage() {
                   <span>Subtotal</span>
                   <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>₹{order.subtotal}</span>
                 </div>
-                {order.couponDiscount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-gold)', fontWeight: '700' }}>
-                    <span>Coupon Discount {order.couponCode ? `(${order.couponCode})` : ''}</span>
-                    <span>-₹{order.couponDiscount}</span>
-                  </div>
-                )}
+                {(() => {
+                  const discountVal = Number(
+                    order.couponDiscount || 
+                    order.discountAmount || 
+                    order.discount_amount || 
+                    Math.max(0, (order.subtotal || 0) + (order.deliveryFee || 0) - (order.totalAmount || order.grandTotal || 0))
+                  );
+                  const couponCodeVal = order.couponCode || order.coupon_code;
+                  if (discountVal <= 0) return null;
+                  return (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-gold)', fontWeight: '700' }}>
+                      <span>Coupon Discount {couponCodeVal ? `(${couponCodeVal})` : ''}</span>
+                      <span>-₹{discountVal}</span>
+                    </div>
+                  );
+                })()}
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
                   <span>Pan-India Delivery</span>
                   <span style={{ fontWeight: '700', color: order.deliveryFee === 0 ? 'var(--accent-gold)' : 'var(--text-light)' }}>

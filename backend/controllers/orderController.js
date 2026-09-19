@@ -419,6 +419,9 @@ export const formatOrderPayload = (o) => {
   const rawOrderStatus = o.order_status || 'confirmed';
   const canonicalOrderStatus = CANONICAL_STATUS_MAP[rawOrderStatus] || rawOrderStatus;
 
+  const discountVal = Number(o.discount_amount || o.discountAmount || o.coupon_discount || o.couponDiscount || 0);
+  const couponCodeVal = o.coupon_code || o.couponCode || null;
+
   return {
     ...o,
     orderId: o.id || o.order_number,
@@ -432,7 +435,12 @@ export const formatOrderPayload = (o) => {
     pincode: o.pincode || '',
     subtotal: Number(o.subtotal || 0),
     deliveryFee: Number(o.delivery_fee || 0),
-    discountAmount: Number(o.discount_amount || 0),
+    discountAmount: discountVal,
+    discount_amount: discountVal,
+    couponDiscount: discountVal,
+    coupon_discount: discountVal,
+    couponCode: couponCodeVal,
+    coupon_code: couponCodeVal,
     grandTotal: Number(o.grand_total || 0),
     totalAmount: Number(o.grand_total || 0),
     orderStatus: canonicalOrderStatus,
