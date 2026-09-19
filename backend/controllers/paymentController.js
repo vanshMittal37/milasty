@@ -218,11 +218,29 @@ export const createPaymentSession = async (req, res) => {
       pincode: finalPincode,
     });
 
+    let resolvedUserId = req.user ? (req.user.id || req.user._id) : userId;
+    if (!resolvedUserId && (finalEmail || finalPhone)) {
+      try {
+        let query = supabase.from('users').select('id');
+        if (finalEmail) {
+          query = query.eq('email', finalEmail.toLowerCase().trim());
+        } else if (finalPhone) {
+          query = query.eq('phone', finalPhone.trim());
+        }
+        const { data: matchedUser } = await query.maybeSingle();
+        if (matchedUser?.id) {
+          resolvedUserId = matchedUser.id;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
     // Save session in memory store & optional DB table
     const sessionData = {
       id: razorpayOrder.id,
       razorpay_order_id: razorpayOrder.id,
-      user_id: req.user ? (req.user.id || req.user._id) : userId,
+      user_id: resolvedUserId || null,
       customerName: customerName || req.user?.name || 'Customer',
       customerEmail: finalEmail || req.user?.email || '',
       customerPhone: finalPhone || req.user?.phone || '',

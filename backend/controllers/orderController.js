@@ -213,6 +213,24 @@ export const createOrder = async (req, res) => {
     const cleanPaymentMethod = (paymentMethod || 'cod').toLowerCase();
     const isCod = cleanPaymentMethod === 'cod';
 
+    let resolvedUserId = req.user ? (req.user.id || req.user._id) : (req.body.userId || null);
+    if (!resolvedUserId && (finalEmail || finalPhone)) {
+      try {
+        let query = supabase.from('users').select('id');
+        if (finalEmail) {
+          query = query.eq('email', finalEmail.toLowerCase().trim());
+        } else if (finalPhone) {
+          query = query.eq('phone', finalPhone.trim());
+        }
+        const { data: matchedUser } = await query.maybeSingle();
+        if (matchedUser?.id) {
+          resolvedUserId = matchedUser.id;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
     let order = null;
 
     try {
@@ -221,7 +239,7 @@ export const createOrder = async (req, res) => {
         .insert([
           {
             order_number: orderNumber,
-            user_id: req.user ? (req.user.id || req.user._id) : null,
+            user_id: resolvedUserId || null,
             customer_name: customerName || req.user?.name || 'Customer',
             customer_email: finalEmail || req.user?.email || '',
             customer_phone: finalPhone || req.user?.phone || '',
@@ -443,14 +461,22 @@ export const formatOrderPayload = (o) => {
 export const getMyOrders = async (req, res) => {
   try {
     const userId = req.user ? (req.user.id || req.user._id) : null;
-    if (!userId) {
+    const userEmail = req.user?.email ? req.user.email.toLowerCase().trim() : null;
+    const userPhone = req.user?.phone ? req.user.phone.trim() : null;
+
+    if (!userId && !userEmail && !userPhone) {
       return res.json([]);
     }
+
+    let filterConditions = [];
+    if (userId) filterConditions.push(`user_id.eq.${userId}`);
+    if (userEmail) filterConditions.push(`customer_email.ilike.${userEmail}`);
+    if (userPhone && userPhone.length >= 10) filterConditions.push(`customer_phone.eq.${userPhone}`);
 
     const { data: orders, error } = await supabase
       .from('orders')
       .select('*, order_items(*)')
-      .eq('user_id', userId)
+      .or(filterConditions.join(','))
       .order('created_at', { ascending: false });
 
     if (error || !orders) {

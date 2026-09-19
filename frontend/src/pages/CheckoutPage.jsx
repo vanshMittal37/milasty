@@ -295,6 +295,7 @@ export default function CheckoutPage() {
 
     try {
       const checkoutPayload = {
+        userId: user?.id || user?._id || null,
         customerName: formData.customerName,
         email: formData.email,
         phone: formData.phone,
