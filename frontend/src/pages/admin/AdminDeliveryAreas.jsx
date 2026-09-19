@@ -526,7 +526,7 @@ export default function AdminDeliveryAreas() {
         <div style={{
           position: 'fixed',
           inset: 0,
-          zIndex: 9999,
+          zIndex: 99999,
           backgroundColor: 'rgba(0,0,0,0.7)',
           backdropFilter: 'blur(4px)',
           display: 'flex',

@@ -126,7 +126,7 @@ function MainLayout() {
       )}
       <EdgeSwipeHandler />
       <Navbar />
-      <main style={{ flexGrow: 1, position: 'relative', zIndex: 1, paddingTop: '135px' }}>
+      <main style={{ flexGrow: 1, position: 'relative', paddingTop: '135px' }}>
         <Outlet />
       </main>
       <Footer />

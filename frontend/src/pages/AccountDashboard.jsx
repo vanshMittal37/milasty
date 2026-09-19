@@ -1671,7 +1671,7 @@ export default function AccountDashboard() {
           ADD / EDIT ADDRESS MODAL
          ================================================== */}
       {showAddressModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(15, 7, 3, 0.8)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(15, 7, 3, 0.8)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div
             style={{
               backgroundColor: '#111613',

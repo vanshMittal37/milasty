@@ -400,7 +400,7 @@ export default function AdminCategories() {
 
       {/* Edit Category Modal */}
       {editModalOpen && editCategoryData && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div className="admin-card" style={{ width: '100%', maxWidth: '480px', padding: '1.75rem', position: 'relative' }}>
             <button
               onClick={() => { setEditModalOpen(false); setEditCategoryData(null); }}
