@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle, X } from 'lucide-react';
+import ModalPortal from './ModalPortal';
 
 export default function ConfirmationModal({
   isOpen,
@@ -11,22 +12,8 @@ export default function ConfirmationModal({
   onConfirm,
   onCancel,
 }) {
-  if (!isOpen) return null;
-
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        backdropFilter: 'blur(4px)',
-        zIndex: 999999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1rem',
-      }}
-    >
+    <ModalPortal isOpen={isOpen} onClose={onCancel}>
       <div
         style={{
           backgroundColor: '#182019',
@@ -111,6 +98,7 @@ export default function ConfirmationModal({
           </button>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 }
+

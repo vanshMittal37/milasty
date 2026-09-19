@@ -1,18 +1,5 @@
 import { supabase } from '../config/supabase.js';
 
-// Default fallback list of delivery areas if database is unseeded
-const FALLBACK_DELIVERY_AREAS = [
-  { id: 'area-1', state: 'Uttarakhand', city: 'Kichha', pincode: '263153', delivery_charge: 40.00, status: 'active', delivery_note: 'Standard home delivery', estimated_days: '3–5 business days' },
-  { id: 'area-2', state: 'Uttarakhand', city: 'Kichha', pincode: '263148', delivery_charge: 40.00, status: 'active', delivery_note: 'Standard home delivery', estimated_days: '3–5 business days' },
-  { id: 'area-3', state: 'Uttarakhand', city: 'Rudarpur', pincode: '263153', delivery_charge: 40.00, status: 'active', delivery_note: 'Express local delivery', estimated_days: '2–3 business days' },
-  { id: 'area-4', state: 'Uttar Pradesh', city: 'Noida', pincode: '201301', delivery_charge: 50.00, status: 'active', delivery_note: 'NCR Express Delivery', estimated_days: '2–4 business days' },
-  { id: 'area-5', state: 'Delhi', city: 'New Delhi', pincode: '110001', delivery_charge: 0.00, status: 'active', delivery_note: 'Free Metro Delivery', estimated_days: '1–3 business days' },
-  { id: 'area-6', state: 'Maharashtra', city: 'Mumbai', pincode: '400001', delivery_charge: 60.00, status: 'active', delivery_note: 'Pan-India Express Delivery', estimated_days: '3–5 business days' },
-];
-
-// In-memory array store fallback if Supabase table is not yet created
-let memoryDeliveryAreas = [...FALLBACK_DELIVERY_AREAS];
-
 /**
  * PUBLIC API — Customer PIN Code Serviceability Check
  * GET /api/delivery-areas/check/:pincode
@@ -30,20 +17,22 @@ export const checkServiceability = async (req, res) => {
       });
     }
 
-    // Attempt Supabase query
-    let area = null;
+    // Attempt Supabase query against public.delivery_areas table
     const { data: dbAreas, error } = await supabase
       .from('delivery_areas')
       .select('*')
       .eq('pincode', pincode)
       .eq('status', 'active');
 
-    if (!error && dbAreas && dbAreas.length > 0) {
-      area = dbAreas[0];
-    } else {
-      // Memory fallback lookup
-      area = memoryDeliveryAreas.find(a => a.pincode === pincode && a.status === 'active');
+    if (error) {
+      console.error('Supabase query error in checkServiceability:', error.message);
+      return res.status(500).json({
+        available: false,
+        message: 'Database error while checking serviceability.'
+      });
     }
+
+    const area = dbAreas && dbAreas.length > 0 ? dbAreas[0] : null;
 
     if (!area) {
       return res.json({
@@ -88,10 +77,12 @@ export const getDeliveryAreas = async (req, res) => {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error || !areas || areas.length === 0) {
-      areas = memoryDeliveryAreas;
+    if (error) {
+      console.error('getDeliveryAreas DB error:', error.message);
+      return res.status(500).json({ message: 'Error fetching delivery areas from database', error: error.message });
     }
 
+    areas = areas || [];
     let filtered = [...areas];
 
     if (state && state !== 'all') {
@@ -167,7 +158,7 @@ export const createDeliveryArea = async (req, res) => {
       updated_at: new Date().toISOString(),
     };
 
-    // Check duplicate in memory / DB
+    // Check duplicate in Supabase DB
     const { data: existing } = await supabase
       .from('delivery_areas')
       .select('id')
@@ -180,22 +171,19 @@ export const createDeliveryArea = async (req, res) => {
       return res.status(400).json({ message: `Delivery area already exists for ${payload.city}, ${payload.state} (${payload.pincode}).` });
     }
 
-    let { data: newArea, error } = await supabase
+    const { data: newArea, error } = await supabase
       .from('delivery_areas')
       .insert([payload])
       .select()
       .single();
 
     if (error) {
-      console.warn('Supabase delivery_areas insert warning:', error.message);
-      newArea = { id: `area-${Date.now()}`, ...payload, created_at: new Date().toISOString() };
-      memoryDeliveryAreas.unshift(newArea);
-    } else {
-      memoryDeliveryAreas.unshift(newArea);
+      console.error('Supabase delivery_areas insert error:', error.message);
+      return res.status(500).json({ message: `Failed to save delivery area to database: ${error.message}` });
     }
 
     return res.status(201).json({
-      message: 'Delivery area created successfully',
+      message: 'Delivery area created successfully in database',
       area: newArea
     });
   } catch (error) {
@@ -230,24 +218,21 @@ export const updateDeliveryArea = async (req, res) => {
     if (delivery_note !== undefined) updatePayload.delivery_note = delivery_note.trim();
     if (estimated_days !== undefined) updatePayload.estimated_days = estimated_days.trim();
 
-    let { data: updatedArea, error } = await supabase
+    const { data: updatedArea, error } = await supabase
       .from('delivery_areas')
       .update(updatePayload)
       .eq('id', id)
       .select()
       .maybeSingle();
 
-    if (error || !updatedArea) {
-      const idx = memoryDeliveryAreas.findIndex(a => a.id === id);
-      if (idx !== -1) {
-        memoryDeliveryAreas[idx] = { ...memoryDeliveryAreas[idx], ...updatePayload };
-        updatedArea = memoryDeliveryAreas[idx];
-      }
+    if (error) {
+      console.error('Supabase update delivery area error:', error.message);
+      return res.status(500).json({ message: `Failed to update delivery area in database: ${error.message}` });
     }
 
     return res.json({
-      message: 'Delivery area updated successfully',
-      area: updatedArea || { id, ...updatePayload }
+      message: 'Delivery area updated successfully in database',
+      area: updatedArea
     });
   } catch (error) {
     console.error('updateDeliveryArea error:', error);
@@ -268,9 +253,12 @@ export const deleteDeliveryArea = async (req, res) => {
       .delete()
       .eq('id', id);
 
-    memoryDeliveryAreas = memoryDeliveryAreas.filter(a => a.id !== id);
+    if (error) {
+      console.error('Supabase delete delivery area error:', error.message);
+      return res.status(500).json({ message: `Failed to delete delivery area from database: ${error.message}` });
+    }
 
-    return res.json({ message: 'Delivery area deleted successfully' });
+    return res.json({ message: 'Delivery area deleted successfully from database' });
   } catch (error) {
     console.error('deleteDeliveryArea error:', error);
     res.status(500).json({ message: 'Error deleting delivery area', error: error.message });
@@ -317,3 +305,4 @@ export const lookupPincodeDetails = async (req, res) => {
     res.status(500).json({ message: 'Error querying PIN code lookup service', error: error.message });
   }
 };
+

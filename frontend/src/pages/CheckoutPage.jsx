@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useDelivery } from '../context/DeliveryContext';
 import api from '../api/axios';
+import ModalPortal from '../components/ModalPortal';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -933,156 +934,345 @@ export default function CheckoutPage() {
       {/* ==================================================
           MODAL 1: SELECT ADDRESS MODAL
          ================================================== */}
-      {showAddressSelectModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.75)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div 
-            className="glass-card" 
-            style={{ 
-              backgroundColor: 'rgba(32, 17, 10, 0.98)', 
-              borderRadius: '24px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)', 
-              width: '100%', 
-              maxWidth: '560px', 
-              maxHeight: '90vh',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: 'var(--shadow-lg)',
-              overflow: 'hidden'
-            }}
-          >
-            {/* Modal Header */}
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
-                  Select Delivery Address
-                </h3>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0.2rem 0 0 0' }}>
-                  Choose which address to deliver this order to
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowAddressSelectModal(false)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.25rem' }}
-              >
-                <X size={20} />
-              </button>
+      <ModalPortal isOpen={showAddressSelectModal} onClose={() => setShowAddressSelectModal(false)}>
+        <div 
+          className="glass-card" 
+          style={{ 
+            backgroundColor: 'rgba(32, 17, 10, 0.98)', 
+            borderRadius: '24px', 
+            border: '1px solid rgba(245, 235, 221, 0.25)', 
+            width: '100%', 
+            maxWidth: '560px', 
+            maxHeight: '85vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: 'var(--shadow-lg)',
+            overflow: 'hidden'
+          }}
+        >
+          {/* Modal Header */}
+          <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
+                Select Delivery Address
+              </h3>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0.2rem 0 0 0' }}>
+                Choose which address to deliver this order to
+              </p>
             </div>
 
-            {/* Address Cards Scrollable Area */}
-            <div style={{ padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', flexGrow: 1 }}>
-              {savedAddresses.map((addr) => {
-                const addrId = addr._id || addr.id;
-                const isSelected = addrId === selectedAddressId;
+            <button
+              type="button"
+              onClick={() => setShowAddressSelectModal(false)}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.25rem' }}
+            >
+              <X size={20} />
+            </button>
+          </div>
 
-                return (
-                  <div
-                    key={addrId}
-                    onClick={() => handleSelectAddress(addr)}
-                    style={{
-                      backgroundColor: isSelected ? 'rgba(197, 160, 89, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                      borderRadius: '16px',
-                      border: isSelected ? '2px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.15)',
-                      padding: '1.15rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.75rem',
-                      position: 'relative',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(197, 160, 89, 0.2)', color: 'var(--accent-gold)', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
-                          {addr.addressType || 'Home'}
+          {/* Address Cards Scrollable Area */}
+          <div style={{ padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', flexGrow: 1 }}>
+            {savedAddresses.map((addr) => {
+              const addrId = addr._id || addr.id;
+              const isSelected = addrId === selectedAddressId;
+
+              return (
+                <div
+                  key={addrId}
+                  onClick={() => handleSelectAddress(addr)}
+                  style={{
+                    backgroundColor: isSelected ? 'rgba(197, 160, 89, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '16px',
+                    border: isSelected ? '2px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.15)',
+                    padding: '1.15rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
+                    position: 'relative',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(197, 160, 89, 0.2)', color: 'var(--accent-gold)', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                        {addr.addressType || 'Home'}
+                      </span>
+                      {addr.isDefault && (
+                        <span style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(39, 76, 55, 0.4)', color: '#85B870', padding: '0.15rem 0.5rem', borderRadius: '999px', border: '1px solid rgba(133, 184, 112, 0.3)' }}>
+                          Default
                         </span>
-                        {addr.isDefault && (
-                          <span style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(39, 76, 55, 0.4)', color: '#85B870', padding: '0.15rem 0.5rem', borderRadius: '999px', border: '1px solid rgba(133, 184, 112, 0.3)' }}>
-                            Default
-                          </span>
-                        )}
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenEditAddressInline(addr);
-                          }}
-                          style={{ background: 'none', border: 'none', color: '#B99A5B', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0 }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSelectAddress(addr);
-                          }}
-                          style={{
-                            padding: '0.35rem 0.85rem',
-                            fontSize: '0.75rem',
-                            fontWeight: '800',
-                            borderRadius: '999px',
-                            backgroundColor: isSelected ? 'var(--accent-gold)' : 'transparent',
-                            color: isSelected ? '#24130D' : 'var(--text-light)',
-                            border: isSelected ? 'none' : '1px solid rgba(245, 235, 221, 0.25)',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {isSelected ? 'Selected ✓' : 'Deliver Here'}
-                        </button>
-                      </div>
+                      )}
                     </div>
 
-                    <div>
-                      <div style={{ fontWeight: '850', color: 'var(--text-light)', fontSize: '0.95rem' }}>
-                        {addr.fullName}
-                      </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', marginTop: '0.2rem' }}>
-                        {addr.building && `${addr.building}, `}{addr.addressLine}, {addr.city}, {addr.state} - <strong style={{ color: 'var(--text-light)', fontFamily: 'monospace' }}>{addr.pincode}</strong>
-                      </div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                        Phone: {addr.phone}
-                      </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenEditAddressInline(addr);
+                        }}
+                        style={{ background: 'none', border: 'none', color: '#B99A5B', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0 }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectAddress(addr);
+                        }}
+                        style={{
+                          padding: '0.35rem 0.85rem',
+                          fontSize: '0.75rem',
+                          fontWeight: '800',
+                          borderRadius: '999px',
+                          backgroundColor: isSelected ? 'var(--accent-gold)' : 'transparent',
+                          color: isSelected ? '#24130D' : 'var(--text-light)',
+                          border: isSelected ? 'none' : '1px solid rgba(245, 235, 221, 0.25)',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {isSelected ? 'Selected ✓' : 'Deliver Here'}
+                      </button>
                     </div>
                   </div>
-                );
-              })}
+
+                  <div>
+                    <div style={{ fontWeight: '850', color: 'var(--text-light)', fontSize: '0.95rem' }}>
+                      {addr.fullName}
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', marginTop: '0.2rem' }}>
+                      {addr.building && `${addr.building}, `}{addr.addressLine}, {addr.city}, {addr.state} - <strong style={{ color: 'var(--text-light)', fontFamily: 'monospace' }}>{addr.pincode}</strong>
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                      Phone: {addr.phone}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Modal Footer */}
+          <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid rgba(245, 235, 221, 0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.15)' }}>
+            <button
+              type="button"
+              onClick={handleOpenAddAddressInline}
+              style={{
+                padding: '0.6rem 1.2rem',
+                fontSize: '0.82rem',
+                fontWeight: '800',
+                borderRadius: '10px',
+                backgroundColor: 'var(--accent-gold)',
+                color: '#24130D',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+              }}
+            >
+              <Plus size={15} />
+              <span>Add New Address</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowAddressSelectModal(false)}
+              style={{
+                padding: '0.6rem 1.2rem',
+                fontSize: '0.82rem',
+                fontWeight: '800',
+                borderRadius: '10px',
+                backgroundColor: 'transparent',
+                color: 'var(--text-muted)',
+                border: '1px solid rgba(245, 235, 221, 0.2)',
+                cursor: 'pointer',
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </ModalPortal>
+
+      {/* ==================================================
+          MODAL 2: INLINE ADD / EDIT ADDRESS MODAL
+         ================================================== */}
+      <ModalPortal isOpen={showAddEditAddressModal} onClose={() => setShowAddEditAddressModal(false)}>
+        <div 
+          className="glass-card" 
+          style={{ 
+            backgroundColor: 'rgba(32, 17, 10, 0.98)', 
+            borderRadius: '24px', 
+            border: '1px solid rgba(245, 235, 221, 0.25)', 
+            width: '100%', 
+            maxWidth: '520px', 
+            maxHeight: '85vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: 'var(--shadow-lg)',
+            overflow: 'hidden'
+          }}
+        >
+          {/* Modal Header */}
+          <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
+              {editingAddrTarget ? 'Edit Delivery Address' : 'Add New Delivery Address'}
+            </h3>
+            <button
+              type="button"
+              onClick={() => setShowAddEditAddressModal(false)}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.25rem' }}
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Modal Form Content */}
+          <form onSubmit={handleSaveAddressInline} style={{ padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', flexGrow: 1 }}>
+            
+            {/* Address Type Selector */}
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Address Label</label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                {['Home', 'Work', 'Other'].map(type => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setAddressModalForm(prev => ({ ...prev, addressType: type }))}
+                    style={{
+                      padding: '0.45rem 1rem',
+                      fontSize: '0.8rem',
+                      fontWeight: '800',
+                      borderRadius: '8px',
+                      border: addressModalForm.addressType === type ? '1.5px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.15)',
+                      backgroundColor: addressModalForm.addressType === type ? 'rgba(197, 160, 89, 0.15)' : 'transparent',
+                      color: addressModalForm.addressType === type ? 'var(--accent-gold)' : 'var(--text-muted)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Modal Footer */}
-            <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid rgba(245, 235, 221, 0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.15)' }}>
+            {/* Full Name */}
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Recipient Name *</label>
+              <input
+                type="text"
+                required
+                value={addressModalForm.fullName}
+                onChange={(e) => setAddressModalForm(prev => ({ ...prev, fullName: e.target.value }))}
+                placeholder="Yash Mittal"
+                style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+              />
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Mobile Phone *</label>
+              <input
+                type="tel"
+                required
+                value={addressModalForm.phone}
+                onChange={(e) => setAddressModalForm(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="9876543210"
+                style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+              />
+            </div>
+
+            {/* Building / Flat */}
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>House / Flat / Building</label>
+              <input
+                type="text"
+                value={addressModalForm.building}
+                onChange={(e) => setAddressModalForm(prev => ({ ...prev, building: e.target.value }))}
+                placeholder="Sikandrabad / Kaziwara"
+                style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+              />
+            </div>
+
+            {/* Street Address */}
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Street Address *</label>
+              <textarea
+                rows={2}
+                required
+                value={addressModalForm.addressLine}
+                onChange={(e) => setAddressModalForm(prev => ({ ...prev, addressLine: e.target.value }))}
+                placeholder="Main Road, Near Landmark"
+                style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)', resize: 'none' }}
+              />
+            </div>
+
+            {/* City, State, Pincode */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>City *</label>
+                <input
+                  type="text"
+                  required
+                  value={addressModalForm.city}
+                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, city: e.target.value }))}
+                  placeholder="Bulandshahr"
+                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>State *</label>
+                <input
+                  type="text"
+                  required
+                  value={addressModalForm.state}
+                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, state: e.target.value }))}
+                  placeholder="Uttar Pradesh"
+                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Pincode *</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  value={addressModalForm.pincode}
+                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, pincode: e.target.value }))}
+                  placeholder="203205"
+                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
+                />
+              </div>
+            </div>
+
+            {/* Modal Submit Buttons */}
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem' }}>
               <button
-                type="button"
-                onClick={handleOpenAddAddressInline}
+                type="submit"
+                disabled={savingAddress}
                 style={{
-                  padding: '0.6rem 1.2rem',
-                  fontSize: '0.82rem',
+                  flexGrow: 1,
+                  padding: '0.85rem',
+                  fontSize: '0.88rem',
                   fontWeight: '800',
                   borderRadius: '10px',
                   backgroundColor: 'var(--accent-gold)',
                   color: '#24130D',
                   border: 'none',
                   cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.35rem',
                 }}
               >
-                <Plus size={15} />
-                <span>Add New Address</span>
+                {savingAddress ? 'Saving Address...' : (editingAddrTarget ? 'Save & Select Address' : 'Add & Select Address')}
               </button>
-
               <button
                 type="button"
-                onClick={() => setShowAddressSelectModal(false)}
+                onClick={() => setShowAddEditAddressModal(false)}
                 style={{
-                  padding: '0.6rem 1.2rem',
-                  fontSize: '0.82rem',
+                  padding: '0.85rem 1.2rem',
+                  fontSize: '0.88rem',
                   fontWeight: '800',
                   borderRadius: '10px',
                   backgroundColor: 'transparent',
@@ -1091,291 +1281,106 @@ export default function CheckoutPage() {
                   cursor: 'pointer',
                 }}
               >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ==================================================
-          MODAL 2: INLINE ADD / EDIT ADDRESS MODAL
-         ================================================== */}
-      {showAddEditAddressModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.75)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div 
-            className="glass-card" 
-            style={{ 
-              backgroundColor: 'rgba(32, 17, 10, 0.98)', 
-              borderRadius: '24px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)', 
-              width: '100%', 
-              maxWidth: '520px', 
-              maxHeight: '90vh',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: 'var(--shadow-lg)',
-              overflow: 'hidden'
-            }}
-          >
-            {/* Modal Header */}
-            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>
-                {editingAddrTarget ? 'Edit Delivery Address' : 'Add New Delivery Address'}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowAddEditAddressModal(false)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.25rem' }}
-              >
-                <X size={18} />
+                Cancel
               </button>
             </div>
 
-            {/* Modal Form Content */}
-            <form onSubmit={handleSaveAddressInline} style={{ padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', flexGrow: 1 }}>
-              
-              {/* Address Type Selector */}
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Address Label</label>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  {['Home', 'Work', 'Other'].map(type => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setAddressModalForm(prev => ({ ...prev, addressType: type }))}
-                      style={{
-                        padding: '0.45rem 1rem',
-                        fontSize: '0.8rem',
-                        fontWeight: '800',
-                        borderRadius: '8px',
-                        border: addressModalForm.addressType === type ? '1.5px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.15)',
-                        backgroundColor: addressModalForm.addressType === type ? 'rgba(197, 160, 89, 0.15)' : 'transparent',
-                        color: addressModalForm.addressType === type ? 'var(--accent-gold)' : 'var(--text-muted)',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Full Name */}
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Recipient Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={addressModalForm.fullName}
-                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, fullName: e.target.value }))}
-                  placeholder="Yash Mittal"
-                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
-                />
-              </div>
-
-              {/* Phone */}
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Mobile Phone *</label>
-                <input
-                  type="tel"
-                  required
-                  value={addressModalForm.phone}
-                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder="9876543210"
-                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
-                />
-              </div>
-
-              {/* Building / Flat */}
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>House / Flat / Building</label>
-                <input
-                  type="text"
-                  value={addressModalForm.building}
-                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, building: e.target.value }))}
-                  placeholder="Sikandrabad / Kaziwara"
-                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
-                />
-              </div>
-
-              {/* Street Address */}
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Street Address *</label>
-                <textarea
-                  rows={2}
-                  required
-                  value={addressModalForm.addressLine}
-                  onChange={(e) => setAddressModalForm(prev => ({ ...prev, addressLine: e.target.value }))}
-                  placeholder="Main Road, Near Landmark"
-                  style={{ width: '100%', padding: '0.7rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.88rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)', resize: 'none' }}
-                />
-              </div>
-
-              {/* City, State, Pincode */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>City *</label>
-                  <input
-                    type="text"
-                    required
-                    value={addressModalForm.city}
-                    onChange={(e) => setAddressModalForm(prev => ({ ...prev, city: e.target.value }))}
-                    placeholder="Bulandshahr"
-                    style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>State *</label>
-                  <input
-                    type="text"
-                    required
-                    value={addressModalForm.state}
-                    onChange={(e) => setAddressModalForm(prev => ({ ...prev, state: e.target.value }))}
-                    placeholder="Uttar Pradesh"
-                    style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-light)', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Pincode *</label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={6}
-                    value={addressModalForm.pincode}
-                    onChange={(e) => setAddressModalForm(prev => ({ ...prev, pincode: e.target.value }))}
-                    placeholder="203205"
-                    style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '8px', border: '1px solid rgba(245, 235, 221, 0.2)', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-light)' }}
-                  />
-                </div>
-              </div>
-
-              {/* Modal Submit Buttons */}
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem' }}>
-                <button
-                  type="submit"
-                  disabled={savingAddress}
-                  style={{
-                    flexGrow: 1,
-                    padding: '0.85rem',
-                    fontSize: '0.88rem',
-                    fontWeight: '800',
-                    borderRadius: '10px',
-                    backgroundColor: 'var(--accent-gold)',
-                    color: '#24130D',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {savingAddress ? 'Saving Address...' : (editingAddrTarget ? 'Save & Select Address' : 'Add & Select Address')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowAddEditAddressModal(false)}
-                  style={{
-                    padding: '0.85rem 1.2rem',
-                    fontSize: '0.88rem',
-                    fontWeight: '800',
-                    borderRadius: '10px',
-                    backgroundColor: 'transparent',
-                    color: 'var(--text-muted)',
-                    border: '1px solid rgba(245, 235, 221, 0.2)',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-
-            </form>
-          </div>
+          </form>
         </div>
-      )}
+      </ModalPortal>
 
       {/* Simulated Payment Modal */}
-      {showSimulatedPaymentModal && simulatePaymentData && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(20, 10, 5, 0.75)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div 
-            className="glass-card" 
-            style={{ 
-              backgroundColor: 'rgba(42, 21, 14, 0.98)', 
-              borderRadius: '24px', 
-              border: '1px solid rgba(245, 235, 221, 0.25)', 
-              width: '100%', 
-              maxWidth: '460px', 
-              padding: '2.5rem',
-              boxShadow: 'var(--shadow-lg)',
-              position: 'relative'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-              <Lock size={18} color="var(--accent-gold)" />
-              <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '800' }}>MILASTY SECURE PAYMENT</span>
+      <ModalPortal 
+        isOpen={showSimulatedPaymentModal && !!simulatePaymentData} 
+        onClose={() => {
+          setShowSimulatedPaymentModal(false);
+          if (simulatePaymentData?.options?.modal?.ondismiss) {
+            simulatePaymentData.options.modal.ondismiss();
+          }
+        }}
+      >
+        <div 
+          className="glass-card" 
+          style={{ 
+            backgroundColor: 'rgba(42, 21, 14, 0.98)', 
+            borderRadius: '24px', 
+            border: '1px solid rgba(245, 235, 221, 0.25)', 
+            width: '100%', 
+            maxWidth: '460px', 
+            padding: '2.5rem',
+            boxShadow: 'var(--shadow-lg)',
+            position: 'relative'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <Lock size={18} color="var(--accent-gold)" />
+            <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '800' }}>MILASTY SECURE PAYMENT</span>
+          </div>
+          <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>
+            Razorpay Sandbox Simulator
+          </h3>
+          
+          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(245, 235, 221, 0.15)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Customer Name</span>
+              <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>{simulatePaymentData?.customerName}</span>
             </div>
-            <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', marginBottom: '1.25rem', margin: 0 }}>
-              Razorpay Sandbox Simulator
-            </h3>
-            
-            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(245, 235, 221, 0.15)', borderRadius: '12px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Customer Name</span>
-                <span style={{ fontWeight: '700', color: 'var(--text-light)' }}>{simulatePaymentData.customerName}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Razorpay Order ID</span>
-                <span style={{ fontWeight: '700', color: 'var(--text-light)', fontFamily: 'monospace' }}>{simulatePaymentData.razorpayOrderId}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Exact Amount to Pay</span>
-                <span style={{ fontWeight: '850', color: 'var(--accent-gold)', fontSize: '1.1rem' }}>₹{simulatePaymentData.grandTotal}</span>
-              </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Razorpay Order ID</span>
+              <span style={{ fontWeight: '700', color: 'var(--text-light)', fontFamily: 'monospace' }}>{simulatePaymentData?.razorpayOrderId}</span>
             </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <button 
-                type="button"
-                onClick={async () => {
-                  setShowSimulatedPaymentModal(false);
-                  const response = {
-                    razorpay_order_id: simulatePaymentData.razorpayOrderId,
-                    razorpay_payment_id: 'pay_simulated_' + Math.random().toString(36).substring(2, 10),
-                    razorpay_signature: 'test_signature'
-                  };
-                  await simulatePaymentData.options.handler(response);
-                }}
-                className="btn-primary"
-                style={{ width: '100%', height: '48px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--accent-gold)', border: 'none', color: '#24130D', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
-              >
-                Simulate Successful Payment
-              </button>
-              <button 
-                type="button"
-                onClick={async () => {
-                  setShowSimulatedPaymentModal(false);
-                  await api.post('/payments/fail', { razorpay_order_id: simulatePaymentData.razorpayOrderId }).catch(() => {});
-                  setErrorMessage('Payment failed. Your order has not been placed.');
-                  setLoading(false);
-                }}
-                className="btn-primary"
-                style={{ width: '100%', height: '48px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--accent-terracotta)', border: 'none', color: '#FFFFFF', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
-              >
-                Simulate Failed Payment
-              </button>
-              <button 
-                type="button"
-                onClick={() => {
-                  setShowSimulatedPaymentModal(false);
-                  simulatePaymentData.options.modal.ondismiss();
-                }}
-                className="btn-secondary"
-                style={{ width: '100%', height: '44px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '800' }}
-              >
-                Cancel / Close (No Order Created)
-              </button>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Exact Amount to Pay</span>
+              <span style={{ fontWeight: '850', color: 'var(--accent-gold)', fontSize: '1.1rem' }}>₹{simulatePaymentData?.grandTotal}</span>
             </div>
           </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <button 
+              type="button"
+              onClick={async () => {
+                setShowSimulatedPaymentModal(false);
+                const response = {
+                  razorpay_order_id: simulatePaymentData.razorpayOrderId,
+                  razorpay_payment_id: 'pay_simulated_' + Math.random().toString(36).substring(2, 10),
+                  razorpay_signature: 'test_signature'
+                };
+                await simulatePaymentData.options.handler(response);
+              }}
+              className="btn-primary"
+              style={{ width: '100%', height: '48px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--accent-gold)', border: 'none', color: '#24130D', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
+            >
+              Simulate Successful Payment
+            </button>
+            <button 
+              type="button"
+              onClick={async () => {
+                setShowSimulatedPaymentModal(false);
+                await api.post('/payments/fail', { razorpay_order_id: simulatePaymentData.razorpayOrderId }).catch(() => {});
+                setErrorMessage('Payment failed. Your order has not been placed.');
+                setLoading(false);
+              }}
+              className="btn-primary"
+              style={{ width: '100%', height: '48px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--accent-terracotta)', border: 'none', color: '#FFFFFF', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
+            >
+              Simulate Failed Payment
+            </button>
+            <button 
+              type="button"
+              onClick={() => {
+                setShowSimulatedPaymentModal(false);
+                if (simulatePaymentData?.options?.modal?.ondismiss) {
+                  simulatePaymentData.options.modal.ondismiss();
+                }
+              }}
+              className="btn-secondary"
+              style={{ width: '100%', height: '44px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderColor: 'rgba(245, 235, 221, 0.25)', color: 'var(--accent-gold)', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '800' }}
+            >
+              Cancel / Close (No Order Created)
+            </button>
+          </div>
         </div>
-      )}
+      </ModalPortal>
     </div>
   );
 }

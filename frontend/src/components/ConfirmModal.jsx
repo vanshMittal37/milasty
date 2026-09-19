@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { AlertTriangle, LogOut, Trash2, X } from 'lucide-react';
+import ModalPortal from './ModalPortal';
 
 export default function ConfirmModal({
   isOpen,
@@ -12,44 +13,10 @@ export default function ConfirmModal({
   onCancel,
   loading = false,
 }) {
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        onCancel();
-      }
-    };
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onCancel]);
-
-  if (!isOpen) return null;
-
   const isDanger = type === 'danger';
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.72)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        zIndex: 99999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1.25rem',
-      }}
-      onClick={onCancel}
-    >
+    <ModalPortal isOpen={isOpen} onClose={onCancel}>
       <div
         className="admin-card animate-slide-up"
         style={{
@@ -166,6 +133,7 @@ export default function ConfirmModal({
           </button>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 }
+

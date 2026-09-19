@@ -1,12 +1,11 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { X, Lock, LogIn, UserPlus, ShieldCheck } from 'lucide-react';
+import ModalPortal from './ModalPortal';
 
 export default function AuthPromptModal({ isOpen, onClose, title = "Login Required", message = "Please log in or create an account to purchase MILASTY products." }) {
   const navigate = useNavigate();
   const location = useLocation();
-
-  if (!isOpen) return null;
 
   const handleLogin = () => {
     onClose();
@@ -19,21 +18,7 @@ export default function AuthPromptModal({ isOpen, onClose, title = "Login Requir
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(14, 7, 4, 0.8)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        zIndex: 99999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1.25rem',
-      }}
-      onClick={onClose}
-    >
+    <ModalPortal isOpen={isOpen} onClose={onClose}>
       <div
         style={{
           width: '100%',
@@ -167,6 +152,7 @@ export default function AuthPromptModal({ isOpen, onClose, title = "Login Requir
           <span>Secure MILASTY Checkout &amp; Order Guarantee</span>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 }
+
