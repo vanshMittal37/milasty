@@ -69,9 +69,10 @@ export default function Shop() {
     setPrebookingLoading(true);
     try {
       const res = await api.get('/prebookings/active');
-      if (res.data?.success && Array.isArray(res.data.prebookings)) {
-        setPrebookingProducts(res.data.prebookings);
-      }
+      const list = Array.isArray(res.data) 
+        ? res.data 
+        : (Array.isArray(res.data?.prebookings) ? res.data.prebookings : (Array.isArray(res.data?.data) ? res.data.data : []));
+      setPrebookingProducts(list);
     } catch (err) {
       console.error('Error loading prebooking products:', err);
     } finally {
@@ -83,9 +84,10 @@ export default function Shop() {
     setTestimonialsLoading(true);
     try {
       const res = await api.get('/testimonials?placement=shop');
-      if (res.data?.success && Array.isArray(res.data.testimonials)) {
-        setTestimonials(res.data.testimonials);
-      }
+      const list = Array.isArray(res.data) 
+        ? res.data 
+        : (Array.isArray(res.data?.testimonials) ? res.data.testimonials : (Array.isArray(res.data?.data) ? res.data.data : []));
+      setTestimonials(list);
     } catch (err) {
       console.error('Error loading testimonials:', err);
     } finally {
@@ -97,9 +99,10 @@ export default function Shop() {
     setQuizLoading(true);
     try {
       const res = await api.get('/quiz/active');
-      if (res.data?.success && Array.isArray(res.data.questions)) {
-        setQuizQuestions(res.data.questions);
-      }
+      const list = Array.isArray(res.data) 
+        ? res.data 
+        : (Array.isArray(res.data?.questions) ? res.data.questions : (Array.isArray(res.data?.data) ? res.data.data : []));
+      setQuizQuestions(list);
     } catch (err) {
       console.error('Error loading recommendation quiz:', err);
     } finally {

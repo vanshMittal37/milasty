@@ -172,24 +172,28 @@ export const getPublicPrebookings = async (req, res) => {
         const pidStr = String(pb.product_id || '').trim();
         const product = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
 
-        if (!product.title) return null; // Ignore deleted/missing products safely
+        const title = pb.custom_heading || product.title || pb.title;
+        if (!title) return null; // Ignore deleted/missing products safely
 
         const launchDateObj = pb.launch_date ? new Date(pb.launch_date) : null;
         const isFuture = launchDateObj ? launchDateObj > currentDate : true;
 
+        // ONLY return upcoming prebooking items for "What's Next"
+        if (!isFuture) return null;
+
         return {
           id: pb.id,
           productId: product.id || product._id || pidStr,
-          title: pb.custom_heading || product.title,
-          description: pb.custom_description || product.subtitle || product.description,
-          image: product.image,
-          price: product.price || 0,
-          originalPrice: product.originalPrice || product.price || 0,
+          title: title,
+          description: pb.custom_description || product.subtitle || product.description || '',
+          image: pb.product_image || product.image || product.image_url || '/images/image1.jpeg',
+          price: Number(pb.price || product.price || 0),
+          originalPrice: Number(pb.original_price || product.originalPrice || product.price || 0),
           launchDate: pb.launch_date,
           preorderEnabled: Boolean(pb.preorder_enabled ?? true),
           displayOrder: pb.display_order || 0,
           isUpcoming: isFuture,
-          productSlug: product.slug || '',
+          productSlug: product.slug || pidStr,
         };
       })
       .filter(Boolean);
@@ -200,7 +204,7 @@ export const getPublicPrebookings = async (req, res) => {
       return new Date(a.launchDate || 0) - new Date(b.launchDate || 0);
     });
 
-    return res.json(formatted);
+    return res.json({ success: true, prebookings: formatted });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching prebooking products', error: error.message });
   }
@@ -246,9 +250,12 @@ export const getAllAdminPrebookings = async (req, res) => {
         id: pb.id,
         _id: pb.id,
         productId: pb.product_id,
-        productTitle: product.title || pb.custom_heading || 'Product #' + pb.product_id,
-        productImage: product.image || '',
-        productPrice: product.price || 0,
+        productTitle: pb.custom_heading || product.title || pb.title || 'Product #' + pb.product_id,
+        productImage: pb.product_image || product.image || product.image_url || '',
+        productPrice: pb.price !== undefined ? pb.price : (product.price || 0),
+        originalPrice: pb.original_price !== undefined ? pb.original_price : (product.originalPrice || 0),
+        description: pb.custom_description || product.description || '',
+        category: pb.category || product.category || 'cookies',
         enabled: Boolean(pb.enabled ?? true),
         preorderEnabled: Boolean(pb.preorder_enabled ?? true),
         launchDate: pb.launch_date,
@@ -274,7 +281,14 @@ export const getAllAdminPrebookings = async (req, res) => {
 export const createPrebooking = async (req, res) => {
   try {
     const {
+      isNewProduct = false,
       productId,
+      title,
+      description = '',
+      price = 0,
+      originalPrice = 0,
+      category = 'cookies',
+      image = '',
       launchDate,
       enabled = true,
       preorderEnabled = true,
@@ -283,21 +297,57 @@ export const createPrebooking = async (req, res) => {
       customDescription = '',
     } = req.body;
 
-    if (!productId) {
-      return res.status(400).json({ message: 'Existing product selection is required' });
-    }
     if (!launchDate) {
       return res.status(400).json({ message: 'Launch date is required' });
     }
 
+    let finalProductId = productId;
+
+    // If creating a brand new product directly in Pre-Bookings
+    if (isNewProduct || !productId) {
+      const cleanTitle = (title || customHeading).trim();
+      if (!cleanTitle) {
+        return res.status(400).json({ message: 'Product title is required' });
+      }
+
+      const slug = cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      finalProductId = `prod_pb_${Date.now()}`;
+
+      const newProductRecord = {
+        id: finalProductId,
+        title: cleanTitle,
+        slug,
+        subtitle: (description || customDescription).slice(0, 120),
+        description: description || customDescription,
+        category,
+        price: Number(price || 0),
+        original_price: Number(originalPrice || price || 0),
+        image_url: image || '/images/image1.jpeg',
+        is_active: true,
+        launch_date: new Date(launchDate).toISOString(),
+        created_at: new Date().toISOString(),
+      };
+
+      try {
+        await supabase.from('products').insert([newProductRecord]);
+      } catch (e) {
+        console.warn('Supabase product insert notice:', e.message);
+      }
+    }
+
     const newRecord = {
-      product_id: String(productId).trim(),
+      product_id: String(finalProductId).trim(),
+      title: title || customHeading,
+      price: Number(price || 0),
+      original_price: Number(originalPrice || price || 0),
+      category,
+      product_image: image,
       enabled: Boolean(enabled),
       preorder_enabled: Boolean(preorderEnabled),
       launch_date: new Date(launchDate).toISOString(),
       display_order: Number(displayOrder || 0),
-      custom_heading: String(customHeading || '').trim(),
-      custom_description: String(customDescription || '').trim(),
+      custom_heading: String(customHeading || title || '').trim(),
+      custom_description: String(customDescription || description || '').trim(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -343,6 +393,12 @@ export const updatePrebooking = async (req, res) => {
     const { id } = req.params;
     const {
       productId,
+      title,
+      description,
+      price,
+      originalPrice,
+      category,
+      image,
       launchDate,
       enabled,
       preorderEnabled,
@@ -353,6 +409,11 @@ export const updatePrebooking = async (req, res) => {
 
     const updates = { updated_at: new Date().toISOString() };
     if (productId !== undefined) updates.product_id = String(productId).trim();
+    if (title !== undefined) updates.title = String(title).trim();
+    if (price !== undefined) updates.price = Number(price);
+    if (originalPrice !== undefined) updates.original_price = Number(originalPrice);
+    if (category !== undefined) updates.category = String(category);
+    if (image !== undefined) updates.product_image = String(image);
     if (launchDate !== undefined) updates.launch_date = new Date(launchDate).toISOString();
     if (enabled !== undefined) updates.enabled = Boolean(enabled);
     if (preorderEnabled !== undefined) updates.preorder_enabled = Boolean(preorderEnabled);
@@ -384,6 +445,26 @@ export const updatePrebooking = async (req, res) => {
     }
 
     syncPrebookingsToDisk();
+
+    // Sync launch_date to products table if linked productId exists
+    const targetPid = updates.product_id || (updated && updated.product_id);
+    if (targetPid && launchDate) {
+      try {
+        await supabase
+          .from('products')
+          .update({
+            launch_date: new Date(launchDate).toISOString(),
+            title: title || customHeading || undefined,
+            price: price ? Number(price) : undefined,
+            original_price: originalPrice ? Number(originalPrice) : undefined,
+            category: category || undefined,
+            image_url: image || undefined,
+          })
+          .eq('id', targetPid);
+      } catch (e) {
+        console.warn('Supabase product sync notice:', e.message);
+      }
+    }
 
     return res.json({
       success: true,

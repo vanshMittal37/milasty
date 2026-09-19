@@ -105,7 +105,12 @@ export const getProducts = async (req, res) => {
         };
       });
 
-      let filtered = [...formatted];
+      let filtered = formatted.filter((p) => {
+        if (!p.launch_date && !p.launchDate) return true;
+        const d = new Date(p.launch_date || p.launchDate);
+        return d <= new Date(); // Only include launched products in main catalog
+      });
+
       if (minPrice || maxPrice) {
         filtered = filtered.filter((p) => {
           const price = p.variants[0]?.price || p.price || 0;

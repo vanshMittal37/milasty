@@ -18,7 +18,14 @@ export default function AdminPrebookingList() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Form Fields
+  // Form Mode & Fields
+  const [isNewProduct, setIsNewProduct] = useState(true);
+  const [newTitle, setNewTitle] = useState('');
+  const [newDescription, setNewDescription] = useState('');
+  const [newPrice, setNewPrice] = useState('');
+  const [newOriginalPrice, setNewOriginalPrice] = useState('');
+  const [newCategory, setNewCategory] = useState('cookies');
+  const [newImage, setNewImage] = useState('');
   const [launchDate, setLaunchDate] = useState('');
   const [enabled, setEnabled] = useState(true);
   const [preorderEnabled, setPreorderEnabled] = useState(true);
@@ -42,7 +49,8 @@ export default function AdminPrebookingList() {
         api.get('/products?limit=100'),
       ]);
 
-      if (pbRes.data) setPrebookings(pbRes.data);
+      const pbData = Array.isArray(pbRes.data) ? pbRes.data : (pbRes.data?.prebookings || []);
+      setPrebookings(pbData);
       if (prodRes.data && prodRes.data.products) setProducts(prodRes.data.products);
     } catch (err) {
       console.error('Error loading prebookings data:', err);
@@ -54,9 +62,15 @@ export default function AdminPrebookingList() {
 
   const handleOpenAdd = () => {
     setEditingItem(null);
+    setIsNewProduct(true);
+    setNewTitle('');
+    setNewDescription('');
+    setNewPrice('');
+    setNewOriginalPrice('');
+    setNewCategory('cookies');
+    setNewImage('/images/image1.jpeg');
     setSelectedProduct(null);
     setProductSearch('');
-    // Default launch date to 30 days in the future formatted YYYY-MM-DD
     const defaultDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     setLaunchDate(defaultDate);
     setEnabled(true);
@@ -69,9 +83,16 @@ export default function AdminPrebookingList() {
 
   const handleOpenEdit = (item) => {
     setEditingItem(item);
+    setIsNewProduct(false);
     const matched = products.find((p) => String(p.id || p._id) === String(item.productId));
     setSelectedProduct(matched || { id: item.productId, title: item.productTitle });
     setProductSearch(matched ? matched.title : item.productTitle || '');
+    setNewTitle(item.productTitle || item.customHeading || '');
+    setNewDescription(item.description || item.customDescription || '');
+    setNewPrice(item.productPrice || '');
+    setNewOriginalPrice(item.originalPrice || '');
+    setNewCategory(item.category || 'cookies');
+    setNewImage(item.productImage || '');
     const dateFormatted = item.launchDate ? new Date(item.launchDate).toISOString().split('T')[0] : '';
     setLaunchDate(dateFormatted);
     setEnabled(item.enabled !== false);
@@ -84,10 +105,20 @@ export default function AdminPrebookingList() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!selectedProduct) {
-      toast.error('Please select an existing product for pre-booking.');
+    if (isNewProduct) {
+      if (!newTitle.trim()) {
+        toast.error('Please enter a product title.');
+        return;
+      }
+      if (!newPrice || Number(newPrice) <= 0) {
+        toast.error('Please enter a valid price.');
+        return;
+      }
+    } else if (!selectedProduct) {
+      toast.error('Please select an existing product.');
       return;
     }
+
     if (!launchDate) {
       toast.error('Please select a valid launch date.');
       return;
@@ -95,13 +126,20 @@ export default function AdminPrebookingList() {
 
     setSaving(true);
     const payload = {
-      productId: selectedProduct.id || selectedProduct._id,
+      isNewProduct,
+      productId: selectedProduct ? (selectedProduct.id || selectedProduct._id) : null,
+      title: isNewProduct ? newTitle.trim() : (selectedProduct?.title || customHeading),
+      description: isNewProduct ? newDescription : (selectedProduct?.description || customDescription),
+      price: isNewProduct ? Number(newPrice) : Number(selectedProduct?.price || 0),
+      originalPrice: isNewProduct ? Number(newOriginalPrice || newPrice) : Number(selectedProduct?.originalPrice || 0),
+      category: isNewProduct ? newCategory : (selectedProduct?.category || 'cookies'),
+      image: isNewProduct ? newImage : (selectedProduct?.image || ''),
       launchDate: new Date(launchDate).toISOString(),
       enabled,
       preorderEnabled,
       displayOrder: Number(displayOrder || 1),
-      customHeading,
-      customDescription,
+      customHeading: isNewProduct ? newTitle.trim() : customHeading,
+      customDescription: isNewProduct ? newDescription : customDescription,
     };
 
     try {
@@ -328,53 +366,188 @@ export default function AdminPrebookingList() {
               <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
             </div>
 
-            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '78vh', overflowY: 'auto', paddingRight: '0.25rem' }}>
               
-              {/* Product Selector */}
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
-                  Select Existing Product *
-                </label>
-                
-                {selectedProduct ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: 'var(--admin-surface-elevated)', border: '1.5px solid var(--admin-accent)', borderRadius: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      {selectedProduct.image && <img src={selectedProduct.image} alt="" style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />}
-                      <span style={{ fontWeight: '800', fontSize: '0.85rem', color: 'var(--admin-text-primary)' }}>{selectedProduct.title}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => { setSelectedProduct(null); setProductSearch(''); }}
-                      style={{ background: 'none', border: 'none', color: 'var(--admin-danger)', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '700' }}
-                    >
-                      Change
-                    </button>
-                  </div>
-                ) : (
-                  <div style={{ position: 'relative' }}>
+              {/* Product Mode Toggle: Create New vs Select Existing */}
+              {!editingItem && (
+                <div style={{ display: 'flex', gap: '0.5rem', padding: '0.25rem', backgroundColor: 'var(--admin-surface-elevated)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsNewProduct(true)}
+                    style={{
+                      flex: 1,
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
+                      fontWeight: '800',
+                      border: 'none',
+                      cursor: 'pointer',
+                      backgroundColor: isNewProduct ? 'var(--admin-accent)' : 'transparent',
+                      color: isNewProduct ? '#FFF' : 'var(--admin-text-muted)',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    + Create New Product
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsNewProduct(false)}
+                    style={{
+                      flex: 1,
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
+                      fontWeight: '800',
+                      border: 'none',
+                      cursor: 'pointer',
+                      backgroundColor: !isNewProduct ? 'var(--admin-accent)' : 'transparent',
+                      color: !isNewProduct ? '#FFF' : 'var(--admin-text-muted)',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    Select Existing Product
+                  </button>
+                </div>
+              )}
+
+              {/* NEW PRODUCT FIELDS */}
+              {isNewProduct ? (
+                <>
+                  <div>
+                    <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                      Product Title / Name *
+                    </label>
                     <input
                       type="text"
-                      placeholder="Search product name..."
-                      value={productSearch}
-                      onChange={(e) => setProductSearch(e.target.value)}
+                      required
+                      placeholder="e.g. Cardamom Millet Crisp"
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
                       className="admin-input"
                     />
-                    <div style={{ maxHeight: '160px', overflowY: 'auto', marginTop: '0.35rem', border: '1px solid var(--admin-border)', borderRadius: '8px', backgroundColor: 'var(--admin-surface-elevated)' }}>
-                      {filteredProductOptions.map((p) => (
-                        <div
-                          key={p.id || p._id}
-                          onClick={() => { setSelectedProduct(p); setProductSearch(p.title); }}
-                          style={{ padding: '0.6rem 0.85rem', cursor: 'pointer', fontSize: '0.82rem', borderBottom: '1px solid var(--admin-border)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                          className="hover-highlight"
-                        >
-                          {p.image && <img src={p.image} alt="" style={{ width: '28px', height: '28px', borderRadius: '4px', objectFit: 'cover' }} />}
-                          <span style={{ fontWeight: '700' }}>{p.title}</span>
-                        </div>
-                      ))}
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                      Description
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Short description of the upcoming bake..."
+                      value={newDescription}
+                      onChange={(e) => setNewDescription(e.target.value)}
+                      className="admin-input"
+                      style={{ resize: 'vertical' }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                        Pre-Book Price (₹) *
+                      </label>
+                      <input
+                        type="number"
+                        required
+                        placeholder="99"
+                        value={newPrice}
+                        onChange={(e) => setNewPrice(e.target.value)}
+                        className="admin-input"
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                        Original Price / MRP (₹)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="120"
+                        value={newOriginalPrice}
+                        onChange={(e) => setNewOriginalPrice(e.target.value)}
+                        className="admin-input"
+                      />
                     </div>
                   </div>
-                )}
-              </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                        Category
+                      </label>
+                      <select
+                        value={newCategory}
+                        onChange={(e) => setNewCategory(e.target.value)}
+                        className="admin-input"
+                      >
+                        <option value="cookies">Cookies</option>
+                        <option value="cakes">Cakes</option>
+                        <option value="brownies">Brownies</option>
+                        <option value="treats">Treats & Snacks</option>
+                        <option value="macro-friendly">Macro-Friendly</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                        Product Image URL
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="/images/image1.jpeg"
+                        value={newImage}
+                        onChange={(e) => setNewImage(e.target.value)}
+                        className="admin-input"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* EXISTING PRODUCT SELECTOR */
+                <div>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                    Select Existing Product *
+                  </label>
+                  
+                  {selectedProduct ? (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.65rem 0.85rem', backgroundColor: 'var(--admin-surface-elevated)', border: '1.5px solid var(--admin-accent)', borderRadius: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        {selectedProduct.image && <img src={selectedProduct.image} alt="" style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />}
+                        <span style={{ fontWeight: '800', fontSize: '0.85rem', color: 'var(--admin-text-primary)' }}>{selectedProduct.title}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedProduct(null); setProductSearch(''); }}
+                        style={{ background: 'none', border: 'none', color: 'var(--admin-danger)', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '700' }}
+                      >
+                        Change
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type="text"
+                        placeholder="Search product name..."
+                        value={productSearch}
+                        onChange={(e) => setProductSearch(e.target.value)}
+                        className="admin-input"
+                      />
+                      <div style={{ maxHeight: '160px', overflowY: 'auto', marginTop: '0.35rem', border: '1px solid var(--admin-border)', borderRadius: '8px', backgroundColor: 'var(--admin-surface-elevated)' }}>
+                        {filteredProductOptions.map((p) => (
+                          <div
+                            key={p.id || p._id}
+                            onClick={() => { setSelectedProduct(p); setProductSearch(p.title); }}
+                            style={{ padding: '0.6rem 0.85rem', cursor: 'pointer', fontSize: '0.82rem', borderBottom: '1px solid var(--admin-border)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                            className="hover-highlight"
+                          >
+                            {p.image && <img src={p.image} alt="" style={{ width: '28px', height: '28px', borderRadius: '4px', objectFit: 'cover' }} />}
+                            <span style={{ fontWeight: '700' }}>{p.title}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Launch Date */}
               <div>

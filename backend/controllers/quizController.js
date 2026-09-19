@@ -212,7 +212,7 @@ export const getPublicQuiz = async (req, res) => {
       };
     });
 
-    return res.json(formattedQuestions);
+    return res.json({ success: true, questions: formattedQuestions });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching recommendation quiz', error: error.message });
   }
