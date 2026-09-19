@@ -76,12 +76,14 @@ export default function AdminReviewList() {
   const fetchProducts = async () => {
     try {
       const res = await api.get('/products');
-      setProducts(res.data || []);
-      if (res.data && res.data.length > 0) {
-        setRevProductId(res.data[0].id || res.data[0]._id);
+      const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.products) ? res.data.products : []);
+      setProducts(list);
+      if (list.length > 0) {
+        setRevProductId(list[0].id || list[0]._id);
       }
     } catch (e) {
       console.warn('Products load error:', e.message);
+      setProducts([]);
     }
   };
 
@@ -89,9 +91,11 @@ export default function AdminReviewList() {
     setLoadingReviews(true);
     try {
       const res = await api.get('/reviews/admin/all');
-      setReviews(res.data || []);
+      const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.reviews) ? res.data.reviews : []);
+      setReviews(list);
     } catch (e) {
       toast.error('Unable to fetch product reviews.');
+      setReviews([]);
     } finally {
       setLoadingReviews(false);
     }
@@ -101,9 +105,11 @@ export default function AdminReviewList() {
     setLoadingTestimonials(true);
     try {
       const res = await api.get('/testimonials/admin/all');
-      setTestimonials(res.data || []);
+      const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.testimonials) ? res.data.testimonials : []);
+      setTestimonials(list);
     } catch (e) {
       toast.error('Unable to fetch testimonials.');
+      setTestimonials([]);
     } finally {
       setLoadingTestimonials(false);
     }
@@ -298,12 +304,16 @@ export default function AdminReviewList() {
   };
 
   // Filter calculations for user reviews
-  const countAll = reviews.length;
-  const countPending = reviews.filter((r) => r.status === 'pending').length;
-  const countApproved = reviews.filter((r) => r.status === 'approved' || !r.status).length;
-  const countRejected = reviews.filter((r) => r.status === 'rejected').length;
+  const safeReviews = Array.isArray(reviews) ? reviews : [];
+  const safeTestimonials = Array.isArray(testimonials) ? testimonials : [];
+  const safeProducts = Array.isArray(products) ? products : [];
 
-  const filteredReviews = reviews.filter((r) => {
+  const countAll = safeReviews.length;
+  const countPending = safeReviews.filter((r) => r.status === 'pending').length;
+  const countApproved = safeReviews.filter((r) => r.status === 'approved' || !r.status).length;
+  const countRejected = safeReviews.filter((r) => r.status === 'rejected').length;
+
+  const filteredReviews = safeReviews.filter((r) => {
     const st = r.status || 'approved';
     if (filterStatus === 'all') return true;
     return st === filterStatus;
@@ -386,7 +396,7 @@ export default function AdminReviewList() {
           }}
         >
           <Award size={16} />
-          <span>HOMEPAGE TESTIMONIALS ({testimonials.length})</span>
+          <span>HOMEPAGE TESTIMONIALS ({safeTestimonials.length})</span>
         </button>
       </div>
 
@@ -726,7 +736,7 @@ export default function AdminReviewList() {
                   onChange={(e) => setRevProductId(e.target.value)}
                   style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
                 >
-                  {products.map((p) => (
+                  {safeProducts.map((p) => (
                     <option key={p.id || p._id} value={p.id || p._id}>{p.title}</option>
                   ))}
                 </select>

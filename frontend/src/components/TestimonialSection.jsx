@@ -29,8 +29,9 @@ export default function TestimonialSection() {
   const fetchTestimonials = async () => {
     try {
       const res = await api.get('/testimonials');
-      if (res.data && res.data.length > 0) {
-        setDbTestimonials(res.data);
+      const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.testimonials) ? res.data.testimonials : []);
+      if (list.length > 0) {
+        setDbTestimonials(list);
       }
     } catch (e) {
       console.warn('Error fetching testimonials from API:', e.message);

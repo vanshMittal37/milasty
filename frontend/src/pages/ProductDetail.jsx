@@ -35,8 +35,13 @@ export default function ProductDetail() {
   const fetchProductReviews = async (targetId) => {
     try {
       const res = await api.get(`/reviews/product/${targetId}`);
-      if (res.data) {
-        setReviewsData(res.data);
+      if (res.data && typeof res.data === 'object') {
+        setReviewsData({
+          averageRating: Number(res.data.averageRating || 0),
+          totalReviews: Number(res.data.totalReviews || 0),
+          ratingDistribution: res.data.ratingDistribution || {},
+          reviews: Array.isArray(res.data.reviews) ? res.data.reviews : (Array.isArray(res.data) ? res.data : []),
+        });
       }
     } catch (e) {
       console.warn('Error fetching product reviews:', e.message);
@@ -900,7 +905,7 @@ export default function ProductDetail() {
               </div>
 
               {/* Reviews List */}
-              {reviewsData.reviews && reviewsData.reviews.length > 0 ? (
+              {Array.isArray(reviewsData.reviews) && reviewsData.reviews.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   {reviewsData.reviews.map((rev) => (
                     <div key={rev.id} style={{ padding: '1.25rem', backgroundColor: 'rgba(0, 0, 0, 0.25)', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>

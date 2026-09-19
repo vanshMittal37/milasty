@@ -31,9 +31,11 @@ export default function OrderHistoryPage() {
     setError(false);
     try {
       const res = await api.get('/orders/my-orders');
-      setOrders(res.data || []);
+      const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.orders) ? res.data.orders : []);
+      setOrders(list);
     } catch (e) {
       console.error('Error fetching orders', e);
+      setOrders([]);
       setError(true);
     } finally {
       setLoading(false);
@@ -43,9 +45,11 @@ export default function OrderHistoryPage() {
   const fetchMyReviews = async () => {
     try {
       const res = await api.get('/reviews/my-reviews');
-      setMyReviews(res.data || []);
+      const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.reviews) ? res.data.reviews : []);
+      setMyReviews(list);
     } catch (e) {
       console.warn('Error fetching user reviews:', e.message);
+      setMyReviews([]);
     }
   };
 
@@ -148,14 +152,17 @@ export default function OrderHistoryPage() {
   };
 
   // Calculations for summary statistics
-  const totalOrders = orders.length;
-  const activeOrders = orders.filter((o) =>
+  const safeOrders = Array.isArray(orders) ? orders : [];
+  const safeMyReviews = Array.isArray(myReviews) ? myReviews : [];
+
+  const totalOrders = safeOrders.length;
+  const activeOrders = safeOrders.filter((o) =>
     ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery'].includes(o.orderStatus)
   ).length;
-  const deliveredOrders = orders.filter((o) => String(o.orderStatus).toLowerCase() === 'delivered').length;
+  const deliveredOrders = safeOrders.filter((o) => String(o.orderStatus).toLowerCase() === 'delivered').length;
 
   // Filtering & Searching logic
-  const filteredOrders = orders.filter((order) => {
+  const filteredOrders = safeOrders.filter((order) => {
     const matchesSearch = (order.orderId || order.orderNumber || '').toLowerCase().includes(searchTerm.toLowerCase());
 
     if (selectedFilter === 'All') return matchesSearch;
