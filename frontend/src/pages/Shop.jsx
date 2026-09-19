@@ -11,6 +11,41 @@ import { initialProducts } from '../data/seedData';
 import { useCart } from '../context/CartContext';
 import { useCategories } from '../context/CategoryContext';
 
+const cardThemes = [
+  {
+    bgGradient: 'linear-gradient(180deg, rgba(46, 26, 15, 0.92) 0%, rgba(26, 14, 8, 0.96) 100%)',
+    borderColor: 'rgba(212, 175, 55, 0.45)',
+    titleColor: '#FFFDF9',
+    badgeBg: 'linear-gradient(135deg, #D4AF37 0%, #AA8222 100%)',
+    badgeColor: '#1A0E07',
+  },
+  {
+    bgGradient: 'linear-gradient(180deg, rgba(30, 44, 20, 0.92) 0%, rgba(18, 28, 12, 0.96) 100%)',
+    borderColor: '#557038',
+    titleColor: '#FFFDF9',
+    badgeBg: '#3D5625',
+    badgeColor: '#FAF4EB',
+  },
+  {
+    bgGradient: 'linear-gradient(180deg, rgba(58, 30, 20, 0.92) 0%, rgba(33, 16, 10, 0.96) 100%)',
+    borderColor: '#A87045',
+    titleColor: '#FFFDF9',
+    badgeBg: '#C8733B',
+    badgeColor: '#FFFDF9',
+  },
+];
+
+const formatLaunchDate = (dateStr) => {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return String(dateStr);
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch (e) {
+    return String(dateStr);
+  }
+};
+
 export default function Shop() {
   const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
