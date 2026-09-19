@@ -50,6 +50,7 @@ export default function AdminReviewList() {
   const [showAddTestimonialModal, setShowAddTestimonialModal] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState(null);
   const [deleteTestimonialTargetId, setDeleteTestimonialTargetId] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   // Add Testimonial Form State
   const [tName, setTName] = useState('');
@@ -536,11 +537,28 @@ export default function AdminReviewList() {
 
                       {/* Attached Photo */}
                       {rev.reviewImageUrl && (
-                        <img
-                          src={rev.reviewImageUrl}
-                          alt="Attached review photo"
-                          style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--admin-border-subtle)', marginTop: '0.35rem' }}
-                        />
+                        <div style={{ marginTop: '0.65rem' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--admin-text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+                            📷 Customer Uploaded Photo (Click to Enlarge):
+                          </span>
+                          <img
+                            src={rev.reviewImageUrl}
+                            alt="Attached review photo"
+                            onClick={() => setPreviewImage(rev.reviewImageUrl)}
+                            style={{
+                              width: '90px',
+                              height: '90px',
+                              objectFit: 'cover',
+                              borderRadius: '10px',
+                              border: '1.5px solid var(--admin-accent-gold)',
+                              cursor: 'pointer',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                              transition: 'transform 0.2s ease',
+                            }}
+                            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                            onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                          />
+                        </div>
                       )}
                     </div>
 
@@ -1070,6 +1088,38 @@ export default function AdminReviewList() {
         confirmText="Delete"
         cancelText="Cancel"
       />
+      {/* LIGHTBOX MODAL FOR ENLARGED PHOTO PREVIEW */}
+      {previewImage && (
+        <div
+          onClick={() => setPreviewImage(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.88)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.5rem',
+            cursor: 'zoom-out',
+          }}
+        >
+          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }}>
+            <img
+              src={previewImage}
+              alt="Enlarged review photo"
+              style={{ maxWidth: '100%', maxHeight: '85vh', borderRadius: '14px', boxShadow: '0 12px 40px rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)' }}
+            />
+            <button
+              onClick={() => setPreviewImage(null)}
+              style={{ position: 'absolute', top: '-15px', right: '-15px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

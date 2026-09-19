@@ -49,14 +49,15 @@ getInitialTestimonialsSeed().forEach(t => memoryTestimonials.set(t.id, t));
 const getProductsLookupMap = async () => {
   const map = new Map();
 
-  // Populate from initialProducts seed first
+  // 1. Populate from initialProducts seed first
   initialProducts.forEach((p) => {
     if (p.id) map.set(String(p.id), p);
     if (p._id) map.set(String(p._id), p);
     if (p.slug) map.set(String(p.slug), p);
+    if (p.title) map.set(String(p.title).toLowerCase(), p);
   });
 
-  // Populate/override from Supabase products table
+  // 2. Populate/override from Supabase products table
   try {
     const { data: products } = await supabase.from('products').select('*');
     if (products && products.length > 0) {
@@ -64,6 +65,7 @@ const getProductsLookupMap = async () => {
         if (p.id) map.set(String(p.id), p);
         if (p._id) map.set(String(p._id), p);
         if (p.slug) map.set(String(p.slug), p);
+        if (p.title) map.set(String(p.title).toLowerCase(), p);
       });
     }
   } catch (err) {
@@ -196,7 +198,8 @@ export const createCustomerReview = async (req, res) => {
     }
 
     const productsMap = await getProductsLookupMap();
-    const resolvedProduct = productsMap.get(String(productId)) || {};
+    const pidStr = String(productId).trim();
+    const resolvedProduct = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
     const productTitle = matchedOrderItem?.title || matchedOrderItem?.product_title || matchedOrderItem?.name || resolvedProduct.title || 'MILASTY Product';
 
     const finalImageUrl = reviewImageUrl || image_url || '';
@@ -434,20 +437,35 @@ export const getAllAdminReviews = async (req, res) => {
     reviews.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
 
     const formatted = reviews.map((r) => {
-      const pidStr = String(r.product_id || r.productId || '');
-      const p = productsMap.get(pidStr) || productsMap.get(r.product_id) || {};
+      const pidRaw = r.product_id || r.productId || '';
+      const pidStr = String(pidRaw).trim();
+
+      // Find matching product across map keys or title search
+      let p = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
+      if (!p.title && pidStr) {
+        const lowerPid = pidStr.toLowerCase();
+        p = Array.from(productsMap.values()).find(
+          (item) =>
+            String(item.id) === pidStr ||
+            String(item._id) === pidStr ||
+            String(item.slug).toLowerCase() === lowerPid ||
+            String(item.title).toLowerCase() === lowerPid
+        ) || {};
+      }
 
       const resolvedTitle =
-        r.product_title ||
-        r.productTitle ||
+        (r.product_title && r.product_title.trim()) ||
+        (r.productTitle && r.productTitle.trim()) ||
         p.title ||
         p.name ||
-        (pidStr ? `Product (#${pidStr.slice(0, 8)})` : 'MILASTY Artisan Bake');
+        'MILASTY Artisan Bake';
 
       const img =
-        r.product_image ||
+        (r.product_image && r.product_image.trim()) ||
         p.image ||
-        (Array.isArray(p.images) ? p.images[0] : '/images/image1.jpeg');
+        (Array.isArray(p.images) && p.images[0] ? p.images[0] : null) ||
+        p.secondaryImage ||
+        'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=800&q=80';
 
       return {
         id: r.id,
@@ -501,7 +519,8 @@ export const createAdminProductReview = async (req, res) => {
     }
 
     const productsMap = await getProductsLookupMap();
-    const resolvedProduct = productsMap.get(String(productId)) || {};
+    const pidStr = String(productId).trim();
+    const resolvedProduct = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
     const productTitle = resolvedProduct.title || resolvedProduct.name || 'MILASTY Artisan Bake';
 
     const newRecord = {
@@ -616,6 +635,8 @@ export const updateReview = async (req, res) => {
       isVerifiedPurchase,
       isPublished,
       showOnProduct,
+      reviewImageUrl,
+      image_url,
     } = req.body;
 
     const targetProductId = productId || product_id;
@@ -624,7 +645,7 @@ export const updateReview = async (req, res) => {
     if (targetProductId) {
       updates.product_id = targetProductId;
       const productsMap = await getProductsLookupMap();
-      const p = productsMap.get(String(targetProductId)) || {};
+      const p = productsMap.get(String(targetProductId)) || productsMap.get(String(targetProductId).toLowerCase()) || {};
       if (p.title) updates.product_title = p.title;
     }
 
@@ -638,6 +659,9 @@ export const updateReview = async (req, res) => {
     }
     if (isPublished !== undefined) updates.is_published = isPublished;
     if (showOnProduct !== undefined) updates.show_on_product = showOnProduct;
+    if (reviewImageUrl !== undefined || image_url !== undefined) {
+      updates.review_image_url = reviewImageUrl || image_url;
+    }
 
     let updated = null;
 
