@@ -85,25 +85,29 @@ export default function CustomerOrderDetailPage() {
     );
   }
 
-  const currentStageIndex = STATUS_STAGES.indexOf(order.orderStatus);
-  const isCancelled = order.orderStatus === 'Cancelled';
+  const normalizeStatus = (s) => String(s || '').toLowerCase().replace(/_/g, ' ').trim();
+  const currentStageIndex = STATUS_STAGES.findIndex(
+    stage => normalizeStatus(stage) === normalizeStatus(order?.orderStatus)
+  );
+  const isCancelled = normalizeStatus(order?.orderStatus) === 'cancelled';
 
   // Get dynamic current status subtext message
   const getStatusDescriptionMessage = (status) => {
-    switch (status) {
-      case 'Pending':
+    const norm = normalizeStatus(status);
+    switch (norm) {
+      case 'pending':
         return 'Waiting for payment confirmation to initiate baking.';
-      case 'Confirmed':
+      case 'confirmed':
         return 'Your order has been confirmed and is being prepared by the MILASTY team.';
-      case 'Processing':
+      case 'processing':
         return 'Our team is carefully preparing your fresh small-batch millet bakes.';
-      case 'Packed':
+      case 'packed':
         return 'Your order is securely packed in eco-friendly wraps and ready to ship.';
-      case 'Shipped':
+      case 'shipped':
         return 'Your MILASTY package has left our facility and is on the way.';
-      case 'Out for Delivery':
+      case 'out for delivery':
         return 'Our delivery agent is nearby and will reach you shortly today.';
-      case 'Delivered':
+      case 'delivered':
         return 'Order was successfully delivered. Thank you for choosing MILASTY!';
       default:
         return 'Your order updates will progress dynamically.';
@@ -447,14 +451,36 @@ export default function CustomerOrderDetailPage() {
               
               <div style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: '1.6', marginTop: '1.25rem' }}>
                 <strong style={{ fontSize: '1rem', color: 'var(--text-light)', display: 'block', marginBottom: '0.45rem' }}>{order.customerName}</strong>
-                <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>
-                  {order.shippingAddress?.building && `${order.shippingAddress.building}, `}
-                  {order.shippingAddress?.addressLine}<br />
-                  {order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.pincode}
+                <span style={{ color: 'var(--text-muted)', fontWeight: '500', display: 'block', lineHeight: '1.5' }}>
+                  {(() => {
+                    const addr = order.shippingAddress;
+                    const pin = order.pincode || '';
+                    if (typeof addr === 'object' && addr !== null) {
+                      const parts = [
+                        addr.building,
+                        addr.addressLine || addr.address,
+                        addr.city,
+                        addr.state,
+                        addr.country || 'India',
+                      ].filter(Boolean);
+                      const mainAddr = parts.join(', ');
+                      return pin && !mainAddr.includes(pin) ? `${mainAddr} - ${pin}` : mainAddr;
+                    }
+                    const str = String(addr || '').trim();
+                    if (!str) return pin ? `Pincode: ${pin}` : 'Address details unavailable';
+                    return pin && !str.includes(pin) ? `${str} - ${pin}` : str;
+                  })()}
                 </span>
                 
                 <div style={{ marginTop: '1.1rem', paddingTop: '1rem', borderTop: '1px solid rgba(245, 235, 221, 0.15)', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                  Mobile / WhatsApp: <strong style={{ color: 'var(--text-light)' }}>+91 {order.phone}</strong>
+                  Mobile / WhatsApp: <strong style={{ color: 'var(--text-light)' }}>
+                    {(() => {
+                      const p = order.phone || order.customerPhone || order.customer_phone || '';
+                      if (!p) return 'Not provided';
+                      const cleanP = String(p).trim().replace(/^\+91\s*/, '');
+                      return `+91 ${cleanP}`;
+                    })()}
+                  </strong>
                 </div>
               </div>
             </div>

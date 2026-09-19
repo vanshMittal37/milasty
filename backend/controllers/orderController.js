@@ -421,6 +421,7 @@ export const formatOrderPayload = (o) => {
 
   const discountVal = Number(o.discount_amount || o.discountAmount || o.coupon_discount || o.couponDiscount || 0);
   const couponCodeVal = o.coupon_code || o.couponCode || null;
+  const phoneVal = o.customer_phone || o.customerPhone || o.phone || '';
 
   return {
     ...o,
@@ -430,7 +431,8 @@ export const formatOrderPayload = (o) => {
     orderNumber: o.order_number || `MIL-${String(o.id || '').slice(-6)}`,
     customerName: o.customer_name || 'Customer',
     customerEmail: o.customer_email || '',
-    customerPhone: o.customer_phone || '',
+    customerPhone: phoneVal,
+    phone: phoneVal,
     shippingAddress: o.shipping_address || '',
     pincode: o.pincode || '',
     subtotal: Number(o.subtotal || 0),
