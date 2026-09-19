@@ -1115,3 +1115,70 @@ export const getFaqs = async (req, res) => {
     return res.status(500).json({ message: 'Error fetching FAQs', error: error.message });
   }
 };
+
+/**
+ * 15. HELPER: COMPUTE REAL AVERAGE RATINGS & REVIEW COUNTS PER PRODUCT
+ */
+export const getApprovedProductReviewStats = async () => {
+  const statsMap = new Map();
+
+  let dbReviews = [];
+  try {
+    const { data, error } = await supabase
+      .from('product_reviews')
+      .select('*')
+      .eq('status', 'approved')
+      .eq('is_published', true)
+      .eq('show_on_product', true);
+
+    if (!error && data) dbReviews = data;
+  } catch (e) {
+    console.warn('Supabase getApprovedProductReviewStats notice:', e.message);
+  }
+
+  const memReviews = Array.from(memoryReviews.values()).filter(
+    (r) =>
+      r.status === 'approved' &&
+      r.is_published !== false &&
+      r.show_on_product !== false
+  );
+
+  const reviewMap = new Map();
+  dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
+  memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
+
+  const allApproved = Array.from(reviewMap.values());
+  const productsMap = await getProductsLookupMap();
+
+  allApproved.forEach((r) => {
+    const pidRaw = String(r.product_id || r.productId || '').trim();
+    const pidLower = pidRaw.toLowerCase();
+    const pTitleLower = String(r.product_title || r.productTitle || '').trim().toLowerCase();
+
+    let p = productsMap.get(pidRaw) || productsMap.get(pidLower) || {};
+    if (!p.title && pTitleLower) {
+      p = productsMap.get(pTitleLower) || {};
+    }
+
+    const keysToAttribute = new Set(
+      [
+        pidRaw,
+        pidLower,
+        pTitleLower,
+        String(p.id || ''),
+        String(p._id || ''),
+        String(p.slug || '').toLowerCase(),
+        String(p.title || '').toLowerCase(),
+      ].filter(Boolean)
+    );
+
+    keysToAttribute.forEach((k) => {
+      const existing = statsMap.get(k) || { count: 0, sum: 0 };
+      existing.count += 1;
+      existing.sum += Number(r.rating || 5);
+      statsMap.set(k, existing);
+    });
+  });
+
+  return statsMap;
+};

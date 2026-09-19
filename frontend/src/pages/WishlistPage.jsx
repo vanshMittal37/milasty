@@ -130,14 +130,22 @@ function WishlistProductCard({ product }) {
         <div>
           {/* Rating */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', color: 'var(--accent-gold)' }}>
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={11} fill={i < Math.floor(product.rating || 5) ? 'var(--accent-gold)' : 'none'} color="var(--accent-gold)" />
-              ))}
-            </div>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '700' }}>
-              {product.rating} ({product.reviewCount || 10})
-            </span>
+            {product.reviewCount > 0 ? (
+              <>
+                <div style={{ display: 'flex', color: 'var(--accent-gold)' }}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={11} fill={i < Math.round(product.rating) ? 'var(--accent-gold)' : 'none'} color="var(--accent-gold)" />
+                  ))}
+                </div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '700' }}>
+                  {Number(product.rating).toFixed(1)} ({product.reviewCount})
+                </span>
+              </>
+            ) : (
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600' }}>
+                No reviews yet
+              </span>
+            )}
           </div>
 
           {/* Title */}

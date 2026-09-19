@@ -1,6 +1,7 @@
 import { supabase } from '../config/supabase.js';
 import { initialProducts } from '../data/seedData.js';
 import { LOW_STOCK_THRESHOLD } from '../config/constants.js';
+import { getApprovedProductReviewStats } from './reviewController.js';
 
 export const getProducts = async (req, res) => {
   try {
@@ -15,6 +16,8 @@ export const getProducts = async (req, res) => {
       page = 1,
       limit = 12,
     } = req.query;
+
+    const statsMap = await getApprovedProductReviewStats();
 
     // Try fetching from Supabase PostgreSQL first
     let query = supabase.from('products').select('*, product_variants(*)');
@@ -65,6 +68,13 @@ export const getProducts = async (req, res) => {
           ? variants.reduce((sum, v) => sum + (v.stock || 0), 0)
           : (p.stock !== undefined && p.stock !== null ? Number(p.stock) : 100);
 
+        const pKey = String(p.id || p._id || p.slug || '').toLowerCase();
+        const pTitleKey = String(p.title || '').toLowerCase();
+        const stats = statsMap.get(pKey) || statsMap.get(pTitleKey) || { count: 0, sum: 0 };
+
+        const realReviewCount = stats.count;
+        const realRating = realReviewCount > 0 ? Number((stats.sum / stats.count).toFixed(1)) : 0;
+
         return {
           _id: p.id,
           id: p.id,
@@ -89,8 +99,8 @@ export const getProducts = async (req, res) => {
           pieces: p.nutrition_facts?.pieces || p.pieces || '',
           labReportUrl: p.lab_report_url || '',
           isFeatured: p.is_featured !== false,
-          rating: p.rating || 5.0,
-          reviewCount: p.review_count || 0,
+          rating: realRating,
+          reviewCount: realReviewCount,
           variants,
         };
       });
@@ -120,7 +130,21 @@ export const getProducts = async (req, res) => {
     }
 
     // Fallback to seed data if Supabase isn't seeded yet
-    let fallback = [...initialProducts];
+    let fallback = initialProducts.map((p) => {
+      const pKey = String(p.id || p._id || p.slug || '').toLowerCase();
+      const pTitleKey = String(p.title || '').toLowerCase();
+      const stats = statsMap.get(pKey) || statsMap.get(pTitleKey) || { count: 0, sum: 0 };
+
+      const realReviewCount = stats.count;
+      const realRating = realReviewCount > 0 ? Number((stats.sum / stats.count).toFixed(1)) : 0;
+
+      return {
+        ...p,
+        rating: realRating,
+        reviewCount: realReviewCount,
+      };
+    });
+
     if (category && category !== 'all') fallback = fallback.filter((p) => p.category === category);
     if (featured === 'true') fallback = fallback.filter((p) => p.isFeatured);
     if (search) {
@@ -145,6 +169,7 @@ export const getProductBySlugOrId = async (req, res) => {
 
     // Determine if identifier is a UUID or slug to avoid PostgreSQL syntax errors
     const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(identifier);
+    const statsMap = await getApprovedProductReviewStats();
 
     let query = supabase.from('products').select('*, product_variants(*)');
     if (isUuid) {
@@ -185,6 +210,13 @@ export const getProductBySlugOrId = async (req, res) => {
         ? variants.reduce((sum, v) => sum + (v.stock || 0), 0)
         : (p.stock !== undefined && p.stock !== null ? Number(p.stock) : 100);
 
+      const pKey = String(p.id || p._id || p.slug || '').toLowerCase();
+      const pTitleKey = String(p.title || '').toLowerCase();
+      const stats = statsMap.get(pKey) || statsMap.get(pTitleKey) || { count: 0, sum: 0 };
+
+      const realReviewCount = stats.count;
+      const realRating = realReviewCount > 0 ? Number((stats.sum / stats.count).toFixed(1)) : 0;
+
       const formatted = {
         _id: p.id,
         id: p.id,
@@ -209,15 +241,28 @@ export const getProductBySlugOrId = async (req, res) => {
         pieces: p.nutrition_facts?.pieces || p.pieces || '',
         labReportUrl: p.lab_report_url || '',
         isFeatured: p.is_featured !== false,
-        rating: p.rating || 5.0,
-        reviewCount: p.review_count || 0,
+        rating: realRating,
+        reviewCount: realReviewCount,
         variants,
       };
       return res.json(formatted);
     }
 
     const fallback = initialProducts.find((p) => p.slug === identifier || p._id === identifier);
-    if (fallback) return res.json(fallback);
+    if (fallback) {
+      const pKey = String(fallback.id || fallback._id || fallback.slug || '').toLowerCase();
+      const pTitleKey = String(fallback.title || '').toLowerCase();
+      const stats = statsMap.get(pKey) || statsMap.get(pTitleKey) || { count: 0, sum: 0 };
+
+      const realReviewCount = stats.count;
+      const realRating = realReviewCount > 0 ? Number((stats.sum / stats.count).toFixed(1)) : 0;
+
+      return res.json({
+        ...fallback,
+        rating: realRating,
+        reviewCount: realReviewCount,
+      });
+    }
 
     return res.status(404).json({ message: 'Product not found' });
   } catch (error) {

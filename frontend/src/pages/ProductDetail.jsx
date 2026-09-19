@@ -439,19 +439,37 @@ export default function ProductDetail() {
             )}
 
             {/* Rating / Review Info */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', color: '#b9cd94' }}>
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={15} fill="#b9cd94" color="#b9cd94" />
-                ))}
+            {((reviewsData.totalReviews || product.reviewCount || 0) > 0) ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', color: '#b9cd94' }}>
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star
+                      key={s}
+                      size={15}
+                      fill={s <= Math.round(reviewsData.averageRating || product.rating || 0) ? '#b9cd94' : 'none'}
+                      color="#b9cd94"
+                    />
+                  ))}
+                </div>
+                <span style={{ fontSize: '0.88rem', fontWeight: '750', color: '#FFFDF9' }}>
+                  {Number(reviewsData.averageRating || product.rating || 5).toFixed(1)}
+                </span>
+                <span style={{ fontSize: '0.82rem', color: '#F5EBDD', opacity: 0.8 }}>
+                  ({reviewsData.totalReviews || product.reviewCount} {(reviewsData.totalReviews || product.reviewCount) === 1 ? 'Review' : 'Reviews'})
+                </span>
               </div>
-              <span style={{ fontSize: '0.88rem', fontWeight: '750', color: '#FFFDF9' }}>
-                {product.rating || 5.0}
-              </span>
-              <span style={{ fontSize: '0.82rem', color: '#F5EBDD', opacity: 0.8 }}>
-                {product.reviewCount ? `(${product.reviewCount} Reviews)` : '(No reviews yet)'}
-              </span>
-            </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', color: 'rgba(255, 255, 255, 0.2)' }}>
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} size={15} fill="none" color="rgba(245, 235, 221, 0.4)" />
+                  ))}
+                </div>
+                <span style={{ fontSize: '0.82rem', color: '#F5EBDD', opacity: 0.7, fontWeight: '600' }}>
+                  (No reviews yet)
+                </span>
+              </div>
+            )}
 
             {/* Description */}
             {product.description && (
