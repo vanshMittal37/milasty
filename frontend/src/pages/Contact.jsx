@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   MessageSquare, MapPin, ShieldCheck, Mail, Send, CheckCircle2, 
-  Package, ArrowRight, ChevronDown 
+  Package, ArrowRight, ChevronDown, AlertCircle
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 
 export default function Contact() {
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [submittedInquiry, setSubmittedInquiry] = useState(null);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,14 +25,53 @@ export default function Contact() {
 
   const [activeFaq, setActiveFaq] = useState(null);
 
-  const handleSubmit = (e) => {
+  // Auto pre-fill name, email, phone if user is logged in
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.phone || '',
+      }));
+    }
+  }, [user]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage('');
+
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setErrorMessage('Please fill in all required fields (Name, Email, Message).');
+      return;
+    }
+
     setLoading(true);
-    // Simulate API request
-    setTimeout(() => {
+
+    try {
+      // POST inquiry to real database endpoint
+      const response = await api.post('/api/inquiries', {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        message: formData.message.trim(),
+      });
+
+      if (response.data && response.data.success) {
+        setSubmittedInquiry(response.data.inquiry);
+        setSubmitted(true);
+        // Reset form data so user cannot double-submit
+        setFormData({ name: '', email: '', phone: '', message: '' });
+      } else {
+        setErrorMessage(response.data?.message || 'Unable to submit your inquiry right now. Please try again.');
+      }
+    } catch (error) {
+      console.error('Inquiry submission error:', error);
+      const apiMsg = error.response?.data?.message || 'Unable to submit your inquiry right now. Please try again.';
+      setErrorMessage(apiMsg);
+    } finally {
       setLoading(false);
-      setSubmitted(true);
-    }, 1200);
+    }
   };
 
   const handleSelectReason = (reasonText) => {
@@ -32,11 +79,24 @@ export default function Contact() {
       ...prev,
       message: `Hi MILASTY Team, I am reaching out regarding: ${reasonText}. `
     }));
-    // Smooth scroll to form
+    setSubmitted(false);
+    setErrorMessage('');
     const formElement = document.getElementById('contact-inquiry-form');
     if (formElement) {
       formElement.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const resetFormToSubmitAnother = () => {
+    setSubmitted(false);
+    setSubmittedInquiry(null);
+    setErrorMessage('');
+    setFormData({
+      name: user?.name || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+      message: '',
+    });
   };
 
   const faqs = [
@@ -96,7 +156,7 @@ export default function Contact() {
       }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
       
-      {/* 1. HERO SECTION (OLD SHOP THEME STYLING) */}
+      {/* 1. HERO SECTION */}
       <section 
         style={{ 
           padding: '6.5rem 1.5rem 4.5rem', 
@@ -151,7 +211,7 @@ export default function Contact() {
         </p>
       </section>
 
-      {/* 2. QUICK CONTACT OPTIONS (OLD SHOP CARD STYLING) */}
+      {/* 2. QUICK CONTACT OPTIONS */}
       <section style={{ width: '100%', maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
           
@@ -277,7 +337,7 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* 3. MAIN CONTACT SECTION + 4. RESPONSIVE CONTACT FORM (OLD SHOP THEME) */}
+      {/* 3. MAIN CONTACT SECTION + 4. CUSTOMER SUBMISSION FLOW */}
       <section style={{ width: '100%', maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div className="story-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '3.5rem', alignItems: 'start' }}>
           
@@ -357,7 +417,7 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Right Column: Custom Message Form (OLD SHOP THEME & RESPONSIVE) */}
+          {/* Right Column: Custom Message Form or Success Confirmation Card */}
           <div 
             id="contact-inquiry-form" 
             style={{ 
@@ -369,104 +429,214 @@ export default function Contact() {
               boxSizing: 'border-box' 
             }}
           >
-            <h3 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.25rem 0' }}>Send Us a Message</h3>
-            <p style={{ fontSize: '0.88rem', color: '#F5EBDD', marginBottom: '2rem', fontWeight: '550' }}>We usually respond as soon as possible.</p>
-
             {submitted ? (
-              <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: '#b9cd94' }}>
-                <CheckCircle2 size={48} style={{ margin: '0 auto 1.25rem' }} />
-                <h4 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.5rem' }}>Thank you for reaching out.</h4>
-                <p style={{ color: '#F5EBDD', fontSize: '0.92rem', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>We've received your message and will get back to you soon.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
-                <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Enter your name"
-                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="name@example.com"
-                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    WhatsApp / Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+91 98765 43210"
-                    style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    Message / Inquiry *
-                  </label>
-                  <textarea
-                    rows={4}
-                    required
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="How can we help you?"
-                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', lineHeight: '1.5', boxSizing: 'border-box' }}
-                  />
-                </div>
-
-                <button 
-                  type="submit" 
-                  className="btn-primary" 
-                  disabled={loading}
+              /* CLEAN MILASTY SUCCESS CARD (REQUIREMENTS #3 & #4) */
+              <div style={{ textAlign: 'center', padding: '1.5rem 0.5rem' }}>
+                <div 
                   style={{ 
-                    height: '52px',
+                    width: '64px', 
+                    height: '64px', 
+                    borderRadius: '50%', 
+                    backgroundColor: 'rgba(36, 79, 33, 0.5)', 
+                    color: '#b9cd94', 
+                    border: '2px solid rgba(185, 205, 148, 0.5)', 
+                    display: 'flex', 
+                    alignItems: 'center', 
                     justifyContent: 'center', 
-                    marginTop: '0.5rem',
-                    backgroundColor: '#244f21',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '12px',
-                    fontWeight: '850',
-                    fontSize: '0.92rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.45rem',
-                    width: '100%'
+                    margin: '0 auto 1.5rem' 
                   }}
                 >
-                  <Send size={16} />
-                  <span>{loading ? 'Sending...' : 'Send Inquiry'}</span>
-                </button>
-              </form>
+                  <CheckCircle2 size={36} color="#b9cd94" />
+                </div>
+
+                <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.75rem' }}>
+                  ✓ Thank You for Contacting MILASTY
+                </h3>
+
+                {submittedInquiry?.inquiry_number && (
+                  <div style={{ display: 'inline-block', backgroundColor: 'rgba(185, 205, 148, 0.15)', color: '#b9cd94', padding: '0.35rem 0.9rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: '800', marginBottom: '1.25rem', border: '1px solid rgba(185, 205, 148, 0.3)' }}>
+                    Inquiry Reference: {submittedInquiry.inquiry_number}
+                  </div>
+                )}
+
+                <p style={{ color: '#F5EBDD', fontSize: '0.96rem', lineHeight: '1.6', margin: '0 0 0.85rem 0', fontWeight: '500' }}>
+                  Your inquiry has been received successfully.
+                </p>
+
+                <p style={{ color: '#F5EBDD', fontSize: '0.92rem', lineHeight: '1.6', margin: '0 0 1.5rem 0', fontWeight: '500' }}>
+                  Our team will contact you shortly by email or WhatsApp.
+                </p>
+
+                {isAuthenticated && (
+                  <p style={{ color: '#b9cd94', fontSize: '0.88rem', margin: '0 0 1.75rem 0', fontWeight: '600' }}>
+                    You can track your inquiry from your MILASTY account.
+                  </p>
+                )}
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginTop: '1rem' }}>
+                  {isAuthenticated ? (
+                    <Link
+                      to="/account/inquiries"
+                      className="btn-primary"
+                      style={{
+                        height: '48px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#244f21',
+                        color: '#FFFFFF',
+                        borderRadius: '12px',
+                        fontWeight: '850',
+                        fontSize: '0.92rem',
+                        textDecoration: 'none',
+                        gap: '0.45rem',
+                      }}
+                    >
+                      <MessageSquare size={16} />
+                      <span>View My Inquiries</span>
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/shop"
+                      className="btn-primary"
+                      style={{
+                        height: '48px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#244f21',
+                        color: '#FFFFFF',
+                        borderRadius: '12px',
+                        fontWeight: '850',
+                        fontSize: '0.92rem',
+                        textDecoration: 'none',
+                        gap: '0.45rem',
+                      }}
+                    >
+                      <span>Continue Shopping</span>
+                    </Link>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={resetFormToSubmitAnother}
+                    style={{
+                      background: 'transparent',
+                      border: '1px solid rgba(185, 205, 148, 0.4)',
+                      color: '#b9cd94',
+                      height: '44px',
+                      borderRadius: '12px',
+                      fontSize: '0.85rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Submit Another Inquiry
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <h3 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.25rem 0' }}>Send Us a Message</h3>
+                <p style={{ fontSize: '0.88rem', color: '#F5EBDD', marginBottom: '1.75rem', fontWeight: '550' }}>We usually respond as soon as possible.</p>
+
+                {errorMessage && (
+                  <div style={{ padding: '0.85rem 1rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '12px', color: '#FCA5A5', fontSize: '0.88rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <AlertCircle size={18} style={{ flexShrink: 0 }} />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="Enter your name"
+                      style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="name@example.com"
+                      style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      WhatsApp / Phone Number (Optional)
+                    </label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="+91 98765 43210"
+                      style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Message / Inquiry *
+                    </label>
+                    <textarea
+                      rows={4}
+                      required
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      placeholder="How can we help you?"
+                      style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', lineHeight: '1.5', boxSizing: 'border-box' }}
+                    />
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    className="btn-primary" 
+                    disabled={loading}
+                    style={{ 
+                      height: '52px',
+                      justifyContent: 'center', 
+                      marginTop: '0.5rem',
+                      backgroundColor: '#244f21',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '12px',
+                      fontWeight: '850',
+                      fontSize: '0.92rem',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      width: '100%',
+                      opacity: loading ? 0.75 : 1,
+                    }}
+                  >
+                    <Send size={16} />
+                    <span>{loading ? 'Sending...' : 'Send Inquiry'}</span>
+                  </button>
+                </form>
+              </div>
             )}
           </div>
 
         </div>
       </section>
 
-      {/* 5. CONTACT REASONS (Interactive inquiry populators - OLD SHOP THEME) */}
+      {/* 5. CONTACT REASONS */}
       <section style={{ width: '100%', maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
@@ -509,7 +679,7 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* 6. FAQ SECTION (OLD SHOP CARD STYLING) */}
+      {/* 6. FAQ SECTION */}
       <section style={{ width: '100%', maxWidth: '800px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Help Center</span>

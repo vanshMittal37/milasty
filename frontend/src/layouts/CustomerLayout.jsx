@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { 
   LayoutDashboard, Package, Heart, MapPin, User, Lock, LogOut, Menu, X, 
-  Store, Home as HomeIcon, ChevronRight, Bell, ShieldCheck
+  Store, Home as HomeIcon, ChevronRight, Bell, ShieldCheck, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -56,6 +56,7 @@ export default function CustomerLayout() {
         { label: 'My Orders', path: '/account/orders', icon: Package },
         { label: 'Wishlist', path: '/wishlist', icon: Heart, badge: wishlistCount },
         { label: 'Addresses', path: '/account?tab=addresses', icon: MapPin },
+        { label: 'My Inquiries', path: '/account/inquiries', icon: MessageSquare },
         { label: 'Profile', path: '/account?tab=profile', icon: User },
       ]
     },
@@ -89,6 +90,9 @@ export default function CustomerLayout() {
     }
     if (path === '/account/orders') {
       return { category: 'ACCOUNT / ORDERS', title: 'My Orders', subtitle: 'Track and review your past purchases and order status.' };
+    }
+    if (path.includes('/account/inquiries')) {
+      return { category: 'ACCOUNT / INQUIRIES', title: 'My Inquiries', subtitle: 'View your questions and track your inquiries with MILASTY.' };
     }
     if (path === '/wishlist') {
       return { category: 'ACCOUNT / WISHLIST', title: 'My Wishlist', subtitle: 'Your saved favorite bakes and rituals.' };

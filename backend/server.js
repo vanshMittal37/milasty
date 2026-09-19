@@ -15,6 +15,7 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import deliveryAreaRoutes from './routes/deliveryAreaRoutes.js';
+import inquiryRoutes from './routes/inquiryRoutes.js';
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/delivery-areas', deliveryAreaRoutes);
+app.use('/api/inquiries', inquiryRoutes);
 app.use('/api', reviewRoutes);
 
 // Health Check Endpoint

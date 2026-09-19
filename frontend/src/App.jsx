@@ -34,6 +34,8 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import AccountDashboard from './pages/AccountDashboard';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import CustomerOrderDetailPage from './pages/CustomerOrderDetailPage';
+import CustomerInquiryList from './pages/CustomerInquiryList';
+import CustomerInquiryDetail from './pages/CustomerInquiryDetail';
 
 // Admin Panel Layout & Pages
 import AdminLayout from './layouts/AdminLayout';
@@ -46,6 +48,7 @@ import AdminOrderList from './pages/admin/AdminOrderList';
 import AdminCustomerList from './pages/admin/AdminCustomerList';
 import AdminCouponList from './pages/admin/AdminCouponList';
 import AdminReviewList from './pages/admin/AdminReviewList';
+import AdminInquiryList from './pages/admin/AdminInquiryList';
 
 // Dedicated Customer Portal Layout
 import CustomerLayout from './layouts/CustomerLayout';
@@ -157,6 +160,7 @@ export default function App() {
                       <Route path="delivery-areas" element={<AdminDeliveryAreas />} />
                       <Route path="orders" element={<AdminOrderList />} />
                       <Route path="customers" element={<AdminCustomerList />} />
+                      <Route path="inquiries" element={<AdminInquiryList />} />
                       <Route path="coupons" element={<AdminCouponList />} />
                       <Route path="reviews" element={<AdminReviewList />} />
                     </Route>
@@ -166,6 +170,8 @@ export default function App() {
                       <Route path="/account" element={<AccountDashboard />} />
                       <Route path="/account/orders" element={<OrderHistoryPage />} />
                       <Route path="/account/orders/:id" element={<CustomerOrderDetailPage />} />
+                      <Route path="/account/inquiries" element={<CustomerInquiryList />} />
+                      <Route path="/account/inquiries/:id" element={<CustomerInquiryDetail />} />
                     </Route>
 
                     {/* Public Website & Store */}

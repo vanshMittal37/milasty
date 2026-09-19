@@ -1,0 +1,36 @@
+[
+  {
+    "id": "inq_1789844364048_1bi674x",
+    "inquiry_number": "INQ-1002",
+    "user_id": "usr_test_123",
+    "name": "Customer User",
+    "email": "customer@example.com",
+    "phone": "+91 99999 88888",
+    "message": "Do you provide gluten-free macro nutrition boxes?",
+    "status": "new",
+    "admin_response": "",
+    "admin_notes": "",
+    "created_at": "2026-09-19T18:59:24.048Z",
+    "updated_at": "2026-09-19T18:59:24.048Z",
+    "contacted_at": null,
+    "resolved_at": null,
+    "closed_at": null
+  },
+  {
+    "id": "inq_1789844358968_vpqa4tt",
+    "inquiry_number": "INQ-1001",
+    "user_id": null,
+    "name": "Vansh Mittal",
+    "email": "vansh@example.com",
+    "phone": "+91 98765 43210",
+    "message": "I want to know about bulk orders for festival gifting.",
+    "status": "contacted",
+    "admin_response": "Thank you for reaching out! Yes, we offer festive bulk discounts for orders over 50 boxes.",
+    "admin_notes": "",
+    "created_at": "2026-09-19T18:59:18.928Z",
+    "updated_at": "2026-09-19T18:59:27.405Z",
+    "contacted_at": "2026-09-19T18:59:27.238Z",
+    "resolved_at": null,
+    "closed_at": null
+  }
+]
