@@ -110,55 +110,119 @@ export const validateCoupon = async (req, res) => {
 };
 
 /**
- * PUBLIC API — Get Dynamic Featured Promotional Coupon for Top Announcement Bar
+ * PUBLIC API — Get Dynamic Featured Promotional Coupons for Top Announcement Bar
  * GET /api/coupons/featured
  */
 export const getFeaturedPromoCoupon = async (req, res) => {
   try {
-    const now = new Date().toISOString();
-
-    // Query active featured promo coupon
-    let { data: coupon } = await supabase
+    const { data: coupons } = await supabase
       .from('coupons')
-      .select('code, discount_type, discount_value, description, min_order_amount')
+      .select('*')
       .eq('is_active', true)
-      .eq('is_featured', true)
-      .order('updated_at', { ascending: false })
-      .maybeSingle();
+      .order('created_at', { ascending: false });
 
-    if (!coupon) {
-      // Fallback: any active coupon
-      const { data: fallback } = await supabase
-        .from('coupons')
-        .select('code, discount_type, discount_value, description, min_order_amount')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .maybeSingle();
-      coupon = fallback;
+    const now = new Date();
+    const validCoupons = (coupons || []).filter((coupon) => {
+      const startsValid = !coupon.starts_at || new Date(coupon.starts_at) <= now;
+      const expiresValid = !coupon.expires_at || new Date(coupon.expires_at) > now;
+      const usageValid = coupon.usage_limit === null || coupon.usage_limit === undefined || Number(coupon.usage_count || 0) < Number(coupon.usage_limit);
+      return startsValid && expiresValid && usageValid;
+    });
+
+    // Filter by is_featured if marked, else use all valid active coupons
+    let featuredList = validCoupons.filter((c) => c.is_featured);
+    if (featuredList.length === 0) {
+      featuredList = validCoupons;
     }
 
-    if (!coupon) {
-      return res.json({ success: false, promo: null });
+    if (featuredList.length === 0) {
+      return res.json({ success: false, promos: [], marqueeText: '', promo: null });
     }
 
-    const discountText = coupon.discount_type === 'percentage'
-      ? `${coupon.discount_value}% OFF`
-      : `₹${coupon.discount_value} FLAT OFF`;
+    const promos = featuredList.map((coupon) => {
+      const valNum = Number(coupon.discount_value || 0);
+      const minOrder = Number(coupon.min_order_amount || 0);
+      const discountText = coupon.discount_type === 'percentage'
+        ? `${valNum}% OFF`
+        : `₹${valNum} OFF`;
+
+      const conditionText = minOrder > 0 ? `on orders above ₹${minOrder}` : '';
+      const displayText = `Use code ${coupon.code} for ${discountText}${conditionText ? ' ' + conditionText : ''}`.trim();
+
+      return {
+        code: coupon.code,
+        discountType: coupon.discount_type,
+        discountValue: valNum,
+        minOrderAmount: minOrder,
+        maxDiscount: Number(coupon.max_discount || 0),
+        discountText,
+        displayText,
+      };
+    });
+
+    const marqueeText = promos.map((p) => p.displayText).join(' • ');
 
     return res.json({
       success: true,
-      promo: {
-        code: coupon.code,
-        discountType: coupon.discount_type,
-        discountValue: Number(coupon.discount_value),
-        discountText,
-        minOrderAmount: Number(coupon.min_order_amount || 0),
-        displayText: `Use code ${coupon.code} for ${discountText}`,
-      }
+      promos,
+      marqueeText,
+      promo: promos[0],
     });
   } catch (error) {
     console.error('getFeaturedPromoCoupon error:', error);
-    return res.json({ success: false, promo: null });
+    return res.json({ success: false, promos: [], marqueeText: '', promo: null });
+  }
+};
+
+/**
+ * PUBLIC API — Get All Active Promotional Coupons for Storefront & Cart Offers
+ * GET /api/coupons/active
+ */
+export const getActiveCoupons = async (req, res) => {
+  try {
+    const { data: coupons, error } = await supabase
+      .from('coupons')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const now = new Date();
+    const validCoupons = (coupons || []).filter((coupon) => {
+      const startsValid = !coupon.starts_at || new Date(coupon.starts_at) <= now;
+      const expiresValid = !coupon.expires_at || new Date(coupon.expires_at) > now;
+      const usageValid = coupon.usage_limit === null || coupon.usage_limit === undefined || Number(coupon.usage_count || 0) < Number(coupon.usage_limit);
+      return startsValid && expiresValid && usageValid;
+    }).map((coupon) => {
+      const valNum = Number(coupon.discount_value || 0);
+      const minOrder = Number(coupon.min_order_amount || 0);
+      const discountText = coupon.discount_type === 'percentage'
+        ? `${valNum}% OFF`
+        : `₹${valNum} OFF`;
+
+      const conditionText = minOrder > 0 ? `on orders above ₹${minOrder}` : '';
+      const displayText = `Use code ${coupon.code} for ${discountText}${conditionText ? ' ' + conditionText : ''}`.trim();
+
+      return {
+        id: coupon.id,
+        code: coupon.code,
+        discountType: coupon.discount_type,
+        discountValue: valNum,
+        minOrderAmount: minOrder,
+        maxDiscount: Number(coupon.max_discount || 0),
+        isFeatured: !!coupon.is_featured,
+        description: coupon.description || '',
+        discountText,
+        conditionText,
+        displayText,
+      };
+    });
+
+    return res.json({ success: true, coupons: validCoupons });
+  } catch (error) {
+    console.error('getActiveCoupons error:', error);
+    return res.status(500).json({ success: false, coupons: [], error: error.message });
   }
 };
 

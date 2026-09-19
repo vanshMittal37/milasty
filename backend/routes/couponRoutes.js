@@ -2,6 +2,7 @@ import express from 'express';
 import {
   validateCoupon,
   getFeaturedPromoCoupon,
+  getActiveCoupons,
   getCoupons,
   createCoupon,
   updateCoupon,
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.post('/validate', validateCoupon);
 router.get('/featured', getFeaturedPromoCoupon);
+router.get('/active', getActiveCoupons);
 router.get('/', protect, adminOnly, getCoupons);
 router.post('/', protect, adminOnly, createCoupon);
 router.put('/:id', protect, adminOnly, updateCoupon);

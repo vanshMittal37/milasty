@@ -231,7 +231,11 @@ export default function ProductCard({ product }) {
 
           <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
             <button
-              onClick={handleAddToCart}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleAddToCart();
+              }}
               className="btn-primary add-cart-btn"
               style={{
                 padding: '0.4rem 0.65rem',
