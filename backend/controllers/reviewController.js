@@ -854,3 +854,33 @@ export const deleteTestimonial = async (req, res) => {
     res.status(500).json({ message: 'Error deleting testimonial', error: error.message });
   }
 };
+
+/**
+ * 14. PUBLIC: GET FAQS
+ * GET /api/faqs
+ */
+export const getFaqs = async (req, res) => {
+  try {
+    let faqs = [];
+    try {
+      const { data, error } = await supabase
+        .from('faqs')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (!error && data && data.length > 0) {
+        faqs = data;
+      }
+    } catch (e) {
+      console.warn('Supabase faqs fetch notice:', e.message);
+    }
+
+    if (faqs.length === 0) {
+      faqs = initialFaqs || [];
+    }
+
+    return res.json(faqs);
+  } catch (error) {
+    return res.status(500).json({ message: 'Error fetching FAQs', error: error.message });
+  }
+};
