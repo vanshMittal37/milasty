@@ -50,7 +50,7 @@ export default function Contact() {
 
     try {
       // POST inquiry to real database endpoint
-      const response = await api.post('/api/inquiries', {
+      const response = await api.post('/inquiries', {
         name: formData.name.trim(),
         email: formData.email.trim(),
         phone: formData.phone.trim(),

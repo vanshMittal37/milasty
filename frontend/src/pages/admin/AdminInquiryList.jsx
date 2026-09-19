@@ -96,7 +96,7 @@ export default function AdminInquiryList() {
     else setLoading(true);
 
     try {
-      const response = await api.get('/api/inquiries/admin/all', {
+      const response = await api.get('/inquiries/admin/all', {
         params: {
           status: statusFilter,
           search: searchQuery,
@@ -140,7 +140,7 @@ export default function AdminInquiryList() {
     setSavingStatus(true);
     try {
       const targetId = selectedInquiry.id || selectedInquiry.inquiry_number;
-      const res = await api.patch(`/api/inquiries/admin/${targetId}/status`, {
+      const res = await api.patch(`/inquiries/admin/${targetId}/status`, {
         status: modalStatus
       });
 
@@ -163,7 +163,7 @@ export default function AdminInquiryList() {
     setSavingResponse(true);
     try {
       const targetId = selectedInquiry.id || selectedInquiry.inquiry_number;
-      const res = await api.patch(`/api/inquiries/admin/${targetId}/response`, {
+      const res = await api.patch(`/inquiries/admin/${targetId}/response`, {
         admin_response: modalResponse
       });
 
@@ -186,7 +186,7 @@ export default function AdminInquiryList() {
     setSavingNotes(true);
     try {
       const targetId = selectedInquiry.id || selectedInquiry.inquiry_number;
-      const res = await api.patch(`/api/inquiries/admin/${targetId}/notes`, {
+      const res = await api.patch(`/inquiries/admin/${targetId}/notes`, {
         admin_notes: modalNotes
       });
 

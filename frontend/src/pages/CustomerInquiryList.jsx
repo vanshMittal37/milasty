@@ -81,7 +81,7 @@ export default function CustomerInquiryList() {
     setError(null);
 
     try {
-      const response = await api.get('/api/inquiries/my-inquiries');
+      const response = await api.get('/inquiries/my-inquiries');
       if (response.data && response.data.success) {
         setInquiries(response.data.inquiries || []);
       } else {

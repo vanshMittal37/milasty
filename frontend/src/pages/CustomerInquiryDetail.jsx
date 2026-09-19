@@ -17,7 +17,7 @@ export default function CustomerInquiryDetail() {
     setError(null);
 
     try {
-      const response = await api.get(`/api/inquiries/my-inquiries/${id}`);
+      const response = await api.get(`/inquiries/my-inquiries/${id}`);
       if (response.data && response.data.success) {
         setInquiry(response.data.inquiry);
       } else {
