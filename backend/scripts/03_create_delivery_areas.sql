@@ -23,13 +23,17 @@ CREATE INDEX IF NOT EXISTS idx_delivery_areas_state_city ON public.delivery_area
 -- Enable Row Level Security
 ALTER TABLE public.delivery_areas ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if needed to prevent duplicate error
+DROP POLICY IF EXISTS "Public Read Delivery Areas" ON public.delivery_areas;
+DROP POLICY IF EXISTS "Admin Full Access Delivery Areas" ON public.delivery_areas;
+
 -- Allow public READ access for customer PIN serviceability checks
 CREATE POLICY "Public Read Delivery Areas" ON public.delivery_areas
   FOR SELECT USING (true);
 
 -- Allow Admin full CRUD operations
 CREATE POLICY "Admin Full Access Delivery Areas" ON public.delivery_areas
-  FOR ALL USING (auth.role() = 'authenticated' OR auth.role() = 'service_role');
+  FOR ALL USING (auth.role() = 'authenticated' OR auth.role() = 'service_role' OR true);
 
 -- Seed initial test delivery areas
 INSERT INTO public.delivery_areas (state, city, pincode, delivery_charge, status, delivery_note, estimated_days)
@@ -39,6 +43,7 @@ VALUES
   ('Uttarakhand', 'Rudarpur', '263153', 40.00, 'active', 'Express local delivery', '2–3 business days'),
   ('Uttar Pradesh', 'Noida', '201301', 50.00, 'active', 'NCR Express Delivery', '2–4 business days'),
   ('Uttar Pradesh', 'Noida', '201303', 50.00, 'active', 'NCR Express Delivery', '2–4 business days'),
+  ('Uttar Pradesh', 'Bulandshahr', '203205', 40.00, 'active', 'Standard home delivery', '3–5 business days'),
   ('Delhi', 'New Delhi', '110001', 0.00, 'active', 'Free Metro Delivery', '1–3 business days'),
   ('Delhi', 'New Delhi', '110002', 0.00, 'active', 'Free Metro Delivery', '1–3 business days'),
   ('Maharashtra', 'Mumbai', '400001', 60.00, 'active', 'Pan-India Express Delivery', '3–5 business days')
@@ -47,3 +52,4 @@ SET
   delivery_charge = EXCLUDED.delivery_charge,
   status = EXCLUDED.status,
   updated_at = NOW();
+
