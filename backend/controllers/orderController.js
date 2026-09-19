@@ -167,23 +167,45 @@ export const createOrder = async (req, res) => {
 
     // Coupon calculation
     let discountAmount = 0;
+    let validatedCouponId = null;
+    let validatedCouponCode = null;
+
     if (couponCode) {
       try {
+        const cleanCode = String(couponCode).toUpperCase().trim();
         const { data: coupon } = await supabase
           .from('coupons')
           .select('*')
-          .eq('code', String(couponCode).toUpperCase().trim())
+          .eq('code', cleanCode)
           .eq('is_active', true)
           .maybeSingle();
 
         if (coupon) {
-          if (coupon.discount_type === 'percentage') {
-            discountAmount = Math.round((subtotal * Number(coupon.discount_value)) / 100);
-          } else {
-            discountAmount = Number(coupon.discount_value || 0);
+          const now = new Date();
+          const startsValid = !coupon.starts_at || new Date(coupon.starts_at) <= now;
+          const expiresValid = !coupon.expires_at || new Date(coupon.expires_at) > now;
+          const minOrder = Number(coupon.min_order_amount || 0);
+
+          if (startsValid && expiresValid && subtotal >= minOrder) {
+            validatedCouponId = coupon.id;
+            validatedCouponCode = coupon.code;
+            const valNum = Number(coupon.discount_value || 0);
+            const maxCap = Number(coupon.max_discount || 0);
+
+            if (coupon.discount_type === 'percentage') {
+              let calc = Math.round((subtotal * valNum) / 100);
+              if (maxCap > 0 && calc > maxCap) {
+                calc = maxCap;
+              }
+              discountAmount = Math.min(subtotal, calc);
+            } else {
+              discountAmount = Math.min(subtotal, valNum);
+            }
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('Coupon calculation notice:', e.message);
+      }
     }
 
     const grandTotal = Math.max(0, subtotal - discountAmount + deliveryFee);
@@ -208,10 +230,12 @@ export const createOrder = async (req, res) => {
             subtotal,
             delivery_fee: deliveryFee,
             discount_amount: discountAmount,
+            coupon_id: validatedCouponId,
+            coupon_code: validatedCouponCode,
             grand_total: grandTotal,
             payment_method: cleanPaymentMethod,
             payment_id: paymentId || null,
-            payment_status: paymentId ? 'paid' : 'pending',
+            payment_status: paymentId ? 'paid' : (isCod ? 'pending' : 'pending'),
             order_status: isCod ? 'confirmed' : 'pending',
           },
         ])
@@ -231,6 +255,40 @@ export const createOrder = async (req, res) => {
           
         if (insertedItems) {
           order.order_items = insertedItems;
+        }
+
+        // Record Coupon Usage for COD orders
+        if (isCod && validatedCouponId) {
+          try {
+            const { data: cData } = await supabase
+              .from('coupons')
+              .select('id, usage_count')
+              .eq('id', validatedCouponId)
+              .maybeSingle();
+
+            if (cData) {
+              await supabase
+                .from('coupons')
+                .update({
+                  usage_count: Number(cData.usage_count || 0) + 1,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', cData.id);
+
+              if (req.user) {
+                await supabase
+                  .from('coupon_usages')
+                  .insert([{
+                    coupon_id: cData.id,
+                    user_id: req.user.id || req.user._id,
+                    order_id: order.id,
+                    discount_amount: discountAmount,
+                  }]);
+              }
+            }
+          } catch (cErr) {
+            console.warn('COD coupon usage notice:', cErr.message);
+          }
         }
       } else if (orderErr) {
         console.error('Supabase order insert error:', orderErr.message);

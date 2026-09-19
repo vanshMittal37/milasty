@@ -406,7 +406,7 @@ export default function CustomerOrderDetailPage() {
                 </div>
                 {order.couponDiscount > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--accent-gold)', fontWeight: '700' }}>
-                    <span>Coupon Discount</span>
+                    <span>Coupon Discount {order.couponCode ? `(${order.couponCode})` : ''}</span>
                     <span>-₹{order.couponDiscount}</span>
                   </div>
                 )}

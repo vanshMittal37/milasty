@@ -450,10 +450,10 @@ export default function AdminOrderList() {
                 <span>Delivery Fee:</span>
                 <span>{(selectedOrder.deliveryFee || selectedOrder.delivery_fee || 0) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `₹${selectedOrder.deliveryFee || selectedOrder.delivery_fee}`}</span>
               </div>
-              {selectedOrder.discountAmount > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', color: '#22c55e' }}>
-                  <span>Discount:</span>
-                  <span>-₹{selectedOrder.discountAmount}</span>
+              {(selectedOrder.discountAmount > 0 || selectedOrder.coupon_discount > 0 || selectedOrder.couponDiscount > 0) && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '260px', color: '#22c55e' }}>
+                  <span>Discount {(selectedOrder.couponCode || selectedOrder.coupon_code) ? `(${selectedOrder.couponCode || selectedOrder.coupon_code})` : ''}:</span>
+                  <span>-₹{selectedOrder.discountAmount || selectedOrder.coupon_discount || selectedOrder.couponDiscount}</span>
                 </div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', fontSize: '1.1rem', fontWeight: '900', color: 'var(--admin-text-primary)', borderTop: '1px dashed var(--admin-border)', paddingTop: '0.5rem', marginTop: '0.2rem' }}>

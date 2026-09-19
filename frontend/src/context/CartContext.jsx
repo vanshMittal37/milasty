@@ -10,187 +10,101 @@ export const CartProvider = ({ children }) => {
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [appliedCoupon, setAppliedCoupon] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('milasty_applied_coupon');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
   const [couponDiscountAmount, setCouponDiscountAmount] = useState(0);
 
-  // Load cart item list based on active user context
+  // Sync appliedCoupon with Session Storage
   useEffect(() => {
-    const key = user ? `milasty_cart_${user._id}` : 'milasty_cart_guest';
     try {
-      const saved = localStorage.getItem(key);
-      setCartItems(saved ? JSON.parse(saved) : []);
-    } catch (e) {
-      setCartItems([]);
-    }
-  }, [user]);
+      if (appliedCoupon) {
+        sessionStorage.setItem('milasty_applied_coupon', JSON.stringify(appliedCoupon));
+      } else {
+        sessionStorage.removeItem('milasty_applied_coupon');
+      }
+    } catch (e) {}
+  }, [appliedCoupon]);
 
-  // Save changes to active storage key when cart modifies
+  const subtotal = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
+
+  // Recalculate or revalidate coupon discount when subtotal modifies
   useEffect(() => {
-    const key = user ? `milasty_cart_${user._id}` : 'milasty_cart_guest';
-    try {
-      localStorage.setItem(key, JSON.stringify(cartItems));
-    } catch (e) {
-      console.error('Failed to save cart', e);
-    }
-  }, [cartItems, user]);
-
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3000);
-  };
-
-  const addToCart = (product, variant, qty = 1) => {
-    const selectedVariant = variant || product?.variants?.[0] || {};
-    const itemKey = `${product?._id || product?.slug}-${selectedVariant?.name || 'default'}`;
-    const unitPrice = selectedVariant?.price || product?.finalPrice || product?.price || 0;
-    const availableStock = selectedVariant?.stock !== undefined && selectedVariant?.stock !== null
-      ? Number(selectedVariant.stock)
-      : (product?.stock !== undefined && product?.stock !== null ? Number(product.stock) : 50);
-
-    if (availableStock <= 0) {
-      showToast('This variant is currently Out of Stock.');
+    if (!appliedCoupon) {
+      setCouponDiscountAmount(0);
       return;
     }
 
-    setCartItems((prevItems) => {
-      const existingIndex = prevItems.findIndex((item) => item.key === itemKey);
-      if (existingIndex > -1) {
-        const existingQty = prevItems[existingIndex].quantity;
-        const requestedQty = existingQty + qty;
-        if (requestedQty > availableStock) {
-          showToast(`Only ${availableStock} packs are available.`);
-          const cappedQty = Math.min(requestedQty, availableStock);
-          const updated = [...prevItems];
-          updated[existingIndex].quantity = cappedQty;
-          updated[existingIndex].availableStock = availableStock;
-          updated[existingIndex].totalPrice = cappedQty * unitPrice;
-          return updated;
-        }
-        const updated = [...prevItems];
-        updated[existingIndex].quantity = requestedQty;
-        updated[existingIndex].availableStock = availableStock;
-        updated[existingIndex].totalPrice = requestedQty * unitPrice;
-        return updated;
-      } else {
-        const cappedQty = Math.min(qty, availableStock);
-        if (qty > availableStock) {
-          showToast(`Only ${availableStock} packs are available.`);
-        }
-        return [
-          ...prevItems,
-          {
-            key: itemKey,
-            productId: product._id || product.id || product.slug,
-            variantId: selectedVariant.id || selectedVariant._id || null,
-            slug: product.slug,
-            title: product.title,
-            variantName: selectedVariant.name || 'Standard Pack',
-            weight: selectedVariant.weight || '',
-            price: unitPrice,
-            originalPrice: selectedVariant.originalPrice || unitPrice,
-            image: product.image,
-            availableStock: availableStock,
-            quantity: cappedQty,
-            totalPrice: unitPrice * cappedQty,
-          },
-        ];
+    if (subtotal <= 0) {
+      setAppliedCoupon(null);
+      setCouponDiscountAmount(0);
+      return;
+    }
+
+    const minOrder = Number(appliedCoupon.minOrderAmount || 0);
+    if (subtotal < minOrder) {
+      const couponCodeMsg = appliedCoupon.code;
+      setAppliedCoupon(null);
+      setCouponDiscountAmount(0);
+      sessionStorage.removeItem('milasty_applied_coupon');
+      showToast(`Coupon ${couponCodeMsg} removed because minimum order requirement (₹${minOrder}) is no longer met.`);
+      return;
+    }
+
+    // Dynamic recalculation for quantity changes
+    let newDiscount = 0;
+    const valNum = Number(appliedCoupon.discountValue || 0);
+    const maxCap = Number(appliedCoupon.maxDiscount || 0);
+
+    if (appliedCoupon.discountType === 'percentage') {
+      let calc = Math.round((subtotal * valNum) / 100);
+      if (maxCap > 0 && calc > maxCap) {
+        calc = maxCap;
       }
-    });
+      newDiscount = Math.min(subtotal, calc);
+    } else {
+      newDiscount = Math.min(subtotal, valNum);
+    }
 
-    showToast(`Added "${product.title} (${selectedVariant.weight || selectedVariant.name})"` );
-  };
+    setCouponDiscountAmount(newDiscount);
+  }, [subtotal, appliedCoupon]);
 
-  const updateQuantity = (itemKey, delta) => {
-    setCartItems((prevItems) => {
-      return prevItems
-        .map((item) => {
-          if (item.key === itemKey) {
-            const newQty = item.quantity + delta;
-            if (newQty <= 0) return null;
-            if (item.availableStock !== undefined && newQty > item.availableStock) {
-              showToast(`Only ${item.availableStock} packs are available.`);
-              return {
-                ...item,
-                quantity: item.availableStock,
-                totalPrice: item.availableStock * item.price,
-              };
-            }
-            return {
-              ...item,
-              quantity: newQty,
-              totalPrice: newQty * item.price,
-            };
-          }
-          return item;
-        })
-        .filter(Boolean);
-    });
-  };
-
-  const removeFromCart = (itemKey) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.key !== itemKey));
-  };
-
-  const clearCart = () => {
-    setCartItems([]);
-    setAppliedCoupon(null);
-    setCouponDiscountAmount(0);
-  };
-
-  const subtotal = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
   const deliveryFee = 0;
   const grandTotal = Math.max(0, subtotal - couponDiscountAmount);
   const totalItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const applyCoupon = async (code) => {
-    const upperCode = code ? code.toUpperCase() : '';
+    const upperCode = String(code || '').toUpperCase().trim();
+    if (!upperCode) {
+      const msg = 'Please enter a coupon code.';
+      showToast(msg);
+      return { success: false, message: msg };
+    }
+
     try {
-      const res = await api.post('/coupons/validate', { code: upperCode, subtotal });
+      const res = await api.post('/coupons/validate', {
+        code: upperCode,
+        subtotal,
+        userId: user ? (user.id || user._id) : null,
+      });
+
       if (res.data && res.data.valid) {
         setAppliedCoupon(res.data);
         setCouponDiscountAmount(res.data.discountAmount);
         showToast(res.data.message);
         return { success: true, message: res.data.message };
       }
+      const msg = res.data?.message || 'Invalid coupon code';
+      showToast(msg);
+      return { success: false, message: msg };
     } catch (error) {
-      // Graceful client fallback validation
-      if (upperCode === 'WELCOME10') {
-        const discount = Math.round(subtotal * 0.1);
-        const fallbackCoupon = {
-          valid: true,
-          code: 'WELCOME10',
-          discountType: 'percentage',
-          discountValue: 10,
-          discountAmount: discount,
-          message: `Coupon applied! You saved ₹${discount}`,
-        };
-        setAppliedCoupon(fallbackCoupon);
-        setCouponDiscountAmount(discount);
-        showToast(`Coupon WELCOME10 applied! You saved ₹${discount}`);
-        return { success: true, message: `Coupon WELCOME10 applied! You saved ₹${discount}` };
-      } else if (upperCode === 'MILASTY100') {
-        if (subtotal < 500) {
-          const msg = 'Minimum order amount of ₹500 required for MILASTY100';
-          showToast(msg);
-          return { success: false, message: msg };
-        }
-        const discount = 100;
-        const fallbackCoupon = {
-          valid: true,
-          code: 'MILASTY100',
-          discountType: 'fixed',
-          discountValue: 100,
-          discountAmount: discount,
-          message: 'Coupon MILASTY100 applied! You saved ₹100',
-        };
-        setAppliedCoupon(fallbackCoupon);
-        setCouponDiscountAmount(discount);
-        showToast('Coupon MILASTY100 applied! You saved ₹100');
-        return { success: true, message: 'Coupon MILASTY100 applied! You saved ₹100' };
-      }
-      const msg = error.response?.data?.message || 'Invalid coupon code';
+      const msg = error.response?.data?.message || 'Unable to apply coupon. Please try again.';
       showToast(msg);
       return { success: false, message: msg };
     }
@@ -199,8 +113,12 @@ export const CartProvider = ({ children }) => {
   const removeCoupon = () => {
     setAppliedCoupon(null);
     setCouponDiscountAmount(0);
+    try {
+      sessionStorage.removeItem('milasty_applied_coupon');
+    } catch (e) {}
     showToast('Coupon removed');
   };
+
 
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
