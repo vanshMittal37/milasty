@@ -1,7 +1,41 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { supabase } from '../config/supabase.js';
 import { initialProducts, initialReviews, initialFaqs } from '../data/seedData.js';
 
-// In-memory fallback store for development environment when database table is bootstrapping
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const REVIEWS_FILE = path.join(__dirname, '../data/reviews_store.json');
+const TESTIMONIALS_FILE = path.join(__dirname, '../data/testimonials_store.json');
+
+// Helper to load JSON files safely from disk
+const loadJsonFile = (filePath, defaultData = []) => {
+  try {
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      if (content.trim()) return JSON.parse(content);
+    }
+  } catch (err) {
+    console.warn(`Notice loading ${path.basename(filePath)}:`, err.message);
+  }
+  return defaultData;
+};
+
+// Helper to save JSON files safely to disk
+const saveJsonFile = (filePath, data) => {
+  try {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.warn(`Notice saving ${path.basename(filePath)}:`, err.message);
+  }
+};
+
+// In-memory & file-backed store for rock-solid persistence across deployments
 const memoryReviews = new Map();
 const memoryTestimonials = new Map();
 
@@ -42,31 +76,47 @@ const getInitialTestimonialsSeed = () => [
   },
 ];
 
-// Initialize memory seed
-getInitialTestimonialsSeed().forEach(t => memoryTestimonials.set(t.id, t));
+// Hydrate memory stores from disk on startup
+const storedReviewsList = loadJsonFile(REVIEWS_FILE, []);
+storedReviewsList.forEach((r) => { if (r && r.id) memoryReviews.set(String(r.id), r); });
+
+const storedTestimonialsList = loadJsonFile(TESTIMONIALS_FILE, getInitialTestimonialsSeed());
+storedTestimonialsList.forEach((t) => { if (t && t.id) memoryTestimonials.set(String(t.id), t); });
+
+// Helper functions to persist memory states to disk
+const syncReviewsToDisk = () => {
+  saveJsonFile(REVIEWS_FILE, Array.from(memoryReviews.values()));
+};
+
+const syncTestimonialsToDisk = () => {
+  saveJsonFile(TESTIMONIALS_FILE, Array.from(memoryTestimonials.values()));
+};
 
 // Helper to build comprehensive product lookup map across seed data and DB
 const getProductsLookupMap = async () => {
   const map = new Map();
 
-  // 1. Populate from initialProducts seed first
-  initialProducts.forEach((p) => {
-    if (p.id) map.set(String(p.id), p);
-    if (p._id) map.set(String(p._id), p);
-    if (p.slug) map.set(String(p.slug), p);
-    if (p.title) map.set(String(p.title).toLowerCase(), p);
-  });
+  const addProductToMap = (p) => {
+    if (!p) return;
+    const img = p.image || p.image_url || (Array.isArray(p.images) && p.images[0]) || p.secondaryImage || '';
+    const item = { ...p, image: img };
+    if (p.id) map.set(String(p.id), item);
+    if (p._id) map.set(String(p._id), item);
+    if (p.slug) {
+      map.set(String(p.slug), item);
+      map.set(String(p.slug).toLowerCase(), item);
+    }
+    if (p.title) map.set(String(p.title).toLowerCase(), item);
+  };
+
+  // 1. Populate from initialProducts seed
+  initialProducts.forEach(addProductToMap);
 
   // 2. Populate/override from Supabase products table
   try {
     const { data: products } = await supabase.from('products').select('*');
     if (products && products.length > 0) {
-      products.forEach((p) => {
-        if (p.id) map.set(String(p.id), p);
-        if (p._id) map.set(String(p._id), p);
-        if (p.slug) map.set(String(p.slug), p);
-        if (p.title) map.set(String(p.title).toLowerCase(), p);
-      });
+      products.forEach(addProductToMap);
     }
   } catch (err) {
     console.warn('Products map fetch notice:', err.message);
@@ -117,13 +167,11 @@ export const createCustomerReview = async (req, res) => {
         .or(`user_id.eq.${userId}${userEmail ? `,customer_email.ilike.${userEmail}` : ''}`);
 
       if (orders && orders.length > 0) {
-        // Find delivered order matching orderId or containing productId
         matchedOrder = orders.find((o) => {
           const isDelivered = String(o.order_status || '').toLowerCase() === 'delivered';
           if (!isDelivered) return false;
           if (orderId && (o.id === orderId || o.order_number === orderId)) return true;
           
-          // Check if order contains product
           const items = o.order_items || [];
           return items.some((item) => (item.product_id || item.productId) === productId);
         });
@@ -138,7 +186,6 @@ export const createCustomerReview = async (req, res) => {
     }
 
     if (!matchedOrder) {
-      // Memory fallback check for orders
       const memOrders = Array.from(global.memoryOrders?.values() || []);
       matchedOrder = memOrders.find((o) => {
         const oUserId = o.user_id || o.userId;
@@ -157,7 +204,6 @@ export const createCustomerReview = async (req, res) => {
       }
     }
 
-    // Direct frontend fallback if submitted from delivered order UI context
     if (!matchedOrder && orderId) {
       matchedOrder = {
         id: orderId,
@@ -177,8 +223,8 @@ export const createCustomerReview = async (req, res) => {
       const { data: existingReviews } = await supabase
         .from('product_reviews')
         .select('id')
-        .eq('user_id', userId)
-        .eq('product_id', productId)
+        .eq('user_id', String(userId))
+        .eq('product_id', String(productId))
         .eq('review_source', 'customer');
 
       if (existingReviews && existingReviews.length > 0) {
@@ -188,7 +234,7 @@ export const createCustomerReview = async (req, res) => {
       }
     } catch (checkErr) {
       const hasReviewedInMemory = Array.from(memoryReviews.values()).some(
-        (r) => r.user_id === userId && r.product_id === productId && r.review_source === 'customer'
+        (r) => String(r.user_id) === String(userId) && String(r.product_id) === String(productId) && r.review_source === 'customer'
       );
       if (hasReviewedInMemory) {
         return res.status(400).json({
@@ -199,25 +245,30 @@ export const createCustomerReview = async (req, res) => {
 
     const productsMap = await getProductsLookupMap();
     const pidStr = String(productId).trim();
-    const resolvedProduct = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
+    let resolvedProduct = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
+    if (!resolvedProduct.title) {
+      resolvedProduct = Array.from(productsMap.values()).find(
+        (p) => String(p.id) === pidStr || String(p._id) === pidStr || String(p.slug).toLowerCase() === pidStr.toLowerCase()
+      ) || {};
+    }
     const productTitle = matchedOrderItem?.title || matchedOrderItem?.product_title || matchedOrderItem?.name || resolvedProduct.title || 'MILASTY Product';
     const productImage = matchedOrderItem?.image || matchedOrderItem?.product_image || resolvedProduct.image || (Array.isArray(resolvedProduct.images) ? resolvedProduct.images[0] : '');
 
     const finalImageUrl = reviewImageUrl || image_url || '';
     const newReviewRecord = {
-      product_id: productId,
+      product_id: String(productId),
       product_title: productTitle,
       product_image: productImage,
-      user_id: userId,
-      order_id: matchedOrder.id,
-      order_item_id: matchedOrderItem?.id || orderItemId || null,
+      user_id: String(userId),
+      order_id: matchedOrder.id ? String(matchedOrder.id) : null,
+      order_item_id: matchedOrderItem?.id ? String(matchedOrderItem.id) : null,
       reviewer_name: req.user?.name || matchedOrder.customer_name || 'Customer',
       email: userEmail || matchedOrder.customer_email || '',
       rating: finalRating,
       comment: String(comment || '').trim(),
       review_image_url: finalImageUrl,
       review_source: 'customer',
-      status: 'pending', // Requires admin moderation
+      status: 'pending',
       is_published: true,
       show_on_product: true,
       is_verified_purchase: true,
@@ -247,8 +298,9 @@ export const createCustomerReview = async (req, res) => {
       insertedReview = { id: fallbackId, ...newReviewRecord };
     }
 
-    // Synchronize to memory store so it is immediately visible
+    // Synchronize to memory & disk store
     memoryReviews.set(String(insertedReview.id), insertedReview);
+    syncReviewsToDisk();
 
     return res.status(201).json({
       success: true,
@@ -288,25 +340,34 @@ export const getMyCustomerReviews = async (req, res) => {
     }
 
     const memReviews = Array.from(memoryReviews.values()).filter(
-      (r) => r.user_id === userId || (userEmail && r.email?.toLowerCase() === userEmail)
+      (r) => String(r.user_id) === String(userId) || (userEmail && r.email?.toLowerCase() === userEmail)
     );
 
     const reviewMap = new Map();
     dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
     memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
 
-    const formatted = Array.from(reviewMap.values()).map((r) => ({
-      id: r.id,
-      productId: r.product_id,
-      productTitle: r.product_title || r.productTitle || '',
-      productImage: r.product_image || '',
-      orderId: r.order_id,
-      rating: r.rating,
-      comment: r.comment,
-      status: r.status || 'pending',
-      reviewImageUrl: r.review_image_url || '',
-      createdAt: r.created_at,
-    }));
+    const productsMap = await getProductsLookupMap();
+
+    const formatted = Array.from(reviewMap.values()).map((r) => {
+      const pidStr = String(r.product_id || r.productId || '').trim();
+      const p = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
+      const img = p.image || r.product_image || r.productImage || '';
+      const title = p.title || r.product_title || r.productTitle || 'MILASTY Product';
+
+      return {
+        id: r.id,
+        productId: r.product_id,
+        productTitle: title,
+        productImage: img,
+        orderId: r.order_id,
+        rating: r.rating,
+        comment: r.comment,
+        status: r.status || 'pending',
+        reviewImageUrl: r.review_image_url || '',
+        createdAt: r.created_at,
+      };
+    });
 
     return res.json(formatted);
   } catch (error) {
@@ -327,7 +388,7 @@ export const getProductReviews = async (req, res) => {
       const { data, error } = await supabase
         .from('product_reviews')
         .select('*')
-        .eq('product_id', productId)
+        .eq('product_id', String(productId))
         .eq('status', 'approved')
         .eq('is_published', true)
         .eq('show_on_product', true)
@@ -340,8 +401,8 @@ export const getProductReviews = async (req, res) => {
 
     const memReviews = Array.from(memoryReviews.values()).filter(
       (r) =>
-        String(r.product_id) === String(productId) &&
-        (r.status === 'approved' || !r.status) &&
+        String(r.product_id || r.productId) === String(productId) &&
+        r.status === 'approved' &&
         r.is_published !== false &&
         r.show_on_product !== false
     );
@@ -350,37 +411,20 @@ export const getProductReviews = async (req, res) => {
     dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
     memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
 
-    const reviews = Array.from(reviewMap.values());
-
-    // Calculations for ratings & distribution
-    const totalReviews = reviews.length;
-    const sumRating = reviews.reduce((acc, r) => acc + Number(r.rating || 5), 0);
-    const averageRating = totalReviews > 0 ? Number((sumRating / totalReviews).toFixed(1)) : 0;
-
-    const ratingDistribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-    reviews.forEach((r) => {
-      const rNum = Math.min(5, Math.max(1, Math.round(Number(r.rating || 5))));
-      ratingDistribution[rNum] = (ratingDistribution[rNum] || 0) + 1;
-    });
+    let reviews = Array.from(reviewMap.values());
 
     const formatted = reviews.map((r) => ({
       id: r.id,
-      reviewerName: r.reviewer_name || r.name || 'Customer',
+      name: r.reviewer_name || r.name || 'Customer',
       rating: Number(r.rating || 5),
       comment: r.comment || r.text || '',
       reviewImageUrl: r.review_image_url || r.image_url || '',
-      isVerifiedPurchase: Boolean(r.is_verified_purchase ?? r.is_verified ?? true),
+      isVerified: Boolean(r.is_verified_purchase ?? r.is_verified ?? true),
       reviewSource: r.review_source || 'customer',
-      createdAt: r.created_at,
+      createdAt: r.created_at || new Date().toISOString(),
     }));
 
-    return res.json({
-      productId,
-      averageRating,
-      totalReviews,
-      ratingDistribution,
-      reviews: formatted,
-    });
+    return res.json(formatted);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching product reviews', error: error.message });
   }
@@ -410,19 +454,18 @@ export const getAllAdminReviews = async (req, res) => {
 
     const memReviews = Array.from(memoryReviews.values());
 
-    // Merge DB and Memory reviews so no submitted review is ever lost
     const reviewMap = new Map();
     dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
     memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
 
     let reviews = Array.from(reviewMap.values());
 
-    // Merge seed reviews ONLY if no real user/admin/memory reviews exist
+    // Fallback seed reviews if no reviews exist at all
     if (reviews.length === 0) {
       reviews = initialReviews.map((r, idx) => ({
         id: `seed_rev_${idx}`,
         product_id: r.productId || null,
-        product_title: r.productTitle || '',
+        product_title: r.productTitle || r.productName || '',
         reviewer_name: r.name || 'Customer',
         email: r.email || '',
         rating: r.rating || 5,
@@ -444,19 +487,35 @@ export const getAllAdminReviews = async (req, res) => {
       const pidStr = String(pidRaw).trim();
       const searchTitle = (r.product_title || r.productTitle || '').trim();
 
-      // Find matching product across map keys or title search
       let p = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
+      
       if (!p.title) {
-        const lowerSearch = (searchTitle || pidStr).toLowerCase();
+        const lowerSearch = searchTitle.toLowerCase();
+        const lowerPid = pidStr.toLowerCase();
+
         p = Array.from(productsMap.values()).find(
-          (item) =>
-            String(item.id) === pidStr ||
-            String(item._id) === pidStr ||
-            String(item.slug).toLowerCase() === lowerSearch ||
-            String(item.title).toLowerCase() === lowerSearch ||
-            (item.title && lowerSearch && item.title.toLowerCase().includes(lowerSearch)) ||
-            (searchTitle && item.title && searchTitle.toLowerCase().includes(item.title.toLowerCase()))
+          (item) => {
+            const itemTitle = (item.title || '').toLowerCase();
+            const itemSlug = (item.slug || '').toLowerCase();
+            const itemId = String(item.id || item._id || '').toLowerCase();
+
+            if (itemId && (itemId === lowerPid || lowerPid.includes(itemId))) return true;
+            if (itemSlug && (itemSlug === lowerPid || lowerPid.includes(itemSlug))) return true;
+            if (lowerSearch && (itemTitle === lowerSearch || itemTitle.includes(lowerSearch) || lowerSearch.includes(itemTitle))) return true;
+            return false;
+          }
         ) || {};
+      }
+
+      if (!p.title) {
+        const commentText = (r.comment || '').toLowerCase();
+        if (commentText.includes('imperial') || searchTitle.toLowerCase().includes('imperial')) {
+          p = productsMap.get('imperial-wedding-hamper') || {};
+        } else if (commentText.includes('elegant') || searchTitle.toLowerCase().includes('elegant')) {
+          p = productsMap.get('elegant-celebration-hamper') || {};
+        } else if (commentText.includes('hamper')) {
+          p = productsMap.get('imperial-wedding-hamper') || {};
+        }
       }
 
       const resolvedTitle =
@@ -466,16 +525,17 @@ export const getAllAdminReviews = async (req, res) => {
         'MILASTY Artisan Bake';
 
       const img =
-        (r.product_image && r.product_image.trim()) ||
         p.image ||
+        p.image_url ||
         (Array.isArray(p.images) && p.images[0] ? p.images[0] : null) ||
-        p.secondaryImage ||
-        'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=800&q=80';
+        (r.product_image && r.product_image.trim()) ||
+        (r.productImage && r.productImage.trim()) ||
+        'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80';
 
       return {
         id: r.id,
         _id: r.id,
-        productId: r.product_id,
+        productId: r.product_id || r.productId || pidStr,
         productTitle: resolvedTitle,
         productImage: img,
         reviewerName: r.reviewer_name || r.name || 'Customer',
@@ -535,7 +595,7 @@ export const createAdminProductReview = async (req, res) => {
     const productImage = resolvedProduct.image || (Array.isArray(resolvedProduct.images) ? resolvedProduct.images[0] : '');
 
     const newRecord = {
-      product_id: productId,
+      product_id: String(productId),
       product_title: productTitle,
       product_image: productImage,
       user_id: null,
@@ -564,7 +624,9 @@ export const createAdminProductReview = async (req, res) => {
         .select()
         .single();
 
-      if (!error && data) inserted = data;
+      if (!error && data) {
+        inserted = data;
+      }
     } catch (e) {
       console.warn('Admin review creation notice:', e.message);
     }
@@ -575,6 +637,7 @@ export const createAdminProductReview = async (req, res) => {
     }
 
     memoryReviews.set(String(inserted.id), inserted);
+    syncReviewsToDisk();
 
     return res.status(201).json({
       success: true,
@@ -619,7 +682,11 @@ export const updateReviewStatus = async (req, res) => {
       item.status = status;
       item.updated_at = new Date().toISOString();
       if (!updated) updated = item;
+    } else if (updated) {
+      memoryReviews.set(String(id), updated);
     }
+
+    syncReviewsToDisk();
 
     return res.json({ success: true, message: `Review status set to ${status}`, review: updated || { id, status } });
   } catch (error) {
@@ -655,7 +722,7 @@ export const updateReview = async (req, res) => {
     const updates = { updated_at: new Date().toISOString() };
 
     if (targetProductId) {
-      updates.product_id = targetProductId;
+      updates.product_id = String(targetProductId);
       const productsMap = await getProductsLookupMap();
       const pidStr = String(targetProductId).trim();
       let p = productsMap.get(pidStr) || productsMap.get(pidStr.toLowerCase()) || {};
@@ -701,7 +768,11 @@ export const updateReview = async (req, res) => {
       const item = memoryReviews.get(String(id));
       Object.assign(item, updates);
       if (!updated) updated = item;
+    } else if (updated) {
+      memoryReviews.set(String(id), updated);
     }
+
+    syncReviewsToDisk();
 
     return res.json({ success: true, message: 'Review updated successfully', review: updated || { id, ...updates } });
   } catch (error) {
@@ -724,6 +795,7 @@ export const deleteReview = async (req, res) => {
     }
 
     memoryReviews.delete(String(id));
+    syncReviewsToDisk();
 
     return res.json({ success: true, message: 'Review deleted successfully' });
   } catch (error) {
@@ -875,6 +947,7 @@ export const createTestimonial = async (req, res) => {
     }
 
     memoryTestimonials.set(String(inserted.id), inserted);
+    syncTestimonialsToDisk();
 
     return res.status(201).json({
       success: true,
@@ -922,7 +995,11 @@ export const updateTestimonial = async (req, res) => {
       const item = memoryTestimonials.get(String(id));
       Object.assign(item, updates);
       if (!updated) updated = item;
+    } else if (updated) {
+      memoryTestimonials.set(String(id), updated);
     }
+
+    syncTestimonialsToDisk();
 
     return res.json({ success: true, message: 'Testimonial updated successfully', testimonial: updated || { id, ...updates } });
   } catch (error) {
@@ -945,6 +1022,7 @@ export const deleteTestimonial = async (req, res) => {
     }
 
     memoryTestimonials.delete(String(id));
+    syncTestimonialsToDisk();
 
     return res.json({ success: true, message: 'Testimonial deleted successfully' });
   } catch (error) {

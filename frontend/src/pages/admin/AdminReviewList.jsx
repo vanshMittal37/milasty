@@ -597,7 +597,14 @@ export default function AdminReviewList() {
                         <button
                           onClick={() => {
                             setEditingReview(rev);
-                            setEditRevProductId(rev.productId || rev.product_id || '');
+                            const matchedP = safeProducts.find((p) =>
+                              String(p.id) === String(rev.productId || rev.product_id) ||
+                              String(p._id) === String(rev.productId || rev.product_id) ||
+                              String(p.slug) === String(rev.productId || rev.product_id) ||
+                              String(p.title).toLowerCase() === String(rev.productTitle || '').toLowerCase()
+                            );
+                            const initialPid = matchedP ? (matchedP.id || matchedP._id || matchedP.slug) : (rev.productId || rev.product_id || '');
+                            setEditRevProductId(initialPid);
                             setEditRevName(rev.reviewerName || '');
                             setEditRevRating(rev.rating || 5);
                             setEditRevComment(rev.comment || '');
@@ -757,9 +764,10 @@ export default function AdminReviewList() {
                   onChange={(e) => setRevProductId(e.target.value)}
                   style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
                 >
-                  {safeProducts.map((p) => (
-                    <option key={p.id || p._id} value={p.id || p._id}>{p.title}</option>
-                  ))}
+                  {safeProducts.map((p) => {
+                    const pVal = p.id || p._id || p.slug;
+                    return <option key={pVal} value={pVal}>{p.title}</option>;
+                  })}
                 </select>
               </div>
 
@@ -849,9 +857,10 @@ export default function AdminReviewList() {
                   onChange={(e) => setEditRevProductId(e.target.value)}
                   style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
                 >
-                  {safeProducts.map((p) => (
-                    <option key={p.id || p._id} value={p.id || p._id}>{p.title}</option>
-                  ))}
+                  {safeProducts.map((p) => {
+                    const pVal = p.id || p._id || p.slug;
+                    return <option key={pVal} value={pVal}>{p.title}</option>;
+                  })}
                 </select>
               </div>
 

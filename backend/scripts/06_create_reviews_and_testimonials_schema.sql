@@ -5,11 +5,13 @@
 
 -- 1. Create product_reviews Table
 CREATE TABLE IF NOT EXISTS public.product_reviews (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
-  order_id UUID REFERENCES public.orders(id) ON DELETE SET NULL,
-  order_item_id UUID,
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  product_id TEXT NOT NULL,
+  product_title TEXT DEFAULT '',
+  product_image TEXT DEFAULT '',
+  user_id TEXT DEFAULT '',
+  order_id TEXT DEFAULT '',
+  order_item_id TEXT DEFAULT '',
   reviewer_name TEXT NOT NULL DEFAULT 'Customer',
   email TEXT DEFAULT '',
   rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
@@ -28,7 +30,7 @@ CREATE TABLE IF NOT EXISTS public.product_reviews (
 -- Partial Unique Index: Ensures 1 customer review per user per product
 CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_user_product_review 
 ON public.product_reviews(user_id, product_id) 
-WHERE (review_source = 'customer' AND user_id IS NOT NULL);
+WHERE (review_source = 'customer' AND user_id IS NOT NULL AND user_id != '');
 
 -- Indexes for fast querying
 CREATE INDEX IF NOT EXISTS idx_product_reviews_product_id ON public.product_reviews(product_id);
@@ -38,7 +40,7 @@ CREATE INDEX IF NOT EXISTS idx_product_reviews_is_published ON public.product_re
 
 -- 2. Create testimonials Table (Homepage Brand Testimonials)
 CREATE TABLE IF NOT EXISTS public.testimonials (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   name TEXT NOT NULL,
   role TEXT DEFAULT 'Valued Customer',
   rating INTEGER NOT NULL DEFAULT 5 CHECK (rating >= 1 AND rating <= 5),
