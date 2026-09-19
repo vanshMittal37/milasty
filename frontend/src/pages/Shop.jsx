@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, ChevronRight, ShoppingBag, Leaf, Sparkles, 
   Shield, Award, ArrowRight, Star, ChevronLeft, Check, Filter,
@@ -47,6 +47,7 @@ const formatLaunchDate = (dateStr) => {
 };
 
 export default function Shop() {
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -552,6 +553,7 @@ export default function Shop() {
               return (
                 <div
                   key={item.id || idx}
+                  onClick={() => navigate(`/product/${item.productSlug || item.slug || pId}`)}
                   style={{
                     background: theme.bgGradient,
                     borderRadius: isMobile ? '14px' : '20px',
@@ -564,6 +566,7 @@ export default function Shop() {
                     position: 'relative',
                     overflow: 'hidden',
                     boxSizing: 'border-box',
+                    cursor: 'pointer',
                     transition: 'transform 0.3s ease, border-color 0.3s ease',
                   }}
                 >
@@ -660,7 +663,8 @@ export default function Shop() {
                       </div>
 
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           addToCart({
                             _id: pId,
                             id: pId,
@@ -1103,27 +1107,49 @@ export default function Shop() {
 
             {/* Recommended Products Result Box */}
             {quizSelectedOption && (
-              <div style={{ marginTop: '2rem', borderTop: '1px dashed rgba(255,255,255,0.2)', paddingTop: '1.5rem' }}>
+              <div style={{ marginTop: '2rem', borderTop: '1px dashed rgba(255,255,255,0.2)', paddingTop: '1.5rem', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
                 <h3 style={{ fontSize: '1.2rem', color: '#b9cd94', fontFamily: 'var(--font-serif)', marginBottom: '1rem', fontWeight: '800' }}>
                   Recommended for You ({quizRecommendations.length})
                 </h3>
 
                 {quizRecommendations.length > 0 ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, minmax(0, 1fr))', gap: '0.85rem', width: '100%', boxSizing: 'border-box' }}>
                     {quizRecommendations.map((prod) => (
-                      <div key={prod.id || prod._id} style={{ backgroundColor: 'rgba(20, 10, 5, 0.85)', padding: '1rem', borderRadius: '16px', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', gap: '0.85rem', alignItems: 'center', textAlign: 'left' }}>
-                        <img src={prod.image || prod.primary_image || '/images/image1.jpeg'} alt={prod.title} style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '10px' }} />
-                        <div style={{ flexGrow: 1, minWidth: 0 }}>
-                          <div style={{ fontWeight: '800', color: '#FFFDF9', fontSize: '0.95rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div
+                        key={prod.id || prod._id}
+                        onClick={() => navigate(`/product/${prod.slug || prod.id || prod._id}`)}
+                        style={{
+                          backgroundColor: 'rgba(20, 10, 5, 0.85)',
+                          padding: isMobile ? '0.65rem' : '0.85rem',
+                          borderRadius: '16px',
+                          border: '1px solid rgba(185, 205, 148, 0.3)',
+                          display: 'flex',
+                          gap: '0.65rem',
+                          alignItems: 'center',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          width: '100%',
+                          boxSizing: 'border-box',
+                          minWidth: 0,
+                          overflow: 'hidden',
+                          transition: 'transform 0.2s ease, border-color 0.2s ease',
+                        }}
+                      >
+                        <img src={prod.image || prod.primary_image || '/images/image1.jpeg'} alt={prod.title} style={{ width: isMobile ? '48px' : '56px', height: isMobile ? '48px' : '56px', objectFit: 'cover', borderRadius: '10px', flexShrink: 0 }} />
+                        <div style={{ flexGrow: 1, minWidth: 0, overflow: 'hidden' }}>
+                          <div style={{ fontWeight: '800', color: '#FFFDF9', fontSize: isMobile ? '0.82rem' : '0.92rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {prod.title}
                           </div>
-                          <div style={{ color: '#b9cd94', fontWeight: '800', fontSize: '0.9rem', marginTop: '0.2rem' }}>
+                          <div style={{ color: '#b9cd94', fontWeight: '800', fontSize: isMobile ? '0.78rem' : '0.88rem', marginTop: '0.15rem' }}>
                             ₹{prod.price}
                           </div>
                         </div>
                         <button
-                          onClick={() => addToCart(prod, null, 1)}
-                          style={{ backgroundColor: '#244f21', color: '#FFF', border: '1px solid #b9cd94', padding: '0.45rem 0.85rem', borderRadius: '999px', fontWeight: '800', fontSize: '0.78rem', cursor: 'pointer', flexShrink: 0 }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(prod, null, 1);
+                          }}
+                          style={{ backgroundColor: '#244f21', color: '#FFF', border: '1px solid #b9cd94', padding: isMobile ? '0.35rem 0.65rem' : '0.45rem 0.85rem', borderRadius: '999px', fontWeight: '800', fontSize: isMobile ? '0.7rem' : '0.78rem', cursor: 'pointer', flexShrink: 0 }}
                         >
                           + Add
                         </button>

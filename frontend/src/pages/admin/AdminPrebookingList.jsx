@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Calendar, Search, RefreshCw, CheckCircle2, XCircle, Clock, Package } from 'lucide-react';
+import { Plus, Edit2, Trash2, Calendar, Search, RefreshCw, CheckCircle2, XCircle, Clock, Package, Upload } from 'lucide-react';
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
 import ConfirmationModal from '../../components/ConfirmationModal';
@@ -17,6 +17,7 @@ export default function AdminPrebookingList() {
   const [productSearch, setProductSearch] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Form Mode & Fields
   const [isNewProduct, setIsNewProduct] = useState(true);
@@ -36,6 +37,36 @@ export default function AdminPrebookingList() {
   // Delete modal state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB');
+      return;
+    }
+
+    setUploadingImage(true);
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      try {
+        const res = await api.post('/upload', { image: reader.result });
+        if (res.data?.url) {
+          setNewImage(res.data.url);
+          toast.success('Image uploaded successfully!');
+        } else {
+          toast.error('Failed to upload image.');
+        }
+      } catch (err) {
+        console.error('Image upload error:', err);
+        toast.error('Error uploading image.');
+      } finally {
+        setUploadingImage(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     fetchData();
@@ -68,7 +99,7 @@ export default function AdminPrebookingList() {
     setNewPrice('');
     setNewOriginalPrice('');
     setNewCategory('cookies');
-    setNewImage('/images/image1.jpeg');
+    setNewImage('');
     setSelectedProduct(null);
     setProductSearch('');
     const defaultDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -489,15 +520,59 @@ export default function AdminPrebookingList() {
 
                     <div>
                       <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
-                        Product Image URL
+                        Product Image
                       </label>
-                      <input
-                        type="text"
-                        placeholder="/images/image1.jpeg"
-                        value={newImage}
-                        onChange={(e) => setNewImage(e.target.value)}
-                        className="admin-input"
-                      />
+                      
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                        {newImage ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.45rem 0.65rem', backgroundColor: 'var(--admin-surface-elevated)', borderRadius: '8px', border: '1px solid var(--admin-border)' }}>
+                            <img src={newImage} alt="" style={{ width: '36px', height: '36px', borderRadius: '6px', objectFit: 'cover' }} />
+                            <span style={{ fontSize: '0.74rem', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--admin-text-muted)' }}>
+                              {newImage}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setNewImage('')}
+                              style={{ color: 'var(--admin-danger)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.74rem', fontWeight: '700' }}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ) : null}
+
+                        <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
+                          <input
+                            type="text"
+                            placeholder="Enter image URL or upload..."
+                            value={newImage}
+                            onChange={(e) => setNewImage(e.target.value)}
+                            className="admin-input"
+                            style={{ flex: 1 }}
+                          />
+                          <label
+                            className="admin-btn-secondary"
+                            style={{
+                              padding: '0.55rem 0.85rem',
+                              fontSize: '0.78rem',
+                              cursor: uploadingImage ? 'not-allowed' : 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            <Upload size={14} />
+                            <span>{uploadingImage ? 'Uploading...' : 'Upload File'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileUpload}
+                              disabled={uploadingImage}
+                              style={{ display: 'none' }}
+                            />
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </>
