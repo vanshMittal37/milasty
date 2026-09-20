@@ -329,11 +329,14 @@ export default function Home() {
 
     api.get('/ingredients')
       .then(res => {
-        if (res.data && Array.isArray(res.data.ingredients)) {
-          setDbIngredients(res.data.ingredients);
+        const list = Array.isArray(res.data)
+          ? res.data
+          : (Array.isArray(res.data?.ingredients) ? res.data.ingredients : (Array.isArray(res.data?.data) ? res.data.data : []));
+        if (list.length > 0) {
+          setDbIngredients(list);
         }
       })
-      .catch(() => {});
+      .catch((err) => console.log('Notice fetching ingredients:', err));
   }, []);
 
   // Fallback category dataset
@@ -1242,7 +1245,7 @@ export default function Home() {
                 return itemsToDisplay.map((ingredient, idx) => (
                   <div key={ingredient.id || ingredient.name || idx} className="glass-card" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px' }}>
                     <img 
-                      src={ingredient.image || ingredient.img} 
+                      src={ingredient.image || ingredient.imageUrl || ingredient.image_url || ingredient.img} 
                       alt={ingredient.name} 
                       style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(185, 205, 148, 0.4)', margin: '0 auto 1.25rem', display: 'block', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }} 
                     />
