@@ -814,9 +814,23 @@ export default function Home() {
             {/* Bestseller Product Cards Grid */}
             <div className="bestsellers-grid fitted-cards-container-4" style={{ marginBottom: '3rem' }}>
               {(() => {
-                const bestsellers = allProductsList.filter(p => p.isBestseller || p.is_bestseller || p.isFeatured || (p.badges && p.badges.some(b => b.toLowerCase().includes('bestseller'))));
-                const listToDisplay = bestsellers.length > 0 ? bestsellers : allProductsList;
-                return listToDisplay.slice(0, 4).map((product) => (
+                const bestsellers = allProductsList.filter(p => {
+                  if (p.isBestseller === true || p.is_bestseller === true) return true;
+                  if (Array.isArray(p.badges)) {
+                    return p.badges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
+                  }
+                  return false;
+                });
+
+                if (bestsellers.length === 0) {
+                  return (
+                    <div style={{ textAlign: 'center', color: '#FFFDF9', gridColumn: '1 / -1', padding: '2rem' }}>
+                      <p style={{ fontSize: '1rem', opacity: 0.8 }}>No bestseller products marked yet. Mark products as Bestseller in Admin to feature them here.</p>
+                    </div>
+                  );
+                }
+
+                return bestsellers.map((product) => (
                   <ProductCard key={product._id || product.slug || product.id} product={product} />
                 ));
               })()}

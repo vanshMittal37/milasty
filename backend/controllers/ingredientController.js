@@ -1,11 +1,52 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { supabase } from '../config/supabase.js';
 
-let memoryIngredients = [
-  { id: 'ing_bajra', name: 'BAJRA', subtitle: 'PEARL MILLET', description: 'Powerhouse of fiber, magnesium and essential nutrients for long-lasting energy.', imageUrl: '/images/image1.jpeg', active: true },
-  { id: 'ing_jowar', name: 'JOWAR', subtitle: 'SORGHUM MILLET', description: 'Gluten-free supergrain packed with antioxidant polyphenols and high dietary fiber.', imageUrl: '/images/image2.jpeg', active: true },
-  { id: 'ing_ragi', name: 'RAGI', subtitle: 'FINGER MILLET', description: 'Natural calcium powerhouse supporting bone density and healthy blood glucose control.', imageUrl: '/images/image3.jpeg', active: true },
-  { id: 'ing_ghee', name: 'DESI GHEE', subtitle: 'PURE COW GHEE', description: 'Traditional A2 cow ghee rich in butyric acid, enhancing gut health and vitamin absorption.', imageUrl: '/images/image4.jpg', active: true },
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const INGREDIENTS_FILE = path.join(__dirname, '../data/ingredients_store.json');
+
+const loadJsonFile = (filePath, defaultData = []) => {
+  try {
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      if (content.trim()) return JSON.parse(content);
+    }
+  } catch (err) {
+    console.warn(`Notice loading ${path.basename(filePath)}:`, err.message);
+  }
+  return defaultData;
+};
+
+const saveJsonFile = (filePath, data) => {
+  try {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.warn(`Notice saving ${path.basename(filePath)}:`, err.message);
+  }
+};
+
+const defaultIngredientsSeed = [
+  { id: 'ing_bajra', name: 'BAJRA', subtitle: 'PEARL MILLET', description: 'Powerhouse of fiber, magnesium and essential minerals for long-lasting energy.', image_url: '/images/image1.jpeg', image: '/images/image1.jpeg', imageUrl: '/images/image1.jpeg', active: true },
+  { id: 'ing_jowar', name: 'JOWAR', subtitle: 'SORGHUM MILLET', description: 'Gluten-free supergrain packed with antioxidant polyphenols and high dietary fiber.', image_url: '/images/image2.jpeg', image: '/images/image2.jpeg', imageUrl: '/images/image2.jpeg', active: true },
+  { id: 'ing_ragi', name: 'RAGI', subtitle: 'FINGER MILLET', description: 'Natural calcium powerhouse supporting bone density and healthy blood glucose control.', image_url: '/images/image3.jpeg', image: '/images/image3.jpeg', imageUrl: '/images/image3.jpeg', active: true },
+  { id: 'ing_ghee', name: 'DESI GHEE', subtitle: 'PURE COW GHEE', description: 'Traditional A2 cow ghee rich in butyric acid, enhancing gut health and vitamin absorption.', image_url: '/images/image4.jpg', image: '/images/image4.jpg', imageUrl: '/images/image4.jpg', active: true },
 ];
+
+let localIngredients = loadJsonFile(INGREDIENTS_FILE, defaultIngredientsSeed);
+if (!localIngredients || localIngredients.length === 0) {
+  localIngredients = defaultIngredientsSeed;
+  saveJsonFile(INGREDIENTS_FILE, localIngredients);
+}
+
+const syncToDisk = () => {
+  saveJsonFile(INGREDIENTS_FILE, localIngredients);
+};
 
 /**
  * GET /api/ingredients (Public)
@@ -27,7 +68,7 @@ export const getPublicIngredients = async (req, res) => {
       console.warn('Supabase getPublicIngredients notice:', e.message);
     }
 
-    const source = dbIngredients.length > 0 ? dbIngredients : memoryIngredients.filter((i) => i.active !== false);
+    const source = dbIngredients.length > 0 ? dbIngredients : localIngredients.filter((i) => i.active !== false);
     const formatted = source.map((ing) => {
       const img = ing.image_url || ing.imageUrl || ing.image || '';
       return {
@@ -67,7 +108,7 @@ export const getAdminIngredients = async (req, res) => {
       console.warn('Supabase getAdminIngredients notice:', e.message);
     }
 
-    const source = dbIngredients.length > 0 ? dbIngredients : memoryIngredients;
+    const source = dbIngredients.length > 0 ? dbIngredients : localIngredients;
     const formatted = source.map((ing) => {
       const img = ing.image_url || ing.imageUrl || ing.image || '';
       return {
@@ -124,7 +165,8 @@ export const createIngredient = async (req, res) => {
       image_url: finalImage,
       active: payload.active,
     };
-    memoryIngredients.unshift(newIng);
+    localIngredients.unshift(newIng);
+    syncToDisk();
 
     return res.json({ success: true, ingredient: newIng });
   } catch (err) {
@@ -155,17 +197,29 @@ export const updateIngredient = async (req, res) => {
       console.warn('Supabase updateIngredient notice:', e.message);
     }
 
-    const idx = memoryIngredients.findIndex((i) => i.id === id);
+    const idx = localIngredients.findIndex((i) => String(i.id) === String(id));
     if (idx >= 0) {
-      memoryIngredients[idx] = {
-        ...memoryIngredients[idx],
+      localIngredients[idx] = {
+        ...localIngredients[idx],
         ...(name !== undefined ? { name: name.toUpperCase() } : {}),
         ...(subtitle !== undefined ? { subtitle: subtitle.toUpperCase() } : {}),
         ...(description !== undefined ? { description } : {}),
         ...(finalImage !== undefined ? { image: finalImage, imageUrl: finalImage, image_url: finalImage } : {}),
         ...(active !== undefined ? { active } : {}),
       };
+    } else {
+      localIngredients.push({
+        id,
+        name: name ? name.toUpperCase() : 'INGREDIENT',
+        subtitle: subtitle ? subtitle.toUpperCase() : '',
+        description: description || '',
+        image: finalImage || '/images/image1.jpeg',
+        imageUrl: finalImage || '/images/image1.jpeg',
+        image_url: finalImage || '/images/image1.jpeg',
+        active: active !== false,
+      });
     }
+    syncToDisk();
 
     return res.json({ success: true, message: 'Ingredient updated successfully' });
   } catch (err) {
@@ -185,7 +239,8 @@ export const deleteIngredient = async (req, res) => {
       console.warn('Supabase deleteIngredient notice:', e.message);
     }
 
-    memoryIngredients = memoryIngredients.filter((i) => i.id !== id);
+    localIngredients = localIngredients.filter((i) => String(i.id) !== String(id));
+    syncToDisk();
     return res.json({ success: true, message: 'Ingredient deleted successfully' });
   } catch (err) {
     return res.status(500).json({ message: 'Error deleting ingredient', error: err.message });
