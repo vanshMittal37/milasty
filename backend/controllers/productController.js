@@ -378,15 +378,7 @@ const safeInsertProduct = async (payload) => {
   )) {
     console.warn('Supabase product insert schema fallback triggered for is_bestseller:', error.message);
     const fallbackPayload = { ...payload };
-    const wasBestseller = fallbackPayload.is_bestseller === true;
     delete fallbackPayload.is_bestseller;
-
-    if (wasBestseller) {
-      const currentBadges = Array.isArray(fallbackPayload.badges) ? fallbackPayload.badges : [];
-      if (!currentBadges.some(b => b.toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
-        fallbackPayload.badges = [...currentBadges, 'Best Seller'];
-      }
-    }
 
     const res = await supabase
       .from('products')
@@ -414,20 +406,7 @@ const safeUpdateProduct = async (id, payload) => {
   )) {
     console.warn('Supabase product update schema fallback triggered for is_bestseller:', error.message);
     const fallbackPayload = { ...payload };
-    const wasBestseller = fallbackPayload.is_bestseller === true;
     delete fallbackPayload.is_bestseller;
-
-    if (fallbackPayload.badges !== undefined) {
-      let currentBadges = Array.isArray(fallbackPayload.badges) ? fallbackPayload.badges : [];
-      if (wasBestseller) {
-        if (!currentBadges.some(b => b.toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
-          currentBadges = [...currentBadges, 'Best Seller'];
-        }
-      } else {
-        currentBadges = currentBadges.filter(b => !b.toLowerCase().replace(/\s+/g, '').includes('bestseller'));
-      }
-      fallbackPayload.badges = currentBadges;
-    }
 
     const res = await supabase
       .from('products')
@@ -487,6 +466,19 @@ export const createProduct = async (req, res) => {
     const parsedBadges = Array.isArray(badges) 
       ? badges 
       : (typeof badges === 'string' ? badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
+
+    const isBestsellerRequested = req.body.isBestseller === true || 
+                                  req.body.is_bestseller === true || 
+                                  parsedBadges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
+
+    let finalBadges = [...parsedBadges];
+    if (isBestsellerRequested) {
+      if (!finalBadges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
+        finalBadges.push('Best Seller');
+      }
+    } else {
+      finalBadges = finalBadges.filter(b => !String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
+    }
     
     const parsedIngredients = Array.isArray(ingredients) 
       ? ingredients 
@@ -523,12 +515,12 @@ export const createProduct = async (req, res) => {
       lab_report_url: req.body.labReportUrl || req.body.lab_report_url || '',
       ingredients: parsedIngredients,
       nutrition_facts: mergedNutritionFacts,
-      badges: parsedBadges,
+      badges: finalBadges,
       allergens: allergens || '',
       benefits: parsedBenefits,
       target_audience: targetAudience || '',
       is_featured: isFeatured !== false,
-      is_bestseller: req.body.isBestseller === true || req.body.is_bestseller === true,
+      is_bestseller: isBestsellerRequested,
       is_active: status === 'active',
     };
 
@@ -657,7 +649,20 @@ export const updateProduct = async (req, res) => {
     const parsedBadges = Array.isArray(updates.badges) 
       ? updates.badges 
       : (typeof updates.badges === 'string' ? updates.badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
-    
+
+    const isBestsellerRequested = updates.isBestseller === true || 
+                                  updates.is_bestseller === true || 
+                                  parsedBadges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
+
+    let finalBadges = [...parsedBadges];
+    if (isBestsellerRequested) {
+      if (!finalBadges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
+        finalBadges.push('Best Seller');
+      }
+    } else {
+      finalBadges = finalBadges.filter(b => !String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
+    }
+
     const parsedIngredients = Array.isArray(updates.ingredients) 
       ? updates.ingredients 
       : (typeof updates.ingredients === 'string' ? updates.ingredients.split(',').map((s) => s.trim()).filter(Boolean) : []);
@@ -690,12 +695,12 @@ export const updateProduct = async (req, res) => {
         pieces: updates.pieces || (typeof updates.nutritionFacts === 'object' ? updates.nutritionFacts?.pieces : '') || '',
         variant_stocks: Object.keys(variantStocksMap).length > 0 ? variantStocksMap : updates.nutritionFacts?.variant_stocks,
       },
-      badges: parsedBadges,
+      badges: finalBadges,
       allergens: updates.allergens || '',
       benefits: parsedBenefits,
       target_audience: updates.targetAudience || '',
       is_featured: updates.isFeatured !== false,
-      is_bestseller: updates.isBestseller === true || updates.is_bestseller === true,
+      is_bestseller: isBestsellerRequested,
       is_active: updates.status === 'active',
       updated_at: new Date(),
     };

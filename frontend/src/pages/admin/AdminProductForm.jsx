@@ -161,6 +161,20 @@ export default function AdminProductForm() {
 
       if (prodRes.data) {
         const p = prodRes.data;
+        // Badges parsing
+        const rawBadges = p.badges;
+        const parsedB = Array.isArray(rawBadges)
+          ? rawBadges
+          : (typeof rawBadges === 'string' ? rawBadges.split(',').map((s) => s.trim()).filter(Boolean) : []);
+
+        const isBs = !!(p.isBestseller || p.is_bestseller || parsedB.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller')));
+
+        let finalBadgesList = [...parsedB];
+        if (isBs && !finalBadgesList.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
+          finalBadgesList.push('Bestseller');
+        }
+        setBadgesList(finalBadgesList);
+
         setFormData({
           title: p.title || '',
           slug: p.slug || '',
@@ -176,7 +190,7 @@ export default function AdminProductForm() {
           sku: p.sku || '',
           status: p.status || (p.is_active !== false ? 'active' : 'inactive'),
           isFeatured: p.isFeatured !== false,
-          isBestseller: !!(p.isBestseller || p.is_bestseller),
+          isBestseller: isBs,
           image: p.image || p.image_url || '',
           secondaryImage: p.secondaryImage || p.secondary_image_url || '',
           labReportUrl: p.labReportUrl || p.lab_report_url || '',
@@ -187,13 +201,6 @@ export default function AdminProductForm() {
             stock: v.stock !== undefined && v.stock !== null ? v.stock : (v.in_stock ? 50 : 0)
           })),
         });
-
-        // Badges parsing
-        const rawBadges = p.badges;
-        const parsedB = Array.isArray(rawBadges)
-          ? rawBadges
-          : (typeof rawBadges === 'string' ? rawBadges.split(',').map((s) => s.trim()).filter(Boolean) : []);
-        setBadgesList(parsedB);
 
         // Ingredients parsing
         const rawIng = p.ingredients;
@@ -301,10 +308,19 @@ export default function AdminProductForm() {
 
   // Badge helpers
   const togglePresetBadge = (badgeName) => {
+    const isBsBadge = badgeName.toLowerCase().replace(/\s+/g, '').includes('bestseller');
     if (badgesList.includes(badgeName)) {
-      setBadgesList(badgesList.filter((b) => b !== badgeName));
+      const nextBadges = badgesList.filter((b) => b !== badgeName);
+      setBadgesList(nextBadges);
+      if (isBsBadge) {
+        setFormData((prev) => ({ ...prev, isBestseller: false }));
+      }
     } else {
-      setBadgesList([...badgesList, badgeName]);
+      const nextBadges = [...badgesList, badgeName];
+      setBadgesList(nextBadges);
+      if (isBsBadge) {
+        setFormData((prev) => ({ ...prev, isBestseller: true }));
+      }
     }
   };
 
@@ -313,12 +329,19 @@ export default function AdminProductForm() {
     if (!clean) return;
     if (!badgesList.includes(clean)) {
       setBadgesList([...badgesList, clean]);
+      if (clean.toLowerCase().replace(/\s+/g, '').includes('bestseller')) {
+        setFormData((prev) => ({ ...prev, isBestseller: true }));
+      }
     }
     setCustomBadgeInput('');
   };
 
   const removeBadge = (badgeName) => {
+    const isBsBadge = badgeName.toLowerCase().replace(/\s+/g, '').includes('bestseller');
     setBadgesList(badgesList.filter((b) => b !== badgeName));
+    if (isBsBadge) {
+      setFormData((prev) => ({ ...prev, isBestseller: false }));
+    }
   };
 
   // Ingredient helpers
@@ -468,10 +491,23 @@ export default function AdminProductForm() {
 
     setLoading(true);
 
+    const isBestsellerActive = formData.isBestseller || badgesList.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
+    
+    let finalPayloadBadges = [...badgesList];
+    if (isBestsellerActive) {
+      if (!finalPayloadBadges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
+        finalPayloadBadges.push('Bestseller');
+      }
+    } else {
+      finalPayloadBadges = finalPayloadBadges.filter(b => !String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
+    }
+
     const payload = {
       ...formData,
+      isBestseller: isBestsellerActive,
+      is_bestseller: isBestsellerActive,
       pieces: formData.pieces ? String(formData.pieces).trim() : '',
-      badges: badgesList,
+      badges: finalPayloadBadges,
       ingredients: ingredientsList,
       benefits: benefitsList,
       nutritionFacts: {
