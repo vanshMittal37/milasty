@@ -75,6 +75,43 @@ export const getProducts = async (req, res) => {
         const realReviewCount = stats.count;
         const realRating = realReviewCount > 0 ? Number((stats.sum / stats.count).toFixed(1)) : 0;
 
+        // Normalize nutrition_facts object to handle both new structured format { key: { label, value, unit } } and legacy keys
+        const rawFacts = p.nutrition_facts || {};
+        const normalizedNutrition = { ...rawFacts };
+
+        if (rawFacts.energyKcal && !normalizedNutrition.energy) {
+          normalizedNutrition.energy = { label: 'Calories / Energy', value: Number(rawFacts.energyKcal), unit: 'kcal/100g' };
+        }
+        if (rawFacts.proteinG && !normalizedNutrition.protein) {
+          normalizedNutrition.protein = { label: 'Protein', value: Number(rawFacts.proteinG), unit: 'g' };
+        }
+        if (rawFacts.totalFatG && !normalizedNutrition.total_fat) {
+          normalizedNutrition.total_fat = { label: 'Total Fat', value: Number(rawFacts.totalFatG), unit: 'g' };
+        }
+        if (rawFacts.carbohydrateG && !normalizedNutrition.carbohydrates) {
+          normalizedNutrition.carbohydrates = { label: 'Carbohydrates', value: Number(rawFacts.carbohydrateG), unit: 'g' };
+        }
+        if (rawFacts.dietaryFiberG && !normalizedNutrition.dietary_fiber) {
+          normalizedNutrition.dietary_fiber = { label: 'Dietary Fiber', value: Number(rawFacts.dietaryFiberG), unit: 'g' };
+        }
+        if (rawFacts.totalSugarsG && !normalizedNutrition.total_sugars) {
+          normalizedNutrition.total_sugars = { label: 'Total Sugars', value: Number(rawFacts.totalSugarsG), unit: 'g' };
+        }
+        if (rawFacts.addedSugarsG && !normalizedNutrition.added_sugars) {
+          normalizedNutrition.added_sugars = { label: 'Added Sugars', value: Number(rawFacts.addedSugarsG), unit: 'g' };
+        }
+        if (rawFacts.sodiumMg && !normalizedNutrition.sodium) {
+          normalizedNutrition.sodium = { label: 'Sodium', value: Number(rawFacts.sodiumMg), unit: 'mg' };
+        }
+
+        const parsedIngredients = Array.isArray(p.ingredients) 
+          ? p.ingredients 
+          : (typeof p.ingredients === 'string' ? p.ingredients.split(',').map((s) => s.trim()).filter(Boolean) : []);
+
+        const parsedBadges = Array.isArray(p.badges) 
+          ? p.badges 
+          : (typeof p.badges === 'string' ? p.badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
+
         return {
           _id: p.id,
           id: p.id,
@@ -90,12 +127,12 @@ export const getProducts = async (req, res) => {
           status: p.is_active !== false ? 'active' : 'inactive',
           image: p.image_url,
           secondaryImage: p.secondary_image_url || '',
-          badges: p.badges || [],
-          ingredients: p.ingredients || [],
+          badges: parsedBadges,
+          ingredients: parsedIngredients,
           allergens: p.allergens || '',
           benefits: p.benefits || [],
           targetAudience: p.target_audience || '',
-          nutritionFacts: p.nutrition_facts || {},
+          nutritionFacts: normalizedNutrition,
           pieces: p.nutrition_facts?.pieces || p.pieces || '',
           labReportUrl: p.lab_report_url || '',
           isFeatured: p.is_featured !== false,
@@ -222,6 +259,43 @@ export const getProductBySlugOrId = async (req, res) => {
       const realReviewCount = stats.count;
       const realRating = realReviewCount > 0 ? Number((stats.sum / stats.count).toFixed(1)) : 0;
 
+      // Normalize nutrition_facts object to handle both new structured format { key: { label, value, unit } } and legacy keys
+      const rawFacts = p.nutrition_facts || {};
+      const normalizedNutrition = { ...rawFacts };
+
+      if (rawFacts.energyKcal && !normalizedNutrition.energy) {
+        normalizedNutrition.energy = { label: 'Calories / Energy', value: Number(rawFacts.energyKcal), unit: 'kcal/100g' };
+      }
+      if (rawFacts.proteinG && !normalizedNutrition.protein) {
+        normalizedNutrition.protein = { label: 'Protein', value: Number(rawFacts.proteinG), unit: 'g' };
+      }
+      if (rawFacts.totalFatG && !normalizedNutrition.total_fat) {
+        normalizedNutrition.total_fat = { label: 'Total Fat', value: Number(rawFacts.totalFatG), unit: 'g' };
+      }
+      if (rawFacts.carbohydrateG && !normalizedNutrition.carbohydrates) {
+        normalizedNutrition.carbohydrates = { label: 'Carbohydrates', value: Number(rawFacts.carbohydrateG), unit: 'g' };
+      }
+      if (rawFacts.dietaryFiberG && !normalizedNutrition.dietary_fiber) {
+        normalizedNutrition.dietary_fiber = { label: 'Dietary Fiber', value: Number(rawFacts.dietaryFiberG), unit: 'g' };
+      }
+      if (rawFacts.totalSugarsG && !normalizedNutrition.total_sugars) {
+        normalizedNutrition.total_sugars = { label: 'Total Sugars', value: Number(rawFacts.totalSugarsG), unit: 'g' };
+      }
+      if (rawFacts.addedSugarsG && !normalizedNutrition.added_sugars) {
+        normalizedNutrition.added_sugars = { label: 'Added Sugars', value: Number(rawFacts.addedSugarsG), unit: 'g' };
+      }
+      if (rawFacts.sodiumMg && !normalizedNutrition.sodium) {
+        normalizedNutrition.sodium = { label: 'Sodium', value: Number(rawFacts.sodiumMg), unit: 'mg' };
+      }
+
+      const parsedIngredients = Array.isArray(p.ingredients) 
+        ? p.ingredients 
+        : (typeof p.ingredients === 'string' ? p.ingredients.split(',').map((s) => s.trim()).filter(Boolean) : []);
+
+      const parsedBadges = Array.isArray(p.badges) 
+        ? p.badges 
+        : (typeof p.badges === 'string' ? p.badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
+
       const formatted = {
         _id: p.id,
         id: p.id,
@@ -237,12 +311,12 @@ export const getProductBySlugOrId = async (req, res) => {
         status: p.is_active !== false ? 'active' : 'inactive',
         image: p.image_url,
         secondaryImage: p.secondary_image_url || '',
-        badges: p.badges || [],
-        ingredients: p.ingredients || [],
+        badges: parsedBadges,
+        ingredients: parsedIngredients,
         allergens: p.allergens || '',
         benefits: p.benefits || [],
         targetAudience: p.target_audience || '',
-        nutritionFacts: p.nutrition_facts || {},
+        nutritionFacts: normalizedNutrition,
         pieces: p.nutrition_facts?.pieces || p.pieces || '',
         labReportUrl: p.lab_report_url || '',
         isFeatured: p.is_featured !== false,

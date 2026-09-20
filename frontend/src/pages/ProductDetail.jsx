@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Star, Heart, ChevronRight, ChevronLeft, CheckCircle2, XCircle, ShieldCheck, Truck, Sparkles, AlertTriangle, Plus, Minus, Info, MapPin, Save } from 'lucide-react';
+import { ShoppingBag, Star, Heart, ChevronRight, ChevronLeft, CheckCircle2, XCircle, ShieldCheck, Truck, Sparkles, AlertTriangle, Plus, Minus, Info, MapPin, Save, FileText, ExternalLink } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useDelivery } from '../context/DeliveryContext';
@@ -239,12 +239,59 @@ export default function ProductDetail() {
     }
   };
 
-  // Safe nutrition facts entries
-  const safeNutritionFacts = product.nutritionFacts
-    ? Object.entries(product.nutritionFacts).filter(
-        ([k, v]) => k !== 'variant_stocks' && k !== 'pieces' && v !== null && v !== undefined && v !== '' && typeof v !== 'object'
-      )
-    : [];
+  // Safe nutrition facts normalized list
+  const getNormalizedNutritionList = () => {
+    const raw = product.nutritionFacts || product.nutrition_facts;
+    if (!raw) return [];
+    
+    if (Array.isArray(raw)) {
+      return raw.map((item) => {
+        if (typeof item === 'object' && item !== null) {
+          return {
+            label: item.label || item.key || 'Nutrition',
+            value: item.value ?? '',
+            unit: item.unit ?? ''
+          };
+        }
+        return { label: String(item), value: '', unit: '' };
+      }).filter((item) => Boolean(item.label && (item.value !== '' || item.unit !== '')));
+    }
+    
+    if (typeof raw === 'object' && raw !== null) {
+      return Object.entries(raw).map(([key, val]) => {
+        if (key === 'variant_stocks' || key === 'pieces') return null;
+        if (val === null || val === undefined || val === '') return null;
+        if (typeof val === 'object' && val !== null) {
+          const label = val.label || key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/^./, (str) => str.toUpperCase());
+          return {
+            label: label,
+            value: val.value ?? '',
+            unit: val.unit ?? ''
+          };
+        }
+        const label = key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/^./, (str) => str.toUpperCase());
+        return { label, value: String(val), unit: '' };
+      }).filter(Boolean);
+    }
+    return [];
+  };
+
+  const safeNutritionFacts = getNormalizedNutritionList();
+
+  const getIngredientsList = () => {
+    const raw = product.ingredients;
+    if (!raw) return [];
+    if (Array.isArray(raw)) {
+      return raw.map((i) => String(i).trim()).filter((i) => i.length > 0);
+    }
+    if (typeof raw === 'string') {
+      return raw.split(',').map((s) => s.trim()).filter((s) => s.length > 0);
+    }
+    return [];
+  };
+
+  const ingredientsList = getIngredientsList();
+  const labReportUrl = product.labReportUrl || product.lab_report_url || product.lab_report || product.labReport;
 
   return (
     <div style={{ backgroundColor: '#140A05', color: '#FFFDF9', minHeight: '100vh', paddingTop: '1rem', paddingBottom: '5rem' }}>
@@ -859,6 +906,24 @@ export default function ProductDetail() {
             >
               Ingredients &amp; Craft
             </button>
+            {labReportUrl && (
+              <button
+                onClick={() => setActiveTab('labreport')}
+                style={{
+                  padding: '0.75rem 1.25rem',
+                  border: 'none',
+                  backgroundColor: 'transparent',
+                  color: activeTab === 'labreport' ? '#b9cd94' : '#F5EBDD',
+                  borderBottom: activeTab === 'labreport' ? '2px solid #b9cd94' : '2px solid transparent',
+                  fontWeight: '800',
+                  fontSize: '0.95rem',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Verified Lab Report
+              </button>
+            )}
             <button
               onClick={() => setActiveTab('reviews')}
               style={{
@@ -880,25 +945,151 @@ export default function ProductDetail() {
           {activeTab === 'nutrition' && (
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
               {safeNutritionFacts.length > 0 ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-                  {safeNutritionFacts.map(([k, v], idx) => (
-                    <div key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '0.78rem', color: '#b9cd94', textTransform: 'uppercase', fontWeight: '700', display: 'block' }}>{k.replace(/_/g, ' ')}</span>
-                      <span style={{ fontSize: '1rem', fontWeight: '800', color: '#FFFDF9' }}>{String(v)}</span>
+                <div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: labReportUrl ? '1.5rem' : 0 }}>
+                    {safeNutritionFacts.map((item, idx) => (
+                      <div key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '0.5rem' }}>
+                        <span style={{ fontSize: '0.78rem', color: '#b9cd94', textTransform: 'uppercase', fontWeight: '700', display: 'block' }}>
+                          {item.label}
+                        </span>
+                        <span style={{ fontSize: '1rem', fontWeight: '800', color: '#FFFDF9' }}>
+                          {item.value} {item.unit}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {labReportUrl && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(36, 79, 33, 0.25)', border: '1px solid rgba(185, 205, 148, 0.3)', padding: '0.85rem 1.25rem', borderRadius: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        <ShieldCheck size={20} color="#b9cd94" />
+                        <div>
+                          <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#FFFDF9' }}>Verified Laboratory Analysis Available</div>
+                          <div style={{ fontSize: '0.78rem', color: '#F5EBDD', opacity: 0.8 }}>Independently tested for purity, nutrition levels &amp; heavy metals.</div>
+                        </div>
+                      </div>
+                      <a
+                        href={labReportUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          backgroundColor: '#244f21',
+                          color: '#FFFDF9',
+                          border: '1px solid #b9cd94',
+                          padding: '0.45rem 0.95rem',
+                          borderRadius: '8px',
+                          fontSize: '0.82rem',
+                          fontWeight: '800',
+                          textDecoration: 'none'
+                        }}
+                      >
+                        <FileText size={15} /> View Lab Report <ExternalLink size={13} />
+                      </a>
                     </div>
-                  ))}
+                  )}
                 </div>
               ) : (
-                <p style={{ color: '#F5EBDD', margin: 0 }}>Rich in fiber, vitamins, deshi ghee goodness, and essential minerals.</p>
+                <div>
+                  <p style={{ color: '#F5EBDD', margin: 0, lineHeight: '1.6' }}>
+                    Rich in fiber, vitamins, deshi ghee goodness, and essential minerals. No added artificial additives.
+                  </p>
+                  {labReportUrl && (
+                    <div style={{ marginTop: '1rem' }}>
+                      <a
+                        href={labReportUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          backgroundColor: '#244f21',
+                          color: '#FFFDF9',
+                          border: '1px solid #b9cd94',
+                          padding: '0.45rem 0.95rem',
+                          borderRadius: '8px',
+                          fontSize: '0.82rem',
+                          fontWeight: '800',
+                          textDecoration: 'none'
+                        }}
+                      >
+                        <FileText size={15} /> Download Verified Lab Report <ExternalLink size={13} />
+                      </a>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           )}
 
           {activeTab === 'ingredients' && (
             <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <p style={{ color: '#F5EBDD', lineHeight: '1.6', margin: 0 }}>
-                Handcrafted using 100% natural ingredients, organic millets, Desi Cow Ghee, and unrefined organic jaggery. No refined palm oil, no artificial preservatives, zero maida.
+              {ingredientsList.length > 0 ? (
+                <div>
+                  <h4 style={{ fontSize: '0.9rem', color: '#b9cd94', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.85rem' }}>
+                    Crafted With Natural Ingredients
+                  </h4>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+                    {ingredientsList.map((ing, idx) => (
+                      <span
+                        key={idx}
+                        style={{
+                          fontSize: '0.85rem',
+                          fontWeight: '700',
+                          color: '#FFFDF9',
+                          backgroundColor: 'rgba(20, 10, 5, 0.4)',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          padding: '0.4rem 0.85rem',
+                          borderRadius: '999px'
+                        }}
+                      >
+                        ✓ {ing}
+                      </span>
+                    ))}
+                  </div>
+                  <p style={{ color: '#F5EBDD', fontSize: '0.85rem', opacity: 0.8, margin: 0, lineHeight: '1.5' }}>
+                    Handcrafted using 100% natural ingredients, organic millets, Desi Cow Ghee, and unrefined organic jaggery. No refined palm oil, no artificial preservatives, zero maida.
+                  </p>
+                </div>
+              ) : (
+                <p style={{ color: '#F5EBDD', lineHeight: '1.6', margin: 0 }}>
+                  Handcrafted using 100% natural ingredients, organic millets, Desi Cow Ghee, and unrefined organic jaggery. No refined palm oil, no artificial preservatives, zero maida.
+                </p>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'labreport' && labReportUrl && (
+            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '2rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
+              <ShieldCheck size={40} color="#b9cd94" style={{ margin: '0 auto 1rem' }} />
+              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#FFFDF9', margin: '0 0 0.5rem 0' }}>Official Quality &amp; Nutrition Lab Report</h3>
+              <p style={{ color: '#F5EBDD', fontSize: '0.9rem', opacity: 0.85, maxWidth: '500px', margin: '0 auto 1.5rem auto' }}>
+                Every batch of {product.title} is certified by NABL-accredited food safety testing laboratories. Click below to inspect the complete lab report document.
               </p>
+              <a
+                href={labReportUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  backgroundColor: '#244f21',
+                  color: '#FFFDF9',
+                  border: '1px solid #b9cd94',
+                  padding: '0.75rem 1.75rem',
+                  borderRadius: '999px',
+                  fontSize: '0.95rem',
+                  fontWeight: '850',
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 16px rgba(36, 79, 33, 0.4)'
+                }}
+              >
+                <FileText size={18} /> View / Download Full Lab Certificate <ExternalLink size={15} />
+              </a>
             </div>
           )}
 
