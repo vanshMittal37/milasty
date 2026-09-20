@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus, 
   Check, X, FileText, AlertCircle, Calendar, Sparkles, CheckSquare, Square
@@ -110,6 +110,9 @@ export default function AdminProductForm() {
     }
   }, [ctxCategories]);
 
+  const [searchParams] = useSearchParams();
+  const isPrebookQuery = searchParams.get('prebook') === 'true';
+
   useEffect(() => {
     if (isEdit) {
       fetchProductDetails();
@@ -123,8 +126,14 @@ export default function AdminProductForm() {
         defaultNutr[item.key] = { label: item.label, value: '', unit: item.unit };
       });
       setNutritionMap(defaultNutr);
+
+      if (isPrebookQuery) {
+        setPrebookingEnabled(true);
+        const defaultDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        setPrebookingLaunchDate(defaultDate);
+      }
     }
-  }, [id]);
+  }, [id, isPrebookQuery]);
 
   const fetchCategories = async () => {
     try {
@@ -1373,50 +1382,13 @@ export default function AdminProductForm() {
           </div>
 
           {/* ================================================================== */}
-          {/* SECTION 9: SEO & METADATA */}
-          {/* ================================================================== */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.4rem' }}>
-              9. SEO &amp; Target Audience
-            </h3>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
-                  Allergens Warning
-                </label>
-                <input
-                  type="text"
-                  value={formData.allergens}
-                  onChange={(e) => setFormData({ ...formData, allergens: e.target.value })}
-                  placeholder="e.g. Contains Tree Nuts (Almonds)"
-                  className="admin-input"
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
-                  Target Audience
-                </label>
-                <input
-                  type="text"
-                  value={formData.targetAudience}
-                  onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
-                  placeholder="e.g. Chai Lovers & Health-Conscious Snackers"
-                  className="admin-input"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* ================================================================== */}
-          {/* SECTION 10: PRE-BOOKING CONFIGURATION */}
+          {/* SECTION 9: PRE-BOOKING CONFIGURATION */}
           {/* ================================================================== */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1.5px solid var(--admin-accent)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  10. Pre-Booking Section Config ("What's Next")
+                  9. Pre-Booking Section Config ("What's Next")
                 </h3>
                 <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>
                   Attach this product to the "What's Next from MILASTY" section on the shop page with a future launch date.

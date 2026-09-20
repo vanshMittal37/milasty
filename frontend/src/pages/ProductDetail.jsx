@@ -525,6 +525,41 @@ export default function ProductDetail() {
               </p>
             )}
 
+            {/* Product Benefits Section */}
+            {((Array.isArray(product.benefits) && product.benefits.length > 0) || (typeof product.benefits === 'string' && product.benefits.trim().length > 0)) && (
+              <div style={{ marginTop: '0.4rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#b9cd94' }}>
+                  Key Bake Benefits
+                </span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
+                  {(Array.isArray(product.benefits) ? product.benefits : product.benefits.split(',')).map((b, idx) => {
+                    const cleanB = String(b).trim();
+                    if (!cleanB) return null;
+                    return (
+                      <div 
+                        key={idx} 
+                        style={{ 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          gap: '0.35rem', 
+                          backgroundColor: 'rgba(36, 79, 33, 0.35)', 
+                          border: '1px solid rgba(185, 205, 148, 0.35)', 
+                          padding: '0.3rem 0.75rem', 
+                          borderRadius: '999px', 
+                          fontSize: '0.8rem', 
+                          color: '#FFFDF9', 
+                          fontWeight: '700' 
+                        }}
+                      >
+                        <CheckCircle2 size={13} color="#b9cd94" />
+                        <span>{cleanB}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Price Section */}
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.85rem', marginTop: '0.5rem', marginBottom: '0.25rem' }}>
               <span style={{ fontSize: '2rem', fontWeight: '900', color: '#FFFDF9' }}>
