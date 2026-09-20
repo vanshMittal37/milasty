@@ -28,14 +28,19 @@ export const getPublicIngredients = async (req, res) => {
     }
 
     const source = dbIngredients.length > 0 ? dbIngredients : memoryIngredients.filter((i) => i.active !== false);
-    const formatted = source.map((ing) => ({
-      id: ing.id,
-      name: ing.name,
-      subtitle: ing.subtitle || '',
-      description: ing.description,
-      imageUrl: ing.image_url || ing.imageUrl || '',
-      active: ing.active !== false,
-    }));
+    const formatted = source.map((ing) => {
+      const img = ing.image_url || ing.imageUrl || ing.image || '';
+      return {
+        id: ing.id,
+        name: ing.name,
+        subtitle: ing.subtitle || '',
+        description: ing.description,
+        image: img,
+        imageUrl: img,
+        image_url: img,
+        active: ing.active !== false,
+      };
+    });
 
     return res.json(formatted);
   } catch (err) {
@@ -63,14 +68,19 @@ export const getAdminIngredients = async (req, res) => {
     }
 
     const source = dbIngredients.length > 0 ? dbIngredients : memoryIngredients;
-    const formatted = source.map((ing) => ({
-      id: ing.id,
-      name: ing.name,
-      subtitle: ing.subtitle || '',
-      description: ing.description,
-      imageUrl: ing.image_url || ing.imageUrl || '',
-      active: ing.active !== false,
-    }));
+    const formatted = source.map((ing) => {
+      const img = ing.image_url || ing.imageUrl || ing.image || '';
+      return {
+        id: ing.id,
+        name: ing.name,
+        subtitle: ing.subtitle || '',
+        description: ing.description,
+        image: img,
+        imageUrl: img,
+        image_url: img,
+        active: ing.active !== false,
+      };
+    });
 
     return res.json(formatted);
   } catch (err) {
@@ -83,17 +93,18 @@ export const getAdminIngredients = async (req, res) => {
  */
 export const createIngredient = async (req, res) => {
   try {
-    const { name, subtitle = '', description = '', imageUrl = '', active = true } = req.body;
+    const { name, subtitle = '', description = '', image, imageUrl, image_url, active = true } = req.body;
     if (!name || !name.trim()) return res.status(400).json({ message: 'Ingredient name is required' });
     if (!description || !description.trim()) return res.status(400).json({ message: 'Description is required' });
 
+    const finalImage = imageUrl || image || image_url || '/images/image1.jpeg';
     const newId = `ing_${Date.now()}`;
     const payload = {
       id: newId,
       name: name.trim().toUpperCase(),
       subtitle: subtitle.trim().toUpperCase(),
       description: description.trim(),
-      image_url: imageUrl || '/images/image1.jpeg',
+      image_url: finalImage,
       active: Boolean(active),
     };
 
@@ -108,7 +119,9 @@ export const createIngredient = async (req, res) => {
       name: payload.name,
       subtitle: payload.subtitle,
       description: payload.description,
-      imageUrl: payload.image_url,
+      image: finalImage,
+      imageUrl: finalImage,
+      image_url: finalImage,
       active: payload.active,
     };
     memoryIngredients.unshift(newIng);
@@ -125,13 +138,14 @@ export const createIngredient = async (req, res) => {
 export const updateIngredient = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, subtitle, description, imageUrl, active } = req.body;
+    const { name, subtitle, description, image, imageUrl, image_url, active } = req.body;
 
+    const finalImage = imageUrl !== undefined ? imageUrl : (image !== undefined ? image : image_url);
     const payload = {};
     if (name !== undefined) payload.name = name.trim().toUpperCase();
     if (subtitle !== undefined) payload.subtitle = subtitle.trim().toUpperCase();
     if (description !== undefined) payload.description = description.trim();
-    if (imageUrl !== undefined) payload.image_url = imageUrl;
+    if (finalImage !== undefined) payload.image_url = finalImage;
     if (active !== undefined) payload.active = Boolean(active);
     payload.updated_at = new Date().toISOString();
 
@@ -148,7 +162,7 @@ export const updateIngredient = async (req, res) => {
         ...(name !== undefined ? { name: name.toUpperCase() } : {}),
         ...(subtitle !== undefined ? { subtitle: subtitle.toUpperCase() } : {}),
         ...(description !== undefined ? { description } : {}),
-        ...(imageUrl !== undefined ? { imageUrl } : {}),
+        ...(finalImage !== undefined ? { image: finalImage, imageUrl: finalImage, image_url: finalImage } : {}),
         ...(active !== undefined ? { active } : {}),
       };
     }

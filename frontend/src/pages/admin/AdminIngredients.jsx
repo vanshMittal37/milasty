@@ -63,7 +63,7 @@ export default function AdminIngredients() {
     setName(ing.name || '');
     setSubtitle(ing.subtitle || '');
     setDescription(ing.description || '');
-    setImage(ing.image || '');
+    setImage(ing.image || ing.imageUrl || ing.image_url || '');
     setActive(ing.active !== false);
     setModalOpen(true);
   };
@@ -79,8 +79,9 @@ export default function AdminIngredients() {
       const res = await api.post('/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      if (res.data && res.data.imageUrl) {
-        setImage(res.data.imageUrl);
+      if (res.data && (res.data.imageUrl || res.data.url)) {
+        const uploadedUrl = res.data.imageUrl || res.data.url;
+        setImage(uploadedUrl);
         toast.success('Image uploaded successfully.');
       }
     } catch (err) {
@@ -110,6 +111,8 @@ export default function AdminIngredients() {
       subtitle: subtitle.trim(),
       description: description.trim(),
       image,
+      imageUrl: image,
+      image_url: image,
       active,
     };
 
@@ -165,28 +168,25 @@ export default function AdminIngredients() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <Sparkles size={24} color="#b9cd94" />
-            <h1 style={{ fontSize: '1.75rem', fontWeight: '850', color: '#FFFDF9', margin: 0, fontFamily: 'var(--font-serif)' }}>
+            <Sparkles size={24} color="var(--admin-accent)" />
+            <h1 style={{ fontSize: '1.75rem', fontWeight: '850', color: 'var(--admin-text-primary)', margin: 0, fontFamily: 'var(--font-serif)' }}>
               Honest Ingredients CMS
             </h1>
           </div>
-          <p style={{ color: '#F5EBDD', fontSize: '0.9rem', margin: 0, fontWeight: '500' }}>
+          <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.9rem', margin: 0, fontWeight: '500' }}>
             Manage clean ingredient stories shown on the homepage educational section.
           </p>
         </div>
 
         <button
           onClick={handleOpenAdd}
-          className="btn-primary"
+          className="admin-btn-primary"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.5rem',
-            backgroundColor: '#244f21',
-            color: '#FFFFFF',
             padding: '0.75rem 1.25rem',
             borderRadius: '12px',
-            border: 'none',
             fontWeight: '700',
             cursor: 'pointer',
           }}
@@ -198,154 +198,139 @@ export default function AdminIngredients() {
 
       {/* LIST GRID */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: '#F5EBDD' }}>
-          <RefreshCw size={32} className="animate-spin" style={{ marginBottom: '1rem', color: '#b9cd94' }} />
+        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--admin-text-muted)' }}>
+          <RefreshCw size={32} className="animate-spin" style={{ marginBottom: '1rem', color: 'var(--admin-accent)' }} />
           <p>Loading ingredients...</p>
         </div>
       ) : ingredients.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem 2rem', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.15)' }}>
-          <Sparkles size={48} color="#b9cd94" style={{ marginBottom: '1rem', opacity: 0.5 }} />
-          <h3 style={{ color: '#FFFDF9', margin: '0 0 0.5rem' }}>No Ingredients Found</h3>
-          <p style={{ color: '#F5EBDD', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+        <div className="admin-card" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+          <Sparkles size={48} color="var(--admin-accent)" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+          <h3 style={{ color: 'var(--admin-text-primary)', margin: '0 0 0.5rem' }}>No Ingredients Found</h3>
+          <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
             Add your first ingredient story to feature it on the homepage.
           </p>
           <button
             onClick={handleOpenAdd}
-            style={{
-              backgroundColor: '#244f21',
-              color: '#FFF',
-              padding: '0.65rem 1.25rem',
-              borderRadius: '10px',
-              border: 'none',
-              fontWeight: '700',
-              cursor: 'pointer',
-            }}
+            className="admin-btn-primary"
           >
             Add Ingredient
           </button>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
-          {ingredients.map((ing) => (
-            <div
-              key={ing.id}
-              className="glass-card"
-              style={{
-                borderRadius: '18px',
-                padding: '1.5rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justify: 'space-between',
-                border: '1px solid rgba(255,255,255,0.12)',
-                opacity: ing.active ? 1 : 0.65,
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                  {ing.image ? (
-                    <img
-                      src={ing.image}
-                      alt={ing.name}
-                      style={{ width: '64px', height: '64px', borderRadius: '14px', objectFit: 'cover', flexShrink: 0 }}
-                    />
-                  ) : (
-                    <div style={{ width: '64px', height: '64px', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <ImageIcon size={28} color="#b9cd94" />
-                    </div>
-                  )}
-
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
-                      <h3 style={{ fontSize: '1.1rem', color: '#FFFDF9', margin: 0, fontWeight: '800', truncate: 'true' }}>
-                        {ing.name}
-                      </h3>
-                      <button
-                        onClick={() => toggleActive(ing)}
-                        title={ing.active ? 'Deactivate' : 'Activate'}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          color: ing.active ? '#b9cd94' : '#888',
-                          padding: '0.2rem',
-                        }}
-                      >
-                        {ing.active ? <Eye size={18} /> : <EyeOff size={18} />}
-                      </button>
-                    </div>
-                    {ing.subtitle && (
-                      <p style={{ color: '#b9cd94', fontSize: '0.8rem', margin: '0.2rem 0 0', fontWeight: '600' }}>
-                        {ing.subtitle}
-                      </p>
+          {ingredients.map((ing) => {
+            const imgSrc = ing.image || ing.imageUrl || ing.image_url;
+            return (
+              <div
+                key={ing.id}
+                className="admin-card"
+                style={{
+                  borderRadius: '18px',
+                  padding: '1.5rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  backgroundColor: 'var(--admin-surface-card)',
+                  border: '1px solid var(--admin-border)',
+                  opacity: ing.active ? 1 : 0.65,
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    {imgSrc ? (
+                      <img
+                        src={imgSrc}
+                        alt={ing.name}
+                        style={{ width: '64px', height: '64px', borderRadius: '14px', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--admin-border)' }}
+                      />
+                    ) : (
+                      <div style={{ width: '64px', height: '64px', borderRadius: '14px', backgroundColor: 'var(--admin-surface-elevated)', border: '1px solid var(--admin-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <ImageIcon size={28} color="var(--admin-accent)" />
+                      </div>
                     )}
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                        <h3 style={{ fontSize: '1.1rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>
+                          {ing.name}
+                        </h3>
+                        <button
+                          onClick={() => toggleActive(ing)}
+                          title={ing.active ? 'Deactivate' : 'Activate'}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: ing.active ? 'var(--admin-accent)' : 'var(--admin-text-muted)',
+                            padding: '0.2rem',
+                          }}
+                        >
+                          {ing.active ? <Eye size={18} /> : <EyeOff size={18} />}
+                        </button>
+                      </div>
+                      {ing.subtitle && (
+                        <p style={{ color: 'var(--admin-accent)', fontSize: '0.8rem', margin: '0.2rem 0 0', fontWeight: '600' }}>
+                          {ing.subtitle}
+                        </p>
+                      )}
+                    </div>
                   </div>
+
+                  <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.85rem', lineHeight: '1.55', margin: 0, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    {ing.description}
+                  </p>
                 </div>
 
-                <p style={{ color: '#F5EBDD', fontSize: '0.85rem', lineHeight: '1.55', margin: 0, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                  {ing.description}
-                </p>
-              </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--admin-border)' }}>
+                  <button
+                    onClick={() => handleOpenEdit(ing)}
+                    className="admin-btn-secondary"
+                    style={{ fontSize: '0.8rem', padding: '0.45rem 0.85rem' }}
+                  >
+                    <Edit2 size={14} />
+                    <span>Edit</span>
+                  </button>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                <button
-                  onClick={() => handleOpenEdit(ing)}
-                  style={{
-                    backgroundColor: 'rgba(255,255,255,0.08)',
-                    color: '#FFFDF9',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                    padding: '0.45rem 0.85rem',
-                    borderRadius: '8px',
-                    fontSize: '0.8rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.35rem',
-                  }}
-                >
-                  <Edit2 size={14} />
-                  <span>Edit</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setTargetId(ing.id);
-                    setDeleteModalOpen(true);
-                  }}
-                  style={{
-                    backgroundColor: 'rgba(220, 53, 69, 0.15)',
-                    color: '#ff6b6b',
-                    border: '1px solid rgba(220, 53, 69, 0.3)',
-                    padding: '0.45rem 0.85rem',
-                    borderRadius: '8px',
-                    fontSize: '0.8rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.35rem',
-                  }}
-                >
-                  <Trash2 size={14} />
-                  <span>Delete</span>
-                </button>
+                  <button
+                    onClick={() => {
+                      setTargetId(ing.id);
+                      setDeleteModalOpen(true);
+                    }}
+                    style={{
+                      backgroundColor: 'rgba(220, 53, 69, 0.15)',
+                      color: '#ff6b6b',
+                      border: '1px solid rgba(220, 53, 69, 0.3)',
+                      padding: '0.45rem 0.85rem',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    <Trash2 size={14} />
+                    <span>Delete</span>
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* CREATE / EDIT MODAL */}
       {modalOpen && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ backgroundColor: '#24130D', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '24px', padding: '2rem', maxWidth: '550px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ color: '#FFFDF9', fontFamily: 'var(--font-serif)', margin: '0 0 1.5rem', fontSize: '1.4rem' }}>
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ backgroundColor: 'var(--admin-surface-card)', border: '1px solid var(--admin-border)', borderRadius: '20px', padding: '2rem', maxWidth: '550px', width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
+            <h2 style={{ color: 'var(--admin-text-primary)', fontFamily: 'var(--font-serif)', margin: '0 0 1.5rem', fontSize: '1.4rem' }}>
               {editingIngredient ? 'Edit Ingredient' : 'Add New Ingredient'}
             </h2>
 
             <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
-                <label style={{ display: 'block', color: '#F5EBDD', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem' }}>
+                <label style={{ display: 'block', color: 'var(--admin-text-secondary)', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
                   Ingredient Name *
                 </label>
                 <input
@@ -354,12 +339,12 @@ export default function AdminIngredients() {
                   placeholder="e.g., Pure Desi Ghee"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFF', boxSizing: 'border-box' }}
+                  className="admin-input"
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', color: '#F5EBDD', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem' }}>
+                <label style={{ display: 'block', color: 'var(--admin-text-secondary)', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
                   Subtitle / Tagline
                 </label>
                 <input
@@ -367,12 +352,12 @@ export default function AdminIngredients() {
                   placeholder="e.g., Why Pure Desi Ghee?"
                   value={subtitle}
                   onChange={(e) => setSubtitle(e.target.value)}
-                  style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFF', boxSizing: 'border-box' }}
+                  className="admin-input"
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', color: '#F5EBDD', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem' }}>
+                <label style={{ display: 'block', color: 'var(--admin-text-secondary)', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
                   Description / Story *
                 </label>
                 <textarea
@@ -381,27 +366,28 @@ export default function AdminIngredients() {
                   placeholder="Explain why this ingredient matters..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: '#FFF', resize: 'vertical', boxSizing: 'border-box' }}
+                  className="admin-input"
+                  style={{ resize: 'vertical' }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', color: '#F5EBDD', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem' }}>
+                <label style={{ display: 'block', color: 'var(--admin-text-secondary)', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
                   Ingredient Image
                 </label>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                   {image && (
-                    <img src={image} alt="Preview" style={{ width: '50px', height: '50px', borderRadius: '10px', objectFit: 'cover' }} />
+                    <img src={image} alt="Preview" style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', border: '1px solid var(--admin-border)' }} />
                   )}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
                     disabled={uploadingImage}
-                    style={{ color: '#F5EBDD', fontSize: '0.85rem' }}
+                    style={{ color: 'var(--admin-text-secondary)', fontSize: '0.85rem' }}
                   />
                 </div>
-                {uploadingImage && <span style={{ color: '#b9cd94', fontSize: '0.8rem' }}>Uploading...</span>}
+                {uploadingImage && <span style={{ color: 'var(--admin-accent)', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Uploading image...</span>}
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -410,9 +396,9 @@ export default function AdminIngredients() {
                   id="ingActive"
                   checked={active}
                   onChange={(e) => setActive(e.target.checked)}
-                  style={{ width: '18px', height: '18px', accentColor: '#244f21' }}
+                  style={{ width: '18px', height: '18px', accentColor: 'var(--admin-accent)' }}
                 />
-                <label htmlFor="ingActive" style={{ color: '#FFFDF9', fontSize: '0.9rem', cursor: 'pointer' }}>
+                <label htmlFor="ingActive" style={{ color: 'var(--admin-text-primary)', fontSize: '0.9rem', cursor: 'pointer', fontWeight: '600' }}>
                   Active (Show on Homepage)
                 </label>
               </div>
@@ -421,14 +407,14 @@ export default function AdminIngredients() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  style={{ padding: '0.65rem 1.25rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'transparent', color: '#FFF', cursor: 'pointer' }}
+                  className="admin-btn-secondary"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  style={{ padding: '0.65rem 1.5rem', borderRadius: '10px', border: 'none', backgroundColor: '#244f21', color: '#FFF', fontWeight: '700', cursor: 'pointer' }}
+                  className="admin-btn-primary"
                 >
                   {saving ? 'Saving...' : editingIngredient ? 'Update Ingredient' : 'Create Ingredient'}
                 </button>
