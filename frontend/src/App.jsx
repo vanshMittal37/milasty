@@ -166,6 +166,8 @@ export default function App() {
                       <Route path="coupons" element={<AdminCouponList />} />
                       <Route path="reviews" element={<AdminReviewList />} />
                       <Route path="prebookings" element={<AdminPrebookingList />} />
+                      <Route path="prebookings/add" element={<AdminProductForm />} />
+                      <Route path="prebookings/edit/:id" element={<AdminProductForm />} />
                       <Route path="recommendation-quiz" element={<AdminQuizManagement />} />
                     </Route>
 

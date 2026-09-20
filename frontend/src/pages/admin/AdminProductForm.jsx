@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus, 
   Check, X, FileText, AlertCircle, Calendar, Sparkles, CheckSquare, Square
@@ -110,8 +110,9 @@ export default function AdminProductForm() {
     }
   }, [ctxCategories]);
 
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const isPrebookQuery = searchParams.get('prebook') === 'true';
+  const isPrebookQuery = searchParams.get('prebook') === 'true' || location.pathname.includes('/prebookings');
 
   useEffect(() => {
     if (isEdit) {
@@ -523,7 +524,7 @@ export default function AdminProductForm() {
       }
 
       refreshCategories();
-      navigate('/admin/products');
+      navigate(isPrebookQuery ? '/admin/prebookings' : '/admin/products');
     } catch (err) {
       console.error('Product save error:', err);
       toast.error(err.response?.data?.message || 'Failed to save product');
@@ -546,7 +547,7 @@ export default function AdminProductForm() {
       
       {/* Back Link */}
       <Link 
-        to="/admin/products" 
+        to={isPrebookQuery ? "/admin/prebookings" : "/admin/products"} 
         style={{ 
           display: 'inline-flex', 
           alignItems: 'center', 
@@ -558,7 +559,7 @@ export default function AdminProductForm() {
         }}
       >
         <ArrowLeft size={16} />
-        <span>Back to Product Listing</span>
+        <span>{isPrebookQuery ? 'Back to Pre-Bookings' : 'Back to Product Listing'}</span>
       </Link>
 
       <div className="admin-card" style={{ padding: '2rem' }}>

@@ -43,12 +43,12 @@ export default function AdminPrebookingList() {
   };
 
   const handleOpenAdd = () => {
-    navigate('/admin/products/add?prebook=true');
+    navigate('/admin/prebookings/add?prebook=true');
   };
 
   const handleOpenEdit = (item) => {
     const targetId = item.productId || item.id;
-    navigate(`/admin/products/edit/${targetId}?prebook=true`);
+    navigate(`/admin/prebookings/edit/${targetId}?prebook=true`);
   };
 
   const handleConfirmDelete = async () => {
