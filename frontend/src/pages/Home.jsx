@@ -36,6 +36,9 @@ export default function Home() {
   // Real product data & category state
   const [dbProducts, setDbProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showAllIngredients, setShowAllIngredients] = useState(false);
+  const [dbIngredients, setDbIngredients] = useState([]);
   const [activeCategorySlug, setActiveCategorySlug] = useState('cookies');
   const [selectedMood, setSelectedMood] = useState('classic');
   const [activeFaq, setActiveFaq] = useState(null);
@@ -323,6 +326,14 @@ export default function Home() {
       .catch(() => {
         setCategories(defaultCategoryList);
       });
+
+    api.get('/ingredients')
+      .then(res => {
+        if (res.data && Array.isArray(res.data.ingredients)) {
+          setDbIngredients(res.data.ingredients);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Fallback category dataset
@@ -669,10 +680,10 @@ export default function Home() {
                 flexWrap: 'wrap',
                 justifyContent: 'center',
                 gap: isMobile ? '0.5rem' : '0.75rem',
-                marginBottom: '2.5rem'
+                marginBottom: '1.25rem'
               }}
             >
-              {categories.map((cat) => {
+              {(showAllCategories ? categories : categories.slice(0, 4)).map((cat) => {
                 const isSelected = activeCategorySlug === cat.slug || activeCategorySlug === cat.id;
                 return (
                   <button
@@ -699,6 +710,27 @@ export default function Home() {
                 );
               })}
             </div>
+
+            {categories.length > 4 && (
+              <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+                <button
+                  onClick={() => setShowAllCategories(!showAllCategories)}
+                  style={{
+                    padding: '0.55rem 1.35rem',
+                    borderRadius: '999px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid #b9cd94',
+                    color: '#b9cd94',
+                    fontSize: '0.82rem',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {showAllCategories ? 'Show Less Categories' : 'Explore Other Categories'}
+                </button>
+              </div>
+            )}
 
             {/* Dynamic Category Products Display Grid */}
             <div className="category-products-grid fitted-cards-container-4" style={{ marginBottom: '2.5rem' }}>
@@ -779,10 +811,10 @@ export default function Home() {
             {/* Bestseller Product Cards Grid */}
             <div className="bestsellers-grid fitted-cards-container-4" style={{ marginBottom: '3rem' }}>
               {(() => {
-                const bestsellers = allProductsList.filter(p => p.isFeatured || (p.badges && p.badges.some(b => b.toLowerCase().includes('bestseller'))));
+                const bestsellers = allProductsList.filter(p => p.isBestseller || p.is_bestseller || p.isFeatured || (p.badges && p.badges.some(b => b.toLowerCase().includes('bestseller'))));
                 const listToDisplay = bestsellers.length > 0 ? bestsellers : allProductsList;
                 return listToDisplay.slice(0, 4).map((product) => (
-                  <ProductCard key={product._id || product.slug} product={product} />
+                  <ProductCard key={product._id || product.slug || product.id} product={product} />
                 ));
               })()}
             </div>
@@ -1195,25 +1227,59 @@ export default function Home() {
             <div 
               ref={ingredientsRef}
               className="horizontal-scroll-container fitted-cards-container-4"
+              style={{ marginBottom: '2rem' }}
             >
-              {[
-                { name: 'BAJRA', type: 'Pearl Millet', desc: 'Powerhouse of fiber, magnesium, and essential nutrients.', img: '/images/bajra.jpeg' },
-                { name: 'JOWAR', type: 'Sorghum Millet', desc: 'Gluten-free grain that aids digestion and regulates blood sugar.', img: '/images/jowar.jpeg' },
-                { name: 'RAGI', type: 'Finger Millet', desc: 'Calcium-rich grain that builds bone strength naturally.', img: '/images/ragi.jpeg' },
-                { name: 'DESI GHEE', type: 'Pure Cow Ghee', desc: 'Rich in A2 fats, vitamins, providing aroma and crisp texture.', img: '/images/ghee.jpeg' },
-              ].map((ingredient) => (
-                <div key={ingredient.name} className="glass-card" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px' }}>
-                  <img 
-                    src={ingredient.img} 
-                    alt={ingredient.name} 
-                    style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(185, 205, 148, 0.4)', margin: '0 auto 1.25rem', display: 'block', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }} 
-                  />
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.2rem 0' }}>{ingredient.name}</h4>
-                  <span style={{ fontSize: '0.8rem', color: '#b9cd94', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{ingredient.type}</span>
-                  <p style={{ fontSize: '0.85rem', color: '#F5EBDD', lineHeight: '1.55', marginTop: '0.45rem', padding: '0 0.5rem', fontWeight: '550' }}>{ingredient.desc}</p>
-                </div>
-              ))}
+              {(() => {
+                const defaultIngredients = [
+                  { name: 'BAJRA', type: 'Pearl Millet', desc: 'Powerhouse of fiber, magnesium, and essential nutrients.', img: '/images/bajra.jpeg' },
+                  { name: 'JOWAR', type: 'Sorghum Millet', desc: 'Gluten-free grain that aids digestion and regulates blood sugar.', img: '/images/jowar.jpeg' },
+                  { name: 'RAGI', type: 'Finger Millet', desc: 'Calcium-rich grain that builds bone strength naturally.', img: '/images/ragi.jpeg' },
+                  { name: 'DESI GHEE', type: 'Pure Cow Ghee', desc: 'Rich in A2 fats, vitamins, providing aroma and crisp texture.', img: '/images/ghee.jpeg' },
+                ];
+                const activeList = dbIngredients.length > 0 ? dbIngredients : defaultIngredients;
+                const itemsToDisplay = showAllIngredients ? activeList : activeList.slice(0, 4);
+
+                return itemsToDisplay.map((ingredient, idx) => (
+                  <div key={ingredient.id || ingredient.name || idx} className="glass-card" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px' }}>
+                    <img 
+                      src={ingredient.image || ingredient.img} 
+                      alt={ingredient.name} 
+                      style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(185, 205, 148, 0.4)', margin: '0 auto 1.25rem', display: 'block', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }} 
+                    />
+                    <h4 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.2rem 0' }}>{ingredient.name}</h4>
+                    {(ingredient.subtitle || ingredient.type) && (
+                      <span style={{ fontSize: '0.8rem', color: '#b9cd94', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        {ingredient.subtitle || ingredient.type}
+                      </span>
+                    )}
+                    <p style={{ fontSize: '0.85rem', color: '#F5EBDD', lineHeight: '1.55', marginTop: '0.45rem', padding: '0 0.5rem', fontWeight: '550' }}>
+                      {ingredient.description || ingredient.desc}
+                    </p>
+                  </div>
+                ));
+              })()}
             </div>
+
+            {((dbIngredients.length > 0 ? dbIngredients : [1,2,3,4,5]).length > 4) && (
+              <div style={{ textAlign: 'center' }}>
+                <button
+                  onClick={() => setShowAllIngredients(!showAllIngredients)}
+                  style={{
+                    padding: '0.75rem 1.75rem',
+                    borderRadius: '999px',
+                    backgroundColor: 'rgba(36, 79, 33, 0.8)',
+                    border: '1.5px solid #b9cd94',
+                    color: '#FFFDF9',
+                    fontSize: '0.88rem',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease'
+                  }}
+                >
+                  {showAllIngredients ? 'Show Less Ingredients' : 'Explore Our Ingredients'}
+                </button>
+              </div>
+            )}
 
           </div>
         </section>

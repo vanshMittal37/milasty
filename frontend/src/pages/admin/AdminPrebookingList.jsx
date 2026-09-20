@@ -144,7 +144,6 @@ export default function AdminPrebookingList() {
                   <th style={{ padding: '0.85rem 1.25rem' }}>Launch Date</th>
                   <th style={{ padding: '0.85rem 1.25rem' }}>Status</th>
                   <th style={{ padding: '0.85rem 1.25rem' }}>Pre-Booking</th>
-                  <th style={{ padding: '0.85rem 1.25rem' }}>Order</th>
                   <th style={{ padding: '0.85rem 1.25rem', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
@@ -205,10 +204,6 @@ export default function AdminPrebookingList() {
                             <XCircle size={14} /> Closed
                           </span>
                         )}
-                      </td>
-
-                      <td style={{ padding: '1rem 1.25rem', fontWeight: '700', color: 'var(--admin-text-secondary)' }}>
-                        #{item.displayOrder || 1}
                       </td>
 
                       <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>

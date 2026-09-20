@@ -44,7 +44,10 @@ export default function Nutrition() {
   }, []);
 
   const displayProducts = products && products.length > 0 ? products : initialProducts;
-  const dailyProducts = displayProducts.filter((p) => p.category === 'daily' || p.category === 'cookies' || p.labReportUrl || p.lab_report_url).slice(0, 5);
+  const dailyProducts = displayProducts.filter((p) => {
+    const reportUrl = p.labReportUrl || p.lab_report_url;
+    return reportUrl && typeof reportUrl === 'string' && reportUrl.trim() !== '';
+  }).slice(0, 5);
 
   const [isGlanceHovered, setIsGlanceHovered] = useState(false);
   const [isIngredientsHovered, setIsIngredientsHovered] = useState(false);

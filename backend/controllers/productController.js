@@ -136,6 +136,7 @@ export const getProducts = async (req, res) => {
           pieces: p.nutrition_facts?.pieces || p.pieces || '',
           labReportUrl: p.lab_report_url || '',
           isFeatured: p.is_featured !== false,
+          isBestseller: p.is_bestseller === true || (Array.isArray(parsedBadges) && parsedBadges.some((b) => b.toLowerCase().includes('bestseller'))),
           rating: realRating,
           reviewCount: realReviewCount,
           variants,
@@ -450,6 +451,7 @@ export const createProduct = async (req, res) => {
       benefits: parsedBenefits,
       target_audience: targetAudience || '',
       is_featured: isFeatured !== false,
+      is_bestseller: req.body.isBestseller === true || req.body.is_bestseller === true,
       is_active: status === 'active',
     };
 
@@ -620,6 +622,7 @@ export const updateProduct = async (req, res) => {
       benefits: parsedBenefits,
       target_audience: updates.targetAudience || '',
       is_featured: updates.isFeatured !== false,
+      is_bestseller: updates.isBestseller === true || updates.is_bestseller === true,
       is_active: updates.status === 'active',
       updated_at: new Date(),
     };

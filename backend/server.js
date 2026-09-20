@@ -18,6 +18,8 @@ import deliveryAreaRoutes from './routes/deliveryAreaRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
 import prebookingRoutes from './routes/prebookingRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
+import snackFinderRoutes from './routes/snackFinderRoutes.js';
+import ingredientRoutes from './routes/ingredientRoutes.js';
 
 dotenv.config();
 
@@ -70,6 +72,8 @@ app.use('/api/delivery-areas', deliveryAreaRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/prebookings', prebookingRoutes);
 app.use('/api/quiz', quizRoutes);
+app.use('/api/snack-finder', snackFinderRoutes);
+app.use('/api/ingredients', ingredientRoutes);
 app.use('/api', reviewRoutes);
 
 // Health Check Endpoint

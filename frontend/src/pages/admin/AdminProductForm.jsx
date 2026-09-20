@@ -62,6 +62,7 @@ export default function AdminProductForm() {
     sku: '',
     status: 'active',
     isFeatured: true,
+    isBestseller: false,
     image: '',
     secondaryImage: '',
     labReportUrl: '',
@@ -175,6 +176,7 @@ export default function AdminProductForm() {
           sku: p.sku || '',
           status: p.status || (p.is_active !== false ? 'active' : 'inactive'),
           isFeatured: p.isFeatured !== false,
+          isBestseller: !!(p.isBestseller || p.is_bestseller),
           image: p.image || p.image_url || '',
           secondaryImage: p.secondaryImage || p.secondary_image_url || '',
           labReportUrl: p.labReportUrl || p.lab_report_url || '',
@@ -669,7 +671,7 @@ export default function AdminProductForm() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
               <div>
                 <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Catalog Status
@@ -694,6 +696,20 @@ export default function AdminProductForm() {
                   className="admin-input"
                 >
                   <option value="true">YES (Show in Featured Grid)</option>
+                  <option value="false">NO (Standard Item)</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  Bestseller Product
+                </label>
+                <select
+                  value={formData.isBestseller ? 'true' : 'false'}
+                  onChange={(e) => setFormData({ ...formData, isBestseller: e.target.value === 'true' })}
+                  className="admin-input"
+                >
+                  <option value="true">🔥 YES (Bestseller Badge & Section)</option>
                   <option value="false">NO (Standard Item)</option>
                 </select>
               </div>
@@ -1439,19 +1455,6 @@ export default function AdminProductForm() {
                     <option value="true">YES (Customers can pre-book now)</option>
                     <option value="false">NO (Coming Soon preview only)</option>
                   </select>
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
-                    Display Order
-                  </label>
-                  <input
-                    type="number"
-                    value={prebookingDisplayOrder}
-                    onChange={(e) => setPrebookingDisplayOrder(e.target.value)}
-                    placeholder="1"
-                    className="admin-input"
-                  />
                 </div>
               </div>
             )}

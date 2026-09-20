@@ -118,7 +118,7 @@ export default function ProductCard({ product }) {
         </button>
 
         {/* Dynamic Badges (Informational Labels, non-clickable) */}
-        {product.badges && product.badges.length > 0 && (
+        {(product.isBestseller || product.is_bestseller || (product.badges && product.badges.length > 0)) && (
           <div
             className="card-badge-wrap"
             style={{
@@ -131,20 +131,19 @@ export default function ProductCard({ product }) {
               pointerEvents: 'none'
             }}
           >
-            {product.badges.slice(0, 1).map((badge, idx) => (
+            {(product.isBestseller || product.is_bestseller) ? (
               <span 
-                key={idx} 
                 className="card-badge-span"
                 style={{
                   fontSize: '0.50rem',
                   fontWeight: '800',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
-                  color: '#b9cd94',
-                  backgroundColor: 'rgba(36, 79, 33, 0.90)',
+                  color: '#FFFDF9',
+                  backgroundColor: 'rgba(185, 90, 20, 0.92)',
                   backdropFilter: 'blur(8px)',
                   WebkitBackdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(185, 205, 148, 0.45)',
+                  border: '1px solid rgba(255, 165, 0, 0.6)',
                   padding: '0.12rem 0.38rem',
                   borderRadius: '4px',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
@@ -153,9 +152,35 @@ export default function ProductCard({ product }) {
                   display: 'inline-block'
                 }}
               >
-                {formatMinimalBadge(badge)}
+                🔥 BESTSELLER
               </span>
-            ))}
+            ) : (
+              product.badges.slice(0, 1).map((badge, idx) => (
+                <span 
+                  key={idx} 
+                  className="card-badge-span"
+                  style={{
+                    fontSize: '0.50rem',
+                    fontWeight: '800',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                    color: '#b9cd94',
+                    backgroundColor: 'rgba(36, 79, 33, 0.90)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(185, 205, 148, 0.45)',
+                    padding: '0.12rem 0.38rem',
+                    borderRadius: '4px',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                    lineHeight: '1.1',
+                    whiteSpace: 'nowrap',
+                    display: 'inline-block'
+                  }}
+                >
+                  {formatMinimalBadge(badge)}
+                </span>
+              ))
+            )}
           </div>
         )}
       </div>

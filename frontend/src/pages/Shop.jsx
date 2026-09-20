@@ -60,6 +60,7 @@ export default function Shop() {
 
   // Pre-booking State (Database-backed)
   const [prebookingProducts, setPrebookingProducts] = useState([]);
+  const [showAllPrebookings, setShowAllPrebookings] = useState(false);
   const [prebookingLoading, setPrebookingLoading] = useState(true);
 
   // Testimonials State (Database-backed)
@@ -541,7 +542,7 @@ export default function Shop() {
               alignItems: 'stretch' 
             }}
           >
-            {prebookingProducts.map((item, idx) => {
+            {(showAllPrebookings ? prebookingProducts : prebookingProducts.slice(0, 4)).map((item, idx) => {
               const theme = cardThemes[idx % cardThemes.length];
               const pId = item.productId || item.product_id || item.id;
               const title = item.productTitle || item.title || 'Upcoming Bake';
@@ -562,7 +563,7 @@ export default function Shop() {
                     padding: isMobile ? '0.65rem 0.55rem 0.6rem' : '1.15rem 1rem 1rem',
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'space-between',
+                    justify: 'space-between',
                     position: 'relative',
                     overflow: 'hidden',
                     boxSizing: 'border-box',
@@ -724,6 +725,27 @@ export default function Shop() {
               );
             })}
           </div>
+
+          {prebookingProducts.length > 4 && (
+            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+              <button
+                onClick={() => setShowAllPrebookings(!showAllPrebookings)}
+                style={{
+                  padding: '0.65rem 1.65rem',
+                  borderRadius: '999px',
+                  backgroundColor: 'rgba(36, 79, 33, 0.85)',
+                  border: '1.5px solid #b9cd94',
+                  color: '#FFFDF9',
+                  fontSize: '0.88rem',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s ease'
+                }}
+              >
+                {showAllPrebookings ? 'Show Less' : 'Show More'}
+              </button>
+            </div>
+          )}
         </section>
       )}
 

@@ -51,6 +51,7 @@ import AdminReviewList from './pages/admin/AdminReviewList';
 import AdminInquiryList from './pages/admin/AdminInquiryList';
 import AdminPrebookingList from './pages/admin/AdminPrebookingList';
 import AdminQuizManagement from './pages/admin/AdminQuizManagement';
+import AdminIngredients from './pages/admin/AdminIngredients';
 
 // Dedicated Customer Portal Layout
 import CustomerLayout from './layouts/CustomerLayout';
@@ -169,6 +170,7 @@ export default function App() {
                       <Route path="prebookings/add" element={<AdminProductForm />} />
                       <Route path="prebookings/edit/:id" element={<AdminProductForm />} />
                       <Route path="recommendation-quiz" element={<AdminQuizManagement />} />
+                      <Route path="honest-ingredients" element={<AdminIngredients />} />
                     </Route>
 
                     {/* Customer Portal (Separate Shell, No Website Navbar) */}

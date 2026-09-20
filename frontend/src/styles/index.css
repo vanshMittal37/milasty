@@ -3592,6 +3592,103 @@ footer.transparent-blurred-footer {
   }
 }
 
+/* ========================================================
+   GLOBAL DROPDOWN & SELECT MENU STYLING (MILASTY DARK SYSTEM)
+   ======================================================== */
+select,
+option,
+optgroup {
+  background-color: #141A17 !important;
+  color: #F4F5F0 !important;
+  font-family: var(--font-sans);
+}
 
+select:focus,
+option:hover,
+option:focus,
+option:active,
+option:checked {
+  background-color: #1E2723 !important;
+  color: #8FAF5B !important;
+}
 
-
+.admin-input select,
+select.admin-input {
+  background-color: #141A17 !important;
+  color: #F4F5F0 !important;
+  border: 1px solid #2C3730 !important;
+  border-radius: 10px;
+  outline: none;
+}
+
+/* Custom Select Dropdown & Popover system */
+.custom-select-wrap {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.custom-select-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  background-color: #141A17;
+  border: 1px solid #2C3730;
+  border-radius: 10px;
+  color: #F4F5F0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.custom-select-trigger:hover,
+.custom-select-trigger:focus {
+  border-color: #8FAF5B;
+  box-shadow: 0 0 0 2px rgba(143, 175, 91, 0.25);
+}
+
+.custom-select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 99999;
+  max-height: 240px;
+  overflow-y: auto;
+  background-color: #141A17;
+  border: 1.5px solid #2C3730;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+  padding: 0.35rem;
+  margin: 0;
+  list-style: none;
+}
+
+.custom-select-option {
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  color: #C1C7C1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.custom-select-option:hover,
+.custom-select-option.focused {
+  background-color: #1E2723;
+  color: #F4F5F0;
+}
+
+.custom-select-option.selected {
+  background-color: rgba(143, 175, 91, 0.18);
+  color: #8FAF5B;
+  font-weight: 800;
+}
