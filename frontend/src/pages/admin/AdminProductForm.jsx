@@ -1510,6 +1510,4 @@ export default function AdminProductForm() {
       </div>
     </div>
   );
-}   </div>
-  );
 }
