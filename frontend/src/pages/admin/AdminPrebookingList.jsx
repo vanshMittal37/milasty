@@ -73,10 +73,7 @@ export default function AdminPrebookingList() {
     );
   });
 
-  const filteredProductOptions = products.filter((p) => {
-    if (!productSearch) return true;
-    return p.title.toLowerCase().includes(productSearch.toLowerCase());
-  });
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
