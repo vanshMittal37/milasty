@@ -6,14 +6,14 @@ import {
   updateOption,
   deleteOption,
 } from '../controllers/snackFinderController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.get('/', getPublicSnackFinder);
-router.get('/admin/all', protect, admin, getAdminSnackFinder);
-router.post('/options', protect, admin, createOption);
-router.put('/options/:id', protect, admin, updateOption);
-router.delete('/options/:id', protect, admin, deleteOption);
+router.get('/admin/all', protect, adminOnly, getAdminSnackFinder);
+router.post('/options', protect, adminOnly, createOption);
+router.put('/options/:id', protect, adminOnly, updateOption);
+router.delete('/options/:id', protect, adminOnly, deleteOption);
 
 export default router;
