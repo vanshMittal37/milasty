@@ -364,6 +364,83 @@ const safeInsertVariants = async (variantRows) => {
   return data || [];
 };
 
+// Helper for safe product insertion handling missing is_bestseller column in PostgREST schema cache
+const safeInsertProduct = async (payload) => {
+  let { data, error } = await supabase
+    .from('products')
+    .insert([payload])
+    .select()
+    .single();
+
+  if (error && error.message && (
+    error.message.toLowerCase().includes('is_bestseller') || 
+    error.message.toLowerCase().includes('schema cache')
+  )) {
+    console.warn('Supabase product insert schema fallback triggered for is_bestseller:', error.message);
+    const fallbackPayload = { ...payload };
+    const wasBestseller = fallbackPayload.is_bestseller === true;
+    delete fallbackPayload.is_bestseller;
+
+    if (wasBestseller) {
+      const currentBadges = Array.isArray(fallbackPayload.badges) ? fallbackPayload.badges : [];
+      if (!currentBadges.some(b => b.toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
+        fallbackPayload.badges = [...currentBadges, 'Best Seller'];
+      }
+    }
+
+    const res = await supabase
+      .from('products')
+      .insert([fallbackPayload])
+      .select()
+      .single();
+    data = res.data;
+    error = res.error;
+  }
+  return { data, error };
+};
+
+// Helper for safe product update handling missing is_bestseller column in PostgREST schema cache
+const safeUpdateProduct = async (id, payload) => {
+  let { data, error } = await supabase
+    .from('products')
+    .update(payload)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error && error.message && (
+    error.message.toLowerCase().includes('is_bestseller') || 
+    error.message.toLowerCase().includes('schema cache')
+  )) {
+    console.warn('Supabase product update schema fallback triggered for is_bestseller:', error.message);
+    const fallbackPayload = { ...payload };
+    const wasBestseller = fallbackPayload.is_bestseller === true;
+    delete fallbackPayload.is_bestseller;
+
+    if (fallbackPayload.badges !== undefined) {
+      let currentBadges = Array.isArray(fallbackPayload.badges) ? fallbackPayload.badges : [];
+      if (wasBestseller) {
+        if (!currentBadges.some(b => b.toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
+          currentBadges = [...currentBadges, 'Best Seller'];
+        }
+      } else {
+        currentBadges = currentBadges.filter(b => !b.toLowerCase().replace(/\s+/g, '').includes('bestseller'));
+      }
+      fallbackPayload.badges = currentBadges;
+    }
+
+    const res = await supabase
+      .from('products')
+      .update(fallbackPayload)
+      .eq('id', id)
+      .select()
+      .single();
+    data = res.data;
+    error = res.error;
+  }
+  return { data, error };
+};
+
 export const createProduct = async (req, res) => {
   try {
     const {
@@ -455,11 +532,7 @@ export const createProduct = async (req, res) => {
       is_active: status === 'active',
     };
 
-    const { data: product, error } = await supabase
-      .from('products')
-      .insert([insertPayload])
-      .select()
-      .single();
+    const { data: product, error } = await safeInsertProduct(insertPayload);
 
     if (error) {
       console.error('Supabase Product Insert Error:', error);
@@ -637,12 +710,7 @@ export const updateProduct = async (req, res) => {
     // Remove undefined keys
     Object.keys(updatePayload).forEach((key) => updatePayload[key] === undefined && delete updatePayload[key]);
 
-    const { data: product, error } = await supabase
-      .from('products')
-      .update(updatePayload)
-      .eq('id', id)
-      .select()
-      .single();
+    const { data: product, error } = await safeUpdateProduct(id, updatePayload);
 
     if (error) {
       console.error('Supabase Product Update Error:', error);
