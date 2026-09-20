@@ -11,6 +11,7 @@ import { protect, adminOnly } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 router.get('/', getPublicIngredients);
+router.get('/admin', protect, adminOnly, getAdminIngredients);
 router.get('/admin/all', protect, adminOnly, getAdminIngredients);
 router.post('/', protect, adminOnly, createIngredient);
 router.put('/:id', protect, adminOnly, updateIngredient);

@@ -32,10 +32,14 @@ export default function AdminIngredients() {
   const fetchIngredients = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/ingredients/admin');
-      if (res.data && res.data.ingredients) {
-        setIngredients(res.data.ingredients);
-      }
+      const res = await api.get('/ingredients/admin/all')
+        .catch(() => api.get('/ingredients/admin'))
+        .catch(() => api.get('/ingredients'));
+
+      const list = Array.isArray(res.data)
+        ? res.data
+        : (res.data?.ingredients || res.data?.data || []);
+      setIngredients(list);
     } catch (err) {
       console.error('Error fetching ingredients:', err);
       toast.error('Failed to load honest ingredients.');

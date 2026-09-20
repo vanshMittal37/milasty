@@ -11,6 +11,7 @@ import { protect, adminOnly } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 router.get('/', getPublicSnackFinder);
+router.get('/admin', protect, adminOnly, getAdminSnackFinder);
 router.get('/admin/all', protect, adminOnly, getAdminSnackFinder);
 router.post('/options', protect, adminOnly, createOption);
 router.put('/options/:id', protect, adminOnly, updateOption);
