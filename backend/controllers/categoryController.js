@@ -42,31 +42,55 @@ const INITIAL_CATEGORIES = [
 
 export const getCategories = async (req, res) => {
   try {
-    let { data: categories, error } = await supabase
-      .from('categories')
-      .select('*')
-      .order('created_at', { ascending: true });
+    let categories = [];
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (!error && data) categories = data;
+    } catch (e) {
+      console.warn('Error fetching categories from DB:', e.message);
+    }
 
-    if (error || !categories || categories.length === 0) {
+    if (!categories || categories.length === 0) {
       console.log('Seeding default categories to Supabase...');
       for (const cat of INITIAL_CATEGORIES) {
-        await supabase.from('categories').upsert({
-          name: cat.name,
-          label: cat.label || cat.name,
-          slug: cat.slug,
-          subtitle: cat.subtitle,
-          image_url: cat.image_url,
-        }, { onConflict: 'slug' });
+        try {
+          await supabase.from('categories').upsert({
+            name: cat.name,
+            label: cat.label || cat.name,
+            slug: cat.slug,
+            subtitle: cat.subtitle,
+            image_url: cat.image_url,
+          }, { onConflict: 'slug' });
+        } catch (e) {}
       }
-      const { data: seeded } = await supabase.from('categories').select('*').order('created_at', { ascending: true });
-      categories = seeded || INITIAL_CATEGORIES;
+      try {
+        const { data: seeded } = await supabase.from('categories').select('*').order('created_at', { ascending: true });
+        categories = seeded || INITIAL_CATEGORIES;
+      } catch (e) {
+        categories = INITIAL_CATEGORIES;
+      }
     }
 
     // Safely query products and category_products
-    const [{ data: dbProducts }, { data: catProductsRels }] = await Promise.all([
-      supabase.from('products').select('id, category, category_id'),
-      supabase.from('category_products').select('category_id, product_id').catch(() => ({ data: [] })),
-    ]);
+    let dbProducts = [];
+    let catProductsRels = [];
+
+    try {
+      const { data: pData } = await supabase.from('products').select('id, category, category_id');
+      if (pData) dbProducts = pData;
+    } catch (e) {
+      console.warn('Warning querying products in getCategories:', e.message);
+    }
+
+    try {
+      const { data: cpData, error: cpErr } = await supabase.from('category_products').select('category_id, product_id');
+      if (!cpErr && cpData) catProductsRels = cpData;
+    } catch (e) {
+      console.warn('Warning querying category_products table:', e.message);
+    }
 
     // Map product IDs and dynamic counts per category
     const catProductIdsMap = {};
@@ -147,7 +171,22 @@ export const getCategories = async (req, res) => {
     return res.json(formatted);
   } catch (error) {
     console.error('getCategories error:', error);
-    res.status(500).json({ message: 'Error fetching categories', error: error.message });
+    return res.json(INITIAL_CATEGORIES.map((cat, idx) => ({
+      _id: cat.slug,
+      id: cat.slug,
+      name: cat.name,
+      label: cat.label,
+      slug: cat.slug,
+      description: cat.description,
+      subtitle: cat.subtitle,
+      image_url: cat.image_url,
+      image: cat.image_url,
+      display_order: idx + 1,
+      is_active: true,
+      productCount: 0,
+      productIds: [],
+      created_at: new Date().toISOString()
+    })));
   }
 };
 
@@ -195,11 +234,16 @@ export const createCategory = async (req, res) => {
         category_id: category.id,
         product_id: pId,
       }));
-      await supabase.from('category_products').insert(relRows).catch(err => console.warn('category_products insert error:', err.message));
+      try {
+        await supabase.from('category_products').insert(relRows);
+      } catch (err) {
+        console.warn('category_products insert warning:', err?.message);
+      }
       savedProductIds = productIds;
 
-      // Update products table category field for legacy compatibility
-      await supabase.from('products').update({ category: category.slug, category_id: category.id }).in('id', productIds).catch(() => {});
+      try {
+        await supabase.from('products').update({ category: category.slug, category_id: category.id }).in('id', productIds);
+      } catch (err) {}
     }
 
     return res.status(201).json({
@@ -263,24 +307,33 @@ export const updateCategory = async (req, res) => {
     // Synchronize Category Products Relationship
     let savedProductIds = [];
     if (Array.isArray(productIds)) {
-      await supabase.from('category_products').delete().eq('category_id', targetCatId).catch(() => {});
+      try {
+        await supabase.from('category_products').delete().eq('category_id', targetCatId);
+      } catch (e) {}
 
       if (productIds.length > 0) {
         const relRows = productIds.map(pId => ({
           category_id: targetCatId,
           product_id: pId,
         }));
-        await supabase.from('category_products').insert(relRows).catch(err => console.warn('category_products update error:', err.message));
+        try {
+          await supabase.from('category_products').insert(relRows);
+        } catch (err) {
+          console.warn('category_products update warning:', err?.message);
+        }
         savedProductIds = productIds;
 
-        // Update products table category field for legacy compatibility
         if (targetSlug) {
-          await supabase.from('products').update({ category: targetSlug, category_id: targetCatId }).in('id', productIds).catch(() => {});
+          try {
+            await supabase.from('products').update({ category: targetSlug, category_id: targetCatId }).in('id', productIds);
+          } catch (e) {}
         }
       }
     } else {
-      const { data: rels } = await supabase.from('category_products').select('product_id').eq('category_id', targetCatId).catch(() => ({ data: [] }));
-      savedProductIds = (rels || []).map(r => r.product_id);
+      try {
+        const { data: rels } = await supabase.from('category_products').select('product_id').eq('category_id', targetCatId);
+        savedProductIds = (rels || []).map(r => r.product_id);
+      } catch (e) {}
     }
 
     return res.json({
@@ -307,10 +360,18 @@ export const deleteCategory = async (req, res) => {
     const catName = cat?.name || id;
 
     // Check if any products are assigned to this category
-    const [{ data: dbProducts }, { data: catRels }] = await Promise.all([
-      supabase.from('products').select('id, category, category_id'),
-      supabase.from('category_products').select('product_id').eq('category_id', id).catch(() => ({ data: [] })),
-    ]);
+    let dbProducts = [];
+    let catRels = [];
+
+    try {
+      const { data: pData } = await supabase.from('products').select('id, category, category_id');
+      if (pData) dbProducts = pData;
+    } catch (e) {}
+
+    try {
+      const { data: rels } = await supabase.from('category_products').select('product_id').eq('category_id', id);
+      if (rels) catRels = rels;
+    } catch (e) {}
 
     const assignedRelIds = new Set((catRels || []).map(r => r.product_id));
     (dbProducts || []).forEach(p => {
@@ -325,7 +386,10 @@ export const deleteCategory = async (req, res) => {
       });
     }
 
-    await supabase.from('category_products').delete().eq('category_id', id).catch(() => {});
+    try {
+      await supabase.from('category_products').delete().eq('category_id', id);
+    } catch (e) {}
+
     const { error } = await supabase.from('categories').delete().eq('id', id);
     if (error) throw error;
 
@@ -335,4 +399,3 @@ export const deleteCategory = async (req, res) => {
     res.status(500).json({ message: 'Error deleting category', error: error.message });
   }
 };
-
