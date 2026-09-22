@@ -100,6 +100,7 @@ function ToastNotification() {
 
 const PAGE_BACKGROUNDS = {
   '/our-story': '/images/about_background_image.jpeg',
+  '/about': '/images/about_background_image.jpeg',
   '/shop': '/images/ritiual_background_image.jpeg',
   '/nutrition': '/images/nutrition_background_image.jpeg',
   '/contact': '/images/shop_background_image.jpeg',
@@ -190,6 +191,7 @@ export default function App() {
                       <Route path="/product/:slug" element={<ProductDetail />} />
                       <Route path="/nutrition" element={<Nutrition />} />
                       <Route path="/our-story" element={<OurStory />} />
+                      <Route path="/about" element={<Navigate to="/our-story" replace />} />
                       <Route path="/reviews" element={<TestimonialsPage />} />
                       <Route path="/testimonials" element={<TestimonialsPage />} />
                       <Route path="/contact" element={<Contact />} />

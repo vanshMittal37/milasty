@@ -1,50 +1,49 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Sparkles, ShieldCheck, Award, Leaf, Flame, Compass, ChevronRight, MessageSquare, Info, ChevronLeft } from 'lucide-react';
-import Logo from '../components/Logo';
+import { Heart, Sparkles, ShieldCheck, Award, Leaf, Flame, Compass, ChevronRight, Info, CheckCircle2, ArrowRight } from 'lucide-react';
 
 // ========================================================
-// SECTION 1 — ORBIT JOURNEY (Milestones) COMPONENT
+// SECTION — ORBIT JOURNEY (Milestones) COMPONENT
 // ========================================================
 function OrbitJourneySection() {
   const milestones = [
     { 
       step: '01', 
-      title: 'The Question', 
-      desc: 'Can everyday bakery snacks be healthy, clean, and genuinely delicious?',
+      title: 'MY HEALTH JOURNEY', 
+      desc: 'Corporate life, rushed meals and COVID led me to rethink my relationship with food.',
       icon: Compass
     },
     { 
       step: '02', 
-      title: 'The Search', 
-      desc: 'Sourcing honest local ingredients, unrefined sweeteners, and traditional grains.',
+      title: 'DISCOVERING MILLETS', 
+      desc: 'I went back to traditional millets, looking for food that felt nourishing and satisfying.',
       icon: Leaf
     },
     { 
       step: '03', 
-      title: 'The First Bake', 
-      desc: 'Experimenting in small home batches with millet, pure Desi Ghee, and organic jaggery.',
+      title: 'BAKING AT HOME', 
+      desc: 'Experiments began in my kitchen with millets, desi ghee and jaggery.',
       icon: Flame
     },
     { 
       step: '04', 
-      title: 'MILASTY is Born', 
-      desc: 'A better, mindful way of snacking, establishing our small-batch bakery.',
-      icon: ShieldCheck
+      title: 'PEOPLE WANTED MORE', 
+      desc: 'My friends and family tasted the cookies and started asking for more.',
+      icon: Heart
     },
     { 
       step: '05', 
-      title: 'Today', 
-      desc: 'Bringing handcrafted millet bakes to wellness-focused Indian homes.',
+      title: 'MILASTY WAS BORN', 
+      desc: 'A personal journey became a mission to make mindful snacking delicious and accessible.',
       icon: Sparkles
     },
   ];
 
-  const [activeIdx, setActiveIdx] = React.useState(0);
-  const [isPaused, setIsPaused] = React.useState(false);
-  const [isMobile, setIsMobile] = React.useState(false);
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 767);
     };
@@ -54,7 +53,7 @@ function OrbitJourneySection() {
   }, []);
 
   // Cyclic Rotation from Step 1 to 5
-  React.useEffect(() => {
+  useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
       setActiveIdx((prev) => (prev + 1) % milestones.length);
@@ -84,7 +83,7 @@ function OrbitJourneySection() {
             The MILASTY <span style={{ color: '#b9cd94', fontSize: '1.18em', fontWeight: '900', textShadow: '0 0 12px rgba(185, 205, 148, 0.4)' }}>Journey</span>
           </h2>
           <p style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', color: '#F5EBDD', fontWeight: '500', marginTop: '0.6rem', lineHeight: '1.6' }}>
-            From an inspiring question to handcrafted bakes delivered nationwide.
+            From one woman's search for better food to a brand built around better everyday snacking.
           </p>
         </div>
 
@@ -381,19 +380,13 @@ function OrbitJourneySection() {
 }
 
 export default function OurStory() {
-  const journeyRef = useRef(null);
-
-  const scrollLeft = (ref) => {
-    if (ref.current) {
-      ref.current.scrollBy({ left: -320, behavior: 'smooth' });
+  useEffect(() => {
+    document.title = "About MILASTY | The Story Behind Our Millet Bakes";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Discover the MILASTY story — from a home kitchen to millet-based bakes made with honest ingredients, care and no compromise on taste.');
     }
-  };
-
-  const scrollRight = (ref) => {
-    if (ref.current) {
-      ref.current.scrollBy({ left: 320, behavior: 'smooth' });
-    }
-  };
+  }, []);
 
   return (
     <div
@@ -420,7 +413,7 @@ export default function OurStory() {
       }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
       
-      {/* 1. STORYTELLING HERO SECTION */}
+      {/* 1. SECTION 1 — HERO */}
       <section 
         className="shop-hero"
         style={{ 
@@ -450,7 +443,7 @@ export default function OurStory() {
               border: '1.5px solid rgba(185, 205, 148, 0.4)'
             }}
           >
-            Our Story
+            THE MILASTY STORY
           </span>
           <h1 
             style={{ 
@@ -464,34 +457,49 @@ export default function OurStory() {
               textShadow: '0 2px 10px rgba(0,0,0,0.5)'
             }}
           >
-            Born From a Mother's Search<br />for Better Snacking.
+            Born in a Home Kitchen.<br />
+            Made for Better Snacking.
           </h1>
           <p 
             style={{ 
               fontSize: '1.15rem', 
               color: '#F5EBDD', 
               lineHeight: '1.75', 
-              maxWidth: '540px',
+              maxWidth: '560px',
               margin: '0.5rem 0 1.5rem',
               fontWeight: '550'
             }}
           >
-            Milasty began with a simple question: Can everyday snacking be wholesome, honest, and genuinely delicious?
+            What started as a search for better food became a mission to make better snacking a part of everyday life — millet-based bakes made with honest ingredients, care, and no compromise on taste.
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <Link 
               to="/shop" 
               className="btn-primary" 
-              style={{ padding: '0.9rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', fontWeight: '850', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              style={{ 
+                padding: '0.95rem 2.4rem', 
+                fontSize: '0.95rem', 
+                backgroundColor: '#244f21', 
+                color: '#FFFFFF', 
+                border: 'none', 
+                borderRadius: '999px', 
+                fontWeight: '850', 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                boxShadow: '0 4px 16px rgba(36, 79, 33, 0.4)',
+                transition: 'all 0.3s ease',
+                textDecoration: 'none'
+              }}
             >
               <span>Discover Our Bakes</span>
-              <ChevronRight size={16} />
+              <ChevronRight size={18} />
             </Link>
           </div>
         </div>
 
         {/* Hero image block with label */}
-        {/* <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative' }}>
           <div 
             style={{ 
               position: 'relative', 
@@ -503,7 +511,7 @@ export default function OurStory() {
           >
             <img
               src="/images/image2.jpeg"
-              alt="Millet baking ingredients"
+              alt="MILASTY millet baking ingredients and process"
               style={{
                 width: '100%',
                 display: 'block',
@@ -520,8 +528,9 @@ export default function OurStory() {
               position: 'absolute', 
               bottom: '24px', 
               right: '24px',
-              backgroundColor: 'rgba(28, 14, 9, 0.85)',
-              padding: '0.55rem 1.15rem',
+              backgroundColor: 'rgba(28, 14, 9, 0.88)',
+              backdropFilter: 'blur(12px)',
+              padding: '0.6rem 1.2rem',
               borderRadius: '999px',
               border: '1px solid rgba(255, 255, 255, 0.25)',
               fontSize: '0.78rem',
@@ -531,17 +540,18 @@ export default function OurStory() {
               color: '#FFFDF9',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.35rem',
-              pointerEvents: 'none'
+              gap: '0.4rem',
+              pointerEvents: 'none',
+              boxShadow: '0 8px 20px rgba(0,0,0,0.4)'
             }}
           >
-            <Sparkles size={13} color="#b9cd94" />
+            <Sparkles size={14} color="#b9cd94" />
             <span>Handcrafted with intention</span>
           </div>
-        </div> */}
+        </div>
       </section>
 
-      {/* 2. EDITORIAL FOUNDER STORY SECTION */}
+      {/* 2. SECTION 2 — STORY */}
       <section style={{ backgroundColor: 'transparent', padding: '6rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
         <div 
           className="story-grid"
@@ -556,7 +566,7 @@ export default function OurStory() {
             alignItems: 'center' 
           }}
         >
-          {/* Left Founder Image */}
+          {/* Left Founder / Kitchen Image */}
           <div style={{ position: 'relative' }}>
             <div 
               style={{ 
@@ -568,8 +578,8 @@ export default function OurStory() {
             >
               <img 
                 src="/images/image3.jpeg" 
-                alt="Mother baking in kitchen" 
-                style={{ width: '100%', height: '480px', objectFit: 'cover', display: 'block' }} 
+                alt="Baking with authentic ingredients in home kitchen" 
+                style={{ width: '100%', height: '500px', objectFit: 'cover', display: 'block' }} 
               />
             </div>
             {/* Overlay Quote label */}
@@ -595,65 +605,113 @@ export default function OurStory() {
 
           {/* Right Text Block */}
           <div>
+            <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.6rem' }}>
+              OUR FOUNDING STORY
+            </span>
             <h2 
               style={{ 
-                fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', 
+                fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', 
                 fontFamily: 'var(--font-serif)', 
                 color: '#FFFDF9', 
                 marginBottom: '1.75rem', 
-                lineHeight: '1.3',
-                fontStyle: 'italic',
+                lineHeight: '1.25',
                 fontWeight: '850',
                 textShadow: '0 2px 8px rgba(0,0,0,0.4)'
               }}
             >
-              "Snacking should nourish your soul, not burden your conscience."
+              We Wanted Better.<br />Finding It Wasn't Easy.
             </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: '#F5EBDD', lineHeight: '1.85', fontSize: '1.02rem', fontWeight: '550' }}>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: '#F5EBDD', lineHeight: '1.85', fontSize: '1.05rem', fontWeight: '500' }}>
               <p>
-                MILASTY was founded by <strong style={{ color: '#b9cd94', fontWeight: '800' }}>Anwesha</strong> in Greater Noida after realizing that almost every commercial snack labeled "digestive", "sugar-free", or "oats" on supermarket shelves was packed with hidden palm oil, refined maida flour, and synthetic preservatives.
+                While navigating my own health journey, I realised how difficult it was to find snacks that genuinely fit the way I wanted to eat. So many products claimed to be “healthy”, but a closer look at the ingredient list often told a different story.
               </p>
               <p>
-                We set out to revive India's rich heritage of <strong style={{ color: '#b9cd94', fontWeight: '800' }}>millet baking</strong>. By pairing Pearl Millet (<strong style={{ color: '#b9cd94', fontWeight: '800' }}>Bajra</strong>), Sorghum (<strong style={{ color: '#b9cd94', fontWeight: '800' }}>Jowar</strong>), and Finger Millet (<strong style={{ color: '#b9cd94', fontWeight: '800' }}>Ragi</strong>) with 100% pure <strong style={{ color: '#b9cd94', fontWeight: '800' }}>Desi Ghee</strong> and organic <strong style={{ color: '#b9cd94', fontWeight: '800' }}>jaggery</strong>, we proved that healthy, <strong style={{ color: '#b9cd94', fontWeight: '800' }}>clean</strong> snacks can taste truly extraordinary.
+                Instead of settling, I went back to my kitchen. I started experimenting with simple recipes made with ingredients I could understand and trust. There was no business plan behind it — just a personal need to create food that felt right for my everyday life.
+              </p>
+              <p>
+                Then I started sharing those homemade bakes with family, friends and others around me. The response was clear: people weren't just looking for healthier options; they were looking for more honest ones.
+              </p>
+              <p style={{ fontWeight: '700', color: '#FFFDF9', fontSize: '1.1rem' }}>
+                And that's where MILASTY began.
+              </p>
+              <p>
+                Built around millets, thoughtful ingredients and great taste, MILASTY is our way of making everyday snacking a little more conscious — without making it boring.
               </p>
             </div>
 
             <blockquote 
               style={{ 
                 borderLeft: '4px solid #b9cd94', 
-                paddingLeft: '1.25rem', 
-                margin: '2rem 0 2rem 0',
+                paddingLeft: '1.35rem', 
+                margin: '2rem 0',
                 fontFamily: 'var(--font-serif)',
                 color: '#FFFDF9',
                 fontWeight: '800',
-                fontSize: '1.15rem'
+                fontSize: '1.15rem',
+                lineHeight: '1.6',
+                fontStyle: 'italic',
+                backgroundColor: 'rgba(36, 79, 33, 0.2)',
+                padding: '1rem 1.35rem',
+                borderRadius: '0 12px 12px 0',
+                border: '1px solid rgba(185, 205, 148, 0.25)',
+                borderLeft: '4px solid #b9cd94'
               }}
             >
-              "From a mother's kitchen to mindful, guilt-free homes across India."
+              "Because sometimes, the most meaningful brands don't begin with a business plan. They begin with a problem worth solving."
             </blockquote>
+          </div>
+        </div>
+      </section>
 
-            <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', marginTop: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                <ShieldCheck size={18} color="#b9cd94" />
-                <span>Small Batch Crafted</span>
+      {/* STORY HIGHLIGHT STRIP */}
+      <section style={{ backgroundColor: 'rgba(28, 14, 9, 0.65)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)', padding: '2.5rem 0' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.5rem' }}>
+          <div 
+            style={{ 
+              display: 'flex', 
+              justifyContent: 'space-around', 
+              alignItems: 'center', 
+              flexWrap: 'wrap', 
+              gap: '2rem' 
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.5)', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ShieldCheck size={22} color="#b9cd94" />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                <Award size={18} color="#b9cd94" />
-                <span>Zero Compromise</span>
+              <span style={{ color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '850', letterSpacing: '0.04em' }}>
+                SMALL-BATCH CRAFTED
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.5)', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Leaf size={22} color="#b9cd94" />
               </div>
+              <span style={{ color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '850', letterSpacing: '0.04em' }}>
+                HONEST INGREDIENTS
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.5)', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Award size={22} color="#b9cd94" />
+              </div>
+              <span style={{ color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '850', letterSpacing: '0.04em' }}>
+                TASTE WITHOUT COMPROMISE
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. REDESIGNED ORBIT MILESTONES TIMELINE SECTION */}
+      {/* 3. SECTION — MILASTY JOURNEY / MILESTONES */}
       <OrbitJourneySection />
 
-
-
-      {/* 9. TRUST & TRANSPARENCY SECTION */}
-      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0', borderBottom: '1px solid rgba(245,220,180,0.15)' }}>
-        <div style={{ maxWidth: '750px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
+      {/* 4. PRESERVED EXISTING SECTION — TRANSPARENCY & NUTRITION */}
+      <section style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid rgba(245,220,180,0.15)' }}>
+        <div style={{ maxWidth: '780px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
           <div className="glass-card" style={{ padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center' }}>
             <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.4)', color: '#b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid rgba(185, 205, 148, 0.35)' }}>
               <Info size={24} />
@@ -661,21 +719,104 @@ export default function OurStory() {
             <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '1rem' }}>
               Know What Goes Into Your Food.
             </h2>
-            <p style={{ fontSize: '1rem', color: '#F5EBDD', lineHeight: '1.7', marginBottom: '2.5rem', fontWeight: '550' }}>
+            <p style={{ fontSize: '1.05rem', color: '#F5EBDD', lineHeight: '1.7', marginBottom: '2.5rem', fontWeight: '550' }}>
               We maintain 100% transparency in recipe designs, nutritional parameters, and batch-test laboratory reports.
             </p>
             <Link
               to="/nutrition"
               className="btn-primary"
-              style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850' }}
+              style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
             >
-              Explore Nutrition & Lab Reports
+              <span>Explore Nutrition & Lab Reports</span>
+              <ChevronRight size={16} />
             </Link>
           </div>
         </div>
       </section>
 
+      {/* 5. SECTION — MILASTY PROMISE */}
+      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0 4rem', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', textAlign: 'center' }}>
+          <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.6rem' }}>
+            THE MILASTY PROMISE
+          </span>
+          <h2 style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 1.25rem', lineHeight: '1.2' }}>
+            Good Food Should Feel Good to Choose.
+          </h2>
+          <p style={{ fontSize: '1.15rem', color: '#F5EBDD', lineHeight: '1.8', maxWidth: '720px', margin: '0 auto 3rem', fontWeight: '550' }}>
+            From the ingredients we choose to the way we bake, we believe in making everyday snacking more thoughtful, transparent and genuinely delicious.
+          </p>
 
+          {/* PROMISE CTAS */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
+            {/* Primary CTA */}
+            <Link
+              to="/shop"
+              style={{
+                padding: '1rem 2.4rem',
+                fontSize: '0.95rem',
+                backgroundColor: '#244f21',
+                color: '#FFFFFF',
+                borderRadius: '999px',
+                textDecoration: 'none',
+                fontWeight: '850',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 6px 20px rgba(36, 79, 33, 0.45)',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <span>Explore Our Bakes</span>
+              <ChevronRight size={18} />
+            </Link>
+
+            {/* Secondary CTA */}
+            <Link
+              to="/nutrition"
+              style={{
+                padding: '1rem 2.4rem',
+                fontSize: '0.95rem',
+                backgroundColor: 'rgba(28, 14, 9, 0.65)',
+                color: '#FFFDF9',
+                borderRadius: '999px',
+                textDecoration: 'none',
+                fontWeight: '850',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                border: '1.5px solid rgba(185, 205, 148, 0.5)',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <span>Explore Ingredients & Nutrition</span>
+              <ChevronRight size={18} color="#b9cd94" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. FINAL CLOSING LINE */}
+      <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center' }}>
+        <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+          <p 
+            style={{ 
+              fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', 
+              fontFamily: 'var(--font-serif)', 
+              color: '#FFFDF9', 
+              fontWeight: '850', 
+              lineHeight: '1.6',
+              margin: 0,
+              textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+            }}
+          >
+            Made with millets.<br />
+            Baked with care.<br />
+            <span style={{ color: '#b9cd94', fontStyle: 'italic' }}>Created for everyday cravings.</span>
+          </p>
+        </div>
+      </section>
 
       {/* CSS style overrides for horizontal scroll containers, fitted card grids, and transparent blurred card styles */}
       <style>{`
@@ -781,3 +922,4 @@ export default function OurStory() {
     </div>
   );
 }
+
