@@ -38,7 +38,16 @@ export default function Home() {
   const [showAllIngredients, setShowAllIngredients] = useState(false);
   const [dbIngredients, setDbIngredients] = useState([]);
   const [activeCategorySlug, setActiveCategorySlug] = useState('cookies');
+  const [selectedMood, setSelectedMood] = useState('classic');
   const [activeFaq, setActiveFaq] = useState(null);
+
+  const moodOptions = [
+    { id: 'classic', label: 'I love classic', subtitle: 'Timeless flavours like Cardamom & Desi Ghee', tag: 'classic' },
+    { id: 'crunchy', label: 'Light & crunchy', subtitle: 'Crispy crackers & toasted millets', tag: 'crunchy' },
+    { id: 'chocolate', label: 'Chocolate cravings', subtitle: 'Deep dark cocoa & rich ragi bakes', tag: 'cocoa' },
+    { id: 'wholesome', label: 'Something wholesome', subtitle: 'Nutrient-rich trio of Bajra, Jowar & Ragi', tag: 'wholesome' },
+    { id: 'share', label: 'Something to share', subtitle: 'Family packs & artisanal gift hampers', tag: 'gifting' },
+  ];
 
   const [scrollY, setScrollY] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
@@ -74,6 +83,7 @@ export default function Home() {
   const categoryRef = useScrollReveal();
   const bestsellersRef = useScrollReveal();
   const whyRef = useScrollReveal();
+  const moodRef = useScrollReveal();
   const ingredientsSectionRef = useScrollReveal();
   const pillarsRef = useScrollReveal();
   const customerTestimonialRef = useScrollReveal();
@@ -977,6 +987,120 @@ export default function Home() {
                   ))}
                 </div>
               </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ================================================================== */}
+        {/* PRODUCT DISCOVERY BY MOOD — NOT SURE WHERE TO START?              */}
+        {/* ================================================================== */}
+        <section
+          ref={moodRef}
+          className="reveal-fade-up mood-section"
+          style={{
+            padding: isMobile ? '4rem 0' : '6.5rem 0',
+            backgroundColor: 'transparent',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+          }}
+        >
+          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
+            
+            <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3rem' }}>
+              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+                NOT SURE WHERE TO START?
+              </span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
+                Find Your Perfect <span style={{ color: 'var(--accent-gold)' }}>MILASTY Snack</span>
+              </h2>
+              <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
+                Something light. Something crunchy. Something chocolatey. Or something to share.
+              </p>
+            </div>
+
+            {/* Mood Category Selector Options */}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                gap: isMobile ? '0.55rem' : '0.85rem',
+                marginBottom: '2.5rem'
+              }}
+            >
+              {moodOptions.map((mood) => {
+                const isSelected = selectedMood === mood.id;
+                return (
+                  <button
+                    key={mood.id}
+                    onClick={() => setSelectedMood(mood.id)}
+                    style={{
+                      padding: isMobile ? '0.65rem 1.15rem' : '0.85rem 1.65rem',
+                      borderRadius: '999px',
+                      backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
+                      border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
+                      color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.85)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
+                      cursor: 'pointer',
+                      fontSize: isMobile ? '0.82rem' : '0.92rem',
+                      fontWeight: '800',
+                      transition: 'all 0.25s ease',
+                      boxShadow: isSelected ? '0 8px 24px rgba(36, 79, 33, 0.45)' : 'none'
+                    }}
+                  >
+                    <span>{mood.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Mood Filtered Products Cards */}
+            <div className="mood-products-grid fitted-cards-container-4" style={{ marginBottom: '2.5rem' }}>
+              {(() => {
+                const currentMoodObj = moodOptions.find(m => m.id === selectedMood);
+                const tag = currentMoodObj ? currentMoodObj.tag : 'classic';
+                let filtered = allProductsList.filter(p => {
+                  const title = (p.title || '').toLowerCase();
+                  const desc = (p.description || '').toLowerCase();
+                  const cat = (p.category || '').toLowerCase();
+                  if (tag === 'classic') return title.includes('cardamom') || title.includes('bajra') || cat === 'daily';
+                  if (tag === 'crunchy') return title.includes('cracker') || title.includes('jowar') || desc.includes('crunch');
+                  if (tag === 'cocoa') return title.includes('cocoa') || title.includes('ragi') || title.includes('chocolate');
+                  if (tag === 'wholesome') return title.includes('trio') || cat === 'starter' || p.isFeatured;
+                  if (tag === 'gifting') return title.includes('hamper') || title.includes('box') || cat === 'gifts';
+                  return true;
+                });
+
+                if (filtered.length === 0) filtered = allProductsList.slice(0, 4);
+
+                return filtered.slice(0, 4).map((product) => (
+                  <ProductCard key={product._id || product.slug} product={product} />
+                ));
+              })()}
+            </div>
+
+            <div style={{ textAlign: 'center' }}>
+              <Link
+                to="/shop"
+                className="btn-primary"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.85rem 2rem',
+                  backgroundColor: '#244f21',
+                  color: '#FFFFFF',
+                  border: '1.5px solid #b9cd94',
+                  borderRadius: '999px',
+                  fontWeight: '800',
+                  fontSize: '0.9rem',
+                  textDecoration: 'none'
+                }}
+              >
+                <span>EXPLORE ALL SNACKS</span>
+                <ArrowRight size={16} color="#b9cd94" />
+              </Link>
             </div>
 
           </div>
