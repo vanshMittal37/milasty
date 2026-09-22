@@ -247,7 +247,10 @@ export default function Shop() {
   // Filtered Catalogue Products
   const displayedProducts = safeProducts.filter(p => {
     const matchesCat = matchesCategoryFilter(p, selectedCategory);
-    const matchesSearch = !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.description.toLowerCase().includes(search.toLowerCase());
+    const pTitle = (p.title || p.name || '').toString();
+    const pDesc = (p.description || p.subtitle || '').toString();
+    const cleanSearch = (search || '').toLowerCase();
+    const matchesSearch = !cleanSearch || pTitle.toLowerCase().includes(cleanSearch) || pDesc.toLowerCase().includes(cleanSearch);
     return matchesCat && matchesSearch;
   });
 

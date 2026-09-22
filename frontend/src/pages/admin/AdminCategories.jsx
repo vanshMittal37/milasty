@@ -388,9 +388,13 @@ export default function AdminCategories() {
                   </div>
                 ) : (
                   allProducts
-                    .filter(p => !productSearch || p.name.toLowerCase().includes(productSearch.toLowerCase()))
+                    .filter(p => {
+                      const pTitle = p.title || p.name || '';
+                      return !productSearch || pTitle.toLowerCase().includes(productSearch.toLowerCase());
+                    })
                     .map(p => {
                       const pId = p.id || p._id;
+                      const pTitle = p.title || p.name || 'Untitled Product';
                       const isSelected = selectedProductIds.includes(pId);
                       const pImg = p.image || p.image_url || (p.images && p.images[0]?.image_url);
                       return (
@@ -411,7 +415,7 @@ export default function AdminCategories() {
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, minWidth: 0 }}>
                             {pImg ? (
-                              <img src={pImg} alt={p.name} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
+                              <img src={pImg} alt={pTitle} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
                             ) : (
                               <div style={{ width: '32px', height: '32px', borderRadius: '6px', backgroundColor: 'var(--admin-surface-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Package size={14} color="var(--admin-text-muted)" />
@@ -419,10 +423,10 @@ export default function AdminCategories() {
                             )}
                             <div style={{ minWidth: 0, flex: 1 }}>
                               <div style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                                {p.name}
+                                {pTitle}
                               </div>
                               <div style={{ fontSize: '0.66rem', color: 'var(--admin-text-muted)' }}>
-                                ₹{p.price} {p.is_active !== false ? '• Active' : '• Inactive'}
+                                ₹{p.price || 0} {p.is_active !== false ? '• Active' : '• Inactive'}
                               </div>
                             </div>
                           </div>
@@ -656,9 +660,13 @@ export default function AdminCategories() {
                     </div>
                   ) : (
                     allProducts
-                      .filter(p => !editProductSearch || p.name.toLowerCase().includes(editProductSearch.toLowerCase()))
+                      .filter(p => {
+                        const pTitle = p.title || p.name || '';
+                        return !editProductSearch || pTitle.toLowerCase().includes(editProductSearch.toLowerCase());
+                      })
                       .map(p => {
                         const pId = p.id || p._id;
+                        const pTitle = p.title || p.name || 'Untitled Product';
                         const isSelected = (editCategoryData.productIds || []).includes(pId);
                         const pImg = p.image || p.image_url || (p.images && p.images[0]?.image_url);
                         return (
@@ -679,7 +687,7 @@ export default function AdminCategories() {
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, minWidth: 0 }}>
                               {pImg ? (
-                                <img src={pImg} alt={p.name} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
+                                <img src={pImg} alt={pTitle} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
                               ) : (
                                 <div style={{ width: '32px', height: '32px', borderRadius: '6px', backgroundColor: 'var(--admin-surface-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                   <Package size={14} color="var(--admin-text-muted)" />
@@ -687,10 +695,10 @@ export default function AdminCategories() {
                               )}
                               <div style={{ minWidth: 0, flex: 1 }}>
                                 <div style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                                  {p.name}
+                                  {pTitle}
                                 </div>
                                 <div style={{ fontSize: '0.66rem', color: 'var(--admin-text-muted)' }}>
-                                  ₹{p.price} {p.is_active !== false ? '• Active' : '• Inactive'}
+                                  ₹{p.price || 0} {p.is_active !== false ? '• Active' : '• Inactive'}
                                 </div>
                               </div>
                             </div>
