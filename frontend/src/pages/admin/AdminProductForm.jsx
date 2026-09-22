@@ -44,7 +44,10 @@ export const PRESET_BADGES = [
 export default function AdminProductForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const isEdit = !!id;
+  const isPrebookQuery = searchParams.get('prebook') === 'true' || location.pathname.includes('/prebookings');
   const { toast } = useToast();
   const { categories: ctxCategories, refreshCategories } = useCategories();
 
@@ -257,10 +260,6 @@ export default function AdminProductForm() {
     }
   }, [ctxCategories]);
 
-  const location = useLocation();
-  const [searchParams] = useSearchParams();
-  const isPrebookQuery = searchParams.get('prebook') === 'true' || location.pathname.includes('/prebookings');
-
   useEffect(() => {
     if (isEdit) {
       fetchProductDetails();
@@ -382,6 +381,27 @@ export default function AdminProductForm() {
           }
         });
         setNutritionMap(nMap);
+
+        // Load gallery images from product.images array so they show in the gallery editor
+        if (Array.isArray(p.images) && p.images.length > 0) {
+          const mapped = p.images.map((img, idx) => ({
+            id: img.id || `img-${idx}`,
+            image_url: img.image_url || img.url || img,
+            public_id: img.public_id || '',
+            sort_order: img.sort_order !== undefined ? img.sort_order : idx,
+            is_primary: img.is_primary !== undefined ? img.is_primary : idx === 0,
+            alt_text: img.alt_text || '',
+          }));
+          setGalleryImages(mapped);
+        } else {
+          // Fallback: seed gallery from image_url and secondary_image_url fields
+          const seed = [];
+          const primaryUrl = p.image || p.image_url || '';
+          const secondaryUrl = p.secondaryImage || p.secondary_image_url || '';
+          if (primaryUrl) seed.push({ id: 'img-primary', image_url: primaryUrl, public_id: '', sort_order: 0, is_primary: true, alt_text: '' });
+          if (secondaryUrl && secondaryUrl !== primaryUrl) seed.push({ id: 'img-secondary', image_url: secondaryUrl, public_id: '', sort_order: 1, is_primary: false, alt_text: '' });
+          setGalleryImages(seed);
+        }
 
         // Check if attached to pre-booking
         const pbList = Array.isArray(pbRes.data) ? pbRes.data : (pbRes.data?.prebookings || []);
