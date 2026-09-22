@@ -6,11 +6,13 @@ import { useWishlist } from '../context/WishlistContext';
 import PriceDisplay from './PriceDisplay';
 
 export default function ProductCard({ product }) {
-  if (!product) return null;
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [btnText, setBtnText] = useState('Add to Cart');
+
+  if (!product) return null;
+
   const selectedVariant = product?.variants?.[selectedVariantIndex] || product?.variants?.[0] || {};
   const wishlisted = isInWishlist(product?._id || product?.id || product?.slug);
 

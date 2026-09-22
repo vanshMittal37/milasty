@@ -80,6 +80,18 @@ export default function ProductDetail() {
     }
   }, [identifier]);
 
+  // Keyboard navigation for Lightbox — MUST be declared before any early returns
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!isLightboxOpen) return;
+      if (e.key === 'Escape') setIsLightboxOpen(false);
+      if (e.key === 'ArrowRight') setSelectedImageIndex((prev) => prev + 1);
+      if (e.key === 'ArrowLeft') setSelectedImageIndex((prev) => (prev > 0 ? prev - 1 : 0));
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen]);
+
   const fetchProduct = async () => {
     setLoading(true);
     try {
@@ -203,17 +215,6 @@ export default function ProductDetail() {
     }
   };
 
-  // Keyboard navigation for Lightbox
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (!isLightboxOpen) return;
-      if (e.key === 'Escape') setIsLightboxOpen(false);
-      if (e.key === 'ArrowRight' && images.length > 1) setSelectedImageIndex((prev) => (prev + 1) % images.length);
-      if (e.key === 'ArrowLeft' && images.length > 1) setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isLightboxOpen]);
 
   // Extract all gallery images from product_images relation or legacy single fields
   const galleryImageUrls = [];
