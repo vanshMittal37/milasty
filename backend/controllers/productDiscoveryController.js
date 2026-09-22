@@ -61,38 +61,73 @@ let memoryMoods = [
 function extractProductPrice(p) {
   if (!p) return 0;
 
-  // Direct price check
-  if (p.price !== undefined && p.price !== null && Number(p.price) > 0) {
-    return Number(p.price);
+  // 1. Check resolvedPrice if already set
+  if (p.resolvedPrice && Number(p.resolvedPrice) > 0) {
+    return Number(p.resolvedPrice);
   }
 
-  // Supabase product_variants array check
-  if (Array.isArray(p.product_variants) && p.product_variants.length > 0) {
-    const firstVar = p.product_variants[0];
-    if (firstVar) {
-      const vPrice = firstVar.price || firstVar.original_price || firstVar.sale_price;
-      if (vPrice && Number(vPrice) > 0) return Number(vPrice);
+  // 2. Direct top-level numeric checks
+  const topKeys = ['price', 'original_price', 'sale_price', 'regular_price', 'originalPrice', 'base_price', 'mrp', 'price_rupees'];
+  for (const k of topKeys) {
+    if (p[k] !== undefined && p[k] !== null && Number(p[k]) > 0) {
+      return Number(p[k]);
     }
   }
 
-  // JSON variants array check
+  // 3. Supabase product_variants array check
+  if (Array.isArray(p.product_variants) && p.product_variants.length > 0) {
+    for (const v of p.product_variants) {
+      if (v) {
+        const vPrice = v.price || v.original_price || v.sale_price || v.originalPrice;
+        if (vPrice && Number(vPrice) > 0) return Number(vPrice);
+      }
+    }
+  }
+
+  // 4. JSON / array variants check
   let vars = p.variants;
   if (typeof vars === 'string') {
     try { vars = JSON.parse(vars); } catch (e) { vars = []; }
   }
   if (Array.isArray(vars) && vars.length > 0) {
-    const firstVar = vars[0];
-    if (firstVar) {
-      const vPrice = firstVar.price || firstVar.originalPrice || firstVar.sale_price;
-      if (vPrice && Number(vPrice) > 0) return Number(vPrice);
+    for (const v of vars) {
+      if (v) {
+        const vPrice = v.price || v.originalPrice || v.sale_price || v.original_price;
+        if (vPrice && Number(vPrice) > 0) return Number(vPrice);
+      }
     }
   }
 
-  // Other common price key fallbacks
-  if (p.sale_price && Number(p.sale_price) > 0) return Number(p.sale_price);
-  if (p.regular_price && Number(p.regular_price) > 0) return Number(p.regular_price);
-  if (p.price_rupees && Number(p.price_rupees) > 0) return Number(p.price_rupees);
-  if (p.originalPrice && Number(p.originalPrice) > 0) return Number(p.originalPrice);
+  // 5. Check inside nutrition_facts or metadata if present
+  if (p.nutrition_facts && typeof p.nutrition_facts === 'object') {
+    if (p.nutrition_facts.price && Number(p.nutrition_facts.price) > 0) {
+      return Number(p.nutrition_facts.price);
+    }
+  }
+
+  // 6. Fallback: match initialProducts by slug or title
+  const pSlug = (p.slug || '').toLowerCase().trim();
+  const pTitle = (p.title || p.name || '').toLowerCase().trim();
+  
+  if (initialProducts && Array.isArray(initialProducts)) {
+    const matched = initialProducts.find(ip => {
+      const ipSlug = (ip.slug || '').toLowerCase().trim();
+      const ipTitle = (ip.title || ip.name || '').toLowerCase().trim();
+      return (pSlug && ipSlug && pSlug === ipSlug) || (pTitle && ipTitle && pTitle === ipTitle);
+    });
+
+    if (matched) {
+      if (Array.isArray(matched.variants) && matched.variants.length > 0) {
+        const firstV = matched.variants[0];
+        if (firstV && firstV.price && Number(firstV.price) > 0) {
+          return Number(firstV.price);
+        }
+      }
+      if (matched.price && Number(matched.price) > 0) {
+        return Number(matched.price);
+      }
+    }
+  }
 
   return 0;
 }
@@ -101,20 +136,47 @@ function extractProductPrice(p) {
  * Helper to fetch all available products from DB or Seed Data
  */
 async function fetchAllProducts() {
+  let dbProds = [];
   try {
-    const { data: dbProds, error } = await supabase.from('products').select('*, product_variants(*)');
-    if (!error && dbProds && dbProds.length > 0) {
-      return dbProds.map(p => {
-        const primaryImg = p.image_url || p.image || p.secondary_image_url || '';
-        return {
-          ...p,
-          image: primaryImg,
-          resolvedPrice: extractProductPrice(p),
-        };
-      });
+    const { data: prods, error } = await supabase.from('products').select('*, product_variants(*)');
+    if (!error && prods && prods.length > 0) {
+      dbProds = prods;
     }
   } catch (e) {
     console.warn('Supabase products fetch notice:', e.message);
+  }
+
+  // Also query product_variants directly to cover any unjoined variants
+  try {
+    const { data: allVariants } = await supabase.from('product_variants').select('*');
+    if (allVariants && allVariants.length > 0) {
+      const variantsByPid = {};
+      allVariants.forEach(v => {
+        const pid = String(v.product_id);
+        if (!variantsByPid[pid]) variantsByPid[pid] = [];
+        variantsByPid[pid].push(v);
+      });
+
+      dbProds = dbProds.map(p => {
+        const pid = String(p.id);
+        const existingVars = p.product_variants || [];
+        if (existingVars.length === 0 && variantsByPid[pid]) {
+          return { ...p, product_variants: variantsByPid[pid] };
+        }
+        return p;
+      });
+    }
+  } catch (e) {}
+
+  if (dbProds.length > 0) {
+    return dbProds.map(p => {
+      const primaryImg = p.image_url || p.image || p.secondary_image_url || '';
+      return {
+        ...p,
+        image: primaryImg,
+        resolvedPrice: extractProductPrice(p),
+      };
+    });
   }
 
   return (initialProducts || []).map(p => {

@@ -607,7 +607,7 @@ export default function AdminProductDiscovery() {
                           <div key={prod.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', backgroundColor: '#2A2A2A', border: '1px solid var(--admin-border)', borderRadius: '6px', padding: '0.35rem 0.65rem', fontSize: '0.78rem', color: '#FFFDF9' }}>
                             {prod.image && <img src={prod.image} alt={prod.name} style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />}
                             <span>{prod.name}</span>
-                            <span style={{ color: 'var(--admin-accent)', fontWeight: '800' }}>₹{prod.price}</span>
+                            <span style={{ color: 'var(--admin-accent)', fontWeight: '800' }}>₹{prod.price || prod.resolvedPrice || prod.originalPrice || 0}</span>
                           </div>
                         ))}
                       </div>
@@ -769,7 +769,7 @@ export default function AdminProductDiscovery() {
                                 </div>
                               </div>
                               <div style={{ fontSize: '0.82rem', color: 'var(--admin-accent)', fontWeight: '800' }}>
-                                ₹{prod.price}
+                                ₹{prod.price || prod.resolvedPrice || prod.originalPrice || 0}
                               </div>
                             </label>
                           );
