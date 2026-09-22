@@ -62,20 +62,31 @@ export const getCategories = async (req, res) => {
       categories = seeded || INITIAL_CATEGORIES;
     }
 
-    // Safely query products
-    const { data: dbProducts, error: prodError } = await supabase.from('products').select('*');
-    if (prodError) {
-      console.error('Error fetching products for category count:', prodError);
-    }
+    // Safely query products and category_products
+    const [{ data: dbProducts }, { data: catProductsRels }] = await Promise.all([
+      supabase.from('products').select('id, category, category_id'),
+      supabase.from('category_products').select('category_id, product_id').catch(() => ({ data: [] })),
+    ]);
 
-    // Compute dynamic product counts per category (each product counted once)
-    const countsMap = {};
+    // Map product IDs and dynamic counts per category
+    const catProductIdsMap = {};
     (categories || []).forEach(cat => {
       const key = cat.id || cat._id || cat.slug;
-      if (key) countsMap[key] = 0;
-      if (cat.slug) countsMap[cat.slug] = 0;
+      if (key) catProductIdsMap[key] = new Set();
+      if (cat.slug) catProductIdsMap[cat.slug] = new Set();
     });
 
+    // 1. Fill from category_products table
+    (catProductsRels || []).forEach(rel => {
+      const cId = rel.category_id;
+      const pId = rel.product_id;
+      if (cId && pId) {
+        if (!catProductIdsMap[cId]) catProductIdsMap[cId] = new Set();
+        catProductIdsMap[cId].add(pId);
+      }
+    });
+
+    // 2. Fallback/Integrate legacy product category text matching
     (dbProducts || []).forEach((p) => {
       const pCat = (p.category || '').toString().toLowerCase().trim();
       const pCatId = (p.category_id || '').toString().toLowerCase().trim();
@@ -88,7 +99,6 @@ export const getCategories = async (req, res) => {
         if (pCatId && (pCatId === cId || pCatId === cSlug)) return true;
         if (pCat) {
           if (pCat === cId || pCat === cSlug || pCat === cName) return true;
-          // Alias matching for gifts vs gifting
           if (pCat === 'gifts' && (cSlug === 'gifting' || cSlug === 'gifts')) return true;
           if (pCat === 'gifting' && (cSlug === 'gifting' || cSlug === 'gifts')) return true;
         }
@@ -96,9 +106,15 @@ export const getCategories = async (req, res) => {
       });
 
       if (matchedCat) {
-        const key = matchedCat.id || matchedCat._id || matchedCat.slug;
-        if (key) countsMap[key] = (countsMap[key] || 0) + 1;
-        if (matchedCat.slug && matchedCat.slug !== key) countsMap[matchedCat.slug] = (countsMap[matchedCat.slug] || 0) + 1;
+        const key = matchedCat.id || matchedCat.slug;
+        if (key) {
+          if (!catProductIdsMap[key]) catProductIdsMap[key] = new Set();
+          catProductIdsMap[key].add(p.id);
+        }
+        if (matchedCat.slug && matchedCat.slug !== key) {
+          if (!catProductIdsMap[matchedCat.slug]) catProductIdsMap[matchedCat.slug] = new Set();
+          catProductIdsMap[matchedCat.slug].add(p.id);
+        }
       }
     });
 
@@ -106,7 +122,9 @@ export const getCategories = async (req, res) => {
       const defaultDesc = INITIAL_CATEGORIES.find(c => c.slug === cat.slug)?.description || 'Wholesome artisanal bakes collection';
       const img = cat.image_url || cat.image || INITIAL_CATEGORIES[idx % 4]?.image_url || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600';
       const key = cat.id || cat._id || cat.slug;
-      const catCount = countsMap[key] !== undefined ? countsMap[key] : (countsMap[cat.slug] || 0);
+      
+      const pSet = catProductIdsMap[key] || catProductIdsMap[cat.slug] || new Set();
+      const productIds = Array.from(pSet);
 
       return {
         _id: cat.id || cat._id || cat.slug,
@@ -120,7 +138,8 @@ export const getCategories = async (req, res) => {
         image: img,
         display_order: cat.display_order !== undefined ? cat.display_order : idx + 1,
         is_active: cat.is_active !== false,
-        productCount: catCount,
+        productCount: productIds.length,
+        productIds: productIds,
         created_at: cat.created_at || new Date().toISOString(),
       };
     });
@@ -134,7 +153,7 @@ export const getCategories = async (req, res) => {
 
 export const createCategory = async (req, res) => {
   try {
-    const { name, description, image, image_url, label, subtitle, status } = req.body;
+    const { name, description, image, image_url, label, subtitle, status, productIds } = req.body;
     const finalImage = image_url || image;
 
     if (!name || !name.trim()) {
@@ -169,6 +188,20 @@ export const createCategory = async (req, res) => {
       return res.status(400).json({ message: error.message || 'Database error creating category' });
     }
 
+    // Save Category Products Relationship
+    let savedProductIds = [];
+    if (Array.isArray(productIds) && productIds.length > 0) {
+      const relRows = productIds.map(pId => ({
+        category_id: category.id,
+        product_id: pId,
+      }));
+      await supabase.from('category_products').insert(relRows).catch(err => console.warn('category_products insert error:', err.message));
+      savedProductIds = productIds;
+
+      // Update products table category field for legacy compatibility
+      await supabase.from('products').update({ category: category.slug, category_id: category.id }).in('id', productIds).catch(() => {});
+    }
+
     return res.status(201).json({
       ...category,
       _id: category.id,
@@ -176,7 +209,8 @@ export const createCategory = async (req, res) => {
       subtitle: subtitle || description || '',
       image: category.image_url,
       image_url: category.image_url,
-      productCount: 0,
+      productCount: savedProductIds.length,
+      productIds: savedProductIds,
     });
   } catch (error) {
     console.error('createCategory error:', error);
@@ -187,7 +221,7 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, image, image_url, status, is_active } = req.body;
+    const { name, description, image, image_url, status, is_active, productIds } = req.body;
     const finalImage = image_url || image;
 
     const updatePayload = {};
@@ -223,11 +257,39 @@ export const updateCategory = async (req, res) => {
       return res.status(400).json({ message: error.message || 'Database error updating category' });
     }
 
+    const targetCatId = category?.id || id;
+    const targetSlug = category?.slug || updatePayload.slug;
+
+    // Synchronize Category Products Relationship
+    let savedProductIds = [];
+    if (Array.isArray(productIds)) {
+      await supabase.from('category_products').delete().eq('category_id', targetCatId).catch(() => {});
+
+      if (productIds.length > 0) {
+        const relRows = productIds.map(pId => ({
+          category_id: targetCatId,
+          product_id: pId,
+        }));
+        await supabase.from('category_products').insert(relRows).catch(err => console.warn('category_products update error:', err.message));
+        savedProductIds = productIds;
+
+        // Update products table category field for legacy compatibility
+        if (targetSlug) {
+          await supabase.from('products').update({ category: targetSlug, category_id: targetCatId }).in('id', productIds).catch(() => {});
+        }
+      }
+    } else {
+      const { data: rels } = await supabase.from('category_products').select('product_id').eq('category_id', targetCatId).catch(() => ({ data: [] }));
+      savedProductIds = (rels || []).map(r => r.product_id);
+    }
+
     return res.json({
       ...(category || { id, name }),
       description: description || '',
       image_url: finalImage || category?.image_url,
       image: finalImage || category?.image_url,
+      productCount: savedProductIds.length,
+      productIds: savedProductIds,
     });
   } catch (error) {
     console.error('updateCategory error:', error);
@@ -245,17 +307,25 @@ export const deleteCategory = async (req, res) => {
     const catName = cat?.name || id;
 
     // Check if any products are assigned to this category
-    const { data: dbProducts } = await supabase.from('products').select('id, category, category_id');
-    const assignedProducts = (dbProducts || []).filter(
-      p => p.category_id === id || p.category === catSlug || p.category === catName || (p.category && p.category.toLowerCase() === catSlug.toLowerCase())
-    );
+    const [{ data: dbProducts }, { data: catRels }] = await Promise.all([
+      supabase.from('products').select('id, category, category_id'),
+      supabase.from('category_products').select('product_id').eq('category_id', id).catch(() => ({ data: [] })),
+    ]);
 
-    if (assignedProducts && assignedProducts.length > 0) {
+    const assignedRelIds = new Set((catRels || []).map(r => r.product_id));
+    (dbProducts || []).forEach(p => {
+      if (p.category_id === id || p.category === catSlug || p.category === catName || (p.category && p.category.toLowerCase() === catSlug.toLowerCase())) {
+        assignedRelIds.add(p.id);
+      }
+    });
+
+    if (assignedRelIds.size > 0) {
       return res.status(400).json({
-        message: `This category contains ${assignedProducts.length} product(s). Please reassign or delete these products before deleting this category.`
+        message: `This category contains ${assignedRelIds.size} product(s). Please reassign or delete these products before deleting this category.`
       });
     }
 
+    await supabase.from('category_products').delete().eq('category_id', id).catch(() => {});
     const { error } = await supabase.from('categories').delete().eq('id', id);
     if (error) throw error;
 
@@ -265,3 +335,4 @@ export const deleteCategory = async (req, res) => {
     res.status(500).json({ message: 'Error deleting category', error: error.message });
   }
 };
+

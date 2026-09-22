@@ -192,7 +192,15 @@ export default function Shop() {
   const matchesCategoryFilter = (p, catIdOrSlug) => {
     if (!catIdOrSlug || catIdOrSlug === 'all') return true;
     
+    const pId = p.id || p._id;
     const catObj = safeCategories.find(c => c.id === catIdOrSlug || c.slug === catIdOrSlug || c._id === catIdOrSlug || c.name === catIdOrSlug);
+    
+    // 1. Check Many-to-Many category_products relation productIds array
+    if (catObj && Array.isArray(catObj.productIds) && pId && catObj.productIds.includes(pId)) {
+      return true;
+    }
+
+    // 2. Check direct product category_id and category text matching
     const targetSlug = catObj ? catObj.slug : catIdOrSlug;
     const targetId = catObj ? catObj.id : catIdOrSlug;
     const targetName = catObj ? catObj.name : catIdOrSlug;

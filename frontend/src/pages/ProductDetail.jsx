@@ -180,9 +180,69 @@ export default function ProductDetail() {
     );
   }
 
-  // Deduplicate gallery images
-  const rawImages = [product.image, product.secondaryImage].filter((img) => Boolean(img) && typeof img === 'string' && img.trim() !== '');
-  const images = Array.from(new Set(rawImages));
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
+
+  const handleTouchStart = (e) => {
+    touchEndX.current = null;
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const distance = touchStartX.current - touchEndX.current;
+    if (distance > 40 && images.length > 1) {
+      setSelectedImageIndex((prev) => (prev + 1) % images.length);
+    } else if (distance < -40 && images.length > 1) {
+      setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  };
+
+  // Keyboard navigation for Lightbox
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!isLightboxOpen) return;
+      if (e.key === 'Escape') setIsLightboxOpen(false);
+      if (e.key === 'ArrowRight' && images.length > 1) setSelectedImageIndex((prev) => (prev + 1) % images.length);
+      if (e.key === 'ArrowLeft' && images.length > 1) setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen]);
+
+  // Extract all gallery images from product_images relation or legacy single fields
+  const galleryImageUrls = [];
+  if (Array.isArray(product?.images) && product.images.length > 0) {
+    product.images.forEach((imgObj) => {
+      const url = typeof imgObj === 'string' ? imgObj : (imgObj.image_url || imgObj.url || imgObj.image);
+      if (url && typeof url === 'string' && url.trim() !== '') {
+        galleryImageUrls.push(url.trim());
+      }
+    });
+  }
+
+  if (galleryImageUrls.length === 0 && product) {
+    const fallbackList = [
+      product.image,
+      product.image_url,
+      product.secondaryImage,
+      product.secondary_image,
+      product.primary_image
+    ].filter((img) => Boolean(img) && typeof img === 'string' && img.trim() !== '');
+    galleryImageUrls.push(...fallbackList);
+  }
+
+  if (galleryImageUrls.length === 0) {
+    galleryImageUrls.push('https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800');
+  }
+
+  const images = Array.from(new Set(galleryImageUrls));
 
   const hasVariants = product.variants && product.variants.length > 0;
   const selectedVariant = hasVariants ? (product.variants[selectedVariantIndex] || product.variants[0]) : null;
@@ -347,6 +407,10 @@ export default function ProductDetail() {
             
             {/* Main Dominant Image Container */}
             <div 
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onClick={() => setIsLightboxOpen(true)}
               style={{ 
                 position: 'relative', 
                 width: '100%', 
@@ -355,7 +419,9 @@ export default function ProductDetail() {
                 overflow: 'hidden', 
                 backgroundColor: 'rgba(20, 10, 5, 0.4)', 
                 border: '1px solid rgba(255, 255, 255, 0.12)',
-                boxShadow: '0 16px 40px rgba(0,0,0,0.35)'
+                boxShadow: '0 16px 40px rgba(0,0,0,0.35)',
+                cursor: 'zoom-in',
+                userSelect: 'none'
               }}
             >
               <img 
@@ -368,9 +434,11 @@ export default function ProductDetail() {
                   width: '100%', 
                   height: '100%', 
                   objectFit: 'cover',
-                  transition: 'transform 0.4s ease'
+                  transition: 'opacity 0.3s ease, transform 0.4s ease'
                 }} 
               />
+
+              {/* Save Discount Badge */}
               {hasDiscount && (
                 <div 
                   style={{ 
@@ -385,17 +453,137 @@ export default function ProductDetail() {
                     fontSize: '0.75rem', 
                     fontWeight: '800',
                     letterSpacing: '0.05em',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    zIndex: 2
                   }}
                 >
                   SAVE {discountPercent}%
+                </div>
+              )}
+
+              {/* Click to Zoom Overlay Indicator */}
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '16px',
+                  right: '16px',
+                  backgroundColor: 'rgba(20, 10, 5, 0.75)',
+                  backdropFilter: 'blur(6px)',
+                  color: '#b9cd94',
+                  border: '1px solid rgba(185, 205, 148, 0.3)',
+                  padding: '0.3rem 0.75rem',
+                  borderRadius: '999px',
+                  fontSize: '0.72rem',
+                  fontWeight: '700',
+                  pointerEvents: 'none',
+                  zIndex: 2
+                }}
+              >
+                🔍 Tap to Expand
+              </div>
+
+              {/* Prev / Next Chevrons on Main Gallery when multiple images exist */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
+                    }}
+                    aria-label="Previous Image"
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '12px',
+                      transform: 'translateY(-50%)',
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(20, 10, 5, 0.7)',
+                      backdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: '#FFFDF9',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 3,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedImageIndex((prev) => (prev + 1) % images.length);
+                    }}
+                    aria-label="Next Image"
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      right: '12px',
+                      transform: 'translateY(-50%)',
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(20, 10, 5, 0.7)',
+                      backdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: '#FFFDF9',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 3,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </>
+              )}
+
+              {/* Mobile Dots Indicator */}
+              {images.length > 1 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '16px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    display: 'flex',
+                    gap: '6px',
+                    zIndex: 2
+                  }}
+                >
+                  {images.map((_, idx) => (
+                    <div
+                      key={idx}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedImageIndex(idx);
+                      }}
+                      style={{
+                        width: idx === selectedImageIndex ? '20px' : '8px',
+                        height: '8px',
+                        borderRadius: '999px',
+                        backgroundColor: idx === selectedImageIndex ? '#b9cd94' : 'rgba(255, 255, 255, 0.5)',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer'
+                      }}
+                    />
+                  ))}
                 </div>
               )}
             </div>
 
             {/* Thumbnails Row */}
             {images.length > 1 && (
-              <div style={{ display: 'flex', gap: '0.85rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.85rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'thin' }}>
                 {images.map((img, idx) => {
                   const isActive = idx === selectedImageIndex;
                   return (
@@ -412,8 +600,9 @@ export default function ProductDetail() {
                         border: isActive ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
                         cursor: 'pointer',
                         transition: 'all 0.2s',
-                        boxShadow: isActive ? '0 0 12px rgba(185, 205, 148, 0.4)' : 'none',
-                        flexShrink: 0
+                        boxShadow: isActive ? '0 0 14px rgba(185, 205, 148, 0.45)' : 'none',
+                        flexShrink: 0,
+                        opacity: isActive ? 1 : 0.7
                       }}
                     >
                       <img src={img} alt={`Thumbnail ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -1224,6 +1413,156 @@ export default function ProductDetail() {
               style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}
             >
               <img src={selectedModalImage} alt="Review photo full" style={{ maxWidth: '90vw', maxHeight: '85vh', borderRadius: '16px', objectFit: 'contain' }} />
+            </div>
+          )}
+
+          {/* Fullscreen Product Gallery Lightbox Modal */}
+          {isLightboxOpen && (
+            <div 
+              onClick={() => setIsLightboxOpen(false)}
+              style={{ 
+                position: 'fixed', 
+                inset: 0, 
+                backgroundColor: 'rgba(10, 5, 2, 0.95)', 
+                backdropFilter: 'blur(12px)', 
+                WebkitBackdropFilter: 'blur(12px)', 
+                zIndex: 999999, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                justifyContent: 'space-between', 
+                padding: '1.5rem',
+                userSelect: 'none'
+              }}
+            >
+              {/* Top Bar */}
+              <div 
+                onClick={(e) => e.stopPropagation()} 
+                style={{ width: '100%', maxWidth: '1100px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#FFFDF9' }}
+              >
+                <div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: '800', fontFamily: 'var(--font-serif)' }}>{product.title}</div>
+                  <div style={{ fontSize: '0.78rem', color: '#b9cd94', fontWeight: '700' }}>
+                    Image {selectedImageIndex + 1} of {images.length}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsLightboxOpen(false)}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: '#FFFDF9',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Center Image View with Chevrons */}
+              <div 
+                onClick={(e) => e.stopPropagation()}
+                style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', maxWidth: '1000px', margin: '1rem 0' }}
+              >
+                {images.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length)}
+                    style={{
+                      position: 'absolute',
+                      left: '10px',
+                      backgroundColor: 'rgba(20, 10, 5, 0.8)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: '#FFFDF9',
+                      width: '48px',
+                      height: '48px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 10
+                    }}
+                  >
+                    <ChevronLeft size={26} />
+                  </button>
+                )}
+
+                <img
+                  src={images[selectedImageIndex] || product.image}
+                  alt={`${product.title} view ${selectedImageIndex + 1}`}
+                  style={{
+                    maxHeight: '72vh',
+                    maxWidth: '85vw',
+                    objectFit: 'contain',
+                    borderRadius: '16px',
+                    boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}
+                />
+
+                {images.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedImageIndex((prev) => (prev + 1) % images.length)}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      backgroundColor: 'rgba(20, 10, 5, 0.8)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: '#FFFDF9',
+                      width: '48px',
+                      height: '48px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      zIndex: 10
+                    }}
+                  >
+                    <ChevronRight size={26} />
+                  </button>
+                )}
+              </div>
+
+              {/* Bottom Thumbnails Strip */}
+              {images.length > 1 && (
+                <div 
+                  onClick={(e) => e.stopPropagation()} 
+                  style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', padding: '0.5rem 1rem', maxWidth: '90vw' }}
+                >
+                  {images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSelectedImageIndex(idx)}
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '10px',
+                        overflow: 'hidden',
+                        padding: 0,
+                        backgroundColor: 'transparent',
+                        border: idx === selectedImageIndex ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.2)',
+                        cursor: 'pointer',
+                        opacity: idx === selectedImageIndex ? 1 : 0.6,
+                        flexShrink: 0
+                      }}
+                    >
+                      <img src={img} alt={`Thumb ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

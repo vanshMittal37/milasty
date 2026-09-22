@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus, 
-  Check, X, FileText, AlertCircle, Calendar, Sparkles, CheckSquare, Square
+  Check, X, FileText, AlertCircle, Calendar, Sparkles, CheckSquare, Square,
+  ArrowUp, ArrowDown, Star
 } from 'lucide-react';
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
@@ -96,12 +97,143 @@ export default function AdminProductForm() {
   const [customNutritionValue, setCustomNutritionValue] = useState('');
   const [customNutritionUnit, setCustomNutritionUnit] = useState('g');
 
+  // Multi-Image Gallery State
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [uploadProgressText, setUploadProgressText] = useState('');
+  const [draggedImgIdx, setDraggedImgIdx] = useState(null);
+
   // Pre-Booking Config State
   const [prebookingEnabled, setPrebookingEnabled] = useState(false);
   const [preorderAllowed, setPreorderAllowed] = useState(true);
   const [prebookingLaunchDate, setPrebookingLaunchDate] = useState('');
   const [prebookingDisplayOrder, setPrebookingDisplayOrder] = useState(1);
   const [existingPrebookingId, setExistingPrebookingId] = useState(null);
+
+  const handleMultiFileUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    for (const f of files) {
+      if (!f.type.match(/^image\/(jpeg|jpg|png|webp)$/i)) {
+        toast.error(`File "${f.name}" is not a supported image format (JPG, PNG, WEBP).`);
+        return;
+      }
+      if (f.size > 15 * 1024 * 1024) {
+        toast.error(`File "${f.name}" exceeds 15MB size limit.`);
+        return;
+      }
+    }
+
+    setUploadingGallery(true);
+    let updatedList = [...galleryImages];
+    let failedCount = 0;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setUploadProgressText(`Uploading ${i + 1}/${files.length}...`);
+      try {
+        const base64Data = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+        });
+
+        const res = await api.post('/upload', { image: base64Data });
+        if (res.data && res.data.url) {
+          const isFirst = updatedList.length === 0;
+          updatedList.push({
+            id: `img-${Date.now()}-${i}`,
+            image_url: res.data.url,
+            public_id: res.data.public_id || '',
+            sort_order: updatedList.length,
+            is_primary: isFirst,
+            alt_text: '',
+          });
+        } else {
+          failedCount++;
+        }
+      } catch (err) {
+        console.error('Multi image upload error:', err);
+        failedCount++;
+      }
+    }
+
+    if (updatedList.length > 0 && !updatedList.some(img => img.is_primary)) {
+      updatedList[0].is_primary = true;
+    }
+
+    setGalleryImages(updatedList);
+    const primaryObj = updatedList.find(img => img.is_primary) || updatedList[0];
+    const secObj = updatedList.length > 1 ? updatedList[1] : primaryObj;
+    setFormData(prev => ({
+      ...prev,
+      image: primaryObj ? primaryObj.image_url : '',
+      secondaryImage: secObj ? secObj.image_url : '',
+    }));
+
+    setUploadingGallery(false);
+    setUploadProgressText('');
+    if (failedCount > 0) {
+      toast.error(`${failedCount} image(s) failed to upload.`);
+    } else {
+      toast.success(`${files.length} image(s) uploaded successfully!`);
+    }
+  };
+
+  const handleSetPrimaryImage = (index) => {
+    const updated = galleryImages.map((img, idx) => ({
+      ...img,
+      is_primary: idx === index,
+      sort_order: idx,
+    }));
+    setGalleryImages(updated);
+    const primaryObj = updated[index];
+    const secObj = updated.length > 1 ? (index === 0 ? updated[1] : updated[0]) : primaryObj;
+    setFormData(prev => ({
+      ...prev,
+      image: primaryObj ? primaryObj.image_url : '',
+      secondaryImage: secObj ? secObj.image_url : '',
+    }));
+    toast.success('Set as primary product image');
+  };
+
+  const handleMoveImage = (index, direction) => {
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= galleryImages.length) return;
+    const updated = [...galleryImages];
+    const temp = updated[index];
+    updated[index] = updated[targetIdx];
+    updated[targetIdx] = temp;
+
+    const reordered = updated.map((img, idx) => ({ ...img, sort_order: idx }));
+    setGalleryImages(reordered);
+    const primaryObj = reordered.find(img => img.is_primary) || reordered[0];
+    setFormData(prev => ({
+      ...prev,
+      image: primaryObj ? primaryObj.image_url : '',
+    }));
+  };
+
+  const handleRemoveGalleryImage = (index) => {
+    const target = galleryImages[index];
+    const filtered = galleryImages.filter((_, idx) => idx !== index);
+    if (target?.is_primary && filtered.length > 0) {
+      filtered[0].is_primary = true;
+    }
+    const reordered = filtered.map((img, idx) => ({ ...img, sort_order: idx }));
+    setGalleryImages(reordered);
+
+    const primaryObj = reordered.find(img => img.is_primary) || reordered[0];
+    const secObj = reordered.length > 1 ? reordered[1] : primaryObj;
+    setFormData(prev => ({
+      ...prev,
+      image: primaryObj ? primaryObj.image_url : '',
+      secondaryImage: secObj ? secObj.image_url : '',
+    }));
+    toast.info('Image removed from gallery');
+  };
 
   useEffect(() => {
     if (ctxCategories && ctxCategories.length > 0) {
@@ -753,126 +885,212 @@ export default function AdminProductForm() {
           </div>
 
           {/* ================================================================== */}
-          {/* SECTION 2: PRODUCT IMAGES */}
+          {/* SECTION 2: PRODUCT MULTI-IMAGE GALLERY */}
           {/* ================================================================== */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1px solid var(--admin-border)' }}>
-            <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.4rem' }}>
-              2. Product Images
-            </h3>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
-              {/* Primary Image Upload Box */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.5rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
-                  Primary Image URL / File *
-                </label>
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.65rem' }}>
-                  <input
-                    type="text"
-                    required
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    placeholder="/images/image1.jpeg"
-                    className="admin-input"
-                    style={{ flex: 1 }}
-                  />
-                  <label 
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      padding: '0 0.85rem',
-                      backgroundColor: 'var(--admin-accent)',
-                      color: '#ffffff',
-                      borderRadius: '8px',
-                      fontSize: '0.78rem',
-                      fontWeight: '700',
-                      cursor: uploadingMain ? 'not-allowed' : 'pointer',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    <Upload size={14} />
-                    <span>{uploadingMain ? 'Uploading...' : 'Upload'}</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileUpload(e, 'image')}
-                      style={{ display: 'none' }}
-                      disabled={uploadingMain}
-                    />
-                  </label>
-                </div>
-
-                {formData.image && (
-                  <div style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--admin-border)' }}>
-                    <img src={formData.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, image: '' })}
-                      style={{ position: 'absolute', top: '4px', right: '4px', backgroundColor: 'rgba(0,0,0,0.7)', border: 'none', color: '#ff5b5b', borderRadius: '4px', padding: '3px', cursor: 'pointer' }}
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </div>
-                )}
+                <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  2. Product Images Multi-Gallery ({galleryImages.length})
+                </h3>
+                <p style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)', margin: '0.2rem 0 0 0' }}>
+                  Upload multiple product images. Set primary image, reorder, or remove images.
+                </p>
               </div>
 
-              {/* Secondary Image Upload Box */}
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
-                  Secondary Image URL / File
-                </label>
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.65rem' }}>
-                  <input
-                    type="text"
-                    value={formData.secondaryImage}
-                    onChange={(e) => setFormData({ ...formData, secondaryImage: e.target.value })}
-                    placeholder="Secondary image URL"
-                    className="admin-input"
-                    style={{ flex: 1 }}
-                  />
-                  <label 
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                      padding: '0 0.85rem',
-                      backgroundColor: 'var(--admin-surface-card)',
-                      border: '1px solid var(--admin-border)',
-                      color: 'var(--admin-text-primary)',
-                      borderRadius: '8px',
-                      fontSize: '0.78rem',
-                      fontWeight: '700',
-                      cursor: uploadingSec ? 'not-allowed' : 'pointer',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    <Upload size={14} />
-                    <span>{uploadingSec ? 'Uploading...' : 'Upload'}</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileUpload(e, 'secondaryImage')}
-                      style={{ display: 'none' }}
-                      disabled={uploadingSec}
-                    />
-                  </label>
-                </div>
-
-                {formData.secondaryImage && (
-                  <div style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--admin-border)' }}>
-                    <img src={formData.secondaryImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, secondaryImage: '' })}
-                      style={{ position: 'absolute', top: '4px', right: '4px', backgroundColor: 'rgba(0,0,0,0.7)', border: 'none', color: '#ff5b5b', borderRadius: '4px', padding: '3px', cursor: 'pointer' }}
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </div>
-                )}
-              </div>
+              <label 
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.55rem 1.15rem',
+                  backgroundColor: 'var(--admin-accent)',
+                  color: '#ffffff',
+                  borderRadius: '999px',
+                  fontSize: '0.8rem',
+                  fontWeight: '800',
+                  cursor: uploadingGallery ? 'not-allowed' : 'pointer',
+                  boxShadow: '0 4px 12px rgba(39, 76, 55, 0.3)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <Upload size={15} />
+                <span>{uploadingGallery ? (uploadProgressText || 'Uploading...') : '+ Upload Images'}</span>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleMultiFileUpload}
+                  style={{ display: 'none' }}
+                  disabled={uploadingGallery}
+                />
+              </label>
             </div>
+
+            {/* Quick URL input bar */}
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input
+                type="text"
+                placeholder="Or paste image URL and press Enter to add..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = e.target.value.trim();
+                    if (!val) return;
+                    const isFirst = galleryImages.length === 0;
+                    const nextList = [...galleryImages, {
+                      id: `img-url-${Date.now()}`,
+                      image_url: val,
+                      public_id: '',
+                      sort_order: galleryImages.length,
+                      is_primary: isFirst,
+                      alt_text: '',
+                    }];
+                    setGalleryImages(nextList);
+                    e.target.value = '';
+                    toast.success('Image URL added to gallery');
+                  }
+                }}
+                className="admin-input"
+                style={{ flex: 1, fontSize: '0.8rem' }}
+              />
+            </div>
+
+            {/* Gallery Thumbnails Display */}
+            {galleryImages.length > 0 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
+                {galleryImages.map((imgObj, idx) => {
+                  const isPrimary = imgObj.is_primary;
+                  return (
+                    <div
+                      key={imgObj.id || idx}
+                      style={{
+                        position: 'relative',
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        backgroundColor: 'var(--admin-surface-card)',
+                        border: isPrimary ? '2px solid var(--admin-accent)' : '1px solid var(--admin-border)',
+                        boxShadow: isPrimary ? '0 0 14px rgba(39, 76, 55, 0.35)' : 'none',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {/* Image Thumbnail Box */}
+                      <div style={{ position: 'relative', width: '100%', paddingTop: '100%', backgroundColor: '#000' }}>
+                        <img
+                          src={imgObj.image_url}
+                          alt={imgObj.alt_text || `Product image ${idx + 1}`}
+                          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                        {/* Primary Badge */}
+                        {isPrimary ? (
+                          <span 
+                            style={{ 
+                              position: 'absolute', 
+                              top: '6px', 
+                              left: '6px', 
+                              backgroundColor: 'var(--admin-accent)', 
+                              color: '#FFF', 
+                              fontSize: '0.62rem', 
+                              fontWeight: '900', 
+                              padding: '0.2rem 0.5rem', 
+                              borderRadius: '999px',
+                              letterSpacing: '0.04em',
+                              boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.25rem'
+                            }}
+                          >
+                            <Star size={10} fill="#FFF" /> PRIMARY
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleSetPrimaryImage(idx)}
+                            style={{
+                              position: 'absolute',
+                              top: '6px',
+                              left: '6px',
+                              backgroundColor: 'rgba(0,0,0,0.75)',
+                              color: '#b9cd94',
+                              border: '1px solid rgba(185, 205, 148, 0.5)',
+                              borderRadius: '999px',
+                              padding: '0.2rem 0.5rem',
+                              fontSize: '0.6rem',
+                              fontWeight: '800',
+                              cursor: 'pointer',
+                              backdropFilter: 'blur(4px)'
+                            }}
+                          >
+                            Set Primary
+                          </button>
+                        )}
+
+                        {/* Remove Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveGalleryImage(idx)}
+                          style={{
+                            position: 'absolute',
+                            top: '6px',
+                            right: '6px',
+                            backgroundColor: 'rgba(239, 68, 68, 0.9)',
+                            border: 'none',
+                            color: '#FFF',
+                            borderRadius: '50%',
+                            width: '24px',
+                            height: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.4)'
+                          }}
+                          title="Remove Image"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+
+                      {/* Controls Footer */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.4rem 0.6rem', backgroundColor: 'var(--admin-surface-card)', borderTop: '1px solid var(--admin-border)' }}>
+                        <span style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--admin-text-muted)' }}>
+                          #{idx + 1}
+                        </span>
+                        <div style={{ display: 'flex', gap: '0.25rem' }}>
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={() => handleMoveImage(idx, -1)}
+                            style={{ background: 'none', border: 'none', color: idx === 0 ? 'var(--admin-border)' : 'var(--admin-text-primary)', cursor: idx === 0 ? 'default' : 'pointer', padding: '2px' }}
+                            title="Move Left/Up"
+                          >
+                            <ArrowUp size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === galleryImages.length - 1}
+                            onClick={() => handleMoveImage(idx, 1)}
+                            style={{ background: 'none', border: 'none', color: idx === galleryImages.length - 1 ? 'var(--admin-border)' : 'var(--admin-text-primary)', cursor: idx === galleryImages.length - 1 ? 'default' : 'pointer', padding: '2px' }}
+                            title="Move Right/Down"
+                          >
+                            <ArrowDown size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', border: '2px dashed var(--admin-border)', borderRadius: '12px', color: 'var(--admin-text-muted)' }}>
+                <ImageIcon size={32} style={{ marginBottom: '0.5rem', opacity: 0.6 }} />
+                <p style={{ fontSize: '0.85rem', fontWeight: '700', margin: '0 0 0.25rem 0' }}>No product gallery images uploaded yet</p>
+                <p style={{ fontSize: '0.75rem', margin: 0 }}>Click "+ Upload Images" above or paste an image URL.</p>
+              </div>
+            )}
           </div>
 
           {/* ================================================================== */}

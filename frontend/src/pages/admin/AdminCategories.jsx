@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Plus, Trash2, Tags, RefreshCw, Upload, Image as ImageIcon, Edit3, ShieldAlert, CheckCircle, Package, Layers, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Trash2, Tags, RefreshCw, Upload, Image as ImageIcon, Edit3, ShieldAlert, CheckCircle, Package, Layers, X, Search, Check } from 'lucide-react';
 import api from '../../api/axios';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import { useToast } from '../../context/ToastContext';
@@ -8,16 +8,23 @@ import { useCategories } from '../../context/CategoryContext';
 export default function AdminCategories() {
   const { categories, categoriesLoading: fetching, refreshCategories } = useCategories();
   
+  // Products list for multi-select taxonomy assignment
+  const [allProducts, setAllProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(false);
+
   // Create Category Form State
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
+  const [selectedProductIds, setSelectedProductIds] = useState([]);
+  const [productSearch, setProductSearch] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
   const [creating, setCreating] = useState(false);
 
   // Edit Category Modal State
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editCategoryData, setEditCategoryData] = useState(null);
+  const [editProductSearch, setEditProductSearch] = useState('');
   const [editImageUploading, setEditImageUploading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
@@ -25,6 +32,43 @@ export default function AdminCategories() {
   const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   const { toast } = useToast();
+
+  // Load products list on mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    setProductsLoading(true);
+    try {
+      const res = await api.get('/products');
+      const list = res.data.products || res.data || [];
+      setAllProducts(list);
+    } catch (err) {
+      console.error('Error fetching products for taxonomy assignment:', err);
+    } finally {
+      setProductsLoading(false);
+    }
+  };
+
+  // Toggle selection for Create Category
+  const toggleSelectProduct = (productId) => {
+    setSelectedProductIds(prev =>
+      prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]
+    );
+  };
+
+  // Toggle selection for Edit Category
+  const toggleEditSelectProduct = (productId) => {
+    if (!editCategoryData) return;
+    setEditCategoryData(prev => {
+      const current = prev.productIds || [];
+      const updated = current.includes(productId)
+        ? current.filter(id => id !== productId)
+        : [...current, productId];
+      return { ...prev, productIds: updated };
+    });
+  };
 
   // Image File Upload Helper using Cloudinary Endpoint
   const handleFileUpload = (e, isEdit = false) => {
@@ -83,11 +127,19 @@ export default function AdminCategories() {
 
     setCreating(true);
     try {
-      await api.post('/categories', { name, description, image, image_url: image });
+      await api.post('/categories', {
+        name,
+        description,
+        image,
+        image_url: image,
+        productIds: selectedProductIds
+      });
       toast.success('Category created successfully.');
       setName('');
       setDescription('');
       setImage('');
+      setSelectedProductIds([]);
+      setProductSearch('');
       refreshCategories();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error creating category.');
@@ -103,8 +155,10 @@ export default function AdminCategories() {
       description: cat.description || cat.subtitle || '',
       image: cat.image_url || cat.image || '',
       image_url: cat.image_url || cat.image || '',
-      status: cat.is_active !== false ? 'active' : 'inactive'
+      status: cat.is_active !== false ? 'active' : 'inactive',
+      productIds: Array.isArray(cat.productIds) ? cat.productIds : []
     });
+    setEditProductSearch('');
     setEditModalOpen(true);
   };
 
@@ -299,6 +353,101 @@ export default function AdminCategories() {
               )}
             </div>
 
+            {/* PRODUCTS IN THIS CATEGORY */}
+            <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--admin-border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Products in this Category
+                </label>
+                <span style={{ fontSize: '0.7rem', color: 'var(--admin-accent)', fontWeight: '800' }}>
+                  Selected: {selectedProductIds.length}
+                </span>
+              </div>
+              <p style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', margin: '0 0 0.75rem 0' }}>
+                Select the products that should appear in this collection.
+              </p>
+
+              {/* Search input */}
+              <div style={{ position: 'relative', marginBottom: '0.6rem' }}>
+                <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
+                <input
+                  type="text"
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  placeholder="Search products..."
+                  className="admin-input"
+                  style={{ paddingLeft: '30px', fontSize: '0.78rem', padding: '0.4rem 0.6rem 0.4rem 30px' }}
+                />
+              </div>
+
+              {/* Product List Selector */}
+              <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', border: '1px solid var(--admin-border)', borderRadius: '8px', padding: '0.4rem', backgroundColor: 'var(--admin-surface-card)' }}>
+                {allProducts.length === 0 ? (
+                  <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', textAlign: 'center', padding: '1rem 0' }}>
+                    {productsLoading ? 'Loading store products...' : 'No products found'}
+                  </div>
+                ) : (
+                  allProducts
+                    .filter(p => !productSearch || p.name.toLowerCase().includes(productSearch.toLowerCase()))
+                    .map(p => {
+                      const pId = p.id || p._id;
+                      const isSelected = selectedProductIds.includes(pId);
+                      const pImg = p.image || p.image_url || (p.images && p.images[0]?.image_url);
+                      return (
+                        <div
+                          key={pId}
+                          onClick={() => toggleSelectProduct(pId)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0.4rem 0.6rem',
+                            borderRadius: '6px',
+                            backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.12)' : 'transparent',
+                            border: isSelected ? '1px solid var(--admin-accent)' : '1px solid transparent',
+                            cursor: 'pointer',
+                            userSelect: 'none'
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, minWidth: 0 }}>
+                            {pImg ? (
+                              <img src={pImg} alt={p.name} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
+                            ) : (
+                              <div style={{ width: '32px', height: '32px', borderRadius: '6px', backgroundColor: 'var(--admin-surface-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Package size={14} color="var(--admin-text-muted)" />
+                              </div>
+                            )}
+                            <div style={{ minWidth: 0, flex: 1 }}>
+                              <div style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                                {p.name}
+                              </div>
+                              <div style={{ fontSize: '0.66rem', color: 'var(--admin-text-muted)' }}>
+                                ₹{p.price} {p.is_active !== false ? '• Active' : '• Inactive'}
+                              </div>
+                            </div>
+                          </div>
+                          <div style={{
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '4px',
+                            border: isSelected ? 'none' : '1.5px solid var(--admin-border)',
+                            backgroundColor: isSelected ? 'var(--admin-accent)' : 'transparent',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#ffffff',
+                            flexShrink: 0,
+                            marginLeft: '0.5rem'
+                          }}>
+                            {isSelected && <Check size={12} strokeWidth={3} />}
+                          </div>
+                        </div>
+                      );
+                    })
+                )}
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={creating || uploadingImage || !image}
@@ -470,6 +619,101 @@ export default function AdminCategories() {
                     disabled={editImageUploading}
                   />
                 </label>
+              </div>
+
+              {/* PRODUCTS IN THIS CATEGORY */}
+              <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '0.85rem', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Products in this Category
+                  </label>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--admin-accent)', fontWeight: '800' }}>
+                    Selected: {(editCategoryData.productIds || []).length}
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', margin: '0 0 0.65rem 0' }}>
+                  Select the products that should appear in this collection.
+                </p>
+
+                {/* Search input */}
+                <div style={{ position: 'relative', marginBottom: '0.6rem' }}>
+                  <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
+                  <input
+                    type="text"
+                    value={editProductSearch}
+                    onChange={(e) => setEditProductSearch(e.target.value)}
+                    placeholder="Search products..."
+                    className="admin-input"
+                    style={{ paddingLeft: '30px', fontSize: '0.78rem', padding: '0.4rem 0.6rem 0.4rem 30px' }}
+                  />
+                </div>
+
+                {/* Product List Selector */}
+                <div style={{ maxHeight: '180px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', border: '1px solid var(--admin-border)', borderRadius: '8px', padding: '0.4rem', backgroundColor: 'var(--admin-surface-card)' }}>
+                  {allProducts.length === 0 ? (
+                    <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', textAlign: 'center', padding: '1rem 0' }}>
+                      {productsLoading ? 'Loading store products...' : 'No products found'}
+                    </div>
+                  ) : (
+                    allProducts
+                      .filter(p => !editProductSearch || p.name.toLowerCase().includes(editProductSearch.toLowerCase()))
+                      .map(p => {
+                        const pId = p.id || p._id;
+                        const isSelected = (editCategoryData.productIds || []).includes(pId);
+                        const pImg = p.image || p.image_url || (p.images && p.images[0]?.image_url);
+                        return (
+                          <div
+                            key={pId}
+                            onClick={() => toggleEditSelectProduct(pId)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '0.4rem 0.6rem',
+                              borderRadius: '6px',
+                              backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.12)' : 'transparent',
+                              border: isSelected ? '1px solid var(--admin-accent)' : '1px solid transparent',
+                              cursor: 'pointer',
+                              userSelect: 'none'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, minWidth: 0 }}>
+                              {pImg ? (
+                                <img src={pImg} alt={p.name} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
+                              ) : (
+                                <div style={{ width: '32px', height: '32px', borderRadius: '6px', backgroundColor: 'var(--admin-surface-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <Package size={14} color="var(--admin-text-muted)" />
+                                </div>
+                              )}
+                              <div style={{ minWidth: 0, flex: 1 }}>
+                                <div style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                                  {p.name}
+                                </div>
+                                <div style={{ fontSize: '0.66rem', color: 'var(--admin-text-muted)' }}>
+                                  ₹{p.price} {p.is_active !== false ? '• Active' : '• Inactive'}
+                                </div>
+                              </div>
+                            </div>
+                            <div style={{
+                              width: '18px',
+                              height: '18px',
+                              borderRadius: '4px',
+                              border: isSelected ? 'none' : '1.5px solid var(--admin-border)',
+                              backgroundColor: isSelected ? 'var(--admin-accent)' : 'transparent',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: '#ffffff',
+                              flexShrink: 0,
+                              marginLeft: '0.5rem'
+                            }}>
+                              {isSelected && <Check size={12} strokeWidth={3} />}
+                            </div>
+                          </div>
+                        );
+                      })
+                  )}
+                </div>
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>

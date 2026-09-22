@@ -90,7 +90,33 @@ export async function setupNewSchemas() {
       `ALTER TABLE public.prebook_products DISABLE ROW LEVEL SECURITY;`,
       `ALTER TABLE public.recommendation_questions DISABLE ROW LEVEL SECURITY;`,
       `ALTER TABLE public.recommendation_options DISABLE ROW LEVEL SECURITY;`,
-      `ALTER TABLE public.recommendation_option_products DISABLE ROW LEVEL SECURITY;`
+      `ALTER TABLE public.recommendation_option_products DISABLE ROW LEVEL SECURITY;`,
+
+      `CREATE TABLE IF NOT EXISTS public.product_images (
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        product_id TEXT NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+        image_url TEXT NOT NULL,
+        public_id TEXT DEFAULT '',
+        sort_order INTEGER DEFAULT 0,
+        is_primary BOOLEAN DEFAULT false,
+        alt_text TEXT DEFAULT '',
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_product_images_product_id ON public.product_images(product_id);`,
+      `CREATE INDEX IF NOT EXISTS idx_product_images_is_primary ON public.product_images(is_primary);`,
+      `ALTER TABLE public.product_images DISABLE ROW LEVEL SECURITY;`,
+
+      `CREATE TABLE IF NOT EXISTS public.category_products (
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        category_id TEXT NOT NULL REFERENCES public.categories(id) ON DELETE CASCADE,
+        product_id TEXT NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        CONSTRAINT unique_cat_prod UNIQUE (category_id, product_id)
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_category_products_category_id ON public.category_products(category_id);`,
+      `CREATE INDEX IF NOT EXISTS idx_category_products_product_id ON public.category_products(product_id);`,
+      `ALTER TABLE public.category_products DISABLE ROW LEVEL SECURITY;`
     ];
 
     for (const sql of sqlStatements) {

@@ -3,6 +3,98 @@ import { initialProducts } from '../data/seedData.js';
 import { LOW_STOCK_THRESHOLD } from '../config/constants.js';
 import { getApprovedProductReviewStats } from './reviewController.js';
 
+export const fetchProductImagesMap = async (productIds = []) => {
+  const imagesMap = new Map();
+  if (!productIds || productIds.length === 0) return imagesMap;
+  try {
+    const { data: imgRows } = await supabase
+      .from('product_images')
+      .select('*')
+      .in('product_id', productIds)
+      .order('sort_order', { ascending: true });
+
+    if (imgRows && imgRows.length > 0) {
+      imgRows.forEach((img) => {
+        const pid = String(img.product_id);
+        if (!imagesMap.has(pid)) imagesMap.set(pid, []);
+        imagesMap.get(pid).push({
+          id: img.id,
+          image_url: img.image_url,
+          public_id: img.public_id || '',
+          sort_order: img.sort_order || 0,
+          is_primary: img.is_primary === true,
+          alt_text: img.alt_text || '',
+        });
+      });
+    }
+  } catch (err) {
+    console.warn('Error fetching product images:', err?.message);
+  }
+  return imagesMap;
+};
+
+export const saveProductImages = async (productId, imagesInput = [], defaultMainImg = '', defaultSecImg = '') => {
+  if (!productId) return [];
+  try {
+    await supabase.from('product_images').delete().eq('product_id', productId);
+
+    let imagesToInsert = [];
+    if (Array.isArray(imagesInput) && imagesInput.length > 0) {
+      imagesToInsert = imagesInput.map((img, idx) => {
+        const isObj = typeof img === 'object' && img !== null;
+        const imgUrl = isObj ? (img.image_url || img.url || img.image || '') : String(img);
+        return {
+          product_id: productId,
+          image_url: imgUrl,
+          public_id: isObj ? (img.public_id || '') : '',
+          sort_order: isObj && typeof img.sort_order === 'number' ? img.sort_order : idx,
+          is_primary: isObj ? (img.is_primary === true) : (idx === 0),
+          alt_text: isObj ? (img.alt_text || '') : '',
+        };
+      }).filter(img => Boolean(img.image_url && img.image_url.trim()));
+    }
+
+    if (imagesToInsert.length === 0 && defaultMainImg) {
+      imagesToInsert.push({
+        product_id: productId,
+        image_url: defaultMainImg,
+        public_id: '',
+        sort_order: 0,
+        is_primary: true,
+        alt_text: '',
+      });
+      if (defaultSecImg && defaultSecImg !== defaultMainImg) {
+        imagesToInsert.push({
+          product_id: productId,
+          image_url: defaultSecImg,
+          public_id: '',
+          sort_order: 1,
+          is_primary: false,
+          alt_text: '',
+        });
+      }
+    }
+
+    if (imagesToInsert.length > 0) {
+      const hasPrimary = imagesToInsert.some(i => i.is_primary);
+      if (!hasPrimary) {
+        imagesToInsert[0].is_primary = true;
+      }
+    }
+
+    if (imagesToInsert.length > 0) {
+      const { data: inserted, error } = await supabase.from('product_images').insert(imagesToInsert).select();
+      if (error) {
+        console.error('Error inserting product_images:', error);
+      }
+      return inserted || imagesToInsert;
+    }
+  } catch (err) {
+    console.error('saveProductImages exception:', err);
+  }
+  return [];
+};
+
 export const getProducts = async (req, res) => {
   try {
     const {
@@ -19,11 +111,37 @@ export const getProducts = async (req, res) => {
 
     const statsMap = await getApprovedProductReviewStats();
 
+    // Check if category corresponds to M2M category_products entries
+    let catFilterProductIds = null;
+    if (category && category !== 'all') {
+      try {
+        const cleanCat = category.toString().toLowerCase().trim();
+        const { data: catRows } = await supabase.from('categories').select('id, slug, name');
+        const matchedCat = (catRows || []).find(c => 
+          String(c.id).toLowerCase() === cleanCat || 
+          String(c.slug).toLowerCase() === cleanCat || 
+          String(c.name).toLowerCase() === cleanCat
+        );
+        if (matchedCat) {
+          const { data: rels } = await supabase.from('category_products').select('product_id').eq('category_id', matchedCat.id);
+          if (rels && rels.length > 0) {
+            catFilterProductIds = rels.map(r => r.product_id);
+          }
+        }
+      } catch (err) {
+        console.warn('Error checking category_products filter:', err?.message);
+      }
+    }
+
     // Try fetching from Supabase PostgreSQL first
     let query = supabase.from('products').select('*, product_variants(*)');
 
     if (category && category !== 'all') {
-      query = query.eq('category', category);
+      if (catFilterProductIds && catFilterProductIds.length > 0) {
+        query = query.or(`category.eq.${category},id.in.(${catFilterProductIds.join(',')})`);
+      } else {
+        query = query.eq('category', category);
+      }
     }
 
     if (featured === 'true') {
@@ -37,6 +155,9 @@ export const getProducts = async (req, res) => {
     const { data: dbProducts, error } = await query;
 
     if (!error && dbProducts && dbProducts.length > 0) {
+      const dbProductIds = dbProducts.map(p => p.id);
+      const imagesMap = await fetchProductImagesMap(dbProductIds);
+
       // Map DB schema to frontend expected format
       const formatted = dbProducts.map((p) => {
         const variantStocksMap = p.nutrition_facts?.variant_stocks || {};
@@ -75,7 +196,29 @@ export const getProducts = async (req, res) => {
         const realReviewCount = stats.count;
         const realRating = realReviewCount > 0 ? Number((stats.sum / stats.count).toFixed(1)) : 0;
 
-        // Normalize nutrition_facts object to handle both new structured format { key: { label, value, unit } } and legacy keys
+        // Image gallery resolution
+        const rawImgs = imagesMap.get(String(p.id)) || [];
+        let images = [];
+        if (rawImgs.length > 0) {
+          images = rawImgs.map((img, idx) => ({
+            id: img.id || `img-${idx}`,
+            image_url: img.image_url,
+            public_id: img.public_id || '',
+            sort_order: img.sort_order !== undefined ? img.sort_order : idx,
+            is_primary: img.is_primary === true,
+            alt_text: img.alt_text || '',
+          }));
+        } else {
+          if (p.image_url) images.push({ id: 'legacy-1', image_url: p.image_url, public_id: '', sort_order: 0, is_primary: true });
+          if (p.secondary_image_url && p.secondary_image_url !== p.image_url) {
+            images.push({ id: 'legacy-2', image_url: p.secondary_image_url, public_id: '', sort_order: 1, is_primary: false });
+          }
+        }
+        const primaryObj = images.find(img => img.is_primary) || images[0];
+        const primaryUrl = primaryObj ? primaryObj.image_url : (p.image_url || '');
+        const secondaryUrl = (images.length > 1 ? images[1].image_url : primaryUrl) || p.secondary_image_url || '';
+
+        // Normalize nutrition_facts object
         const rawFacts = p.nutrition_facts || {};
         const normalizedNutrition = { ...rawFacts };
 
@@ -125,8 +268,11 @@ export const getProducts = async (req, res) => {
           stock: calculatedStock,
           sku: p.sku || 'MLS-PRD',
           status: p.is_active !== false ? 'active' : 'inactive',
-          image: p.image_url,
-          secondaryImage: p.secondary_image_url || '',
+          image: primaryUrl,
+          image_url: primaryUrl,
+          secondaryImage: secondaryUrl,
+          secondary_image_url: secondaryUrl,
+          images: images,
           badges: parsedBadges,
           ingredients: parsedIngredients,
           allergens: p.allergens || '',
@@ -297,6 +443,28 @@ export const getProductBySlugOrId = async (req, res) => {
         ? p.badges 
         : (typeof p.badges === 'string' ? p.badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
+      const imagesMap = await fetchProductImagesMap([p.id]);
+      const rawImgs = imagesMap.get(String(p.id)) || [];
+      let images = [];
+      if (rawImgs.length > 0) {
+        images = rawImgs.map((img, idx) => ({
+          id: img.id || `img-${idx}`,
+          image_url: img.image_url,
+          public_id: img.public_id || '',
+          sort_order: img.sort_order !== undefined ? img.sort_order : idx,
+          is_primary: img.is_primary === true,
+          alt_text: img.alt_text || '',
+        }));
+      } else {
+        if (p.image_url) images.push({ id: 'legacy-1', image_url: p.image_url, public_id: '', sort_order: 0, is_primary: true });
+        if (p.secondary_image_url && p.secondary_image_url !== p.image_url) {
+          images.push({ id: 'legacy-2', image_url: p.secondary_image_url, public_id: '', sort_order: 1, is_primary: false });
+        }
+      }
+      const primaryObj = images.find(img => img.is_primary) || images[0];
+      const primaryUrl = primaryObj ? primaryObj.image_url : (p.image_url || '');
+      const secondaryUrl = (images.length > 1 ? images[1].image_url : primaryUrl) || p.secondary_image_url || '';
+
       const formatted = {
         _id: p.id,
         id: p.id,
@@ -310,8 +478,11 @@ export const getProductBySlugOrId = async (req, res) => {
         stock: calculatedStock,
         sku: p.sku || 'MLS-PRD',
         status: p.is_active !== false ? 'active' : 'inactive',
-        image: p.image_url,
-        secondaryImage: p.secondary_image_url || '',
+        image: primaryUrl,
+        image_url: primaryUrl,
+        secondaryImage: secondaryUrl,
+        secondary_image_url: secondaryUrl,
+        images: images,
         badges: parsedBadges,
         ingredients: parsedIngredients,
         allergens: p.allergens || '',
@@ -608,6 +779,13 @@ export const createProduct = async (req, res) => {
       ? Number(formattedVariants[0].originalPrice)
       : Number(originalPrice || basePrice);
 
+    const savedImgs = await saveProductImages(product.id, req.body.images || req.body.image_gallery, image, secondaryImage);
+    const primaryImg = savedImgs.find(i => i.is_primary) || savedImgs[0];
+    const primaryUrl = primaryImg ? primaryImg.image_url : (image || '');
+    const secondaryUrl = (savedImgs.length > 1 ? savedImgs[1].image_url : primaryUrl) || secondaryImage || '';
+
+    await supabase.from('products').update({ image_url: primaryUrl, secondary_image_url: secondaryUrl }).eq('id', product.id);
+
     const formattedProduct = {
       _id: product.id,
       id: product.id,
@@ -621,8 +799,11 @@ export const createProduct = async (req, res) => {
       stock: totalStock,
       sku: sku || 'MLS-PRD',
       status: product.is_active !== false ? 'active' : 'inactive',
-      image: product.image_url,
-      secondaryImage: product.secondary_image_url || '',
+      image: primaryUrl,
+      image_url: primaryUrl,
+      secondaryImage: secondaryUrl,
+      secondary_image_url: secondaryUrl,
+      images: savedImgs,
       badges: product.badges || [],
       ingredients: product.ingredients || [],
       allergens: product.allergens || '',
@@ -813,6 +994,24 @@ export const updateProduct = async (req, res) => {
       ? formattedVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
       : (updates.stock !== undefined && updates.stock !== null && updates.stock !== '' ? Number(updates.stock) : 100);
 
+    let savedImgs = [];
+    if (updates.images !== undefined || updates.image_gallery !== undefined || updates.image !== undefined) {
+      savedImgs = await saveProductImages(id, updates.images || updates.image_gallery, updates.image, updates.secondaryImage);
+      if (savedImgs.length > 0) {
+        const primaryImg = savedImgs.find(i => i.is_primary) || savedImgs[0];
+        const primaryUrl = primaryImg.image_url;
+        const secondaryUrl = savedImgs.length > 1 ? savedImgs[1].image_url : primaryUrl;
+        await supabase.from('products').update({ image_url: primaryUrl, secondary_image_url: secondaryUrl }).eq('id', id);
+      }
+    } else {
+      const imagesMap = await fetchProductImagesMap([id]);
+      savedImgs = imagesMap.get(String(id)) || [];
+    }
+
+    const primaryImg = savedImgs.find(i => i.is_primary) || savedImgs[0];
+    const primaryUrl = primaryImg ? primaryImg.image_url : (product.image_url || updates.image || '');
+    const secondaryUrl = (savedImgs.length > 1 ? savedImgs[1].image_url : primaryUrl) || product.secondary_image_url || '';
+
     const formattedProduct = {
       _id: product.id,
       id: product.id,
@@ -826,8 +1025,11 @@ export const updateProduct = async (req, res) => {
       stock: totalStock,
       sku: product.sku || updates.sku || 'MLS-PRD',
       status: product.is_active !== false ? 'active' : 'inactive',
-      image: product.image_url,
-      secondaryImage: product.secondary_image_url || '',
+      image: primaryUrl,
+      image_url: primaryUrl,
+      secondaryImage: secondaryUrl,
+      secondary_image_url: secondaryUrl,
+      images: savedImgs,
       badges: product.badges || [],
       ingredients: product.ingredients || [],
       allergens: product.allergens || '',
