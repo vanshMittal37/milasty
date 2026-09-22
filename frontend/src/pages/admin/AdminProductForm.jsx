@@ -687,6 +687,8 @@ export default function AdminProductForm() {
       // Always include both category_id (UUID) and category (slug) for canonical mapping
       category_id: formData.category_id || '',
       category: formData.category || '',
+      // Send full gallery so backend saves ALL images, not just primary + secondary
+      images: galleryImages.length > 0 ? galleryImages : undefined,
     };
 
     try {
