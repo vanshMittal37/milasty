@@ -3,6 +3,9 @@
 -- MILASTY — Product Multi-Image Gallery & Category Products Relationship
 -- ========================================================
 
+-- 0. Ensure categories table has is_active column
+ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
+
 -- 1. Create product_images Table
 CREATE TABLE IF NOT EXISTS public.product_images (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
