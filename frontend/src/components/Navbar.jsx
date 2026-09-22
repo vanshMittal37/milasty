@@ -40,6 +40,20 @@ export default function Navbar() {
     }
   };
 
+  // Promo state and showToast MUST be declared before any useEffect
+  const [promos, setPromos] = useState([
+    {
+      code: 'WELCOME10',
+      discountText: '10% OFF',
+      minOrderAmount: 300,
+    },
+    {
+      code: 'MILASTY100',
+      discountText: '₹100 OFF',
+      minOrderAmount: 500,
+    },
+  ]);
+  const { showToast } = useCart();
   const accountMenuRef = useRef(null);
 
   useEffect(() => {
@@ -89,20 +103,6 @@ export default function Navbar() {
   // Dynamic Theme Styling
   const textThemeColor = '#FFFFFF';
   const textMutedThemeColor = 'rgba(255, 255, 255, 0.8)';
-
-  const [promos, setPromos] = useState([
-    {
-      code: 'WELCOME10',
-      discountText: '10% OFF',
-      minOrderAmount: 300,
-    },
-    {
-      code: 'MILASTY100',
-      discountText: '₹100 OFF',
-      minOrderAmount: 500,
-    },
-  ]);
-  const { showToast } = useCart();
 
   useEffect(() => {
     const fetchPromo = async () => {

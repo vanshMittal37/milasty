@@ -31,6 +31,10 @@ export default function ProductDetail() {
   const [activeTab, setActiveTab] = useState('nutrition');
   const [reviewsData, setReviewsData] = useState({ averageRating: 0, totalReviews: 0, ratingDistribution: {}, reviews: [] });
   const [selectedModalImage, setSelectedModalImage] = useState(null);
+  // These MUST be at top — hooks cannot be after early returns or useEffect
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
 
   const fetchProductReviews = async (targetId) => {
     try {
@@ -179,11 +183,6 @@ export default function ProductDetail() {
       </div>
     );
   }
-
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-
-  const touchStartX = useRef(null);
-  const touchEndX = useRef(null);
 
   const handleTouchStart = (e) => {
     touchEndX.current = null;

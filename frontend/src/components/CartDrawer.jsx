@@ -33,19 +33,18 @@ export default function CartDrawer() {
   const [isEditingPin, setIsEditingPin] = useState(false);
   const touchStartRef = useRef(null);
 
+  // Coupon State — MUST be before any useEffect (Rules of Hooks)
+  const [couponInputCode, setCouponInputCode] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState('');
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+
   // Synchronize pincode input when deliveryInfo changes
   useEffect(() => {
     if (deliveryInfo && deliveryInfo.pincode) {
       setPincodeInput(deliveryInfo.pincode);
     }
   }, [deliveryInfo]);
-
-
-  // Coupon State
-  const [couponInputCode, setCouponInputCode] = useState('');
-  const [couponLoading, setCouponLoading] = useState(false);
-  const [couponError, setCouponError] = useState('');
-  const [availableCoupons, setAvailableCoupons] = useState([]);
 
   useEffect(() => {
     if (isCartOpen) {

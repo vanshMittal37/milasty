@@ -15,17 +15,6 @@ export default function CheckoutPage() {
 
   const savedAddresses = user?.addresses || [];
 
-  // Load Razorpay script dynamically
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
   // Determine initial selected address ID (default address first, or first row)
   const getInitialSelectedId = () => {
     if (!savedAddresses || savedAddresses.length === 0) return null;
@@ -73,6 +62,17 @@ export default function CheckoutPage() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [showSimulatedPaymentModal, setShowSimulatedPaymentModal] = useState(false);
   const [simulatePaymentData, setSimulatePaymentData] = useState(null);
+
+  // Load Razorpay script dynamically
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   // Sync formData when selectedAddressId or user addresses change
   useEffect(() => {

@@ -28,6 +28,8 @@ export const CartProvider = ({ children }) => {
   });
 
   const [couponDiscountAmount, setCouponDiscountAmount] = useState(0);
+  // mobileNavOpen MUST be at top — hooks cannot come after useEffect
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // Sync cartItems with localStorage
   useEffect(() => {
@@ -238,8 +240,6 @@ export const CartProvider = ({ children }) => {
     } catch (e) {}
     showToast('Coupon removed');
   };
-
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const openCart = () => {
     setMobileNavOpen(false);

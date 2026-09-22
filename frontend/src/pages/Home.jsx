@@ -71,6 +71,34 @@ export default function Home() {
       : DEFAULT_DESKTOP_POSTER
   );
 
+  // Scroll reveal references — MUST be before any useEffect
+  const heroRef = useScrollReveal();
+  const trustRef = useScrollReveal();
+  const categoryRef = useScrollReveal();
+  const bestsellersRef = useScrollReveal();
+  const whyRef = useScrollReveal();
+  const customerTestimonialRef = useScrollReveal();
+  const moodRef = useScrollReveal();
+  const ritualRef = useScrollReveal();
+  const labRef = useScrollReveal();
+  const storyRef = useScrollReveal();
+  const ingredientsSectionRef = useScrollReveal();
+  const pillarsRef = useScrollReveal();
+  const faqRef = useScrollReveal();
+  const finalCtaRef = useScrollReveal();
+
+  // Dynamic Home CMS Data state — MUST be before any useEffect
+  const [homeCms, setHomeCms] = useState({
+    eyebrow: "HANDCRAFTED MILLET BAKES",
+    heroTitle: "Ancient Grains. Modern Cravings.",
+    heroSubtitle: "Delicious cookies, crackers & brownies made with millets, jaggery & desi ghee — crafted for the way you snack today.",
+    heroVideoUrl: "https://res.cloudinary.com/dmm8lfc3x/video/upload/q_auto,f_auto/v1787068808/cookie_video.mp4",
+    heroPosterUrl: "https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1787068808/cookie_video.jpg",
+  });
+
+  // activeRitualIdx — MUST be before any useEffect
+  const [activeRitualIdx, setActiveRitualIdx] = useState(0);
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 767);
@@ -262,31 +290,6 @@ export default function Home() {
     }
   };
 
-  // Scroll reveal references
-  const heroRef = useScrollReveal();
-  const trustRef = useScrollReveal();
-  const categoryRef = useScrollReveal();
-  const bestsellersRef = useScrollReveal();
-  const whyRef = useScrollReveal();
-  const customerTestimonialRef = useScrollReveal();
-  const moodRef = useScrollReveal();
-  const ritualRef = useScrollReveal();
-  const labRef = useScrollReveal();
-  const storyRef = useScrollReveal();
-  const ingredientsSectionRef = useScrollReveal();
-  const pillarsRef = useScrollReveal();
-  const faqRef = useScrollReveal();
-  const finalCtaRef = useScrollReveal();
-
-  // Dynamic Home CMS Data state
-  const [homeCms, setHomeCms] = useState({
-    eyebrow: "HANDCRAFTED MILLET BAKES",
-    heroTitle: "Ancient Grains. Modern Cravings.",
-    heroSubtitle: "Delicious cookies, crackers & brownies made with millets, jaggery & desi ghee — crafted for the way you snack today.",
-    heroVideoUrl: "https://res.cloudinary.com/dmm8lfc3x/video/upload/q_auto,f_auto/v1787068808/cookie_video.mp4",
-    heroPosterUrl: "https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1787068808/cookie_video.jpg",
-  });
-
   // Fetch Home CMS data
   useEffect(() => {
     api.get('/home-cms')
@@ -386,7 +389,6 @@ export default function Home() {
 
   // Ritual products helper
   const allProductsList = dbProducts.length > 0 ? dbProducts : initialProducts;
-  const [activeRitualIdx, setActiveRitualIdx] = useState(0);
   const activeRitualProduct = allProductsList[activeRitualIdx] || allProductsList[0];
 
   return (

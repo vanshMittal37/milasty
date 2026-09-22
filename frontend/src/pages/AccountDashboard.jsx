@@ -35,16 +35,8 @@ export default function AccountDashboard() {
   const queryTab = new URLSearchParams(location.search).get('tab');
   const [activeTab, setActiveTab] = useState(queryTab || 'overview');
 
-  useEffect(() => {
-    if (queryTab) {
-      setActiveTab(queryTab);
-    }
-  }, [queryTab]);
-
-  // Mobile drawer state
+  // Mobile drawer state — MUST be before any useEffect
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-
-  // Logout confirmation modal state
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Orders State
@@ -84,6 +76,12 @@ export default function AccountDashboard() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
+
+  useEffect(() => {
+    if (queryTab) {
+      setActiveTab(queryTab);
+    }
+  }, [queryTab]);
 
   useEffect(() => {
     if (!isAuthenticated) {

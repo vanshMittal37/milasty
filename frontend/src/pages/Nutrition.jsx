@@ -13,6 +13,15 @@ export default function Nutrition() {
   const [glanceIndex, setGlanceIndex] = useState(0);
   const [whyIngredientsIndex, setWhyIngredientsIndex] = useState(0);
   
+  const [isGlanceHovered, setIsGlanceHovered] = useState(false);
+  const [isIngredientsHovered, setIsIngredientsHovered] = useState(false);
+
+  // Touch gesture swipe state
+  const [glanceTouchStartX, setGlanceTouchStartX] = useState(null);
+  const [glanceTouchStartY, setGlanceTouchStartY] = useState(null);
+  const [ingredientsTouchStartX, setIngredientsTouchStartX] = useState(null);
+  const [ingredientsTouchStartY, setIngredientsTouchStartY] = useState(null);
+
   const insideBiteRef = useRef(null);
   const glanceRef = useRef(null);
   const ingredientsRef = useRef(null);
@@ -48,15 +57,6 @@ export default function Nutrition() {
     const reportUrl = p.labReportUrl || p.lab_report_url;
     return reportUrl && typeof reportUrl === 'string' && reportUrl.trim() !== '';
   }).slice(0, 5);
-
-  const [isGlanceHovered, setIsGlanceHovered] = useState(false);
-  const [isIngredientsHovered, setIsIngredientsHovered] = useState(false);
-
-  // Touch gesture swipe state
-  const [glanceTouchStartX, setGlanceTouchStartX] = useState(null);
-  const [glanceTouchStartY, setGlanceTouchStartY] = useState(null);
-  const [ingredientsTouchStartX, setIngredientsTouchStartX] = useState(null);
-  const [ingredientsTouchStartY, setIngredientsTouchStartY] = useState(null);
 
   // Auto-scroll Nutrition At A Glance cards (every 2.0s with hover/touch pause)
   useEffect(() => {
