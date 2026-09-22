@@ -553,20 +553,25 @@ export default function AdminCategories() {
 
       {/* Edit Category Modal */}
       {editModalOpen && editCategoryData && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div className="admin-card" style={{ width: '100%', maxWidth: '480px', padding: '1.75rem', position: 'relative' }}>
-            <button
-              onClick={() => { setEditModalOpen(false); setEditCategoryData(null); }}
-              style={{ position: 'absolute', top: '16px', right: '16px', backgroundColor: 'transparent', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer' }}
-            >
-              <X size={18} />
-            </button>
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div className="admin-card" style={{ width: '100%', maxWidth: '520px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', padding: '1.5rem', position: 'relative', overflow: 'hidden' }}>
+            
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexShrink: 0 }}>
+              <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0 }}>
+                Edit Collection Category
+              </h3>
+              <button
+                type="button"
+                onClick={() => { setEditModalOpen(false); setEditCategoryData(null); }}
+                style={{ backgroundColor: 'transparent', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-            <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
-              Edit Collection Category
-            </h3>
-
-            <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto', paddingRight: '0.4rem', gap: '1.15rem' }}>
               <div>
                 <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Category Name *</label>
                 <input
@@ -653,7 +658,7 @@ export default function AdminCategories() {
                 </div>
 
                 {/* Product List Selector */}
-                <div style={{ maxHeight: '180px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', border: '1px solid var(--admin-border)', borderRadius: '8px', padding: '0.4rem', backgroundColor: 'var(--admin-surface-card)' }}>
+                <div style={{ maxHeight: '140px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', border: '1px solid var(--admin-border)', borderRadius: '8px', padding: '0.4rem', backgroundColor: 'var(--admin-surface-card)' }}>
                   {allProducts.length === 0 ? (
                     <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', textAlign: 'center', padding: '1rem 0' }}>
                       {productsLoading ? 'Loading store products...' : 'No products found'}
@@ -724,7 +729,21 @@ export default function AdminCategories() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+              {/* Sticky Footer for Buttons */}
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  gap: '0.75rem', 
+                  marginTop: '0.5rem',
+                  paddingTop: '0.85rem', 
+                  borderTop: '1px solid var(--admin-border)',
+                  backgroundColor: 'var(--admin-surface-card)',
+                  position: 'sticky',
+                  bottom: 0,
+                  zIndex: 10,
+                  flexShrink: 0
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setEditModalOpen(false)}
