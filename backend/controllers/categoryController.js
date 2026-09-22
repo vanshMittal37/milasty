@@ -95,9 +95,10 @@ export const getCategories = async (req, res) => {
     // Map product IDs and dynamic counts per category
     const catProductIdsMap = {};
     (categories || []).forEach(cat => {
-      const key = cat.id || cat._id || cat.slug;
-      if (key) catProductIdsMap[key] = new Set();
-      if (cat.slug) catProductIdsMap[cat.slug] = new Set();
+      const cId = cat.id || cat._id;
+      const cSlug = cat.slug;
+      if (cId) catProductIdsMap[cId] = new Set();
+      if (cSlug) catProductIdsMap[cSlug] = new Set();
     });
 
     // 1. Fill from category_products table
@@ -115,31 +116,28 @@ export const getCategories = async (req, res) => {
       const pCat = (p.category || '').toString().toLowerCase().trim();
       const pCatId = (p.category_id || '').toString().toLowerCase().trim();
 
-      const matchedCat = (categories || []).find(cat => {
+      (categories || []).forEach(cat => {
         const cId = (cat.id || cat._id || '').toString().toLowerCase().trim();
         const cSlug = (cat.slug || '').toString().toLowerCase().trim();
         const cName = (cat.name || '').toString().toLowerCase().trim();
 
-        if (pCatId && (pCatId === cId || pCatId === cSlug)) return true;
-        if (pCat) {
-          if (pCat === cId || pCat === cSlug || pCat === cName) return true;
-          if (pCat === 'gifts' && (cSlug === 'gifting' || cSlug === 'gifts')) return true;
-          if (pCat === 'gifting' && (cSlug === 'gifting' || cSlug === 'gifts')) return true;
-        }
-        return false;
-      });
+        let isMatch = false;
+        if (pCatId && (pCatId === cId || pCatId === cSlug)) isMatch = true;
+        if (pCat && (pCat === cId || pCat === cSlug || pCat === cName)) isMatch = true;
+        if (pCat === 'gifts' && (cSlug === 'gifting' || cSlug === 'gifts')) isMatch = true;
+        if (pCat === 'gifting' && (cSlug === 'gifting' || cSlug === 'gifts')) isMatch = true;
 
-      if (matchedCat) {
-        const key = matchedCat.id || matchedCat.slug;
-        if (key) {
-          if (!catProductIdsMap[key]) catProductIdsMap[key] = new Set();
-          catProductIdsMap[key].add(p.id);
+        if (isMatch) {
+          if (cId) {
+            if (!catProductIdsMap[cId]) catProductIdsMap[cId] = new Set();
+            catProductIdsMap[cId].add(p.id);
+          }
+          if (cSlug) {
+            if (!catProductIdsMap[cSlug]) catProductIdsMap[cSlug] = new Set();
+            catProductIdsMap[cSlug].add(p.id);
+          }
         }
-        if (matchedCat.slug && matchedCat.slug !== key) {
-          if (!catProductIdsMap[matchedCat.slug]) catProductIdsMap[matchedCat.slug] = new Set();
-          catProductIdsMap[matchedCat.slug].add(p.id);
-        }
-      }
+      });
     });
 
     const formatted = categories.map((cat, idx) => {
@@ -147,7 +145,11 @@ export const getCategories = async (req, res) => {
       const img = cat.image_url || cat.image || INITIAL_CATEGORIES[idx % 4]?.image_url || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600';
       const key = cat.id || cat._id || cat.slug;
       
-      const pSet = catProductIdsMap[key] || catProductIdsMap[cat.slug] || new Set();
+      const pSet = new Set([
+        ...(catProductIdsMap[cat.id] || []),
+        ...(catProductIdsMap[cat.slug] || []),
+        ...(catProductIdsMap[key] || [])
+      ]);
       const productIds = Array.from(pSet);
 
       return {
@@ -227,22 +229,30 @@ export const createCategory = async (req, res) => {
       return res.status(400).json({ message: error.message || 'Database error creating category' });
     }
 
+    const targetCatId = category.id;
+    const targetSlug = category.slug || slug;
+
     // Save Category Products Relationship
     let savedProductIds = [];
     if (Array.isArray(productIds) && productIds.length > 0) {
-      const relRows = productIds.map(pId => ({
-        category_id: category.id,
-        product_id: pId,
-      }));
+      savedProductIds = productIds;
+
+      const relRows = [];
+      productIds.forEach(pId => {
+        relRows.push({ category_id: targetCatId, product_id: pId });
+        if (targetSlug && targetSlug !== targetCatId) {
+          relRows.push({ category_id: targetSlug, product_id: pId });
+        }
+      });
+
       try {
         await supabase.from('category_products').insert(relRows);
       } catch (err) {
         console.warn('category_products insert warning:', err?.message);
       }
-      savedProductIds = productIds;
 
       try {
-        await supabase.from('products').update({ category: category.slug, category_id: category.id }).in('id', productIds);
+        await supabase.from('products').update({ category: targetSlug, category_id: targetCatId }).in('id', productIds);
       } catch (err) {}
     }
 
@@ -268,8 +278,14 @@ export const updateCategory = async (req, res) => {
     const { name, description, image, image_url, status, is_active, productIds } = req.body;
     const finalImage = image_url || image;
 
-    const updatePayload = {};
+    // 1. Find target category in database by id or slug
+    let { data: category } = await supabase
+      .from('categories')
+      .select('*')
+      .or(`id.eq.${id},slug.eq.${id}`)
+      .maybeSingle();
 
+    const updatePayload = {};
     if (name) {
       updatePayload.name = name.trim();
       updatePayload.label = name.trim();
@@ -284,56 +300,74 @@ export const updateCategory = async (req, res) => {
       updatePayload.image_url = finalImage;
     }
 
-    let { data: category, error } = await supabase
-      .from('categories')
-      .update(updatePayload)
-      .eq('id', id)
-      .select()
-      .maybeSingle();
-
-    if (error) {
-      console.error('Supabase Category Update Error:', error);
-      return res.status(400).json({ message: error.message || 'Database error updating category' });
+    if (Object.keys(updatePayload).length > 0) {
+      const { data: updatedCat } = await supabase
+        .from('categories')
+        .update(updatePayload)
+        .or(`id.eq.${id},slug.eq.${id}`)
+        .select()
+        .maybeSingle();
+      if (updatedCat) category = updatedCat;
     }
 
     const targetCatId = category?.id || id;
-    const targetSlug = category?.slug || updatePayload.slug;
+    const targetSlug = category?.slug || updatePayload.slug || id;
 
-    // Synchronize Category Products Relationship
+    // 2. Synchronize Category Products Relationship
     let savedProductIds = [];
     if (Array.isArray(productIds)) {
+      savedProductIds = productIds;
+
+      // Delete existing relationships for both targetCatId and targetSlug
       try {
         await supabase.from('category_products').delete().eq('category_id', targetCatId);
       } catch (e) {}
+      if (targetSlug && targetSlug !== targetCatId) {
+        try {
+          await supabase.from('category_products').delete().eq('category_id', targetSlug);
+        } catch (e) {}
+      }
 
       if (productIds.length > 0) {
-        const relRows = productIds.map(pId => ({
-          category_id: targetCatId,
-          product_id: pId,
-        }));
+        // Insert relationship entries for targetCatId and targetSlug (if different)
+        const relRows = [];
+        productIds.forEach(pId => {
+          relRows.push({ category_id: targetCatId, product_id: pId });
+          if (targetSlug && targetSlug !== targetCatId) {
+            relRows.push({ category_id: targetSlug, product_id: pId });
+          }
+        });
+
         try {
           await supabase.from('category_products').insert(relRows);
         } catch (err) {
-          console.warn('category_products update warning:', err?.message);
+          console.warn('category_products insert notice:', err?.message);
         }
-        savedProductIds = productIds;
 
-        if (targetSlug) {
-          try {
-            await supabase.from('products').update({ category: targetSlug, category_id: targetCatId }).in('id', productIds);
-          } catch (e) {}
+        // Also update products table category & category_id columns for legacy compatibility
+        try {
+          await supabase.from('products').update({
+            category: targetSlug,
+            category_id: targetCatId
+          }).in('id', productIds);
+        } catch (e) {
+          console.warn('products table legacy sync notice:', e?.message);
         }
       }
     } else {
       try {
-        const { data: rels } = await supabase.from('category_products').select('product_id').eq('category_id', targetCatId);
-        savedProductIds = (rels || []).map(r => r.product_id);
+        const { data: rels } = await supabase.from('category_products').select('product_id').or(`category_id.eq.${targetCatId},category_id.eq.${targetSlug}`);
+        savedProductIds = Array.from(new Set((rels || []).map(r => r.product_id)));
       } catch (e) {}
     }
 
     return res.json({
       ...(category || { id, name }),
-      description: description || '',
+      id: targetCatId,
+      _id: targetCatId,
+      name: updatePayload.name || category?.name || name,
+      description: description || category?.subtitle || '',
+      subtitle: updatePayload.subtitle || category?.subtitle || description || '',
       image_url: finalImage || category?.image_url,
       image: finalImage || category?.image_url,
       productCount: savedProductIds.length,
