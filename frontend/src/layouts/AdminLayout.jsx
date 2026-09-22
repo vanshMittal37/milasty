@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { 
   LayoutDashboard, Package, Tags, ShoppingCart, Users, Ticket, Star, 
-  LogOut, Menu, Bell, ChevronDown, Globe, KeyRound, UserCheck, X, Truck, MessageSquare, Clock, HelpCircle, Sparkles
+  LogOut, Menu, Bell, ChevronDown, Globe, KeyRound, UserCheck, X, Truck, MessageSquare, Clock, HelpCircle, Sparkles, Compass
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -88,6 +88,7 @@ export default function AdminLayout() {
     {
       title: 'Content & Discovery',
       items: [
+        { label: 'Product Discovery', path: '/admin/product-discovery', icon: Compass },
         { label: 'Recommendation Quiz', path: '/admin/recommendation-quiz', icon: HelpCircle },
         { label: 'Honest Ingredients', path: '/admin/honest-ingredients', icon: Sparkles },
         { label: 'View Website', path: '/', icon: Globe },
@@ -110,6 +111,7 @@ export default function AdminLayout() {
     if (path.includes('/admin/inquiries')) return { title: 'Customer Inquiries', breadcrumb: 'Support / Customer Inquiries' };
     if (path.includes('/admin/coupons')) return { title: 'Coupons', breadcrumb: 'Promotions / Coupons' };
     if (path.includes('/admin/reviews')) return { title: 'Reviews Moderation', breadcrumb: 'Feedback / Reviews' };
+    if (path.includes('/admin/product-discovery')) return { title: 'Product Discovery', breadcrumb: 'Content / Product Discovery' };
     if (path.includes('/admin/recommendation-quiz')) return { title: 'Recommendation Quiz', breadcrumb: 'Content / Product Quiz' };
     if (path.includes('/admin/honest-ingredients')) return { title: 'Honest Ingredients', breadcrumb: 'Content / Honest Ingredients' };
     return { title: 'Admin Panel', breadcrumb: 'MILASTY / Admin' };
