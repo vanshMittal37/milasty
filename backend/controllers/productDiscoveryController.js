@@ -1,13 +1,12 @@
 import { supabase } from '../config/supabase.js';
 import { initialProducts } from '../data/seedData.js';
 
-// Default In-Memory Section Config (Fallback if Supabase tables are being initialized)
+// Default In-Memory Section Config (Fallback)
 let memorySectionConfig = {
   is_active: true,
   eyebrow: 'NOT SURE WHERE TO START?',
   title: 'Find Your Perfect MILASTY Snack',
   description: 'Something light. Something crunchy. Something chocolatey. Or something to share.',
-  background_image_url: '',
   explore_button_text: 'EXPLORE ALL SNACKS →',
   explore_button_url: '/shop',
 };
@@ -57,22 +56,79 @@ let memoryMoods = [
 ];
 
 /**
+ * Robust price extraction helper
+ */
+function extractProductPrice(p) {
+  if (!p) return 0;
+
+  // Direct price check
+  if (p.price !== undefined && p.price !== null && Number(p.price) > 0) {
+    return Number(p.price);
+  }
+
+  // Supabase product_variants array check
+  if (Array.isArray(p.product_variants) && p.product_variants.length > 0) {
+    const firstVar = p.product_variants[0];
+    if (firstVar) {
+      const vPrice = firstVar.price || firstVar.original_price || firstVar.sale_price;
+      if (vPrice && Number(vPrice) > 0) return Number(vPrice);
+    }
+  }
+
+  // JSON variants array check
+  let vars = p.variants;
+  if (typeof vars === 'string') {
+    try { vars = JSON.parse(vars); } catch (e) { vars = []; }
+  }
+  if (Array.isArray(vars) && vars.length > 0) {
+    const firstVar = vars[0];
+    if (firstVar) {
+      const vPrice = firstVar.price || firstVar.originalPrice || firstVar.sale_price;
+      if (vPrice && Number(vPrice) > 0) return Number(vPrice);
+    }
+  }
+
+  // Other common price key fallbacks
+  if (p.sale_price && Number(p.sale_price) > 0) return Number(p.sale_price);
+  if (p.regular_price && Number(p.regular_price) > 0) return Number(p.regular_price);
+  if (p.price_rupees && Number(p.price_rupees) > 0) return Number(p.price_rupees);
+  if (p.originalPrice && Number(p.originalPrice) > 0) return Number(p.originalPrice);
+
+  return 0;
+}
+
+/**
  * Helper to fetch all available products from DB or Seed Data
  */
 async function fetchAllProducts() {
   try {
-    const { data: dbProds, error } = await supabase.from('products').select('*');
+    const { data: dbProds, error } = await supabase.from('products').select('*, product_variants(*)');
     if (!error && dbProds && dbProds.length > 0) {
-      return dbProds;
+      return dbProds.map(p => {
+        const primaryImg = p.image_url || p.image || p.secondary_image_url || '';
+        return {
+          ...p,
+          image: primaryImg,
+          resolvedPrice: extractProductPrice(p),
+        };
+      });
     }
   } catch (e) {
     console.warn('Supabase products fetch notice:', e.message);
   }
-  return initialProducts || [];
+
+  return (initialProducts || []).map(p => {
+    let img = p.image || p.imageUrl || p.image_url || '';
+    return {
+      ...p,
+      image: img,
+      resolvedPrice: extractProductPrice(p),
+    };
+  });
 }
 
 /**
- * Helper to match default initial products to memory moods if empty
+ * Helper to match default initial products to memory moods if empty, ensuring no duplicates
  */
 function assignInitialProductIds(products) {
   memoryMoods.forEach((m) => {
@@ -88,7 +144,13 @@ function assignInitialProductIds(products) {
         if (tag === 'gifting') return title.includes('ritual') || title.includes('wedding') || title.includes('celebration') || title.includes('hamper') || cat === 'gifts';
         return false;
       });
-      m.product_ids = matched.map((p) => p.id || p._id || p.slug);
+
+      // Deduplicate IDs
+      const rawIds = matched.map((p) => String(p.id || p._id || p.slug));
+      m.product_ids = Array.from(new Set(rawIds));
+    } else {
+      // Ensure existing product_ids are deduplicated
+      m.product_ids = Array.from(new Set((m.product_ids || []).map(id => String(id))));
     }
   });
 }
@@ -103,7 +165,6 @@ export const getPublicProductDiscovery = async (req, res) => {
     let moodProductsMap = {};
 
     try {
-      // 1. Fetch section settings
       const { data: sData } = await supabase
         .from('product_discovery_sections')
         .select('*')
@@ -115,13 +176,11 @@ export const getPublicProductDiscovery = async (req, res) => {
           eyebrow: sData.eyebrow || memorySectionConfig.eyebrow,
           title: sData.title || memorySectionConfig.title,
           description: sData.description || memorySectionConfig.description,
-          background_image_url: sData.background_image_url || sData.bg_image_url || '',
           explore_button_text: sData.explore_button_text || memorySectionConfig.explore_button_text,
           explore_button_url: sData.explore_button_url || memorySectionConfig.explore_button_url,
         };
       }
 
-      // 2. Fetch active moods
       const { data: mData } = await supabase
         .from('product_discovery_moods')
         .select('*')
@@ -132,7 +191,6 @@ export const getPublicProductDiscovery = async (req, res) => {
         moods = mData;
       }
 
-      // 3. Fetch mood product mappings
       const { data: mpData } = await supabase
         .from('product_discovery_mood_products')
         .select('*')
@@ -141,7 +199,9 @@ export const getPublicProductDiscovery = async (req, res) => {
       if (mpData) {
         mpData.forEach((row) => {
           if (!moodProductsMap[row.mood_id]) moodProductsMap[row.mood_id] = [];
-          moodProductsMap[row.mood_id].push(row.product_id);
+          if (!moodProductsMap[row.mood_id].includes(String(row.product_id))) {
+            moodProductsMap[row.mood_id].push(String(row.product_id));
+          }
         });
       }
     } catch (e) {
@@ -155,10 +215,11 @@ export const getPublicProductDiscovery = async (req, res) => {
       moods = memoryMoods.filter((m) => m.is_active !== false);
     }
 
-    // Attach products to each active mood
     const formattedMoods = moods.map((m) => {
-      const assignedIds = moodProductsMap[m.id] || m.product_ids || [];
-      const assignedProducts = assignedIds
+      const rawIds = moodProductsMap[m.id] || m.product_ids || [];
+      const uniqueIds = Array.from(new Set(rawIds.map(id => String(id))));
+      
+      const assignedProducts = uniqueIds
         .map((pid) => allProducts.find((p) => String(p.id || p._id || p.slug) === String(pid)))
         .filter((p) => Boolean(p) && p.is_active !== false && p.active !== false);
 
@@ -204,7 +265,6 @@ export const getAdminProductDiscovery = async (req, res) => {
           eyebrow: sData.eyebrow || memorySectionConfig.eyebrow,
           title: sData.title || memorySectionConfig.title,
           description: sData.description || memorySectionConfig.description,
-          background_image_url: sData.background_image_url || sData.bg_image_url || '',
           explore_button_text: sData.explore_button_text || memorySectionConfig.explore_button_text,
           explore_button_url: sData.explore_button_url || memorySectionConfig.explore_button_url,
         };
@@ -225,7 +285,9 @@ export const getAdminProductDiscovery = async (req, res) => {
       if (mpData) {
         mpData.forEach((row) => {
           if (!moodProductsMap[row.mood_id]) moodProductsMap[row.mood_id] = [];
-          moodProductsMap[row.mood_id].push(row.product_id);
+          if (!moodProductsMap[row.mood_id].includes(String(row.product_id))) {
+            moodProductsMap[row.mood_id].push(String(row.product_id));
+          }
         });
       }
     } catch (e) {
@@ -237,25 +299,29 @@ export const getAdminProductDiscovery = async (req, res) => {
 
     if (moods.length === 0) moods = memoryMoods;
 
-    const formattedMoods = moods.map((m) => ({
-      id: m.id,
-      name: m.name,
-      description: m.description || '',
-      display_order: m.display_order || 1,
-      is_active: m.is_active !== false,
-      product_ids: moodProductsMap[m.id] || m.product_ids || [],
-    }));
+    const formattedMoods = moods.map((m) => {
+      const rawIds = moodProductsMap[m.id] || m.product_ids || [];
+      const uniqueIds = Array.from(new Set(rawIds.map(id => String(id))));
+      return {
+        id: m.id,
+        name: m.name,
+        description: m.description || '',
+        display_order: m.display_order || 1,
+        is_active: m.is_active !== false,
+        product_ids: uniqueIds,
+      };
+    });
 
     return res.json({
       success: true,
       section: sectionConfig,
       moods: formattedMoods,
       availableProducts: allProducts.map((p) => ({
-        id: p.id || p._id || p.slug,
-        name: p.title || p.name,
+        id: String(p.id || p._id || p.slug),
+        name: p.title || p.name || 'Untitled Product',
         category: p.category || '',
-        price: p.variants?.[0]?.price || p.price || 0,
-        image: p.image || p.imageUrl || '',
+        price: extractProductPrice(p),
+        image: p.image || p.imageUrl || p.image_url || '',
         is_active: p.is_active !== false && p.active !== false,
       })),
     });
@@ -269,14 +335,13 @@ export const getAdminProductDiscovery = async (req, res) => {
  */
 export const updateSectionConfig = async (req, res) => {
   try {
-    const { is_active, eyebrow, title, description, background_image_url, explore_button_text, explore_button_url } = req.body;
+    const { is_active, eyebrow, title, description, explore_button_text, explore_button_url } = req.body;
 
     const payload = {
       is_active: is_active !== undefined ? Boolean(is_active) : memorySectionConfig.is_active,
       eyebrow: eyebrow !== undefined ? String(eyebrow).trim() : memorySectionConfig.eyebrow,
       title: title !== undefined ? String(title).trim() : memorySectionConfig.title,
       description: description !== undefined ? String(description).trim() : memorySectionConfig.description,
-      background_image_url: background_image_url !== undefined ? String(background_image_url) : memorySectionConfig.background_image_url,
       explore_button_text: explore_button_text !== undefined ? String(explore_button_text).trim() : memorySectionConfig.explore_button_text,
       explore_button_url: explore_button_url !== undefined ? String(explore_button_url).trim() : memorySectionConfig.explore_button_url,
       updated_at: new Date().toISOString(),
@@ -315,6 +380,7 @@ export const createMood = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Mood collection name is required' });
     }
 
+    const uniqueProductIds = Array.from(new Set((product_ids || []).map(id => String(id))));
     const newId = `mood_${Date.now()}`;
     const payload = {
       id: newId,
@@ -328,8 +394,8 @@ export const createMood = async (req, res) => {
     try {
       await supabase.from('product_discovery_moods').insert([payload]);
 
-      if (Array.isArray(product_ids) && product_ids.length > 0) {
-        const rows = product_ids.map((pid, idx) => ({
+      if (uniqueProductIds.length > 0) {
+        const rows = uniqueProductIds.map((pid, idx) => ({
           mood_id: newId,
           product_id: String(pid),
           display_order: idx + 1,
@@ -346,7 +412,7 @@ export const createMood = async (req, res) => {
       description: payload.description,
       display_order: payload.display_order,
       is_active: payload.is_active,
-      product_ids: Array.isArray(product_ids) ? product_ids : [],
+      product_ids: uniqueProductIds,
     };
     memoryMoods.push(newMood);
 
@@ -371,13 +437,17 @@ export const updateMood = async (req, res) => {
     if (is_active !== undefined) payload.is_active = Boolean(is_active);
     payload.updated_at = new Date().toISOString();
 
+    const uniqueProductIds = Array.isArray(product_ids)
+      ? Array.from(new Set(product_ids.map(pid => String(pid))))
+      : undefined;
+
     try {
       await supabase.from('product_discovery_moods').update(payload).eq('id', id);
 
-      if (Array.isArray(product_ids)) {
+      if (uniqueProductIds !== undefined) {
         await supabase.from('product_discovery_mood_products').delete().eq('mood_id', id);
-        if (product_ids.length > 0) {
-          const rows = product_ids.map((pid, idx) => ({
+        if (uniqueProductIds.length > 0) {
+          const rows = uniqueProductIds.map((pid, idx) => ({
             mood_id: id,
             product_id: String(pid),
             display_order: idx + 1,
@@ -397,7 +467,7 @@ export const updateMood = async (req, res) => {
         ...(description !== undefined ? { description: String(description).trim() } : {}),
         ...(display_order !== undefined ? { display_order: Number(display_order) } : {}),
         ...(is_active !== undefined ? { is_active: Boolean(is_active) } : {}),
-        ...(Array.isArray(product_ids) ? { product_ids } : {}),
+        ...(uniqueProductIds !== undefined ? { product_ids: uniqueProductIds } : {}),
       };
     }
 
