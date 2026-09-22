@@ -284,12 +284,6 @@ export const updateCategory = async (req, res) => {
       updatePayload.image_url = finalImage;
     }
 
-    if (status !== undefined) {
-      updatePayload.is_active = status === 'active';
-    } else if (is_active !== undefined) {
-      updatePayload.is_active = is_active;
-    }
-
     let { data: category, error } = await supabase
       .from('categories')
       .update(updatePayload)
@@ -297,26 +291,8 @@ export const updateCategory = async (req, res) => {
       .select()
       .maybeSingle();
 
-    // Automatic Fallback Retry if is_active column does not exist in Supabase DB schema
-    if (error && (error.message?.includes('is_active') || error.code === 'PGRST204')) {
-      console.warn('is_active column missing in Supabase categories table schema. Retrying update without is_active...');
-      const fallbackPayload = { ...updatePayload };
-      delete fallbackPayload.is_active;
-
-      const retry = await supabase
-        .from('categories')
-        .update(fallbackPayload)
-        .eq('id', id)
-        .select()
-        .maybeSingle();
-
-      if (!retry.error) {
-        category = retry.data;
-        error = null;
-      }
-    }
-
     if (error) {
+      console.error('Supabase Category Update Error:', error);
       return res.status(400).json({ message: error.message || 'Database error updating category' });
     }
 
