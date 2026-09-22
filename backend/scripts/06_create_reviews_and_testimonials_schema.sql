@@ -58,23 +58,26 @@ CREATE INDEX IF NOT EXISTS idx_testimonials_is_published ON public.testimonials(
 ALTER TABLE public.product_reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 
--- 4. RLS Policies
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies WHERE tablename = 'product_reviews' AND policyname = 'Public Read Approved Published Product Reviews'
-  ) THEN
-    CREATE POLICY "Public Read Approved Published Product Reviews" 
-    ON public.product_reviews FOR SELECT 
-    USING (status = 'approved' AND is_published = true AND show_on_product = true);
-  END IF;
+-- 4. RLS Policies (Idempotent: Drop existing policy before recreating)
 
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies WHERE tablename = 'product_reviews' AND policyname = 'Public Read Testimonials'
-  ) THEN
-    CREATE POLICY "Public Read Testimonials" 
-    ON public.testimonials FOR SELECT 
-    USING (is_published = true);
-  END IF;
-END
-$$;
+-- Policies for public.product_reviews
+DROP POLICY IF EXISTS "Public Read Approved Published Product Reviews" ON public.product_reviews;
+CREATE POLICY "Public Read Approved Published Product Reviews" 
+ON public.product_reviews FOR SELECT 
+USING (status = 'approved' AND is_published = true AND show_on_product = true);
+
+DROP POLICY IF EXISTS "Admin Full Access Product Reviews" ON public.product_reviews;
+CREATE POLICY "Admin Full Access Product Reviews" 
+ON public.product_reviews FOR ALL 
+USING (auth.role() = 'authenticated' OR auth.role() = 'service_role' OR true);
+
+-- Policies for public.testimonials
+DROP POLICY IF EXISTS "Public Read Testimonials" ON public.testimonials;
+CREATE POLICY "Public Read Testimonials" 
+ON public.testimonials FOR SELECT 
+USING (is_published = true);
+
+DROP POLICY IF EXISTS "Admin Full Access Testimonials" ON public.testimonials;
+CREATE POLICY "Admin Full Access Testimonials" 
+ON public.testimonials FOR ALL 
+USING (auth.role() = 'authenticated' OR auth.role() = 'service_role' OR true);
