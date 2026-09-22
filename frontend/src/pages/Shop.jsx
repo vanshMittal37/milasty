@@ -193,23 +193,38 @@ export default function Shop() {
     if (!catIdOrSlug || catIdOrSlug === 'all') return true;
     
     const pId = p.id || p._id;
-    const catObj = safeCategories.find(c => c.id === catIdOrSlug || c.slug === catIdOrSlug || c._id === catIdOrSlug || c.name === catIdOrSlug);
+    const cleanFilter = String(catIdOrSlug).toLowerCase().trim();
+    
+    // Find the category object for this filter value (match by id, slug, _id, or name)
+    const catObj = safeCategories.find(c => 
+      String(c.id || '').toLowerCase() === cleanFilter || 
+      String(c.slug || '').toLowerCase() === cleanFilter || 
+      String(c._id || '').toLowerCase() === cleanFilter ||
+      String(c.name || '').toLowerCase() === cleanFilter
+    );
     
     // 1. Check Many-to-Many category_products relation productIds array
     if (catObj && Array.isArray(catObj.productIds) && pId && catObj.productIds.includes(pId)) {
       return true;
     }
 
-    // 2. Check direct product category_id and category text matching
-    const targetSlug = catObj ? catObj.slug : catIdOrSlug;
+    // 2. Check direct product category_id (UUID) matching
     const targetId = catObj ? catObj.id : catIdOrSlug;
+    const targetSlug = catObj ? catObj.slug : catIdOrSlug;
     const targetName = catObj ? catObj.name : catIdOrSlug;
 
-    const pCat = p.category || '';
-    const pCatId = p.category_id || p.categoryId || '';
+    const pCat = (p.category || '').toString().toLowerCase().trim();
+    const pCatId = (p.category_id || p.categoryId || '').toString().toLowerCase().trim();
 
-    if (pCatId && (pCatId === targetId || pCatId === catIdOrSlug)) return true;
-    if (pCat && (pCat.toLowerCase() === targetSlug.toLowerCase() || pCat.toLowerCase() === targetName.toLowerCase())) return true;
+    // Check by UUID category_id
+    if (pCatId && targetId && pCatId === String(targetId).toLowerCase()) return true;
+    // Check by slug
+    if (pCat && targetSlug && pCat === String(targetSlug).toLowerCase()) return true;
+    // Check by name  
+    if (pCat && targetName && pCat === String(targetName).toLowerCase()) return true;
+    // Fallback: raw param match
+    if (pCat && pCat === cleanFilter) return true;
+    if (pCatId && pCatId === cleanFilter) return true;
     
     return false;
   };
@@ -231,7 +246,8 @@ export default function Shop() {
   const modalCategoryList = [
     { id: 'all', number: '00', name: 'ALL BAKES', label: 'All Bakes', subtitle: 'Explore the complete MILASTY collection' },
     ...safeCategories.map((c, idx) => ({
-      id: c.slug || c.id,
+      id: c.slug || c.id,       // Use slug for filter so matchesCategoryFilter works via slug
+      catId: c.id || c._id,    // Keep original UUID for reference
       number: String(idx + 1).padStart(2, '0'),
       name: c.name,
       label: c.label || c.name,
@@ -240,6 +256,7 @@ export default function Shop() {
       productCount: c.productCount || 0,
     }))
   ];
+
 
   // Featured Products
   const featuredProducts = safeProducts.filter(p => p.isFeatured || p.category === 'starter');

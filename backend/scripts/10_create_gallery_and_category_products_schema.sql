@@ -8,8 +8,8 @@ ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT
 
 -- 1. Create product_images Table
 CREATE TABLE IF NOT EXISTS public.product_images (
-  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  product_id TEXT NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
   image_url TEXT NOT NULL,
   public_id TEXT DEFAULT '',
   sort_order INTEGER DEFAULT 0,
@@ -28,9 +28,9 @@ ALTER TABLE public.product_images DISABLE ROW LEVEL SECURITY;
 
 -- 2. Create category_products Table (Many-to-Many Relationship)
 CREATE TABLE IF NOT EXISTS public.category_products (
-  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  category_id TEXT NOT NULL REFERENCES public.categories(id) ON DELETE CASCADE,
-  product_id TEXT NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  category_id UUID NOT NULL REFERENCES public.categories(id) ON DELETE CASCADE,
+  product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(category_id, product_id)
 );

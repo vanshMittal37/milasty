@@ -27,6 +27,8 @@ export async function setupNewSchemas() {
     console.log('Connected to Postgres directly!');
 
     const sqlStatements = [
+      `ALTER TABLE public.products ADD COLUMN IF NOT EXISTS category_id TEXT REFERENCES public.categories(id);`,
+      `CREATE INDEX IF NOT EXISTS idx_products_category_id ON public.products(category_id);`,
       `ALTER TABLE public.products ADD COLUMN IF NOT EXISTS lab_report_url TEXT DEFAULT '';`,
 
       `CREATE TABLE IF NOT EXISTS public.prebook_products (

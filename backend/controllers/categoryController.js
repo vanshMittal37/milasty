@@ -83,6 +83,11 @@ export const getCategories = async (req, res) => {
       if (pData) dbProducts = pData;
     } catch (e) {
       console.warn('Warning querying products in getCategories:', e.message);
+      // Try without category_id if schema cache missing
+      try {
+        const { data: pData2 } = await supabase.from('products').select('id, category');
+        if (pData2) dbProducts = pData2;
+      } catch (e2) {}
     }
 
     try {
@@ -101,7 +106,7 @@ export const getCategories = async (req, res) => {
       if (cSlug) catProductIdsMap[cSlug] = new Set();
     });
 
-    // 1. Fill from category_products table
+    // 1. Fill from category_products junction table (source of truth)
     (catProductsRels || []).forEach(rel => {
       const cId = rel.category_id;
       const pId = rel.product_id;
@@ -111,7 +116,7 @@ export const getCategories = async (req, res) => {
       }
     });
 
-    // 2. Fallback/Integrate legacy product category text matching
+    // 2. Fill from products.category_id (direct FK) and products.category (legacy slug)
     (dbProducts || []).forEach((p) => {
       const pCat = (p.category || '').toString().toLowerCase().trim();
       const pCatId = (p.category_id || '').toString().toLowerCase().trim();
@@ -128,9 +133,10 @@ export const getCategories = async (req, res) => {
         if (pCat === 'gifting' && (cSlug === 'gifting' || cSlug === 'gifts')) isMatch = true;
 
         if (isMatch) {
-          if (cId) {
-            if (!catProductIdsMap[cId]) catProductIdsMap[cId] = new Set();
-            catProductIdsMap[cId].add(p.id);
+          const realCId = cat.id || cat._id;
+          if (realCId) {
+            if (!catProductIdsMap[realCId]) catProductIdsMap[realCId] = new Set();
+            catProductIdsMap[realCId].add(p.id);
           }
           if (cSlug) {
             if (!catProductIdsMap[cSlug]) catProductIdsMap[cSlug] = new Set();

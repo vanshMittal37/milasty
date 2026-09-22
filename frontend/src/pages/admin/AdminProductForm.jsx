@@ -54,6 +54,7 @@ export default function AdminProductForm() {
     subtitle: '',
     description: '',
     category: 'cookies',
+    category_id: '',
     price: '',
     originalPrice: '',
     discountType: 'none',
@@ -238,6 +239,19 @@ export default function AdminProductForm() {
   useEffect(() => {
     if (ctxCategories && ctxCategories.length > 0) {
       setCategories(ctxCategories);
+      // Auto-set category_id if form doesn't have one yet
+      setFormData(prev => {
+        if (!prev.category_id) {
+          // Find matching category by current category slug
+          const matchedCat = ctxCategories.find(c => 
+            c.slug === prev.category || c.id === prev.category_id
+          ) || ctxCategories[0];
+          if (matchedCat) {
+            return { ...prev, category_id: matchedCat.id || matchedCat._id || '', category: matchedCat.slug || prev.category };
+          }
+        }
+        return prev;
+      });
     } else {
       fetchCategories();
     }
@@ -313,6 +327,7 @@ export default function AdminProductForm() {
           subtitle: p.subtitle || '',
           description: p.description || '',
           category: p.category || 'cookies',
+          category_id: p.category_id || p.categoryId || '',
           price: p.price !== undefined && p.price !== null ? p.price : '',
           originalPrice: p.originalPrice !== undefined && p.originalPrice !== null ? p.originalPrice : '',
           discountType: p.discountType || 'none',
@@ -649,6 +664,9 @@ export default function AdminProductForm() {
       price: basePriceNum,
       originalPrice: formData.originalPrice !== '' && formData.originalPrice !== null ? Number(formData.originalPrice) : null,
       stock: formData.stock !== '' && formData.stock !== null ? Number(formData.stock) : (isVariantProduct ? formData.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) : null),
+      // Always include both category_id (UUID) and category (slug) for canonical mapping
+      category_id: formData.category_id || '',
+      category: formData.category || '',
     };
 
     try {
@@ -795,14 +813,22 @@ export default function AdminProductForm() {
                   Category *
                 </label>
                 <select
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  value={formData.category_id || formData.category || ''}
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    const selectedCat = categories.find(c => (c.id || c._id) === selectedId);
+                    setFormData({
+                      ...formData,
+                      category_id: selectedId,
+                      category: selectedCat ? (selectedCat.slug || selectedCat.name?.toLowerCase().replace(/\s+/g, '-') || selectedId) : formData.category,
+                    });
+                  }}
                   className="admin-input"
                   style={{ cursor: 'pointer' }}
                 >
                   {categories.length > 0 ? (
                     categories.map((cat) => (
-                      <option key={cat._id || cat.slug || cat.id} value={cat.slug}>{cat.name || cat.label}</option>
+                      <option key={cat.id || cat._id || cat.slug} value={cat.id || cat._id}>{cat.name || cat.label}</option>
                     ))
                   ) : (
                     <option value="cookies">Cookies</option>

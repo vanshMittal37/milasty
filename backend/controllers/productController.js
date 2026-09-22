@@ -111,25 +111,34 @@ export const getProducts = async (req, res) => {
 
     const statsMap = await getApprovedProductReviewStats();
 
-    // Check if category corresponds to M2M category_products entries
+    // Resolve category filter: support category ID, slug, or name
+    let resolvedCatId = null;
+    let resolvedCatSlug = null;
     let catFilterProductIds = null;
     if (category && category !== 'all') {
       try {
         const cleanCat = category.toString().toLowerCase().trim();
         const { data: catRows } = await supabase.from('categories').select('id, slug, name');
-        const matchedCat = (catRows || []).find(c => 
-          String(c.id).toLowerCase() === cleanCat || 
-          String(c.slug).toLowerCase() === cleanCat || 
+        const matchedCat = (catRows || []).find(c =>
+          String(c.id).toLowerCase() === cleanCat ||
+          String(c.slug).toLowerCase() === cleanCat ||
           String(c.name).toLowerCase() === cleanCat
         );
         if (matchedCat) {
-          const { data: rels } = await supabase.from('category_products').select('product_id').eq('category_id', matchedCat.id);
-          if (rels && rels.length > 0) {
-            catFilterProductIds = rels.map(r => r.product_id);
+          resolvedCatId = matchedCat.id;
+          resolvedCatSlug = matchedCat.slug;
+          // Collect product IDs from junction table
+          try {
+            const { data: rels } = await supabase.from('category_products').select('product_id').eq('category_id', matchedCat.id);
+            if (rels && rels.length > 0) {
+              catFilterProductIds = rels.map(r => r.product_id);
+            }
+          } catch (jErr) {
+            console.warn('category_products query notice:', jErr?.message);
           }
         }
       } catch (err) {
-        console.warn('Error checking category_products filter:', err?.message);
+        console.warn('Error resolving category filter:', err?.message);
       }
     }
 
@@ -137,8 +146,18 @@ export const getProducts = async (req, res) => {
     let query = supabase.from('products').select('*, product_variants(*)');
 
     if (category && category !== 'all') {
+      // Build filter: products matching by category_id OR by category slug text OR in junction table
+      const orParts = [];
+      if (resolvedCatSlug) orParts.push(`category.eq.${resolvedCatSlug}`);
+      if (resolvedCatId) orParts.push(`category_id.eq.${resolvedCatId}`);
       if (catFilterProductIds && catFilterProductIds.length > 0) {
-        query = query.or(`category.eq.${category},id.in.(${catFilterProductIds.join(',')})`);
+        orParts.push(`id.in.(${catFilterProductIds.join(',')})`);
+      }
+      // Fallback: match raw category param as text
+      if (!resolvedCatSlug && !resolvedCatId) orParts.push(`category.eq.${category}`);
+      
+      if (orParts.length > 0) {
+        query = query.or(orParts.join(','));
       } else {
         query = query.eq('category', category);
       }
@@ -263,6 +282,7 @@ export const getProducts = async (req, res) => {
           subtitle: p.subtitle,
           description: p.description,
           category: p.category,
+          category_id: p.category_id || '',
           price: Number(variants[0]?.price || 0),
           originalPrice: Number(variants[0]?.originalPrice || variants[0]?.price || 0),
           stock: calculatedStock,
@@ -473,6 +493,7 @@ export const getProductBySlugOrId = async (req, res) => {
         subtitle: p.subtitle,
         description: p.description,
         category: p.category,
+        category_id: p.category_id || '',
         price: Number(variants[0]?.price || 0),
         originalPrice: Number(variants[0]?.originalPrice || variants[0]?.price || 0),
         stock: calculatedStock,
@@ -535,7 +556,26 @@ const safeInsertVariants = async (variantRows) => {
   return data || [];
 };
 
-// Helper for safe product insertion handling missing is_bestseller column in PostgREST schema cache
+// Helper for resolving category info by ID or slug
+export const resolveCategoryInfo = async (catIdOrSlug) => {
+  if (!catIdOrSlug) return null;
+  try {
+    const clean = String(catIdOrSlug).trim().toLowerCase();
+    const { data: catRows } = await supabase.from('categories').select('id, slug, name');
+    if (catRows && catRows.length > 0) {
+      return catRows.find(c => 
+        String(c.id).toLowerCase() === clean ||
+        String(c.slug).toLowerCase() === clean ||
+        String(c.name).toLowerCase() === clean
+      ) || null;
+    }
+  } catch (err) {
+    console.warn('Error resolving category info:', err?.message);
+  }
+  return null;
+};
+
+// Helper for safe product insertion handling missing columns in PostgREST schema cache
 const safeInsertProduct = async (payload) => {
   let { data, error } = await supabase
     .from('products')
@@ -545,11 +585,13 @@ const safeInsertProduct = async (payload) => {
 
   if (error && error.message && (
     error.message.toLowerCase().includes('is_bestseller') || 
+    error.message.toLowerCase().includes('category_id') || 
     error.message.toLowerCase().includes('schema cache')
   )) {
-    console.warn('Supabase product insert schema fallback triggered for is_bestseller:', error.message);
+    console.warn('Supabase product insert schema fallback triggered:', error.message);
     const fallbackPayload = { ...payload };
-    delete fallbackPayload.is_bestseller;
+    if (error.message.toLowerCase().includes('is_bestseller')) delete fallbackPayload.is_bestseller;
+    if (error.message.toLowerCase().includes('category_id')) delete fallbackPayload.category_id;
 
     const res = await supabase
       .from('products')
@@ -562,7 +604,7 @@ const safeInsertProduct = async (payload) => {
   return { data, error };
 };
 
-// Helper for safe product update handling missing is_bestseller column in PostgREST schema cache
+// Helper for safe product update handling missing columns in PostgREST schema cache
 const safeUpdateProduct = async (id, payload) => {
   let { data, error } = await supabase
     .from('products')
@@ -573,11 +615,13 @@ const safeUpdateProduct = async (id, payload) => {
 
   if (error && error.message && (
     error.message.toLowerCase().includes('is_bestseller') || 
+    error.message.toLowerCase().includes('category_id') || 
     error.message.toLowerCase().includes('schema cache')
   )) {
-    console.warn('Supabase product update schema fallback triggered for is_bestseller:', error.message);
+    console.warn('Supabase product update schema fallback triggered:', error.message);
     const fallbackPayload = { ...payload };
-    delete fallbackPayload.is_bestseller;
+    if (error.message.toLowerCase().includes('is_bestseller')) delete fallbackPayload.is_bestseller;
+    if (error.message.toLowerCase().includes('category_id')) delete fallbackPayload.category_id;
 
     const res = await supabase
       .from('products')
@@ -675,12 +719,27 @@ export const createProduct = async (req, res) => {
       variant_stocks: variantStocksMap,
     };
 
+    // Resolve category_id and category slug from categories table
+    const categoryInput = req.body.category_id || category || 'daily';
+    let resolvedCatId = null;
+    let resolvedCatSlug = category || 'daily';
+    try {
+      const catInfo = await resolveCategoryInfo(categoryInput);
+      if (catInfo) {
+        resolvedCatId = catInfo.id;
+        resolvedCatSlug = catInfo.slug || resolvedCatSlug;
+      }
+    } catch (err) {
+      console.warn('Category resolution warning:', err?.message);
+    }
+
     const insertPayload = {
       title: title.trim(),
       slug: finalSlug,
       subtitle: subtitle || '',
       description: description || '',
-      category: category || 'daily',
+      category: resolvedCatSlug,
+      category_id: resolvedCatId,
       image_url: image || '',
       secondary_image_url: secondaryImage || '',
       lab_report_url: req.body.labReportUrl || req.body.lab_report_url || '',
@@ -786,6 +845,18 @@ export const createProduct = async (req, res) => {
 
     await supabase.from('products').update({ image_url: primaryUrl, secondary_image_url: secondaryUrl }).eq('id', product.id);
 
+    // Sync category_products junction table
+    if (resolvedCatId && product.id) {
+      try {
+        await supabase.from('category_products').upsert(
+          [{ category_id: resolvedCatId, product_id: product.id }],
+          { onConflict: 'category_id,product_id' }
+        );
+      } catch (err) {
+        console.warn('category_products sync warning on create:', err?.message);
+      }
+    }
+
     const formattedProduct = {
       _id: product.id,
       id: product.id,
@@ -862,11 +933,28 @@ export const updateProduct = async (req, res) => {
       });
     }
 
+    // Resolve category_id and slug for the update
+    const categoryInput = updates.category_id || updates.category;
+    let resolvedCatId = null;
+    let resolvedCatSlug = updates.category || null;
+    try {
+      if (categoryInput) {
+        const catInfo = await resolveCategoryInfo(categoryInput);
+        if (catInfo) {
+          resolvedCatId = catInfo.id;
+          resolvedCatSlug = catInfo.slug;
+        }
+      }
+    } catch (err) {
+      console.warn('Category resolution warning on update:', err?.message);
+    }
+
     const updatePayload = {
       title: updates.title,
       subtitle: updates.subtitle || '',
       description: updates.description,
-      category: updates.category,
+      category: resolvedCatSlug || updates.category,
+      category_id: resolvedCatId,
       image_url: updates.image !== undefined ? updates.image : undefined,
       secondary_image_url: updates.secondaryImage !== undefined ? updates.secondaryImage : undefined,
       lab_report_url: updates.labReportUrl !== undefined ? updates.labReportUrl : (updates.lab_report_url !== undefined ? updates.lab_report_url : undefined),
@@ -993,6 +1081,21 @@ export const updateProduct = async (req, res) => {
     const totalStock = formattedVariants.length > 0 
       ? formattedVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
       : (updates.stock !== undefined && updates.stock !== null && updates.stock !== '' ? Number(updates.stock) : 100);
+
+    // Sync category_products junction table on update
+    if (resolvedCatId && id) {
+      try {
+        // Remove old junction rows for this product
+        await supabase.from('category_products').delete().eq('product_id', id);
+        // Insert new junction row
+        await supabase.from('category_products').upsert(
+          [{ category_id: resolvedCatId, product_id: id }],
+          { onConflict: 'category_id,product_id' }
+        );
+      } catch (err) {
+        console.warn('category_products sync warning on update:', err?.message);
+      }
+    }
 
     let savedImgs = [];
     if (updates.images !== undefined || updates.image_gallery !== undefined || updates.image !== undefined) {
