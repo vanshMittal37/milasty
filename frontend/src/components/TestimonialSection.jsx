@@ -324,48 +324,49 @@ export default function TestimonialSection() {
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* 2. SECTION DIVIDER: WHAT OUR CUSTOMERS SAY                    */}
+      {/* 2. SECTION HEADER: LOVED BY MILASTY SNACKERS                   */}
       {/* ------------------------------------------------------------- */}
       <div
         style={{
-          margin: isMobile ? '2rem 0 1.5rem' : '4rem 0 3rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: isMobile ? '0.75rem' : '1.25rem',
+          margin: isMobile ? '2.5rem 0 1.5rem' : '4rem 0 2.5rem',
+          textAlign: 'center',
         }}
       >
-        <div
-          style={{
-            flex: 1,
-            height: '1px',
-            background:
-              'linear-gradient(90deg, transparent, rgba(163, 181, 128, 0.4), transparent)',
-          }}
-        />
         <span
           style={{
-            color: '#A3B580',
-            fontSize: isMobile ? '0.75rem' : '0.86rem',
+            color: 'var(--accent-gold, #c89b3c)',
+            fontSize: isMobile ? '0.78rem' : '0.85rem',
             fontWeight: '800',
-            letterSpacing: isMobile ? '0.12em' : '0.18em',
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            whiteSpace: 'nowrap',
+            display: 'block',
+            marginBottom: '0.5rem',
           }}
         >
-          <span style={{ fontSize: isMobile ? '0.95rem' : '1.05rem' }}>🍃</span> WHAT OUR CUSTOMERS SAY
+          ✦ LOVED BY MILASTY SNACKERS
         </span>
-        <div
+        <h2
           style={{
-            flex: 1,
-            height: '1px',
-            background:
-              'linear-gradient(90deg, transparent, rgba(163, 181, 128, 0.4), transparent)',
+            fontSize: isMobile ? '1.8rem' : '2.6rem',
+            color: '#FFFDF9',
+            fontFamily: 'var(--font-serif)',
+            fontWeight: '800',
+            margin: '0 0 0.5rem',
+            lineHeight: '1.2',
           }}
-        />
+        >
+          Don't Just Take Our Word For It.
+        </h2>
+        <p
+          style={{
+            color: 'rgba(255, 255, 255, 0.88)',
+            fontSize: isMobile ? '0.9rem' : '1.05rem',
+            margin: 0,
+            fontWeight: '500',
+          }}
+        >
+          Here's what customers have to say after taking their first bite.
+        </p>
       </div>
 
       {/* ------------------------------------------------------------- */}

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Sparkles, ShieldCheck, ArrowRight, Award, FileText, CheckCircle2,
   Star, ChevronLeft, ChevronRight, ChevronDown, Heart, ShoppingBag, Eye, Check, X, Quote, Grid,
-  Flame, Leaf, Compass, Package, Cookie, HelpCircle
+  Flame, Leaf, Compass, Package, Cookie, HelpCircle, Gift, Building2, FileCheck, Apple
 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import TestimonialSection from '../components/TestimonialSection';
@@ -17,8 +17,6 @@ export default function Home() {
   const { addToCart } = useCart();
   const { wishlistItems, toggleWishlist } = useWishlist();
 
-  const snackRitualRef = useRef(null);
-  const whyDiffRef = useRef(null);
   const ingredientsRef = useRef(null);
 
   const scrollLeft = (ref) => {
@@ -40,7 +38,6 @@ export default function Home() {
   const [showAllIngredients, setShowAllIngredients] = useState(false);
   const [dbIngredients, setDbIngredients] = useState([]);
   const [activeCategorySlug, setActiveCategorySlug] = useState('cookies');
-  const [selectedMood, setSelectedMood] = useState('classic');
   const [activeFaq, setActiveFaq] = useState(null);
 
   const [scrollY, setScrollY] = useState(0);
@@ -71,23 +68,21 @@ export default function Home() {
       : DEFAULT_DESKTOP_POSTER
   );
 
-  // Scroll reveal references — MUST be before any useEffect
+  // Scroll reveal references
   const heroRef = useScrollReveal();
   const trustRef = useScrollReveal();
   const categoryRef = useScrollReveal();
   const bestsellersRef = useScrollReveal();
   const whyRef = useScrollReveal();
-  const customerTestimonialRef = useScrollReveal();
-  const moodRef = useScrollReveal();
-  const ritualRef = useScrollReveal();
-  const labRef = useScrollReveal();
-  const storyRef = useScrollReveal();
   const ingredientsSectionRef = useScrollReveal();
   const pillarsRef = useScrollReveal();
+  const customerTestimonialRef = useScrollReveal();
   const faqRef = useScrollReveal();
+  const nutritionLabRef = useScrollReveal();
+  const giftingCorporateRef = useScrollReveal();
   const finalCtaRef = useScrollReveal();
 
-  // Dynamic Home CMS Data state — MUST be before any useEffect
+  // Dynamic Home CMS Data state
   const [homeCms, setHomeCms] = useState({
     eyebrow: "HANDCRAFTED MILLET BAKES",
     heroTitle: "Ancient Grains. Modern Cravings.",
@@ -95,9 +90,6 @@ export default function Home() {
     heroVideoUrl: "https://res.cloudinary.com/dmm8lfc3x/video/upload/q_auto,f_auto/v1787068808/cookie_video.mp4",
     heroPosterUrl: "https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1787068808/cookie_video.jpg",
   });
-
-  // activeRitualIdx — MUST be before any useEffect
-  const [activeRitualIdx, setActiveRitualIdx] = useState(0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -350,46 +342,55 @@ export default function Home() {
     { id: 'gifting', slug: 'gifting', name: 'Gift Hampers', label: 'Gift Hampers', subtitle: 'Artisanal hampers for celebrations' },
   ];
 
-  // Mood filters list
-  const moodOptions = [
-    { id: 'classic', label: 'I love classic', subtitle: 'Timeless flavours like Cardamom & Desi Ghee', tag: 'classic' },
-    { id: 'crunchy', label: 'Light & crunchy', subtitle: 'Crispy crackers & toasted millets', tag: 'crunchy' },
-    { id: 'chocolate', label: 'Chocolate cravings', subtitle: 'Deep dark cocoa & rich ragi bakes', tag: 'cocoa' },
-    { id: 'wholesome', label: 'Something wholesome', subtitle: 'Nutrient-rich trio of Bajra, Jowar & Ragi', tag: 'wholesome' },
-    { id: 'share', label: 'Something to share', subtitle: 'Family packs & artisanal gift hampers', tag: 'gifting' },
-  ];
-
-  // FAQs dataset
+  // Approved 11 FAQs dataset from PDF
   const faqs = [
     {
       q: "Do you deliver across India?",
-      a: "Yes. We deliver across India using trusted courier partners. Shipping charges are calculated based on your location and total order weight."
+      a: "Yes. We deliver MILASTY products across India through trusted courier partners."
     },
     {
-      q: "Are the cookies baked fresh?",
-      a: "Yes. MILASTY cookies are baked in small batches, often on request, to ensure freshness and quality."
+      q: "Are MILASTY products baked fresh?",
+      a: "Yes. Our cookies, crackers and brownies are made in small batches to maintain freshness, quality and taste."
     },
     {
-      q: "What is the shelf life of MILASTY cookies?",
-      a: "Our cookies are best enjoyed within 45 days when stored in a cool and dry place away from moisture."
+      q: "What is the shelf life of MILASTY products?",
+      a: "Shelf life varies by product. Please check the individual product page and packaging for the best-before information. Once opened, keep the product in an airtight container and consume it within the recommended period."
     },
     {
-      q: "Are MILASTY cookies suitable for families?",
-      a: "Our millet cookies are crafted with familiar home-style ingredients and balanced sweetness, making them a thoughtful snack choice for everyday family moments."
+      q: "Are MILASTY products suitable for families?",
+      a: "Our products are made with thoughtfully selected, familiar ingredients and are designed for everyday snacking and sharing with family. Please check the ingredients and allergen information for each product before consuming."
     },
     {
-      q: "Are the cookies suitable for children?",
-      a: "MILASTY cookies are naturally crunchy due to millets. We do not recommend them for children below 6 years of age. For older children, please serve in small pieces under supervision."
+      q: "Are MILASTY products suitable for children?",
+      a: "Our products may have a naturally crunchy or firm texture. For young children, please use your judgement based on their age and ability to chew safely, and always supervise while eating."
     },
     {
-      q: "Do your cookies contain gluten or milk?",
-      a: "Yes. Our cookies contain a small quantity of whole wheat (atta) and milk powder, so they are not gluten-free or dairy-free."
+      q: "Do MILASTY products contain gluten or milk?",
+      a: "It depends on the product. Some MILASTY products contain ingredients such as whole wheat (atta) and/or milk powder. Please check the individual product label for specific ingredients and allergen information."
+    },
+    {
+      q: "Where can I find the ingredients and nutritional information?",
+      a: "You can find the ingredients, allergen information and nutritional details on the respective product page and product packaging."
+    },
+    {
+      q: "Do you offer gifting and bulk orders?",
+      a: "Yes. We offer curated gift hampers, custom gifting and bulk orders for celebrations, offices, events and corporate requirements. Contact us to discuss your requirements."
+    },
+    {
+      q: "Can I customize my MILASTY order based on my requirements?",
+      a: "Yes. We offer customization for selected orders based on your requirements. Contact us to discuss your customization needs."
+    },
+    {
+      q: "Are MILASTY products diabetic-friendly?",
+      a: "Our regular products are not specifically diabetic-friendly, as they contain jaggery. However, we can prepare a custom sugar-free batch based on your requirements. The minimum order quantity for customization is 1 kg. Contact us to discuss your requirements."
+    },
+    {
+      q: "Do you customize cakes?",
+      a: "Yes. We offer customized cakes based on your preferred flavour, design and occasion. Contact us to discuss your requirements."
     }
   ];
 
-  // Ritual products helper
   const allProductsList = dbProducts.length > 0 ? dbProducts : initialProducts;
-  const activeRitualProduct = allProductsList[activeRitualIdx] || allProductsList[0];
 
   return (
     <div ref={homeRef} className="home-page" style={{ backgroundColor: 'transparent', position: 'relative' }}>
@@ -506,7 +507,7 @@ export default function Home() {
                 textShadow: '0 2px 4px rgba(0, 0, 0, 0.4)'
               }}
             >
-              ✦ {homeCms.eyebrow || "HANDCRAFTED MILLET BAKES"}
+              ✦ HANDCRAFTED MILLET BAKES
             </span>
 
             <h1
@@ -538,7 +539,7 @@ export default function Home() {
                 fontWeight: '500'
               }}
             >
-             Delicious cookies, crackers & brownies made with millets, jaggery & desi ghee — crafted for the way you snack today.
+              Delicious cookies, crackers & brownies made with millets, jaggery & desi ghee — crafted for the way you snack today.
             </p>
 
             <div className="hero-buttons" style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
@@ -634,7 +635,7 @@ export default function Home() {
             >
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                 <ShieldCheck size={18} color="#b9cd94" />
-                <span>0% Maida & Palm Oil</span>
+                <span>No Maida & no Palm Oil</span>
               </div>
               <span style={{ color: 'rgba(255, 255, 255, 0.35)', display: isMobile ? 'none' : 'inline' }}>•</span>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -644,7 +645,7 @@ export default function Home() {
               <span style={{ color: 'rgba(255, 255, 255, 0.35)', display: isMobile ? 'none' : 'inline' }}>•</span>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Sparkles size={18} color="#b9cd94" />
-                <span>Naturally Sweetened with Jaggery</span>
+                <span>Naturally sweetened with Jaggery</span>
               </div>
               <span style={{ color: 'rgba(255, 255, 255, 0.35)', display: isMobile ? 'none' : 'inline' }}>•</span>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -889,7 +890,7 @@ export default function Home() {
                 Because Better Ingredients Matter.
               </h2>
               <p style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', color: '#F5EBDD', fontWeight: '500', maxWidth: '650px', margin: '0 auto' }}>
-                Thoughtfully made bakes, with ingredients you can recognise and flavours you’ll genuinely crave.
+                Thoughtfully made bakes, with ingredients you can recognise and flavours you'll genuinely crave.
               </p>
             </div>
 
@@ -923,10 +924,10 @@ export default function Home() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
                   {[
-                    { title: "1. Millets at the Heart", desc: "Ragi, Jowar & Bajra thoughtfully brought into everyday bakes." },
-                    { title: "2. Desi ghee & jaggery", desc: "Rich, familiar ingredients chosen for flavor as well as tradition." },
-                    { title: "3. Small-batch craftsmanship", desc: "Made with care, not just made at scale." },
-                    { title: "4. Ingredient transparency", desc: "We believe you should know exactly what goes into your snack." }
+                    { title: "Millets at the heart:", desc: "Ragi, Jowar & Bajra thoughtfully brought into everyday bakes." },
+                    { title: "Desi ghee & jaggery:", desc: "Rich, familiar ingredients chosen for flavour as well as tradition." },
+                    { title: "Small-batch craftsmanship:", desc: "Made with care, not just made at scale." },
+                    { title: "Ingredient transparency:", desc: "We believe you should know exactly what goes into your snack." }
                   ].map((item, idx) => (
                     <div key={idx} style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
                       <span style={{ color: '#b9cd94', fontWeight: '900', fontSize: '1.1rem', lineHeight: '1.2' }}>✓</span>
@@ -961,10 +962,10 @@ export default function Home() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
                   {[
-                    { title: "1. No maida", desc: "We don't use refined wheat flour in our millet cookies." },
-                    { title: "2. No palm oil or vegetable oil", desc: "We choose not to use palm oil or vegetable oil (dalda) in our recipes." },
-                    { title: "3. No added refined sugar", desc: "We sweeten our recipes with jaggery instead." },
-                    { title: "4. No unnecessary emulsifier, chemicals or additives", desc: "We keep our recipes thoughtfully simple." }
+                    { title: "No maida:", desc: "We don't use refined wheat flour in our millet cookies." },
+                    { title: "No palm oil or Vanaspati:", desc: "We choose not to use palm oil or hydrogenated vegetable oil (Vanaspati) in our recipes." },
+                    { title: "No added refined sugar:", desc: "We sweeten our recipes with jaggery instead." },
+                    { title: "No unnecessary emulsifier, chemicals or additives:", desc: "We keep our recipes thoughtfully simple." }
                   ].map((item, idx) => (
                     <div key={idx} style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
                       <span style={{ color: '#ff8888', fontWeight: '900', fontSize: '1.1rem', lineHeight: '1.2' }}>✕</span>
@@ -982,204 +983,7 @@ export default function Home() {
         </section>
 
         {/* ================================================================== */}
-        {/* EXISTING TESTIMONIAL / CUSTOMER REVIEWS SECTION                    */}
-        {/* CRITICAL: PRESERVED EXACTLY IN ITS ORIGINAL POSITION              */}
-        {/* ================================================================== */}
-        <div ref={customerTestimonialRef} className="reveal-fade-up">
-          <TestimonialSection />
-        </div>
-
-        {/* ================================================================== */}
-        {/* SECTION 6 — PRODUCT DISCOVERY BY MOOD                              */}
-        {/* ================================================================== */}
-        <section
-          ref={moodRef}
-          className="reveal-fade-up mood-section"
-          style={{
-            padding: isMobile ? '4rem 0' : '6.5rem 0',
-            backgroundColor: 'transparent',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
-          }}
-        >
-          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
-            
-            <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3rem' }}>
-              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
-                NOT SURE WHERE TO START?
-              </span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
-                Find Your Perfect <span style={{ color: 'var(--accent-gold)' }}>MILASTY Snack</span>
-              </h2>
-              <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
-                Something light. Something crunchy. Something chocolatey. Or something to share.
-              </p>
-            </div>
-
-            {/* Mood Category Selector Options */}
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-                gap: isMobile ? '0.55rem' : '0.85rem',
-                marginBottom: '2.5rem'
-              }}
-            >
-              {moodOptions.map((mood) => {
-                const isSelected = selectedMood === mood.id;
-                return (
-                  <button
-                    key={mood.id}
-                    onClick={() => setSelectedMood(mood.id)}
-                    style={{
-                      padding: isMobile ? '0.65rem 1.15rem' : '0.85rem 1.65rem',
-                      borderRadius: '999px',
-                      backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
-                      border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
-                      color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.85)',
-                      backdropFilter: 'blur(16px)',
-                      WebkitBackdropFilter: 'blur(16px)',
-                      cursor: 'pointer',
-                      fontSize: isMobile ? '0.82rem' : '0.92rem',
-                      fontWeight: '800',
-                      transition: 'all 0.25s ease',
-                      boxShadow: isSelected ? '0 8px 24px rgba(36, 79, 33, 0.45)' : 'none'
-                    }}
-                  >
-                    <span>{mood.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Mood Filtered Products Cards */}
-            <div className="mood-products-grid fitted-cards-container-4" style={{ marginBottom: '2.5rem' }}>
-              {(() => {
-                const currentMoodObj = moodOptions.find(m => m.id === selectedMood);
-                const tag = currentMoodObj ? currentMoodObj.tag : 'classic';
-                let filtered = allProductsList.filter(p => {
-                  const title = (p.title || '').toLowerCase();
-                  const desc = (p.description || '').toLowerCase();
-                  const cat = (p.category || '').toLowerCase();
-                  if (tag === 'classic') return title.includes('cardamom') || title.includes('bajra') || cat === 'daily';
-                  if (tag === 'crunchy') return title.includes('cracker') || title.includes('jowar') || desc.includes('crunch');
-                  if (tag === 'cocoa') return title.includes('cocoa') || title.includes('ragi') || title.includes('chocolate');
-                  if (tag === 'wholesome') return title.includes('trio') || cat === 'starter' || p.isFeatured;
-                  if (tag === 'gifting') return title.includes('hamper') || title.includes('box') || cat === 'gifts';
-                  return true;
-                });
-
-                if (filtered.length === 0) filtered = allProductsList.slice(0, 4);
-
-                return filtered.slice(0, 4).map((product) => (
-                  <ProductCard key={product._id || product.slug} product={product} />
-                ));
-              })()}
-            </div>
-
-            <div style={{ textAlign: 'center' }}>
-              <Link
-                to="/shop"
-                className="btn-primary"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.85rem 2rem',
-                  backgroundColor: '#244f21',
-                  color: '#FFFFFF',
-                  border: '1.5px solid #b9cd94',
-                  borderRadius: '999px',
-                  fontWeight: '800',
-                  fontSize: '0.9rem',
-                  textDecoration: 'none'
-                }}
-              >
-                <span>EXPLORE ALL SNACKS</span>
-                <ArrowRight size={16} color="#b9cd94" />
-              </Link>
-            </div>
-
-          </div>
-        </section>
-
-        {/* ================================================================== */}
-        {/* EXISTING INTERACTIVE MILLET RITUAL SECTION                         */}
-        {/* ================================================================== */}
-        <section ref={ritualRef} className="reveal-fade-up ritual-section desktop-only-section" style={{ display: isMobile ? 'none' : 'block', padding: '6.5rem 0', backgroundColor: 'transparent', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-          <div className="container">
-            <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 4rem' }}>
-              <span style={{ display: 'inline-block', marginBottom: '0.75rem', fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800' }}>Interactive Selection</span>
-              <h2 style={{ fontSize: '2.6rem', color: '#FFFFFF', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>Discover Your Perfect <span style={{ color: 'var(--accent-gold)' }}>Millet Ritual</span></h2>
-            </div>
-
-            <div className="desktop-ritual-view ritual-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3.5rem', alignItems: 'center' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {allProductsList.slice(0, 4).map((item, idx) => {
-                  const isSelected = activeRitualIdx === idx;
-                  return (
-                    <div
-                      key={item._id || item.slug || idx}
-                      onClick={() => setActiveRitualIdx(idx)}
-                      style={{
-                        padding: '1.25rem 1.5rem',
-                        borderRadius: '16px',
-                        backgroundColor: isSelected ? 'rgba(35, 21, 13, 0.82)' : 'rgba(35, 21, 13, 0.50)',
-                        border: isSelected ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.12)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                        <span style={{ fontSize: '1.25rem', fontFamily: "var(--font-serif)", fontWeight: '700', color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.6)' }}>
-                          0{idx + 1}
-                        </span>
-                        <h3 className="ritual-item-title" style={{ fontSize: '1.15rem', color: '#FFFFFF', fontWeight: '500', margin: 0 }}>{item.title}</h3>
-                      </div>
-                      <ArrowRight size={18} style={{ color: '#FFFFFF', transform: isSelected ? 'translateX(4px)' : 'translateX(0)', transition: 'transform 0.2s' }} />
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="ritual-showcase" style={{ padding: '2.5rem' }}>
-                <div style={{ position: 'relative', height: '300px', borderRadius: '16px', overflow: 'hidden', marginBottom: '1.75rem', backgroundColor: 'transparent' }}>
-                  <img src={activeRitualProduct.image} alt={activeRitualProduct.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <h3 style={{ fontSize: '1.6rem', color: '#FFFFFF', marginBottom: '0.5rem', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>{activeRitualProduct.title}</h3>
-                <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '0.95rem', lineHeight: '1.65', marginBottom: '1.5rem', fontWeight: '500' }}>{activeRitualProduct.description}</p>
-
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.75rem' }}>
-                  {activeRitualProduct.ingredients?.slice(0, 4).map((ingredient, i) => (
-                    <span key={i} style={{ fontSize: '0.78rem', backgroundColor: 'transparent', color: '#FFFFFF', fontWeight: '700', padding: '0.35rem 0.75rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.65)' }}>
-                      {ingredient}
-                    </span>
-                  ))}
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '1.25rem', borderTop: '1px solid rgba(255, 255, 255, 0.25)' }}>
-                  <div>
-                    <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.8)', display: 'block', fontWeight: '600' }}>From</span>
-                    <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#FFFFFF' }}>₹{activeRitualProduct.variants?.[0]?.price || activeRitualProduct.price || 139}</span>
-                  </div>
-                  <Link to={`/product/${activeRitualProduct.slug}`} className="btn-primary" style={{ padding: '0.75rem 1.5rem', fontSize: '0.88rem', backgroundColor: '#c89b3c', color: '#FFFFFF', fontWeight: '800', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <span>Explore Product</span>
-                    <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ================================================================== */}
-        {/* SECTION 7 — WHAT GOES INTO EVERY BAKE                              */}
+        {/* SECTION 6 — WHAT GOES INTO EVERY BAKE                              */}
         {/* ================================================================== */}
         <section
           ref={ingredientsSectionRef}
@@ -1304,7 +1108,7 @@ export default function Home() {
         </section>
 
         {/* ================================================================== */}
-        {/* SECTION 8 — MILASTY 4 PILLARS                                      */}
+        {/* SECTION 7 — MILASTY 4 PILLARS                                      */}
         {/* ================================================================== */}
         <section
           ref={pillarsRef}
@@ -1333,25 +1137,25 @@ export default function Home() {
             <div className="fitted-cards-container-4" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', gap: '1.5rem' }}>
               {[
                 {
-                  pillar: 'PILLAR 1',
+                  pillar: '1. MILLETS AT THE HEART',
                   title: 'Millets at the Heart',
                   desc: 'Ragi, Jowar & Bajra — ancient Indian grains, reimagined for modern snacking.',
                   icon: Leaf
                 },
                 {
-                  pillar: 'PILLAR 2',
+                  pillar: '2. MADE THE TRADITIONAL WAY',
                   title: 'Made the Traditional Way',
                   desc: 'Baked in desi ghee and sweetened with jaggery.',
                   icon: Flame
                 },
                 {
-                  pillar: 'PILLAR 3',
+                  pillar: '3. CLEAN BY CHOICE',
                   title: 'Clean by Choice',
                   desc: 'No maida. No palm oil. No added refined sugar. No unnecessary additives.',
                   icon: ShieldCheck
                 },
                 {
-                  pillar: 'PILLAR 4',
+                  pillar: '4. TASTE COMES FIRST',
                   title: 'Taste Comes First',
                   desc: 'Because a better snack is only better if you actually want another bite.',
                   icon: Sparkles
@@ -1376,7 +1180,7 @@ export default function Home() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
                       <span style={{ fontSize: '0.75rem', fontWeight: '850', color: 'var(--accent-gold)', letterSpacing: '0.08em', textTransform: 'uppercase', backgroundColor: 'rgba(200, 155, 60, 0.15)', padding: '0.25rem 0.65rem', borderRadius: '999px', border: '1px solid rgba(200, 155, 60, 0.3)' }}>
-                        {p.pillar}
+                        PILLAR 0{idx + 1}
                       </span>
                       <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <IconComp size={18} color="var(--accent-gold)" />
@@ -1399,7 +1203,16 @@ export default function Home() {
         </section>
 
         {/* ================================================================== */}
-        {/* SECTION 9 — FAQs                                                  */}
+        {/* SECTION 8 — CUSTOMER REVIEWS                                       */}
+        {/* Placed immediately before FAQs                                    */}
+        {/* ================================================================== */}
+        <div ref={customerTestimonialRef} className="reveal-fade-up">
+          <TestimonialSection />
+        </div>
+
+        {/* ================================================================== */}
+        {/* SECTION 9 — FREQUENTLY ASKED QUESTIONS                             */}
+        {/* Placed immediately after Customer Reviews                          */}
         {/* ================================================================== */}
         <section
           ref={faqRef}
@@ -1410,7 +1223,7 @@ export default function Home() {
             borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
           }}
         >
-          <div className="container" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 1rem' }}>
+          <div className="container" style={{ maxWidth: '850px', margin: '0 auto', padding: '0 1rem' }}>
             
             <div style={{ textAlign: 'center', marginBottom: isMobile ? '2.25rem' : '3.5rem' }}>
               <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
@@ -1486,7 +1299,307 @@ export default function Home() {
         </section>
 
         {/* ================================================================== */}
-        {/* SECTION 10 — FINAL CTA                                             */}
+        {/* SECTION 10 — NUTRITION & LAB TRANSPARENCY                          */}
+        {/* ================================================================== */}
+        <section
+          ref={nutritionLabRef}
+          className="reveal-fade-up nutrition-lab-section"
+          style={{
+            padding: isMobile ? '4rem 0' : '6.5rem 0',
+            backgroundColor: 'transparent',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+          }}
+        >
+          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
+            
+            <div style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 3.5rem' }}>
+              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#b9cd94', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+                TESTED. DOCUMENTED. TRANSPARENT.
+              </span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
+                See the Proof Behind the Pack.
+              </h2>
+              <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
+                Want to know more than what's on the front of the box? Explore our nutritional information, ingredient details and available laboratory reports.
+              </p>
+            </div>
+
+            {/* 3 Mini Cards Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
+              {/* Card 1: NUTRITION */}
+              <div
+                className="glass-card"
+                style={{
+                  borderRadius: '24px',
+                  padding: '2.25rem 1.75rem',
+                  backgroundColor: 'rgba(35, 21, 13, 0.65)',
+                  border: '1px solid rgba(255, 255, 255, 0.18)',
+                  boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <div>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <Apple size={22} color="var(--accent-gold)" />
+                  </div>
+                  <h3 style={{ fontSize: '1.3rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>
+                    1. NUTRITION
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#F5EBDD', lineHeight: '1.6', margin: '0 0 1.75rem', fontWeight: '500' }}>
+                    See the nutritional information for our products.
+                  </p>
+                </div>
+
+                <Link
+                  to="/nutrition"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    color: '#b9cd94',
+                    fontWeight: '800',
+                    fontSize: '0.9rem',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <span>View Nutrition Details →</span>
+                </Link>
+              </div>
+
+              {/* Card 2: INGREDIENTS */}
+              <div
+                className="glass-card"
+                style={{
+                  borderRadius: '24px',
+                  padding: '2.25rem 1.75rem',
+                  backgroundColor: 'rgba(35, 21, 13, 0.65)',
+                  border: '1px solid rgba(255, 255, 255, 0.18)',
+                  boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <div>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <Leaf size={22} color="var(--accent-gold)" />
+                  </div>
+                  <h3 style={{ fontSize: '1.3rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>
+                    2. INGREDIENTS
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#F5EBDD', lineHeight: '1.6', margin: '0 0 1.75rem', fontWeight: '500' }}>
+                    Explore what's inside each bake.
+                  </p>
+                </div>
+
+                <Link
+                  to="/nutrition"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    color: '#b9cd94',
+                    fontWeight: '800',
+                    fontSize: '0.9rem',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <span>Explore Ingredients →</span>
+                </Link>
+              </div>
+
+              {/* Card 3: LAB REPORTS */}
+              <div
+                className="glass-card"
+                style={{
+                  borderRadius: '24px',
+                  padding: '2.25rem 1.75rem',
+                  backgroundColor: 'rgba(35, 21, 13, 0.65)',
+                  border: '1px solid rgba(255, 255, 255, 0.18)',
+                  boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <div>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <FileCheck size={22} color="var(--accent-gold)" />
+                  </div>
+                  <h3 style={{ fontSize: '1.3rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>
+                    3. LAB REPORTS
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#F5EBDD', lineHeight: '1.6', margin: '0 0 1.75rem', fontWeight: '500' }}>
+                    View available testing and reports.
+                  </p>
+                </div>
+
+                <Link
+                  to="/nutrition"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    color: '#b9cd94',
+                    fontWeight: '800',
+                    fontSize: '0.9rem',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <span>Access Lab Reports →</span>
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ================================================================== */}
+        {/* SECTION 11 — GIFTING + CORPORATE                                   */}
+        {/* ================================================================== */}
+        <section
+          ref={giftingCorporateRef}
+          className="reveal-fade-up gifting-corporate-section"
+          style={{
+            padding: isMobile ? '4rem 0' : '6.5rem 0',
+            backgroundColor: 'transparent',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+          }}
+        >
+          <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
+            
+            <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3.5rem' }}>
+              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+                MADE TO SHARE
+              </span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
+                Good Food Is Better When It's Shared.
+              </h2>
+            </div>
+
+            {/* 2 Content Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
+              
+              {/* CARD 1: GIFTING */}
+              <div
+                className="glass-card"
+                style={{
+                  borderRadius: '28px',
+                  padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
+                  backgroundColor: 'rgba(36, 79, 33, 0.55)',
+                  border: '1.5px solid #b9cd94',
+                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <div>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                    <Gift size={24} color="var(--accent-gold)" />
+                  </div>
+                  <span style={{ fontSize: '0.8rem', fontWeight: '850', color: '#b9cd94', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>
+                    CELEBRATIONS & MOMENTS
+                  </span>
+                  <h3 style={{ fontSize: isMobile ? '1.6rem' : '2rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '1rem' }}>
+                    GIFTING
+                  </h3>
+                  <p style={{ fontSize: isMobile ? '0.92rem' : '1.02rem', color: '#F5EBDD', lineHeight: '1.7', margin: '0 0 2rem', fontWeight: '500' }}>
+                    Thoughtful gifts, made with millet. Cookies, brownies, crackers and curated hampers for birthdays, festivals, celebrations and special moments.
+                  </p>
+                </div>
+
+                <div>
+                  <Link
+                    to="/shop"
+                    className="btn-primary"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.85rem 2rem',
+                      backgroundColor: '#c89b3c',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '999px',
+                      fontWeight: '800',
+                      fontSize: '0.92rem',
+                      textDecoration: 'none',
+                      boxShadow: '0 8px 24px rgba(200, 155, 60, 0.35)'
+                    }}
+                  >
+                    <span>Explore Gift Hampers →</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* CARD 2: CORPORATE & BULK ORDERS */}
+              <div
+                className="glass-card"
+                style={{
+                  borderRadius: '28px',
+                  padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
+                  backgroundColor: 'rgba(35, 21, 13, 0.65)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <div>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(200, 155, 60, 0.15)', border: '1px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                    <Building2 size={24} color="var(--accent-gold)" />
+                  </div>
+                  <span style={{ fontSize: '0.8rem', fontWeight: '850', color: 'var(--accent-gold)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>
+                    OFFICES & EVENTS
+                  </span>
+                  <h3 style={{ fontSize: isMobile ? '1.6rem' : '2rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '1rem' }}>
+                    CORPORATE & BULK ORDERS
+                  </h3>
+                  <p style={{ fontSize: isMobile ? '0.92rem' : '1.02rem', color: '#F5EBDD', lineHeight: '1.7', margin: '0 0 2rem', fontWeight: '500' }}>
+                    Better snacking for teams, offices & events. Custom snack boxes and gifting solutions for offices, startups, events and corporate occasions.
+                  </p>
+                </div>
+
+                <div>
+                  <Link
+                    to="/contact"
+                    className="btn-primary"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.85rem 2rem',
+                      backgroundColor: '#244f21',
+                      color: '#FFFFFF',
+                      border: '1.5px solid #b9cd94',
+                      borderRadius: '999px',
+                      fontWeight: '800',
+                      fontSize: '0.92rem',
+                      textDecoration: 'none',
+                      boxShadow: '0 8px 24px rgba(36, 79, 33, 0.35)'
+                    }}
+                  >
+                    <span>Enquire for Bulk Orders →</span>
+                  </Link>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        {/* ================================================================== */}
+        {/* SECTION 12 — FINAL CTA                                             */}
         {/* ================================================================== */}
         <section
           ref={finalCtaRef}
