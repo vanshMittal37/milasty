@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, CheckCircle2, XCircle, Lock, MapPin, Tag, Percent, Gift, Check, Calendar } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { useDelivery } from '../context/DeliveryContext';
 import api from '../api/axios';
 
 export default function CartDrawer() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     cartItems,
     isCartOpen,

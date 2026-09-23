@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import api from '../api/axios';
 import { useAuth } from './AuthContext';
 
@@ -6,9 +6,19 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
-  // Load cart from localStorage
+  const currentUserId = user ? (user.id || user._id) : null;
+  const prevUserIdRef = useRef(currentUserId);
+
+  // Load cart initially based on whether user is logged in or guest
   const [cartItems, setCartItems] = useState(() => {
     try {
+      if (currentUserId) {
+        const userSaved = localStorage.getItem(`milasty_cart_${currentUserId}`);
+        if (userSaved) return JSON.parse(userSaved);
+      } else {
+        const guestSaved = localStorage.getItem('milasty_guest_cart');
+        if (guestSaved) return JSON.parse(guestSaved);
+      }
       const saved = localStorage.getItem('milasty_cart_items');
       return saved ? JSON.parse(saved) : [];
     } catch (e) {
@@ -67,51 +77,87 @@ export const CartProvider = ({ children }) => {
     return Array.from(map.values());
   };
 
-  // Sync cartItems with localStorage
+  // Sync cart state with localStorage and backend on changes & handles Auth transitions (login / logout)
   useEffect(() => {
-    try {
-      localStorage.setItem('milasty_cart_items', JSON.stringify(cartItems));
-      if (user && (user.id || user._id)) {
-        localStorage.setItem(`milasty_cart_${user.id || user._id}`, JSON.stringify(cartItems));
-      }
-    } catch (e) {}
-  }, [cartItems, user]);
+    const prevUserId = prevUserIdRef.current;
+    const activeUserId = user ? (user.id || user._id) : null;
 
-  // Sync & Merge cart when user logs in
-  useEffect(() => {
-    const handleAuthCartSync = async () => {
-      if (user && (user.id || user._id)) {
-        const userId = user.id || user._id;
-        const userCartKey = `milasty_cart_${userId}`;
-        
-        let savedUserCart = [];
+    if (prevUserId !== activeUserId) {
+      // User identity changed
+      if (prevUserId && !activeUserId) {
+        // --- LOGOUT TRANSITION ---
+        // Save logged-out user's cart safely under their user key before clearing
         try {
-          const localUserCart = localStorage.getItem(userCartKey);
-          if (localUserCart) {
-            savedUserCart = JSON.parse(localUserCart);
-          } else {
-            const res = await api.get('/cart').catch(() => null);
-            if (res?.data && Array.isArray(res.data.items)) {
-              savedUserCart = res.data.items;
-            }
+          if (cartItems.length > 0) {
+            localStorage.setItem(`milasty_cart_${prevUserId}`, JSON.stringify(cartItems));
           }
         } catch (e) {}
 
-        const guestCart = cartItems;
-        if (guestCart.length > 0 || savedUserCart.length > 0) {
+        // Reset active state for new guest session
+        setCartItems([]);
+        setAppliedCoupon(null);
+        setCouponDiscountAmount(0);
+        try {
+          localStorage.removeItem('milasty_cart_items');
+          localStorage.removeItem('milasty_guest_cart');
+          sessionStorage.removeItem('milasty_applied_coupon');
+        } catch (e) {}
+      } else if (activeUserId) {
+        // --- LOGIN TRANSITION ---
+        // User logged in: load user cart & merge guest items if present
+        const handleAuthLoginSync = async () => {
+          const userCartKey = `milasty_cart_${activeUserId}`;
+          let savedUserCart = [];
+          try {
+            const localUserCart = localStorage.getItem(userCartKey);
+            if (localUserCart) {
+              savedUserCart = JSON.parse(localUserCart);
+            } else {
+              const res = await api.get('/cart').catch(() => null);
+              if (res?.data && Array.isArray(res.data.items)) {
+                savedUserCart = res.data.items;
+              }
+            }
+          } catch (e) {}
+
+          let guestCart = [];
+          try {
+            const guestSaved = localStorage.getItem('milasty_guest_cart');
+            if (guestSaved) {
+              guestCart = JSON.parse(guestSaved);
+            } else if (!prevUserId) {
+              guestCart = cartItems;
+            }
+          } catch (e) {}
+
           const merged = mergeCartLists(savedUserCart, guestCart);
           setCartItems(merged);
+
           try {
             localStorage.setItem(userCartKey, JSON.stringify(merged));
             localStorage.setItem('milasty_cart_items', JSON.stringify(merged));
+            localStorage.removeItem('milasty_guest_cart');
             await api.post('/cart', { items: merged }).catch(() => {});
           } catch (e) {}
-        }
-      }
-    };
+        };
 
-    handleAuthCartSync();
-  }, [user?.id, user?._id]);
+        handleAuthLoginSync();
+      }
+
+      prevUserIdRef.current = activeUserId;
+    } else {
+      // --- REGULAR CART MODIFICATION IN CURRENT SESSION ---
+      try {
+        localStorage.setItem('milasty_cart_items', JSON.stringify(cartItems));
+        if (activeUserId) {
+          localStorage.setItem(`milasty_cart_${activeUserId}`, JSON.stringify(cartItems));
+          api.post('/cart', { items: cartItems }).catch(() => {});
+        } else {
+          localStorage.setItem('milasty_guest_cart', JSON.stringify(cartItems));
+        }
+      } catch (e) {}
+    }
+  }, [cartItems, user]);
 
   // Sync appliedCoupon with Session Storage
   useEffect(() => {

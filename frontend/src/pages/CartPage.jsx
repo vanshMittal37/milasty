@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Trash2, Plus, Minus, Tag, ArrowRight, Truck, ShieldCheck, MapPin, CheckCircle2, Calendar } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { useDelivery } from '../context/DeliveryContext';
 
 export default function CartPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     cartItems,
     updateQuantity,

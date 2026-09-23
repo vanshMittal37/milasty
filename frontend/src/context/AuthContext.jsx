@@ -50,12 +50,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    // Clear user-specific persistent states
-    if (user && user._id) {
-      localStorage.removeItem(`milasty_cart_${user._id}`);
-      localStorage.removeItem(`milasty_wishlist_${user._id}`);
-    }
-    
     // Clear authorization headers
     delete api.defaults.headers.common['Authorization'];
 
