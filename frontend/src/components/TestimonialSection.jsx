@@ -128,7 +128,7 @@ export default function TestimonialSection() {
       {/* ------------------------------------------------------------- */}
       {/* 1. TOP FEATURED CARD: CELEBRITY PICK                           */}
       {/* ------------------------------------------------------------- */}
-      {/* <div
+      <div
         style={{
           backgroundColor: '#E5D3BF',
           borderRadius: isMobile ? '18px' : '28px',
@@ -321,7 +321,7 @@ export default function TestimonialSection() {
             />
           </svg>
         </div>
-      </div> */}
+      </div>
 
       {/* ------------------------------------------------------------- */}
       {/* 2. SECTION HEADER: LOVED BY MILASTY SNACKERS                   */}
