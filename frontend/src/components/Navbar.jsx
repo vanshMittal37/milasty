@@ -540,7 +540,7 @@ export default function Navbar() {
                 transition: 'color 0.35s ease'
               }}
             >
-              {mobileNavOpen ? <X size={24} /> : <Menu size={24} />}
+              <Menu size={24} />
             </button>
           </div>
         </header>
@@ -569,7 +569,7 @@ export default function Navbar() {
           }}
         />
 
-        {/* Mobile Navigation Side Drawer — opens from RIGHT */}
+        {/* Mobile Navigation Side Drawer — opens from LEFT */}
         <div 
           className={`mobile-menu-panel ${mobileNavOpen ? 'open' : ''}`}
           onClick={(e) => e.stopPropagation()}
@@ -583,8 +583,8 @@ export default function Navbar() {
             if (!touchStartRef.current) return;
             const touch = e.touches[0];
             if (!touch) return;
-            // Swiping right to close (drawer is on the right)
-            const diffX = touch.clientX - touchStartRef.current.x;
+            // Swiping left to close (drawer is on the left)
+            const diffX = touchStartRef.current.x - touch.clientX;
             const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
             if (diffX > 10 && diffX > diffY) {
               if (e.cancelable) e.preventDefault();
@@ -594,8 +594,8 @@ export default function Navbar() {
             if (!touchStartRef.current) return;
             const touch = e.changedTouches[0];
             if (touch) {
-              // Swipe right → close
-              const diffX = touch.clientX - touchStartRef.current.x;
+              // Swipe left → close
+              const diffX = touchStartRef.current.x - touch.clientX;
               const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
               if (diffX > 45 && diffX > diffY) {
                 setMobileNavOpen(false);
@@ -606,13 +606,13 @@ export default function Navbar() {
           style={{ 
             backgroundColor: 'rgba(35, 21, 13, 0.98)',
             backgroundImage: 'linear-gradient(135deg, rgba(35, 21, 13, 0.99) 0%, rgba(20, 10, 5, 1) 100%)',
-            borderLeft: '1px solid rgba(245, 235, 221, 0.18)',
-            boxShadow: '-8px 0 35px rgba(0, 0, 0, 0.55)',
+            borderRight: '1px solid rgba(245, 235, 221, 0.18)',
+            boxShadow: '8px 0 35px rgba(0, 0, 0, 0.55)',
             position: 'fixed',
             top: 0,
-            right: 0,
+            left: 0,
+            right: 'auto',
             bottom: 0,
-            left: 'auto',
             width: '75vw',
             maxWidth: '360px',
             height: '100vh',
@@ -624,7 +624,7 @@ export default function Navbar() {
             gap: '1.5rem',
             zIndex: 1001,
             transition: 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease, visibility 300ms step-end',
-            transform: mobileNavOpen ? 'translateX(0)' : 'translateX(100%)',
+            transform: mobileNavOpen ? 'translateX(0)' : 'translateX(-100%)',
             opacity: mobileNavOpen ? 1 : 0,
             visibility: mobileNavOpen ? 'visible' : 'hidden',
             pointerEvents: mobileNavOpen ? 'auto' : 'none',
