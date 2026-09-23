@@ -10,8 +10,19 @@ import ModalPortal from '../components/ModalPortal';
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cartItems, subtotal, deliveryFee: defaultDeliveryFee, grandTotal: defaultGrandTotal, appliedCoupon, couponDiscountAmount, clearCart } = useCart();
-  const { user, addAddress, updateAddress } = useAuth();
+  const { user, isAuthenticated, addAddress, updateAddress } = useAuth();
   const { deliveryInfo, checkPincode } = useDelivery();
+
+  // Authentication & Empty Cart Guard
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/checkout' }, replace: true });
+      return;
+    }
+    if (!cartItems || cartItems.length === 0) {
+      navigate('/shop', { replace: true });
+    }
+  }, [isAuthenticated, cartItems, navigate]);
 
   const savedAddresses = user?.addresses || [];
 

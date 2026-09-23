@@ -260,7 +260,14 @@ export default function CartPage() {
               </div>
 
               <button
-                onClick={() => navigate('/checkout')}
+                onClick={() => {
+                  if (cartItems.length === 0) return;
+                  if (!user) {
+                    navigate('/login', { state: { from: '/checkout' } });
+                  } else {
+                    navigate('/checkout');
+                  }
+                }}
                 style={{ width: '100%', justifyContent: 'center', padding: '0.95rem', fontSize: '1.05rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '14px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s ease' }}
               >
                 <span>Proceed to Checkout</span>

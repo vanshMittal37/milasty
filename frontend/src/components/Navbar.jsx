@@ -692,41 +692,13 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* ── ACCOUNT & WISHLIST & EXTRA LINKS ── */}
+          {/* ── ACCOUNT / PROFILE ── */}
           <div style={{
             padding: '1rem 1.1rem 1.5rem',
             borderTop: '1px solid rgba(120, 75, 40, 0.3)',
             display: 'flex', flexDirection: 'column', gap: '0.5rem',
             flexShrink: 0,
           }}>
-            <Link
-              to="/wishlist"
-              onClick={() => setMobileNavOpen(false)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 1rem',
-                borderRadius: '14px', backgroundColor: 'rgba(35, 16, 8, 0.5)', border: '1px solid rgba(120, 75, 40, 0.25)',
-                color: '#FFF8ED', textDecoration: 'none', transition: 'all 0.18s ease',
-              }}
-            >
-              <Heart size={18} color="#A8C47A" />
-              <span style={{ flexGrow: 1, fontSize: '0.92rem', fontWeight: '700' }}>My Wishlist ({wishlistCount})</span>
-              <ChevronRight size={15} color="rgba(217, 195, 165, 0.4)" />
-            </Link>
-
-            <Link
-              to="/account/orders"
-              onClick={() => setMobileNavOpen(false)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 1rem',
-                borderRadius: '14px', backgroundColor: 'rgba(35, 16, 8, 0.5)', border: '1px solid rgba(120, 75, 40, 0.25)',
-                color: '#FFF8ED', textDecoration: 'none', transition: 'all 0.18s ease',
-              }}
-            >
-              <Package size={18} color="#A8C47A" />
-              <span style={{ flexGrow: 1, fontSize: '0.92rem', fontWeight: '700' }}>Track Order</span>
-              <ChevronRight size={15} color="rgba(217, 195, 165, 0.4)" />
-            </Link>
-
             {isAuthenticated ? (
               <>
                 <Link

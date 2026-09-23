@@ -565,7 +565,18 @@ export default function CartDrawer() {
 
             {/* Proceed to Checkout CTA */}
             <button
-              onClick={() => { setIsCartOpen(false); navigate('/checkout'); }}
+              onClick={() => {
+                if (cartItems.length === 0) {
+                  showToast('Your cart is empty.');
+                  return;
+                }
+                setIsCartOpen(false);
+                if (!user) {
+                  navigate('/login', { state: { from: '/checkout' } });
+                } else {
+                  navigate('/checkout');
+                }
+              }}
               style={{
                 width: '100%', padding: '1rem', fontSize: '0.88rem',
                 background: 'linear-gradient(135deg, #3F7D32 0%, #2F6024 100%)',

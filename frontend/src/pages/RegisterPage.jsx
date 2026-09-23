@@ -208,7 +208,7 @@ export default function RegisterPage() {
       {/* Switch to Login */}
       <div style={{ textAlign: 'center', fontSize: '0.9rem', color: '#4A3525', fontWeight: '600', paddingTop: '0.2rem' }}>
         Already have an account?{' '}
-        <Link to="/login" style={{ color: '#1F5A28', fontWeight: '800', textDecoration: 'none' }}>
+        <Link to="/login" state={{ from: location.state?.from }} style={{ color: '#1F5A28', fontWeight: '800', textDecoration: 'none' }}>
           Login here
         </Link>
       </div>

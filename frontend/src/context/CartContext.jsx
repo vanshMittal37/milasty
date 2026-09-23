@@ -31,12 +31,87 @@ export const CartProvider = ({ children }) => {
   // mobileNavOpen MUST be at top — hooks cannot come after useEffect
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
+  // Helper to generate unique item key based on product_id + variant
+  const getItemKey = (item) => {
+    const pId = item.productId || item._id || item.id || item.slug || '';
+    const vName = item.variantName || item.weight || 'Standard Pack';
+    const vId = item.variantId || vName;
+    return `${pId}_${vId}`;
+  };
+
+  // Helper to merge guest cart items with user cart items
+  const mergeCartLists = (userCart = [], guestCart = []) => {
+    const map = new Map();
+
+    userCart.forEach((item) => {
+      const key = getItemKey(item);
+      map.set(key, { ...item });
+    });
+
+    guestCart.forEach((guestItem) => {
+      const key = getItemKey(guestItem);
+      if (map.has(key)) {
+        const existing = map.get(key);
+        const newQty = Number(existing.quantity || 0) + Number(guestItem.quantity || 0);
+        const unitPrice = Number(existing.unitPrice || guestItem.unitPrice || 0);
+        map.set(key, {
+          ...existing,
+          quantity: newQty,
+          totalPrice: unitPrice * newQty,
+        });
+      } else {
+        map.set(key, { ...guestItem });
+      }
+    });
+
+    return Array.from(map.values());
+  };
+
   // Sync cartItems with localStorage
   useEffect(() => {
     try {
       localStorage.setItem('milasty_cart_items', JSON.stringify(cartItems));
+      if (user && (user.id || user._id)) {
+        localStorage.setItem(`milasty_cart_${user.id || user._id}`, JSON.stringify(cartItems));
+      }
     } catch (e) {}
-  }, [cartItems]);
+  }, [cartItems, user]);
+
+  // Sync & Merge cart when user logs in
+  useEffect(() => {
+    const handleAuthCartSync = async () => {
+      if (user && (user.id || user._id)) {
+        const userId = user.id || user._id;
+        const userCartKey = `milasty_cart_${userId}`;
+        
+        let savedUserCart = [];
+        try {
+          const localUserCart = localStorage.getItem(userCartKey);
+          if (localUserCart) {
+            savedUserCart = JSON.parse(localUserCart);
+          } else {
+            const res = await api.get('/cart').catch(() => null);
+            if (res?.data && Array.isArray(res.data.items)) {
+              savedUserCart = res.data.items;
+            }
+          }
+        } catch (e) {}
+
+        const guestCart = cartItems;
+        if (guestCart.length > 0 || savedUserCart.length > 0) {
+          const merged = mergeCartLists(savedUserCart, guestCart);
+          setCartItems(merged);
+          try {
+            localStorage.setItem(userCartKey, JSON.stringify(merged));
+            localStorage.setItem('milasty_cart_items', JSON.stringify(merged));
+            await api.post('/cart', { items: merged }).catch(() => {});
+          } catch (e) {}
+        }
+      }
+    };
+
+    handleAuthCartSync();
+  }, [user?.id, user?._id]);
 
   // Sync appliedCoupon with Session Storage
   useEffect(() => {
