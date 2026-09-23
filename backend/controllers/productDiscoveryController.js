@@ -171,20 +171,57 @@ async function fetchAllProducts() {
   if (dbProds.length > 0) {
     return dbProds.map(p => {
       const primaryImg = p.image_url || p.image || p.secondary_image_url || '';
+      const priceVal = extractProductPrice(p);
+
+      let normalizedVariants = [];
+      if (Array.isArray(p.product_variants) && p.product_variants.length > 0) {
+        normalizedVariants = p.product_variants.map(v => ({
+          id: v.id,
+          name: v.name || 'Standard Pack',
+          weight: v.weight || '',
+          price: Number(v.price || v.original_price || priceVal),
+          originalPrice: Number(v.original_price || v.price || priceVal),
+          inStock: v.in_stock !== false,
+        }));
+      } else if (Array.isArray(p.variants) && p.variants.length > 0) {
+        normalizedVariants = p.variants.map(v => ({
+          ...v,
+          price: Number(v.price || v.originalPrice || priceVal),
+        }));
+      } else {
+        normalizedVariants = [{ name: 'Standard Pack', price: priceVal, originalPrice: priceVal, inStock: true }];
+      }
+
       return {
         ...p,
+        title: p.title || p.name || 'Untitled Product',
+        name: p.title || p.name || 'Untitled Product',
         image: primaryImg,
-        resolvedPrice: extractProductPrice(p),
+        image_url: primaryImg,
+        price: priceVal,
+        resolvedPrice: priceVal,
+        variants: normalizedVariants,
       };
     });
   }
 
   return (initialProducts || []).map(p => {
     let img = p.image || p.imageUrl || p.image_url || '';
+    const priceVal = extractProductPrice(p);
+
+    let normalizedVariants = Array.isArray(p.variants) && p.variants.length > 0
+      ? p.variants.map(v => ({ ...v, price: Number(v.price || priceVal) }))
+      : [{ name: 'Standard Pack', price: priceVal, originalPrice: priceVal, inStock: true }];
+
     return {
       ...p,
+      title: p.title || p.name || 'Untitled Product',
+      name: p.title || p.name || 'Untitled Product',
       image: img,
-      resolvedPrice: extractProductPrice(p),
+      image_url: img,
+      price: priceVal,
+      resolvedPrice: priceVal,
+      variants: normalizedVariants,
     };
   });
 }

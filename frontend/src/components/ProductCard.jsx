@@ -258,44 +258,56 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Pricing & Actions Bottom Divider */}
-        <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.55rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
-          <PriceDisplay 
-            prefix={product?.variants && product.variants.length > 0 ? 'From ' : ''}
-            price={selectedVariant.price !== undefined ? selectedVariant.price : (product.price || 0)} 
-            originalPrice={selectedVariant.originalPrice !== undefined ? selectedVariant.originalPrice : (product.originalPrice || selectedVariant.price || product.price || 0)} 
-            size="small" 
-          />
+        {(() => {
+          const cardPrice = (selectedVariant && selectedVariant.price !== undefined && selectedVariant.price !== null && Number(selectedVariant.price) > 0)
+            ? Number(selectedVariant.price)
+            : Number(product?.price || product?.resolvedPrice || product?.originalPrice || 0);
 
-          <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                handleAddToCart();
-              }}
-              className="btn-primary add-cart-btn"
-              style={{
-                padding: '0.4rem 0.65rem',
-                fontSize: '0.75rem',
-                borderRadius: '999px',
-                backgroundColor: '#244f21',
-                color: '#FFFFFF',
-                border: '1px solid #b9cd94',
-                fontWeight: '850',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.2rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              <ShoppingBag size={12} color="#b9cd94" />
-              <span>{btnText === 'Add to Cart' ? 'Add' : btnText}</span>
-            </button>
-          </div>
-        </div>
+          const cardOriginalPrice = (selectedVariant && selectedVariant.originalPrice !== undefined && selectedVariant.originalPrice !== null && Number(selectedVariant.originalPrice) > 0)
+            ? Number(selectedVariant.originalPrice)
+            : Number(product?.originalPrice || product?.original_price || cardPrice);
+
+          return (
+            <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.55rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
+              <PriceDisplay 
+                prefix={product?.variants && product.variants.length > 1 ? 'From ' : ''}
+                price={cardPrice} 
+                originalPrice={cardOriginalPrice} 
+                size="small" 
+              />
+
+              <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleAddToCart();
+                  }}
+                  className="btn-primary add-cart-btn"
+                  style={{
+                    padding: '0.4rem 0.65rem',
+                    fontSize: '0.75rem',
+                    borderRadius: '999px',
+                    backgroundColor: '#244f21',
+                    color: '#FFFFFF',
+                    border: '1px solid #b9cd94',
+                    fontWeight: '850',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.2rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  <ShoppingBag size={12} color="#b9cd94" />
+                  <span>{btnText === 'Add to Cart' ? 'Add' : btnText}</span>
+                </button>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
