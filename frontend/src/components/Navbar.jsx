@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Heart, User, Menu, X, ChevronDown, LogOut, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Heart, User, Menu, X, ChevronDown, LogOut, ChevronRight, Home as HomeIcon, Leaf, Sparkles, Phone, Package, Instagram, Facebook, Youtube, Linkedin } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
@@ -91,11 +91,11 @@ export default function Navbar() {
   }, [mobileMenuOpen]);
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/our-story' },
-    { name: 'Shop', path: '/shop' },
-    { name: 'Nutrition', path: '/nutrition' },
-    { name: 'Contact', path: '/contact' },
+    { name: 'Home', path: '/', icon: HomeIcon },
+    { name: 'About', path: '/our-story', icon: Leaf },
+    { name: 'Shop', path: '/shop', icon: ShoppingBag },
+    { name: 'Nutrition', path: '/nutrition', icon: Sparkles },
+    { name: 'Contact', path: '/contact', icon: Phone },
   ];
 
   // Get first letter of customer's name
@@ -660,9 +660,10 @@ export default function Navbar() {
           </div>
 
           {/* ── NAVIGATION LINKS ── */}
-          <div style={{ flexGrow: 1, overflowY: 'auto', padding: '1rem 1.1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+          <div style={{ flexGrow: 1, overflowY: 'auto', padding: '1rem 1.1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
+              const LinkIcon = link.icon || HomeIcon;
               return (
                 <Link
                   key={link.path}
@@ -670,80 +671,136 @@ export default function Navbar() {
                   onClick={() => setMobileNavOpen(false)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '0.85rem',
-                    padding: '0.85rem 0.9rem', borderRadius: '14px',
-                    background: isActive ? 'rgba(63, 125, 50, 0.2)' : 'transparent',
-                    border: isActive ? '1px solid rgba(168, 196, 122, 0.3)' : '1px solid transparent',
-                    color: isActive ? '#A8C47A' : '#D9C3A5',
+                    padding: '0.85rem 1rem', borderRadius: '14px',
+                    backgroundColor: isActive ? 'rgba(36, 79, 33, 0.25)' : 'rgba(35, 16, 8, 0.6)',
+                    border: isActive ? '1px solid #244f21' : '1px solid rgba(120, 75, 40, 0.3)',
+                    color: isActive ? '#A8C47A' : '#FFF8ED',
                     textDecoration: 'none', transition: 'all 0.18s ease',
                   }}
                 >
+                  <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: isActive ? 'rgba(36, 79, 33, 0.4)' : 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <LinkIcon size={18} color={isActive ? '#A8C47A' : '#D9C3A5'} />
+                  </div>
                   <span style={{
-                    fontWeight: '700', fontSize: '1.05rem',
+                    fontWeight: '700', fontSize: '1rem',
                     fontFamily: 'var(--font-serif)',
                     flexGrow: 1, lineHeight: '1',
                   }}>{link.name}</span>
-                  <ChevronRight size={15} color={isActive ? '#A8C47A' : 'rgba(217, 195, 165, 0.3)'} />
+                  <ChevronRight size={16} color={isActive ? '#A8C47A' : 'rgba(217, 195, 165, 0.4)'} />
                 </Link>
               );
             })}
           </div>
 
-          {/* ── ACCOUNT & WISHLIST ── */}
+          {/* ── ACCOUNT & WISHLIST & EXTRA LINKS ── */}
           <div style={{
-            padding: '0.85rem 1.1rem 1.5rem',
-            borderTop: '1px solid rgba(217, 195, 165, 0.1)',
-            display: 'flex', flexDirection: 'column', gap: '0.3rem',
+            padding: '1rem 1.1rem 1.5rem',
+            borderTop: '1px solid rgba(120, 75, 40, 0.3)',
+            display: 'flex', flexDirection: 'column', gap: '0.5rem',
             flexShrink: 0,
           }}>
-            <div style={{ fontSize: '0.62rem', color: '#A8C47A', fontWeight: '800', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>My Account</div>
             <Link
               to="/wishlist"
               onClick={() => setMobileNavOpen(false)}
               style={{
-                display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 0.9rem',
-                borderRadius: '14px', background: 'transparent', border: '1px solid transparent',
-                color: '#D9C3A5', textDecoration: 'none', transition: 'all 0.18s ease',
+                display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 1rem',
+                borderRadius: '14px', backgroundColor: 'rgba(35, 16, 8, 0.5)', border: '1px solid rgba(120, 75, 40, 0.25)',
+                color: '#FFF8ED', textDecoration: 'none', transition: 'all 0.18s ease',
               }}
             >
-              <Heart size={17} color="#A8C47A" />
-              <span style={{ flexGrow: 1, fontSize: '0.95rem', fontWeight: '700' }}>My Wishlist ({wishlistCount})</span>
-              <ChevronRight size={15} color="rgba(217, 195, 165, 0.3)" />
+              <Heart size={18} color="#A8C47A" />
+              <span style={{ flexGrow: 1, fontSize: '0.92rem', fontWeight: '700' }}>My Wishlist ({wishlistCount})</span>
+              <ChevronRight size={15} color="rgba(217, 195, 165, 0.4)" />
+            </Link>
+
+            <Link
+              to="/account/orders"
+              onClick={() => setMobileNavOpen(false)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 1rem',
+                borderRadius: '14px', backgroundColor: 'rgba(35, 16, 8, 0.5)', border: '1px solid rgba(120, 75, 40, 0.25)',
+                color: '#FFF8ED', textDecoration: 'none', transition: 'all 0.18s ease',
+              }}
+            >
+              <Package size={18} color="#A8C47A" />
+              <span style={{ flexGrow: 1, fontSize: '0.92rem', fontWeight: '700' }}>Track Order</span>
+              <ChevronRight size={15} color="rgba(217, 195, 165, 0.4)" />
             </Link>
 
             {isAuthenticated ? (
-              <Link
-                to="/account"
-                onClick={() => setMobileNavOpen(false)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 0.9rem',
-                  borderRadius: '14px', background: 'transparent', border: '1px solid transparent',
-                  color: '#D9C3A5', textDecoration: 'none', transition: 'all 0.18s ease',
-                }}
-              >
-                <User size={17} color="#A8C47A" />
-                <span style={{ flexGrow: 1, fontSize: '0.95rem', fontWeight: '700' }}>My Account ({user?.name})</span>
-                <ChevronRight size={15} color="rgba(217, 195, 165, 0.3)" />
-              </Link>
+              <>
+                <Link
+                  to="/account"
+                  onClick={() => setMobileNavOpen(false)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 1rem',
+                    borderRadius: '14px', backgroundColor: 'rgba(35, 16, 8, 0.5)', border: '1px solid rgba(120, 75, 40, 0.25)',
+                    color: '#FFF8ED', textDecoration: 'none', transition: 'all 0.18s ease',
+                  }}
+                >
+                  <User size={18} color="#A8C47A" />
+                  <span style={{ flexGrow: 1, fontSize: '0.92rem', fontWeight: '700' }}>My Profile</span>
+                  <ChevronRight size={15} color="rgba(217, 195, 165, 0.4)" />
+                </Link>
+
+                <button
+                  onClick={() => {
+                    setMobileNavOpen(false);
+                    setShowLogoutModal(true);
+                  }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 1rem',
+                    borderRadius: '14px', backgroundColor: 'rgba(184, 92, 58, 0.15)', border: '1px solid rgba(184, 92, 58, 0.3)',
+                    color: '#ff9980', textDecoration: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
+                  }}
+                >
+                  <LogOut size={18} color="#ff9980" />
+                  <span style={{ flexGrow: 1, fontSize: '0.92rem', fontWeight: '700' }}>Logout</span>
+                  <ChevronRight size={15} color="rgba(255, 153, 128, 0.4)" />
+                </button>
+              </>
             ) : (
               <Link
                 to="/login"
                 onClick={() => setMobileNavOpen(false)}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 0.9rem',
+                  display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 1rem',
                   borderRadius: '14px',
-                  background: 'linear-gradient(135deg, rgba(63, 125, 50, 0.2) 0%, rgba(42, 85, 32, 0.15) 100%)',
-                  border: '1px solid rgba(168, 196, 122, 0.25)',
+                  backgroundColor: 'rgba(36, 79, 33, 0.25)',
+                  border: '1px solid rgba(168, 196, 122, 0.3)',
                   color: '#A8C47A', textDecoration: 'none',
                 }}
               >
-                <User size={17} color="#A8C47A" />
+                <User size={18} color="#A8C47A" />
                 <span style={{ flexGrow: 1, fontSize: '0.95rem', fontWeight: '800' }}>Sign In / Register</span>
                 <ChevronRight size={15} color="rgba(168, 196, 122, 0.5)" />
               </Link>
             )}
 
-            <div style={{ marginTop: '0.75rem', textAlign: 'center', fontSize: '0.65rem', color: 'rgba(217, 195, 165, 0.35)', fontStyle: 'italic' }}>
-              Good food brings people together ♥
+            {/* Signature Banner & Footer */}
+            <div style={{
+              marginTop: '0.75rem',
+              padding: '0.9rem 1rem',
+              borderRadius: '16px',
+              backgroundColor: 'rgba(35, 16, 8, 0.85)',
+              border: '1px solid rgba(120, 75, 40, 0.3)',
+              textAlign: 'center',
+              color: '#D9C3A5',
+            }}>
+              <div style={{ fontSize: '0.82rem', fontStyle: 'italic', fontFamily: 'var(--font-serif)', color: '#FFF8ED', marginBottom: '0.2rem' }}>
+                Good food brings good people together. ♡
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '0.6rem', color: '#D9C3A5' }}>
+              <Instagram size={16} style={{ cursor: 'pointer' }} />
+              <Facebook size={16} style={{ cursor: 'pointer' }} />
+              <Youtube size={16} style={{ cursor: 'pointer' }} />
+              <Linkedin size={16} style={{ cursor: 'pointer' }} />
+            </div>
+
+            <div style={{ marginTop: '0.5rem', textAlign: 'center', fontSize: '0.68rem', color: '#A38C7A' }}>
+              © 2026 MILASTY. All rights reserved.
             </div>
           </div>
         </div>

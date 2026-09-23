@@ -1287,11 +1287,11 @@ export default function Home() {
 
             {/* 4 Pillars Cards Grid */}
             <div
-              className="fitted-cards-container-4"
+              className="fitted-cards-container-4 pillars-grid-container"
               style={{
                 display: 'grid',
                 gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
-                gap: isMobile ? '0.65rem' : '1.5rem',
+                gap: isMobile ? '0.75rem' : '1.5rem',
                 alignItems: 'stretch',
               }}
             >
@@ -1325,7 +1325,7 @@ export default function Home() {
                 return (
                   <div
                     key={idx}
-                    className="glass-card"
+                    className="glass-card pillar-card-item"
                     style={{
                       borderRadius: '20px',
                       padding: isMobile ? '1.25rem 1rem' : '2rem 1.5rem',
@@ -1334,25 +1334,30 @@ export default function Home() {
                       boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
                       display: 'flex',
                       flexDirection: 'column',
+                      justifyContent: 'space-between',
                       alignSelf: 'stretch',
                       boxSizing: 'border-box',
                       width: '100%',
+                      height: '100%',
+                      minHeight: isMobile ? '195px' : '240px',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                      <span style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: '850', color: 'var(--accent-gold)', letterSpacing: '0.08em', textTransform: 'uppercase', backgroundColor: 'rgba(200, 155, 60, 0.15)', padding: '0.2rem 0.5rem', borderRadius: '999px', border: '1px solid rgba(200, 155, 60, 0.3)' }}>
-                        PILLAR 0{idx + 1}
-                      </span>
-                      <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <IconComp size={isMobile ? 15 : 18} color="var(--accent-gold)" />
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                        <span style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: '850', color: 'var(--accent-gold)', letterSpacing: '0.08em', textTransform: 'uppercase', backgroundColor: 'rgba(200, 155, 60, 0.15)', padding: '0.2rem 0.5rem', borderRadius: '999px', border: '1px solid rgba(200, 155, 60, 0.3)' }}>
+                          PILLAR 0{idx + 1}
+                        </span>
+                        <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <IconComp size={isMobile ? 15 : 18} color="var(--accent-gold)" />
+                        </div>
                       </div>
+
+                      <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '0.5rem', lineHeight: '1.25' }}>
+                        {p.title}
+                      </h3>
                     </div>
 
-                    <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '0.5rem', lineHeight: '1.25' }}>
-                      {p.title}
-                    </h3>
-
-                    <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: '#F5EBDD', lineHeight: '1.55', margin: 0, fontWeight: '500' }}>
+                    <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: '#F5EBDD', lineHeight: '1.55', margin: 0, fontWeight: '500', flexGrow: 1, display: 'flex', alignItems: 'flex-start' }}>
                       {p.desc}
                     </p>
                   </div>
@@ -1850,21 +1855,31 @@ export default function Home() {
             gap: 1.25rem !important;
           }
         }
+        .pillars-section .fitted-cards-container-4 {
+          align-items: stretch !important;
+        }
+        .pillars-section .glass-card,
+        .pillars-section .pillar-card-item {
+          height: 100% !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: space-between !important;
+        }
         @media (max-width: 640px) {
-          .fitted-cards-container-4 {
-            display: flex !important;
-            grid-template-columns: none !important;
-            overflow-x: auto !important;
-            scroll-behavior: smooth !important;
-            padding-bottom: 1.25rem !important;
-            gap: 1rem !important;
-            -webkit-overflow-scrolling: touch;
+          .pillars-section .fitted-cards-container-4 {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            overflow-x: visible !important;
+            gap: 0.75rem !important;
           }
-          .fitted-cards-container-4 .glass-card {
-            flex: 0 0 270px !important;
-            width: 270px !important;
-            max-width: 270px !important;
-            min-width: 270px !important;
+          .pillars-section .fitted-cards-container-4 .glass-card,
+          .pillars-section .pillar-card-item {
+            flex: 1 1 100% !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            min-height: 195px !important;
+            height: 100% !important;
           }
         }
       `}</style>

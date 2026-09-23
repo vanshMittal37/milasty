@@ -200,40 +200,43 @@ export default function CartDrawer() {
       >
         {/* ── PREMIUM HEADER ── */}
         <div style={{
-          padding: '1.5rem 1.5rem 1.25rem',
-          borderBottom: '1px solid rgba(217, 195, 165, 0.1)',
+          padding: '1.75rem 1.5rem 1.25rem',
+          borderBottom: '1px solid rgba(120, 75, 40, 0.3)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          background: 'rgba(26, 11, 5, 0.7)',
+          background: 'rgba(26, 11, 5, 0.85)',
           flexShrink: 0,
         }}>
           <div>
-            <div style={{ fontSize: '0.62rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#A8C47A', fontWeight: '800', marginBottom: '0.2rem' }}>
-              ✦ Milasty
-            </div>
             <h2 style={{
-              fontSize: '1.6rem', fontFamily: 'var(--font-serif, Georgia, serif)',
-              color: '#F5EBDD', fontWeight: '800', margin: 0, lineHeight: '1', letterSpacing: '-0.01em',
+              fontSize: '2.2rem', fontFamily: 'var(--font-serif, Georgia, serif)',
+              color: '#FFF8ED', fontWeight: '800', margin: 0, lineHeight: '1', letterSpacing: '-0.01em',
             }}>
               Your Cart
             </h2>
-            <div style={{ fontSize: '0.76rem', color: 'rgba(245, 235, 221, 0.5)', fontWeight: '500', marginTop: '0.25rem' }}>
+            <div style={{ fontSize: '0.85rem', color: '#3F7D32', fontWeight: '700', marginTop: '0.4rem' }}>
               {totalItemCount} {totalItemCount === 1 ? 'item' : 'items'}
             </div>
           </div>
-          <button
-            onClick={() => setIsCartOpen(false)}
-            aria-label="Close Cart"
-            style={{
-              background: 'rgba(217, 195, 165, 0.07)', border: '1px solid rgba(217, 195, 165, 0.2)',
-              color: '#D9C3A5', width: '40px', height: '40px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: '50%', transition: 'all 0.2s ease', flexShrink: 0,
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = 'rgba(217, 195, 165, 0.15)'; }}
-            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'rgba(217, 195, 165, 0.07)'; }}
-          >
-            <X size={18} />
-          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: '#D9C3A5', fontSize: '0.95rem', opacity: 0.9 }}>
+              Good Food Stays ♡
+            </div>
+            <button
+              onClick={() => setIsCartOpen(false)}
+              aria-label="Close Cart"
+              style={{
+                background: 'rgba(120, 75, 40, 0.2)', border: '1px solid rgba(120, 75, 40, 0.4)',
+                color: '#FFF8ED', width: '40px', height: '40px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: '50%', transition: 'all 0.2s ease', flexShrink: 0,
+              }}
+              onMouseOver={(e) => { e.currentTarget.style.backgroundColor = 'rgba(120, 75, 40, 0.35)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'rgba(120, 75, 40, 0.2)'; }}
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* ── SCROLLABLE CONTENT ── */}
@@ -579,9 +582,13 @@ export default function CartDrawer() {
               <ArrowRight size={16} />
             </button>
 
-            <div style={{ textAlign: 'center', marginTop: '0.8rem', fontSize: '0.72rem', color: 'rgba(245, 235, 221, 0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}>
-              <Lock size={12} color="#A8C47A" />
+            <div style={{ textAlign: 'center', marginTop: '0.8rem', fontSize: '0.75rem', color: '#D9C3A5', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}>
+              <Lock size={12} color="#3F7D32" />
               <span>Secure checkout</span>
+            </div>
+
+            <div style={{ textAlign: 'center', marginTop: '0.5rem', fontSize: '0.78rem', fontStyle: 'italic', fontFamily: 'var(--font-serif)', color: 'rgba(217, 195, 165, 0.7)' }}>
+              Millets for a better tomorrow ♡
             </div>
           </div>
         )}
