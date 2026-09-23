@@ -655,12 +655,12 @@ a {
     font-size: 0.8rem !important;
   }
 
-  /* Mobile menu drawer styling and placement */
+  /* Mobile menu drawer — anchored to RIGHT side */
   .mobile-menu-panel {
     position: fixed !important;
     top: 0 !important;
-    left: 0 !important;
-    right: auto !important;
+    right: 0 !important;
+    left: auto !important;
     bottom: 0 !important;
     width: 75vw !important;
     max-width: 360px !important;
@@ -669,11 +669,11 @@ a {
     overflow-y: auto !important;
     margin: 0 !important;
     box-sizing: border-box !important;
-    border-radius: 0 24px 24px 0 !important;
+    border-radius: 24px 0 0 24px !important;
     border: none !important;
-    border-right: 1px solid rgba(245, 235, 221, 0.15) !important;
+    border-left: 1px solid rgba(245, 235, 221, 0.15) !important;
     padding: 2rem 1.5rem !important;
-    box-shadow: 8px 0 35px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: -8px 0 35px rgba(0, 0, 0, 0.5) !important;
     z-index: 1001 !important;
   }
 
@@ -1047,12 +1047,13 @@ a {
     padding: 0.55rem 0.75rem !important;
   }
 
-  /* Hamburger menu position reset for mobile viewports */
+  /* Hamburger menu position reset for mobile viewports — RIGHT side */
   .mobile-menu-panel {
-    left: 16px !important;
-    right: 16px !important;
-    width: calc(100% - 32px) !important;
-    margin: 0 auto !important;
+    left: auto !important;
+    right: 0 !important;
+    width: 80vw !important;
+    max-width: 320px !important;
+    margin: 0 !important;
   }
 
   /* Hero Section Mobile height - Hug content to eliminate bottom empty gap */
