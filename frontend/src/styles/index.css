@@ -1,5 +1,21 @@
 :root {
-  /* MILASTY Official Color System */
+  /* MILASTY Official Visual Color System (Section 1) */
+  --milasty-dark-brown: #3A1F14;
+  --milasty-deep-brown: #2A140D;
+  --milasty-cream-page: #F7EFE3;
+  --milasty-warm-cream: #F2E4D2;
+  --milasty-soft-cream: #FBF6EE;
+  --milasty-green: #2F7D32;
+  --milasty-dark-green: #215C27;
+  --milasty-muted-brown: #725D50;
+  --milasty-light-border: rgba(58, 31, 20, 0.16);
+  --milasty-medium-border: rgba(58, 31, 20, 0.28);
+  --milasty-footer-text: #F3E7D8;
+  --milasty-footer-muted: #D8C6B4;
+  --milasty-footer-heading: #F8EBDD;
+  --milasty-footer-accent: #9BCB88;
+
+  /* Legacy & Internal Theme Tokens */
   --milasty-cream-primary: #F7F0E5;
   --milasty-cream-secondary: #F1E5D4;
   --milasty-ivory: #FCF8F1;
@@ -9,46 +25,46 @@
   --milasty-card-secondary: #EBE0CF;
   --milasty-card-highlight: #EFE3D1;
 
-  --milasty-text-primary: #2B170D;
-  --milasty-text-heading: #32180D;
-  --milasty-text-secondary: #654B38;
-  --milasty-text-muted: #806A57;
-  --milasty-text-very-muted: #9A846F;
+  --milasty-text-primary: #3A1F14;
+  --milasty-text-heading: #3A1F14;
+  --milasty-text-secondary: #725D50;
+  --milasty-text-muted: #725D50;
+  --milasty-text-very-muted: #725D50;
 
-  --milasty-green-primary: #2F6B3A;
-  --milasty-green-dark: #24572E;
+  --milasty-green-primary: #2F7D32;
+  --milasty-green-dark: #215C27;
   --milasty-green-light: #E3EEDC;
 
-  --milasty-navbar: #2B140B;
-  --milasty-brown-dark: #3A1D10;
-  --milasty-brown-medium: #5A3623;
+  --milasty-navbar: #2A140D;
+  --milasty-brown-dark: #3A1F14;
+  --milasty-brown-medium: #725D50;
 
   --milasty-border: #5C3A21;
-  --milasty-border-soft: rgba(92, 58, 33, 0.45);
+  --milasty-border-soft: rgba(58, 31, 20, 0.28);
 
   /* Mapped Component Tokens */
-  --bg-main: var(--milasty-cream-primary);
+  --bg-main: var(--milasty-cream-page);
   --bg-card: var(--milasty-card-primary);
-  --bg-subtle: var(--milasty-ivory);
-  --bg-sand: var(--milasty-cream-secondary);
+  --bg-subtle: var(--milasty-soft-cream);
+  --bg-sand: var(--milasty-warm-cream);
 
-  --primary-dark: var(--milasty-green-primary);
-  --primary-brown: var(--milasty-navbar);
+  --primary-dark: var(--milasty-dark-green);
+  --primary-brown: var(--milasty-dark-brown);
   --primary-light: var(--milasty-brown-medium);
 
-  --accent-terracotta: var(--milasty-green-primary);
-  --accent-gold: var(--milasty-green-primary);
-  --accent-btn-bg: var(--milasty-green-primary);
-  --accent-olive: var(--milasty-green-dark);
-  --accent-amber: var(--milasty-green-primary);
+  --accent-terracotta: var(--milasty-green);
+  --accent-gold: var(--milasty-green);
+  --accent-btn-bg: var(--milasty-dark-green);
+  --accent-olive: var(--milasty-dark-green);
+  --accent-amber: var(--milasty-green);
 
-  --text-dark: var(--milasty-text-primary);
-  --text-heading: var(--milasty-text-heading);
-  --text-muted: var(--milasty-text-secondary);
-  --text-light: var(--milasty-text-muted);
+  --text-dark: var(--milasty-dark-brown);
+  --text-heading: var(--milasty-dark-brown);
+  --text-muted: var(--milasty-muted-brown);
+  --text-light: var(--milasty-muted-brown);
 
-  --border-color: var(--milasty-border);
-  --border-gold: var(--milasty-green-primary);
+  --border-color: var(--milasty-medium-border);
+  --border-gold: var(--milasty-green);
 
   --shadow-sm: 0 4px 16px rgba(43, 20, 11, 0.05);
   --shadow-md: 0 8px 24px rgba(43, 20, 11, 0.08);
@@ -63,7 +79,110 @@
 
   --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
+/* ========================================================
+   GLOBAL MILASTY BUTTON SYSTEM (Section 2)
+   ======================================================== */
+
+/* A. PRIMARY BUTTON */
+.btn-primary,
+.btn-primary-green {
+  background-color: #215C27 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #215C27 !important;
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+  padding: 14px 26px !important;
+  box-shadow: 0 8px 20px rgba(33, 92, 39, 0.16) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  min-height: 52px !important;
+  box-sizing: border-box !important;
+  font-family: var(--font-sans) !important;
+}
+
+.btn-primary:hover,
+.btn-primary-green:hover {
+  background-color: #2F7D32 !important;
+  border-color: #2F7D32 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 10px 24px rgba(33, 92, 39, 0.20) !important;
+}
+
+.btn-primary:active,
+.btn-primary-green:active {
+  transform: translateY(0) !important;
+}
+
+/* B. SECONDARY / OUTLINE BUTTON */
+.btn-secondary,
+.btn-outline,
+.btn-secondary-outline {
+  background-color: rgba(255, 255, 255, 0.35) !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  color: #3A1F14 !important;
+  border: 1.5px solid rgba(58, 31, 20, 0.45) !important;
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+  padding: 14px 26px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  min-height: 52px !important;
+  box-sizing: border-box !important;
+  font-family: var(--font-sans) !important;
+}
+
+.btn-secondary:hover,
+.btn-outline:hover,
+.btn-secondary-outline:hover {
+  background-color: #F2E4D2 !important;
+  background: #F2E4D2 !important;
+  border-color: #2F7D32 !important;
+  color: #215C27 !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-secondary:active,
+.btn-outline:active,
+.btn-secondary-outline:active {
+  transform: translateY(0) !important;
+}
+
+/* C. GHOST BUTTON */
+.btn-ghost {
+  background: transparent !important;
+  color: #3A1F14 !important;
+  border: 1px solid rgba(58, 31, 20, 0.20) !important;
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+  padding: 14px 26px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  min-height: 52px !important;
+  box-sizing: border-box !important;
+}
+
+.btn-ghost:hover {
+  background-color: rgba(47, 125, 50, 0.07) !important;
+  border-color: rgba(47, 125, 50, 0.35) !important;
+  color: #215C27 !important;
+}
   /* Unified MILASTY Admin Dashboard Design Tokens */
   --admin-bg: #0B0F0D;
   --admin-surface: #101512;

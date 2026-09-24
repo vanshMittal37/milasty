@@ -734,19 +734,22 @@ export default function OurStory() {
             {/* Primary CTA */}
             <Link
               to="/shop"
+              className="btn-primary"
               style={{
-                padding: '1rem 2.4rem',
+                padding: '14px 26px',
                 fontSize: '0.95rem',
-                backgroundColor: '#2F6B3A',
+                backgroundColor: '#215C27',
                 color: '#FFFFFF',
                 borderRadius: '999px',
                 textDecoration: 'none',
-                fontWeight: '850',
+                fontWeight: '600',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                boxShadow: '0 4px 16px rgba(47, 107, 58, 0.25)',
-                transition: 'all 0.3s ease'
+                boxShadow: '0 8px 20px rgba(33,92,39,0.16)',
+                minHeight: '52px',
+                boxSizing: 'border-box',
+                transition: 'all 0.25s ease'
               }}
             >
               <span>Explore Our Bakes</span>
@@ -756,24 +759,25 @@ export default function OurStory() {
             {/* Secondary CTA */}
             <Link
               to="/nutrition"
+              className="btn-secondary"
               style={{
-                padding: '1rem 2.4rem',
+                padding: '14px 26px',
                 fontSize: '0.95rem',
-                backgroundColor: '#FFF9F0',
-                color: '#32180D',
+                backgroundColor: 'rgba(255, 255, 255, 0.35)',
+                color: '#3A1F14',
                 borderRadius: '999px',
                 textDecoration: 'none',
-                fontWeight: '850',
+                fontWeight: '600',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                border: '1.5px solid #32180D',
-                boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)',
-                transition: 'all 0.3s ease'
-              }}
+                border: '1.5px solid rgba(58,31,20,0.45)',
+                minHeight: '52px',
+                boxSizing: 'border-box',
+                transition: 'all 0.25s ease'
             >
-              <span>Explore Ingredients & Nutrition</span>
-              <ChevronRight size={18} color="#2F6B3A" />
+              <span>Lab Reports & Nutrition</span>
+              <ChevronRight size={18} />
             </Link>
           </div>
         </div>

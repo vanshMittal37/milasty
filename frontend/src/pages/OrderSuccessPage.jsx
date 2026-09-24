@@ -177,45 +177,55 @@ export default function OrderSuccessPage() {
           )}
 
           {/* Action CTAs */}
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
             <Link 
               to="/account/orders" 
               className="btn-primary" 
               style={{ 
-                padding: '0.85rem 1.75rem', 
-                backgroundColor: '#2F6B3A', 
+                padding: '14px 26px', 
+                backgroundColor: '#215C27', 
                 color: '#FFFFFF',
-                border: 'none',
+                border: '1px solid #215C27',
                 borderRadius: '999px',
-                fontWeight: '800',
+                fontWeight: '600',
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '0.5rem',
-                fontSize: '0.88rem',
-                boxShadow: '0 4px 16px rgba(47, 107, 58, 0.25)'
+                fontSize: '0.92rem',
+                minHeight: '52px',
+                boxShadow: '0 8px 20px rgba(33,92,39,0.16)',
+                flex: '1 1 180px',
+                boxSizing: 'border-box',
+                textDecoration: 'none'
               }}
             >
-              <Truck size={16} />
+              <Truck size={17} />
               <span>Track My Order</span>
             </Link>
             <Link 
               to="/shop" 
               className="btn-secondary" 
               style={{ 
-                padding: '0.85rem 1.75rem',
-                border: '1.5px solid #D8C4A9',
-                color: '#2B140B',
+                padding: '14px 26px',
+                backgroundColor: 'rgba(255, 255, 255, 0.35)',
+                border: '1.5px solid rgba(58, 31, 20, 0.45)',
+                color: '#3A1F14',
                 borderRadius: '999px',
-                fontWeight: '800',
+                fontWeight: '600',
                 display: 'inline-flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '0.5rem',
-                fontSize: '0.88rem',
-                backgroundColor: '#F4EBDD'
+                fontSize: '0.92rem',
+                minHeight: '52px',
+                flex: '1 1 180px',
+                boxSizing: 'border-box',
+                textDecoration: 'none'
               }}
             >
               <span>Continue Shopping</span>
-              <ArrowRight size={16} />
+              <ArrowRight size={17} />
             </Link>
           </div>
         </div>

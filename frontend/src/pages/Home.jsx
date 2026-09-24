@@ -615,19 +615,21 @@ export default function Home() {
                   to="/shop"
                   className="btn-primary"
                   style={{
-                    padding: '0.95rem 2.2rem',
+                    padding: '14px 26px',
                     fontSize: '0.95rem',
-                    backgroundColor: '#2F6B3A',
+                    backgroundColor: '#215C27',
                     color: '#FFFFFF',
-                    border: 'none',
-                    fontWeight: '800',
+                    border: '1px solid #215C27',
+                    fontWeight: '600',
                     textDecoration: 'none',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.5rem',
                     borderRadius: '999px',
-                    boxShadow: '0 6px 20px rgba(47, 107, 58, 0.3)',
-                    transition: 'all 0.2s ease',
+                    boxShadow: '0 8px 20px rgba(33,92,39,0.16)',
+                    transition: 'all 0.25s ease',
+                    minHeight: '52px',
+                    boxSizing: 'border-box',
                   }}
                 >
                   <span>Explore Our Bakes →</span>
@@ -637,18 +639,20 @@ export default function Home() {
                   href="#why-milasty"
                   className="btn-secondary"
                   style={{
-                    padding: '0.9rem 2rem',
+                    padding: '14px 26px',
                     fontSize: '0.95rem',
-                    borderColor: '#32180D',
-                    color: '#32180D',
-                    fontWeight: '800',
-                    backgroundColor: 'transparent',
-                    border: '1.5px solid #32180D',
+                    color: '#3A1F14',
+                    fontWeight: '600',
+                    backgroundColor: 'rgba(255, 255, 255, 0.35)',
+                    border: '1.5px solid rgba(58, 31, 20, 0.45)',
                     borderRadius: '999px',
                     textDecoration: 'none',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.4rem',
+                    minHeight: '52px',
+                    boxSizing: 'border-box',
+                    transition: 'all 0.25s ease',
                   }}
                 >
                   <span>Why MILASTY?</span>
