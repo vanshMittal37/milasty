@@ -6,6 +6,7 @@ export default function Logo({ variant = 'primary', height, width, style, classN
     : '/images/branding/milasty-logo-primary.png';
 
   const alt = variant === 'emblem' ? 'MILASTY Emblem' : 'MILASTY Logo';
+  const isDarkVariant = variant === 'dark';
 
   return (
     <img
@@ -17,6 +18,7 @@ export default function Logo({ variant = 'primary', height, width, style, classN
         width: width || 'auto',
         objectFit: 'contain',
         display: 'block',
+        ...(isDarkVariant ? { filter: 'brightness(0.15)' } : {}),
         ...style
       }}
     />

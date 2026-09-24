@@ -581,23 +581,13 @@ export default function Navbar() {
                   touchStartRef.current = { x: touch.clientX, y: touch.clientY };
                 }
               }}
-              onTouchMove={(e) => {
-                if (!touchStartRef.current) return;
-                const touch = e.touches[0];
-                if (!touch) return;
-                const diffX = touchStartRef.current.x - touch.clientX;
-                const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
-                if (diffX > 10 && diffX > diffY) {
-                  if (e.cancelable) e.preventDefault();
-                }
-              }}
               onTouchEnd={(e) => {
                 if (!touchStartRef.current) return;
                 const touch = e.changedTouches[0];
                 if (touch) {
                   const diffX = touchStartRef.current.x - touch.clientX;
                   const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
-                  if (diffX > 45 && diffX > diffY) {
+                  if (diffX > 50 && diffX > diffY * 1.5) {
                     setMobileNavOpen(false);
                   }
                 }
@@ -633,8 +623,6 @@ export default function Navbar() {
                 visibility: mobileNavOpen ? 'visible' : 'hidden',
                 pointerEvents: mobileNavOpen ? 'auto' : 'none',
                 touchAction: 'pan-y',
-                userSelect: 'none',
-                WebkitUserSelect: 'none',
                 overflow: 'hidden',
               }}
             >
@@ -664,7 +652,7 @@ export default function Navbar() {
                 zIndex: 2,
               }}>
                 <div>
-                  <Logo variant="primary" style={{ height: '42px', width: 'auto' }} />
+                  <Logo variant="dark" style={{ height: '42px', width: 'auto' }} />
                   <div style={{
                     fontSize: '0.75rem',
                     color: '#75675D',
