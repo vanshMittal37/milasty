@@ -843,7 +843,6 @@ export default function Navbar() {
           document.body
         )}
       </div>
-      </div>
 
       <ConfirmationModal
         isOpen={showLogoutModal}
