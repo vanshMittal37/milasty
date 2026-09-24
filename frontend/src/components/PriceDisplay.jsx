@@ -34,7 +34,7 @@ export default function PriceDisplay({
         style={{
           fontSize: sizes.current,
           fontWeight: '800',
-          color: 'var(--text-primary, #2B170D)',
+          color: '#32180D',
         }}
       >
         {prefix}₹{currentPrice}

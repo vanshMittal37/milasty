@@ -5,8 +5,8 @@
   --milasty-ivory: #FCF8F1;
   --milasty-beige: #E6D4BC;
 
-  --milasty-card-primary: #FFF9F0;
-  --milasty-card-secondary: #F3E6D4;
+  --milasty-card-primary: #F4EBDD;
+  --milasty-card-secondary: #EBE0CF;
   --milasty-card-highlight: #EFE3D1;
 
   --milasty-text-primary: #2B170D;
@@ -85,6 +85,50 @@
   --admin-warning-bg: rgba(214, 162, 63, 0.10);
   --admin-success: #6FA66A;
   --admin-success-bg: rgba(111, 166, 106, 0.10);
+}
+
+/* MILASTY Product Card Visual System */
+.milasty-product-card {
+  background-color: #F4EBDD !important;
+  border: 1px solid #D9C4A8 !important;
+  box-shadow: 0 8px 25px rgba(70, 40, 20, 0.08) !important;
+  border-radius: 20px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.milasty-product-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 28px rgba(70, 40, 20, 0.12) !important;
+  border-color: #2F6B3A !important;
+}
+
+.milasty-product-card .card-body {
+  background-color: #F4EBDD !important;
+}
+
+.milasty-product-card .card-title,
+.milasty-product-card .card-title a {
+  color: #32180D !important;
+}
+
+.milasty-product-card .card-subtitle {
+  color: #654B38 !important;
+}
+
+.milasty-product-card .card-footer {
+  border-top: 1px solid #D9C4A8 !important;
+}
+
+.milasty-product-card .add-cart-btn {
+  background-color: #2F6B3A !important;
+  color: #FFFFFF !important;
+  border-radius: 999px !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(47, 107, 58, 0.25) !important;
+}
+
+.milasty-product-card .add-cart-btn:hover {
+  background-color: #24572E !important;
 }
 
 * {

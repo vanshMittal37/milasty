@@ -54,7 +54,7 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
       style={{
         minHeight: '100vh',
         backgroundColor: '#F5EBDD',
-        backgroundImage: 'linear-gradient(rgba(245, 235, 221, 0.25), rgba(245, 235, 221, 0.25)), url(/images/about_background_image.jpeg)',
+        backgroundImage: 'linear-gradient(rgba(245, 235, 221, 0.25), rgba(245, 235, 221, 0.25)), url(/images/register_login_background_image.jpeg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
@@ -309,9 +309,8 @@ export function AuthInput({
             width: '100%',
             height: '48px',
             borderRadius: '12px',
-            border: `1.5px solid ${
-              error ? '#B8321E' : isFocused ? '#1F5A28' : '#D8CCB8'
-            }`,
+            border: `1.5px solid ${error ? '#B8321E' : isFocused ? '#1F5A28' : '#D8CCB8'
+              }`,
             boxShadow: isFocused ? '0 0 0 3px rgba(31, 90, 40, 0.15)' : 'none',
             fontSize: '0.92rem',
             fontWeight: '600',

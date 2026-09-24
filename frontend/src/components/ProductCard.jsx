@@ -46,26 +46,26 @@ export default function ProductCard({ product }) {
         flexDirection: 'column',
         height: '100%',
         overflow: 'hidden',
-        backgroundColor: '#FFF9F0',
-        borderRadius: '18px',
-        border: '1px solid #DCC8AE',
-        boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
+        backgroundColor: '#F4EBDD',
+        borderRadius: '20px',
+        border: '1px solid #D9C4A8',
+        boxShadow: '0 8px 25px rgba(70, 40, 20, 0.08)',
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         position: 'relative'
       }}
       onMouseOver={(e) => {
-        e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = '0 10px 24px rgba(43, 20, 11, 0.12)';
+        e.currentTarget.style.transform = 'translateY(-3px)';
+        e.currentTarget.style.boxShadow = '0 12px 28px rgba(70, 40, 20, 0.12)';
         e.currentTarget.style.borderColor = '#2F6B3A';
       }}
       onMouseOut={(e) => {
         e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.boxShadow = '0 4px 16px rgba(43, 20, 11, 0.05)';
-        e.currentTarget.style.borderColor = '#DCC8AE';
+        e.currentTarget.style.boxShadow = '0 8px 25px rgba(70, 40, 20, 0.08)';
+        e.currentTarget.style.borderColor = '#D9C4A8';
       }}
     >
       {/* Image Area with Badge & Wishlist Button */}
-      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: '#F3E6D4' }} className="card-image-wrap">
+      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: '#EBE0CF' }} className="card-image-wrap">
         <Link to={`/product/${product.slug || product._id || product.id}`}>
           <img
             src={product.image || product.image_url || product.primary_image || '/images/image1.jpeg'}
@@ -100,23 +100,25 @@ export default function ProductCard({ product }) {
             width: '34px',
             height: '34px',
             borderRadius: '50%',
-            backgroundColor: '#FFF9F0',
-            border: '1px solid #DCC8AE',
+            backgroundColor: 'rgba(255, 255, 255, 0.75)',
+            border: '1px solid #D9C4A8',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(43, 20, 11, 0.12)',
+            boxShadow: '0 2px 8px rgba(70, 40, 20, 0.08)',
             color: wishlisted ? '#2F6B3A' : '#32180D',
             transition: 'all 0.2s',
             zIndex: 10
           }}
           onMouseOver={(e) => {
             e.currentTarget.style.backgroundColor = '#E3EEDC';
+            e.currentTarget.style.color = '#2F6B3A';
             e.currentTarget.style.transform = 'scale(1.08)';
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#FFF9F0';
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.75)';
+            e.currentTarget.style.color = wishlisted ? '#2F6B3A' : '#32180D';
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
@@ -129,8 +131,8 @@ export default function ProductCard({ product }) {
             className="card-badge-wrap"
             style={{
               position: 'absolute',
-              top: '8px',
-              left: '8px',
+              top: '10px',
+              left: '10px',
               display: 'flex',
               alignItems: 'center',
               zIndex: 10,
@@ -145,12 +147,12 @@ export default function ProductCard({ product }) {
                   fontWeight: '800',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
-                  color: '#FFFFFF',
-                  backgroundColor: '#2F6B3A',
-                  border: 'none',
-                  padding: '0.2rem 0.5rem',
-                  borderRadius: '6px',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  color: '#2F6B3A',
+                  backgroundColor: '#E3EEDC',
+                  border: '1px solid rgba(47, 107, 58, 0.3)',
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: '999px',
+                  boxShadow: '0 2px 6px rgba(70, 40, 20, 0.06)',
                   lineHeight: '1.1',
                   whiteSpace: 'nowrap',
                   display: 'inline-block'
@@ -170,9 +172,9 @@ export default function ProductCard({ product }) {
                     letterSpacing: '0.04em',
                     color: '#2F6B3A',
                     backgroundColor: '#E3EEDC',
-                    border: '1px solid #2F6B3A',
-                    padding: '0.2rem 0.5rem',
-                    borderRadius: '6px',
+                    border: '1px solid rgba(47, 107, 58, 0.3)',
+                    padding: '0.25rem 0.6rem',
+                    borderRadius: '999px',
                     lineHeight: '1.1',
                     whiteSpace: 'nowrap',
                     display: 'inline-block'
@@ -190,11 +192,12 @@ export default function ProductCard({ product }) {
       <div
         className="card-body"
         style={{
-          padding: '1rem 0.9rem',
+          padding: '1.1rem 1rem 1rem',
           display: 'flex',
           flexDirection: 'column',
           flexGrow: 1,
           justifyContent: 'space-between',
+          backgroundColor: '#F4EBDD',
         }}
       >
         <div>
@@ -232,7 +235,7 @@ export default function ProductCard({ product }) {
               color: '#32180D',
             }}
           >
-            <Link to={`/product/${product.slug || product._id || product.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <Link to={`/product/${product.slug || product._id || product.id}`} style={{ color: '#32180D', textDecoration: 'none' }}>
               {product.title}
             </Link>
           </h3>
@@ -267,7 +270,7 @@ export default function ProductCard({ product }) {
             : Number(product?.originalPrice || product?.original_price || cardPrice);
 
           return (
-            <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.65rem', borderTop: '1px solid #DCC8AE', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
+            <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid #D9C4A8', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
               <PriceDisplay 
                 prefix={product?.variants && product.variants.length > 1 ? 'From ' : ''}
                 price={cardPrice} 
