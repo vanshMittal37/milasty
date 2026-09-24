@@ -30,35 +30,20 @@ export default function CustomizeItemModal({ isOpen, onClose, item, onSave, onRe
   };
 
   return (
-    <ModalPortal>
+    <ModalPortal isOpen={isOpen} onClose={onClose}>
       <div
         style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(20, 10, 5, 0.7)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          zIndex: 99999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '1.25rem',
+          width: '100%',
+          maxWidth: '480px',
+          backgroundColor: '#FBF6ED',
+          borderRadius: '20px',
+          border: '1.5px solid #E4D1B7',
+          boxShadow: '0 20px 50px rgba(42, 23, 15, 0.3)',
+          overflow: 'hidden',
+          boxSizing: 'border-box',
         }}
-        onClick={onClose}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '480px',
-            backgroundColor: '#FBF6ED',
-            borderRadius: '20px',
-            border: '1.5px solid #E4D1B7',
-            boxShadow: '0 20px 50px rgba(42, 23, 15, 0.3)',
-            overflow: 'hidden',
-            boxSizing: 'border-box',
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
           {/* Header */}
           <div
             style={{
@@ -204,7 +189,6 @@ export default function CustomizeItemModal({ isOpen, onClose, item, onSave, onRe
             </div>
           </form>
         </div>
-      </div>
-    </ModalPortal>
-  );
-}
+      </ModalPortal>
+    );
+  }

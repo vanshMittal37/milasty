@@ -52,7 +52,7 @@ export default function ModalPortal({
         backgroundColor: 'rgba(14, 7, 4, 0.8)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        zIndex: 1000, // Layer hierarchy: Content (0) < Sticky (10) < Navbar (100) < Drawers (500) < Modals (1000) < Toasts (2000)
+        zIndex: 100000, // Layer hierarchy: Content (0) < Sticky (10) < Navbar (100) < Drawers (99991) < Modals (100000) < Toasts (200000)
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -67,7 +67,7 @@ export default function ModalPortal({
     >
       <div 
         style={{ 
-          zIndex: 1001, 
+          zIndex: 100001, 
           width: '100%', 
           display: 'flex', 
           justifyContent: 'center',
