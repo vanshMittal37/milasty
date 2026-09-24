@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, ChevronRight, ShoppingBag, Leaf, Sparkles, 
@@ -1209,15 +1210,15 @@ export default function Shop() {
       )}
 
       {/* EXPLORE MORE CATEGORIES POPUP MODAL */}
-      {exploreModalOpen && (
+      {exploreModalOpen && createPortal(
         <div 
           style={{ 
             position: 'fixed', 
             inset: 0, 
-            backgroundColor: 'rgba(43, 20, 11, 0.6)', 
+            backgroundColor: 'rgba(30, 16, 9, 0.65)', 
             backdropFilter: 'blur(8px)', 
             WebkitBackdropFilter: 'blur(8px)', 
-            zIndex: 99999, 
+            zIndex: 10000, 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
@@ -1238,7 +1239,7 @@ export default function Shop() {
               display: 'flex',
               flexDirection: 'column',
               color: '#32180D',
-              boxShadow: '0 24px 60px rgba(43, 20, 11, 0.2)',
+              boxShadow: '0 24px 60px rgba(35, 18, 10, 0.35)',
               position: 'relative'
             }}
           >
@@ -1303,19 +1304,20 @@ export default function Shop() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* FILTER POPUP MODAL (Synchronized with single category source) */}
-      {filterModalOpen && (
+      {filterModalOpen && createPortal(
         <div 
           style={{ 
             position: 'fixed', 
             inset: 0, 
-            backgroundColor: 'rgba(43, 20, 11, 0.6)', 
+            backgroundColor: 'rgba(30, 16, 9, 0.65)', 
             backdropFilter: 'blur(8px)', 
             WebkitBackdropFilter: 'blur(8px)', 
-            zIndex: 99999, 
+            zIndex: 10000, 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
@@ -1336,7 +1338,7 @@ export default function Shop() {
               display: 'flex',
               flexDirection: 'column',
               color: '#32180D',
-              boxShadow: '0 20px 50px rgba(43, 20, 11, 0.2)',
+              boxShadow: '0 24px 60px rgba(35, 18, 10, 0.35)',
               position: 'relative'
             }}
           >
@@ -1414,7 +1416,8 @@ export default function Shop() {
               Reset All Filters
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ================================================================== */}
@@ -1423,31 +1426,33 @@ export default function Shop() {
       <section 
         className="products-trust-strip" 
         style={{ 
-          backgroundColor: 'rgba(20, 10, 5, 0.65)', 
-          padding: '2.5rem 0', 
-          borderTop: '1px solid rgba(255, 255, 255, 0.15)', 
-          borderBottom: '1px solid rgba(255, 255, 255, 0.15)' 
+          backgroundColor: '#EFE1CF', 
+          padding: '2rem 0', 
+          borderTop: '1px solid rgba(74, 48, 35, 0.20)', 
+          borderBottom: '1px solid rgba(74, 48, 35, 0.20)' 
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Leaf size={16} color="var(--accent-gold)" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#4A3023', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Leaf size={18} color="#2F7D32" />
             <span>100% PURE DESI GHEE</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Sparkles size={16} color="var(--accent-gold)" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#4A3023', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Sparkles size={18} color="#2F7D32" />
             <span>NO MAIDA</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Shield size={16} color="var(--accent-gold)" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#4A3023', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Shield size={18} color="#2F7D32" />
             <span>ORGANIC JAGGERY</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#FFFDF9', fontWeight: '850', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            <Award size={16} color="var(--accent-gold)" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#4A3023', fontWeight: '850', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <Award size={18} color="#2F7D32" />
             <span>NO PALM OIL</span>
           </div>
         </div>
       </section>
+
+      {/* ================================================================== */}
       {/* 7. REVIEWS (Database-backed Testimonials) */}
       {/* ================================================================== */}
       {testimonials.length > 0 && (
@@ -1470,7 +1475,6 @@ export default function Shop() {
               if (!rev) return null;
               return (
                 <div
-                  className="glass-card"
                   onMouseEnter={() => setIsReviewHovered(true)}
                   onMouseLeave={() => setIsReviewHovered(false)}
                   onTouchStart={(e) => {
@@ -1507,9 +1511,9 @@ export default function Shop() {
                   style={{
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
                     borderRadius: '24px',
-                    backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                    border: '1.5px solid rgba(255, 255, 255, 0.18)',
-                    boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                    backgroundColor: '#FFF9F0',
+                    border: '1.5px solid #DCC8AE',
+                    boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                     textAlign: 'center',
                     boxSizing: 'border-box',
                     width: '100%',
@@ -1522,21 +1526,21 @@ export default function Shop() {
                   {/* Rating Stars */}
                   <div style={{ display: 'flex', justifyContent: 'center', gap: '0.25rem', marginBottom: '1.25rem' }}>
                     {[...Array(Number(rev.rating || 5))].map((_, i) => (
-                      <Star key={i} size={18} fill="var(--accent-gold)" color="var(--accent-gold)" />
+                      <Star key={i} size={18} fill="#2F6B3A" color="#2F6B3A" />
                     ))}
                   </div>
 
                   {/* Review Text */}
-                  <p style={{ fontSize: isMobile ? '0.95rem' : '1.15rem', color: '#FFFDF9', lineHeight: '1.65', marginBottom: '1.5rem', fontWeight: '500', fontStyle: 'italic' }}>
+                  <p style={{ fontSize: isMobile ? '0.98rem' : '1.15rem', color: '#3A2A22', lineHeight: '1.65', marginBottom: '1.5rem', fontWeight: '500', fontStyle: 'italic' }}>
                     "{rev.testimonialText || rev.content}"
                   </p>
 
                   {/* Author Info */}
                   <div>
-                    <h4 style={{ fontSize: '1rem', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.2rem' }}>
+                    <h4 style={{ fontSize: '1rem', color: '#32180D', fontWeight: '850', margin: '0 0 0.2rem' }}>
                       — {rev.customerName || rev.name}
                     </h4>
-                    <span style={{ fontSize: '0.78rem', color: '#b9cd94', fontWeight: '700' }}>
+                    <span style={{ fontSize: '0.78rem', color: '#2F6B3A', fontWeight: '700' }}>
                       {rev.verified !== false ? 'Verified Customer' : 'Customer'}{rev.productTitle ? ` • ${rev.productTitle}` : ''}
                     </span>
                   </div>
@@ -1556,7 +1560,7 @@ export default function Shop() {
                         width: (reviewIndex % testimonials.length) === idx ? '24px' : '8px',
                         height: '8px',
                         borderRadius: '999px',
-                        backgroundColor: (reviewIndex % testimonials.length) === idx ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.25)',
+                        backgroundColor: (reviewIndex % testimonials.length) === idx ? '#2F6B3A' : '#DCC8AE',
                         border: 'none',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease'
@@ -1572,9 +1576,9 @@ export default function Shop() {
                       width: '40px',
                       height: '40px',
                       borderRadius: '50%',
-                      backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                      border: '1.5px solid rgba(255, 255, 255, 0.25)',
-                      color: '#FFFDF9',
+                      backgroundColor: '#F1E5D4',
+                      border: '1.5px solid #DCC8AE',
+                      color: '#32180D',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -1589,9 +1593,9 @@ export default function Shop() {
                       width: '40px',
                       height: '40px',
                       borderRadius: '50%',
-                      backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                      border: '1.5px solid rgba(255, 255, 255, 0.25)',
-                      color: '#FFFDF9',
+                      backgroundColor: '#F1E5D4',
+                      border: '1.5px solid #DCC8AE',
+                      color: '#32180D',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -1687,7 +1691,7 @@ export default function Shop() {
             <button
               onClick={() => handleScrollToSection('browse-milasty-collection')}
               className="btn-primary" 
-              style={{ padding: '1.1rem 2.75rem', fontSize: '1.05rem', backgroundColor: '#c89b3c', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', borderRadius: '999px', cursor: 'pointer' }}
+              style={{ padding: '1.1rem 2.75rem', fontSize: '1.05rem', backgroundColor: '#2F6B3A', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', borderRadius: '999px', cursor: 'pointer', boxShadow: '0 8px 24px rgba(47, 107, 58, 0.3)' }}
             >
               <span>Shop All Fresh Bakes →</span>
             </button>
