@@ -113,11 +113,6 @@ export const CartProvider = ({ children }) => {
             const localUserCart = localStorage.getItem(userCartKey);
             if (localUserCart) {
               savedUserCart = JSON.parse(localUserCart);
-            } else {
-              const res = await api.get('/cart').catch(() => null);
-              if (res?.data && Array.isArray(res.data.items)) {
-                savedUserCart = res.data.items;
-              }
             }
           } catch (e) {}
 
@@ -138,7 +133,6 @@ export const CartProvider = ({ children }) => {
             localStorage.setItem(userCartKey, JSON.stringify(merged));
             localStorage.setItem('milasty_cart_items', JSON.stringify(merged));
             localStorage.removeItem('milasty_guest_cart');
-            await api.post('/cart', { items: merged }).catch(() => {});
           } catch (e) {}
         };
 
@@ -152,7 +146,6 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem('milasty_cart_items', JSON.stringify(cartItems));
         if (activeUserId) {
           localStorage.setItem(`milasty_cart_${activeUserId}`, JSON.stringify(cartItems));
-          api.post('/cart', { items: cartItems }).catch(() => {});
         } else {
           localStorage.setItem('milasty_guest_cart', JSON.stringify(cartItems));
         }
