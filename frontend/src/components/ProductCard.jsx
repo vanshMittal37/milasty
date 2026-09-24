@@ -48,7 +48,7 @@ export default function ProductCard({ product }) {
         overflow: 'hidden',
         backgroundColor: '#F4EBDD',
         borderRadius: '20px',
-        border: '1.5px solid #D8C4A9',
+        border: '1.5px solid #C4A882',
         boxShadow: '0 8px 25px rgba(70, 40, 20, 0.08)',
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         position: 'relative'
@@ -61,7 +61,7 @@ export default function ProductCard({ product }) {
       onMouseOut={(e) => {
         e.currentTarget.style.transform = 'none';
         e.currentTarget.style.boxShadow = '0 8px 25px rgba(70, 40, 20, 0.08)';
-        e.currentTarget.style.borderColor = '#D8C4A9';
+        e.currentTarget.style.borderColor = '#C4A882';
       }}
     >
       {/* Image Area with Badge & Wishlist Button */}
