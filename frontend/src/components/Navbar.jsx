@@ -583,7 +583,6 @@ export default function Navbar() {
             if (!touchStartRef.current) return;
             const touch = e.touches[0];
             if (!touch) return;
-            // Swiping left to close (drawer is on the left)
             const diffX = touchStartRef.current.x - touch.clientX;
             const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
             if (diffX > 10 && diffX > diffY) {
@@ -594,7 +593,6 @@ export default function Navbar() {
             if (!touchStartRef.current) return;
             const touch = e.changedTouches[0];
             if (touch) {
-              // Swipe left → close
               const diffX = touchStartRef.current.x - touch.clientX;
               const diffY = Math.abs(touch.clientY - touchStartRef.current.y);
               if (diffX > 45 && diffX > diffY) {
@@ -604,17 +602,17 @@ export default function Navbar() {
             touchStartRef.current = null;
           }}
           style={{ 
-            backgroundColor: 'rgba(20, 10, 4, 0.99)',
-            backgroundImage: 'linear-gradient(180deg, #1C0A04 0%, #130805 55%, #0D0503 100%)',
-            borderRight: '1px solid rgba(217, 195, 165, 0.12)',
-            boxShadow: '12px 0 50px rgba(0, 0, 0, 0.65)',
+            backgroundColor: '#F5EBDD',
+            backgroundImage: 'linear-gradient(180deg, #FBF6ED 0%, #F5EBDD 60%, #EFE1CF 100%)',
+            borderRight: '1px solid rgba(120, 75, 40, 0.15)',
+            boxShadow: '12px 0 50px rgba(42, 23, 15, 0.25)',
             position: 'fixed',
             top: 0,
             left: 0,
             right: 'auto',
             bottom: 0,
             width: '85vw',
-            maxWidth: '400px',
+            maxWidth: '420px',
             height: '100vh',
             padding: '0',
             boxSizing: 'border-box',
@@ -628,20 +626,36 @@ export default function Navbar() {
             pointerEvents: mobileNavOpen ? 'auto' : 'none',
             touchAction: 'pan-y',
             userSelect: 'none',
-            WebkitUserSelect: 'none'
+            WebkitUserSelect: 'none',
+            overflow: 'hidden',
           }}
         >
+          {/* Subtle Corner Botanical Leaf Art */}
+          <div style={{
+            position: 'absolute',
+            bottom: '-20px',
+            right: '-20px',
+            width: '180px',
+            height: '180px',
+            backgroundImage: 'radial-gradient(circle, rgba(47, 107, 58, 0.08) 0%, transparent 70%)',
+            borderRadius: '50%',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }} />
+
           {/* ── PREMIUM DRAWER HEADER ── */}
           <div style={{
-            padding: '1.4rem 1.25rem 1.2rem',
-            borderBottom: '1px solid rgba(217, 195, 165, 0.1)',
+            padding: '1.5rem 1.4rem 1.2rem',
+            borderBottom: '1px solid rgba(120, 75, 40, 0.12)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: 'rgba(26, 10, 4, 0.6)',
+            background: 'rgba(251, 246, 237, 0.85)',
             flexShrink: 0,
+            position: 'relative',
+            zIndex: 2,
           }}>
             <div>
-              <Logo variant="primary" style={{ height: '48px', width: 'auto' }} />
-              <div style={{ fontSize: '0.62rem', color: 'rgba(217, 195, 165, 0.6)', marginTop: '0.3rem', fontStyle: 'italic', fontWeight: '500', letterSpacing: '0.01em' }}>
+              <Logo variant="primary" style={{ height: '44px', width: 'auto' }} />
+              <div style={{ fontSize: '0.72rem', color: '#634B3B', marginTop: '0.25rem', fontStyle: 'italic', fontWeight: '500', fontFamily: 'var(--font-serif)' }}>
                 Where Millets Meet Great Taste
               </div>
             </div>
@@ -649,10 +663,10 @@ export default function Navbar() {
               onClick={() => setMobileNavOpen(false)}
               aria-label="Close Navigation Menu"
               style={{
-                background: 'rgba(217, 195, 165, 0.07)', border: '1px solid rgba(217, 195, 165, 0.18)',
-                color: '#D9C3A5', width: '38px', height: '38px', cursor: 'pointer',
+                background: 'rgba(120, 75, 40, 0.08)', border: '1px solid rgba(120, 75, 40, 0.18)',
+                color: '#2A170F', width: '38px', height: '38px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderRadius: '50%', flexShrink: 0,
+                borderRadius: '50%', flexShrink: 0, transition: 'all 0.2s',
               }}
             >
               <X size={18} />
@@ -660,7 +674,7 @@ export default function Navbar() {
           </div>
 
           {/* ── NAVIGATION LINKS ── */}
-          <div style={{ flexGrow: 1, overflowY: 'auto', padding: '1rem 1.1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div style={{ flexGrow: 1, overflowY: 'auto', padding: '1.25rem 1.2rem', display: 'flex', flexDirection: 'column', gap: '0.45rem', position: 'relative', zIndex: 2 }}>
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               const LinkIcon = link.icon || HomeIcon;
@@ -671,108 +685,98 @@ export default function Navbar() {
                   onClick={() => setMobileNavOpen(false)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '0.85rem',
-                    padding: '0.85rem 1rem', borderRadius: '14px',
-                    backgroundColor: isActive ? 'rgba(36, 79, 33, 0.25)' : 'rgba(35, 16, 8, 0.6)',
-                    border: isActive ? '1px solid #244f21' : '1px solid rgba(120, 75, 40, 0.3)',
-                    color: isActive ? '#A8C47A' : '#FFF8ED',
+                    padding: '0.85rem 1.1rem', borderRadius: '16px',
+                    backgroundColor: isActive ? '#EAEFE5' : 'transparent',
+                    border: isActive ? '1px solid rgba(47, 107, 58, 0.25)' : '1px solid transparent',
+                    color: isActive ? '#2F6B3A' : '#2A170F',
                     textDecoration: 'none', transition: 'all 0.18s ease',
                   }}
                 >
-                  <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: isActive ? 'rgba(36, 79, 33, 0.4)' : 'rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <LinkIcon size={18} color={isActive ? '#A8C47A' : '#D9C3A5'} />
+                  <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: isActive ? 'rgba(47, 107, 58, 0.15)' : 'rgba(120, 75, 40, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <LinkIcon size={17} color={isActive ? '#2F6B3A' : '#634B3B'} />
                   </div>
                   <span style={{
-                    fontWeight: '700', fontSize: '1rem',
-                    fontFamily: 'var(--font-serif)',
+                    fontWeight: isActive ? '800' : '700', fontSize: '1.02rem',
+                    fontFamily: 'var(--font-sans)',
                     flexGrow: 1, lineHeight: '1',
                   }}>{link.name}</span>
-                  <ChevronRight size={16} color={isActive ? '#A8C47A' : 'rgba(217, 195, 165, 0.4)'} />
+                  <ChevronRight size={16} color={isActive ? '#2F6B3A' : 'rgba(120, 75, 40, 0.35)'} />
                 </Link>
               );
             })}
+
+            <div style={{ borderTop: '1px solid rgba(120, 75, 40, 0.12)', margin: '0.5rem 0' }} />
+
+            {/* Additional Options */}
+            <Link
+              to="/wishlist"
+              onClick={() => setMobileNavOpen(false)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '0.85rem',
+                padding: '0.75rem 1.1rem', color: '#2A170F', textDecoration: 'none', fontSize: '0.94rem', fontWeight: '600'
+              }}
+            >
+              <Heart size={18} color="#634B3B" />
+              <span>My Wishlist ({wishlistCount})</span>
+            </Link>
+
+            <Link
+              to={isAuthenticated ? "/account/orders" : "/login"}
+              onClick={() => setMobileNavOpen(false)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '0.85rem',
+                padding: '0.75rem 1.1rem', color: '#2A170F', textDecoration: 'none', fontSize: '0.94rem', fontWeight: '600'
+              }}
+            >
+              <Package size={18} color="#634B3B" />
+              <span>Track Order</span>
+            </Link>
+
+            <Link
+              to={isAuthenticated ? "/account" : "/login"}
+              onClick={() => setMobileNavOpen(false)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '0.85rem',
+                padding: '0.75rem 1.1rem', color: '#2A170F', textDecoration: 'none', fontSize: '0.94rem', fontWeight: '600'
+              }}
+            >
+              <User size={18} color="#634B3B" />
+              <span>{isAuthenticated ? 'My Profile' : 'Sign In / Register'}</span>
+            </Link>
           </div>
 
-          {/* ── ACCOUNT / PROFILE ── */}
+          {/* ── QUOTE CARD & SOCIAL FOOTER ── */}
           <div style={{
-            padding: '1rem 1.1rem 1.5rem',
-            borderTop: '1px solid rgba(120, 75, 40, 0.3)',
-            display: 'flex', flexDirection: 'column', gap: '0.5rem',
+            padding: '1.1rem 1.2rem 1.5rem',
+            borderTop: '1px solid rgba(120, 75, 40, 0.12)',
+            display: 'flex', flexDirection: 'column', gap: '0.85rem',
             flexShrink: 0,
+            position: 'relative',
+            zIndex: 2,
           }}>
-            {isAuthenticated ? (
-              <>
-                <Link
-                  to="/account"
-                  onClick={() => setMobileNavOpen(false)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 1rem',
-                    borderRadius: '14px', backgroundColor: 'rgba(35, 16, 8, 0.5)', border: '1px solid rgba(120, 75, 40, 0.25)',
-                    color: '#FFF8ED', textDecoration: 'none', transition: 'all 0.18s ease',
-                  }}
-                >
-                  <User size={18} color="#A8C47A" />
-                  <span style={{ flexGrow: 1, fontSize: '0.92rem', fontWeight: '700' }}>My Profile</span>
-                  <ChevronRight size={15} color="rgba(217, 195, 165, 0.4)" />
-                </Link>
-
-                <button
-                  onClick={() => {
-                    setMobileNavOpen(false);
-                    setShowLogoutModal(true);
-                  }}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 1rem',
-                    borderRadius: '14px', backgroundColor: 'rgba(184, 92, 58, 0.15)', border: '1px solid rgba(184, 92, 58, 0.3)',
-                    color: '#ff9980', textDecoration: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
-                  }}
-                >
-                  <LogOut size={18} color="#ff9980" />
-                  <span style={{ flexGrow: 1, fontSize: '0.92rem', fontWeight: '700' }}>Logout</span>
-                  <ChevronRight size={15} color="rgba(255, 153, 128, 0.4)" />
-                </button>
-              </>
-            ) : (
-              <Link
-                to="/login"
-                onClick={() => setMobileNavOpen(false)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '0.8rem 1rem',
-                  borderRadius: '14px',
-                  backgroundColor: 'rgba(36, 79, 33, 0.25)',
-                  border: '1px solid rgba(168, 196, 122, 0.3)',
-                  color: '#A8C47A', textDecoration: 'none',
-                }}
-              >
-                <User size={18} color="#A8C47A" />
-                <span style={{ flexGrow: 1, fontSize: '0.95rem', fontWeight: '800' }}>Sign In / Register</span>
-                <ChevronRight size={15} color="rgba(168, 196, 122, 0.5)" />
-              </Link>
-            )}
-
-            {/* Signature Banner & Footer */}
+            {/* Signature Quote Card */}
             <div style={{
-              marginTop: '0.75rem',
-              padding: '0.9rem 1rem',
-              borderRadius: '16px',
-              backgroundColor: 'rgba(35, 16, 8, 0.85)',
-              border: '1px solid rgba(120, 75, 40, 0.3)',
-              textAlign: 'center',
-              color: '#D9C3A5',
+              padding: '1rem 1.15rem',
+              borderRadius: '18px',
+              backgroundColor: '#EFE1CF',
+              border: '1px solid rgba(120, 75, 40, 0.15)',
+              display: 'flex',
+              gap: '0.75rem',
+              alignItems: 'flex-start',
             }}>
-              <div style={{ fontSize: '0.82rem', fontStyle: 'italic', fontFamily: 'var(--font-serif)', color: '#FFF8ED', marginBottom: '0.2rem' }}>
-                Good food brings good people together. ♡
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(47, 107, 58, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Leaf size={15} color="#2F6B3A" />
+              </div>
+              <div style={{ fontSize: '0.84rem', fontStyle: 'italic', fontFamily: 'var(--font-serif)', color: '#2A170F', lineHeight: '1.4' }}>
+                Good food brings good people together.
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '0.6rem', color: '#D9C3A5' }}>
-              <Instagram size={16} style={{ cursor: 'pointer' }} />
-              <Facebook size={16} style={{ cursor: 'pointer' }} />
-              <Youtube size={16} style={{ cursor: 'pointer' }} />
-              <Linkedin size={16} style={{ cursor: 'pointer' }} />
-            </div>
-
-            <div style={{ marginTop: '0.5rem', textAlign: 'center', fontSize: '0.68rem', color: '#A38C7A' }}>
-              © 2026 MILASTY. All rights reserved.
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1.25rem', color: '#2A170F', paddingTop: '0.2rem' }}>
+              <Instagram size={18} style={{ cursor: 'pointer' }} />
+              <Facebook size={18} style={{ cursor: 'pointer' }} />
+              <Youtube size={18} style={{ cursor: 'pointer' }} />
+              <Linkedin size={18} style={{ cursor: 'pointer' }} />
             </div>
           </div>
         </div>

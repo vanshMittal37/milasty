@@ -113,25 +113,16 @@ const PAGE_BACKGROUNDS = {
 };
 
 function MainLayout() {
-  const location = useLocation();
-  const currentBg = PAGE_BACKGROUNDS[location.pathname];
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
-      {currentBg && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundImage: `url(${currentBg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            zIndex: 0,
-            pointerEvents: 'none',
-          }}
-        />
-      )}
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      position: 'relative',
+      backgroundColor: '#F5EBDD',
+      backgroundImage: 'radial-gradient(ellipse at 50% 0%, #FBF6ED 0%, #F5EBDD 65%, #EFE1CF 100%)',
+      color: '#2A170F',
+    }}>
       <EdgeSwipeHandler />
       <Navbar />
       <main style={{ flexGrow: 1, position: 'relative', paddingTop: '135px' }}>

@@ -427,12 +427,10 @@ export default function CheckoutPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundImage: 'url(/images/cart_background_image.jpeg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
+      backgroundColor: '#F5EBDD',
+      backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.6) 0%, rgba(245,235,221,0) 70%)',
       padding: '3rem 0 5rem',
-      color: '#FFF8ED'
+      color: '#2B140B'
     }}>
       <div className="container" style={{ maxWidth: '1150px' }}>
 
@@ -440,18 +438,16 @@ export default function CheckoutPage() {
         <div style={{
           padding: '2.5rem 2rem 2rem',
           textAlign: 'center',
-          backgroundColor: 'rgba(35, 16, 8, 0.85)',
-          backdropFilter: 'blur(18px)',
-          WebkitBackdropFilter: 'blur(18px)',
+          backgroundColor: '#FBF6ED',
           marginBottom: '2.5rem',
           borderRadius: '24px',
-          border: '1px solid rgba(120, 75, 40, 0.3)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.45)',
+          border: '1px solid #E4D1B7',
+          boxShadow: '0 4px 20px rgba(43, 20, 11, 0.05)',
         }}>
-          <h1 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: '#FFF8ED', marginBottom: '0.4rem', fontWeight: '800', margin: '0 0 0.4rem' }}>
+          <h1 style={{ fontSize: '2.5rem', fontFamily: 'var(--font-serif)', color: '#2B140B', marginBottom: '0.4rem', fontWeight: '800', margin: '0 0 0.4rem' }}>
             Checkout
           </h1>
-          <p style={{ color: '#D9C3A5', fontSize: '0.95rem', margin: '0 0 1.75rem', fontWeight: '500' }}>
+          <p style={{ color: '#6B584C', fontSize: '0.95rem', margin: '0 0 1.75rem', fontWeight: '500' }}>
             Almost there! Let's get your bakes to you.
           </p>
 
@@ -459,27 +455,27 @@ export default function CheckoutPage() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '1.25rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             {/* Step 1: Cart */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#244f21', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.85rem' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#2F6B3A', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.85rem' }}>
                 1
               </div>
-              <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#3F7D32', letterSpacing: '0.08em' }}>CART</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#2F6B3A', letterSpacing: '0.08em' }}>CART</span>
             </div>
 
-            <div style={{ width: '40px', height: '2px', backgroundColor: 'rgba(120, 75, 40, 0.4)', marginTop: '-14px' }} />
+            <div style={{ width: '40px', height: '2px', backgroundColor: '#E4D1B7', marginTop: '-14px' }} />
 
             {/* Step 2: Delivery & Payment */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#244f21', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.85rem', border: '2px solid #244f21' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#2F6B3A', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.85rem', border: '2px solid #2F6B3A' }}>
                 2
               </div>
-              <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#FFF8ED', letterSpacing: '0.08em' }}>DELIVERY &amp; PAYMENT</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#2B140B', letterSpacing: '0.08em' }}>DELIVERY &amp; PAYMENT</span>
             </div>
 
-            <div style={{ width: '40px', height: '2px', backgroundColor: 'rgba(120, 75, 40, 0.4)', marginTop: '-14px' }} />
+            <div style={{ width: '40px', height: '2px', backgroundColor: '#E4D1B7', marginTop: '-14px' }} />
 
             {/* Step 3: Confirmation */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', alignItems: 'center' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(120, 75, 40, 0.25)', color: '#A38C7A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.85rem' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#EFE1CF', color: '#A38C7A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.85rem' }}>
                 3
               </div>
               <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#A38C7A', letterSpacing: '0.08em' }}>CONFIRMATION</span>
@@ -496,16 +492,14 @@ export default function CheckoutPage() {
             {/* Delivery address details card */}
             <div style={{
               padding: '2rem',
-              backgroundColor: 'rgba(35, 16, 8, 0.85)',
-              backdropFilter: 'blur(18px)',
-              WebkitBackdropFilter: 'blur(18px)',
+              backgroundColor: '#FBF6ED',
               borderRadius: '24px',
-              border: '1px solid rgba(120, 75, 40, 0.3)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
+              border: '1px solid #E4D1B7',
+              boxShadow: '0 4px 20px rgba(43, 20, 11, 0.05)',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#FFF8ED', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-                  <Truck size={20} color="#3F7D32" />
+                <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#2B140B', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                  <Truck size={20} color="#2F6B3A" />
                   <span>1. Delivery Address</span>
                 </h2>
 
@@ -519,9 +513,9 @@ export default function CheckoutPage() {
                         fontSize: '0.78rem',
                         fontWeight: '800',
                         borderRadius: '999px',
-                        border: '1px solid #244f21',
-                        backgroundColor: 'rgba(36, 79, 33, 0.25)',
-                        color: '#FFF8ED',
+                        border: '1px solid #2F6B3A',
+                        backgroundColor: '#EAEFE5',
+                        color: '#2F6B3A',
                         cursor: 'pointer',
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -540,9 +534,9 @@ export default function CheckoutPage() {
                         fontSize: '0.78rem',
                         fontWeight: '800',
                         borderRadius: '999px',
-                        border: '1px solid rgba(120, 75, 40, 0.4)',
-                        backgroundColor: 'rgba(22, 10, 5, 0.6)',
-                        color: '#FFF8ED',
+                        border: '1px solid #E4D1B7',
+                        backgroundColor: '#FFFFFF',
+                        color: '#2B140B',
                         cursor: 'pointer',
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -560,12 +554,12 @@ export default function CheckoutPage() {
               {savedAddresses.length > 0 && selectedAddress ? (
                 <div
                   style={{
-                    backgroundColor: 'rgba(22, 10, 5, 0.75)',
+                    backgroundColor: '#FFFFFF',
                     borderRadius: '16px',
                     padding: '1.25rem',
                     border: (isCurrentPinChecked && !isDeliverable)
-                      ? '1.5px solid #b85c3a'
-                      : '1.5px solid #244f21',
+                      ? '1.5px solid #C0392B'
+                      : '1.5px solid #2F6B3A',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '0.85rem',
@@ -575,15 +569,15 @@ export default function CheckoutPage() {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(36, 79, 33, 0.3)', color: '#FFF8ED', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: '#EAEFE5', color: '#2F6B3A', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
                         {selectedAddress.addressType || 'Home'}
                       </span>
                       {selectedAddress.isDefault && (
-                        <span style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(36, 79, 33, 0.5)', color: '#A8C47A', padding: '0.15rem 0.5rem', borderRadius: '999px', border: '1px solid rgba(168, 196, 122, 0.3)' }}>
+                        <span style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: '#2F6B3A', color: '#FFFFFF', padding: '0.15rem 0.5rem', borderRadius: '999px' }}>
                           Default Address
                         </span>
                       )}
-                      <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#3F7D32', display: 'inline-flex', alignItems: 'center', gap: '0.2rem', marginLeft: '0.25rem' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#2F6B3A', display: 'inline-flex', alignItems: 'center', gap: '0.2rem', marginLeft: '0.25rem' }}>
                         <CheckCircle2 size={13} /> Selected
                       </span>
                     </div>
@@ -592,14 +586,14 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => handleOpenEditAddressInline(selectedAddress)}
-                        style={{ background: 'none', border: 'none', color: '#D9C3A5', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0 }}
+                        style={{ background: 'none', border: 'none', color: '#6B584C', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0 }}
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowAddressSelectModal(true)}
-                        style={{ background: 'none', border: 'none', color: '#3F7D32', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+                        style={{ background: 'none', border: 'none', color: '#2F6B3A', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
                       >
                         Change
                       </button>
@@ -607,13 +601,13 @@ export default function CheckoutPage() {
                   </div>
 
                   <div>
-                    <div style={{ fontWeight: '850', color: '#FFF8ED', fontSize: '0.98rem' }}>
+                    <div style={{ fontWeight: '850', color: '#2B140B', fontSize: '0.98rem' }}>
                       {selectedAddress.fullName || formData.customerName}
                     </div>
-                    <div style={{ fontSize: '0.88rem', color: '#D9C3A5', lineHeight: '1.5', marginTop: '0.25rem' }}>
-                      {selectedAddress.building && `${selectedAddress.building}, `}{selectedAddress.addressLine}, {selectedAddress.city}, {selectedAddress.state} - <strong style={{ color: '#FFF8ED', fontFamily: 'monospace' }}>{selectedAddress.pincode}</strong>
+                    <div style={{ fontSize: '0.88rem', color: '#5A3422', lineHeight: '1.5', marginTop: '0.25rem' }}>
+                      {selectedAddress.building && `${selectedAddress.building}, `}{selectedAddress.addressLine}, {selectedAddress.city}, {selectedAddress.state} - <strong style={{ color: '#2B140B', fontFamily: 'monospace' }}>{selectedAddress.pincode}</strong>
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: '#A38C7A', marginTop: '0.3rem', fontWeight: '600' }}>
+                    <div style={{ fontSize: '0.8rem', color: '#6B584C', marginTop: '0.3rem', fontWeight: '600' }}>
                       Phone: {selectedAddress.phone || formData.phone}
                     </div>
                   </div>
@@ -625,12 +619,12 @@ export default function CheckoutPage() {
                       borderRadius: '10px',
                       fontSize: '0.8rem',
                       fontWeight: '700',
-                      backgroundColor: isDeliverable ? 'rgba(36, 79, 33, 0.25)' : 'rgba(184, 92, 58, 0.25)',
-                      color: isDeliverable ? '#A8C47A' : '#ff9980',
+                      backgroundColor: isDeliverable ? '#EAEFE5' : '#FADBD8',
+                      color: isDeliverable ? '#2F6B3A' : '#78281F',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.45rem',
-                      border: isDeliverable ? '1px solid rgba(168, 196, 122, 0.4)' : '1px solid rgba(184, 92, 58, 0.4)'
+                      border: isDeliverable ? '1px solid #2F6B3A' : '1px solid #C0392B'
                     }}>
                       {isDeliverable ? (
                         <>
@@ -647,10 +641,10 @@ export default function CheckoutPage() {
                   )}
                 </div>
               ) : savedAddresses.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '1.75rem', backgroundColor: 'rgba(22, 10, 5, 0.65)', borderRadius: '16px', border: '1.5px dashed rgba(120, 75, 40, 0.4)', marginBottom: '1.5rem' }}>
-                  <MapPin size={32} color="#3F7D32" style={{ margin: '0 auto 0.5rem' }} />
-                  <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#FFF8ED', marginBottom: '0.25rem' }}>No saved delivery addresses found</div>
-                  <p style={{ fontSize: '0.8rem', color: '#D9C3A5', margin: '0 0 1rem 0' }}>Add a delivery address below to proceed with your order.</p>
+                <div style={{ textAlign: 'center', padding: '1.75rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px dashed #E4D1B7', marginBottom: '1.5rem' }}>
+                  <MapPin size={32} color="#2F6B3A" style={{ margin: '0 auto 0.5rem' }} />
+                  <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#2B140B', marginBottom: '0.25rem' }}>No saved delivery addresses found</div>
+                  <p style={{ fontSize: '0.8rem', color: '#6B584C', margin: '0 0 1rem 0' }}>Add a delivery address below to proceed with your order.</p>
                   <button
                     type="button"
                     onClick={handleOpenAddAddressInline}
@@ -659,7 +653,7 @@ export default function CheckoutPage() {
                       fontSize: '0.82rem',
                       fontWeight: '800',
                       borderRadius: '999px',
-                      backgroundColor: '#244f21',
+                      backgroundColor: '#2F6B3A',
                       color: '#FFFFFF',
                       border: 'none',
                       cursor: 'pointer',
@@ -679,7 +673,7 @@ export default function CheckoutPage() {
 
                 {/* Full name input */}
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Name *</label>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Name *</label>
                   <input
                     type="text"
                     required
@@ -687,26 +681,26 @@ export default function CheckoutPage() {
                     value={formData.customerName}
                     onChange={handleInputChange}
                     placeholder="Vansh Mittal"
-                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.customerName ? '1.5px solid #b85c3a' : '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#1A0B06', color: '#FFF8ED', fontWeight: '600' }}
+                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.customerName ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
                   />
-                  {fieldErrors.customerName && <span style={{ fontSize: '0.75rem', color: '#b85c3a', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.customerName}</span>}
+                  {fieldErrors.customerName && <span style={{ fontSize: '0.75rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.customerName}</span>}
                 </div>
 
                 {/* Email and Phone grid */}
                 <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email Address</label>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email Address</label>
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="mvansh322@gmail.com"
-                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#1A0B06', color: '#FFF8ED', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone Number *</label>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone Number *</label>
                     <input
                       type="tel"
                       required
@@ -714,28 +708,28 @@ export default function CheckoutPage() {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="8791383595"
-                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.phone ? '1.5px solid #b85c3a' : '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#1A0B06', color: '#FFF8ED', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.phone ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
                     />
-                    {fieldErrors.phone && <span style={{ fontSize: '0.75rem', color: '#b85c3a', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.phone}</span>}
+                    {fieldErrors.phone && <span style={{ fontSize: '0.75rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.phone}</span>}
                   </div>
                 </div>
 
                 {/* Building / House Details */}
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Flat / House / Building Details</label>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Flat / House / Building Details</label>
                   <input
                     type="text"
                     name="building"
                     value={formData.building}
                     onChange={handleInputChange}
                     placeholder="Flat 402, B Block, Royal Palm Apartments"
-                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#1A0B06', color: '#FFF8ED', fontWeight: '600' }}
+                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
                   />
                 </div>
 
                 {/* Area / Locality */}
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Area / Locality *</label>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Area / Locality *</label>
                   <textarea
                     rows={2}
                     required
@@ -743,15 +737,15 @@ export default function CheckoutPage() {
                     value={formData.addressLine}
                     onChange={handleInputChange}
                     placeholder="Sector 76"
-                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.addressLine ? '1.5px solid #b85c3a' : '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#1A0B06', color: '#FFF8ED', fontWeight: '600', resize: 'none' }}
+                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.addressLine ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600', resize: 'none' }}
                   />
-                  {fieldErrors.addressLine && <span style={{ fontSize: '0.75rem', color: '#b85c3a', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.addressLine}</span>}
+                  {fieldErrors.addressLine && <span style={{ fontSize: '0.75rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.addressLine}</span>}
                 </div>
 
                 {/* City, State, Pincode grid */}
                 <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
                   <div>
-                    <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>City *</label>
+                    <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>City *</label>
                     <input
                       type="text"
                       required
@@ -759,12 +753,12 @@ export default function CheckoutPage() {
                       value={formData.city}
                       onChange={handleInputChange}
                       placeholder="Noida"
-                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.city ? '1.5px solid #b85c3a' : '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#1A0B06', color: '#FFF8ED', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.city ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
                     />
-                    {fieldErrors.city && <span style={{ fontSize: '0.72rem', color: '#b85c3a', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.city}</span>}
+                    {fieldErrors.city && <span style={{ fontSize: '0.72rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.city}</span>}
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>State *</label>
+                    <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>State *</label>
                     <input
                       type="text"
                       required
@@ -772,12 +766,12 @@ export default function CheckoutPage() {
                       value={formData.state}
                       onChange={handleInputChange}
                       placeholder="Uttar Pradesh"
-                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.state ? '1.5px solid #b85c3a' : '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#1A0B06', color: '#FFF8ED', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.state ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
                     />
-                    {fieldErrors.state && <span style={{ fontSize: '0.72rem', color: '#b85c3a', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.state}</span>}
+                    {fieldErrors.state && <span style={{ fontSize: '0.72rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.state}</span>}
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pincode *</label>
+                    <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pincode *</label>
                     <input
                       type="text"
                       required
@@ -786,9 +780,9 @@ export default function CheckoutPage() {
                       value={formData.pincode}
                       onChange={handleInputChange}
                       placeholder="263153"
-                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.pincode ? '1.5px solid #b85c3a' : '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.88rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: '#1A0B06', color: '#FFF8ED' }}
+                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.pincode ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: '#FFFFFF', color: '#2B140B' }}
                     />
-                    {fieldErrors.pincode && <span style={{ fontSize: '0.72rem', color: '#b85c3a', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.pincode}</span>}
+                    {fieldErrors.pincode && <span style={{ fontSize: '0.72rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.pincode}</span>}
                   </div>
                 </div>
               </div>
@@ -797,15 +791,13 @@ export default function CheckoutPage() {
             {/* Payment method selection card */}
             <div style={{
               padding: '2rem',
-              backgroundColor: 'rgba(35, 16, 8, 0.85)',
-              backdropFilter: 'blur(18px)',
-              WebkitBackdropFilter: 'blur(18px)',
+              backgroundColor: '#FBF6ED',
               borderRadius: '24px',
-              border: '1px solid rgba(120, 75, 40, 0.3)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
+              border: '1px solid #E4D1B7',
+              boxShadow: '0 4px 20px rgba(43, 20, 11, 0.05)',
             }}>
-              <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#FFF8ED', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 0 1.25rem' }}>
-                <CreditCard size={20} color="#3F7D32" />
+              <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#2B140B', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 0 1.25rem' }}>
+                <CreditCard size={20} color="#2F6B3A" />
                 <span>2. Payment Option</span>
               </h2>
 
@@ -820,9 +812,9 @@ export default function CheckoutPage() {
                     gap: '0.85rem',
                     padding: '1.15rem 1.25rem',
                     borderRadius: '16px',
-                    border: paymentMethod === 'Razorpay' ? '2.5px solid #244f21' : '1.5px solid rgba(120, 75, 40, 0.3)',
-                    backgroundColor: paymentMethod === 'Razorpay' ? 'rgba(36, 79, 33, 0.18)' : 'rgba(22, 10, 5, 0.65)',
-                    boxShadow: paymentMethod === 'Razorpay' ? '0 0 16px rgba(36, 79, 33, 0.25)' : 'none',
+                    border: paymentMethod === 'Razorpay' ? '2px solid #2F6B3A' : '1.5px solid #E4D1B7',
+                    backgroundColor: paymentMethod === 'Razorpay' ? '#EAEFE5' : '#FFFFFF',
+                    boxShadow: paymentMethod === 'Razorpay' ? '0 2px 10px rgba(47, 107, 58, 0.12)' : 'none',
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
@@ -833,11 +825,11 @@ export default function CheckoutPage() {
                     value="Razorpay"
                     checked={paymentMethod === 'Razorpay'}
                     onChange={() => setPaymentMethod('Razorpay')}
-                    style={{ accentColor: '#244f21', width: '18px', height: '18px' }}
+                    style={{ accentColor: '#2F6B3A', width: '18px', height: '18px' }}
                   />
                   <div>
-                    <div style={{ fontWeight: '800', color: '#FFF8ED', fontSize: '0.98rem' }}>Secure Online Checkout (Razorpay)</div>
-                    <div style={{ fontSize: '0.82rem', color: '#D9C3A5', marginTop: '0.15rem' }}>Pay instantly using UPI, Cards, Netbanking, or Wallets</div>
+                    <div style={{ fontWeight: '800', color: '#2B140B', fontSize: '0.98rem' }}>Secure Online Checkout (Razorpay)</div>
+                    <div style={{ fontSize: '0.82rem', color: '#6B584C', marginTop: '0.15rem' }}>Pay instantly using UPI, Cards, Netbanking, or Wallets</div>
                   </div>
                 </label>
 
@@ -850,9 +842,9 @@ export default function CheckoutPage() {
                     gap: '0.85rem',
                     padding: '1.15rem 1.25rem',
                     borderRadius: '16px',
-                    border: paymentMethod === 'COD' ? '2.5px solid #244f21' : '1.5px solid rgba(120, 75, 40, 0.3)',
-                    backgroundColor: paymentMethod === 'COD' ? 'rgba(36, 79, 33, 0.18)' : 'rgba(22, 10, 5, 0.65)',
-                    boxShadow: paymentMethod === 'COD' ? '0 0 16px rgba(36, 79, 33, 0.25)' : 'none',
+                    border: paymentMethod === 'COD' ? '2px solid #2F6B3A' : '1.5px solid #E4D1B7',
+                    backgroundColor: paymentMethod === 'COD' ? '#EAEFE5' : '#FFFFFF',
+                    boxShadow: paymentMethod === 'COD' ? '0 2px 10px rgba(47, 107, 58, 0.12)' : 'none',
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
@@ -863,11 +855,11 @@ export default function CheckoutPage() {
                     value="COD"
                     checked={paymentMethod === 'COD'}
                     onChange={() => setPaymentMethod('COD')}
-                    style={{ accentColor: '#244f21', width: '18px', height: '18px' }}
+                    style={{ accentColor: '#2F6B3A', width: '18px', height: '18px' }}
                   />
                   <div>
-                    <div style={{ fontWeight: '800', color: '#FFF8ED', fontSize: '0.98rem' }}>Cash / Pay on Delivery (COD)</div>
-                    <div style={{ fontSize: '0.82rem', color: '#D9C3A5', marginTop: '0.15rem' }}>Pay cash or UPI upon delivery</div>
+                    <div style={{ fontWeight: '800', color: '#2B140B', fontSize: '0.98rem' }}>Cash / Pay on Delivery (COD)</div>
+                    <div style={{ fontSize: '0.82rem', color: '#6B584C', marginTop: '0.15rem' }}>Pay cash or UPI upon delivery</div>
                   </div>
                 </label>
               </div>
@@ -878,33 +870,31 @@ export default function CheckoutPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', position: 'sticky', top: '100px' }}>
             <div style={{
               padding: '2rem',
-              backgroundColor: 'rgba(35, 16, 8, 0.88)',
-              backdropFilter: 'blur(18px)',
-              WebkitBackdropFilter: 'blur(18px)',
+              backgroundColor: '#FBF6ED',
               borderRadius: '24px',
-              border: '1px solid rgba(120, 75, 40, 0.3)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.45)',
+              border: '1px solid #E4D1B7',
+              boxShadow: '0 4px 20px rgba(43, 20, 11, 0.05)',
             }}>
-              <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#FFF8ED', fontWeight: '800', margin: '0 0 1.25rem' }}>
+              <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#2B140B', fontWeight: '800', margin: '0 0 1.25rem' }}>
                 Order Summary
               </h3>
 
               {/* Items listing */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(120, 75, 40, 0.3)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingBottom: '1.5rem', borderBottom: '1px solid #E4D1B7' }}>
                 {cartItems.map((item) => (
                   <div key={item.key} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <img
                       src={item.image}
                       alt={item.title}
-                      style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '12px', border: '1px solid rgba(120, 75, 40, 0.3)', flexShrink: 0 }}
+                      style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #E4D1B7', flexShrink: 0 }}
                     />
                     <div style={{ flexGrow: 1 }}>
-                      <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#FFF8ED', margin: '0 0 0.15rem 0', lineHeight: '1.25' }}>{item.title}</h4>
-                      <span style={{ fontSize: '0.78rem', color: '#D9C3A5', display: 'block' }}>
+                      <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#2B140B', margin: '0 0 0.15rem 0', lineHeight: '1.25' }}>{item.title}</h4>
+                      <span style={{ fontSize: '0.78rem', color: '#6B584C', display: 'block' }}>
                         Qty: {item.quantity} • {item.variantName} ({item.weight})
                       </span>
                     </div>
-                    <span style={{ fontWeight: '900', color: '#FFF8ED', fontSize: '1.05rem', flexShrink: 0 }}>
+                    <span style={{ fontWeight: '900', color: '#2B140B', fontSize: '1.05rem', flexShrink: 0 }}>
                       ₹{item.totalPrice}
                     </span>
                   </div>
@@ -912,20 +902,20 @@ export default function CheckoutPage() {
               </div>
 
               {/* Cost Summary calculations */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1.5rem 0', borderBottom: '1px solid rgba(120, 75, 40, 0.3)', fontSize: '0.9rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#D9C3A5' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1.5rem 0', borderBottom: '1px solid #E4D1B7', fontSize: '0.9rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#5A3422' }}>
                   <span>Subtotal</span>
-                  <span style={{ fontWeight: '700', color: '#FFF8ED' }}>₹{subtotal}</span>
+                  <span style={{ fontWeight: '700', color: '#2B140B' }}>₹{subtotal}</span>
                 </div>
                 {couponDiscountAmount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#A8C47A', fontWeight: '700' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#2F6B3A', fontWeight: '700' }}>
                     <span>Coupon Discount</span>
                     <span>-₹{couponDiscountAmount}</span>
                   </div>
                 )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#D9C3A5' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#5A3422' }}>
                   <span>Delivery Charge</span>
-                  <span style={{ fontWeight: '700', color: effectiveDeliveryFee === 0 ? '#A8C47A' : '#FFF8ED' }}>
+                  <span style={{ fontWeight: '700', color: effectiveDeliveryFee === 0 ? '#2F6B3A' : '#2B140B' }}>
                     {effectiveDeliveryFee === 0 ? 'FREE' : `₹${effectiveDeliveryFee}`}
                   </span>
                 </div>
@@ -933,12 +923,12 @@ export default function CheckoutPage() {
 
               {/* Grand Total */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 0 1.25rem' }}>
-                <span style={{ fontSize: '1.15rem', fontWeight: '850', color: '#FFF8ED' }}>Total to Pay</span>
-                <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#FFF8ED' }}>₹{effectiveGrandTotal}</span>
+                <span style={{ fontSize: '1.15rem', fontWeight: '850', color: '#2B140B' }}>Total to Pay</span>
+                <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#2B140B' }}>₹{effectiveGrandTotal}</span>
               </div>
 
               {errorMessage && (
-                <div style={{ backgroundColor: 'rgba(184, 92, 58, 0.2)', border: '1px solid #b85c3a', color: '#ff9980', padding: '0.85rem 1rem', borderRadius: '12px', fontSize: '0.85rem', marginBottom: '1.5rem', fontWeight: '600', lineHeight: '1.4' }}>
+                <div style={{ backgroundColor: '#FADBD8', border: '1px solid #C0392B', color: '#78281F', padding: '0.85rem 1rem', borderRadius: '12px', fontSize: '0.85rem', marginBottom: '1.5rem', fontWeight: '600', lineHeight: '1.4' }}>
                   {errorMessage}
                 </div>
               )}
@@ -952,7 +942,7 @@ export default function CheckoutPage() {
                   justifyContent: 'center',
                   padding: '1.1rem',
                   fontSize: '0.98rem',
-                  backgroundColor: (isCurrentPinChecked && !isDeliverable) ? 'rgba(120, 75, 40, 0.3)' : '#244f21',
+                  backgroundColor: (isCurrentPinChecked && !isDeliverable) ? '#E4D1B7' : '#2F6B3A',
                   border: 'none',
                   borderRadius: '999px',
                   fontWeight: '800',
@@ -963,7 +953,7 @@ export default function CheckoutPage() {
                   gap: '0.5rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
-                  boxShadow: '0 4px 20px rgba(36, 79, 33, 0.4)',
+                  boxShadow: '0 4px 16px rgba(47, 107, 58, 0.25)',
                   transition: 'all 0.2s',
                   opacity: loading ? 0.7 : 1
                 }}
@@ -985,8 +975,8 @@ export default function CheckoutPage() {
                 )}
               </button>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', color: '#D9C3A5', fontSize: '0.75rem', fontWeight: '600', marginTop: '1.25rem' }}>
-                <ShieldCheck size={14} color="#3F7D32" />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', color: '#6B584C', fontSize: '0.75rem', fontWeight: '600', marginTop: '1.25rem' }}>
+                <ShieldCheck size={14} color="#2F6B3A" />
                 <span>Encrypted 256-bit SSL secure checkout payment</span>
               </div>
 
@@ -1002,25 +992,25 @@ export default function CheckoutPage() {
       <ModalPortal isOpen={showAddressSelectModal} onClose={() => setShowAddressSelectModal(false)}>
         <div
           style={{
-            backgroundColor: 'rgba(26, 11, 5, 0.96)',
+            backgroundColor: '#FBF6ED',
             borderRadius: '24px',
-            border: '1px solid rgba(120, 75, 40, 0.4)',
+            border: '1px solid #E4D1B7',
             width: '100%',
             maxWidth: '560px',
             maxHeight: '85vh',
             display: 'flex',
             flexDirection: 'column',
-            boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
+            boxShadow: '0 16px 48px rgba(43, 20, 11, 0.15)',
             overflow: 'hidden'
           }}
         >
           {/* Modal Header */}
-          <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(120, 75, 40, 0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '1.5rem', borderBottom: '1px solid #E4D1B7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: '#FFF8ED', fontWeight: '800', margin: 0 }}>
+              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: '#2B140B', fontWeight: '800', margin: 0 }}>
                 Select Delivery Address
               </h3>
-              <p style={{ fontSize: '0.78rem', color: '#D9C3A5', margin: '0.2rem 0 0 0' }}>
+              <p style={{ fontSize: '0.78rem', color: '#6B584C', margin: '0.2rem 0 0 0' }}>
                 Choose which address to deliver this order to
               </p>
             </div>
@@ -1028,7 +1018,7 @@ export default function CheckoutPage() {
             <button
               type="button"
               onClick={() => setShowAddressSelectModal(false)}
-              style={{ background: 'none', border: 'none', color: '#D9C3A5', cursor: 'pointer', padding: '0.25rem' }}
+              style={{ background: 'none', border: 'none', color: '#2B140B', cursor: 'pointer', padding: '0.25rem' }}
             >
               <X size={20} />
             </button>
@@ -1045,9 +1035,9 @@ export default function CheckoutPage() {
                   key={addrId}
                   onClick={() => handleSelectAddress(addr)}
                   style={{
-                    backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.2)' : 'rgba(16, 7, 3, 0.65)',
+                    backgroundColor: isSelected ? '#EAEFE5' : '#FFFFFF',
                     borderRadius: '16px',
-                    border: isSelected ? '2px solid #244f21' : '1px solid rgba(120, 75, 40, 0.3)',
+                    border: isSelected ? '2px solid #2F6B3A' : '1px solid #E4D1B7',
                     padding: '1.15rem',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
@@ -1059,11 +1049,11 @@ export default function CheckoutPage() {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(36, 79, 33, 0.3)', color: '#FFF8ED', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: isSelected ? '#2F6B3A' : '#EFE1CF', color: isSelected ? '#FFFFFF' : '#2B140B', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
                         {addr.addressType || 'Home'}
                       </span>
                       {addr.isDefault && (
-                        <span style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: 'rgba(36, 79, 33, 0.5)', color: '#A8C47A', padding: '0.15rem 0.5rem', borderRadius: '999px', border: '1px solid rgba(168, 196, 122, 0.3)' }}>
+                        <span style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: '#2F6B3A', color: '#FFFFFF', padding: '0.15rem 0.5rem', borderRadius: '999px' }}>
                           Default
                         </span>
                       )}
@@ -1076,7 +1066,7 @@ export default function CheckoutPage() {
                           e.stopPropagation();
                           handleOpenEditAddressInline(addr);
                         }}
-                        style={{ background: 'none', border: 'none', color: '#D9C3A5', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0 }}
+                        style={{ background: 'none', border: 'none', color: '#6B584C', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', padding: 0 }}
                       >
                         Edit
                       </button>
@@ -1091,9 +1081,9 @@ export default function CheckoutPage() {
                           fontSize: '0.75rem',
                           fontWeight: '800',
                           borderRadius: '999px',
-                          backgroundColor: isSelected ? '#244f21' : 'transparent',
-                          color: '#FFFFFF',
-                          border: isSelected ? 'none' : '1px solid rgba(120, 75, 40, 0.4)',
+                          backgroundColor: isSelected ? '#2F6B3A' : 'transparent',
+                          color: isSelected ? '#FFFFFF' : '#2B140B',
+                          border: isSelected ? 'none' : '1px solid #E4D1B7',
                           cursor: 'pointer',
                         }}
                       >
@@ -1103,13 +1093,13 @@ export default function CheckoutPage() {
                   </div>
 
                   <div>
-                    <div style={{ fontWeight: '850', color: '#FFF8ED', fontSize: '0.95rem' }}>
+                    <div style={{ fontWeight: '850', color: '#2B140B', fontSize: '0.95rem' }}>
                       {addr.fullName}
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: '#D9C3A5', lineHeight: '1.5', marginTop: '0.2rem' }}>
-                      {addr.building && `${addr.building}, `}{addr.addressLine}, {addr.city}, {addr.state} - <strong style={{ color: '#FFF8ED', fontFamily: 'monospace' }}>{addr.pincode}</strong>
+                    <div style={{ fontSize: '0.85rem', color: '#5A3422', lineHeight: '1.5', marginTop: '0.2rem' }}>
+                      {addr.building && `${addr.building}, `}{addr.addressLine}, {addr.city}, {addr.state} - <strong style={{ color: '#2B140B', fontFamily: 'monospace' }}>{addr.pincode}</strong>
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: '#A38C7A', marginTop: '0.25rem' }}>
+                    <div style={{ fontSize: '0.78rem', color: '#6B584C', marginTop: '0.25rem' }}>
                       Phone: {addr.phone}
                     </div>
                   </div>
@@ -1119,7 +1109,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Modal Footer */}
-          <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid rgba(120, 75, 40, 0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(16, 7, 3, 0.8)' }}>
+          <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid #E4D1B7', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#F5EBDD' }}>
             <button
               type="button"
               onClick={handleOpenAddAddressInline}
@@ -1128,7 +1118,7 @@ export default function CheckoutPage() {
                 fontSize: '0.82rem',
                 fontWeight: '800',
                 borderRadius: '999px',
-                backgroundColor: '#244f21',
+                backgroundColor: '#2F6B3A',
                 color: '#FFFFFF',
                 border: 'none',
                 cursor: 'pointer',
@@ -1150,8 +1140,8 @@ export default function CheckoutPage() {
                 fontWeight: '800',
                 borderRadius: '999px',
                 backgroundColor: 'transparent',
-                color: '#D9C3A5',
-                border: '1px solid rgba(120, 75, 40, 0.4)',
+                color: '#2B140B',
+                border: '1px solid #E4D1B7',
                 cursor: 'pointer',
               }}
             >
@@ -1167,27 +1157,27 @@ export default function CheckoutPage() {
       <ModalPortal isOpen={showAddEditAddressModal} onClose={() => setShowAddEditAddressModal(false)}>
         <div
           style={{
-            backgroundColor: 'rgba(26, 11, 5, 0.96)',
+            backgroundColor: '#FBF6ED',
             borderRadius: '24px',
-            border: '1px solid rgba(120, 75, 40, 0.4)',
+            border: '1px solid #E4D1B7',
             width: '100%',
             maxWidth: '520px',
             maxHeight: '85vh',
             display: 'flex',
             flexDirection: 'column',
-            boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
+            boxShadow: '0 16px 48px rgba(43, 20, 11, 0.15)',
             overflow: 'hidden'
           }}
         >
           {/* Modal Header */}
-          <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(120, 75, 40, 0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#FFF8ED', fontWeight: '800', margin: 0 }}>
+          <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #E4D1B7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#2B140B', fontWeight: '800', margin: 0 }}>
               {editingAddrTarget ? 'Edit Delivery Address' : 'Add New Delivery Address'}
             </h3>
             <button
               type="button"
               onClick={() => setShowAddEditAddressModal(false)}
-              style={{ background: 'none', border: 'none', color: '#D9C3A5', cursor: 'pointer', padding: '0.25rem' }}
+              style={{ background: 'none', border: 'none', color: '#2B140B', cursor: 'pointer', padding: '0.25rem' }}
             >
               <X size={18} />
             </button>
@@ -1198,7 +1188,7 @@ export default function CheckoutPage() {
 
             {/* Address Type Selector */}
             <div>
-              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Address Label</label>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Address Label</label>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 {['Home', 'Work', 'Other'].map(type => (
                   <button
@@ -1210,9 +1200,9 @@ export default function CheckoutPage() {
                       fontSize: '0.8rem',
                       fontWeight: '800',
                       borderRadius: '8px',
-                      border: addressModalForm.addressType === type ? '1.5px solid #244f21' : '1px solid rgba(120, 75, 40, 0.35)',
-                      backgroundColor: addressModalForm.addressType === type ? 'rgba(36, 79, 33, 0.25)' : 'transparent',
-                      color: addressModalForm.addressType === type ? '#FFF8ED' : '#D9C3A5',
+                      border: addressModalForm.addressType === type ? '1.5px solid #2F6B3A' : '1px solid #E4D1B7',
+                      backgroundColor: addressModalForm.addressType === type ? '#EAEFE5' : '#FFFFFF',
+                      color: addressModalForm.addressType === type ? '#2F6B3A' : '#6B584C',
                       cursor: 'pointer',
                     }}
                   >
@@ -1224,81 +1214,81 @@ export default function CheckoutPage() {
 
             {/* Full Name */}
             <div>
-              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Recipient Name *</label>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Recipient Name *</label>
               <input
                 type="text"
                 required
                 value={addressModalForm.fullName}
                 onChange={(e) => setAddressModalForm(prev => ({ ...prev, fullName: e.target.value }))}
                 placeholder="Yash Mittal"
-                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.88rem', outline: 'none', backgroundColor: '#1A0B06', color: '#FFF8ED' }}
+                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B' }}
               />
             </div>
 
             {/* Phone */}
             <div>
-              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Mobile Phone *</label>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Mobile Phone *</label>
               <input
                 type="tel"
                 required
                 value={addressModalForm.phone}
                 onChange={(e) => setAddressModalForm(prev => ({ ...prev, phone: e.target.value }))}
                 placeholder="9876543210"
-                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.88rem', outline: 'none', backgroundColor: '#1A0B06', color: '#FFF8ED' }}
+                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B' }}
               />
             </div>
 
             {/* Building / Flat */}
             <div>
-              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>House / Flat / Building</label>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>House / Flat / Building</label>
               <input
                 type="text"
                 value={addressModalForm.building}
                 onChange={(e) => setAddressModalForm(prev => ({ ...prev, building: e.target.value }))}
                 placeholder="Flat 402, B Block"
-                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.88rem', outline: 'none', backgroundColor: '#1A0B06', color: '#FFF8ED' }}
+                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B' }}
               />
             </div>
 
             {/* Street Address */}
             <div>
-              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Street Address *</label>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Street Address *</label>
               <textarea
                 rows={2}
                 required
                 value={addressModalForm.addressLine}
                 onChange={(e) => setAddressModalForm(prev => ({ ...prev, addressLine: e.target.value }))}
                 placeholder="Sector 76, Main Road"
-                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.88rem', outline: 'none', backgroundColor: '#1A0B06', color: '#FFF8ED', resize: 'none' }}
+                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B', resize: 'none' }}
               />
             </div>
 
             {/* City, State, Pincode */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>City *</label>
+                <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>City *</label>
                 <input
                   type="text"
                   required
                   value={addressModalForm.city}
                   onChange={(e) => setAddressModalForm(prev => ({ ...prev, city: e.target.value }))}
                   placeholder="Noida"
-                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.85rem', outline: 'none', backgroundColor: '#1A0B06', color: '#FFF8ED' }}
+                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid #E4D1B7', fontSize: '0.85rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B' }}
                 />
               </div>
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>State *</label>
+                <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>State *</label>
                 <input
                   type="text"
                   required
                   value={addressModalForm.state}
                   onChange={(e) => setAddressModalForm(prev => ({ ...prev, state: e.target.value }))}
                   placeholder="Uttar Pradesh"
-                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.85rem', outline: 'none', backgroundColor: '#1A0B06', color: '#FFF8ED' }}
+                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid #E4D1B7', fontSize: '0.85rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B' }}
                 />
               </div>
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#D9C3A5', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Pincode *</label>
+                <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Pincode *</label>
                 <input
                   type="text"
                   required
@@ -1306,7 +1296,7 @@ export default function CheckoutPage() {
                   value={addressModalForm.pincode}
                   onChange={(e) => setAddressModalForm(prev => ({ ...prev, pincode: e.target.value }))}
                   placeholder="263153"
-                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid rgba(120, 75, 40, 0.35)', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: '#1A0B06', color: '#FFF8ED' }}
+                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid #E4D1B7', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: '#FFFFFF', color: '#2B140B' }}
                 />
               </div>
             </div>
@@ -1322,7 +1312,7 @@ export default function CheckoutPage() {
                   fontSize: '0.88rem',
                   fontWeight: '800',
                   borderRadius: '999px',
-                  backgroundColor: '#244f21',
+                  backgroundColor: '#2F6B3A',
                   color: '#FFFFFF',
                   border: 'none',
                   cursor: 'pointer',
@@ -1339,8 +1329,8 @@ export default function CheckoutPage() {
                   fontWeight: '800',
                   borderRadius: '999px',
                   backgroundColor: 'transparent',
-                  color: '#D9C3A5',
-                  border: '1px solid rgba(120, 75, 40, 0.4)',
+                  color: '#2B140B',
+                  border: '1px solid #E4D1B7',
                   cursor: 'pointer',
                 }}
               >
@@ -1364,36 +1354,36 @@ export default function CheckoutPage() {
       >
         <div
           style={{
-            backgroundColor: 'rgba(26, 11, 5, 0.98)',
+            backgroundColor: '#FBF6ED',
             borderRadius: '24px',
-            border: '1px solid rgba(120, 75, 40, 0.4)',
+            border: '1px solid #E4D1B7',
             width: '100%',
             maxWidth: '460px',
             padding: '2.5rem',
-            boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
+            boxShadow: '0 16px 48px rgba(43, 20, 11, 0.15)',
             position: 'relative'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <Lock size={18} color="#3F7D32" />
-            <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#3F7D32', fontWeight: '800' }}>MILASTY SECURE PAYMENT</span>
+            <Lock size={18} color="#2F6B3A" />
+            <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2F6B3A', fontWeight: '800' }}>MILASTY SECURE PAYMENT</span>
           </div>
-          <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#FFF8ED', fontWeight: '800', margin: '0 0 1.25rem' }}>
+          <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#2B140B', fontWeight: '800', margin: '0 0 1.25rem' }}>
             Razorpay Sandbox Simulator
           </h3>
 
-          <div style={{ backgroundColor: 'rgba(16, 7, 3, 0.8)', border: '1px solid rgba(120, 75, 40, 0.3)', borderRadius: '16px', padding: '1.15rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem', fontSize: '0.88rem' }}>
+          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E4D1B7', borderRadius: '16px', padding: '1.15rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem', fontSize: '0.88rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#D9C3A5' }}>Customer Name</span>
-              <span style={{ fontWeight: '700', color: '#FFF8ED' }}>{simulatePaymentData?.customerName}</span>
+              <span style={{ color: '#6B584C' }}>Customer Name</span>
+              <span style={{ fontWeight: '700', color: '#2B140B' }}>{simulatePaymentData?.customerName}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#D9C3A5' }}>Razorpay Order ID</span>
-              <span style={{ fontWeight: '700', color: '#FFF8ED', fontFamily: 'monospace' }}>{simulatePaymentData?.razorpayOrderId}</span>
+              <span style={{ color: '#6B584C' }}>Razorpay Order ID</span>
+              <span style={{ fontWeight: '700', color: '#2B140B', fontFamily: 'monospace' }}>{simulatePaymentData?.razorpayOrderId}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#D9C3A5' }}>Exact Amount to Pay</span>
-              <span style={{ fontWeight: '850', color: '#A8C47A', fontSize: '1.15rem' }}>₹{simulatePaymentData?.grandTotal}</span>
+              <span style={{ color: '#6B584C' }}>Exact Amount to Pay</span>
+              <span style={{ fontWeight: '850', color: '#2F6B3A', fontSize: '1.15rem' }}>₹{simulatePaymentData?.grandTotal}</span>
             </div>
           </div>
 
@@ -1409,7 +1399,7 @@ export default function CheckoutPage() {
                 };
                 await simulatePaymentData.options.handler(response);
               }}
-              style={{ width: '100%', height: '48px', borderRadius: '999px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#244f21', border: 'none', color: '#FFFFFF', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem', boxShadow: '0 4px 16px rgba(36, 79, 33, 0.4)' }}
+              style={{ width: '100%', height: '48px', borderRadius: '999px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#2F6B3A', border: 'none', color: '#FFFFFF', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem', boxShadow: '0 4px 16px rgba(47, 107, 58, 0.3)' }}
             >
               Simulate Successful Payment
             </button>
@@ -1421,7 +1411,7 @@ export default function CheckoutPage() {
                 setErrorMessage('Payment failed. Your order has not been placed.');
                 setLoading(false);
               }}
-              style={{ width: '100%', height: '48px', borderRadius: '999px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#b85c3a', border: 'none', color: '#FFFFFF', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
+              style={{ width: '100%', height: '48px', borderRadius: '999px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#C0392B', border: 'none', color: '#FFFFFF', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
             >
               Simulate Failed Payment
             </button>
@@ -1433,7 +1423,7 @@ export default function CheckoutPage() {
                   simulatePaymentData.options.modal.ondismiss();
                 }
               }}
-              style={{ width: '100%', height: '44px', borderRadius: '999px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(120, 75, 40, 0.4)', color: '#D9C3A5', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '800' }}
+              style={{ width: '100%', height: '44px', borderRadius: '999px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E4D1B7', color: '#2B140B', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '800' }}
             >
               Cancel / Close (No Order Created)
             </button>

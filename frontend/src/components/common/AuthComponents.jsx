@@ -53,10 +53,8 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
       className="milasty-auth-page light-bg-page"
       style={{
         minHeight: '100vh',
-        backgroundImage: 'url(/images/register_login_background_image.jpeg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
+        backgroundColor: '#F5EBDD',
+        backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.6) 0%, rgba(245,235,221,0) 70%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -65,16 +63,6 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
         boxSizing: 'border-box',
       }}
     >
-      {/* Background Soft Dark Overlay for depth contrast */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundColor: 'rgba(25, 14, 8, 0.35)',
-          pointerEvents: 'none',
-          zIndex: 1,
-        }}
-      />
 
       {/* Central Card (#F8F3E9 warm ivory/cream) */}
       <div

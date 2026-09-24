@@ -487,7 +487,7 @@ export default function Home() {
       />
 
       {/* Home Main Content Layer */}
-      <div className="home-content" style={{ position: 'relative', zIndex: 3 }}>
+      <div className="home-content" style={{ position: 'relative', zIndex: 3, backgroundColor: '#F5EBDD' }}>
 
         {/* ================================================================== */}
         {/* SECTION 1 — HERO                                                   */}
@@ -497,136 +497,189 @@ export default function Home() {
           className="hero-section"
           style={{
             position: 'relative',
-            height: isMobile ? 'auto' : '92vh',
-            minHeight: isMobile ? 'auto' : '600px',
-            overflow: 'hidden',
-            backgroundColor: 'transparent',
+            minHeight: isMobile ? 'auto' : '680px',
+            backgroundColor: '#F5EBDD',
+            backgroundImage: 'radial-gradient(ellipse at 70% 30%, #FBF6ED 0%, #F5EBDD 60%, #EFE1CF 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             boxSizing: 'border-box',
-            padding: isMobile ? '6rem 1rem 3.5rem' : '0 1.5rem',
+            padding: isMobile ? '3.5rem 1.25rem 3rem' : '4.5rem 2.5rem',
+            borderBottom: '1px solid rgba(120, 75, 40, 0.12)',
+            overflow: 'hidden',
           }}
         >
           <div
-            className="container hero-content"
+            className="container hero-container"
             style={{
-              position: 'relative',
-              zIndex: 3,
-              textAlign: 'center',
-              color: '#FFFFFF',
-              display: 'flex',
-              flexDirection: 'column',
+              maxWidth: '1280px',
+              margin: '0 auto',
+              width: '100%',
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : '1.1fr 0.9fr',
+              gap: isMobile ? '2.5rem' : '3.5rem',
               alignItems: 'center',
-              justifyContent: 'center',
-              opacity: isMobile ? 1 : Math.max(0, 1 - scrollY / 550),
-              transform: isMobile ? 'none' : `translateY(${-scrollY * 0.12}px)`,
-              transition: isMobile ? 'none' : 'opacity 0.1s ease-out, transform 0.1s ease-out',
             }}
           >
-            <span
-              style={{
-                marginBottom: '1.25rem',
-                fontSize: '0.85rem',
+            {/* Left Content Column */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: isMobile ? 'center' : 'flex-start',
+              textAlign: isMobile ? 'center' : 'left',
+            }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontSize: '0.8rem',
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: 'var(--accent-gold)',
+                color: '#2F6B3A',
                 fontWeight: '800',
-                textShadow: '0 2px 4px rgba(0, 0, 0, 0.4)'
-              }}
-            >
-              ✦ HANDCRAFTED MILLET BAKES
-            </span>
+                marginBottom: '1rem',
+                backgroundColor: 'rgba(47, 107, 58, 0.08)',
+                padding: '0.35rem 0.9rem',
+                borderRadius: '999px',
+                border: '1px solid rgba(47, 107, 58, 0.2)',
+              }}>
+                <Leaf size={14} color="#2F6B3A" />
+                <span>HANDCRAFTED MILLET BAKES</span>
+              </div>
 
-            <h1
-              className="hero-heading"
-              style={{
-                fontSize: 'clamp(2.4rem, 6vw, 4.2rem)',
-                lineHeight: '1.12',
-                color: '#FFFFFF',
-                marginBottom: '1.25rem',
-                letterSpacing: '-0.01em',
-                fontFamily: 'var(--font-serif)',
-                fontWeight: '900',
-                textShadow: '0 4px 16px rgba(0, 0, 0, 0.5)',
-                maxWidth: '850px'
-              }}
-            >
-              Ancient Grains. Modern Cravings.
-            </h1>
-
-            <p
-              className="hero-subheading"
-              style={{
-                fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-                color: '#FFFFFF',
-                lineHeight: '1.7',
-                marginBottom: '2.5rem',
-                maxWidth: '650px',
-                textShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
-                fontWeight: '500'
-              }}
-            >
-              Delicious cookies, crackers & brownies made with millets, jaggery & desi ghee — crafted for the way you snack today.
-            </p>
-
-            <div className="hero-buttons" style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-              <Link
-                to="/shop"
-                className="btn-primary"
+              <h1
+                className="hero-heading"
                 style={{
-                  padding: '1rem 2.5rem',
-                  fontSize: '0.95rem',
-                  backgroundColor: '#c89b3c',
-                  color: '#FFFFFF',
-                  border: 'none',
+                  fontSize: 'clamp(2.6rem, 5vw, 4.4rem)',
+                  lineHeight: '1.08',
+                  color: '#2B140B',
+                  marginBottom: '1.25rem',
+                  letterSpacing: '-0.02em',
+                  fontFamily: 'var(--font-serif)',
                   fontWeight: '800',
-                  textDecoration: 'none',
+                }}
+              >
+                Ancient Grains.<br />
+                <span style={{ color: '#2F6B3A', fontStyle: 'italic' }}>Modern Cravings.</span>
+              </h1>
+
+              <p
+                className="hero-subheading"
+                style={{
+                  fontSize: 'clamp(1rem, 1.8vw, 1.18rem)',
+                  color: '#5A3422',
+                  lineHeight: '1.65',
+                  marginBottom: '2rem',
+                  maxWidth: '560px',
+                  fontWeight: '500'
+                }}
+              >
+                Delicious cookies, crackers & brownies made with <strong>millets</strong>, <strong>jaggery & desi ghee</strong> — crafted for the way you snack today.
+              </p>
+
+              {/* Rating & Social Proof */}
+              <div
+                style={{
+                  marginBottom: '2rem',
                   display: 'inline-flex',
+                  gap: '0.6rem',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  borderRadius: '999px',
-                  boxShadow: '0 8px 24px rgba(200, 155, 60, 0.35)'
+                  fontSize: '0.88rem',
+                  color: '#2A170F',
+                  fontWeight: '700',
+                  flexWrap: 'wrap',
+                  justifyContent: isMobile ? 'center' : 'flex-start',
                 }}
               >
-                <span>Explore Our Bakes →</span>
-              </Link>
-              <a
-                href="#why-milasty"
-                className="btn-secondary"
-                style={{
-                  padding: '0.95rem 2.25rem',
-                  fontSize: '0.95rem',
-                  borderColor: '#c89b3c',
-                  color: '#c89b3c',
-                  fontWeight: '800',
-                  backgroundColor: 'rgba(200, 155, 60, 0.12)',
-                  borderRadius: '999px',
-                  textDecoration: 'none'
-                }}
-              >
-                <span>Why MILASTY?</span>
-              </a>
+                <div style={{ display: 'flex', color: '#2F6B3A' }}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={15} fill="#2F6B3A" color="#2F6B3A" />
+                  ))}
+                </div>
+                <span style={{ fontWeight: '800', color: '#2B140B' }}>4.9/5</span>
+                <span style={{ color: '#634B3B' }}>|</span>
+                <span style={{ color: '#634B3B', textDecoration: 'underline' }}>Loved by 10,000+ Conscious Snackers</span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="hero-buttons" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start', alignItems: 'center' }}>
+                <Link
+                  to="/shop"
+                  className="btn-primary"
+                  style={{
+                    padding: '0.95rem 2.2rem',
+                    fontSize: '0.95rem',
+                    backgroundColor: '#2F6B3A',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    fontWeight: '800',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    borderRadius: '999px',
+                    boxShadow: '0 6px 20px rgba(47, 107, 58, 0.3)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <span>Explore Our Bakes →</span>
+                </Link>
+
+                <a
+                  href="#why-milasty"
+                  className="btn-secondary"
+                  style={{
+                    padding: '0.9rem 2rem',
+                    fontSize: '0.95rem',
+                    borderColor: '#2B140B',
+                    color: '#2B140B',
+                    fontWeight: '800',
+                    backgroundColor: 'transparent',
+                    border: '1.5px solid #2B140B',
+                    borderRadius: '999px',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                  }}
+                >
+                  <span>Why MILASTY?</span>
+                </a>
+              </div>
             </div>
 
-            {/* Micro Rating Badge */}
-            <div
-              style={{
-                marginTop: isMobile ? '2rem' : '2.75rem',
-                display: 'inline-flex',
-                gap: '0.5rem',
-                alignItems: 'center',
-                fontSize: '0.85rem',
-                color: '#FFFDF9',
-                fontWeight: '700'
-              }}
-            >
-              <div style={{ display: 'flex', color: '#b9cd94' }}>
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} fill="#b9cd94" color="#b9cd94" />
-                ))}
+            {/* Right Photography Column — Static Food Art matching Reference 1 */}
+            <div style={{
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <div style={{
+                position: 'relative',
+                borderRadius: '28px',
+                overflow: 'hidden',
+                boxShadow: '0 20px 50px rgba(42, 23, 15, 0.15)',
+                border: '4px solid #FFFFFF',
+                width: '100%',
+                maxHeight: '520px',
+              }}>
+                <img
+                  src="https://res.cloudinary.com/dmm8lfc3x/image/upload/v1787068808/hero_millet_bakes.jpg"
+                  alt="Handcrafted MILASTY Millet Bakes"
+                  onError={(e) => {
+                    // Fallback to high quality static product shot if Cloudinary asset loads
+                    e.currentTarget.src = "/images/image1.jpeg";
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    maxHeight: '520px',
+                    objectFit: 'cover',
+                    display: 'block',
+                  }}
+                />
               </div>
-              <span style={{ color: 'var(--accent-gold)', fontWeight: '800' }}>4.9/5 Loved by 10,000+ Conscious Snackers</span>
             </div>
           </div>
         </section>

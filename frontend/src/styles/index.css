@@ -1,49 +1,49 @@
 :root {
-  --bg-main: #24130D;
-  /* Deep chocolate */
-  --bg-card: rgba(50, 26, 18, 0.60);
-  /* Translucent cocoa */
-  --bg-subtle: #321A12;
-  /* Dark cocoa */
-  --bg-sand: #4A281B;
-  /* Cocoa */
+  --bg-main: #F5EBDD;
+  /* Warm cream */
+  --bg-card: #FFFFFF;
+  /* Pure Ivory / Soft Card */
+  --bg-subtle: #FBF6ED;
+  /* Soft Ivory */
+  --bg-sand: #EFE1CF;
+  /* Secondary Cream / Warm Beige */
 
-  --primary-dark: #b9cd94;
-  /* Milasty Sage Green */
-  --primary-brown: #E8DCCB;
-  /* Soft cream */
-  --primary-light: #6B4030;
-  /* Warm brown */
+  --primary-dark: #2F6B3A;
+  /* MILASTY Natural Green */
+  --primary-brown: #2B140B;
+  /* Deep Chocolate */
+  --primary-light: #5A3422;
+  /* Medium Cocoa */
 
-  --accent-terracotta: #b9cd94;
-  --accent-gold: #b9cd94;
-  /* Text Light Green */
-  --accent-btn-bg: #244f21;
-  /* Button Dark Green */
-  --accent-olive: #3E4D3C;
-  --accent-amber: #b9cd94;
+  --accent-terracotta: #2F6B3A;
+  --accent-gold: #2F6B3A;
+  /* Natural Green Accent */
+  --accent-btn-bg: #2F6B3A;
+  /* Button MILASTY Green */
+  --accent-olive: #557A43;
+  --accent-amber: #2F6B3A;
 
-  --text-dark: #F5EBDD;
-  /* Cream text */
-  --text-muted: #E8DCCB;
-  /* Soft cream */
-  --text-light: #FDFBF7;
-  /* White */
+  --text-dark: #2A170F;
+  /* Primary Dark Chocolate Text */
+  --text-muted: #634B3B;
+  /* Secondary Cocoa Text */
+  --text-light: #806B59;
+  /* Muted Text */
 
-  --border-color: rgba(245, 235, 221, 0.25);
-  /* Translucent cream border */
-  --border-gold: rgba(185, 205, 148, 0.40);
-  /* Translucent green border */
+  --border-color: rgba(120, 75, 40, 0.16);
+  /* Soft warm beige/brown border */
+  --border-gold: rgba(47, 107, 58, 0.32);
+  /* Soft green border */
 
-  --shadow-sm: 0 10px 35px rgba(0, 0, 0, 0.18);
-  --shadow-md: 0 12px 35px rgba(0, 0, 0, 0.20);
-  --shadow-lg: 0 24px 50px rgba(0, 0, 0, 0.30);
+  --shadow-sm: 0 4px 16px rgba(42, 23, 15, 0.05);
+  --shadow-md: 0 8px 24px rgba(42, 23, 15, 0.08);
+  --shadow-lg: 0 16px 40px rgba(42, 23, 15, 0.12);
 
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --radius-sm: 8px;
-  --radius-md: 24px;
-  --radius-lg: 28px;
+  --radius-sm: 10px;
+  --radius-md: 20px;
+  --radius-lg: 24px;
   --radius-full: 9999px;
 
   --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -104,7 +104,7 @@ body.customer-portal-body .account-dashboard-page {
   color: #F0F4F1 !important;
 }
 
-/* Universal Page & Section Background Overrides for Cocoa Theme */
+/* Universal Page & Section Background Overrides for Warm Cream Theme */
 .products-page,
 .shop-page,
 .contact-page,

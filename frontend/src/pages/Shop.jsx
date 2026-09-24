@@ -467,21 +467,10 @@ export default function Shop() {
         overflowX: 'hidden',
         boxSizing: 'border-box',
         position: 'relative',
-        backgroundImage: 'url(/images/ritiual_background_image.jpeg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#F5EBDD',
+        backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.6) 0%, rgba(245,235,221,0) 70%)',
       }}
     >
-      {/* Dark overlay matching MILASTY Shop theme */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.35) 0%, rgba(36, 19, 13, 0.25) 100%)',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
 
 
