@@ -644,7 +644,7 @@ export default function CheckoutPage() {
                   )}
                 </div>
               ) : savedAddresses.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '1.75rem', backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1.5px dashed #E4D1B7', marginBottom: '1.5rem' }}>
+                <div style={{ textAlign: 'center', padding: '1.75rem', backgroundColor: '#F3EDE2', borderRadius: '16px', border: '1.5px dashed #D8CCB8', marginBottom: '1.5rem' }}>
                   <MapPin size={32} color="#2F6B3A" style={{ margin: '0 auto 0.5rem' }} />
                   <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#2B140B', marginBottom: '0.25rem' }}>No saved delivery addresses found</div>
                   <p style={{ fontSize: '0.8rem', color: '#6B584C', margin: '0 0 1rem 0' }}>Add a delivery address below to proceed with your order.</p>
@@ -684,7 +684,7 @@ export default function CheckoutPage() {
                     value={formData.customerName}
                     onChange={handleInputChange}
                     placeholder="Vansh Mittal"
-                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.customerName ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
+                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.customerName ? '1.5px solid #C0392B' : '1.5px solid #D8CCB8', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#F3EDE2', color: '#2B140B', fontWeight: '600' }}
                   />
                   {fieldErrors.customerName && <span style={{ fontSize: '0.75rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.customerName}</span>}
                 </div>
@@ -699,7 +699,7 @@ export default function CheckoutPage() {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="mvansh322@gmail.com"
-                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: '1.5px solid #D8CCB8', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#F3EDE2', color: '#2B140B', fontWeight: '600' }}
                     />
                   </div>
                   <div>
@@ -711,7 +711,7 @@ export default function CheckoutPage() {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="8791383595"
-                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.phone ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.phone ? '1.5px solid #C0392B' : '1.5px solid #D8CCB8', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#F3EDE2', color: '#2B140B', fontWeight: '600' }}
                     />
                     {fieldErrors.phone && <span style={{ fontSize: '0.75rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.phone}</span>}
                   </div>
@@ -726,7 +726,7 @@ export default function CheckoutPage() {
                     value={formData.building}
                     onChange={handleInputChange}
                     placeholder="Flat 402, B Block, Royal Palm Apartments"
-                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
+                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: '1.5px solid #D8CCB8', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#F3EDE2', color: '#2B140B', fontWeight: '600' }}
                   />
                 </div>
 
@@ -740,7 +740,7 @@ export default function CheckoutPage() {
                     value={formData.addressLine}
                     onChange={handleInputChange}
                     placeholder="Sector 76"
-                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.addressLine ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600', resize: 'none' }}
+                    style={{ width: '100%', padding: '0.75rem 0.95rem', borderRadius: '12px', border: fieldErrors.addressLine ? '1.5px solid #C0392B' : '1.5px solid #D8CCB8', fontSize: '0.9rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#F3EDE2', color: '#2B140B', fontWeight: '600', resize: 'none' }}
                   />
                   {fieldErrors.addressLine && <span style={{ fontSize: '0.75rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.addressLine}</span>}
                 </div>
@@ -756,7 +756,7 @@ export default function CheckoutPage() {
                       value={formData.city}
                       onChange={handleInputChange}
                       placeholder="Noida"
-                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.city ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.city ? '1.5px solid #C0392B' : '1.5px solid #D8CCB8', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#F3EDE2', color: '#2B140B', fontWeight: '600' }}
                     />
                     {fieldErrors.city && <span style={{ fontSize: '0.72rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.city}</span>}
                   </div>
@@ -769,7 +769,7 @@ export default function CheckoutPage() {
                       value={formData.state}
                       onChange={handleInputChange}
                       placeholder="Uttar Pradesh"
-                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.state ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#FFFFFF', color: '#2B140B', fontWeight: '600' }}
+                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.state ? '1.5px solid #C0392B' : '1.5px solid #D8CCB8', fontSize: '0.88rem', outline: 'none', fontFamily: 'inherit', backgroundColor: '#F3EDE2', color: '#2B140B', fontWeight: '600' }}
                     />
                     {fieldErrors.state && <span style={{ fontSize: '0.72rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.state}</span>}
                   </div>
@@ -783,7 +783,7 @@ export default function CheckoutPage() {
                       value={formData.pincode}
                       onChange={handleInputChange}
                       placeholder="263153"
-                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.pincode ? '1.5px solid #C0392B' : '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: '#FFFFFF', color: '#2B140B' }}
+                      style={{ width: '100%', padding: '0.75rem 0.75rem', borderRadius: '12px', border: fieldErrors.pincode ? '1.5px solid #C0392B' : '1.5px solid #D8CCB8', fontSize: '0.88rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: '#F3EDE2', color: '#2B140B' }}
                     />
                     {fieldErrors.pincode && <span style={{ fontSize: '0.72rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.pincode}</span>}
                   </div>
@@ -1038,9 +1038,9 @@ export default function CheckoutPage() {
                   key={addrId}
                   onClick={() => handleSelectAddress(addr)}
                   style={{
-                    backgroundColor: isSelected ? '#EAEFE5' : '#FFFFFF',
+                    backgroundColor: isSelected ? '#EAEFE5' : '#F3EDE2',
                     borderRadius: '16px',
-                    border: isSelected ? '2px solid #2F6B3A' : '1px solid #E4D1B7',
+                    border: isSelected ? '2px solid #2F6B3A' : '1.5px solid #D8CCB8',
                     padding: '1.15rem',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
@@ -1204,7 +1204,7 @@ export default function CheckoutPage() {
                       fontWeight: '800',
                       borderRadius: '8px',
                       border: addressModalForm.addressType === type ? '1.5px solid #2F6B3A' : '1px solid #E4D1B7',
-                      backgroundColor: addressModalForm.addressType === type ? '#EAEFE5' : '#FFFFFF',
+                      backgroundColor: addressModalForm.addressType === type ? '#EAEFE5' : '#EEE6D8',
                       color: addressModalForm.addressType === type ? '#2F6B3A' : '#6B584C',
                       cursor: 'pointer',
                     }}
@@ -1224,7 +1224,7 @@ export default function CheckoutPage() {
                 value={addressModalForm.fullName}
                 onChange={(e) => setAddressModalForm(prev => ({ ...prev, fullName: e.target.value }))}
                 placeholder="Yash Mittal"
-                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B' }}
+                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #D8CCB8', fontSize: '0.88rem', outline: 'none', backgroundColor: '#F3EDE2', color: '#2B140B' }}
               />
             </div>
 
@@ -1237,7 +1237,7 @@ export default function CheckoutPage() {
                 value={addressModalForm.phone}
                 onChange={(e) => setAddressModalForm(prev => ({ ...prev, phone: e.target.value }))}
                 placeholder="9876543210"
-                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B' }}
+                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #D8CCB8', fontSize: '0.88rem', outline: 'none', backgroundColor: '#F3EDE2', color: '#2B140B' }}
               />
             </div>
 
@@ -1249,7 +1249,7 @@ export default function CheckoutPage() {
                 value={addressModalForm.building}
                 onChange={(e) => setAddressModalForm(prev => ({ ...prev, building: e.target.value }))}
                 placeholder="Flat 402, B Block"
-                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B' }}
+                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #D8CCB8', fontSize: '0.88rem', outline: 'none', backgroundColor: '#F3EDE2', color: '#2B140B' }}
               />
             </div>
 
@@ -1262,7 +1262,7 @@ export default function CheckoutPage() {
                 value={addressModalForm.addressLine}
                 onChange={(e) => setAddressModalForm(prev => ({ ...prev, addressLine: e.target.value }))}
                 placeholder="Sector 76, Main Road"
-                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #E4D1B7', fontSize: '0.88rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B', resize: 'none' }}
+                style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1.5px solid #D8CCB8', fontSize: '0.88rem', outline: 'none', backgroundColor: '#F3EDE2', color: '#2B140B', resize: 'none' }}
               />
             </div>
 
@@ -1276,7 +1276,7 @@ export default function CheckoutPage() {
                   value={addressModalForm.city}
                   onChange={(e) => setAddressModalForm(prev => ({ ...prev, city: e.target.value }))}
                   placeholder="Noida"
-                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid #E4D1B7', fontSize: '0.85rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B' }}
+                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid #D8CCB8', fontSize: '0.85rem', outline: 'none', backgroundColor: '#F3EDE2', color: '#2B140B' }}
                 />
               </div>
               <div>
@@ -1287,7 +1287,7 @@ export default function CheckoutPage() {
                   value={addressModalForm.state}
                   onChange={(e) => setAddressModalForm(prev => ({ ...prev, state: e.target.value }))}
                   placeholder="Uttar Pradesh"
-                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid #E4D1B7', fontSize: '0.85rem', outline: 'none', backgroundColor: '#FFFFFF', color: '#2B140B' }}
+                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid #D8CCB8', fontSize: '0.85rem', outline: 'none', backgroundColor: '#F3EDE2', color: '#2B140B' }}
                 />
               </div>
               <div>
@@ -1299,7 +1299,7 @@ export default function CheckoutPage() {
                   value={addressModalForm.pincode}
                   onChange={(e) => setAddressModalForm(prev => ({ ...prev, pincode: e.target.value }))}
                   placeholder="263153"
-                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid #E4D1B7', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: '#FFFFFF', color: '#2B140B' }}
+                  style={{ width: '100%', padding: '0.65rem 0.65rem', borderRadius: '10px', border: '1.5px solid #D8CCB8', fontSize: '0.85rem', outline: 'none', fontFamily: 'monospace', fontWeight: '700', backgroundColor: '#F3EDE2', color: '#2B140B' }}
                 />
               </div>
             </div>
@@ -1375,7 +1375,7 @@ export default function CheckoutPage() {
             Razorpay Sandbox Simulator
           </h3>
 
-          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E4D1B7', borderRadius: '16px', padding: '1.15rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem', fontSize: '0.88rem' }}>
+          <div style={{ backgroundColor: '#F3EDE2', border: '1.5px solid #D8CCB8', borderRadius: '16px', padding: '1.15rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem', fontSize: '0.88rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: '#6B584C' }}>Customer Name</span>
               <span style={{ fontWeight: '700', color: '#2B140B' }}>{simulatePaymentData?.customerName}</span>

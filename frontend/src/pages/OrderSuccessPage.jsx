@@ -122,13 +122,14 @@ export default function OrderSuccessPage() {
           ) : (
             order && (
               <div 
+                className="order-success-detail-card"
                 style={{ 
-                  backgroundColor: '#FFFFFF', 
+                  backgroundColor: '#F8F2E7', 
                   padding: '1.5rem', 
                   borderRadius: '16px', 
                   textAlign: 'left', 
                   marginBottom: '2.5rem', 
-                  border: '1px solid #E4D1B7',
+                  border: '1.5px solid #D9C4A8',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.85rem'
@@ -202,7 +203,7 @@ export default function OrderSuccessPage() {
               className="btn-secondary" 
               style={{ 
                 padding: '0.85rem 1.75rem',
-                border: '1px solid #E4D1B7',
+                border: '1.5px solid #D8C4A9',
                 color: '#2B140B',
                 borderRadius: '999px',
                 fontWeight: '800',
@@ -210,7 +211,7 @@ export default function OrderSuccessPage() {
                 alignItems: 'center',
                 gap: '0.5rem',
                 fontSize: '0.88rem',
-                backgroundColor: '#FFFFFF'
+                backgroundColor: '#F4EBDD'
               }}
             >
               <span>Continue Shopping</span>

@@ -3690,13 +3690,29 @@ select.admin-input {
 }
 
 /* ==================================================
-   UNIVERSAL DISTINCT CARD & BUTTON BORDERS
+   MILASTY GLOBAL BORDER SYSTEM
+   Premium warm cream brand — subtle, consistent, non-heavy
    ================================================== */
+
+/* ---- Design Tokens ---- */
+:root {
+  --milasty-card-border: 1.5px solid rgba(74, 48, 35, 0.16);
+  --milasty-card-border-hover: 1.5px solid #2F6B3A;
+  --milasty-card-bg: #F4EBDD;
+  --milasty-input-border: 1.5px solid #D8CCB8;
+  --milasty-input-border-focus: 1.5px solid #2F6B3A;
+  --milasty-input-bg: #F3EDE2;
+  --milasty-popup-border: 1.5px solid #D9C4A8;
+  --milasty-popup-bg: #FBF6ED;
+}
+
+/* ---- Universal Card Border System ---- */
+/* Applies to every named card class used across all pages */
 .card,
 .milasty-product-card,
 .home-product-card,
 .product-card,
-.glass-card,
+.glass-card:not(.account-dashboard-page *):not(.customer-main-area *),
 .category-card,
 .testimonial-card,
 .feature-card,
@@ -3707,43 +3723,256 @@ select.admin-input {
 .nutrition-card,
 .recipe-card,
 .trust-strip-card,
-.category-circle-wrap {
-  border: 1.5px solid #D8C4A9 !important;
+.checkout-info-card,
+.cart-item-card,
+.wishlist-item-card,
+.order-card,
+.order-item-card,
+.contact-card,
+.policy-card,
+.summary-card {
+  border: var(--milasty-card-border) !important;
+  background-color: var(--milasty-card-bg);
 }
 
+/* Card Hover — accent green border lift */
+.card:hover,
 .milasty-product-card:hover,
 .home-product-card:hover,
 .product-card:hover,
-.glass-card:hover,
+.glass-card:not(.account-dashboard-page *):not(.customer-main-area *):hover,
 .category-card:hover,
 .testimonial-card:hover,
 .feature-card:hover,
-.category-circle-wrap:hover {
-  border-color: #2F6B3A !important;
+.category-circle-wrap:hover,
+.checkout-info-card:hover,
+.wishlist-item-card:hover,
+.order-card:hover,
+.contact-card:hover {
+  border: var(--milasty-card-border-hover) !important;
 }
 
-/* Universal Button Borders & Elevation */
-button:not(.plain-btn):not(.nav-link),
-.btn,
+/* ---- Category Circle Wrap (shop/home page circles) ---- */
+.category-circle-wrap {
+  border: var(--milasty-card-border) !important;
+}
+
+/* ---- Form Inputs, Textareas, Selects — Global Light Theme ---- */
+/* Scoped to cream-theme pages (NOT customer portal / admin) */
+.checkout-page input:not([type="radio"]):not([type="checkbox"]):not([type="submit"]):not([type="button"]),
+.checkout-page textarea,
+.checkout-page select,
+.cart-page input:not([type="radio"]):not([type="checkbox"]):not([type="submit"]):not([type="button"]),
+.cart-page select,
+.contact-page input:not([type="submit"]):not([type="button"]),
+.contact-page textarea,
+.contact-page select,
+.wishlist-page input:not([type="submit"]):not([type="button"]),
+.login-page input:not([type="submit"]):not([type="button"]),
+.register-page input:not([type="submit"]):not([type="button"]),
+.milasty-auth-page input:not([type="submit"]):not([type="button"]),
+.milasty-auth-input,
+.shop-page input:not([type="radio"]):not([type="checkbox"]):not([type="submit"]):not([type="button"]),
+.shop-page textarea,
+.nutrition-page input:not([type="submit"]):not([type="button"]),
+.nutrition-page textarea {
+  border: var(--milasty-input-border) !important;
+  background-color: var(--milasty-input-bg) !important;
+  color: #2B1710 !important;
+  border-radius: 12px;
+}
+
+.checkout-page input:focus,
+.checkout-page textarea:focus,
+.checkout-page select:focus,
+.cart-page input:focus,
+.contact-page input:focus,
+.contact-page textarea:focus,
+.milasty-auth-input:focus,
+.shop-page input:focus {
+  border: var(--milasty-input-border-focus) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(47, 107, 58, 0.12) !important;
+}
+
+/* ---- Search Bar Borders ---- */
+input[type="search"],
+.search-input,
+.shop-search-bar input,
+.product-search input,
+[class*="search"] input {
+  border: var(--milasty-input-border) !important;
+  background-color: var(--milasty-input-bg) !important;
+  color: #2B1710 !important;
+  border-radius: 999px !important;
+}
+
+input[type="search"]:focus,
+.search-input:focus,
+.shop-search-bar input:focus {
+  border: var(--milasty-input-border-focus) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(47, 107, 58, 0.12) !important;
+}
+
+/* ---- Popup / Modal Overlay Panels ---- */
+.modal-panel,
+.filter-modal-panel,
+.category-modal-panel,
+.address-modal-panel,
+.popup-card,
+[class*="modal-content"],
+[class*="popup-content"] {
+  border: var(--milasty-popup-border) !important;
+  background-color: var(--milasty-popup-bg) !important;
+}
+
+/* ---- Page-Specific Card Containers ---- */
+
+/* Order Success page inner detail block */
+.order-success-page .order-details-block,
+.order-success-detail-card {
+  background-color: #F8F2E7 !important;
+  border: 1.5px solid #D9C4A8 !important;
+  border-radius: 16px !important;
+}
+
+/* Cart page item rows */
+.cart-item-row {
+  border: 1.5px solid rgba(74, 48, 35, 0.13) !important;
+  border-radius: 16px !important;
+  background-color: #F8F2E7 !important;
+}
+
+/* Coupon / promo input container */
+.coupon-input-wrap,
+.coupon-bar {
+  border: 1.5px solid #D8C4A9 !important;
+  border-radius: 12px !important;
+  background-color: #F3EDE2 !important;
+  overflow: hidden;
+}
+
+/* Wishlist item cards */
+.wishlist-item-card {
+  border: 1.5px solid rgba(74, 48, 35, 0.16) !important;
+  border-radius: 20px !important;
+  background-color: #F4EBDD !important;
+}
+
+/* Nutrition page recipe/ingredient cards */
+.nutrition-card,
+.ingredient-card {
+  border: 1.5px solid #D9C4A8 !important;
+  border-radius: 20px !important;
+  background-color: #F4EBDD !important;
+}
+
+/* Contact page form wrapper card */
+.contact-form-card,
+.contact-info-card {
+  border: 1.5px solid #D9C4A8 !important;
+  border-radius: 24px !important;
+  background-color: #FBF6ED !important;
+}
+
+/* Order history / order list cards */
+.order-card,
+.order-history-card {
+  border: 1.5px solid rgba(74, 48, 35, 0.16) !important;
+  border-radius: 20px !important;
+  background-color: #F8F2E7 !important;
+}
+
+/* ---- Button Border System ---- */
+/* Primary green CTA buttons */
 .btn-primary,
+button.btn-primary,
+a.btn-primary {
+  border: 1.5px solid #2F6B3A !important;
+}
+
+/* Secondary cream outline buttons */
 .btn-secondary,
+button.btn-secondary,
+a.btn-secondary {
+  border: 1.5px solid #D8C4A9 !important;
+}
+
+/* Ghost / Outline buttons */
 .btn-outline,
-.btn-accent {
-  border-width: 1.5px !important;
-  border-style: solid !important;
+button.btn-outline,
+a.btn-outline {
+  border: 1.5px solid #2F6B3A !important;
 }
 
-.btn-primary,
-button.btn-primary {
-  border-color: #2F6B3A !important;
+/* ---- Section Dividers / Separator Lines ---- */
+/* Horizontal rule inside cards */
+.milasty-divider,
+hr.milasty-hr {
+  border: none !important;
+  border-top: 1px solid rgba(74, 48, 35, 0.12) !important;
+  margin: 1rem 0 !important;
 }
 
-.btn-secondary,
-button.btn-secondary {
-  border-color: #D8C4A9 !important;
+/* ---- Image Thumbnail Borders ---- */
+/* Product images in cart / checkout / order pages */
+.checkout-page img,
+.cart-page img,
+.order-card img,
+.wishlist-item-card img {
+  border: 1px solid rgba(74, 48, 35, 0.13) !important;
+  border-radius: 10px !important;
 }
 
-.btn-outline,
-button.btn-outline {
-  border-color: #2F6B3A !important;
+/* ---- Hover Transition for All Bordered Cards ---- */
+.card,
+.milasty-product-card,
+.home-product-card,
+.product-card,
+.wishlist-item-card,
+.order-card,
+.contact-card,
+.checkout-info-card {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease !important;
+}
+
+/* ---- Trust / Info Strip Rows ---- */
+.trust-strip,
+.info-strip,
+.trust-strip-row {
+  border-top: 1px solid rgba(74, 48, 35, 0.10) !important;
+  border-bottom: 1px solid rgba(74, 48, 35, 0.10) !important;
+}
+
+/* ---- Tags / Pills / Badges ---- */
+.badge-tag,
+.filter-tag,
+.category-tag {
+  border: 1px solid rgba(74, 48, 35, 0.18) !important;
+  border-radius: 999px !important;
+}
+
+/* ---- Footer Newsletter Input ---- */
+.footer-newsletter-input,
+footer input[type="email"],
+footer input[type="text"] {
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #F5EBDD !important;
+}
+
+/* ---- Responsive: Ensure borders don't cause overflow on mobile ---- */
+@media (max-width: 768px) {
+  .card,
+  .milasty-product-card,
+  .product-card,
+  .glass-card,
+  .wishlist-item-card,
+  .order-card,
+  .checkout-info-card,
+  .contact-form-card {
+    border-width: 1px !important;
+  }
 }
