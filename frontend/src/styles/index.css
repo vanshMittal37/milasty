@@ -23,8 +23,8 @@
   --milasty-brown-dark: #3A1D10;
   --milasty-brown-medium: #5A3623;
 
-  --milasty-border: #DCC8AE;
-  --milasty-border-soft: rgba(75, 45, 25, 0.14);
+  --milasty-border: #5C3A21;
+  --milasty-border-soft: rgba(92, 58, 33, 0.45);
 
   /* Mapped Component Tokens */
   --bg-main: var(--milasty-cream-primary);

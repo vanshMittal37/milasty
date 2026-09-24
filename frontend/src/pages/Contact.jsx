@@ -121,7 +121,7 @@ export default function Contact() {
   const shopCardStyle = {
     backgroundColor: '#FFF9F0',
     borderRadius: '24px',
-    border: '1px solid #DCC8AE',
+    border: '1.5px solid #5C3A21',
     boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)',
     color: '#2B170D',
   };
@@ -167,7 +167,7 @@ export default function Contact() {
               backgroundColor: '#E3EEDC',
               padding: '0.4rem 0.95rem',
               borderRadius: '999px',
-              border: '1px solid #DCC8AE',
+              border: '1.5px solid #5C3A21',
               display: 'inline-block',
               marginBottom: '1.25rem'
             }}
@@ -219,7 +219,7 @@ export default function Contact() {
               }}
             >
               <div>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1.5px solid #5C3A21', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                   <MessageSquare size={22} />
                 </div>
                 <h3 style={{ fontSize: '1.15rem', color: '#32180D', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>WhatsApp Support</h3>
@@ -260,7 +260,7 @@ export default function Contact() {
               }}
             >
               <div>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1.5px solid #5C3A21', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                   <Mail size={22} />
                 </div>
                 <h3 style={{ fontSize: '1.15rem', color: '#32180D', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Us</h3>
@@ -299,7 +299,7 @@ export default function Contact() {
               }}
             >
               <div>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1.5px solid #5C3A21', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                   <Package size={22} />
                 </div>
                 <h3 style={{ fontSize: '1.15rem', color: '#32180D', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Orders & Support</h3>
