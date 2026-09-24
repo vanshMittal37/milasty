@@ -130,26 +130,47 @@ export default function AdminLayout() {
         flexDirection: 'column', 
         height: '100%', 
         justifyContent: 'space-between',
-        backgroundColor: '#24150F',
-        color: '#D8CCC0',
+        backgroundColor: '#0D120E',
+        color: '#A7ADB8',
         padding: '1.75rem 1.25rem',
         overflowY: 'auto'
       }}
     >
       <div>
         {/* Brand Logo Header */}
-        <div style={{ marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.12)', paddingBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <h2 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.06em', margin: 0, color: '#FFFFFF' }}>
-              MILASTY<span style={{ color: '#5FAF65' }}>.</span>
-            </h2>
-            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#D8CCC0', fontWeight: '700', marginTop: '0.2rem' }}>
-              Store Management
+        <div style={{ marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.10)', paddingBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div 
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                backgroundColor: '#274C37',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: '900',
+                fontFamily: 'var(--font-serif)',
+                fontSize: '0.95rem',
+                border: '1px solid rgba(255,255,255,0.15)',
+                flexShrink: 0
+              }}
+            >
+              M
+            </div>
+            <div>
+              <h2 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.04em', margin: 0, color: '#F5F5F5', lineHeight: '1.1' }}>
+                MILASTY<span style={{ color: '#85B870' }}>.</span>
+              </h2>
+              <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#85B870', fontWeight: '800', marginTop: '0.1rem' }}>
+                Store Management
+              </div>
             </div>
           </div>
           <button 
             onClick={() => setMobileSidebarOpen(false)}
-            style={{ background: 'none', border: 'none', color: '#D8CCC0', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0.2rem' }}
+            style={{ background: 'none', border: 'none', color: '#A7ADB8', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0.2rem' }}
             className="admin-hamburger-btn"
           >
             <X size={18} />
@@ -160,10 +181,10 @@ export default function AdminLayout() {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {sections.map((section) => (
             <div key={section.title}>
-              <h3 style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#8D7B6C', fontWeight: '800', marginBottom: '0.65rem' }}>
+              <h3 style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7B8E80', fontWeight: '800', marginBottom: '0.65rem' }}>
                 {section.title}
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                 {section.items.map((item) => {
                   const Icon = item.icon;
                   const active = location.pathname === item.path;
@@ -176,31 +197,31 @@ export default function AdminLayout() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.75rem',
-                        padding: '0.65rem 0.85rem',
+                        padding: '0.6rem 0.85rem',
                         borderRadius: '8px',
-                        fontSize: '0.85rem',
-                        fontWeight: active ? '800' : '600',
+                        fontSize: '0.82rem',
+                        fontWeight: '700',
                         textDecoration: 'none',
-                        color: active ? '#FFFFFF' : '#D8CCC0',
-                        backgroundColor: active ? 'rgba(47, 125, 50, 0.30)' : 'transparent',
-                        borderLeft: active ? '3px solid #5FAF65' : '3px solid transparent',
+                        color: active ? '#FFFFFF' : '#A7ADB8',
+                        backgroundColor: active ? 'rgba(39, 76, 55, 0.45)' : 'transparent',
+                        borderLeft: active ? '3px solid #85B870' : '3px solid transparent',
                         transition: 'all 0.2s ease',
                       }}
                       onMouseEnter={(e) => {
                         if (!active) {
-                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)';
                           e.currentTarget.style.color = '#FFFFFF';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!active) {
                           e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = '#D8CCC0';
+                          e.currentTarget.style.color = '#A7ADB8';
                         }
                       }}
                       className="admin-sidebar-link"
                     >
-                      <Icon size={16} color={active ? '#5FAF65' : '#D8CCC0'} />
+                      <Icon size={16} color={active ? '#85B870' : '#7B8E80'} />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -212,7 +233,7 @@ export default function AdminLayout() {
       </div>
 
       {/* Sidebar Profile Card Footer */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: '1.25rem', marginTop: '2rem' }}>
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.10)', paddingTop: '1.25rem', marginTop: '2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
             <div 
@@ -220,21 +241,21 @@ export default function AdminLayout() {
                 width: '36px', 
                 height: '36px', 
                 borderRadius: '50%', 
-                backgroundColor: 'rgba(255, 255, 255, 0.12)', 
+                backgroundColor: '#274C37', 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
                 color: '#FFFFFF',
-                fontWeight: '800',
+                fontWeight: '900',
                 fontSize: '0.88rem',
-                border: '1px solid rgba(255, 255, 255, 0.25)'
+                border: '1px solid rgba(255, 255, 255, 0.15)'
               }}
             >
               M
             </div>
             <div>
-              <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#FFFFFF' }}>Milasty Admin</div>
-              <div style={{ fontSize: '0.68rem', color: '#D8CCC0', fontWeight: '600' }}>Store Manager</div>
+              <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#F5F5F5' }}>Milasty Admin</div>
+              <div style={{ fontSize: '0.66rem', color: '#7B8E80', fontWeight: '600' }}>Store Manager</div>
             </div>
           </div>
           
@@ -243,7 +264,7 @@ export default function AdminLayout() {
             style={{ 
               background: 'none', 
               border: 'none', 
-              color: '#F87171', 
+              color: '#FF8A87', 
               cursor: 'pointer',
               padding: '0.4rem',
               display: 'flex',
@@ -276,7 +297,7 @@ export default function AdminLayout() {
           zIndex: 90,
           display: 'none',
           height: '100vh',
-          borderRight: '1px solid var(--admin-border)',
+          borderRight: '1px solid rgba(255,255,255,0.10)',
           overflowY: 'auto'
         }}
         className="admin-desktop-sidebar"
@@ -306,7 +327,7 @@ export default function AdminLayout() {
             left: 0, 
             width: '100%', 
             height: '100%', 
-            backgroundColor: 'rgba(24, 16, 12, 0.65)', 
+            backgroundColor: 'rgba(0, 0, 0, 0.75)', 
             zIndex: 1000,
             backdropFilter: 'blur(4px)'
           }}
@@ -325,7 +346,7 @@ export default function AdminLayout() {
           transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           height: '100vh',
           overflowY: 'auto',
-          boxShadow: mobileSidebarOpen ? '6px 0 25px rgba(0,0,0,0.4)' : 'none'
+          boxShadow: mobileSidebarOpen ? '6px 0 25px rgba(0,0,0,0.5)' : 'none'
         }}
       >
         <SidebarContent />
@@ -351,14 +372,14 @@ export default function AdminLayout() {
             position: 'sticky', 
             top: 0, 
             zIndex: 80, 
-            backgroundColor: '#FFFFFF', 
-            borderBottom: '1px solid #D9CEC0', 
+            backgroundColor: '#0D120E', 
+            borderBottom: '1px solid rgba(255, 255, 255, 0.10)', 
             padding: '0.5rem 1.5rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             height: '72px',
-            boxShadow: '0 2px 10px rgba(36, 21, 15, 0.03)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.30)',
           }}
         >
           {/* Left: Mobile hamburger menu toggle & titles */}
@@ -368,7 +389,7 @@ export default function AdminLayout() {
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#2F7D32',
+                color: '#85B870',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -388,56 +409,53 @@ export default function AdminLayout() {
             </button>
             
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', color: '#665B53', letterSpacing: '0.06em', lineHeight: '1.2' }}>
+              <span style={{ fontSize: '0.62rem', fontWeight: '800', textTransform: 'uppercase', color: '#7B8E80', letterSpacing: '0.08em', lineHeight: '1.2' }}>
                 {pageBreadcrumb}
               </span>
-              <h1 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#24150F', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
+              <h1 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.4rem)', fontFamily: 'var(--font-serif)', color: '#F5F5F5', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
                 {pageTitle}
               </h1>
             </div>
           </div>
 
           {/* Right: Actions, notification bell, admin profile dropdown */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <Link 
               to="/" 
               style={{ 
-                color: '#FFFFFF', 
+                color: '#F5F5F5', 
                 fontSize: '0.76rem', 
                 fontWeight: '700',
                 display: 'flex', 
                 alignItems: 'center', 
-                gap: '0.35rem', 
+                gap: '0.4rem', 
                 textDecoration: 'none',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                backgroundColor: '#24150F',
-                padding: '0.5rem 0.9rem',
-                borderRadius: '8px',
-                border: 'none',
-                boxShadow: '0 2px 6px rgba(36,21,15,0.15)'
+                backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                padding: '0.5rem 1rem',
+                borderRadius: '999px',
+                border: '1px solid rgba(255, 255, 255, 0.14)',
+                transition: 'all 0.2s ease'
               }}
-              className="desktop-links hover-scale"
+              className="desktop-links"
             >
-              <Globe size={14} />
+              <Globe size={14} color="#85B870" />
               <span>View Store</span>
             </Link>
 
             {/* Notification bell button */}
             <button
               style={{
-                background: '#F5EFE7',
-                border: '1px solid #D9CEC0',
-                color: '#24150F',
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.14)',
+                color: '#F5F5F5',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '0.5rem',
-                borderRadius: '8px',
+                padding: '0.55rem',
+                borderRadius: '999px',
                 transition: 'all 0.2s'
               }}
-              className="hover-scale"
               title="Notifications"
             >
               <Bell size={16} />
@@ -453,8 +471,8 @@ export default function AdminLayout() {
                   gap: '0.65rem',
                   cursor: 'pointer',
                   padding: '0.35rem 0.65rem',
-                  borderRadius: '8px',
-                  backgroundColor: profileDropdownOpen ? '#F5EFE7' : 'transparent',
+                  borderRadius: '999px',
+                  backgroundColor: profileDropdownOpen ? 'rgba(255,255,255,0.08)' : 'transparent',
                   border: '1px solid transparent',
                   transition: 'all 0.2s ease'
                 }}
@@ -464,27 +482,27 @@ export default function AdminLayout() {
                     width: '34px', 
                     height: '34px', 
                     borderRadius: '50%', 
-                    backgroundColor: '#E8F5E9', 
-                    color: '#2F7D32', 
+                    backgroundColor: '#274C37', 
+                    color: '#FFFFFF', 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
-                    fontWeight: '800',
+                    fontWeight: '900',
                     fontSize: '0.88rem',
-                    border: '1.5px solid #2F7D32'
+                    border: '1.5px solid #85B870'
                   }}
                 >
                   M
                 </div>
                 <div className="desktop-links" style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#24150F', lineHeight: '1.2' }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#F5F5F5', lineHeight: '1.2' }}>
                     Milasty Admin
                   </span>
-                  <span style={{ fontSize: '0.68rem', color: '#665B53', fontWeight: '600' }}>
+                  <span style={{ fontSize: '0.66rem', color: '#7B8E80', fontWeight: '600' }}>
                     Super Admin
                   </span>
                 </div>
-                <ChevronDown size={13} color="#514840" style={{ transform: profileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                <ChevronDown size={13} color="#A7ADB8" style={{ transform: profileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
               </div>
 
               {/* Profile Dropdown Menu */}
@@ -495,24 +513,24 @@ export default function AdminLayout() {
                     top: 'calc(100% + 8px)',
                     right: 0,
                     width: '230px',
-                    backgroundColor: '#FFFFFF',
-                    border: '1px solid #D9CEC0',
-                    borderRadius: '12px',
+                    backgroundColor: '#141A16',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
+                    borderRadius: '16px',
                     padding: '0.5rem',
-                    boxShadow: '0 10px 35px rgba(36, 21, 15, 0.18)',
+                    boxShadow: '0 12px 40px rgba(0, 0, 0, 0.60)',
                     zIndex: 200,
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '0.2rem'
                   }}
                 >
-                  <div style={{ padding: '0.6rem 0.8rem', borderBottom: '1px solid #E5DDD3', marginBottom: '0.25rem' }}>
-                    <div style={{ fontWeight: '800', fontSize: '0.85rem', color: '#24150F' }}>Milasty Admin</div>
-                    <div style={{ fontSize: '0.72rem', color: '#665B53', marginTop: '0.15rem', fontWeight: '500' }}>admin@milasty.com</div>
+                  <div style={{ padding: '0.66rem 0.85rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '0.25rem' }}>
+                    <div style={{ fontWeight: '800', fontSize: '0.85rem', color: '#F5F5F5' }}>Milasty Admin</div>
+                    <div style={{ fontSize: '0.72rem', color: '#A7ADB8', marginTop: '0.15rem', fontWeight: '500' }}>admin@milasty.com</div>
                   </div>
 
                   <button 
-                    onClick={() => { setProfileDropdownOpen(false); alert('Profile settings are synchronized with Supabase Auth.'); }}
+                    onClick={() => { setProfileDropdownOpen(false); toast.info('Profile settings are synchronized with Supabase Auth.'); }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -521,23 +539,23 @@ export default function AdminLayout() {
                       padding: '0.6rem 0.8rem',
                       background: 'none',
                       border: 'none',
-                      color: '#241C18',
+                      color: '#F5F5F5',
                       fontSize: '0.82rem',
                       fontWeight: '600',
-                      borderRadius: '6px',
+                      borderRadius: '8px',
                       cursor: 'pointer',
                       textAlign: 'left',
                       transition: 'background-color 0.15s ease'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5EFE7'}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
-                    <UserCheck size={15} color="#2F7D32" />
+                    <UserCheck size={15} color="#85B870" />
                     <span>Profile Settings</span>
                   </button>
 
                   <button 
-                    onClick={() => { setProfileDropdownOpen(false); alert('To change password, use Supabase Auth password reset flow.'); }}
+                    onClick={() => { setProfileDropdownOpen(false); toast.info('To change password, use Supabase Auth password reset flow.'); }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -546,8 +564,52 @@ export default function AdminLayout() {
                       padding: '0.6rem 0.8rem',
                       background: 'none',
                       border: 'none',
-                      color: '#241C18',
+                      color: '#F5F5F5',
                       fontSize: '0.82rem',
+                      fontWeight: '600',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'background-color 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <KeyRound size={15} color="#85B870" />
+                    <span>Security & Password</span>
+                  </button>
+
+                  <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', marginTop: '0.25rem', paddingTop: '0.25rem' }}>
+                    <button 
+                      onClick={() => { setProfileDropdownOpen(false); setShowLogoutModal(true); }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        width: '100%',
+                        padding: '0.6rem 0.8rem',
+                        background: 'none',
+                        border: 'none',
+                        color: '#FF8A87',
+                        fontSize: '0.82rem',
+                        fontWeight: '700',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'background-color 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(217, 83, 79, 0.15)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <LogOut size={15} />
+                      <span>Log Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
                       fontWeight: '600',
                       borderRadius: '6px',
                       cursor: 'pointer',

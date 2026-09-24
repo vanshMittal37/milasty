@@ -230,33 +230,33 @@ export default function AdminDashboardMain() {
             <div
               key={k.label}
               style={{
-                background: '#FFFFFF',
-                border: '1px solid #D9CEC0',
+                background: '#141A16',
+                border: '1px solid rgba(255, 255, 255, 0.10)',
                 borderTop: `4px solid ${k.topColor}`,
-                borderRadius: '14px',
+                borderRadius: '16px',
                 padding: '1.25rem 1.35rem',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '0.85rem',
-                boxShadow: '0 4px 16px rgba(36,21,15,0.05)',
+                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.35)',
                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                 cursor: 'default'
               }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(36,21,15,0.10)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 16px rgba(36,21,15,0.05)'; }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(0,0,0,0.50)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.35)'; }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.72rem', color: '#665B53', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{k.label}</span>
+                <span style={{ fontSize: '0.68rem', color: '#7B8E80', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{k.label}</span>
                 <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: k.bg, color: k.color }}>
                   <Icon size={18} />
                 </div>
               </div>
-              <div style={{ fontSize: '2rem', fontWeight: '900', color: '#24150F', letterSpacing: '-0.03em', lineHeight: '1' }}>
+              <div style={{ fontSize: '2rem', fontWeight: '900', color: '#F5F5F5', letterSpacing: '-0.03em', lineHeight: '1' }}>
                 {k.value}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #E5DDD3', paddingTop: '0.65rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.65rem' }}>
                 <span style={{ fontSize: '0.75rem', color: k.color, fontWeight: '800' }}>{k.sub}</span>
-                <span style={{ fontSize: '0.72rem', color: '#665B53', fontWeight: '600' }}>{k.sub2}</span>
+                <span style={{ fontSize: '0.72rem', color: '#A7ADB8', fontWeight: '600' }}>{k.sub2}</span>
               </div>
             </div>
           );
@@ -273,25 +273,24 @@ export default function AdminDashboardMain() {
         <div className="admin-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#24150F', fontWeight: '800', margin: 0 }}>Sales Overview</h3>
-              <p style={{ fontSize: '0.78rem', color: '#514840', margin: '0.2rem 0 0', fontWeight: '500' }}>Revenue performance over time</p>
+              <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F5F5F5', fontWeight: '800', margin: 0 }}>Sales Overview</h3>
+              <p style={{ fontSize: '0.78rem', color: '#A7ADB8', margin: '0.2rem 0 0', fontWeight: '500' }}>Revenue performance over time</p>
             </div>
-            <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: '#F5EFE7', padding: '0.25rem', borderRadius: '8px', border: '1px solid #D9CEC0' }}>
+            <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: '#19221C', padding: '0.25rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.10)' }}>
               {['7 Days', '30 Days', '3 Months'].map(range => (
                 <button
                   key={range}
                   onClick={() => setActiveRange(range)}
                   style={{
                     border: 'none',
-                    background: range === activeRange ? '#24150F' : 'transparent',
-                    color: range === activeRange ? '#FFFFFF' : '#514840',
+                    background: range === activeRange ? '#274C37' : 'transparent',
+                    color: range === activeRange ? '#FFFFFF' : '#A7ADB8',
                     fontSize: '0.72rem',
                     padding: '0.35rem 0.75rem',
                     borderRadius: '6px',
                     fontWeight: '800',
                     cursor: 'pointer',
                     transition: 'all 0.15s',
-                    boxShadow: range === activeRange ? '0 2px 6px rgba(36,21,15,0.15)' : 'none'
                   }}
                 >
                   {range}
@@ -305,12 +304,12 @@ export default function AdminDashboardMain() {
               <svg viewBox="0 0 500 180" width="100%" height="100%" style={{ overflow: 'visible' }}>
                 <defs>
                   <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#2F7D32" stopOpacity="0.22" />
-                    <stop offset="100%" stopColor="#2F7D32" stopOpacity="0.01" />
+                    <stop offset="0%" stopColor="#85B870" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="#85B870" stopOpacity="0.01" />
                   </linearGradient>
                 </defs>
                 {[0, 45, 90, 135].map(y => (
-                  <line key={y} x1="0" y1={y} x2="500" y2={y} stroke="#E5DDD3" strokeWidth="1" />
+                  <line key={y} x1="0" y1={y} x2="500" y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
                 ))}
                 <path
                   d={chartPoints.reduce((acc, p, i) => {
@@ -319,7 +318,7 @@ export default function AdminDashboardMain() {
                     return acc + `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
                   }, '')}
                   fill="none"
-                  stroke="#2F7D32"
+                  stroke="#85B870"
                   strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -336,7 +335,7 @@ export default function AdminDashboardMain() {
                   const x = (i / (chartPoints.length - 1 || 1)) * 500;
                   const y = 160 - (p.y / maxVal) * 140;
                   return (
-                    <circle key={i} cx={x} cy={y} r="5" fill="#FFFFFF" stroke="#2F7D32" strokeWidth="2.5">
+                    <circle key={i} cx={x} cy={y} r="5" fill="#141A16" stroke="#85B870" strokeWidth="2.5">
                       <title>₹{p.y}</title>
                     </circle>
                   );
@@ -344,10 +343,10 @@ export default function AdminDashboardMain() {
               </svg>
             </div>
           ) : (
-            <div style={{ height: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', border: '1.5px dashed #D9CEC0', borderRadius: '12px', backgroundColor: '#FFFCF7' }}>
-              <TrendingUp size={24} color="#2F7D32" />
-              <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#24150F' }}>No sales data yet</span>
-              <span style={{ fontSize: '0.76rem', color: '#665B53', fontWeight: '500', textAlign: 'center', maxWidth: '280px' }}>Sales performance will appear here once orders are completed.</span>
+            <div style={{ height: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', border: '1.5px dashed rgba(255,255,255,0.12)', borderRadius: '12px', backgroundColor: '#161D18' }}>
+              <TrendingUp size={24} color="#85B870" />
+              <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#F5F5F5' }}>No sales data yet</span>
+              <span style={{ fontSize: '0.76rem', color: '#A7ADB8', fontWeight: '500', textAlign: 'center', maxWidth: '280px' }}>Sales performance will appear here once orders are completed.</span>
             </div>
           )}
         </div>
@@ -357,13 +356,13 @@ export default function AdminDashboardMain() {
           
           {/* Out of stock box */}
           {outOfStockItems.length > 0 && (
-            <div className="admin-card" style={{ display: 'flex', flexDirection: 'column', borderColor: '#F3B7B0', backgroundColor: '#FFFDF9' }}>
+            <div className="admin-card" style={{ display: 'flex', flexDirection: 'column', borderColor: 'rgba(217, 83, 79, 0.30)', backgroundColor: '#141A16' }}>
               <div style={{ marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#B42318', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <XCircle size={16} color="#B42318" /> OUT OF STOCK
+                  <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#FF8A87', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <XCircle size={16} color="#FF8A87" /> OUT OF STOCK
                   </h3>
-                  <p style={{ fontSize: '0.75rem', color: '#514840', margin: '0.15rem 0 0', fontWeight: '600' }}>
+                  <p style={{ fontSize: '0.75rem', color: '#A7ADB8', margin: '0.15rem 0 0', fontWeight: '600' }}>
                     {outOfStockItems.length} {outOfStockItems.length === 1 ? 'variant is unavailable' : 'variants are unavailable'}
                   </p>
                 </div>
@@ -371,13 +370,13 @@ export default function AdminDashboardMain() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                 {outOfStockItems.slice(0, 3).map((item, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 0.85rem', background: '#FCE8E6', borderRadius: '10px', border: '1px solid #F3B7B0' }}>
-                    <img src={item.image} alt={item.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #D9CEC0' }} />
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 0.85rem', background: 'rgba(217, 83, 79, 0.12)', borderRadius: '10px', border: '1px solid rgba(217, 83, 79, 0.25)' }}>
+                    <img src={item.image} alt={item.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)' }} />
                     <div style={{ flexGrow: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#24150F', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#F5F5F5', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {item.title}
                       </div>
-                      <div style={{ fontSize: '0.74rem', color: '#B42318', fontWeight: '700' }}>
+                      <div style={{ fontSize: '0.74rem', color: '#FF8A87', fontWeight: '700' }}>
                         {item.variantName ? `${item.variantName} · ` : ''}Out of Stock
                       </div>
                     </div>
@@ -393,10 +392,10 @@ export default function AdminDashboardMain() {
           {/* Low Stock Alert Box */}
           <div className="admin-card" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div style={{ marginBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#24150F', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <AlertTriangle size={16} color="#B7791F" /> LOW STOCK ALERT
+              <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#F5F5F5', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <AlertTriangle size={16} color="#FBBF24" /> LOW STOCK ALERT
               </h3>
-              <p style={{ fontSize: '0.75rem', color: '#514840', margin: '0.15rem 0 0', fontWeight: '600' }}>
+              <p style={{ fontSize: '0.75rem', color: '#A7ADB8', margin: '0.15rem 0 0', fontWeight: '600' }}>
                 {lowStockItems.length} {lowStockItems.length === 1 ? 'variant needs attention' : 'variants need attention'}
               </p>
             </div>
@@ -405,13 +404,13 @@ export default function AdminDashboardMain() {
               {lowStockItems.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   {lowStockItems.slice(0, 4).map((item, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 0.85rem', background: '#FEF3C7', borderRadius: '10px', border: '1px solid #FCD34D' }}>
-                      <img src={item.image} alt={item.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #D9CEC0' }} />
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 0.85rem', background: 'rgba(245, 158, 11, 0.12)', borderRadius: '10px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
+                      <img src={item.image} alt={item.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)' }} />
                       <div style={{ flexGrow: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#24150F', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#F5F5F5', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {item.title}
                         </div>
-                        <div style={{ fontSize: '0.74rem', color: '#B7791F', fontWeight: '700' }}>
+                        <div style={{ fontSize: '0.74rem', color: '#FBBF24', fontWeight: '700' }}>
                           {item.variantName ? `${item.variantName} · ` : ''}Only {item.stock} left (₹{item.price})
                         </div>
                       </div>
@@ -422,15 +421,15 @@ export default function AdminDashboardMain() {
                   ))}
                 </div>
               ) : (
-                <div style={{ padding: '1.5rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', backgroundColor: '#E8F5E9', borderRadius: '10px', border: '1px dashed #B9DDBD' }}>
-                  <CheckCircle size={24} color="#2F7D32" />
-                  <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#236027' }}>Inventory looks healthy</span>
-                  <span style={{ fontSize: '0.72rem', color: '#514840', fontWeight: '500' }}>No variant products are low on stock.</span>
+                <div style={{ padding: '1.5rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(39, 76, 55, 0.35)', borderRadius: '10px', border: '1px dashed rgba(133, 184, 112, 0.30)' }}>
+                  <CheckCircle size={24} color="#85B870" />
+                  <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#85B870' }}>Inventory looks healthy</span>
+                  <span style={{ fontSize: '0.72rem', color: '#A7ADB8', fontWeight: '500' }}>No variant products are low on stock.</span>
                 </div>
               )}
             </div>
 
-            <Link to="/admin/products" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem', fontSize: '0.8rem', fontWeight: '800', color: '#2F7D32', textDecoration: 'none', marginTop: '0.85rem', borderTop: '1px solid #E5DDD3', paddingTop: '0.75rem' }}>
+            <Link to="/admin/products" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem', fontSize: '0.8rem', fontWeight: '800', color: '#85B870', textDecoration: 'none', marginTop: '0.85rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.75rem' }}>
               Manage Inventory <ArrowUpRight size={14} />
             </Link>
         </div>

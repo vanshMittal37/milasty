@@ -47,13 +47,13 @@ export default function AdminCustomerList() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665B53', margin: '0 0 0.2rem 0' }}>
+          <p style={{ fontSize: '0.62rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#7B8E80', margin: '0 0 0.2rem 0' }}>
             Customers
           </p>
-          <h2 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#24150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+          <h2 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#F5F5F5', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             Customer Registry
           </h2>
-          <p style={{ color: '#514840', fontSize: '0.82rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+          <p style={{ color: '#A7ADB8', fontSize: '0.82rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
             Monitor customer activity, order statistics, total lifetime spend, and account status controls.
           </p>
         </div>
@@ -66,7 +66,7 @@ export default function AdminCustomerList() {
 
       {/* Search Bar */}
       <div style={{ position: 'relative', maxWidth: '400px' }}>
-        <Search size={16} color="#665B53" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+        <Search size={16} color="#7B8E80" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
         <input
           type="text"
           value={search}
@@ -80,8 +80,8 @@ export default function AdminCustomerList() {
       <div className="admin-table-container">
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3.5rem', gap: '1rem' }}>
-            <RefreshCw size={22} className="animate-spin" color="#2F7D32" />
-            <span style={{ fontSize: '0.85rem', color: '#665B53', fontWeight: '700' }}>Loading customer accounts...</span>
+            <RefreshCw size={22} className="animate-spin" color="#85B870" />
+            <span style={{ fontSize: '0.85rem', color: '#A7ADB8', fontWeight: '700' }}>Loading customer accounts...</span>
           </div>
         ) : filteredCustomers.length > 0 ? (
           <table className="admin-table">
@@ -108,30 +108,30 @@ export default function AdminCustomerList() {
                             width: '40px',
                             height: '40px',
                             borderRadius: '50%',
-                            backgroundColor: '#E8F5E9',
-                            color: '#2F7D32',
+                            backgroundColor: '#274C37',
+                            color: '#FFFFFF',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontWeight: '800',
+                            fontWeight: '900',
                             fontSize: '0.88rem',
-                            border: '1.5px solid #B9DDBD'
+                            border: '1px solid rgba(255, 255, 255, 0.15)'
                           }}
                         >
                           {initials}
                         </div>
                         <div>
-                          <div style={{ fontWeight: '800', color: '#24150F', fontSize: '0.9rem' }}>{c.name || 'Customer'}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#665B53', fontWeight: '600' }}>ID: {String(c._id || c.id || 'N/A').slice(-6)}</div>
+                          <div style={{ fontWeight: '800', color: '#F5F5F5', fontSize: '0.9rem' }}>{c.name || 'Customer'}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#7B8E80', fontWeight: '600' }}>ID: {String(c._id || c.id || 'N/A').slice(-6)}</div>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <div style={{ fontWeight: '700', color: '#241C18', fontSize: '0.85rem' }}>{c.email || 'No email'}</div>
-                      <div style={{ fontSize: '0.76rem', color: '#665B53', fontWeight: '600' }}>{c.phone || 'No phone provided'}</div>
+                      <div style={{ fontWeight: '700', color: '#F5F5F5', fontSize: '0.85rem' }}>{c.email || 'No email'}</div>
+                      <div style={{ fontSize: '0.76rem', color: '#A7ADB8', fontWeight: '600' }}>{c.phone || 'No phone provided'}</div>
                     </td>
-                    <td style={{ fontWeight: '800', color: '#24150F', fontSize: '0.92rem' }}>{c.totalOrders || 0}</td>
-                    <td style={{ fontWeight: '800', color: '#24150F', fontSize: '0.92rem' }}>₹{(c.totalSpent || 0).toLocaleString('en-IN')}</td>
+                    <td style={{ fontWeight: '800', color: '#F5F5F5', fontSize: '0.92rem' }}>{c.totalOrders || 0}</td>
+                    <td style={{ fontWeight: '800', color: '#85B870', fontSize: '0.92rem' }}>₹{(c.totalSpent || 0).toLocaleString('en-IN')}</td>
                     <td>
                       <span className={`admin-badge ${isDisabled ? 'admin-badge-danger' : 'admin-badge-success'}`}>
                         {isDisabled ? 'Disabled' : 'Active'}
@@ -157,8 +157,8 @@ export default function AdminCustomerList() {
             <div className="admin-empty-icon">
               <Users size={26} />
             </div>
-            <h3 style={{ fontSize: '1.15rem', color: '#24150F', margin: 0, fontWeight: '800' }}>No customers found</h3>
-            <p style={{ fontSize: '0.85rem', color: '#665B53', margin: 0 }}>
+            <h3 style={{ fontSize: '1.15rem', color: '#F5F5F5', margin: 0, fontWeight: '800' }}>No customers found</h3>
+            <p style={{ fontSize: '0.85rem', color: '#A7ADB8', margin: 0 }}>
               {search ? 'No customer account matches your search query.' : 'Registered customer accounts will appear here.'}
             </p>
           </div>
