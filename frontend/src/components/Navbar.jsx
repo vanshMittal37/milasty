@@ -547,32 +547,29 @@ export default function Navbar() {
         </header>
 
         {/* Mobile Navigation Drawer Backdrop & Side Drawer rendered via React Portal into document.body */}
-        {createPortal(
-          <>
-            {/* Mobile Navigation Drawer Backdrop */}
+        {mobileNavOpen && createPortal(
+          <div 
+            onClick={() => setMobileNavOpen(false)}
+            className="mobile-nav-backdrop"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(25, 14, 8, 0.65)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              zIndex: 999998,
+              display: 'flex',
+            }}
+          >
+            {/* Mobile Navigation Side Drawer — opens from LEFT */}
             <div 
-              onClick={() => setMobileNavOpen(false)}
-              className="mobile-nav-backdrop"
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                width: '100%',
-                height: '100vh',
-                backgroundColor: 'rgba(25, 14, 8, 0.65)',
-                zIndex: 999998,
-                opacity: mobileNavOpen ? 1 : 0,
-                pointerEvents: mobileNavOpen ? 'auto' : 'none',
-                visibility: mobileNavOpen ? 'visible' : 'hidden',
-                transition: 'opacity 300ms ease, visibility 300ms step-end',
-              }}
-            />
-
-            {/* Mobile Navigation Side Drawer — opens from LEFT, SIBLING to backdrop */}
-            <div 
-              className={`mobile-menu-panel ${mobileNavOpen ? 'open' : ''}`}
+              className="mobile-menu-panel open"
+              onClick={(e) => e.stopPropagation()}
               onTouchStart={(e) => {
                 const touch = e.touches[0];
                 if (touch) {
@@ -592,35 +589,23 @@ export default function Navbar() {
                 touchStartRef.current = null;
               }}
               style={{ 
-                backgroundColor: '#F7EBDD',
-                borderRight: '1.5px solid rgba(74, 48, 35, 0.16)',
+                backgroundColor: '#FCF8F1',
+                borderRight: '1.5px solid rgba(74, 48, 35, 0.18)',
                 borderTopRightRadius: '24px',
                 borderBottomRightRadius: '24px',
-                boxShadow: '12px 0 40px rgba(42, 23, 15, 0.22)',
+                boxShadow: '16px 0 48px rgba(25, 14, 8, 0.35)',
                 position: 'fixed',
                 top: 0,
                 left: 0,
-                right: 'auto',
                 bottom: 0,
                 width: '85vw',
-                maxWidth: '380px',
+                maxWidth: '360px',
                 height: '100vh',
                 padding: '0',
                 boxSizing: 'border-box',
                 display: 'flex',
                 flexDirection: 'column',
                 zIndex: 999999,
-                isolation: 'isolate',
-                WebkitFontSmoothing: 'antialiased',
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-                willChange: 'transform',
-                transition: 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease, visibility 300ms step-end',
-                transform: mobileNavOpen ? 'translate3d(0, 0, 0)' : 'translate3d(-100%, 0, 0)',
-                opacity: mobileNavOpen ? 1 : 0,
-                visibility: mobileNavOpen ? 'visible' : 'hidden',
-                pointerEvents: mobileNavOpen ? 'auto' : 'none',
-                touchAction: 'pan-y',
                 overflow: 'hidden',
               }}
             >
@@ -631,7 +616,7 @@ export default function Navbar() {
                 right: '-20px',
                 width: '180px',
                 height: '180px',
-                backgroundImage: 'radial-gradient(circle, rgba(47, 125, 50, 0.08) 0%, transparent 70%)',
+                backgroundImage: 'radial-gradient(circle, rgba(47, 125, 50, 0.12) 0%, transparent 70%)',
                 borderRadius: '50%',
                 pointerEvents: 'none',
                 zIndex: 0,
@@ -639,24 +624,24 @@ export default function Navbar() {
 
               {/* ── HEADER ── */}
               <div style={{
-                padding: '1.5rem 1.4rem 1.2rem',
-                borderBottom: '1.5px solid rgba(74, 48, 35, 0.14)',
+                padding: '1.4rem 1.4rem 1.2rem',
+                borderBottom: '1.5px solid rgba(74, 48, 35, 0.12)',
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'space-between',
-                background: 'transparent',
+                justifyContent: 'space-between',
+                backgroundColor: '#F7EBDD',
                 flexShrink: 0,
                 position: 'relative',
                 zIndex: 2,
               }}>
                 <div>
-                  <Logo variant="dark" style={{ height: '42px', width: 'auto' }} />
+                  <Logo variant="dark" style={{ height: '40px', width: 'auto' }} />
                   <div style={{
                     fontSize: '0.75rem',
-                    color: '#75675D',
+                    color: '#654B38',
                     marginTop: '0.2rem',
                     fontStyle: 'italic',
-                    fontWeight: '500',
+                    fontWeight: '600',
                     fontFamily: 'var(--font-serif), Georgia, serif'
                   }}>
                     Where Millets Meet Great Taste
@@ -666,11 +651,11 @@ export default function Navbar() {
                   onClick={() => setMobileNavOpen(false)}
                   aria-label="Close Navigation Menu"
                   style={{
-                    backgroundColor: '#F1E6D7',
-                    border: '1.5px solid rgba(74, 48, 35, 0.16)',
+                    backgroundColor: '#EFE1CF',
+                    border: '1.5px solid rgba(74, 48, 35, 0.18)',
                     color: '#3A241A',
-                    width: '46px',
-                    height: '46px',
+                    width: '44px',
+                    height: '44px',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -691,7 +676,7 @@ export default function Navbar() {
                 padding: '1.25rem 1.2rem',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.65rem',
+                gap: '0.75rem',
                 position: 'relative',
                 zIndex: 2
               }}>
@@ -709,12 +694,12 @@ export default function Navbar() {
                         gap: '0.9rem',
                         padding: '0.9rem 1.1rem',
                         borderRadius: '16px',
-                        backgroundColor: isActive ? '#E8F2E8' : 'transparent',
-                        border: isActive ? '1.5px solid rgba(47, 125, 50, 0.3)' : '1.5px solid rgba(74, 48, 35, 0.12)',
+                        backgroundColor: isActive ? '#E8F2E8' : '#F5EBDD',
+                        border: isActive ? '1.5px solid #2F7D32' : '1.5px solid rgba(74, 48, 35, 0.12)',
                         color: isActive ? '#2F7D32' : '#3A241A',
                         textDecoration: 'none',
                         transition: 'all 0.2s ease',
-                        minHeight: '58px',
+                        minHeight: '56px',
                         boxSizing: 'border-box',
                         cursor: 'pointer'
                       }}
@@ -723,23 +708,23 @@ export default function Navbar() {
                         width: '38px',
                         height: '38px',
                         borderRadius: '12px',
-                        backgroundColor: isActive ? 'rgba(47, 125, 50, 0.15)' : '#F1E6D7',
-                        border: isActive ? '1px solid rgba(47, 125, 50, 0.2)' : '1px solid rgba(74, 48, 35, 0.1)',
+                        backgroundColor: isActive ? 'rgba(47, 125, 50, 0.18)' : '#EFE1CF',
+                        border: isActive ? '1px solid rgba(47, 125, 50, 0.3)' : '1px solid rgba(74, 48, 35, 0.12)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0
                       }}>
-                        <LinkIcon size={19} color={isActive ? '#2F7D32' : '#75675D'} />
+                        <LinkIcon size={19} color={isActive ? '#2F7D32' : '#5C3A21'} />
                       </div>
                       <span style={{
-                        fontWeight: isActive ? '700' : '600',
+                        fontWeight: isActive ? '800' : '700',
                         fontSize: '1.05rem',
                         fontFamily: 'var(--font-sans)',
                         flexGrow: 1,
                         lineHeight: '1.2',
                       }}>{link.name}</span>
-                      <ChevronRight size={18} color={isActive ? '#2F7D32' : '#A49488'} />
+                      <ChevronRight size={18} color={isActive ? '#2F7D32' : '#75675D'} />
                     </Link>
                   );
                 })}
@@ -749,6 +734,7 @@ export default function Navbar() {
               <div style={{
                 padding: '1.2rem 1.2rem 1.5rem',
                 borderTop: '1.5px solid rgba(74, 48, 35, 0.14)',
+                backgroundColor: '#F7EBDD',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '1rem',
@@ -760,7 +746,7 @@ export default function Navbar() {
                 <div style={{
                   padding: '1rem 1.15rem',
                   borderRadius: '18px',
-                  backgroundColor: '#F3E5D3',
+                  backgroundColor: '#FCF8F1',
                   border: '1.5px solid rgba(74, 48, 35, 0.16)',
                   display: 'flex',
                   gap: '0.85rem',
@@ -785,7 +771,7 @@ export default function Navbar() {
                     fontFamily: 'var(--font-serif), Georgia, serif',
                     color: '#3A241A',
                     lineHeight: '1.4',
-                    fontWeight: '500'
+                    fontWeight: '600'
                   }}>
                     Good food brings good people together.
                   </div>
@@ -808,7 +794,7 @@ export default function Navbar() {
                           width: '40px',
                           height: '40px',
                           borderRadius: '50%',
-                          backgroundColor: '#F1E6D7',
+                          backgroundColor: '#EFE1CF',
                           border: '1.5px solid rgba(74, 48, 35, 0.16)',
                           color: '#3A241A',
                           display: 'flex',
@@ -826,7 +812,7 @@ export default function Navbar() {
                 </div>
               </div>
             </div>
-          </>,
+          </div>,
           document.body
         )}
       </div>
