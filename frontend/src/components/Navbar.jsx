@@ -567,14 +567,12 @@ export default function Navbar() {
                 pointerEvents: mobileNavOpen ? 'auto' : 'none',
                 visibility: mobileNavOpen ? 'visible' : 'hidden',
                 transition: 'opacity 300ms ease, visibility 300ms step-end',
-                overflow: 'hidden'
               }}
             />
 
-            {/* Mobile Navigation Side Drawer — opens from LEFT */}
+            {/* Mobile Navigation Side Drawer — opens from LEFT, SIBLING to backdrop */}
             <div 
               className={`mobile-menu-panel ${mobileNavOpen ? 'open' : ''}`}
-              onClick={(e) => e.stopPropagation()}
               onTouchStart={(e) => {
                 const touch = e.touches[0];
                 if (touch) {
@@ -717,7 +715,8 @@ export default function Navbar() {
                         textDecoration: 'none',
                         transition: 'all 0.2s ease',
                         minHeight: '58px',
-                        boxSizing: 'border-box'
+                        boxSizing: 'border-box',
+                        cursor: 'pointer'
                       }}
                     >
                       <div style={{
