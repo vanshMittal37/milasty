@@ -396,14 +396,25 @@ section,
 }
 
 /* Global Heading & Text Contrast Rules for Light Cream Theme */
-h1:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *),
-h2:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *),
-h3:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *),
-h4:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *),
-h5:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *) {
+h1:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *):not(footer *):not(.milasty-footer *),
+h2:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *):not(footer *):not(.milasty-footer *),
+h3:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *):not(footer *):not(.milasty-footer *),
+h4:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *):not(footer *):not(.milasty-footer *),
+h5:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *):not(footer *):not(.milasty-footer *) {
   font-family: var(--font-serif);
   font-weight: 800;
   color: var(--milasty-text-heading) !important;
+}
+
+/* Explicit high-contrast rules for Footer Headings */
+.milasty-footer h4,
+footer.milasty-footer h4,
+footer h4 {
+  color: #F8EBDD !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
 }
 
 p:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *):not(.btn-primary *),
@@ -2737,17 +2748,18 @@ a.btn-primary:hover,
 button.btn-secondary,
 a.btn-secondary,
 .btn-secondary {
-  background-color: rgba(36, 79, 33, 0.25) !important;
-  color: #b9cd94 !important;
-  border-color: #b9cd94 !important;
+  background-color: rgba(255, 255, 255, 0.45) !important;
+  color: #3A1F14 !important;
+  border: 1.5px solid #5C3A21 !important;
+  font-weight: 700 !important;
 }
 
 button.btn-secondary:hover,
 a.btn-secondary:hover,
 .btn-secondary:hover {
-  background-color: #244f21 !important;
+  background-color: #215C27 !important;
   color: #FFFFFF !important;
-  border-color: #244f21 !important;
+  border-color: #215C27 !important;
 }
 
 /* Force replacement of yellow/gold text & icons to #b9cd94 across all pages */

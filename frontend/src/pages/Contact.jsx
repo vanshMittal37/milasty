@@ -773,12 +773,12 @@ export default function Contact() {
                 style={{
                   padding: '0.95rem 2.25rem',
                   fontSize: '0.92rem',
-                  borderColor: '#DCC8AE',
-                  color: '#32180D',
+                  border: '1.5px solid #5C3A21',
+                  color: '#3A1F14',
                   borderRadius: '999px',
-                  fontWeight: '850',
+                  fontWeight: '700',
                   textDecoration: 'none',
-                  backgroundColor: '#FFF9F0'
+                  backgroundColor: 'rgba(255, 255, 255, 0.6)'
                 }}
               >
                 Explore Bakes
