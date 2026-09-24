@@ -373,24 +373,49 @@ export default function CustomerOrderDetailPage() {
               </h3>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1.25rem' }}>
-                {order.items?.map((item, idx) => {
-                  const imageSrc = item.productId?.image || item.image || '/images/image2.jpeg';
+                {(order.items || order.order_items || []).map((item, idx) => {
+                  const imageSrc = item.productId?.image || item.image || item.product_image || '/images/image2.jpeg';
+                  const title = item.product_title || item.title || item.name || 'MILASTY Bake';
+                  const vName = item.variant_name || item.variantName || 'Standard Pack';
+                  const note = item.customization_note || item.customizationNote || null;
+
                   return (
-                    <div key={idx} style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', paddingBottom: '1rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)' }}>
-                      <img 
-                        src={imageSrc} 
-                        alt={item.title} 
-                        style={{ width: '76px', height: '76px', objectFit: 'cover', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)' }} 
-                      />
-                      <div style={{ flexGrow: 1 }}>
-                        <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--text-light)', margin: '0 0 0.2rem 0', lineHeight: '1.25' }}>{item.title}</h4>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600' }}>
-                          {item.variantName} ({item.weight}) • Qty {item.quantity}
-                        </span>
+                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(245, 235, 221, 0.15)' }}>
+                      <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+                        <img 
+                          src={imageSrc} 
+                          alt={title} 
+                          style={{ width: '76px', height: '76px', objectFit: 'cover', borderRadius: '12px', border: '1px solid rgba(245, 235, 221, 0.15)' }} 
+                        />
+                        <div style={{ flexGrow: 1 }}>
+                          <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--text-light)', margin: '0 0 0.2rem 0', lineHeight: '1.25' }}>{title}</h4>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600' }}>
+                            {vName} {item.weight ? `(${item.weight})` : ''} • Qty {item.quantity}
+                          </span>
+                        </div>
+                        <div style={{ fontWeight: '850', color: 'var(--text-light)', fontSize: '1.05rem' }}>
+                          ₹{item.totalPrice || item.total_price}
+                        </div>
                       </div>
-                      <div style={{ fontWeight: '850', color: 'var(--text-light)', fontSize: '1.05rem' }}>
-                        ₹{item.totalPrice}
-                      </div>
+
+                      {/* Per-Product Special Instruction Box */}
+                      {note && (
+                        <div style={{
+                          backgroundColor: 'rgba(251, 246, 238, 0.08)',
+                          border: '1px solid rgba(185, 205, 148, 0.25)',
+                          borderRadius: '10px',
+                          padding: '0.65rem 0.85rem',
+                          fontSize: '0.82rem',
+                          marginTop: '0.2rem'
+                        }}>
+                          <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#b9cd94', letterSpacing: '0.04em', textTransform: 'uppercase', display: 'block', marginBottom: '0.2rem' }}>
+                            ✦ Special Instruction
+                          </span>
+                          <p style={{ margin: 0, color: '#F5EBDD', fontStyle: 'italic', wordBreak: 'break-word', lineHeight: '1.4' }}>
+                            "{note}"
+                          </p>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

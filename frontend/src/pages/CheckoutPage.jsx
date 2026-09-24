@@ -6,12 +6,15 @@ import { useAuth } from '../context/AuthContext';
 import { useDelivery } from '../context/DeliveryContext';
 import api from '../api/axios';
 import ModalPortal from '../components/ModalPortal';
+import CustomizeItemModal from '../components/CustomizeItemModal';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const { cartItems, subtotal, deliveryFee: defaultDeliveryFee, grandTotal: defaultGrandTotal, appliedCoupon, couponDiscountAmount, clearCart } = useCart();
+  const { cartItems, subtotal, deliveryFee: defaultDeliveryFee, grandTotal: defaultGrandTotal, appliedCoupon, couponDiscountAmount, updateCartItemCustomization, removeCartItemCustomization, clearCart } = useCart();
   const { user, isAuthenticated, addAddress, updateAddress } = useAuth();
   const { deliveryInfo, checkPincode } = useDelivery();
+
+  const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
 
   // Authentication & Empty Cart Guard
   useEffect(() => {
@@ -884,22 +887,73 @@ export default function CheckoutPage() {
 
               {/* Items listing */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingBottom: '1.5rem', borderBottom: '1px solid #E4D1B7' }}>
-                {cartItems.map((item) => (
-                  <div key={item.key} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #E4D1B7', flexShrink: 0 }}
-                    />
-                    <div style={{ flexGrow: 1 }}>
-                      <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#2B140B', margin: '0 0 0.15rem 0', lineHeight: '1.25' }}>{item.title}</h4>
-                      <span style={{ fontSize: '0.78rem', color: '#6B584C', display: 'block' }}>
-                        Qty: {item.quantity} • {item.variantName} ({item.weight})
+                {cartItems.map((item, idx) => (
+                  <div key={item.cartItemId || item.key || idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingBottom: '0.85rem', borderBottom: idx === cartItems.length - 1 ? 'none' : '1px dashed #E4D1B7' }}>
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #E4D1B7', flexShrink: 0 }}
+                      />
+                      <div style={{ flexGrow: 1 }}>
+                        <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#2B140B', margin: '0 0 0.15rem 0', lineHeight: '1.25' }}>{item.title}</h4>
+                        <span style={{ fontSize: '0.78rem', color: '#6B584C', display: 'block' }}>
+                          Qty: {item.quantity} • {item.variantName || 'Standard Pack'} {item.weight ? `(${item.weight})` : ''}
+                        </span>
+                      </div>
+                      <span style={{ fontWeight: '900', color: '#2B140B', fontSize: '1.05rem', flexShrink: 0 }}>
+                        ₹{item.totalPrice}
                       </span>
                     </div>
-                    <span style={{ fontWeight: '900', color: '#2B140B', fontSize: '1.05rem', flexShrink: 0 }}>
-                      ₹{item.totalPrice}
-                    </span>
+
+                    {/* Per-Item Special Instruction */}
+                    {item.customization_note ? (
+                      <div style={{
+                        padding: '0.5rem 0.75rem',
+                        backgroundColor: '#FBF6EE',
+                        border: '1px solid rgba(47, 125, 50, 0.25)',
+                        borderRadius: '8px',
+                        fontSize: '0.76rem',
+                        marginTop: '0.2rem',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.15rem' }}>
+                          <span style={{ fontWeight: '800', color: '#2F7D32', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                            ✦ Special Instruction
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setEditingCustomizationItem(item)}
+                            style={{ background: 'none', border: 'none', color: '#2F7D32', fontWeight: '800', cursor: 'pointer', padding: 0, fontSize: '0.72rem', textDecoration: 'underline' }}
+                          >
+                            Edit
+                          </button>
+                        </div>
+                        <p style={{ margin: 0, color: '#3A1F14', fontStyle: 'italic', wordBreak: 'break-word', lineHeight: '1.35' }}>
+                          "{item.customization_note}"
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => setEditingCustomizationItem(item)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#2F7D32',
+                            fontWeight: '700',
+                            fontSize: '0.75rem',
+                            cursor: 'pointer',
+                            padding: 0,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.2rem',
+                          }}
+                        >
+                          <span>+ Add Special Instruction</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1433,6 +1487,14 @@ export default function CheckoutPage() {
           </div>
         </div>
       </ModalPortal>
+
+      <CustomizeItemModal
+        isOpen={Boolean(editingCustomizationItem)}
+        onClose={() => setEditingCustomizationItem(null)}
+        item={editingCustomizationItem}
+        onSave={(targetId, newNote) => updateCartItemCustomization(targetId, newNote)}
+        onRemove={(targetId) => removeCartItemCustomization(targetId)}
+      />
     </div>
   );
 }

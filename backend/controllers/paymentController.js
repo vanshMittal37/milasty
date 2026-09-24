@@ -126,13 +126,19 @@ export const createPaymentSession = async (req, res) => {
       const itemTotal = unitPrice * item.quantity;
       subtotal += itemTotal;
 
+      const rawNote = item.customization_note || item.customizationNote || item.instruction || null;
+      const cleanNote = rawNote ? String(rawNote).trim().slice(0, 300) : null;
+
       validatedItems.push({
         product_id: dbProduct ? dbProduct.id : null,
         product_title: title,
+        product_image: item.image || item.product_image || (dbProduct ? dbProduct.primary_image : null) || null,
+        variant_id: item.variantId || item.variant_id || null,
         variant_name: item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard Pack',
         unit_price: unitPrice,
         quantity: item.quantity,
         total_price: itemTotal,
+        customization_note: cleanNote || null,
       });
     }
 
@@ -355,10 +361,13 @@ export const finalizeOrderFromPayment = async ({
           order_id: newOrder.id,
           product_id: item.product_id,
           product_title: item.product_title,
+          product_image: item.product_image || null,
+          variant_id: item.variant_id || null,
           variant_name: item.variant_name,
           unit_price: item.unit_price,
           quantity: item.quantity,
           total_price: item.total_price,
+          customization_note: item.customization_note || null,
         }));
 
         const { data: insertedItems } = await supabase

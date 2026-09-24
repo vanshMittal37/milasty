@@ -152,13 +152,19 @@ export const createOrder = async (req, res) => {
       const itemTotal = unitPrice * item.quantity;
       subtotal += itemTotal;
 
+      const rawNote = item.customization_note || item.customizationNote || item.instruction || null;
+      const cleanNote = rawNote ? String(rawNote).trim().slice(0, 300) : null;
+
       validatedItems.push({
         product_id: dbProduct ? dbProduct.id : null,
         product_title: title,
+        product_image: item.image || item.product_image || (dbProduct ? dbProduct.primary_image : null) || null,
+        variant_id: item.variantId || item.variant_id || null,
         variant_name: item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard Pack',
         unit_price: unitPrice,
         quantity: item.quantity,
         total_price: itemTotal,
+        customization_note: cleanNote || null,
       });
     }
 

@@ -41,12 +41,13 @@ export const CartProvider = ({ children }) => {
   // mobileNavOpen MUST be at top — hooks cannot come after useEffect
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  // Helper to generate unique item key based on product_id + variant
+  // Helper to generate unique item key based on product_id + variant + customization_note
   const getItemKey = (item) => {
-    const pId = item.productId || item._id || item.id || item.slug || '';
-    const vName = item.variantName || item.weight || 'Standard Pack';
-    const vId = item.variantId || vName;
-    return `${pId}_${vId}`;
+    const pId = item.productId || item.product_id || item._id || item.id || item.slug || '';
+    const vName = item.variantName || item.variant_name || item.weight || 'Standard Pack';
+    const vId = item.variantId || item.variant_id || vName;
+    const note = String(item.customization_note || item.customizationNote || '').trim();
+    return `${pId}_${vId}_${note}`;
   };
 
   // Helper to merge guest cart items with user cart items
@@ -177,7 +178,7 @@ export const CartProvider = ({ children }) => {
     }, 3000);
   };
 
-  const addToCart = async (product, variant, qty = 1) => {
+  const addToCart = async (product, variant, qty = 1, customizationNote = '') => {
     if (!product) return;
 
     const selectedVariant = variant || (product.variants && product.variants[0]) || {};
@@ -185,12 +186,23 @@ export const CartProvider = ({ children }) => {
     const variantName = selectedVariant.weight || selectedVariant.name || selectedVariant.variantWeight || 'Standard Pack';
     const variantId = selectedVariant.id || selectedVariant._id || variantName;
     const pId = product._id || product.id || product.slug || 'item';
-    const cartItemId = `${pId}_${variantId}`;
+    const cleanNote = String(customizationNote || '').trim().slice(0, 300);
+    
+    // Unique cartItemId considering product + variant + customization note
+    const cartItemId = `${pId}_${variantId}_${cleanNote ? encodeURIComponent(cleanNote.slice(0, 15)) + '_' + Date.now() : 'std'}`;
     const image = product.image || product.image_url || product.primary_image || '/images/image1.jpeg';
     const title = product.title || product.name || 'MILASTY Bake';
+    const allowCustomization = Boolean(product.allow_customization || product.allowCustomization);
+    const placeholder = product.customization_placeholder || product.customizationPlaceholder || null;
 
     setCartItems((prevItems) => {
-      const existingIdx = prevItems.findIndex((item) => item.cartItemId === cartItemId || (item.productId === pId && item.variantName === variantName));
+      // Match item with same productId, variantId, AND exact customization_note
+      const existingIdx = prevItems.findIndex((item) => {
+        const itemPId = item.productId || item.product_id;
+        const itemVId = item.variantId || item.variant_id || item.variantName;
+        const itemNote = String(item.customization_note || item.customizationNote || '').trim();
+        return itemPId === pId && (itemVId === variantId || item.variantName === variantName) && itemNote === cleanNote;
+      });
 
       if (existingIdx > -1) {
         const updated = [...prevItems];
@@ -216,11 +228,49 @@ export const CartProvider = ({ children }) => {
           originalPrice: selectedVariant.originalPrice || product.originalPrice || unitPrice,
           quantity: qty,
           totalPrice: unitPrice * qty,
+          customization_note: cleanNote || null,
+          allow_customization: allowCustomization,
+          customization_placeholder: placeholder,
         },
       ];
     });
 
     showToast(`✓ Added ${title} (${variantName}) to cart`);
+  };
+
+  const updateCartItemCustomization = (targetId, newNote) => {
+    if (!targetId) return;
+    const cleanNote = String(newNote || '').trim().slice(0, 300);
+    setCartItems((prev) =>
+      prev.map((item) => {
+        const matches = item.cartItemId === targetId || item.id === targetId || item._id === targetId;
+        if (matches) {
+          return {
+            ...item,
+            customization_note: cleanNote || null,
+          };
+        }
+        return item;
+      })
+    );
+    showToast('✓ Special instruction updated');
+  };
+
+  const removeCartItemCustomization = (targetId) => {
+    if (!targetId) return;
+    setCartItems((prev) =>
+      prev.map((item) => {
+        const matches = item.cartItemId === targetId || item.id === targetId || item._id === targetId;
+        if (matches) {
+          return {
+            ...item,
+            customization_note: null,
+          };
+        }
+        return item;
+      })
+    );
+    showToast('Special instruction removed');
   };
 
   const updateQuantity = (targetId, newQty) => {
@@ -377,6 +427,8 @@ export const CartProvider = ({ children }) => {
       value={{
         cartItems,
         addToCart,
+        updateCartItemCustomization,
+        removeCartItemCustomization,
         updateQuantity,
         removeFromCart,
         clearCart,

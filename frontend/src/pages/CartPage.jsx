@@ -4,6 +4,7 @@ import { ShoppingBag, Trash2, Plus, Minus, Tag, ArrowRight, Truck, ShieldCheck, 
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useDelivery } from '../context/DeliveryContext';
+import CustomizeItemModal from '../components/CustomizeItemModal';
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ export default function CartPage() {
     cartItems,
     updateQuantity,
     removeFromCart,
+    updateCartItemCustomization,
+    removeCartItemCustomization,
     clearCart,
     subtotal,
     deliveryFee: defaultDeliveryFee,
@@ -25,6 +28,7 @@ export default function CartPage() {
 
   const [couponInput, setCouponInput] = useState('');
   const [couponStatus, setCouponStatus] = useState(null);
+  const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
 
   const isDeliverable = deliveryInfo && (deliveryInfo.available ?? deliveryInfo.isDeliverable);
   const effectiveDeliveryFee = isDeliverable ? Number(deliveryInfo.deliveryCharge || 0) : 0;
@@ -144,6 +148,64 @@ export default function CartPage() {
                         <Trash2 size={16} />
                       </button>
                     </div>
+
+                    {/* Per-Item Customization Display & Actions */}
+                    {item.customization_note ? (
+                      <div style={{
+                        marginTop: '0.75rem',
+                        padding: '0.65rem 0.85rem',
+                        backgroundColor: '#FBF6EE',
+                        border: '1px solid rgba(47, 125, 50, 0.25)',
+                        borderRadius: '10px',
+                        fontSize: '0.8rem',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                          <span style={{ fontWeight: '800', color: '#2F7D32', fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                            ✦ Special Instruction
+                          </span>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                              type="button"
+                              onClick={() => setEditingCustomizationItem(item)}
+                              style={{ background: 'none', border: 'none', color: '#2F7D32', fontWeight: '800', cursor: 'pointer', padding: 0, fontSize: '0.75rem', textDecoration: 'underline' }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeCartItemCustomization(item.cartItemId || item.key)}
+                              style={{ background: 'none', border: 'none', color: '#DC2626', fontWeight: '700', cursor: 'pointer', padding: 0, fontSize: '0.75rem' }}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                        <p style={{ margin: 0, color: '#3A1F14', fontStyle: 'italic', wordBreak: 'break-word', lineHeight: '1.4' }}>
+                          "{item.customization_note}"
+                        </p>
+                      </div>
+                    ) : (
+                      <div style={{ marginTop: '0.5rem' }}>
+                        <button
+                          type="button"
+                          onClick={() => setEditingCustomizationItem(item)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#2F7D32',
+                            fontWeight: '700',
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                            padding: 0,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem',
+                          }}
+                        >
+                          <span>+ Add Special Instruction</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ textAlign: 'right', fontWeight: '900', fontSize: '1.2rem', color: '#2B140B', flexShrink: 0 }}>
@@ -270,6 +332,14 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      <CustomizeItemModal
+        isOpen={Boolean(editingCustomizationItem)}
+        onClose={() => setEditingCustomizationItem(null)}
+        item={editingCustomizationItem}
+        onSave={(targetId, newNote) => updateCartItemCustomization(targetId, newNote)}
+        onRemove={(targetId) => removeCartItemCustomization(targetId)}
+      />
     </div>
   );
 }

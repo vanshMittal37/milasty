@@ -74,6 +74,8 @@ export default function AdminProductForm() {
     allergens: '',
     targetAudience: '',
     variants: [],
+    allow_customization: false,
+    customization_placeholder: '',
   };
 
   const [formData, setFormData] = useState(emptyForm);
@@ -342,6 +344,8 @@ export default function AdminProductForm() {
           labReportUrl: p.labReportUrl || p.lab_report_url || '',
           allergens: p.allergens || '',
           targetAudience: p.targetAudience || p.target_audience || '',
+          allow_customization: Boolean(p.allow_customization || p.allowCustomization),
+          customization_placeholder: p.customization_placeholder || p.customizationPlaceholder || '',
           variants: (p.variants || []).map(v => ({
             ...v,
             stock: v.stock !== undefined && v.stock !== null ? v.stock : (v.in_stock ? 50 : 0)
@@ -1758,6 +1762,53 @@ export default function AdminProductForm() {
                     <option value="false">NO (Coming Soon preview only)</option>
                   </select>
                 </div>
+              </div>
+            )}
+          </div>
+
+          {/* ================================================================== */}
+          {/* SECTION 10: PRODUCT CUSTOMIZATION SETTINGS */}
+          {/* ================================================================== */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1px solid var(--admin-border)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  10. Product Customization Settings
+                </h3>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>
+                  Decide whether customers can add special instructions for this product (e.g. birthday notes, packing preferences).
+                </p>
+              </div>
+
+              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={Boolean(formData.allow_customization)}
+                  onChange={(e) => setFormData({ ...formData, allow_customization: e.target.checked })}
+                  style={{ width: '18px', height: '18px', accentColor: 'var(--admin-accent)', cursor: 'pointer' }}
+                />
+                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--admin-text-primary)' }}>
+                  {formData.allow_customization ? 'Customization Enabled' : 'Customization Disabled'}
+                </span>
+              </label>
+            </div>
+
+            {formData.allow_customization && (
+              <div style={{ borderTop: '1px dashed var(--admin-border)', paddingTop: '1rem' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  Customization Placeholder Text
+                </label>
+                <input
+                  type="text"
+                  value={formData.customization_placeholder || ''}
+                  onChange={(e) => setFormData({ ...formData, customization_placeholder: e.target.value })}
+                  placeholder="Example: Please write Happy Birthday Aanya."
+                  className="admin-input"
+                  style={{ width: '100%' }}
+                />
+                <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', marginTop: '0.25rem', display: 'block' }}>
+                  Optional placeholder shown inside the instruction text area on the product detail page.
+                </span>
               </div>
             )}
           </div>

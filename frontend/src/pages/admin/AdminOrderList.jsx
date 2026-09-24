@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, RefreshCw, Eye, ArrowUpRight, X, Package, CreditCard, MapPin, User, Mail, Phone, Calendar, CheckCircle, Clock } from 'lucide-react';
+import { Search, Filter, RefreshCw, Eye, ArrowUpRight, X, Package, CreditCard, MapPin, User, Mail, Phone, Calendar, CheckCircle, Clock, Sparkles, Printer } from 'lucide-react';
 import api from '../../api/axios';
 
 const STAGES = ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'];
@@ -20,8 +20,10 @@ export default function AdminOrderList() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
+  const [customizationFilter, setCustomizationFilter] = useState('');
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showPrintView, setShowPrintView] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -104,13 +106,24 @@ export default function AdminOrderList() {
   };
 
   const filteredOrders = orders.filter((o) => {
-    if (!paymentFilter) return true;
-    const payStatus = (o.paymentStatus || o.payment_status || 'pending').toLowerCase();
-    const payMethod = (o.paymentMethod || o.payment_method || 'cod').toLowerCase();
-    if (paymentFilter === 'paid') return payStatus === 'paid';
-    if (paymentFilter === 'pending') return payStatus === 'pending';
-    if (paymentFilter === 'razorpay') return payMethod.includes('razorpay');
-    if (paymentFilter === 'cod') return payMethod.includes('cod') || payMethod.includes('cash');
+    // Payment filter
+    if (paymentFilter) {
+      const payStatus = (o.paymentStatus || o.payment_status || 'pending').toLowerCase();
+      const payMethod = (o.paymentMethod || o.payment_method || 'cod').toLowerCase();
+      if (paymentFilter === 'paid' && payStatus !== 'paid') return false;
+      if (paymentFilter === 'pending' && payStatus !== 'pending') return false;
+      if (paymentFilter === 'razorpay' && !payMethod.includes('razorpay')) return false;
+      if (paymentFilter === 'cod' && !(payMethod.includes('cod') || payMethod.includes('cash'))) return false;
+    }
+
+    // Customization filter
+    if (customizationFilter) {
+      const items = o.order_items || o.items || [];
+      const customizedCount = items.filter((i) => (i.customization_note || i.customizationNote || '').trim().length > 0).length;
+      if (customizationFilter === 'customized' && customizedCount === 0) return false;
+      if (customizationFilter === 'not_customized' && customizedCount > 0) return false;
+    }
+
     return true;
   });
 
@@ -183,6 +196,21 @@ export default function AdminOrderList() {
             <option value="cod">Cash on Delivery</option>
           </select>
         </div>
+
+        {/* Customization Filter */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <Sparkles size={15} color="var(--admin-text-muted)" />
+          <select
+            value={customizationFilter}
+            onChange={(e) => setCustomizationFilter(e.target.value)}
+            className="admin-input"
+            style={{ width: 'auto', paddingRight: '2rem' }}
+          >
+            <option value="">All Customization</option>
+            <option value="customized">Customized Items</option>
+            <option value="not_customized">No Customization</option>
+          </select>
+        </div>
       </div>
 
       {/* Main Orders Table */}
@@ -202,6 +230,7 @@ export default function AdminOrderList() {
                 <th>Payment Method</th>
                 <th>Payment Status</th>
                 <th>Amount</th>
+                <th>Customization</th>
                 <th>Lifecycle Status</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
@@ -227,6 +256,9 @@ export default function AdminOrderList() {
 
                 const payStatus = (o.paymentStatus || o.payment_status || 'pending').toLowerCase();
                 const payMethod = o.paymentMethod || o.payment_method || 'Cash on Delivery';
+
+                const orderItemsList = o.order_items || o.items || [];
+                const customizedCount = orderItemsList.filter((i) => (i.customization_note || i.customizationNote || '').trim().length > 0).length;
 
                 return (
                   <tr key={o.id || o._id}>
@@ -258,6 +290,27 @@ export default function AdminOrderList() {
                     </td>
                     <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>
                       ₹{total.toLocaleString('en-IN')}
+                    </td>
+                    <td>
+                      {customizedCount > 0 ? (
+                        <span className="admin-badge" style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          background: 'rgba(217, 119, 6, 0.15)',
+                          color: '#f59e0b',
+                          border: '1px solid rgba(217, 119, 6, 0.3)',
+                          fontSize: '0.75rem',
+                          fontWeight: '700',
+                        }}>
+                          <Sparkles size={11} />
+                          ✦ {customizedCount} Customized Item{customizedCount > 1 ? 's' : ''}
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
+                          No Customization
+                        </span>
+                      )}
                     </td>
                     <td>
                       <span className={`admin-badge ${statusBadgeClass}`}>
@@ -339,12 +392,23 @@ export default function AdminOrderList() {
                   {selectedOrder.orderNumber || selectedOrder.orderId || `MIL-${String(selectedOrder.id).slice(-6)}`}
                 </h3>
               </div>
-              <button
-                onClick={() => setSelectedOrder(null)}
-                style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', padding: '4px' }}
-              >
-                <X size={20} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <button
+                  onClick={() => setShowPrintView(true)}
+                  className="admin-btn-secondary"
+                  style={{ padding: '0.4rem 0.75rem', fontSize: '0.78rem', background: '#2F7D32', color: '#FFF', border: 'none' }}
+                  title="Print Preparation & Packing Slip"
+                >
+                  <Printer size={14} />
+                  <span>Print Prep Slip</span>
+                </button>
+                <button
+                  onClick={() => setSelectedOrder(null)}
+                  style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', padding: '4px' }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
             {/* Customer & Shipping Summary Grid */}
@@ -418,25 +482,53 @@ export default function AdminOrderList() {
               <h4 style={{ fontSize: '0.85rem', color: 'var(--admin-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', fontWeight: '800' }}>
                 Ordered Items ({(selectedOrder.items || selectedOrder.order_items || []).length})
               </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {(selectedOrder.items || selectedOrder.order_items || []).map((item, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--admin-border)', borderRadius: '10px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <Package size={16} color="var(--admin-accent)" />
-                      <div>
-                        <div style={{ fontSize: '0.88rem', fontWeight: '700', color: 'var(--admin-text-primary)' }}>
-                          {item.title || item.product_title || 'Bakery Item'}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {(selectedOrder.items || selectedOrder.order_items || []).map((item, idx) => {
+                  const note = item.customization_note || item.customizationNote;
+                  return (
+                    <div key={idx} style={{ padding: '0.85rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--admin-border)', borderRadius: '10px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <Package size={16} color="var(--admin-accent)" />
+                          <div>
+                            <div style={{ fontSize: '0.88rem', fontWeight: '700', color: 'var(--admin-text-primary)' }}>
+                              {item.title || item.product_title || item.product_name || 'Bakery Item'}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
+                              Variant: {item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard'} • Qty: {item.quantity}
+                            </div>
+                          </div>
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
-                          Variant: {item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard'} • Qty: {item.quantity}
+                        <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--admin-text-primary)' }}>
+                          ₹{((item.totalPrice || item.total_price || (item.price * item.quantity)) || 0).toLocaleString('en-IN')}
                         </div>
                       </div>
+
+                      {/* Customization Callout */}
+                      {note ? (
+                        <div style={{
+                          marginTop: '0.6rem',
+                          padding: '0.65rem 0.85rem',
+                          background: '#FBF6EE',
+                          border: '1px solid rgba(47,125,50,0.3)',
+                          borderRadius: '8px',
+                          color: '#3A1F14',
+                        }}>
+                          <div style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#2F7D32', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '0.2rem' }}>
+                            <Sparkles size={13} color="#2F7D32" /> ✦ CUSTOMER INSTRUCTION
+                          </div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: '600', fontStyle: 'italic', color: '#2A140D', lineHeight: '1.4' }}>
+                            "{note}"
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', marginTop: '0.4rem', fontStyle: 'italic' }}>
+                          No customization requested for this product.
+                        </div>
+                      )}
                     </div>
-                    <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--admin-text-primary)' }}>
-                      ₹{((item.totalPrice || item.total_price || (item.price * item.quantity)) || 0).toLocaleString('en-IN')}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -462,6 +554,103 @@ export default function AdminOrderList() {
               </div>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* PRINT / PREPARATION SLIP MODAL */}
+      {selectedOrder && showPrintView && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 100000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1rem',
+        }}>
+          <div style={{
+            background: '#FFFFFF',
+            color: '#3A1F14',
+            width: '100%',
+            maxWidth: '560px',
+            maxHeight: '92vh',
+            overflowY: 'auto',
+            padding: '2rem',
+            borderRadius: '16px',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.6)',
+            fontFamily: 'monospace, sans-serif',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #3A1F14', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h2 style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, color: '#3A1F14' }}>MILASTY — ORDER PREPARATION & PACKING SLIP</h2>
+                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#2F7D32', marginTop: '0.2rem' }}>
+                  {selectedOrder.orderNumber || selectedOrder.orderId || `MIL-${String(selectedOrder.id).slice(-6)}`}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  onClick={() => window.print()}
+                  style={{ background: '#2F7D32', color: '#FFF', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '6px', fontWeight: '700', cursor: 'pointer', fontSize: '0.8rem' }}
+                >
+                  Print
+                </button>
+                <button
+                  onClick={() => setShowPrintView(false)}
+                  style={{ background: '#E2D7C7', color: '#3A1F14', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '6px', fontWeight: '700', cursor: 'pointer', fontSize: '0.8rem' }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+            <div style={{ fontSize: '0.85rem', marginBottom: '1.25rem', lineHeight: '1.5', borderBottom: '1px dashed #CCC', paddingBottom: '0.75rem' }}>
+              <div><strong>Customer:</strong> {selectedOrder.customerName || selectedOrder.user?.name || 'Customer'}</div>
+              <div><strong>Phone:</strong> {selectedOrder.customerPhone || selectedOrder.user?.phone || 'N/A'}</div>
+              <div><strong>Delivery Address:</strong> {typeof selectedOrder.shippingAddress === 'object'
+                ? [selectedOrder.shippingAddress.building, selectedOrder.shippingAddress.addressLine, selectedOrder.shippingAddress.city].filter(Boolean).join(', ')
+                : selectedOrder.shippingAddress || 'N/A'}
+              </div>
+              <div><strong>Status:</strong> {(selectedOrder.orderStatus || selectedOrder.status || 'Confirmed').toUpperCase()}</div>
+            </div>
+
+            <div style={{ border: '2px solid #2F7D32', borderRadius: '10px', padding: '1rem', background: '#FBF6EE', marginBottom: '1.25rem' }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: '900', textTransform: 'uppercase', color: '#2F7D32', textAlign: 'center', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
+                ━━━━━━━━━━━━━━━━━━━━━━━━<br />
+                CUSTOMER CUSTOMIZATION & SPECIAL INSTRUCTIONS<br />
+                ━━━━━━━━━━━━━━━━━━━━━━━━
+              </div>
+
+              {(selectedOrder.items || selectedOrder.order_items || []).map((item, i) => {
+                const note = item.customization_note || item.customizationNote;
+                return (
+                  <div key={i} style={{ marginBottom: '1rem', borderBottom: '1px dashed rgba(47,125,50,0.3)', paddingBottom: '0.75rem' }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#3A1F14' }}>
+                      {i + 1}. {item.title || item.product_title || item.product_name || 'Item'} × {item.quantity}
+                    </div>
+                    {note ? (
+                      <div style={{ marginTop: '0.3rem', padding: '0.5rem', background: '#FFF', border: '1px solid #2F7D32', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '700', color: '#2A140D' }}>
+                        ✦ CUSTOMER INSTRUCTION:<br />
+                        <span style={{ fontStyle: 'italic', color: '#166534' }}>"{note}"</span>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.8rem', color: '#725D50', marginTop: '0.2rem', fontStyle: 'italic' }}>
+                        No customization requested.
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#725D50', fontStyle: 'italic' }}>
+              Please verify all special baking & packaging instructions before dispatch.
+            </div>
           </div>
         </div>
       )}

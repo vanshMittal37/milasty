@@ -330,8 +330,10 @@ export default function OrderHistoryPage() {
               const isDelivered = String(order.orderStatus).toLowerCase() === 'delivered';
               const isCancelled = String(order.orderStatus).toLowerCase() === 'cancelled';
               const isPaid = String(order.paymentStatus).toLowerCase() === 'paid';
+              const orderItemsList = order.order_items || order.items || [];
+              const hasCustomization = orderItemsList.some((i) => Boolean(i.customization_note || i.customizationNote));
               
-              const firstItem = order.items?.[0] || {};
+              const firstItem = orderItemsList[0] || {};
               const firstItemImage = firstItem.image || firstItem.product_image || '/images/image1.jpeg';
 
               return (
@@ -354,7 +356,28 @@ export default function OrderHistoryPage() {
                       <span style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9' }}>#{order.orderNumber || order.orderId}</span>
                     </div>
                     
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      {hasCustomization && (
+                        <span 
+                          style={{ 
+                            backgroundColor: 'rgba(47, 125, 50, 0.25)', 
+                            color: '#9BCB88', 
+                            border: '1px solid rgba(155, 203, 136, 0.4)',
+                            fontSize: '0.72rem',
+                            fontWeight: '800',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.04em',
+                            padding: '0.25rem 0.65rem',
+                            borderRadius: '999px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem'
+                          }}
+                        >
+                          ✦ Customized
+                        </span>
+                      )}
+
                       <span 
                         style={{ 
                           backgroundColor: isCancelled ? 'rgba(217, 83, 79, 0.15)' : (isDelivered ? 'rgba(129, 199, 132, 0.2)' : 'rgba(36, 79, 33, 0.25)'), 

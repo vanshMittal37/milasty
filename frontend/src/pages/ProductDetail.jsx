@@ -276,6 +276,8 @@ export default function ProductDetail() {
     }
   };
 
+  const [customizationNote, setCustomizationNote] = useState('');
+
   // Requirement 8: Enforce Login Prompt for Logged-Out Users
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
@@ -290,7 +292,7 @@ export default function ProductDetail() {
 
     setBtnText('Adding...');
     try {
-      await addToCart(product, selectedVariant, quantity);
+      await addToCart(product, selectedVariant, quantity, customizationNote);
       setBtnText('✓ Added to Cart');
       setTimeout(() => setBtnText('Add to Cart'), 2000);
     } catch (e) {
@@ -831,6 +833,63 @@ export default function ProductDetail() {
                 </div>
               )}
             </div>
+
+            {/* PERSONALIZE YOUR BAKE - Product Level Customization Card */}
+            {Boolean(product?.allow_customization || product?.allowCustomization) && (
+              <div
+                style={{
+                  backgroundColor: '#FBF6EE',
+                  border: '1.5px solid rgba(47, 125, 50, 0.25)',
+                  borderRadius: '16px',
+                  padding: '1.25rem',
+                  marginTop: '0.85rem',
+                  marginBottom: '0.25rem',
+                  boxShadow: '0 4px 16px rgba(47, 125, 50, 0.05)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#2F7D32', letterSpacing: '0.04em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <span>✦</span> PERSONALIZE YOUR BAKE
+                  </span>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#725D50', backgroundColor: 'rgba(58,31,20,0.06)', padding: '0.15rem 0.55rem', borderRadius: '999px' }}>
+                    Optional
+                  </span>
+                </div>
+                
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '800', color: '#3A1F14', marginBottom: '0.2rem' }}>
+                  Special Instructions
+                </label>
+                <p style={{ fontSize: '0.78rem', color: '#725D50', margin: '0 0 0.65rem 0', lineHeight: '1.45' }}>
+                  Optional — tell us how you'd like this particular item prepared. Your instruction applies <strong>ONLY to this product</strong>.
+                </p>
+                
+                <div style={{ position: 'relative' }}>
+                  <textarea
+                    value={customizationNote}
+                    onChange={(e) => setCustomizationNote(e.target.value.slice(0, 300))}
+                    placeholder={product.customization_placeholder || product.customizationPlaceholder || "Example: Please write Happy Birthday Aanya."}
+                    rows={3}
+                    maxLength={300}
+                    style={{
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      padding: '0.75rem 0.85rem',
+                      fontSize: '0.88rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(58, 31, 20, 0.22)',
+                      backgroundColor: '#FFFFFF',
+                      color: '#3A1F14',
+                      resize: 'vertical',
+                      fontFamily: 'var(--font-sans)',
+                      outline: 'none',
+                    }}
+                  />
+                  <div style={{ textAlign: 'right', fontSize: '0.72rem', color: customizationNote.length >= 300 ? '#DC2626' : '#725D50', marginTop: '0.25rem', fontWeight: '700' }}>
+                    {customizationNote.length}/300
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Quantity Selector & Add to Cart Action Row */}
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap' }}>

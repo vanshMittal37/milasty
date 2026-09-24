@@ -172,6 +172,44 @@ export default function OrderSuccessPage() {
                   <span>Total Amount:</span>
                   <span>₹{order.totalAmount || order.grandTotal || 0}</span>
                 </div>
+
+                {/* YOUR ORDER ITEMS LIST WITH PER-PRODUCT INSTRUCTION */}
+                {Array.isArray(order.items || order.order_items) && (order.items || order.order_items).length > 0 && (
+                  <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #E4D1B7' }}>
+                    <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#2B140B', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      YOUR ORDERED ITEMS
+                    </h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      {(order.items || order.order_items).map((item, idx) => {
+                        const title = item.product_title || item.title || item.name || 'MILASTY Bake';
+                        const vName = item.variant_name || item.variantName || 'Standard Pack';
+                        const qty = item.quantity || 1;
+                        const price = item.total_price || item.totalPrice || (item.unit_price ? item.unit_price * qty : 0);
+                        const note = item.customization_note || item.customizationNote || null;
+
+                        return (
+                          <div key={idx} style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '0.85rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div>
+                                <strong style={{ fontSize: '0.92rem', color: '#2B140B' }}>{title}</strong>
+                                <span style={{ fontSize: '0.78rem', color: '#6B584C', display: 'block' }}>
+                                  Qty: {qty} • {vName}
+                                </span>
+                              </div>
+                              <span style={{ fontWeight: '800', color: '#2B140B', fontSize: '0.95rem' }}>₹{price}</span>
+                            </div>
+                            {note && (
+                              <div style={{ marginTop: '0.5rem', paddingTop: '0.4rem', borderTop: '1px dashed #E4D1B7', fontSize: '0.78rem', color: '#2F6B3A' }}>
+                                <span style={{ fontWeight: '800', textTransform: 'uppercase', fontSize: '0.7rem' }}>✦ Special Instruction: </span>
+                                <span style={{ fontStyle: 'italic', color: '#3A1F14' }}>"{note}"</span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             )
           )}
