@@ -74,7 +74,7 @@ export default function WishlistPage() {
         overflowX: 'hidden',
         boxSizing: 'border-box',
         backgroundColor: '#F7F0E5',
-        backgroundImage: 'linear-gradient(rgba(247, 240, 229, 0.88), rgba(247, 240, 229, 0.88)), url(/images/about_background_image.jpeg)',
+        backgroundImage: 'linear-gradient(rgba(247, 240, 229, 0.25), rgba(247, 240, 229, 0.25)), url(/images/about_background_image.jpeg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',

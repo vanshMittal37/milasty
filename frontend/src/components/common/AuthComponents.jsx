@@ -54,7 +54,7 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
       style={{
         minHeight: '100vh',
         backgroundColor: '#F5EBDD',
-        backgroundImage: 'linear-gradient(rgba(245, 235, 221, 0.85), rgba(245, 235, 221, 0.85)), url(/images/about_background_image.jpeg)',
+        backgroundImage: 'linear-gradient(rgba(245, 235, 221, 0.25), rgba(245, 235, 221, 0.25)), url(/images/about_background_image.jpeg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',

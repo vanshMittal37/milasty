@@ -428,7 +428,7 @@ export default function CheckoutPage() {
     <div style={{
       minHeight: '100vh',
       backgroundColor: '#F5EBDD',
-      backgroundImage: 'linear-gradient(rgba(245, 235, 221, 0.88), rgba(245, 235, 221, 0.88)), url(/images/about_background_image.jpeg)',
+      backgroundImage: 'linear-gradient(rgba(245, 235, 221, 0.25), rgba(245, 235, 221, 0.25)), url(/images/about_background_image.jpeg)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed',
