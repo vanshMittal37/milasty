@@ -100,12 +100,16 @@ function ToastNotification() {
 }
 
 const PAGE_BACKGROUNDS = {
+  '/': '/images/about_background_image.jpeg',
   '/our-story': '/images/about_background_image.jpeg',
   '/about': '/images/about_background_image.jpeg',
-  '/shop': '/images/ritiual_background_image.jpeg',
-  '/nutrition': '/images/nutrition_background_image.jpeg',
-  '/contact': '/images/shop_background_image.jpeg',
-  '/wishlist': '/images/ritiual_background_image.jpeg',
+  '/shop': '/images/about_background_image.jpeg',
+  '/nutrition': '/images/about_background_image.jpeg',
+  '/contact': '/images/about_background_image.jpeg',
+  '/wishlist': '/images/about_background_image.jpeg',
+  '/checkout': '/images/about_background_image.jpeg',
+  '/login': '/images/about_background_image.jpeg',
+  '/register': '/images/about_background_image.jpeg',
   '/terms': '/images/about_background_image.jpeg',
   '/shipping': '/images/about_background_image.jpeg',
   '/refund': '/images/about_background_image.jpeg',
@@ -120,7 +124,11 @@ function MainLayout() {
       minHeight: '100vh',
       position: 'relative',
       backgroundColor: '#F5EBDD',
-      backgroundImage: 'radial-gradient(ellipse at 50% 0%, #FBF6ED 0%, #F5EBDD 65%, #EFE1CF 100%)',
+      backgroundImage: 'linear-gradient(rgba(247, 240, 229, 0.88), rgba(247, 240, 229, 0.88)), url(/images/about_background_image.jpeg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      backgroundRepeat: 'no-repeat',
       color: '#2A170F',
     }}>
       <EdgeSwipeHandler />

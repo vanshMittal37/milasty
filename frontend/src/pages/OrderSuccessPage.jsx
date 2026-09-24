@@ -31,7 +31,17 @@ export default function OrderSuccessPage() {
   const displayPaymentStatus = isPaid ? '✓ PAID SUCCESSFULLY' : String(order?.paymentStatus || 'Pending').toUpperCase();
 
   return (
-    <div style={{ backgroundColor: '#F5EBDD', backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.6) 0%, rgba(245,235,221,0) 70%)', minHeight: '90vh', padding: '5rem 0 6rem', display: 'flex', alignItems: 'center' }}>
+    <div style={{
+      backgroundColor: '#F5EBDD',
+      backgroundImage: 'linear-gradient(rgba(245, 235, 221, 0.88), rgba(245, 235, 221, 0.88)), url(/images/about_background_image.jpeg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      minHeight: '90vh',
+      padding: '5rem 0 6rem',
+      display: 'flex',
+      alignItems: 'center'
+    }}>
       <div className="container" style={{ maxWidth: '640px' }}>
         
         {/* Step Indicator Header */}

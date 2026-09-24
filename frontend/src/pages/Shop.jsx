@@ -468,6 +468,10 @@ export default function Shop() {
         boxSizing: 'border-box',
         position: 'relative',
         backgroundColor: '#F7F0E5',
+        backgroundImage: 'linear-gradient(rgba(247, 240, 229, 0.88), rgba(247, 240, 229, 0.88)), url(/images/about_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>

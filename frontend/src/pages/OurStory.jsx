@@ -389,6 +389,10 @@ export default function OurStory() {
         padding: '0 0 5rem',
         position: 'relative',
         backgroundColor: '#F7F0E5',
+        backgroundImage: 'linear-gradient(rgba(247, 240, 229, 0.88), rgba(247, 240, 229, 0.88)), url(/images/about_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
         color: '#2B170D',
         overflowX: 'hidden',
       }}

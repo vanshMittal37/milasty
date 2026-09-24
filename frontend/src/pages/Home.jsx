@@ -66,8 +66,8 @@ export default function Home() {
   const homeRef = useRef(null);
 
   // Default poster URLs
-  const DEFAULT_MOBILE_POSTER = "https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,c_scale,w_480,q_auto:eco/v1787068808/cookie_video.jpg";
-  const DEFAULT_DESKTOP_POSTER = "https://res.cloudinary.com/dmm8lfc3x/video/upload/so_0,q_auto/v1787068808/cookie_video.jpg";
+  const DEFAULT_MOBILE_POSTER = "/images/about_background_image.jpeg";
+  const DEFAULT_DESKTOP_POSTER = "/images/about_background_image.jpeg";
 
   // Video optimization states
   const [videoPlayError, setVideoPlayError] = useState(false);
@@ -487,7 +487,15 @@ export default function Home() {
       />
 
       {/* Home Main Content Layer */}
-      <div className="home-content" style={{ position: 'relative', zIndex: 3, backgroundColor: '#F7F0E5' }}>
+      <div className="home-content" style={{
+        position: 'relative',
+        zIndex: 3,
+        backgroundColor: '#F7F0E5',
+        backgroundImage: 'linear-gradient(rgba(247, 240, 229, 0.88), rgba(247, 240, 229, 0.88)), url(/images/about_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}>
 
         {/* ================================================================== */}
         {/* SECTION 1 — HERO                                                   */}
@@ -498,8 +506,10 @@ export default function Home() {
           style={{
             position: 'relative',
             minHeight: isMobile ? 'auto' : '680px',
-            backgroundColor: '#F7F0E5',
-            backgroundImage: 'radial-gradient(ellipse at 70% 30%, #FCF8F1 0%, #F7F0E5 60%, #E6D4BC 100%)',
+            backgroundColor: 'transparent',
+            backgroundImage: 'linear-gradient(rgba(252, 248, 241, 0.82), rgba(230, 212, 188, 0.82)), url(/images/about_background_image.jpeg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
