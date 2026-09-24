@@ -115,19 +115,19 @@ export default function AdminPrebookingList() {
       </div>
 
       {/* Main Table View */}
-      <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
+      <div className="admin-table-container">
         {loading ? (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '4rem', gap: '0.75rem' }}>
-            <RefreshCw size={22} className="animate-spin" color="var(--admin-accent)" />
-            <span style={{ fontSize: '0.9rem', color: 'var(--admin-text-muted)' }}>Loading pre-booking products...</span>
+            <RefreshCw size={22} className="animate-spin" color="#2F7D32" />
+            <span style={{ fontSize: '0.9rem', color: '#665B53', fontWeight: '700' }}>Loading pre-booking products...</span>
           </div>
         ) : filteredPrebookings.length === 0 ? (
-          <div style={{ padding: '4rem 1.5rem', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
-            <Clock size={36} color="var(--admin-text-muted)" style={{ marginBottom: '0.75rem' }} />
-            <h4 style={{ fontSize: '1.05rem', color: 'var(--admin-text-primary)', margin: '0 0 0.35rem 0', fontWeight: '700' }}>
+          <div className="admin-empty-state">
+            <Clock size={36} color="#2F7D32" style={{ marginBottom: '0.75rem' }} />
+            <h4 style={{ fontSize: '1.05rem', color: '#24150F', margin: '0 0 0.35rem 0', fontWeight: '800' }}>
               No upcoming products configured
             </h4>
-            <p style={{ fontSize: '0.82rem', margin: '0 auto 1.25rem', maxWidth: '420px' }}>
+            <p style={{ fontSize: '0.85rem', color: '#665B53', margin: '0 auto 1.25rem', maxWidth: '420px' }}>
               Add a product to show it in the "What's Next from MILASTY" section on the shop page.
             </p>
             <button onClick={handleOpenAdd} className="admin-btn-secondary" style={{ fontSize: '0.82rem' }}>
@@ -136,17 +136,16 @@ export default function AdminPrebookingList() {
             </button>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
-              <thead>
-                <tr style={{ backgroundColor: 'var(--admin-surface-elevated)', borderBottom: '1px solid var(--admin-border)', color: 'var(--admin-text-muted)', textTransform: 'uppercase', fontSize: '0.72rem', letterSpacing: '0.05em' }}>
-                  <th style={{ padding: '0.85rem 1.25rem' }}>Product</th>
-                  <th style={{ padding: '0.85rem 1.25rem' }}>Launch Date</th>
-                  <th style={{ padding: '0.85rem 1.25rem' }}>Status</th>
-                  <th style={{ padding: '0.85rem 1.25rem' }}>Pre-Booking</th>
-                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'right' }}>Actions</th>
-                </tr>
-              </thead>
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Launch Date</th>
+                <th>Status</th>
+                <th>Pre-Booking</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
               <tbody>
                 {filteredPrebookings.map((item) => {
                   const launchDateObj = item.launchDate ? new Date(item.launchDate) : null;
@@ -233,7 +232,6 @@ export default function AdminPrebookingList() {
                 })}
               </tbody>
             </table>
-          </div>
         )}
       </div>
 

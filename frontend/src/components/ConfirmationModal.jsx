@@ -16,32 +16,34 @@ export default function ConfirmationModal({
     <ModalPortal isOpen={isOpen} onClose={onCancel}>
       <div
         style={{
-          backgroundColor: '#182019',
-          border: '1px solid #2f3e31',
+          backgroundColor: '#FFFFFF',
+          border: '1px solid #D9CEC0',
           borderRadius: '16px',
           padding: '1.75rem',
-          maxWidth: '440px',
+          maxWidth: '460px',
           width: '100%',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+          boxShadow: '0 20px 60px rgba(36, 21, 15, 0.25)',
+          color: '#241C18',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div
               style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '10px',
-                backgroundColor: isDanger ? 'rgba(255, 91, 91, 0.12)' : 'rgba(143, 174, 139, 0.12)',
+                width: '42px',
+                height: '42px',
+                borderRadius: '12px',
+                backgroundColor: isDanger ? '#FCE8E6' : '#E8F5E9',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: isDanger ? '#ff5b5b' : '#8fae8b',
+                color: isDanger ? '#B42318' : '#2F7D32',
+                border: isDanger ? '1px solid #F3B7B0' : '1px solid #B9DDBD',
               }}
             >
-              <AlertTriangle size={20} />
+              <AlertTriangle size={22} />
             </div>
-            <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#e5eae4', fontWeight: '700', fontFamily: 'serif' }}>
+            <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#24150F', fontWeight: '800', fontFamily: 'var(--font-serif)' }}>
               {title}
             </h3>
           </div>
@@ -50,16 +52,16 @@ export default function ConfirmationModal({
             style={{
               background: 'none',
               border: 'none',
-              color: '#7a8c7b',
+              color: '#665B53',
               cursor: 'pointer',
               padding: '4px',
             }}
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
-        <p style={{ margin: '0 0 1.5rem 0', fontSize: '0.9rem', color: '#9bb09e', lineHeight: '1.5' }}>
+        <p style={{ margin: '0 0 1.5rem 0', fontSize: '0.9rem', color: '#514840', lineHeight: '1.5', fontWeight: '500' }}>
           {message}
         </p>
 
@@ -67,15 +69,10 @@ export default function ConfirmationModal({
           <button
             type="button"
             onClick={onCancel}
+            className="admin-btn-secondary"
             style={{
               padding: '0.65rem 1.25rem',
-              borderRadius: '8px',
-              border: '1px solid #2f3e31',
-              backgroundColor: 'transparent',
-              color: '#c5d1c6',
-              fontSize: '0.88rem',
-              fontWeight: '600',
-              cursor: 'pointer',
+              fontSize: '0.85rem',
             }}
           >
             {cancelText}
@@ -83,15 +80,10 @@ export default function ConfirmationModal({
           <button
             type="button"
             onClick={onConfirm}
+            className={isDanger ? "admin-btn-danger" : "admin-btn-primary"}
             style={{
               padding: '0.65rem 1.25rem',
-              borderRadius: '8px',
-              border: 'none',
-              backgroundColor: isDanger ? '#d93838' : '#3d7a46',
-              color: '#ffffff',
-              fontSize: '0.88rem',
-              fontWeight: '600',
-              cursor: 'pointer',
+              fontSize: '0.85rem',
             }}
           >
             {confirmText}

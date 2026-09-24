@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Shield, UserX, UserCheck, RefreshCw } from 'lucide-react';
+import { Users, Shield, UserX, UserCheck, RefreshCw, Search } from 'lucide-react';
 import api from '../../api/axios';
 
 export default function AdminCustomerList() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetchCustomers();
@@ -23,7 +24,7 @@ export default function AdminCustomerList() {
   };
 
   const handleToggleStatus = async (id, currentStatus) => {
-    const nextStatus = currentStatus === 'active' ? 'disabled' : 'active';
+    const nextStatus = currentStatus === 'disabled' ? 'active' : 'disabled';
     try {
       await api.put(`/admin/customers/${id}/status`, { status: nextStatus });
       fetchCustomers();
@@ -32,29 +33,57 @@ export default function AdminCustomerList() {
     }
   };
 
+  const filteredCustomers = customers.filter(c => {
+    if (!search.trim()) return true;
+    const query = search.toLowerCase();
+    return (
+      (c.name || '').toLowerCase().includes(query) ||
+      (c.email || '').toLowerCase().includes(query) ||
+      (c.phone || '').toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--admin-text-muted)', margin: '0 0 0.2rem 0' }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665B53', margin: '0 0 0.2rem 0' }}>
             Customers
           </p>
-          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+          <h2 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#24150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             Customer Registry
           </h2>
-          <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+          <p style={{ color: '#514840', fontSize: '0.82rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
             Monitor customer activity, order statistics, total lifetime spend, and account status controls.
           </p>
         </div>
+
+        <button onClick={fetchCustomers} className="admin-btn-secondary">
+          <RefreshCw size={14} />
+          <span>Refresh List</span>
+        </button>
+      </div>
+
+      {/* Search Bar */}
+      <div style={{ position: 'relative', maxWidth: '400px' }}>
+        <Search size={16} color="#665B53" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by customer name, email, or phone..."
+          className="admin-input"
+          style={{ paddingLeft: '2.5rem' }}
+        />
       </div>
 
       <div className="admin-table-container">
         {loading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', gap: '1rem' }}>
-            <RefreshCw size={20} className="animate-spin" color="var(--admin-accent)" />
-            <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Loading customer accounts...</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3.5rem', gap: '1rem' }}>
+            <RefreshCw size={22} className="animate-spin" color="#2F7D32" />
+            <span style={{ fontSize: '0.85rem', color: '#665B53', fontWeight: '700' }}>Loading customer accounts...</span>
           </div>
-        ) : customers.length > 0 ? (
+        ) : filteredCustomers.length > 0 ? (
           <table className="admin-table">
             <thead>
               <tr>
@@ -67,49 +96,55 @@ export default function AdminCustomerList() {
               </tr>
             </thead>
             <tbody>
-              {customers.map((c) => {
+              {filteredCustomers.map((c) => {
                 const initials = (c.name || 'C').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                const isDisabled = c.status === 'disabled';
                 return (
-                  <tr key={c._id || c.email}>
-                    <td style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                      <div
-                        style={{
-                          width: '38px',
-                          height: '38px',
-                          borderRadius: '50%',
-                          backgroundColor: 'rgba(143, 175, 91, 0.12)',
-                          color: 'var(--admin-accent)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: '800',
-                          fontSize: '0.85rem',
-                          border: '1px solid var(--admin-border)'
-                        }}
-                      >
-                        {initials}
+                  <tr key={c._id || c.id || c.email}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                        <div
+                          style={{
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            backgroundColor: '#E8F5E9',
+                            color: '#2F7D32',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: '800',
+                            fontSize: '0.88rem',
+                            border: '1.5px solid #B9DDBD'
+                          }}
+                        >
+                          {initials}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: '800', color: '#24150F', fontSize: '0.9rem' }}>{c.name || 'Customer'}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#665B53', fontWeight: '600' }}>ID: {String(c._id || c.id || 'N/A').slice(-6)}</div>
+                        </div>
                       </div>
-                      <div style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>{c.name}</div>
                     </td>
                     <td>
-                      <div style={{ fontWeight: '600', color: 'var(--admin-text-primary)' }}>{c.email}</div>
-                      <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>{c.phone || 'No phone'}</div>
+                      <div style={{ fontWeight: '700', color: '#241C18', fontSize: '0.85rem' }}>{c.email || 'No email'}</div>
+                      <div style={{ fontSize: '0.76rem', color: '#665B53', fontWeight: '600' }}>{c.phone || 'No phone provided'}</div>
                     </td>
-                    <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>{c.totalOrders || 0}</td>
-                    <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>₹{c.totalSpent || 0}</td>
+                    <td style={{ fontWeight: '800', color: '#24150F', fontSize: '0.92rem' }}>{c.totalOrders || 0}</td>
+                    <td style={{ fontWeight: '800', color: '#24150F', fontSize: '0.92rem' }}>₹{(c.totalSpent || 0).toLocaleString('en-IN')}</td>
                     <td>
-                      <span className={`admin-badge ${c.status === 'disabled' ? 'admin-badge-danger' : 'admin-badge-success'}`}>
-                        {c.status || 'active'}
+                      <span className={`admin-badge ${isDisabled ? 'admin-badge-danger' : 'admin-badge-success'}`}>
+                        {isDisabled ? 'Disabled' : 'Active'}
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <button
-                        onClick={() => handleToggleStatus(c._id, c.status)}
-                        className="admin-btn-secondary"
-                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
+                        onClick={() => handleToggleStatus(c._id || c.id, c.status)}
+                        className={isDisabled ? "admin-btn-primary" : "admin-btn-danger"}
+                        style={{ padding: '0.45rem 0.85rem', fontSize: '0.78rem' }}
                       >
-                        {c.status === 'disabled' ? <UserCheck size={14} /> : <UserX size={14} />}
-                        <span>{c.status === 'disabled' ? 'Enable' : 'Disable'}</span>
+                        {isDisabled ? <UserCheck size={14} /> : <UserX size={14} />}
+                        <span>{isDisabled ? 'Enable' : 'Disable'}</span>
                       </button>
                     </td>
                   </tr>
@@ -120,10 +155,12 @@ export default function AdminCustomerList() {
         ) : (
           <div className="admin-empty-state">
             <div className="admin-empty-icon">
-              <Users size={24} />
+              <Users size={26} />
             </div>
-            <h3 style={{ fontSize: '1.1rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>No customers yet</h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--admin-text-muted)', margin: 0 }}>Registered customer accounts will appear here.</p>
+            <h3 style={{ fontSize: '1.15rem', color: '#24150F', margin: 0, fontWeight: '800' }}>No customers found</h3>
+            <p style={{ fontSize: '0.85rem', color: '#665B53', margin: 0 }}>
+              {search ? 'No customer account matches your search query.' : 'Registered customer accounts will appear here.'}
+            </p>
           </div>
         )}
       </div>
