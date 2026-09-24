@@ -610,53 +610,6 @@ export default function AdminLayout() {
             </div>
           </div>
         </header>
-                      fontWeight: '600',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'background-color 0.15s ease'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5EFE7'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                  >
-                    <KeyRound size={15} color="#B7791F" />
-                    <span>Change Password</span>
-                  </button>
-
-                  <div style={{ borderTop: '1px solid #E5DDD3', marginTop: '0.25rem', paddingTop: '0.25rem' }}>
-                    <button
-                      onClick={() => {
-                        setProfileDropdownOpen(false);
-                        setShowLogoutModal(true);
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.65rem',
-                        width: '100%',
-                        padding: '0.65rem 0.85rem',
-                        fontSize: '0.82rem',
-                        fontWeight: '700',
-                        color: '#B42318',
-                        backgroundColor: 'transparent',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        transition: 'background-color 0.15s ease'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FCE8E6'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    >
-                      <LogOut size={15} color="#B42318" />
-                      <span>Log Out</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
 
         {/* WORKSPACE AREA */}
         <main 
