@@ -435,6 +435,7 @@ export default function AdminDashboardMain() {
             </Link>
         </div>
       </div>
+    </div>
 
       {/* ── RECENT ORDERS TABLE ── */}
       <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
