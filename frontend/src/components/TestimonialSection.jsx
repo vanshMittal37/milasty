@@ -404,7 +404,7 @@ export default function TestimonialSection() {
                   style={{
                     backgroundColor: '#FFF9F0',
                     borderRadius: '18px',
-                    border: '1px solid #DCC8AE',
+                    border: '1.5px solid #D8C4A9',
                     boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                     padding: '1.25rem 1.15rem',
                     display: 'flex',
@@ -623,7 +623,7 @@ export default function TestimonialSection() {
               style={{
                 backgroundColor: '#FFF9F0',
                 borderRadius: '20px',
-                border: '1px solid #DCC8AE',
+                border: '1.5px solid #D8C4A9',
                 boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                 padding: '1.75rem',
                 display: 'flex',

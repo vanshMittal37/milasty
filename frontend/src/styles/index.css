@@ -3688,3 +3688,62 @@ select.admin-input {
   color: #8FAF5B;
   font-weight: 800;
 }
+
+/* ==================================================
+   UNIVERSAL DISTINCT CARD & BUTTON BORDERS
+   ================================================== */
+.card,
+.milasty-product-card,
+.home-product-card,
+.product-card,
+.glass-card,
+.category-card,
+.testimonial-card,
+.feature-card,
+.cta-card,
+.info-card,
+.auth-card,
+.filter-card,
+.nutrition-card,
+.recipe-card,
+.trust-strip-card,
+.category-circle-wrap {
+  border: 1.5px solid #D8C4A9 !important;
+}
+
+.milasty-product-card:hover,
+.home-product-card:hover,
+.product-card:hover,
+.glass-card:hover,
+.category-card:hover,
+.testimonial-card:hover,
+.feature-card:hover,
+.category-circle-wrap:hover {
+  border-color: #2F6B3A !important;
+}
+
+/* Universal Button Borders & Elevation */
+button:not(.plain-btn):not(.nav-link),
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-accent {
+  border-width: 1.5px !important;
+  border-style: solid !important;
+}
+
+.btn-primary,
+button.btn-primary {
+  border-color: #2F6B3A !important;
+}
+
+.btn-secondary,
+button.btn-secondary {
+  border-color: #D8C4A9 !important;
+}
+
+.btn-outline,
+button.btn-outline {
+  border-color: #2F6B3A !important;
+}

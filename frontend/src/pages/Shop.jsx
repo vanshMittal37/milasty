@@ -1669,34 +1669,32 @@ export default function Shop() {
       >
         <div className="container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1rem' }}>
           <div
-            className="cta-card glass-card"
             style={{
               padding: isMobile ? '3.5rem 1.5rem' : '5rem 2rem',
               textAlign: 'center',
-              color: '#FFFFFF',
               position: 'relative',
               borderRadius: '30px',
-              backgroundColor: 'rgba(35, 21, 13, 0.75)',
-              border: '1.5px solid rgba(255, 255, 255, 0.20)',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4)',
+              backgroundColor: '#FFF9F0',
+              border: '2px solid #DCC8AE',
+              boxShadow: '0 12px 36px rgba(43, 20, 11, 0.08)',
               overflow: 'hidden',
             }}
           >
-            <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800' }}>
-              Ready to Upgrade Your <span style={{ color: 'var(--accent-gold)' }}>Everyday Snack?</span>
+            <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#32180D', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '850', lineHeight: '1.2' }}>
+              Ready to Upgrade Your <span style={{ color: '#2F6B3A' }}>Everyday Snack?</span>
             </h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: isMobile ? '0.95rem' : '1.1rem', maxWidth: '580px', margin: '0 auto 2.5rem', lineHeight: '1.7', fontWeight: '500' }}>
+            <p style={{ color: '#654B38', fontSize: isMobile ? '0.95rem' : '1.1rem', maxWidth: '580px', margin: '0 auto 2.5rem', lineHeight: '1.7', fontWeight: '500' }}>
               Discover freshly baked millet cookies made with pure Desi Ghee and organic jaggery. Delivered fresh all across India.
             </p>
             <button
               onClick={() => handleScrollToSection('browse-milasty-collection')}
               className="btn-primary" 
-              style={{ padding: '1.1rem 2.75rem', fontSize: '1.05rem', backgroundColor: '#2F6B3A', color: '#FFFFFF', border: 'none', fontWeight: '800', textDecoration: 'none', borderRadius: '999px', cursor: 'pointer', boxShadow: '0 8px 24px rgba(47, 107, 58, 0.3)' }}
+              style={{ padding: '1.1rem 2.75rem', fontSize: '1.05rem', backgroundColor: '#2F6B3A', color: '#FFFFFF', border: '1.5px solid #2F6B3A', fontWeight: '850', textDecoration: 'none', borderRadius: '999px', cursor: 'pointer', boxShadow: '0 8px 24px rgba(47, 107, 58, 0.25)', transition: 'all 0.25s ease' }}
             >
               <span>Shop All Fresh Bakes →</span>
             </button>
 
-            <div style={{ marginTop: '2rem', fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.8)', letterSpacing: '0.05em', fontWeight: '700' }}>
+            <div style={{ marginTop: '2rem', fontSize: '0.85rem', color: '#806A57', letterSpacing: '0.06em', fontWeight: '800' }}>
               PAN-INDIA SHIPPING • FRESHLY BAKED ON ORDER
             </div>
           </div>
