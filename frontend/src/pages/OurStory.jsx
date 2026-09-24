@@ -76,13 +76,13 @@ function OrbitJourneySection() {
         
         {/* Header */}
         <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 3rem' }}>
-          <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+          <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
             MILESTONES
           </span>
-          <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-            The MILASTY <span style={{ color: '#b9cd94', fontSize: '1.18em', fontWeight: '900', textShadow: '0 0 12px rgba(185, 205, 148, 0.4)' }}>Journey</span>
+          <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0 }}>
+            The MILASTY <span style={{ color: '#2F6B3A', fontSize: '1.18em', fontWeight: '900' }}>Journey</span>
           </h2>
-          <p style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', color: '#F5EBDD', fontWeight: '500', marginTop: '0.6rem', lineHeight: '1.6' }}>
+          <p style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', color: '#654B38', fontWeight: '500', marginTop: '0.6rem', lineHeight: '1.6' }}>
             From one woman's search for better food to a brand built around better everyday snacking.
           </p>
         </div>
@@ -100,8 +100,7 @@ function OrbitJourneySection() {
                 left: '50%', 
                 transform: 'translateX(-50%)', 
                 width: '2px', 
-                backgroundColor: 'rgba(185, 205, 148, 0.55)', 
-                boxShadow: '0 0 8px rgba(185, 205, 148, 0.3)',
+                backgroundColor: '#DCC8AE', 
                 zIndex: 1 
               }} 
             />
@@ -130,16 +129,16 @@ function OrbitJourneySection() {
                         width: '36px',
                         height: '36px',
                         borderRadius: '50%',
-                        backgroundColor: '#1c3d19',
-                        border: isHighlight ? '2px solid var(--accent-gold)' : '1.5px solid #b9cd94',
-                        boxShadow: isHighlight ? '0 0 16px rgba(185, 205, 148, 0.6), 0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.4)',
+                        backgroundColor: '#2F6B3A',
+                        border: '2px solid #DCC8AE',
+                        boxShadow: '0 4px 10px rgba(75, 45, 25, 0.15)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         transition: 'all 0.3s ease'
                       }}
                     >
-                      <span style={{ fontSize: '0.85rem', fontWeight: '900', color: '#FFFDF9', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: '900', color: '#FFFFFF', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
                         {m.step}
                       </span>
                     </div>
@@ -147,12 +146,10 @@ function OrbitJourneySection() {
                     {/* Main Card Container */}
                     <div
                       style={{
-                        backgroundColor: isHighlight ? 'rgba(38, 24, 16, 0.94)' : 'rgba(32, 20, 13, 0.82)',
-                        backdropFilter: 'blur(16px)',
-                        WebkitBackdropFilter: 'blur(16px)',
+                        backgroundColor: '#FFF9F0',
                         borderRadius: '24px',
-                        border: isHighlight ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.16)',
-                        boxShadow: isHighlight ? '0 14px 36px rgba(0,0,0,0.6), 0 0 20px rgba(185, 205, 148, 0.2)' : '0 8px 24px rgba(0,0,0,0.4)',
+                        border: isHighlight ? '2px solid #2F6B3A' : '1px solid #DCC8AE',
+                        boxShadow: isHighlight ? '0 10px 30px rgba(47, 107, 58, 0.15)' : '0 4px 16px rgba(75, 45, 25, 0.05)',
                         padding: '1.5rem 1.15rem 1.35rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -164,39 +161,38 @@ function OrbitJourneySection() {
                       {/* Left Circular Olive-Green Icon Container */}
                       <div 
                         style={{ 
-                          width: '72px', 
-                          height: '72px', 
+                          width: '64px', 
+                          height: '64px', 
                           borderRadius: '50%', 
-                          backgroundColor: 'rgba(40, 58, 28, 0.85)', 
-                          border: '1.5px solid rgba(185, 205, 148, 0.4)', 
-                          boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.5)',
+                          backgroundColor: '#E3EEDC', 
+                          border: '1.5px solid #DCC8AE', 
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'center',
                           flexShrink: 0 
                         }}
                       >
-                        <IconComp size={34} color="#b9cd94" strokeWidth={1.5} />
+                        <IconComp size={28} color="#2F6B3A" strokeWidth={1.5} />
                       </div>
 
                       {/* Right Text Content Details */}
                       <div style={{ flexGrow: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
-                          <span style={{ fontSize: '0.62rem', letterSpacing: '0.12em', fontWeight: '900', color: 'rgba(185, 205, 148, 0.85)', textTransform: 'uppercase' }}>
+                          <span style={{ fontSize: '0.62rem', letterSpacing: '0.12em', fontWeight: '900', color: '#2F6B3A', textTransform: 'uppercase' }}>
                             STEP {m.step}
                           </span>
                           {isHighlight && (
-                            <span style={{ fontSize: '0.55rem', letterSpacing: '0.06em', fontWeight: '850', textTransform: 'uppercase', color: '#FFFDF9', backgroundColor: '#244f21', padding: '0.15rem 0.5rem', borderRadius: '999px', border: '1px solid #b9cd94' }}>
+                            <span style={{ fontSize: '0.55rem', letterSpacing: '0.06em', fontWeight: '850', textTransform: 'uppercase', color: '#FFFFFF', backgroundColor: '#2F6B3A', padding: '0.15rem 0.5rem', borderRadius: '999px' }}>
                               ACTIVE MILESTONE
                             </span>
                           )}
                         </div>
 
-                        <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.35rem', lineHeight: '1.2' }}>
+                        <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 0.35rem', lineHeight: '1.2' }}>
                           {m.title}
                         </h3>
 
-                        <p style={{ fontSize: '0.78rem', color: '#F5EBDD', lineHeight: '1.45', margin: 0, fontWeight: '500' }}>
+                        <p style={{ fontSize: '0.78rem', color: '#654B38', lineHeight: '1.45', margin: 0, fontWeight: '500' }}>
                           {m.desc}
                         </p>
                       </div>
@@ -208,8 +204,8 @@ function OrbitJourneySection() {
 
             {/* Bottom Leaf Icon at End of Vertical Path */}
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.75rem', position: 'relative', zIndex: 5 }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#1c3d19', border: '1.5px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.4)' }}>
-                <Leaf size={16} color="var(--accent-gold)" />
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#2F6B3A', border: '1.5px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(75, 45, 25, 0.15)' }}>
+                <Leaf size={16} color="#FFFFFF" />
               </div>
             </div>
 
@@ -227,8 +223,7 @@ function OrbitJourneySection() {
                 left: '50%', 
                 transform: 'translateX(-50%)', 
                 width: '2px', 
-                borderLeft: '2px dashed rgba(185, 205, 148, 0.65)', 
-                boxShadow: '0 0 12px rgba(185, 205, 148, 0.3)',
+                borderLeft: '2px dashed #DCC8AE', 
                 zIndex: 1 
               }} 
             />
@@ -268,13 +263,11 @@ function OrbitJourneySection() {
                         style={{
                           padding: '1.75rem 1.6rem',
                           borderRadius: '22px',
-                          backgroundColor: isHighlight ? 'rgba(35, 21, 13, 0.92)' : 'rgba(35, 21, 13, 0.55)',
-                          backdropFilter: 'blur(20px)',
-                          WebkitBackdropFilter: 'blur(20px)',
-                          border: isHighlight ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
+                          backgroundColor: '#FFF9F0',
+                          border: isHighlight ? '2px solid #2F6B3A' : '1px solid #DCC8AE',
                           boxShadow: isHighlight 
-                            ? '0 16px 40px rgba(0, 0, 0, 0.55), 0 0 25px rgba(185, 205, 148, 0.3)' 
-                            : '0 10px 30px rgba(0, 0, 0, 0.3)',
+                            ? '0 12px 32px rgba(47, 107, 58, 0.15)' 
+                            : '0 4px 16px rgba(75, 45, 25, 0.05)',
                           transform: isHighlight ? 'scale(1.02)' : 'scale(1)',
                           transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                           boxSizing: 'border-box',
@@ -287,37 +280,37 @@ function OrbitJourneySection() {
                         {/* Circular Icon Badge inside card */}
                         <div 
                           style={{ 
-                            width: '64px', 
-                            height: '64px', 
+                            width: '56px', 
+                            height: '56px', 
                             borderRadius: '50%', 
-                            backgroundColor: 'rgba(40, 58, 28, 0.85)', 
-                            border: '1.5px solid rgba(185, 205, 148, 0.4)', 
+                            backgroundColor: '#E3EEDC', 
+                            border: '1.5px solid #DCC8AE', 
                             display: 'flex', 
                             alignItems: 'center', 
                             justifyContent: 'center',
                             flexShrink: 0 
                           }}
                         >
-                          <IconComp size={30} color="#b9cd94" strokeWidth={1.5} />
+                          <IconComp size={26} color="#2F6B3A" strokeWidth={1.5} />
                         </div>
 
                         <div style={{ flexGrow: 1 }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: isEven ? 'flex-end' : 'flex-start', gap: '0.5rem', marginBottom: '0.4rem' }}>
-                            <span style={{ fontSize: '0.68rem', letterSpacing: '0.12em', fontWeight: '900', color: isHighlight ? '#b9cd94' : 'var(--accent-gold)', textTransform: 'uppercase' }}>
+                            <span style={{ fontSize: '0.68rem', letterSpacing: '0.12em', fontWeight: '900', color: '#2F6B3A', textTransform: 'uppercase' }}>
                               STEP {m.step}
                             </span>
                             {isHighlight && (
-                              <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', fontWeight: '850', textTransform: 'uppercase', color: '#FFFDF9', backgroundColor: '#244f21', padding: '0.15rem 0.6rem', borderRadius: '999px', border: '1px solid #b9cd94' }}>
+                              <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', fontWeight: '850', textTransform: 'uppercase', color: '#FFFFFF', backgroundColor: '#2F6B3A', padding: '0.15rem 0.6rem', borderRadius: '999px' }}>
                                 ACTIVE MILESTONE
                               </span>
                             )}
                           </div>
 
-                          <h3 style={{ fontSize: '1.4rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.45rem', lineHeight: '1.2' }}>
+                          <h3 style={{ fontSize: '1.4rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.45rem', lineHeight: '1.2' }}>
                             {m.title}
                           </h3>
 
-                          <p style={{ fontSize: '0.94rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+                          <p style={{ fontSize: '0.94rem', color: '#654B38', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
                             {m.desc}
                           </p>
                         </div>
@@ -337,12 +330,12 @@ function OrbitJourneySection() {
                     >
                       <div
                         style={{
-                          width: isHighlight ? '54px' : '44px',
-                          height: isHighlight ? '54px' : '44px',
+                          width: isHighlight ? '50px' : '40px',
+                          height: isHighlight ? '50px' : '40px',
                           borderRadius: '50%',
-                          backgroundColor: isHighlight ? '#244f21' : 'rgba(20, 10, 5, 0.95)',
-                          border: isHighlight ? '2.5px solid #b9cd94' : '1.5px solid var(--accent-gold)',
-                          boxShadow: isHighlight ? '0 0 22px #b9cd94, 0 4px 14px rgba(0,0,0,0.6)' : '0 4px 12px rgba(0,0,0,0.4)',
+                          backgroundColor: '#2F6B3A',
+                          border: '2px solid #DCC8AE',
+                          boxShadow: '0 4px 12px rgba(75, 45, 25, 0.15)',
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
@@ -351,7 +344,7 @@ function OrbitJourneySection() {
                           transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
                         }}
                       >
-                        <span style={{ fontSize: isHighlight ? '1.05rem' : '0.88rem', fontWeight: '900', color: isHighlight ? '#FFFDF9' : 'var(--accent-gold)', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
+                        <span style={{ fontSize: isHighlight ? '1rem' : '0.85rem', fontWeight: '900', color: '#FFFFFF', fontFamily: 'var(--font-serif)', lineHeight: 1 }}>
                           {m.step}
                         </span>
                       </div>
@@ -366,8 +359,8 @@ function OrbitJourneySection() {
 
             {/* Bottom Leaf Icon at End of Vertical Path */}
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2.5rem', position: 'relative', zIndex: 5 }}>
-              <div style={{ width: '38px', height: '38px', borderRadius: '50%', backgroundColor: '#1c3d19', border: '1.5px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
-                <Leaf size={20} color="var(--accent-gold)" />
+              <div style={{ width: '38px', height: '38px', borderRadius: '50%', backgroundColor: '#2F6B3A', border: '1.5px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(75, 45, 25, 0.15)' }}>
+                <Leaf size={20} color="#FFFFFF" />
               </div>
             </div>
 
@@ -395,22 +388,11 @@ export default function OurStory() {
         minHeight: '100vh',
         padding: '0 0 5rem',
         position: 'relative',
-        backgroundImage: 'url(/images/about_background_image.jpeg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#F7F0E5',
+        color: '#2B170D',
         overflowX: 'hidden',
       }}
     >
-      {/* Dark overlay for readability */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(135deg, rgba(15, 8, 4, 0.42) 0%, rgba(28, 14, 9, 0.32) 100%)',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
       
       {/* 1. SECTION 1 — HERO */}
@@ -435,12 +417,12 @@ export default function OurStory() {
               fontSize: '0.8rem', 
               textTransform: 'uppercase', 
               letterSpacing: '0.14em', 
-              color: '#b9cd94', 
+              color: '#2F6B3A', 
               fontWeight: '850',
-              backgroundColor: 'rgba(36, 79, 33, 0.35)',
+              backgroundColor: '#E3EEDC',
               padding: '0.4rem 0.95rem',
               borderRadius: '999px',
-              border: '1.5px solid rgba(185, 205, 148, 0.4)'
+              border: '1px solid #DCC8AE'
             }}
           >
             THE MILASTY STORY
@@ -449,12 +431,11 @@ export default function OurStory() {
             style={{ 
               fontSize: 'clamp(2.5rem, 5.5vw, 3.8rem)', 
               fontFamily: 'var(--font-serif)', 
-              color: '#FFFDF9', 
+              color: '#32180D', 
               fontWeight: '850', 
               lineHeight: '1.15',
               letterSpacing: '-0.02em',
-              margin: 0,
-              textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+              margin: 0
             }}
           >
             Born in a Home Kitchen.<br />
@@ -463,7 +444,7 @@ export default function OurStory() {
           <p 
             style={{ 
               fontSize: '1.15rem', 
-              color: '#F5EBDD', 
+              color: '#654B38', 
               lineHeight: '1.75', 
               maxWidth: '560px',
               margin: '0.5rem 0 1.5rem',
@@ -479,7 +460,7 @@ export default function OurStory() {
               style={{ 
                 padding: '0.95rem 2.4rem', 
                 fontSize: '0.95rem', 
-                backgroundColor: '#244f21', 
+                backgroundColor: '#2F6B3A', 
                 color: '#FFFFFF', 
                 border: 'none', 
                 borderRadius: '999px', 
@@ -487,7 +468,7 @@ export default function OurStory() {
                 display: 'inline-flex', 
                 alignItems: 'center', 
                 gap: '0.5rem',
-                boxShadow: '0 4px 16px rgba(36, 79, 33, 0.4)',
+                boxShadow: '0 4px 16px rgba(47, 107, 58, 0.25)',
                 transition: 'all 0.3s ease',
                 textDecoration: 'none'
               }}
@@ -505,8 +486,8 @@ export default function OurStory() {
               position: 'relative', 
               overflow: 'hidden', 
               borderRadius: '24px', 
-              boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-              border: '1px solid rgba(255, 255, 255, 0.2)'
+              boxShadow: '0 12px 32px rgba(75, 45, 25, 0.12)',
+              border: '1px solid #DCC8AE'
             }}
           >
             <img
@@ -528,31 +509,30 @@ export default function OurStory() {
               position: 'absolute', 
               bottom: '24px', 
               right: '24px',
-              backgroundColor: 'rgba(28, 14, 9, 0.88)',
-              backdropFilter: 'blur(12px)',
+              backgroundColor: '#FFF9F0',
               padding: '0.6rem 1.2rem',
               borderRadius: '999px',
-              border: '1px solid rgba(255, 255, 255, 0.25)',
+              border: '1px solid #DCC8AE',
               fontSize: '0.78rem',
               fontWeight: '850',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
-              color: '#FFFDF9',
+              color: '#32180D',
               display: 'flex',
               alignItems: 'center',
               gap: '0.4rem',
               pointerEvents: 'none',
-              boxShadow: '0 8px 20px rgba(0,0,0,0.4)'
+              boxShadow: '0 6px 16px rgba(75, 45, 25, 0.1)'
             }}
           >
-            <Sparkles size={14} color="#b9cd94" />
+            <Sparkles size={14} color="#2F6B3A" />
             <span>Handcrafted with intention</span>
           </div>
         </div>
       </section>
 
       {/* 2. SECTION 2 — STORY */}
-      <section style={{ backgroundColor: 'transparent', padding: '6rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
+      <section style={{ backgroundColor: '#FCF8F1', padding: '6rem 0', borderTop: '1px solid #DCC8AE', borderBottom: '1px solid #DCC8AE' }}>
         <div 
           className="story-grid"
           style={{ 
@@ -572,8 +552,8 @@ export default function OurStory() {
               style={{ 
                 borderRadius: '24px', 
                 overflow: 'hidden', 
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.35)'
+                border: '1px solid #DCC8AE',
+                boxShadow: '0 12px 32px rgba(75, 45, 25, 0.1)'
               }}
             >
               <img 
@@ -588,7 +568,7 @@ export default function OurStory() {
                 position: 'absolute', 
                 top: '24px', 
                 left: '24px', 
-                backgroundColor: '#244f21', 
+                backgroundColor: '#2F6B3A', 
                 color: '#FFFFFF', 
                 padding: '0.65rem 1.25rem', 
                 borderRadius: '12px',
@@ -596,7 +576,7 @@ export default function OurStory() {
                 fontWeight: '850',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
-                boxShadow: '0 8px 20px rgba(0,0,0,0.3)'
+                boxShadow: '0 4px 12px rgba(47, 107, 58, 0.2)'
               }}
             >
               Where It All Began
@@ -605,24 +585,23 @@ export default function OurStory() {
 
           {/* Right Text Block */}
           <div>
-            <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.6rem' }}>
+            <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.6rem' }}>
               OUR FOUNDING STORY
             </span>
             <h2 
               style={{ 
                 fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', 
                 fontFamily: 'var(--font-serif)', 
-                color: '#FFFDF9', 
+                color: '#32180D', 
                 marginBottom: '1.75rem', 
                 lineHeight: '1.25',
-                fontWeight: '850',
-                textShadow: '0 2px 8px rgba(0,0,0,0.4)'
+                fontWeight: '850'
               }}
             >
               We Wanted Better.<br />Finding It Wasn't Easy.
             </h2>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: '#F5EBDD', lineHeight: '1.85', fontSize: '1.05rem', fontWeight: '500' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: '#654B38', lineHeight: '1.85', fontSize: '1.05rem', fontWeight: '500' }}>
               <p>
                 While navigating my own health journey, I realised how difficult it was to find snacks that genuinely fit the way I wanted to eat. So many products claimed to be “healthy”, but a closer look at the ingredient list often told a different story.
               </p>
@@ -632,7 +611,7 @@ export default function OurStory() {
               <p>
                 Then I started sharing those homemade bakes with family, friends and others around me. The response was clear: people weren't just looking for healthier options; they were looking for more honest ones.
               </p>
-              <p style={{ fontWeight: '700', color: '#FFFDF9', fontSize: '1.1rem' }}>
+              <p style={{ fontWeight: '700', color: '#32180D', fontSize: '1.1rem' }}>
                 And that's where MILASTY began.
               </p>
               <p>
@@ -642,20 +621,19 @@ export default function OurStory() {
 
             <blockquote 
               style={{ 
-                borderLeft: '4px solid #b9cd94', 
                 paddingLeft: '1.35rem', 
                 margin: '2rem 0',
                 fontFamily: 'var(--font-serif)',
-                color: '#FFFDF9',
+                color: '#32180D',
                 fontWeight: '800',
                 fontSize: '1.15rem',
                 lineHeight: '1.6',
                 fontStyle: 'italic',
-                backgroundColor: 'rgba(36, 79, 33, 0.2)',
+                backgroundColor: '#FFF9F0',
                 padding: '1rem 1.35rem',
                 borderRadius: '0 12px 12px 0',
-                border: '1px solid rgba(185, 205, 148, 0.25)',
-                borderLeft: '4px solid #b9cd94'
+                border: '1px solid #DCC8AE',
+                borderLeft: '4px solid #2F6B3A'
               }}
             >
               "Because sometimes, the most meaningful brands don't begin with a business plan. They begin with a problem worth solving."
@@ -665,40 +643,40 @@ export default function OurStory() {
       </section>
 
       {/* STORY HIGHLIGHT STRIP */}
-      <section style={{ backgroundColor: 'rgba(28, 14, 9, 0.65)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)', padding: '2.5rem 0' }}>
+      <section style={{ backgroundColor: '#F1E5D4', borderBottom: '1px solid #DCC8AE', padding: '2.5rem 0' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1.5rem' }}>
           <div 
             style={{ 
               display: 'flex', 
-              justifyContent: 'space-around', 
+              justify: 'space-around', 
               alignItems: 'center', 
               flexWrap: 'wrap', 
               gap: '2rem' 
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.5)', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ShieldCheck size={22} color="#b9cd94" />
+              <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ShieldCheck size={22} color="#2F6B3A" />
               </div>
-              <span style={{ color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '850', letterSpacing: '0.04em' }}>
+              <span style={{ color: '#32180D', fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '850', letterSpacing: '0.04em' }}>
                 SMALL-BATCH CRAFTED
               </span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.5)', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Leaf size={22} color="#b9cd94" />
+              <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Leaf size={22} color="#2F6B3A" />
               </div>
-              <span style={{ color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '850', letterSpacing: '0.04em' }}>
+              <span style={{ color: '#32180D', fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '850', letterSpacing: '0.04em' }}>
                 HONEST INGREDIENTS
               </span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.5)', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Award size={22} color="#b9cd94" />
+              <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Award size={22} color="#2F6B3A" />
               </div>
-              <span style={{ color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '850', letterSpacing: '0.04em' }}>
+              <span style={{ color: '#32180D', fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '850', letterSpacing: '0.04em' }}>
                 TASTE WITHOUT COMPROMISE
               </span>
             </div>
@@ -710,22 +688,22 @@ export default function OurStory() {
       <OrbitJourneySection />
 
       {/* 4. PRESERVED EXISTING SECTION — TRANSPARENCY & NUTRITION */}
-      <section style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid rgba(245,220,180,0.15)' }}>
+      <section style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid #DCC8AE' }}>
         <div style={{ maxWidth: '780px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          <div className="glass-card" style={{ padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center' }}>
-            <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.4)', color: '#b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid rgba(185, 205, 148, 0.35)' }}>
+          <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)' }}>
+            <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid #DCC8AE' }}>
               <Info size={24} />
             </div>
-            <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', marginBottom: '1rem' }}>
               Know What Goes Into Your Food.
             </h2>
-            <p style={{ fontSize: '1.05rem', color: '#F5EBDD', lineHeight: '1.7', marginBottom: '2.5rem', fontWeight: '550' }}>
+            <p style={{ fontSize: '1.05rem', color: '#654B38', lineHeight: '1.7', marginBottom: '2.5rem', fontWeight: '550' }}>
               We maintain 100% transparency in recipe designs, nutritional parameters, and batch-test laboratory reports.
             </p>
             <Link
               to="/nutrition"
               className="btn-primary"
-              style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#244f21', color: '#FFFFFF', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              style={{ padding: '0.95rem 2.25rem', fontSize: '0.92rem', backgroundColor: '#2F6B3A', color: '#FFFFFF', border: 'none', borderRadius: '999px', textDecoration: 'none', fontWeight: '850', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
             >
               <span>Explore Nutrition & Lab Reports</span>
               <ChevronRight size={16} />
@@ -735,15 +713,15 @@ export default function OurStory() {
       </section>
 
       {/* 5. SECTION — MILASTY PROMISE */}
-      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0 4rem', borderBottom: '1px solid rgba(245, 220, 180, 0.15)' }}>
+      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0 4rem', borderBottom: '1px solid #DCC8AE' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', textAlign: 'center' }}>
-          <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.6rem' }}>
+          <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.6rem' }}>
             THE MILASTY PROMISE
           </span>
-          <h2 style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 1.25rem', lineHeight: '1.2' }}>
+          <h2 style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 1.25rem', lineHeight: '1.2' }}>
             Good Food Should Feel Good to Choose.
           </h2>
-          <p style={{ fontSize: '1.15rem', color: '#F5EBDD', lineHeight: '1.8', maxWidth: '720px', margin: '0 auto 3rem', fontWeight: '550' }}>
+          <p style={{ fontSize: '1.15rem', color: '#654B38', lineHeight: '1.8', maxWidth: '720px', margin: '0 auto 3rem', fontWeight: '550' }}>
             From the ingredients we choose to the way we bake, we believe in making everyday snacking more thoughtful, transparent and genuinely delicious.
           </p>
 
@@ -755,7 +733,7 @@ export default function OurStory() {
               style={{
                 padding: '1rem 2.4rem',
                 fontSize: '0.95rem',
-                backgroundColor: '#244f21',
+                backgroundColor: '#2F6B3A',
                 color: '#FFFFFF',
                 borderRadius: '999px',
                 textDecoration: 'none',
@@ -763,7 +741,7 @@ export default function OurStory() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                boxShadow: '0 6px 20px rgba(36, 79, 33, 0.45)',
+                boxShadow: '0 4px 16px rgba(47, 107, 58, 0.25)',
                 transition: 'all 0.3s ease'
               }}
             >
@@ -777,21 +755,21 @@ export default function OurStory() {
               style={{
                 padding: '1rem 2.4rem',
                 fontSize: '0.95rem',
-                backgroundColor: 'rgba(28, 14, 9, 0.65)',
-                color: '#FFFDF9',
+                backgroundColor: '#FFF9F0',
+                color: '#32180D',
                 borderRadius: '999px',
                 textDecoration: 'none',
                 fontWeight: '850',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                border: '1.5px solid rgba(185, 205, 148, 0.5)',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                border: '1.5px solid #32180D',
+                boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)',
                 transition: 'all 0.3s ease'
               }}
             >
               <span>Explore Ingredients & Nutrition</span>
-              <ChevronRight size={18} color="#b9cd94" />
+              <ChevronRight size={18} color="#2F6B3A" />
             </Link>
           </div>
         </div>
@@ -804,21 +782,20 @@ export default function OurStory() {
             style={{ 
               fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', 
               fontFamily: 'var(--font-serif)', 
-              color: '#FFFDF9', 
+              color: '#32180D', 
               fontWeight: '850', 
               lineHeight: '1.6',
-              margin: 0,
-              textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+              margin: 0
             }}
           >
             Made with millets.<br />
             Baked with care.<br />
-            <span style={{ color: '#b9cd94', fontStyle: 'italic' }}>Created for everyday cravings.</span>
+            <span style={{ color: '#2F6B3A', fontStyle: 'italic' }}>Created for everyday cravings.</span>
           </p>
         </div>
       </section>
 
-      {/* CSS style overrides for horizontal scroll containers, fitted card grids, and transparent blurred card styles */}
+      {/* CSS style overrides for horizontal scroll containers and card styles */}
       <style>{`
         .horizontal-scroll-container::-webkit-scrollbar {
           display: none !important;
@@ -828,17 +805,15 @@ export default function OurStory() {
           scrollbar-width: none !important;
         }
         .our-story-page .glass-card {
-          background: rgba(28, 14, 9, 0.18) !important;
-          background-color: rgba(28, 14, 9, 0.18) !important;
-          backdrop-filter: blur(15px) saturate(140%) !important;
-          -webkit-backdrop-filter: blur(15px) saturate(140%) !important;
-          border: 1px solid rgba(255, 255, 255, 0.20) !important;
-          box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25) !important;
+          background: #FFF9F0 !important;
+          background-color: #FFF9F0 !important;
+          border: 1px solid #DCC8AE !important;
+          box-shadow: 0 4px 16px rgba(75, 45, 25, 0.05) !important;
           transition: all 0.3s ease !important;
         }
         .our-story-page .glass-card:hover {
-          background: rgba(36, 79, 33, 0.25) !important;
-          border: 1px solid rgba(185, 205, 148, 0.45) !important;
+          background: #FFF9F0 !important;
+          border: 1px solid #2F6B3A !important;
           transform: translateY(-3px) !important;
         }
         .fitted-cards-container-5 {
@@ -922,4 +897,3 @@ export default function OurStory() {
     </div>
   );
 }
-

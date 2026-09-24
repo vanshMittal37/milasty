@@ -128,11 +128,41 @@ body.customer-portal-body .account-dashboard-page {
 .cart-page,
 .checkout-page,
 .wishlist-page,
+.legal-page,
 .login-page,
 .register-page {
   background-color: var(--bg-main) !important;
   color: var(--text-dark) !important;
 }
+
+.legal-page {
+  background-image: none !important;
+}
+
+.legal-page .glass-card {
+  background: #FFF9F0 !important;
+  background-color: #FFF9F0 !important;
+  border: 1px solid #DCC8AE !important;
+  box-shadow: 0 4px 16px rgba(75, 45, 25, 0.05) !important;
+  color: #2B170D !important;
+}
+
+.legal-page h1,
+.legal-page h2,
+.legal-page h3,
+.legal-page h4,
+.legal-page h5 {
+  color: #32180D !important;
+  text-shadow: none !important;
+}
+
+.legal-page p,
+.legal-page li,
+.legal-page span:not(.badge *):not(.btn-primary *):not([style*="color: #2F6B3A"]):not([style*="color: rgb(47, 107, 58)"]) {
+  color: #654B38 !important;
+}
+
+
 
 /* Customer Dashboard uses DARK GREEN admin theme */
 .account-dashboard-page {

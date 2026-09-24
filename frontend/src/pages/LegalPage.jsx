@@ -1588,24 +1588,10 @@ export default function LegalPage() {
         overflowX: 'hidden',
         boxSizing: 'border-box',
         position: 'relative',
-        backgroundImage: 'url(/images/about_background_image.jpeg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#F7F0E5',
+        color: '#2B170D',
       }}
     >
-      {/* Background Soft Grain & Warm Overlay */}
-      <div 
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.45) 0%, rgba(36, 19, 13, 0.35) 100%)',
-          zIndex: 0,
-          pointerEvents: 'none',
-        }} 
-      />
-
       <div style={{ position: 'relative', zIndex: 1, padding: '2rem 0 5rem' }}>
         {isShippingPage ? (
           renderShippingPolicy()
@@ -1618,5 +1604,6 @@ export default function LegalPage() {
         )}
       </div>
     </div>
+
   );
 }

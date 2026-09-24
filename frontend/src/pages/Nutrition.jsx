@@ -79,17 +79,17 @@ export default function Nutrition() {
   const whyIngredientsData = [
     {
       title: "Why Pure Desi Ghee?",
-      icon: <Sparkles size={28} color="#b9cd94" />,
+      icon: <Sparkles size={28} color="#2F6B3A" />,
       desc: "Unlike industrial palm oil and hydrogenated fats used in commercial biscuits, pure Desi Ghee provides butyric acid, supporting gut lining integrity and enhancing bioavailability of fat-soluble vitamins (A, D, E, K)."
     },
     {
       title: "Why Unrefined Organic Jaggery?",
-      icon: <Award size={28} color="#b9cd94" />,
+      icon: <Award size={28} color="#2F6B3A" />,
       desc: "Refined white sugar strips away minerals causing rapid blood glucose spikes. Organic jaggery retains essential trace elements like Iron, Magnesium, and Potassium, ensuring sustained clean energy."
     },
     {
       title: "Why Ancient Millets over Maida?",
-      icon: <ShieldCheck size={28} color="#b9cd94" />,
+      icon: <ShieldCheck size={28} color="#2F6B3A" />,
       desc: "Refined Maida creates inflammatory mucus in the digestive tract. Millets (Bajra, Jowar, Ragi) deliver rich dietary fiber, naturally slow digestion, and keep you feeling full for longer."
     }
   ];
@@ -123,27 +123,17 @@ export default function Nutrition() {
         overflowX: 'hidden',
         boxSizing: 'border-box',
         position: 'relative',
-        backgroundImage: 'url(/images/nutrition_background_image.jpeg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#F7F0E5',
+        color: '#2B170D',
       }}
     >
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.40) 0%, rgba(36, 19, 13, 0.30) 100%)',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
       
       {/* 1. HERO SECTION */}
       <section 
         className="nutrition-hero-section"
         style={{ 
-          padding: '6rem 1.5rem 5rem', 
+          padding: '5rem 1.5rem 4rem', 
           textAlign: 'center', 
           maxWidth: '850px', 
           margin: '0 auto',
@@ -155,12 +145,12 @@ export default function Nutrition() {
             fontSize: '0.78rem', 
             textTransform: 'uppercase', 
             letterSpacing: '0.14em', 
-            color: '#b9cd94', 
+            color: '#2F6B3A', 
             fontWeight: '850',
-            backgroundColor: 'rgba(36, 79, 33, 0.35)',
+            backgroundColor: '#E3EEDC',
             padding: '0.4rem 0.95rem',
             borderRadius: '999px',
-            border: '1.5px solid rgba(185, 205, 148, 0.4)',
+            border: '1px solid #DCC8AE',
             display: 'inline-block',
             marginBottom: '1.25rem'
           }}
@@ -171,12 +161,11 @@ export default function Nutrition() {
           style={{ 
             fontSize: 'clamp(2.1rem, 5.2vw, 3.8rem)', 
             fontFamily: 'var(--font-serif)', 
-            color: '#FFFDF9', 
+            color: '#32180D', 
             fontWeight: '850',
             lineHeight: '1.15',
             margin: '0 0 1.25rem 0',
             letterSpacing: '-0.02em',
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
           }}
         >
           What's Inside Every Bite.
@@ -184,7 +173,7 @@ export default function Nutrition() {
         <p 
           style={{ 
             fontSize: 'clamp(1rem, 2.2vw, 1.18rem)', 
-            color: '#F5EBDD', 
+            color: '#654B38', 
             lineHeight: '1.7', 
             marginBottom: '1.5rem',
             fontWeight: '550'
@@ -195,7 +184,7 @@ export default function Nutrition() {
         <p 
           style={{ 
             fontSize: '0.94rem', 
-            color: '#F5EBDD', 
+            color: '#654B38', 
             lineHeight: '1.65', 
             maxWidth: '620px', 
             margin: '0 auto 2.5rem' 
@@ -205,17 +194,17 @@ export default function Nutrition() {
         </p>
         
         {/* Trust Indicators */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', justifyContent: 'center', fontSize: '0.86rem', fontWeight: '850', color: '#FFFDF9' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', justifyContent: 'center', fontSize: '0.86rem', fontWeight: '850', color: '#32180D' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-            <CheckCircle2 size={18} color="#b9cd94" />
+            <CheckCircle2 size={18} color="#2F6B3A" />
             <span>Clean-label ingredients</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-            <CheckCircle2 size={18} color="#b9cd94" />
+            <CheckCircle2 size={18} color="#2F6B3A" />
             <span>Transparent nutrition</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-            <CheckCircle2 size={18} color="#b9cd94" />
+            <CheckCircle2 size={18} color="#2F6B3A" />
             <span>Lab-tested information</span>
           </div>
         </div>
@@ -224,21 +213,21 @@ export default function Nutrition() {
       {/* 2. NUTRITION HIGHLIGHTS */}
       <section style={{ maxWidth: '1200px', margin: '0 auto 5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h2 style={{ fontSize: 'clamp(1.35rem, 3.2vw, 1.8rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0 }}>
+          <h2 style={{ fontSize: 'clamp(1.35rem, 3.2vw, 1.8rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0 }}>
             What's Inside Every Bite
           </h2>
           <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
             <button 
               onClick={() => scrollLeft(insideBiteRef)} 
               aria-label="Scroll left"
-              style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <ChevronLeft size={16} />
             </button>
             <button 
               onClick={() => scrollRight(insideBiteRef)} 
               aria-label="Scroll right"
-              style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <ChevronRight size={16} />
             </button>
@@ -254,77 +243,81 @@ export default function Nutrition() {
           onTouchEnd={() => setIsGlanceHovered(false)}
         >
           <div 
-            className="glass-card" 
             style={{ 
+              backgroundColor: '#FFF9F0',
+              border: '1px solid #DCC8AE',
               padding: '2rem 1.75rem', 
               borderRadius: '20px', 
-              transition: 'all 0.25s ease',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <span style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>01</span>
-              <Sprout size={22} color="#b9cd94" />
+              <span style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>01</span>
+              <Sprout size={22} color="#2F6B3A" />
             </div>
-            <h3 style={{ fontSize: '1.05rem', color: '#FFFDF9', marginBottom: '0.5rem', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ancient Millets</h3>
-            <p style={{ fontSize: '0.85rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+            <h3 style={{ fontSize: '1.05rem', color: '#32180D', marginBottom: '0.5rem', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ancient Millets</h3>
+            <p style={{ fontSize: '0.85rem', color: '#654B38', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
               Made with traditional millet grains such as Bajra, Jowar and Ragi.
             </p>
           </div>
 
           <div 
-            className="glass-card" 
             style={{ 
+              backgroundColor: '#FFF9F0',
+              border: '1px solid #DCC8AE',
               padding: '2rem 1.75rem', 
               borderRadius: '20px', 
-              transition: 'all 0.25s ease',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <span style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>02</span>
-              <ShieldCheck size={22} color="#b9cd94" />
+              <span style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>02</span>
+              <ShieldCheck size={22} color="#2F6B3A" />
             </div>
-            <h3 style={{ fontSize: '1.05rem', color: '#FFFDF9', marginBottom: '0.5rem', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pure Desi Ghee</h3>
-            <p style={{ fontSize: '0.85rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+            <h3 style={{ fontSize: '1.05rem', color: '#32180D', marginBottom: '0.5rem', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pure Desi Ghee</h3>
+            <p style={{ fontSize: '0.85rem', color: '#654B38', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
               Made using the ingredients listed in each product's formulation.
             </p>
           </div>
 
           <div 
-            className="glass-card" 
             style={{ 
+              backgroundColor: '#FFF9F0',
+              border: '1px solid #DCC8AE',
               padding: '2rem 1.75rem', 
               borderRadius: '20px', 
-              transition: 'all 0.25s ease',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <span style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>03</span>
-              <Sparkles size={22} color="#b9cd94" />
+              <span style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>03</span>
+              <Sparkles size={22} color="#2F6B3A" />
             </div>
-            <h3 style={{ fontSize: '1.05rem', color: '#FFFDF9', marginBottom: '0.5rem', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Unrefined Jaggery</h3>
-            <p style={{ fontSize: '0.85rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+            <h3 style={{ fontSize: '1.05rem', color: '#32180D', marginBottom: '0.5rem', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Unrefined Jaggery</h3>
+            <p style={{ fontSize: '0.85rem', color: '#654B38', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
               Naturally sweetened with unrefined jaggery where specified.
             </p>
           </div>
 
           <div 
-            className="glass-card" 
             style={{ 
+              backgroundColor: '#FFF9F0',
+              border: '1px solid #DCC8AE',
               padding: '2rem 1.75rem', 
               borderRadius: '20px', 
-              transition: 'all 0.25s ease',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <span style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>04</span>
-              <Layers size={22} color="#b9cd94" />
+              <span style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>04</span>
+              <Layers size={22} color="#2F6B3A" />
             </div>
-            <h3 style={{ fontSize: '1.05rem', color: '#FFFDF9', marginBottom: '0.5rem', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Full Transparency</h3>
-            <p style={{ fontSize: '0.85rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+            <h3 style={{ fontSize: '1.05rem', color: '#32180D', marginBottom: '0.5rem', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Full Transparency</h3>
+            <p style={{ fontSize: '0.85rem', color: '#654B38', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
               Clear nutritional information for the products listed below.
             </p>
           </div>
@@ -334,29 +327,29 @@ export default function Nutrition() {
       {/* 3. NUTRITION COMPARISON SECTION */}
       <section style={{ maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem 0', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 0.5rem 0' }}>
             Nutrition, At A Glance
           </h2>
-          <p style={{ fontSize: '0.98rem', color: '#F5EBDD', margin: 0, fontWeight: '550' }}>
+          <p style={{ fontSize: '0.98rem', color: '#654B38', margin: 0, fontWeight: '550' }}>
             Compare the nutritional profile of our signature bakes.
           </p>
         </div>
 
         {/* DESKTOP TABLE VIEW */}
-        <div className="desktop-only-table" style={{ borderRadius: '24px', overflowX: 'auto', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 12px 36px rgba(0,0,0,0.35)', maxWidth: '100%' }}>
+        <div className="desktop-only-table" style={{ borderRadius: '24px', overflowX: 'auto', border: '1px solid #DCC8AE', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)', backgroundColor: '#FFF9F0', maxWidth: '100%' }}>
           <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
-              <tr style={{ backgroundColor: '#24130D', color: '#FFFFFF' }}>
+              <tr style={{ backgroundColor: '#F1E5D4', color: '#32180D' }}>
                 <th style={{ padding: '1.75rem 1.5rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '850', width: '22%' }}>Metric</th>
                 {dailyProducts.map((p, idx) => (
                   <th key={idx} style={{ padding: '1.75rem 1.5rem', verticalAlign: 'top', width: '26%' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      <div style={{ width: '100px', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.15)' }}>
+                      <div style={{ width: '100px', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #DCC8AE' }}>
                         <img src={p.image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                       <div>
-                        <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.25rem 0' }}>{p.title}</h4>
-                        <p style={{ fontSize: '0.76rem', color: '#F5EBDD', lineHeight: '1.4', margin: 0, fontWeight: '500', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.subtitle || p.description}</p>
+                        <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#32180D', margin: '0 0 0.25rem 0' }}>{p.title}</h4>
+                        <p style={{ fontSize: '0.76rem', color: '#654B38', lineHeight: '1.4', margin: 0, fontWeight: '500', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.subtitle || p.description}</p>
                       </div>
                     </div>
                   </th>
@@ -364,106 +357,106 @@ export default function Nutrition() {
               </tr>
             </thead>
             <tbody>
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FCF8F1' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#32180D', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <Flame size={15} color="#b9cd94" />
+                    <Flame size={15} color="#2F6B3A" />
                     <span>Energy (kcal)</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => {
                   const val = p.nutritionFacts?.energyKcal;
                   return (
-                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
                       {val !== undefined && val !== null && val !== '' ? `${val} kcal` : '—'}
                     </td>
                   );
                 })}
               </tr>
 
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'transparent' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FFF9F0' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#32180D', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <Activity size={15} color="#b9cd94" />
+                    <Activity size={15} color="#2F6B3A" />
                     <span>Protein (g)</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => {
                   const val = p.nutritionFacts?.proteinG;
                   return (
-                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
                       {val !== undefined && val !== null && val !== '' ? `${val}g` : '—'}
                     </td>
                   );
                 })}
               </tr>
 
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FCF8F1' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#32180D', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <Wheat size={15} color="#b9cd94" />
+                    <Wheat size={15} color="#2F6B3A" />
                     <span>Carbohydrates (g)</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => {
                   const val = p.nutritionFacts?.carbohydrateG;
                   return (
-                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
                       {val !== undefined && val !== null && val !== '' ? `${val}g` : '—'}
                     </td>
                   );
                 })}
               </tr>
 
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'transparent' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FFF9F0' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#32180D', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <CheckCircle2 size={15} color="#b9cd94" />
+                    <CheckCircle2 size={15} color="#2F6B3A" />
                     <span>Added Refined Sugar</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#b9cd94', fontSize: '0.85rem' }}>
+                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#2F6B3A', fontSize: '0.85rem' }}>
                     0g (100% Unrefined Jaggery)
                   </td>
                 ))}
               </tr>
 
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FCF8F1' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#32180D', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <CheckCircle2 size={15} color="#b9cd94" />
+                    <CheckCircle2 size={15} color="#2F6B3A" />
                     <span>Fat Type</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => (
-                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#b9cd94', fontSize: '0.85rem' }}>
+                  <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#2F6B3A', fontSize: '0.85rem' }}>
                     100% Pure Desi Ghee (0% Palm Oil)
                   </td>
                 ))}
               </tr>
 
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', backgroundColor: 'transparent' }}>
-                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem' }}>
+              <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FFF9F0' }}>
+                <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#32180D', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <Sprout size={15} color="#b9cd94" />
+                    <Sprout size={15} color="#2F6B3A" />
                     <span>Dietary Fiber (g)</span>
                   </div>
                 </td>
                 {dailyProducts.map((p, idx) => {
                   const val = p.nutritionFacts?.dietaryFiberG;
                   return (
-                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#FFFDF9', fontSize: '0.9rem' }}>
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
                       {val !== undefined && val !== null && val !== '' ? `${val}g` : '—'}
                     </td>
                   );
                 })}
               </tr>
 
-              <tr style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                <td style={{ padding: '1.5rem 1.5rem', fontWeight: '850', color: '#FFFDF9', fontSize: '0.88rem' }}>
+              <tr style={{ backgroundColor: '#FCF8F1' }}>
+                <td style={{ padding: '1.5rem 1.5rem', fontWeight: '850', color: '#32180D', fontSize: '0.88rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <FileText size={15} color="#b9cd94" />
+                    <FileText size={15} color="#2F6B3A" />
                     <span>Official Lab Report</span>
                   </div>
                 </td>
@@ -479,7 +472,7 @@ export default function Nutrition() {
                             padding: '0.55rem 1rem', 
                             fontSize: '0.8rem', 
                             fontWeight: '850', 
-                            backgroundColor: '#244f21', 
+                            backgroundColor: '#2F6B3A', 
                             color: '#FFFFFF',
                             borderRadius: '10px',
                             display: 'inline-flex',
@@ -494,7 +487,7 @@ export default function Nutrition() {
                           <span>Download Lab Report</span>
                         </button>
                       ) : (
-                        <span style={{ fontSize: '0.8rem', color: '#F5EBDD', fontWeight: '600', opacity: 0.7 }}>Not available</span>
+                        <span style={{ fontSize: '0.8rem', color: '#806A57', fontWeight: '600' }}>Not available</span>
                       )}
                     </td>
                   );
@@ -532,10 +525,8 @@ export default function Nutrition() {
             const diffY = Math.abs(glanceTouchStartY - touch.clientY);
             if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
               if (diffX > 0) {
-                // Swiped left -> Next card
                 setGlanceIndex((prev) => (prev + 1) % dailyProducts.length);
               } else {
-                // Swiped right -> Previous card
                 setGlanceIndex((prev) => (prev === 0 ? dailyProducts.length - 1 : prev - 1));
               }
             }
@@ -547,50 +538,51 @@ export default function Nutrition() {
           {dailyProducts[glanceIndex] && (
             <div 
               key={glanceIndex} 
-              className="glass-card animate-fade-in" 
               style={{ 
+                backgroundColor: '#FFF9F0',
+                border: '1px solid #DCC8AE',
                 borderRadius: '24px', 
                 overflow: 'hidden',
                 width: '100%',
                 boxSizing: 'border-box'
               }}
             >
-              <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
+              <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', borderBottom: '1px solid #DCC8AE' }}>
                 <img src={dailyProducts[glanceIndex].image} alt={dailyProducts[glanceIndex].title} style={{ width: '60px', height: '60px', borderRadius: '12px', objectFit: 'cover' }} />
                 <div>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.15rem 0' }}>{dailyProducts[glanceIndex].title}</h3>
-                  <p style={{ fontSize: '0.78rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>{dailyProducts[glanceIndex].subtitle || dailyProducts[glanceIndex].description}</p>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#32180D', margin: '0 0 0.15rem 0' }}>{dailyProducts[glanceIndex].title}</h3>
+                  <p style={{ fontSize: '0.78rem', color: '#654B38', margin: 0, fontWeight: '500' }}>{dailyProducts[glanceIndex].subtitle || dailyProducts[glanceIndex].description}</p>
                 </div>
               </div>
 
               <div style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Energy</span>
-                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.energyKcal} kcal</span>
+                  <span style={{ color: '#654B38', fontWeight: '700' }}>Energy</span>
+                  <span style={{ color: '#32180D', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.energyKcal} kcal</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Protein</span>
-                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.proteinG}g</span>
+                  <span style={{ color: '#654B38', fontWeight: '700' }}>Protein</span>
+                  <span style={{ color: '#32180D', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.proteinG}g</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Carbohydrates</span>
-                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.carbohydrateG}g</span>
+                  <span style={{ color: '#654B38', fontWeight: '700' }}>Carbohydrates</span>
+                  <span style={{ color: '#32180D', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.carbohydrateG}g</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Added Sugar</span>
-                  <span style={{ color: '#b9cd94', fontWeight: '900' }}>0g (100% Jaggery)</span>
+                  <span style={{ color: '#654B38', fontWeight: '700' }}>Added Sugar</span>
+                  <span style={{ color: '#2F6B3A', fontWeight: '900' }}>0g (100% Jaggery)</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Fat Type</span>
-                  <span style={{ color: '#b9cd94', fontWeight: '900' }}>100% Desi Ghee</span>
+                  <span style={{ color: '#654B38', fontWeight: '700' }}>Fat Type</span>
+                  <span style={{ color: '#2F6B3A', fontWeight: '900' }}>100% Desi Ghee</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                  <span style={{ color: '#F5EBDD', fontWeight: '700' }}>Dietary Fiber</span>
-                  <span style={{ color: '#FFFDF9', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.dietaryFiberG}g</span>
+                  <span style={{ color: '#654B38', fontWeight: '700' }}>Dietary Fiber</span>
+                  <span style={{ color: '#32180D', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.dietaryFiberG}g</span>
                 </div>
 
                 {dailyProducts[glanceIndex].labReportUrl && (
-                  <div style={{ paddingTop: '0.85rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', marginTop: '0.35rem' }}>
+                  <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #DCC8AE', marginTop: '0.35rem' }}>
                     <button
                       onClick={() => handleDownload(dailyProducts[glanceIndex].labReportUrl, `${dailyProducts[glanceIndex].title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
                       className="btn-primary"
@@ -598,7 +590,7 @@ export default function Nutrition() {
                         padding: '0.65rem 0', 
                         fontSize: '0.8rem', 
                         fontWeight: '850', 
-                        backgroundColor: '#244f21', 
+                        backgroundColor: '#2F6B3A', 
                         color: '#FFFFFF',
                         borderRadius: '12px',
                         display: 'flex',
@@ -628,9 +620,9 @@ export default function Nutrition() {
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                color: '#FFFDF9',
+                backgroundColor: '#FFF9F0',
+                border: '1px solid #DCC8AE',
+                color: '#32180D',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -650,7 +642,7 @@ export default function Nutrition() {
                     width: glanceIndex === idx ? '24px' : '8px',
                     height: '8px',
                     borderRadius: '999px',
-                    backgroundColor: glanceIndex === idx ? '#b9cd94' : 'rgba(255,255,255,0.3)',
+                    backgroundColor: glanceIndex === idx ? '#2F6B3A' : '#DCC8AE',
                     border: 'none',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease'
@@ -667,9 +659,9 @@ export default function Nutrition() {
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                color: '#FFFDF9',
+                backgroundColor: '#FFF9F0',
+                border: '1px solid #DCC8AE',
+                color: '#32180D',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -685,12 +677,12 @@ export default function Nutrition() {
       </section>
 
       {/* 4. VISUAL STORYTELLING (From Grain To Bake) */}
-      <section style={{ backgroundColor: 'transparent', padding: '6.5rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)', marginBottom: '6.5rem' }}>
+      <section style={{ backgroundColor: '#F1E5D4', padding: '6.5rem 0', borderTop: '1px solid #DCC8AE', borderBottom: '1px solid #DCC8AE', marginBottom: '6.5rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '3.5rem', alignItems: 'center' }}>
             
             {/* Left Column: Image */}
-            <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.18)' }}>
+            <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid #DCC8AE', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.08)' }}>
               <img
                 src="/images/image1.jpeg"
                 alt="Slow baked millet cookies pile"
@@ -703,43 +695,43 @@ export default function Nutrition() {
             {/* Right Column: Steps */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
-                <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Ingredient Philosophy</span>
-                <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+                <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Ingredient Philosophy</span>
+                <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0 }}>
                   From Grain To Bake
                 </h2>
               </div>
-              <p style={{ fontSize: '0.98rem', color: '#F5EBDD', lineHeight: '1.7', margin: 0, fontWeight: '550' }}>
+              <p style={{ fontSize: '0.98rem', color: '#654B38', lineHeight: '1.7', margin: 0, fontWeight: '550' }}>
                 We work directly with domestic farming sources to identify wholesome ancient millets. We never refine, strip, or dilute our baking ingredients.
               </p>
 
               <div className="grain-to-bake-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
-                <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '1.25rem', borderRadius: '16px' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>01</span>
                     <span>Ancient Grains</span>
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Sourced native Bajra, Jowar, and Ragi flour.</p>
+                  <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Sourced native Bajra, Jowar, and Ragi flour.</p>
                 </div>
-                <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '1.25rem', borderRadius: '16px' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>02</span>
                     <span>Selected Ingredients</span>
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Pure cow Desi Ghee & unrefined organic jaggery.</p>
+                  <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Pure cow Desi Ghee & unrefined organic jaggery.</p>
                 </div>
-                <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '1.25rem', borderRadius: '16px' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>03</span>
                     <span>Slow Baking</span>
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Slow-baked in temperature-controlled oven bakes.</p>
+                  <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Slow-baked in temperature-controlled oven bakes.</p>
                 </div>
-                <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '16px' }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '1.25rem', borderRadius: '16px' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>04</span>
                     <span>Finished Bake</span>
                   </h4>
-                  <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>A crumbly, delicious, clean millet cookie.</p>
+                  <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>A crumbly, delicious, clean millet cookie.</p>
                 </div>
               </div>
             </div>
@@ -752,11 +744,11 @@ export default function Nutrition() {
       <section style={{ width: '100%', maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem', flexWrap: 'wrap', gap: '1.25rem' }}>
           <div>
-            <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', backgroundColor: 'rgba(36, 79, 33, 0.35)', padding: '0.4rem 0.95rem', borderRadius: '999px', border: '1.5px solid rgba(185, 205, 148, 0.4)', display: 'inline-block', marginBottom: '0.75rem' }}>Clean Sourcing</span>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+            <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', backgroundColor: '#E3EEDC', padding: '0.4rem 0.95rem', borderRadius: '999px', border: '1px solid #DCC8AE', display: 'inline-block', marginBottom: '0.75rem' }}>Clean Sourcing</span>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0 }}>
               Why These Ingredients Matter
             </h2>
-            <p style={{ fontSize: '0.98rem', color: '#F5EBDD', margin: '0.5rem 0 0 0', fontWeight: '550' }}>
+            <p style={{ fontSize: '0.98rem', color: '#654B38', margin: '0.5rem 0 0 0', fontWeight: '550' }}>
               We believe transparency starts with understanding what goes into your food.
             </p>
           </div>
@@ -764,14 +756,14 @@ export default function Nutrition() {
             <button 
               onClick={() => scrollLeft(ingredientsRef)} 
               aria-label="Scroll left"
-              style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <ChevronLeft size={16} />
             </button>
             <button 
               onClick={() => scrollRight(ingredientsRef)} 
               aria-label="Scroll right"
-              style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <ChevronRight size={16} />
             </button>
@@ -788,13 +780,13 @@ export default function Nutrition() {
           onTouchEnd={() => setIsIngredientsHovered(false)}
         >
           {whyIngredientsData.map((item, idx) => (
-            <div key={idx} className="glass-card" style={{ padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box' }}>
+            <div key={idx} style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box', boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>0{idx + 1}</span>
+                <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>0{idx + 1}</span>
                 {item.icon}
               </div>
-              <h3 style={{ fontSize: '1.25rem', color: '#FFFDF9', marginBottom: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>{item.title}</h3>
-              <p style={{ color: '#F5EBDD', fontSize: '0.92rem', lineHeight: '1.7', margin: 0, fontWeight: '500' }}>
+              <h3 style={{ fontSize: '1.25rem', color: '#32180D', marginBottom: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>{item.title}</h3>
+              <p style={{ color: '#654B38', fontSize: '0.92rem', lineHeight: '1.7', margin: 0, fontWeight: '500' }}>
                 {item.desc}
               </p>
             </div>
@@ -829,10 +821,8 @@ export default function Nutrition() {
             const diffY = Math.abs(ingredientsTouchStartY - touch.clientY);
             if (Math.abs(diffX) > 40 && Math.abs(diffX) > diffY) {
               if (diffX > 0) {
-                // Swiped left -> Next ingredient
                 setWhyIngredientsIndex((prev) => (prev + 1) % whyIngredientsData.length);
               } else {
-                // Swiped right -> Previous ingredient
                 setWhyIngredientsIndex((prev) => (prev === 0 ? whyIngredientsData.length - 1 : prev - 1));
               }
             }
@@ -842,17 +832,17 @@ export default function Nutrition() {
           style={{ touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none' }}
         >
           {whyIngredientsData[whyIngredientsIndex] && (
-            <div className="glass-card animate-fade-in" style={{ padding: '2rem 1.5rem', borderRadius: '24px', boxSizing: 'border-box' }}>
+            <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '2rem 1.5rem', borderRadius: '24px', boxSizing: 'border-box' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                <span style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#b9cd94', fontWeight: '900' }}>
+                <span style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>
                   0{whyIngredientsIndex + 1}
                 </span>
                 {whyIngredientsData[whyIngredientsIndex].icon}
               </div>
-              <h3 style={{ fontSize: '1.2rem', color: '#FFFDF9', marginBottom: '0.65rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>
+              <h3 style={{ fontSize: '1.2rem', color: '#32180D', marginBottom: '0.65rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>
                 {whyIngredientsData[whyIngredientsIndex].title}
               </h3>
-              <p style={{ color: '#F5EBDD', fontSize: '0.9rem', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
+              <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.65', margin: 0, fontWeight: '500' }}>
                 {whyIngredientsData[whyIngredientsIndex].desc}
               </p>
             </div>
@@ -867,9 +857,9 @@ export default function Nutrition() {
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                color: '#FFFDF9',
+                backgroundColor: '#FFF9F0',
+                border: '1px solid #DCC8AE',
+                color: '#32180D',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -889,7 +879,7 @@ export default function Nutrition() {
                     width: whyIngredientsIndex === idx ? '24px' : '8px',
                     height: '8px',
                     borderRadius: '999px',
-                    backgroundColor: whyIngredientsIndex === idx ? '#b9cd94' : 'rgba(255,255,255,0.3)',
+                    backgroundColor: whyIngredientsIndex === idx ? '#2F6B3A' : '#DCC8AE',
                     border: 'none',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease'
@@ -906,9 +896,9 @@ export default function Nutrition() {
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                color: '#FFFDF9',
+                backgroundColor: '#FFF9F0',
+                border: '1px solid #DCC8AE',
+                color: '#32180D',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -923,31 +913,31 @@ export default function Nutrition() {
       </section>
 
       {/* 6. TRUST SECTION */}
-      <section style={{ backgroundColor: 'transparent', width: '100%', padding: '6rem 0', borderTop: '1px solid rgba(245, 220, 180, 0.15)', borderBottom: '1px solid rgba(245, 220, 180, 0.15)', marginBottom: '6.5rem' }}>
+      <section style={{ backgroundColor: 'transparent', width: '100%', padding: '6rem 0', borderTop: '1px solid #DCC8AE', borderBottom: '1px solid #DCC8AE', marginBottom: '6.5rem' }}>
         <div style={{ width: '100%', maxWidth: '900px', margin: '0 auto', textAlign: 'center', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
-          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.75rem', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', marginBottom: '0.75rem' }}>
             Know What You Eat.
           </h2>
-          <p style={{ fontSize: '1.02rem', color: '#F5EBDD', lineHeight: '1.65', marginBottom: '3.5rem', fontWeight: '550' }}>
+          <p style={{ fontSize: '1.02rem', color: '#654B38', lineHeight: '1.65', marginBottom: '3.5rem', fontWeight: '550' }}>
             Every ingredient has a place. Every number has a source.
           </p>
 
           <div className="know-what-you-eat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '1.25rem', textAlign: 'left' }}>
-            <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '18px' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ingredient Transparency</h4>
-              <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Clear ingredient information on every pack.</p>
+            <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '1.5rem', borderRadius: '18px' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ingredient Transparency</h4>
+              <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Clear ingredient information on every pack.</p>
             </div>
-            <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '18px' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Nutritional Info</h4>
-              <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Per 100g nutritional values clearly listed.</p>
+            <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '1.5rem', borderRadius: '18px' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Nutritional Info</h4>
+              <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Per 100g nutritional values clearly listed.</p>
             </div>
-            <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '18px' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Product Specific Data</h4>
-              <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Specific calculations shown for individual bakes.</p>
+            <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '1.5rem', borderRadius: '18px' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Product Specific Data</h4>
+              <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Specific calculations shown for individual bakes.</p>
             </div>
-            <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '18px' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Lab Reports</h4>
-              <p style={{ fontSize: '0.8rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Downloadable certified reports available.</p>
+            <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '1.5rem', borderRadius: '18px' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Lab Reports</h4>
+              <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Downloadable certified reports available.</p>
             </div>
           </div>
         </div>
@@ -955,10 +945,10 @@ export default function Nutrition() {
 
       {/* 7. CTA SECTION */}
       <section style={{ width: '100%', maxWidth: '800px', margin: '0 auto', textAlign: 'center', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
-        <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '1rem', letterSpacing: '-0.01em', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+        <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', marginBottom: '1rem', letterSpacing: '-0.01em' }}>
           Better Ingredients. Thoughtful Bakes.
         </h2>
-        <p style={{ fontSize: '1.02rem', color: '#F5EBDD', lineHeight: '1.7', marginBottom: '2.5rem', maxWidth: '520px', margin: '0.5rem auto 2.5rem', fontWeight: '550' }}>
+        <p style={{ fontSize: '1.02rem', color: '#654B38', lineHeight: '1.7', marginBottom: '2.5rem', maxWidth: '520px', margin: '0.5rem auto 2.5rem', fontWeight: '550' }}>
           Explore the MILASTY collection and discover your everyday wellness ritual.
         </p>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -968,7 +958,7 @@ export default function Nutrition() {
             style={{ 
               padding: '0.95rem 2.25rem', 
               fontSize: '0.92rem', 
-              backgroundColor: '#244f21', 
+              backgroundColor: '#2F6B3A', 
               color: '#FFFFFF', 
               border: 'none', 
               borderRadius: '999px', 
@@ -985,13 +975,13 @@ export default function Nutrition() {
             style={{ 
               padding: '0.95rem 2.25rem', 
               fontSize: '0.92rem', 
-              borderColor: '#b9cd94', 
-              color: '#b9cd94', 
+              border: '1.5px solid #32180D', 
+              color: '#32180D', 
               borderRadius: '999px', 
               fontWeight: '850', 
               textDecoration: 'none',
               cursor: 'pointer',
-              backgroundColor: 'rgba(36, 79, 33, 0.25)'
+              backgroundColor: '#FFF9F0'
             }}
           >
             Learn About MILASTY
