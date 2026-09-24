@@ -2516,64 +2516,7 @@ textarea::placeholder {
    Uses aggressive specificity to override any inline
    backgroundColor styles React might apply
    ================================================== */
-/* Dedicated Transparent Blurred Glass for Rituals, Shop, Nutrition, Contact, Wishlist, and About Pages */
-.products-page .glass-card,
-.products-page [class*="glass-card"],
-.shop-page .glass-card,
-.shop-page [class*="glass-card"],
-.nutrition-page .glass-card,
-.nutrition-page [class*="glass-card"],
-.contact-page .glass-card,
-.contact-page [class*="glass-card"],
-.wishlist-page .glass-card,
-.wishlist-page [class*="glass-card"],
-.our-story-page .glass-card,
-.our-story-page [class*="glass-card"],
-.our-story-page .about-comparison-card {
-  background-color: rgba(20, 10, 5, 0.18) !important;
-  background: rgba(20, 10, 5, 0.18) !important;
-  backdrop-filter: blur(15px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(15px) saturate(140%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.20) !important;
-  box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.25) !important;
-  transition: all 0.3s ease !important;
-}
-
-.products-page .glass-card:hover,
-.products-page [class*="glass-card"]:hover,
-.shop-page .glass-card:hover,
-.shop-page [class*="glass-card"]:hover,
-.nutrition-page .glass-card:hover,
-.nutrition-page [class*="glass-card"]:hover,
-.contact-page .glass-card:hover,
-.contact-page [class*="glass-card"]:hover,
-.wishlist-page .glass-card:hover,
-.wishlist-page [class*="glass-card"]:hover,
-.our-story-page .glass-card:hover,
-.our-story-page [class*="glass-card"]:hover,
-.our-story-page .about-comparison-card:hover {
-  background-color: rgba(36, 79, 33, 0.25) !important;
-  background: rgba(36, 79, 33, 0.25) !important;
-  border: 1px solid rgba(185, 205, 148, 0.45) !important;
-}
-
-/* Other non-transparent pages (Account, Checkout, Auth) fallback */
-.account-dashboard-page .glass-card,
-.cart-page .glass-card,
-.checkout-page .glass-card,
-.login-page .glass-card,
-.register-page .glass-card,
-.order-history-page .glass-card,
-.order-detail-page .glass-card {
-  background-color: rgba(35, 21, 13, 0.65) !important;
-  background: rgba(35, 21, 13, 0.65) !important;
-  backdrop-filter: blur(24px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.35) !important;
-}
-
-/* Ensure bright, clear, readable text on About and Shop pages over background images */
+/* Clean typography and crisp text rendering across public pages */
 .shop-page h1,
 .shop-page h2,
 .shop-page h3,
@@ -2583,23 +2526,18 @@ textarea::placeholder {
 .our-story-page h2,
 .our-story-page h3,
 .our-story-page h4,
-.our-story-page h5 {
-  color: #FFFDF9 !important;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
-}
-
-.shop-page p,
-.shop-page span:not([style*="color: #b9cd94"]):not([style*="color:#b9cd94"]),
-.shop-page li,
-.our-story-page p,
-.our-story-page span:not([style*="color: #b9cd94"]):not([style*="color:#b9cd94"]),
-.our-story-page li {
-  color: #F5EBDD;
-}
-
-.shop-page .glass-card p,
-.our-story-page .glass-card p {
-  color: rgba(253, 251, 247, 0.92);
+.our-story-page h5,
+.nutrition-page h1,
+.nutrition-page h2,
+.nutrition-page h3,
+.nutrition-page h4,
+.nutrition-page h5,
+.contact-page h1,
+.contact-page h2,
+.contact-page h3,
+.contact-page h4,
+.contact-page h5 {
+  text-shadow: none !important;
 }
 
 /* ==================================================

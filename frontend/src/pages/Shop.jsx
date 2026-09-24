@@ -1403,9 +1403,9 @@ export default function Shop() {
                 width: '100%',
                 padding: '0.8rem',
                 borderRadius: '999px',
-                backgroundColor: 'transparent',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                color: 'rgba(255,255,255,0.75)',
+                backgroundColor: '#F1E5D4',
+                border: '1px solid #DCC8AE',
+                color: '#32180D',
                 fontWeight: '700',
                 fontSize: '0.85rem',
                 cursor: 'pointer'
@@ -1455,11 +1455,11 @@ export default function Shop() {
           style={{ padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', maxWidth: '900px', margin: '0 auto', boxSizing: 'border-box' }}
         >
           <div style={{ textAlign: 'center', marginBottom: isMobile ? '2rem' : '3.5rem' }}>
-            <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
               CUSTOMER REVIEWS
             </span>
-            <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
-              Loved by <span style={{ color: '#b9cd94' }}>MILASTY Customers</span>
+            <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
+              Loved by <span style={{ color: '#2F6B3A' }}>MILASTY Customers</span>
             </h2>
           </div>
 
