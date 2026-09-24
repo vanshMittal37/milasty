@@ -775,6 +775,7 @@ export default function OurStory() {
                 minHeight: '52px',
                 boxSizing: 'border-box',
                 transition: 'all 0.25s ease'
+              }}
             >
               <span>Lab Reports & Nutrition</span>
               <ChevronRight size={18} />
