@@ -138,7 +138,7 @@ export default function TestimonialSection() {
           gridTemplateColumns: isMobile ? '1fr' : '42% 58%',
           alignItems: 'stretch',
           position: 'relative',
-          border: '1.5px solid #DCC8AE',
+          border: '1.5px solid #5C3A21',
         }}
       >
         {/* Left Image Section */}
@@ -623,7 +623,7 @@ export default function TestimonialSection() {
               style={{
                 backgroundColor: '#FFF9F0',
                 borderRadius: '20px',
-                border: '1.5px solid #D8C4A9',
+                border: '1.5px solid #5C3A21',
                 boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                 padding: '1.75rem',
                 display: 'flex',
@@ -640,7 +640,7 @@ export default function TestimonialSection() {
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = '#DCC8AE';
+                e.currentTarget.style.borderColor = '#5C3A21';
                 e.currentTarget.style.boxShadow = '0 4px 16px rgba(43, 20, 11, 0.05)';
               }}
             >

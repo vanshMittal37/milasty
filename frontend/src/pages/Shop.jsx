@@ -1512,7 +1512,7 @@ export default function Shop() {
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
                     borderRadius: '24px',
                     backgroundColor: '#FFF9F0',
-                    border: '1.5px solid #DCC8AE',
+                    border: '1.5px solid #5C3A21',
                     boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                     textAlign: 'center',
                     boxSizing: 'border-box',
@@ -1675,7 +1675,7 @@ export default function Shop() {
               position: 'relative',
               borderRadius: '30px',
               backgroundColor: '#FFF9F0',
-              border: '2px solid #DCC8AE',
+              border: '2px solid #5C3A21',
               boxShadow: '0 12px 36px rgba(43, 20, 11, 0.08)',
               overflow: 'hidden',
             }}

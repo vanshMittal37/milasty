@@ -3696,13 +3696,13 @@ select.admin-input {
 
 /* ---- Design Tokens ---- */
 :root {
-  --milasty-card-border: 1.5px solid #C4A882;
+  --milasty-card-border: 1.5px solid #5C3A21;
   --milasty-card-border-hover: 1.5px solid #2F6B3A;
   --milasty-card-bg: #F4EBDD;
-  --milasty-input-border: 1.5px solid #C4A882;
+  --milasty-input-border: 1.5px solid #5C3A21;
   --milasty-input-border-focus: 1.5px solid #2F6B3A;
   --milasty-input-bg: #F3EDE2;
-  --milasty-popup-border: 1.5px solid #C4A882;
+  --milasty-popup-border: 1.5px solid #5C3A21;
   --milasty-popup-bg: #FBF6ED;
 }
 
@@ -3740,7 +3740,7 @@ select.admin-input {
 .service-card,
 .mood-card,
 .gifting-card {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   box-shadow: 0 6px 20px rgba(43, 20, 11, 0.07) !important;
 }
 
@@ -3768,7 +3768,7 @@ select.admin-input {
 
 /* ---- Category Circle Wrap (shop/home page circles) ---- */
 .category-circle-wrap {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
 }
 
 /* ---- Form Inputs, Textareas, Selects — Global Light Theme ---- */
@@ -3790,7 +3790,7 @@ select.admin-input {
 .shop-page textarea,
 .nutrition-page input:not([type="submit"]):not([type="button"]),
 .nutrition-page textarea {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   background-color: var(--milasty-input-bg) !important;
   color: #2B1710 !important;
   border-radius: 12px;
@@ -3815,7 +3815,7 @@ input[type="search"],
 .shop-search-bar input,
 .product-search input,
 [class*="search"] input {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   background-color: var(--milasty-input-bg) !important;
   color: #2B1710 !important;
   border-radius: 999px !important;
@@ -3837,7 +3837,7 @@ input[type="search"]:focus,
 .popup-card,
 [class*="modal-content"],
 [class*="popup-content"] {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   background-color: var(--milasty-popup-bg) !important;
 }
 
@@ -3847,13 +3847,13 @@ input[type="search"]:focus,
 .order-success-page .order-details-block,
 .order-success-detail-card {
   background-color: #F8F2E7 !important;
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   border-radius: 16px !important;
 }
 
 /* Cart page item rows */
 .cart-item-row {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   border-radius: 16px !important;
   background-color: #F8F2E7 !important;
 }
@@ -3861,7 +3861,7 @@ input[type="search"]:focus,
 /* Coupon / promo input container */
 .coupon-input-wrap,
 .coupon-bar {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   border-radius: 12px !important;
   background-color: #F3EDE2 !important;
   overflow: hidden;
@@ -3869,7 +3869,7 @@ input[type="search"]:focus,
 
 /* Wishlist item cards */
 .wishlist-item-card {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   border-radius: 20px !important;
   background-color: #F4EBDD !important;
 }
@@ -3877,7 +3877,7 @@ input[type="search"]:focus,
 /* Nutrition page recipe/ingredient cards */
 .nutrition-card,
 .ingredient-card {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   border-radius: 20px !important;
   background-color: #F4EBDD !important;
 }
@@ -3885,7 +3885,7 @@ input[type="search"]:focus,
 /* Contact page form wrapper card */
 .contact-form-card,
 .contact-info-card {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   border-radius: 24px !important;
   background-color: #FBF6ED !important;
 }
@@ -3893,7 +3893,7 @@ input[type="search"]:focus,
 /* Order history / order list cards */
 .order-card,
 .order-history-card {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
   border-radius: 20px !important;
   background-color: #F8F2E7 !important;
 }
@@ -3910,7 +3910,7 @@ a.btn-primary {
 .btn-secondary,
 button.btn-secondary,
 a.btn-secondary {
-  border: 1.5px solid #C4A882 !important;
+  border: 1.5px solid #5C3A21 !important;
 }
 
 /* Ghost / Outline buttons */
@@ -3925,7 +3925,7 @@ a.btn-outline {
 .milasty-divider,
 hr.milasty-hr {
   border: none !important;
-  border-top: 1px solid rgba(74, 48, 35, 0.18) !important;
+  border-top: 1px solid rgba(74, 48, 35, 0.25) !important;
   margin: 1rem 0 !important;
 }
 
@@ -3935,7 +3935,7 @@ hr.milasty-hr {
 .cart-page img,
 .order-card img,
 .wishlist-item-card img {
-  border: 1px solid #C4A882 !important;
+  border: 1px solid #5C3A21 !important;
   border-radius: 10px !important;
 }
 
@@ -3955,15 +3955,15 @@ hr.milasty-hr {
 .trust-strip,
 .info-strip,
 .trust-strip-row {
-  border-top: 1px solid rgba(74, 48, 35, 0.16) !important;
-  border-bottom: 1px solid rgba(74, 48, 35, 0.16) !important;
+  border-top: 1px solid rgba(74, 48, 35, 0.25) !important;
+  border-bottom: 1px solid rgba(74, 48, 35, 0.25) !important;
 }
 
 /* ---- Tags / Pills / Badges ---- */
 .badge-tag,
 .filter-tag,
 .category-tag {
-  border: 1px solid #C4A882 !important;
+  border: 1px solid #5C3A21 !important;
   border-radius: 999px !important;
 }
 
