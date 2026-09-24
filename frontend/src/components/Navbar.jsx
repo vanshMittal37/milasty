@@ -75,9 +75,9 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Prevent background scrolling when mobile menu dropdown is open
+  // Prevent background scrolling when mobile menu drawer is open
   useEffect(() => {
-    if (mobileMenuOpen) {
+    if (mobileNavOpen) {
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
     } else {
@@ -88,7 +88,7 @@ export default function Navbar() {
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
     };
-  }, [mobileMenuOpen]);
+  }, [mobileNavOpen]);
 
   const navLinks = [
     { name: 'Home', path: '/', icon: HomeIcon },
@@ -557,10 +557,10 @@ export default function Navbar() {
             bottom: 0,
             width: '100%',
             height: '100vh',
-            backgroundColor: 'rgba(20, 10, 5, 0.65)',
+            backgroundColor: 'rgba(35, 25, 18, 0.45)',
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
-            zIndex: 1000,
+            zIndex: 99998,
             opacity: mobileNavOpen ? 1 : 0,
             pointerEvents: mobileNavOpen ? 'auto' : 'none',
             visibility: mobileNavOpen ? 'visible' : 'hidden',
@@ -602,23 +602,24 @@ export default function Navbar() {
             touchStartRef.current = null;
           }}
           style={{ 
-            backgroundColor: '#F5EBDD',
-            backgroundImage: 'linear-gradient(180deg, #FBF6ED 0%, #F5EBDD 60%, #EFE1CF 100%)',
-            borderRight: '1px solid rgba(120, 75, 40, 0.15)',
-            boxShadow: '12px 0 50px rgba(42, 23, 15, 0.25)',
+            backgroundColor: '#F7EBDD',
+            borderRight: '1.5px solid rgba(74, 48, 35, 0.16)',
+            borderTopRightRadius: '24px',
+            borderBottomRightRadius: '24px',
+            boxShadow: '12px 0 40px rgba(42, 23, 15, 0.22)',
             position: 'fixed',
             top: 0,
             left: 0,
             right: 'auto',
             bottom: 0,
             width: '85vw',
-            maxWidth: '420px',
+            maxWidth: '380px',
             height: '100vh',
             padding: '0',
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
-            zIndex: 1001,
+            zIndex: 99999,
             transition: 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease, visibility 300ms step-end',
             transform: mobileNavOpen ? 'translateX(0)' : 'translateX(-100%)',
             opacity: mobileNavOpen ? 1 : 0,
@@ -630,32 +631,41 @@ export default function Navbar() {
             overflow: 'hidden',
           }}
         >
-          {/* Subtle Corner Botanical Leaf Art */}
+          {/* Subtle Corner Leaf Glow */}
           <div style={{
             position: 'absolute',
             bottom: '-20px',
             right: '-20px',
             width: '180px',
             height: '180px',
-            backgroundImage: 'radial-gradient(circle, rgba(47, 107, 58, 0.08) 0%, transparent 70%)',
+            backgroundImage: 'radial-gradient(circle, rgba(47, 125, 50, 0.08) 0%, transparent 70%)',
             borderRadius: '50%',
             pointerEvents: 'none',
             zIndex: 0,
           }} />
 
-          {/* ── PREMIUM DRAWER HEADER ── */}
+          {/* ── HEADER ── */}
           <div style={{
             padding: '1.5rem 1.4rem 1.2rem',
-            borderBottom: '1px solid rgba(120, 75, 40, 0.12)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: 'rgba(251, 246, 237, 0.85)',
+            borderBottom: '1.5px solid rgba(74, 48, 35, 0.14)',
+            display: 'flex',
+            alignItems: 'center',
+            justify: 'space-between',
+            background: 'transparent',
             flexShrink: 0,
             position: 'relative',
             zIndex: 2,
           }}>
             <div>
-              <Logo variant="primary" style={{ height: '44px', width: 'auto' }} />
-              <div style={{ fontSize: '0.72rem', color: '#634B3B', marginTop: '0.25rem', fontStyle: 'italic', fontWeight: '500', fontFamily: 'var(--font-serif)' }}>
+              <Logo variant="primary" style={{ height: '42px', width: 'auto' }} />
+              <div style={{
+                fontSize: '0.75rem',
+                color: '#75675D',
+                marginTop: '0.2rem',
+                fontStyle: 'italic',
+                fontWeight: '500',
+                fontFamily: 'var(--font-serif), Georgia, serif'
+              }}>
                 Where Millets Meet Great Taste
               </div>
             </div>
@@ -663,18 +673,35 @@ export default function Navbar() {
               onClick={() => setMobileNavOpen(false)}
               aria-label="Close Navigation Menu"
               style={{
-                background: 'rgba(120, 75, 40, 0.08)', border: '1px solid rgba(120, 75, 40, 0.18)',
-                color: '#2A170F', width: '38px', height: '38px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderRadius: '50%', flexShrink: 0, transition: 'all 0.2s',
+                backgroundColor: '#F1E6D7',
+                border: '1.5px solid rgba(74, 48, 35, 0.16)',
+                color: '#3A241A',
+                width: '46px',
+                height: '46px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                flexShrink: 0,
+                transition: 'all 0.2s ease',
               }}
             >
-              <X size={18} />
+              <X size={20} />
             </button>
           </div>
 
-          {/* ── NAVIGATION LINKS ── */}
-          <div style={{ flexGrow: 1, overflowY: 'auto', padding: '1.25rem 1.2rem', display: 'flex', flexDirection: 'column', gap: '0.45rem', position: 'relative', zIndex: 2 }}>
+          {/* ── NAVIGATION LINKS (5 PRIMARY LINKS ONLY) ── */}
+          <div style={{
+            flexGrow: 1,
+            overflowY: 'auto',
+            padding: '1.25rem 1.2rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.65rem',
+            position: 'relative',
+            zIndex: 2
+          }}>
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               const LinkIcon = link.icon || HomeIcon;
@@ -684,99 +711,124 @@ export default function Navbar() {
                   to={link.path}
                   onClick={() => setMobileNavOpen(false)}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: '0.85rem',
-                    padding: '0.85rem 1.1rem', borderRadius: '16px',
-                    backgroundColor: isActive ? '#EAEFE5' : 'transparent',
-                    border: isActive ? '1px solid rgba(47, 107, 58, 0.25)' : '1px solid transparent',
-                    color: isActive ? '#2F6B3A' : '#2A170F',
-                    textDecoration: 'none', transition: 'all 0.18s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.9rem',
+                    padding: '0.9rem 1.1rem',
+                    borderRadius: '16px',
+                    backgroundColor: isActive ? '#E8F2E8' : 'transparent',
+                    border: isActive ? '1.5px solid rgba(47, 125, 50, 0.3)' : '1.5px solid rgba(74, 48, 35, 0.12)',
+                    color: isActive ? '#2F7D32' : '#3A241A',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                    minHeight: '58px',
+                    boxSizing: 'border-box'
                   }}
                 >
-                  <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: isActive ? 'rgba(47, 107, 58, 0.15)' : 'rgba(120, 75, 40, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <LinkIcon size={17} color={isActive ? '#2F6B3A' : '#634B3B'} />
+                  <div style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '12px',
+                    backgroundColor: isActive ? 'rgba(47, 125, 50, 0.15)' : '#F1E6D7',
+                    border: isActive ? '1px solid rgba(47, 125, 50, 0.2)' : '1px solid rgba(74, 48, 35, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    <LinkIcon size={19} color={isActive ? '#2F7D32' : '#75675D'} />
                   </div>
                   <span style={{
-                    fontWeight: isActive ? '800' : '700', fontSize: '1.02rem',
+                    fontWeight: isActive ? '700' : '600',
+                    fontSize: '1.05rem',
                     fontFamily: 'var(--font-sans)',
-                    flexGrow: 1, lineHeight: '1',
+                    flexGrow: 1,
+                    lineHeight: '1.2',
                   }}>{link.name}</span>
-                  <ChevronRight size={16} color={isActive ? '#2F6B3A' : 'rgba(120, 75, 40, 0.35)'} />
+                  <ChevronRight size={18} color={isActive ? '#2F7D32' : '#A49488'} />
                 </Link>
               );
             })}
-
-            <div style={{ borderTop: '1px solid rgba(120, 75, 40, 0.12)', margin: '0.5rem 0' }} />
-
-            {/* Additional Options */}
-            <Link
-              to="/wishlist"
-              onClick={() => setMobileNavOpen(false)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '0.85rem',
-                padding: '0.75rem 1.1rem', color: '#2A170F', textDecoration: 'none', fontSize: '0.94rem', fontWeight: '600'
-              }}
-            >
-              <Heart size={18} color="#634B3B" />
-              <span>My Wishlist ({wishlistCount})</span>
-            </Link>
-
-            <Link
-              to={isAuthenticated ? "/account/orders" : "/login"}
-              onClick={() => setMobileNavOpen(false)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '0.85rem',
-                padding: '0.75rem 1.1rem', color: '#2A170F', textDecoration: 'none', fontSize: '0.94rem', fontWeight: '600'
-              }}
-            >
-              <Package size={18} color="#634B3B" />
-              <span>Track Order</span>
-            </Link>
-
-            <Link
-              to={isAuthenticated ? "/account" : "/login"}
-              onClick={() => setMobileNavOpen(false)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '0.85rem',
-                padding: '0.75rem 1.1rem', color: '#2A170F', textDecoration: 'none', fontSize: '0.94rem', fontWeight: '600'
-              }}
-            >
-              <User size={18} color="#634B3B" />
-              <span>{isAuthenticated ? 'My Profile' : 'Sign In / Register'}</span>
-            </Link>
           </div>
 
-          {/* ── QUOTE CARD & SOCIAL FOOTER ── */}
+          {/* ── BRAND MESSAGE CARD & SOCIAL FOOTER ── */}
           <div style={{
-            padding: '1.1rem 1.2rem 1.5rem',
-            borderTop: '1px solid rgba(120, 75, 40, 0.12)',
-            display: 'flex', flexDirection: 'column', gap: '0.85rem',
+            padding: '1.2rem 1.2rem 1.5rem',
+            borderTop: '1.5px solid rgba(74, 48, 35, 0.14)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
             flexShrink: 0,
             position: 'relative',
             zIndex: 2,
           }}>
-            {/* Signature Quote Card */}
+            {/* Signature Brand Message Card */}
             <div style={{
               padding: '1rem 1.15rem',
               borderRadius: '18px',
-              backgroundColor: '#EFE1CF',
-              border: '1px solid rgba(120, 75, 40, 0.15)',
+              backgroundColor: '#F3E5D3',
+              border: '1.5px solid rgba(74, 48, 35, 0.16)',
               display: 'flex',
-              gap: '0.75rem',
-              alignItems: 'flex-start',
+              gap: '0.85rem',
+              alignItems: 'center',
             }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(47, 107, 58, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Leaf size={15} color="#2F6B3A" />
+              <div style={{
+                width: '34px',
+                height: '34px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(47, 125, 50, 0.15)',
+                border: '1px solid rgba(47, 125, 50, 0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <Leaf size={16} color="#2F7D32" />
               </div>
-              <div style={{ fontSize: '0.84rem', fontStyle: 'italic', fontFamily: 'var(--font-serif)', color: '#2A170F', lineHeight: '1.4' }}>
+              <div style={{
+                fontSize: '0.88rem',
+                fontStyle: 'italic',
+                fontFamily: 'var(--font-serif), Georgia, serif',
+                color: '#3A241A',
+                lineHeight: '1.4',
+                fontWeight: '500'
+              }}>
                 Good food brings good people together.
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1.25rem', color: '#2A170F', paddingTop: '0.2rem' }}>
-              <Instagram size={18} style={{ cursor: 'pointer' }} />
-              <Facebook size={18} style={{ cursor: 'pointer' }} />
-              <Youtube size={18} style={{ cursor: 'pointer' }} />
-              <Linkedin size={18} style={{ cursor: 'pointer' }} />
+            {/* Social Media Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.85rem', paddingTop: '0.2rem' }}>
+              {[
+                { icon: Instagram, label: 'Instagram' },
+                { icon: Facebook, label: 'Facebook' },
+                { icon: Youtube, label: 'Youtube' },
+                { icon: Linkedin, label: 'Linkedin' }
+              ].map((soc, idx) => {
+                const SocIcon = soc.icon;
+                return (
+                  <button
+                    key={idx}
+                    aria-label={soc.label}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      backgroundColor: '#F1E6D7',
+                      border: '1.5px solid rgba(74, 48, 35, 0.16)',
+                      color: '#3A241A',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      padding: 0
+                    }}
+                  >
+                    <SocIcon size={18} />
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

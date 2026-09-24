@@ -578,7 +578,7 @@ export default function Shop() {
                   style={{
                     background: '#FFF9F0',
                     borderRadius: isMobile ? '14px' : '20px',
-                    border: '1.5px solid #DCC8AE',
+                    border: '1.5px solid #5C3A21',
                     boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                     padding: isMobile ? '0.65rem 0.55rem 0.6rem' : '1.15rem 1rem 1rem',
                     display: 'flex',

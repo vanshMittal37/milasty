@@ -535,7 +535,10 @@ export default function OurStory() {
         </div>
       </section>
 
-      {/* 2. SECTION 2 — STORY */}
+      {/* 2. SECTION — MILASTY JOURNEY / MILESTONES */}
+      <OrbitJourneySection />
+
+      {/* 3. SECTION 2 — STORY */}
       <section style={{ backgroundColor: '#FCF8F1', padding: '6rem 0', borderTop: '1px solid #DCC8AE', borderBottom: '1px solid #DCC8AE' }}>
         <div 
           className="story-grid"
@@ -687,9 +690,6 @@ export default function OurStory() {
           </div>
         </div>
       </section>
-
-      {/* 3. SECTION — MILASTY JOURNEY / MILESTONES */}
-      <OrbitJourneySection />
 
       {/* 4. PRESERVED EXISTING SECTION — TRANSPARENCY & NUTRITION */}
       <section style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid #DCC8AE' }}>
