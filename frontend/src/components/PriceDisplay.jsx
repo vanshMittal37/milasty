@@ -33,8 +33,8 @@ export default function PriceDisplay({
       <span
         style={{
           fontSize: sizes.current,
-          fontWeight: '700',
-          color: 'var(--text-primary, #ffffff)',
+          fontWeight: '800',
+          color: 'var(--text-primary, #2B170D)',
         }}
       >
         {prefix}₹{currentPrice}
@@ -43,7 +43,7 @@ export default function PriceDisplay({
         <span
           style={{
             fontSize: sizes.original,
-            color: 'var(--text-muted, #8ea090)',
+            color: 'var(--text-muted, #806A57)',
             textDecoration: 'line-through',
             fontWeight: '500',
           }}

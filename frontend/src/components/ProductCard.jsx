@@ -40,26 +40,32 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="glass-card home-product-card"
+      className="milasty-product-card"
       style={{
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
         overflow: 'hidden',
+        backgroundColor: '#FFF9F0',
+        borderRadius: '18px',
+        border: '1px solid #DCC8AE',
+        boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         position: 'relative'
       }}
       onMouseOver={(e) => {
         e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.4)';
+        e.currentTarget.style.boxShadow = '0 10px 24px rgba(43, 20, 11, 0.12)';
+        e.currentTarget.style.borderColor = '#2F6B3A';
       }}
       onMouseOut={(e) => {
         e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+        e.currentTarget.style.boxShadow = '0 4px 16px rgba(43, 20, 11, 0.05)';
+        e.currentTarget.style.borderColor = '#DCC8AE';
       }}
     >
       {/* Image Area with Badge & Wishlist Button */}
-      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: 'transparent' }} className="card-image-wrap">
+      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: '#F3E6D4' }} className="card-image-wrap">
         <Link to={`/product/${product.slug || product._id || product.id}`}>
           <img
             src={product.image || product.image_url || product.primary_image || '/images/image1.jpeg'}
@@ -94,39 +100,37 @@ export default function ProductCard({ product }) {
             width: '34px',
             height: '34px',
             borderRadius: '50%',
-            backgroundColor: 'rgba(20, 10, 5, 0.65)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
+            backgroundColor: '#FFF9F0',
+            border: '1px solid #DCC8AE',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            color: wishlisted ? '#b9cd94' : '#FFFDF9',
+            boxShadow: '0 2px 8px rgba(43, 20, 11, 0.12)',
+            color: wishlisted ? '#2F6B3A' : '#32180D',
             transition: 'all 0.2s',
             zIndex: 10
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(36, 79, 33, 0.85)';
+            e.currentTarget.style.backgroundColor = '#E3EEDC';
             e.currentTarget.style.transform = 'scale(1.08)';
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(20, 10, 5, 0.65)';
+            e.currentTarget.style.backgroundColor = '#FFF9F0';
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          <Heart size={15} fill={wishlisted ? '#b9cd94' : 'none'} color={wishlisted ? '#b9cd94' : '#FFFDF9'} />
+          <Heart size={15} fill={wishlisted ? '#2F6B3A' : 'none'} color={wishlisted ? '#2F6B3A' : '#32180D'} />
         </button>
 
-        {/* Dynamic Badges (Informational Labels, non-clickable) */}
+        {/* Dynamic Badges */}
         {(product.isBestseller || product.is_bestseller || (product.badges && product.badges.length > 0)) && (
           <div
             className="card-badge-wrap"
             style={{
               position: 'absolute',
-              top: '6px',
-              left: '6px',
+              top: '8px',
+              left: '8px',
               display: 'flex',
               alignItems: 'center',
               zIndex: 10,
@@ -137,18 +141,16 @@ export default function ProductCard({ product }) {
               <span 
                 className="card-badge-span"
                 style={{
-                  fontSize: '0.50rem',
+                  fontSize: '0.62rem',
                   fontWeight: '800',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
-                  color: '#FFFDF9',
-                  backgroundColor: 'rgba(185, 90, 20, 0.92)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 165, 0, 0.6)',
-                  padding: '0.12rem 0.38rem',
-                  borderRadius: '4px',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                  color: '#FFFFFF',
+                  backgroundColor: '#2F6B3A',
+                  border: 'none',
+                  padding: '0.2rem 0.5rem',
+                  borderRadius: '6px',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
                   lineHeight: '1.1',
                   whiteSpace: 'nowrap',
                   display: 'inline-block'
@@ -162,18 +164,15 @@ export default function ProductCard({ product }) {
                   key={idx} 
                   className="card-badge-span"
                   style={{
-                    fontSize: '0.50rem',
+                    fontSize: '0.62rem',
                     fontWeight: '800',
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
-                    color: '#b9cd94',
-                    backgroundColor: 'rgba(36, 79, 33, 0.90)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    border: '1px solid rgba(185, 205, 148, 0.45)',
-                    padding: '0.12rem 0.38rem',
-                    borderRadius: '4px',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                    color: '#2F6B3A',
+                    backgroundColor: '#E3EEDC',
+                    border: '1px solid #2F6B3A',
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: '6px',
                     lineHeight: '1.1',
                     whiteSpace: 'nowrap',
                     display: 'inline-block'
@@ -191,7 +190,7 @@ export default function ProductCard({ product }) {
       <div
         className="card-body"
         style={{
-          padding: '0.85rem 0.75rem',
+          padding: '1rem 0.9rem',
           display: 'flex',
           flexDirection: 'column',
           flexGrow: 1,
@@ -199,22 +198,22 @@ export default function ProductCard({ product }) {
         }}
       >
         <div>
-          {/* Rating stars (Dynamic based on product.show_rating & real DB reviews) */}
+          {/* Rating stars */}
           {(product.show_rating !== false && product.showRating !== false) && (
             <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.35rem' }}>
               {product.rating > 0 && (product.reviewCount > 0 || product.reviews_count > 0 || product.totalReviews > 0) ? (
                 <>
-                  <div style={{ display: 'flex', color: '#b9cd94' }}>
+                  <div style={{ display: 'flex', color: '#2F6B3A' }}>
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={11} fill={i < Math.round(product.rating) ? '#b9cd94' : 'none'} color="#b9cd94" />
+                      <Star key={i} size={11} fill={i < Math.round(product.rating) ? '#2F6B3A' : 'none'} color="#2F6B3A" />
                     ))}
                   </div>
-                  <span style={{ fontSize: '0.72rem', color: '#F5EBDD', fontWeight: '750' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#654B38', fontWeight: '750' }}>
                     {Number(product.rating).toFixed(1)} ({product.reviewCount || product.reviews_count || product.totalReviews})
                   </span>
                 </>
               ) : (
-                <span style={{ fontSize: '0.72rem', color: 'rgba(245, 235, 221, 0.6)', fontWeight: '600' }}>
+                <span style={{ fontSize: '0.75rem', color: '#806A57', fontWeight: '600' }}>
                   No reviews yet
                 </span>
               )}
@@ -225,12 +224,12 @@ export default function ProductCard({ product }) {
           <h3
             className="card-title"
             style={{
-              fontSize: '0.95rem',
+              fontSize: '1rem',
               fontFamily: 'var(--font-serif)',
-              fontWeight: '850',
-              lineHeight: '1.25',
-              marginBottom: '0.25rem',
-              color: '#FFFDF9',
+              fontWeight: '800',
+              lineHeight: '1.3',
+              marginBottom: '0.35rem',
+              color: '#32180D',
             }}
           >
             <Link to={`/product/${product.slug || product._id || product.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -242,10 +241,10 @@ export default function ProductCard({ product }) {
           <p
             className="card-subtitle"
             style={{
-              fontSize: '0.78rem',
-              color: '#F5EBDD',
-              lineHeight: '1.35',
-              marginBottom: '0.75rem',
+              fontSize: '0.82rem',
+              color: '#654B38',
+              lineHeight: '1.4',
+              marginBottom: '0.85rem',
               fontWeight: '500',
               display: '-webkit-box',
               WebkitLineClamp: 2,
@@ -268,7 +267,7 @@ export default function ProductCard({ product }) {
             : Number(product?.originalPrice || product?.original_price || cardPrice);
 
           return (
-            <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.55rem', borderTop: '1px solid rgba(255, 255, 255, 0.15)', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
+            <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.65rem', borderTop: '1px solid #DCC8AE', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
               <PriceDisplay 
                 prefix={product?.variants && product.variants.length > 1 ? 'From ' : ''}
                 price={cardPrice} 
@@ -285,23 +284,24 @@ export default function ProductCard({ product }) {
                   }}
                   className="btn-primary add-cart-btn"
                   style={{
-                    padding: '0.4rem 0.65rem',
-                    fontSize: '0.75rem',
+                    padding: '0.45rem 0.85rem',
+                    fontSize: '0.78rem',
                     borderRadius: '999px',
-                    backgroundColor: '#244f21',
+                    backgroundColor: '#2F6B3A',
                     color: '#FFFFFF',
-                    border: '1px solid #b9cd94',
-                    fontWeight: '850',
+                    border: 'none',
+                    fontWeight: '800',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '0.2rem',
+                    gap: '0.3rem',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
+                    boxShadow: '0 2px 8px rgba(47, 107, 58, 0.25)',
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  <ShoppingBag size={12} color="#b9cd94" />
+                  <ShoppingBag size={13} color="#FFFFFF" />
                   <span>{btnText === 'Add to Cart' ? 'Add' : btnText}</span>
                 </button>
               </div>

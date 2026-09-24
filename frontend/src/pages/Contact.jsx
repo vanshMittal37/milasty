@@ -119,13 +119,11 @@ export default function Contact() {
   ];
 
   const shopCardStyle = {
-    backgroundColor: 'rgba(18, 9, 4, 0.30)',
-    backdropFilter: 'blur(30px) saturate(150%)',
-    WebkitBackdropFilter: 'blur(30px) saturate(150%)',
+    backgroundColor: '#FFF9F0',
     borderRadius: '24px',
-    border: '1px solid rgba(255, 255, 255, 0.20)',
-    boxShadow: '0 12px 32px rgba(0,0,0,0.35)',
-    color: '#FFFDF9',
+    border: '1px solid #DCC8AE',
+    boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)',
+    color: '#2B170D',
   };
 
   return (
@@ -139,27 +137,16 @@ export default function Contact() {
         overflowX: 'hidden',
         boxSizing: 'border-box',
         position: 'relative',
-        backgroundImage: 'url(/images/shop_background_image.jpeg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#F7F0E5',
+        color: '#2B170D'
       }}
     >
-      {/* Dark overlay matching Old Shop theme */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(135deg, rgba(15, 8, 4, 0.40) 0%, rgba(28, 14, 9, 0.30) 100%)',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }} />
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div>
       
       {/* 1. HERO SECTION */}
       <section 
         style={{ 
-          padding: '6.5rem 1.5rem 4.5rem', 
+          padding: '4rem 1.5rem 3.5rem', 
           textAlign: 'center', 
           maxWidth: '850px', 
           margin: '0 auto',
@@ -171,12 +158,12 @@ export default function Contact() {
             fontSize: '0.78rem', 
             textTransform: 'uppercase', 
             letterSpacing: '0.14em', 
-            color: '#b9cd94', 
+            color: '#2F6B3A', 
             fontWeight: '850',
-            backgroundColor: 'rgba(36, 79, 33, 0.35)',
+            backgroundColor: '#E3EEDC',
             padding: '0.4rem 0.95rem',
             borderRadius: '999px',
-            border: '1.5px solid rgba(185, 205, 148, 0.4)',
+            border: '1px solid #DCC8AE',
             display: 'inline-block',
             marginBottom: '1.25rem'
           }}
@@ -187,12 +174,11 @@ export default function Contact() {
           style={{ 
             fontSize: 'clamp(2.1rem, 5.2vw, 3.8rem)', 
             fontFamily: 'var(--font-serif)', 
-            color: '#FFFDF9', 
+            color: '#32180D', 
             fontWeight: '850',
             lineHeight: '1.15',
             margin: '0 0 1.25rem 0',
-            letterSpacing: '-0.02em',
-            textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+            letterSpacing: '-0.02em'
           }}
         >
           Let's Talk. We're Listening.
@@ -200,11 +186,11 @@ export default function Contact() {
         <p 
           style={{ 
             fontSize: 'clamp(1rem, 2.2vw, 1.12rem)', 
-            color: '#F5EBDD', 
+            color: '#654B38', 
             lineHeight: '1.65', 
             maxWidth: '600px',
             margin: '0 auto',
-            fontWeight: '550'
+            fontWeight: '500'
           }}
         >
           Have a question about your order, ingredients, gifting, or anything MILASTY? Our team is here to help.
@@ -229,11 +215,11 @@ export default function Contact() {
             }}
           >
             <div>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.45)', color: '#b9cd94', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                 <MessageSquare size={22} />
               </div>
-              <h3 style={{ fontSize: '1.15rem', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>WhatsApp Support</h3>
-              <p style={{ fontSize: '0.88rem', color: '#F5EBDD', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
+              <h3 style={{ fontSize: '1.15rem', color: '#32180D', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>WhatsApp Support</h3>
+              <p style={{ fontSize: '0.88rem', color: '#654B38', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
                 Quick questions? Chat with our team for instant assistance.
               </p>
             </div>
@@ -243,7 +229,7 @@ export default function Contact() {
               rel="noreferrer"
               style={{ 
                 fontSize: '0.88rem', 
-                color: '#b9cd94', 
+                color: '#2F6B3A', 
                 fontWeight: '850', 
                 textDecoration: 'none',
                 display: 'inline-flex',
@@ -270,11 +256,11 @@ export default function Contact() {
             }}
           >
             <div>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.45)', color: '#b9cd94', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                 <Mail size={22} />
               </div>
-              <h3 style={{ fontSize: '1.15rem', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Us</h3>
-              <p style={{ fontSize: '0.88rem', color: '#F5EBDD', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
+              <h3 style={{ fontSize: '1.15rem', color: '#32180D', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Us</h3>
+              <p style={{ fontSize: '0.88rem', color: '#654B38', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
                 Send us your questions, feedback or bulk enquiries.
               </p>
             </div>
@@ -282,7 +268,7 @@ export default function Contact() {
               href="mailto:hello@milasty.com"
               style={{ 
                 fontSize: '0.88rem', 
-                color: '#b9cd94', 
+                color: '#2F6B3A', 
                 fontWeight: '850', 
                 textDecoration: 'none',
                 display: 'inline-flex',
@@ -309,11 +295,11 @@ export default function Contact() {
             }}
           >
             <div>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.45)', color: '#b9cd94', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                 <Package size={22} />
               </div>
-              <h3 style={{ fontSize: '1.15rem', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Orders & Support</h3>
-              <p style={{ fontSize: '0.88rem', color: '#F5EBDD', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
+              <h3 style={{ fontSize: '1.15rem', color: '#32180D', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Orders & Support</h3>
+              <p style={{ fontSize: '0.88rem', color: '#654B38', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
                 Need help with an existing order or want to track shipping?
               </p>
             </div>
@@ -321,7 +307,7 @@ export default function Contact() {
               to="/account/orders"
               style={{ 
                 fontSize: '0.88rem', 
-                color: '#b9cd94', 
+                color: '#2F6B3A', 
                 fontWeight: '850', 
                 textDecoration: 'none',
                 display: 'inline-flex',
@@ -344,8 +330,8 @@ export default function Contact() {
           {/* Left Column: Business Details */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', minWidth: 0 }}>
             <div>
-              <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.75rem 0', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>Get In Touch</h2>
-              <p style={{ fontSize: '0.98rem', color: '#F5EBDD', lineHeight: '1.7', margin: 0, fontWeight: '550' }}>
+              <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 0.75rem 0' }}>Get In Touch</h2>
+              <p style={{ fontSize: '0.98rem', color: '#654B38', lineHeight: '1.7', margin: 0, fontWeight: '500' }}>
                 Whether you're curious about our ingredients, need help with an order, or want to explore gifting options, we'd love to hear from you.
               </p>
             </div>
@@ -354,12 +340,12 @@ export default function Contact() {
               
               {/* Address block */}
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(36, 79, 33, 0.45)', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b9cd94', flexShrink: 0 }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2F6B3A', flexShrink: 0 }}>
                   <MapPin size={20} />
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>Registered Bakery Address</h4>
-                  <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.5', margin: 0, fontWeight: '500', wordBreak: 'break-word' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>Registered Bakery Address</h4>
+                  <p style={{ fontSize: '0.9rem', color: '#654B38', lineHeight: '1.5', margin: 0, fontWeight: '500', wordBreak: 'break-word' }}>
                     MILASTY Foods Private Limited,<br />
                     Greater Noida, Gautam Buddha Nagar,<br />
                     Uttar Pradesh - 201306, India
@@ -369,16 +355,16 @@ export default function Contact() {
 
               {/* WhatsApp block */}
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(36, 79, 33, 0.45)', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b9cd94', flexShrink: 0 }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2F6B3A', flexShrink: 0 }}>
                   <MessageSquare size={20} />
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>WhatsApp Desk</h4>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>WhatsApp Desk</h4>
                   <a 
                     href="https://api.whatsapp.com/send/?phone=918927142056&text=Hi%20MILASTY%2C%20I%20have%20a%20query"
                     target="_blank"
                     rel="noreferrer"
-                    style={{ fontSize: '0.92rem', color: '#FFFDF9', fontWeight: '800', textDecoration: 'none', wordBreak: 'break-all' }}
+                    style={{ fontSize: '0.92rem', color: '#32180D', fontWeight: '800', textDecoration: 'none', wordBreak: 'break-all' }}
                   >
                     +91 89271 42056
                   </a>
@@ -387,14 +373,14 @@ export default function Contact() {
 
               {/* Email block */}
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(36, 79, 33, 0.45)', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b9cd94', flexShrink: 0 }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2F6B3A', flexShrink: 0 }}>
                   <Mail size={20} />
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>Email Support</h4>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>Email Support</h4>
                   <a 
                     href="mailto:hello@milasty.com"
-                    style={{ fontSize: '0.92rem', color: '#FFFDF9', fontWeight: '800', textDecoration: 'none', wordBreak: 'break-all' }}
+                    style={{ fontSize: '0.92rem', color: '#32180D', fontWeight: '800', textDecoration: 'none', wordBreak: 'break-all' }}
                   >
                     hello@milasty.com
                   </a>
@@ -403,12 +389,12 @@ export default function Contact() {
 
               {/* License block */}
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(36, 79, 33, 0.45)', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b9cd94', flexShrink: 0 }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2F6B3A', flexShrink: 0 }}>
                   <ShieldCheck size={20} />
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>Food Safety License</h4>
-                  <p style={{ fontSize: '0.9rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.35rem' }}>Food Safety License</h4>
+                  <p style={{ fontSize: '0.9rem', color: '#654B38', margin: 0, fontWeight: '500' }}>
                     FSSAI Lic No: 22724105001223
                   </p>
                 </div>
@@ -430,45 +416,44 @@ export default function Contact() {
             }}
           >
             {submitted ? (
-              /* CLEAN MILASTY SUCCESS CARD (REQUIREMENTS #3 & #4) */
               <div style={{ textAlign: 'center', padding: '1.5rem 0.5rem' }}>
                 <div 
                   style={{ 
                     width: '64px', 
                     height: '64px', 
                     borderRadius: '50%', 
-                    backgroundColor: 'rgba(36, 79, 33, 0.5)', 
-                    color: '#b9cd94', 
-                    border: '2px solid rgba(185, 205, 148, 0.5)', 
+                    backgroundColor: '#E3EEDC', 
+                    color: '#2F6B3A', 
+                    border: '2px solid #DCC8AE', 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center', 
                     margin: '0 auto 1.5rem' 
                   }}
                 >
-                  <CheckCircle2 size={36} color="#b9cd94" />
+                  <CheckCircle2 size={36} color="#2F6B3A" />
                 </div>
 
-                <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.75rem' }}>
+                <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', marginBottom: '0.75rem' }}>
                   ✓ Thank You for Contacting MILASTY
                 </h3>
 
                 {submittedInquiry?.inquiry_number && (
-                  <div style={{ display: 'inline-block', backgroundColor: 'rgba(185, 205, 148, 0.15)', color: '#b9cd94', padding: '0.35rem 0.9rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: '800', marginBottom: '1.25rem', border: '1px solid rgba(185, 205, 148, 0.3)' }}>
+                  <div style={{ display: 'inline-block', backgroundColor: '#E3EEDC', color: '#2F6B3A', padding: '0.35rem 0.9rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: '800', marginBottom: '1.25rem', border: '1px solid #DCC8AE' }}>
                     Inquiry Reference: {submittedInquiry.inquiry_number}
                   </div>
                 )}
 
-                <p style={{ color: '#F5EBDD', fontSize: '0.96rem', lineHeight: '1.6', margin: '0 0 0.85rem 0', fontWeight: '500' }}>
+                <p style={{ color: '#654B38', fontSize: '0.96rem', lineHeight: '1.6', margin: '0 0 0.85rem 0', fontWeight: '500' }}>
                   Your inquiry has been received successfully.
                 </p>
 
-                <p style={{ color: '#F5EBDD', fontSize: '0.92rem', lineHeight: '1.6', margin: '0 0 1.5rem 0', fontWeight: '500' }}>
+                <p style={{ color: '#654B38', fontSize: '0.92rem', lineHeight: '1.6', margin: '0 0 1.5rem 0', fontWeight: '500' }}>
                   Our team will contact you shortly by email or WhatsApp.
                 </p>
 
                 {isAuthenticated && (
-                  <p style={{ color: '#b9cd94', fontSize: '0.88rem', margin: '0 0 1.75rem 0', fontWeight: '600' }}>
+                  <p style={{ color: '#2F6B3A', fontSize: '0.88rem', margin: '0 0 1.75rem 0', fontWeight: '600' }}>
                     You can track your inquiry from your MILASTY account.
                   </p>
                 )}
@@ -483,7 +468,7 @@ export default function Contact() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: '#244f21',
+                        backgroundColor: '#2F6B3A',
                         color: '#FFFFFF',
                         borderRadius: '12px',
                         fontWeight: '850',
@@ -504,7 +489,7 @@ export default function Contact() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: '#244f21',
+                        backgroundColor: '#2F6B3A',
                         color: '#FFFFFF',
                         borderRadius: '12px',
                         fontWeight: '850',
@@ -522,8 +507,8 @@ export default function Contact() {
                     onClick={resetFormToSubmitAnother}
                     style={{
                       background: 'transparent',
-                      border: '1px solid rgba(185, 205, 148, 0.4)',
-                      color: '#b9cd94',
+                      border: '1px solid #DCC8AE',
+                      color: '#2F6B3A',
                       height: '44px',
                       borderRadius: '12px',
                       fontSize: '0.85rem',
@@ -537,11 +522,11 @@ export default function Contact() {
               </div>
             ) : (
               <div>
-                <h3 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.25rem 0' }}>Send Us a Message</h3>
-                <p style={{ fontSize: '0.88rem', color: '#F5EBDD', marginBottom: '1.75rem', fontWeight: '550' }}>We usually respond as soon as possible.</p>
+                <h3 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 0.25rem 0' }}>Send Us a Message</h3>
+                <p style={{ fontSize: '0.88rem', color: '#654B38', marginBottom: '1.75rem', fontWeight: '500' }}>We usually respond as soon as possible.</p>
 
                 {errorMessage && (
-                  <div style={{ padding: '0.85rem 1rem', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '12px', color: '#FCA5A5', fontSize: '0.88rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ padding: '0.85rem 1rem', backgroundColor: '#fee2e2', border: '1px solid #fca5a5', borderRadius: '12px', color: '#dc2626', fontSize: '0.88rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <AlertCircle size={18} style={{ flexShrink: 0 }} />
                     <span>{errorMessage}</span>
                   </div>
@@ -549,7 +534,7 @@ export default function Contact() {
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#32180D', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       Full Name *
                     </label>
                     <input
@@ -558,12 +543,12 @@ export default function Contact() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Enter your name"
-                      style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
+                      style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #DCC8AE', fontSize: '0.9rem', outline: 'none', backgroundColor: '#FCF8F1', color: '#32180D', boxSizing: 'border-box' }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#32180D', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       Email Address *
                     </label>
                     <input
@@ -572,12 +557,12 @@ export default function Contact() {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="name@example.com"
-                      style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
+                      style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #DCC8AE', fontSize: '0.9rem', outline: 'none', backgroundColor: '#FCF8F1', color: '#32180D', boxSizing: 'border-box' }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#32180D', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       WhatsApp / Phone Number (Optional)
                     </label>
                     <input
@@ -585,12 +570,12 @@ export default function Contact() {
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="+91 98765 43210"
-                      style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', boxSizing: 'border-box' }}
+                      style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #DCC8AE', fontSize: '0.9rem', outline: 'none', backgroundColor: '#FCF8F1', color: '#32180D', boxSizing: 'border-box' }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#F5EBDD', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#32180D', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       Message / Inquiry *
                     </label>
                     <textarea
@@ -599,7 +584,7 @@ export default function Contact() {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="How can we help you?"
-                      style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.3)', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: 'rgba(20, 10, 5, 0.65)', color: '#FFFDF9', lineHeight: '1.5', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #DCC8AE', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: '#FCF8F1', color: '#32180D', lineHeight: '1.5', boxSizing: 'border-box' }}
                     />
                   </div>
 
@@ -611,7 +596,7 @@ export default function Contact() {
                       height: '52px',
                       justifyContent: 'center', 
                       marginTop: '0.5rem',
-                      backgroundColor: '#244f21',
+                      backgroundColor: '#2F6B3A',
                       color: '#FFFFFF',
                       border: 'none',
                       borderRadius: '12px',
@@ -639,7 +624,7 @@ export default function Contact() {
       {/* 5. CONTACT REASONS */}
       <section style={{ width: '100%', maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0 }}>
             How Can We Help?
           </h2>
         </div>
@@ -649,32 +634,32 @@ export default function Contact() {
             onClick={() => handleSelectReason("Questions about an existing order")}
             style={{ ...shopCardStyle, padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
           >
-            <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Order Support</h4>
-            <p style={{ fontSize: '0.85rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Questions about an existing order.</p>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Order Support</h4>
+            <p style={{ fontSize: '0.85rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Questions about an existing order.</p>
           </div>
 
           <div 
             onClick={() => handleSelectReason("Ingredients, pack sizes or product information")}
             style={{ ...shopCardStyle, padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
           >
-            <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Product Questions</h4>
-            <p style={{ fontSize: '0.85rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Ingredients, pack sizes or product info.</p>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Product Questions</h4>
+            <p style={{ fontSize: '0.85rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Ingredients, pack sizes or product info.</p>
           </div>
 
           <div 
             onClick={() => handleSelectReason("Corporate, festive or celebration gifting")}
             style={{ ...shopCardStyle, padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
           >
-            <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Gifting & Bulk</h4>
-            <p style={{ fontSize: '0.85rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Corporate, festive or celebration gifting.</p>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Gifting & Bulk</h4>
+            <p style={{ fontSize: '0.85rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Corporate, festive or celebration gifting.</p>
           </div>
 
           <div 
             onClick={() => handleSelectReason("General enquiry")}
             style={{ ...shopCardStyle, padding: '2rem 1.5rem', borderRadius: '20px', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s', boxSizing: 'border-box' }}
           >
-            <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#b9cd94', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>General Enquiry</h4>
-            <p style={{ fontSize: '0.85rem', color: '#F5EBDD', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Anything else you'd like to ask.</p>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>General Enquiry</h4>
+            <p style={{ fontSize: '0.85rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Anything else you'd like to ask.</p>
           </div>
         </div>
       </section>
@@ -682,8 +667,8 @@ export default function Contact() {
       {/* 6. FAQ SECTION */}
       <section style={{ width: '100%', maxWidth: '800px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Help Center</span>
-          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+          <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Help Center</span>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0 }}>
             Before You Reach Out
           </h2>
         </div>
@@ -719,11 +704,11 @@ export default function Contact() {
                     gap: '1rem'
                   }}
                 >
-                  <span style={{ fontSize: '0.95rem', fontWeight: '850', color: '#FFFDF9', flex: 1 }}>{faq.q}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: '850', color: '#32180D', flex: 1 }}>{faq.q}</span>
                   <ChevronDown 
                     size={18} 
                     style={{ 
-                      color: '#b9cd94', 
+                      color: '#2F6B3A', 
                       transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', 
                       transition: 'transform 0.25s ease',
                       flexShrink: 0
@@ -732,7 +717,7 @@ export default function Contact() {
                 </button>
                 
                 {isOpen && (
-                  <div style={{ padding: '0 1.5rem 1.5rem 1.5rem', fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.6', fontWeight: '500' }}>
+                  <div style={{ padding: '0 1.5rem 1.5rem 1.5rem', fontSize: '0.9rem', color: '#654B38', lineHeight: '1.6', fontWeight: '500' }}>
                     {faq.a}
                   </div>
                 )}
@@ -755,10 +740,10 @@ export default function Contact() {
             boxSizing: 'border-box'
           }}
         >
-          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', color: '#FFFDF9', marginBottom: '1rem', fontFamily: 'var(--font-serif)', fontWeight: '850', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', color: '#32180D', marginBottom: '1rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>
             Made With Intention. Shared With Love.
           </h2>
-          <p style={{ color: '#F5EBDD', fontSize: '1.02rem', maxWidth: '520px', margin: '0.5rem auto 2.5rem', lineHeight: '1.7', fontWeight: '550' }}>
+          <p style={{ color: '#654B38', fontSize: '1.02rem', maxWidth: '520px', margin: '0.5rem auto 2.5rem', lineHeight: '1.7', fontWeight: '500' }}>
             Discover the story, ingredients and rituals behind MILASTY.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -768,7 +753,7 @@ export default function Contact() {
               style={{ 
                 padding: '0.95rem 2.25rem', 
                 fontSize: '0.92rem', 
-                backgroundColor: '#244f21', 
+                backgroundColor: '#2F6B3A', 
                 color: '#FFFFFF', 
                 border: 'none', 
                 borderRadius: '999px', 
@@ -784,12 +769,12 @@ export default function Contact() {
               style={{ 
                 padding: '0.95rem 2.25rem', 
                 fontSize: '0.92rem', 
-                borderColor: '#b9cd94', 
-                color: '#b9cd94', 
+                borderColor: '#DCC8AE', 
+                color: '#32180D', 
                 borderRadius: '999px', 
                 fontWeight: '850', 
                 textDecoration: 'none',
-                backgroundColor: 'rgba(36, 79, 33, 0.25)'
+                backgroundColor: '#FFF9F0'
               }}
             >
               Explore Bakes

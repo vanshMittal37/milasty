@@ -13,25 +13,25 @@ import { useCategories } from '../context/CategoryContext';
 
 const cardThemes = [
   {
-    bgGradient: 'linear-gradient(180deg, rgba(46, 26, 15, 0.92) 0%, rgba(26, 14, 8, 0.96) 100%)',
-    borderColor: 'rgba(212, 175, 55, 0.45)',
-    titleColor: '#FFFDF9',
-    badgeBg: 'linear-gradient(135deg, #D4AF37 0%, #AA8222 100%)',
-    badgeColor: '#1A0E07',
+    bgGradient: '#FFF9F0',
+    borderColor: '#DCC8AE',
+    titleColor: '#32180D',
+    badgeBg: '#E3EEDC',
+    badgeColor: '#24572E',
   },
   {
-    bgGradient: 'linear-gradient(180deg, rgba(30, 44, 20, 0.92) 0%, rgba(18, 28, 12, 0.96) 100%)',
-    borderColor: '#557038',
-    titleColor: '#FFFDF9',
-    badgeBg: '#3D5625',
-    badgeColor: '#FAF4EB',
+    bgGradient: '#FFF9F0',
+    borderColor: '#DCC8AE',
+    titleColor: '#32180D',
+    badgeBg: '#E3EEDC',
+    badgeColor: '#24572E',
   },
   {
-    bgGradient: 'linear-gradient(180deg, rgba(58, 30, 20, 0.92) 0%, rgba(33, 16, 10, 0.96) 100%)',
-    borderColor: '#A87045',
-    titleColor: '#FFFDF9',
-    badgeBg: '#C8733B',
-    badgeColor: '#FFFDF9',
+    bgGradient: '#FFF9F0',
+    borderColor: '#DCC8AE',
+    titleColor: '#32180D',
+    badgeBg: '#E3EEDC',
+    badgeColor: '#24572E',
   },
 ];
 
@@ -467,13 +467,10 @@ export default function Shop() {
         overflowX: 'hidden',
         boxSizing: 'border-box',
         position: 'relative',
-        backgroundColor: '#F5EBDD',
-        backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.6) 0%, rgba(245,235,221,0) 70%)',
+        backgroundColor: '#F7F0E5',
       }}
     >
       <div style={{ position: 'relative', zIndex: 1 }}>
-
-
 
       {/* ================================================================== */}
       {/* 2. FUTURE FAVOURITES / WHAT'S NEXT FROM MILASTY                     */}
@@ -495,7 +492,7 @@ export default function Shop() {
                 fontSize: '0.8rem', 
                 textTransform: 'uppercase', 
                 letterSpacing: '0.18em', 
-                color: '#A3B580', 
+                color: '#2F6B3A', 
                 fontWeight: '800', 
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -503,24 +500,24 @@ export default function Shop() {
                 marginBottom: '0.65rem'
               }}
             >
-              <Leaf size={14} color="#A3B580" /> FUTURE FAVOURITES <Leaf size={14} color="#A3B580" />
+              <Leaf size={14} color="#2F6B3A" /> FUTURE FAVOURITES <Leaf size={14} color="#2F6B3A" />
             </span>
             <h2 
               style={{ 
                 fontSize: isMobile ? '2.2rem' : '3.4rem', 
                 fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif', 
-                color: '#FFFDF9', 
+                color: '#32180D', 
                 fontWeight: '800', 
                 margin: '0 0 0.85rem 0', 
                 lineHeight: '1.2' 
               }}
             >
-              What's Next from <span style={{ color: '#A3B580' }}>MILASTY</span>
+              What's Next from <span style={{ color: '#2F6B3A' }}>MILASTY</span>
             </h2>
             <p 
               style={{ 
                 fontSize: isMobile ? '0.92rem' : '1.08rem', 
-                color: '#EADEC9', 
+                color: '#654B38', 
                 margin: '0 auto 1.5rem', 
                 fontWeight: '500',
                 lineHeight: '1.6',
@@ -533,9 +530,9 @@ export default function Shop() {
 
             <span
               style={{
-                backgroundColor: 'rgba(36, 79, 33, 0.45)',
-                color: '#EADEC9',
-                border: '1.5px solid rgba(163, 181, 128, 0.45)',
+                backgroundColor: '#E3EEDC',
+                color: '#24572E',
+                border: '1.5px solid rgba(47, 107, 58, 0.3)',
                 padding: '0.45rem 1.25rem',
                 borderRadius: '25px',
                 fontSize: '0.78rem',
@@ -544,10 +541,10 @@ export default function Shop() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.25)'
+                boxShadow: '0 4px 14px rgba(43, 20, 11, 0.05)'
               }}
             >
-              <Calendar size={14} color="#A3B580" /> NOW OPEN FOR PRE-BOOKING
+              <Calendar size={14} color="#2F6B3A" /> NOW OPEN FOR PRE-BOOKING
             </span>
           </div>
 
@@ -574,14 +571,14 @@ export default function Shop() {
                   key={item.id || idx}
                   onClick={() => navigate(`/product/${item.productSlug || item.slug || pId}`)}
                   style={{
-                    background: theme.bgGradient,
+                    background: '#FFF9F0',
                     borderRadius: isMobile ? '14px' : '20px',
-                    border: `1.5px solid ${theme.borderColor}`,
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                    border: '1.5px solid #DCC8AE',
+                    boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                     padding: isMobile ? '0.65rem 0.55rem 0.6rem' : '1.15rem 1rem 1rem',
                     display: 'flex',
                     flexDirection: 'column',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                     position: 'relative',
                     overflow: 'hidden',
                     boxSizing: 'border-box',
@@ -594,9 +591,9 @@ export default function Shop() {
                     <div style={{ marginBottom: isMobile ? '0.35rem' : '0.75rem' }}>
                       <span
                         style={{
-                          background: theme.badgeBg,
-                          color: theme.badgeColor,
-                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          background: '#E3EEDC',
+                          color: '#24572E',
+                          border: '1px solid rgba(47, 107, 58, 0.25)',
                           padding: isMobile ? '0.18rem 0.45rem' : '0.3rem 0.8rem',
                           borderRadius: '20px',
                           fontSize: isMobile ? '0.54rem' : '0.7rem',
@@ -628,7 +625,7 @@ export default function Shop() {
                             margin: 0,
                             fontSize: isMobile ? '0.85rem' : '1.1rem',
                             fontWeight: '800',
-                            color: theme.titleColor,
+                            color: '#32180D',
                             fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
                             lineHeight: '1.2',
                           }}
@@ -642,8 +639,8 @@ export default function Shop() {
                           height: isMobile ? '55px' : '85px', 
                           borderRadius: isMobile ? '8px' : '12px', 
                           overflow: 'hidden', 
-                          boxShadow: '0 4px 10px rgba(0,0,0,0.3)', 
-                          border: '1px solid rgba(255,255,255,0.15)', 
+                          boxShadow: '0 2px 8px rgba(43,20,11,0.08)', 
+                          border: '1px solid #DCC8AE', 
                           flexShrink: 0 
                         }}
                       >
@@ -659,7 +656,7 @@ export default function Shop() {
                     <p
                       style={{
                         fontSize: isMobile ? '0.68rem' : '0.82rem',
-                        color: 'rgba(255, 255, 255, 0.82)',
+                        color: '#654B38',
                         lineHeight: '1.3',
                         marginBottom: isMobile ? '0.35rem' : '0.85rem',
                         fontWeight: '400',
@@ -675,7 +672,7 @@ export default function Shop() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: isMobile ? '0.2rem' : '0.5rem', marginBottom: isMobile ? '0.45rem' : '0.85rem', paddingTop: '0.25rem', width: '100%', boxSizing: 'border-box' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '0.2rem' : '0.4rem', flexWrap: 'nowrap' }}>
-                          <span style={{ fontSize: isMobile ? '0.92rem' : '1.35rem', fontWeight: '950', color: '#FFFDF9', textShadow: '0 2px 4px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontSize: isMobile ? '0.92rem' : '1.35rem', fontWeight: '950', color: '#2B170D', whiteSpace: 'nowrap' }}>
                             ₹{price}
                           </span>
                         </div>
@@ -698,9 +695,9 @@ export default function Shop() {
                         }}
                         className="btn-primary"
                         style={{
-                          backgroundColor: '#244f21',
+                          backgroundColor: '#2F6B3A',
                           color: '#FFFFFF',
-                          border: '1px solid #b9cd94',
+                          border: 'none',
                           padding: isMobile ? '0.35rem 0.5rem' : '0.8rem 1.4rem',
                           borderRadius: '999px',
                           fontSize: isMobile ? '0.68rem' : '0.92rem',
@@ -709,12 +706,12 @@ export default function Shop() {
                           display: 'flex',
                           alignItems: 'center',
                           gap: isMobile ? '0.15rem' : '0.45rem',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.35)',
+                          boxShadow: '0 4px 12px rgba(47, 107, 58, 0.25)',
                           transition: 'all 0.25s ease',
                           flexShrink: 0
                         }}
                       >
-                        <ShoppingBag size={isMobile ? 11 : 17} color="#b9cd94" />
+                        <ShoppingBag size={isMobile ? 11 : 17} color="#FFFFFF" />
                         <span>Pre-book</span>
                       </button>
                     </div>
@@ -725,7 +722,7 @@ export default function Shop() {
                         <span
                           style={{
                             fontSize: isMobile ? '0.52rem' : '0.66rem',
-                            color: 'rgba(255, 255, 255, 0.75)',
+                            color: '#806A57',
                             fontWeight: '700',
                             letterSpacing: '0.03em',
                             textTransform: 'uppercase',
@@ -734,7 +731,7 @@ export default function Shop() {
                             gap: '0.2rem',
                           }}
                         >
-                          <Calendar size={isMobile ? 9 : 12} color="rgba(255, 255, 255, 0.75)" /> SHIPPING STARTS {formattedDate}
+                          <Calendar size={isMobile ? 9 : 12} color="#806A57" /> SHIPPING STARTS {formattedDate}
                         </span>
                       </div>
                     )}
@@ -751,9 +748,9 @@ export default function Shop() {
                 style={{
                   padding: '0.65rem 1.65rem',
                   borderRadius: '999px',
-                  backgroundColor: 'rgba(36, 79, 33, 0.85)',
-                  border: '1.5px solid #b9cd94',
-                  color: '#FFFDF9',
+                  backgroundColor: '#FFF9F0',
+                  border: '1.5px solid #DCC8AE',
+                  color: '#32180D',
                   fontSize: '0.88rem',
                   fontWeight: '800',
                   cursor: 'pointer',
@@ -774,20 +771,20 @@ export default function Shop() {
         id="explore-by-category-section"
         style={{ 
           padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', 
-          backgroundColor: 'rgba(20, 10, 5, 0.45)', 
-          borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.12)' 
+          backgroundColor: '#F1E5D4', 
+          borderTop: '1px solid #DCC8AE',
+          borderBottom: '1px solid #DCC8AE' 
         }}
       >
         <div style={{ maxWidth: '1240px', margin: '0 auto', boxSizing: 'border-box' }}>
           <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 2.25rem' : '0 auto 3.5rem' }}>
-            <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
               EXPLORE BY CATEGORY
             </span>
-            <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
-              Explore the <span style={{ color: '#b9cd94' }}>MILASTY Collection</span>
+            <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
+              Explore the <span style={{ color: '#2F6B3A' }}>MILASTY Collection</span>
             </h2>
-            <p style={{ fontSize: isMobile ? '0.92rem' : '1.1rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>
+            <p style={{ fontSize: isMobile ? '0.92rem' : '1.1rem', color: '#654B38', margin: 0, fontWeight: '500' }}>
               Discover our wholesome bakes by collection.
             </p>
           </div>
@@ -833,9 +830,9 @@ export default function Shop() {
                       borderRadius: '50%',
                       overflow: 'hidden',
                       position: 'relative',
-                      border: isSelected ? '2.5px solid #b9cd94' : '2px solid rgba(185, 205, 148, 0.45)',
-                      backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                      boxShadow: isSelected ? '0 10px 25px rgba(36, 79, 33, 0.4)' : '0 8px 24px rgba(0, 0, 0, 0.35)',
+                      border: isSelected ? '3px solid #2F6B3A' : '2px solid #DCC8AE',
+                      backgroundColor: '#FFF9F0',
+                      boxShadow: isSelected ? '0 8px 20px rgba(47, 107, 58, 0.25)' : '0 4px 12px rgba(43, 20, 11, 0.05)',
                       transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                       marginBottom: '0.85rem',
                       boxSizing: 'border-box'
@@ -859,18 +856,18 @@ export default function Shop() {
                           position: 'absolute',
                           bottom: '6px',
                           right: '6px',
-                          backgroundColor: '#244f21',
-                          border: '1.5px solid #b9cd94',
+                          backgroundColor: '#2F6B3A',
+                          border: '1.5px solid #FFFFFF',
                           borderRadius: '50%',
                           width: '24px',
                           height: '24px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: '#FFFDF9'
+                          color: '#FFFFFF'
                         }}
                       >
-                        <Check size={14} strokeWidth={3} color="#b9cd94" />
+                        <Check size={14} strokeWidth={3} color="#FFFFFF" />
                       </div>
                     )}
                   </div>
@@ -881,7 +878,7 @@ export default function Shop() {
                       fontSize: '0.68rem', 
                       letterSpacing: '0.08em', 
                       fontWeight: '850', 
-                      color: isSelected ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.5)',
+                      color: isSelected ? '#2F6B3A' : '#806A57',
                       marginBottom: '0.15rem',
                       display: 'block'
                     }}
@@ -892,7 +889,7 @@ export default function Shop() {
                     className="category-circle-title"
                     style={{
                       fontSize: isMobile ? '0.82rem' : '0.95rem',
-                      color: isSelected ? 'var(--accent-gold)' : '#FFFDF9',
+                      color: isSelected ? '#2F6B3A' : '#32180D',
                       fontFamily: 'var(--font-serif)',
                       fontWeight: '800',
                       lineHeight: '1.25',
@@ -918,21 +915,21 @@ export default function Shop() {
                 style={{
                   padding: '0.85rem 2.25rem',
                   borderRadius: '999px',
-                  backgroundColor: 'rgba(36, 79, 33, 0.75)',
-                  border: '1.5px solid #b9cd94',
-                  color: '#FFFDF9',
+                  backgroundColor: '#2F6B3A',
+                  color: '#FFFFFF',
+                  border: 'none',
                   fontWeight: '850',
                   fontSize: '0.92rem',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.6rem',
-                  boxShadow: '0 8px 24px rgba(36, 79, 33, 0.4)',
+                  boxShadow: '0 8px 24px rgba(47, 107, 58, 0.25)',
                   transition: 'all 0.3s ease'
                 }}
               >
                 <span>Explore More Categories ({categories.length - 4} More)</span>
-                <ArrowRight size={16} color="#b9cd94" />
+                <ArrowRight size={16} color="#FFFFFF" />
               </button>
             </div>
           )}
@@ -953,13 +950,13 @@ export default function Shop() {
         }}
       >
         <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 1.75rem' : '0 auto 3rem' }}>
-          <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+          <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
             BROWSE MILASTY COLLECTION
           </span>
-          <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
-            Explore All <span style={{ color: '#b9cd94' }}>Wholesome Bakes</span>
+          <h2 style={{ fontSize: isMobile ? '2.2rem' : '3.2rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 0.5rem', lineHeight: '1.2' }}>
+            Explore All <span style={{ color: '#2F6B3A' }}>Wholesome Bakes</span>
           </h2>
-          <p style={{ fontSize: isMobile ? '0.92rem' : '1.1rem', color: '#F5EBDD', margin: 0, fontWeight: '500' }}>
+          <p style={{ fontSize: isMobile ? '0.92rem' : '1.1rem', color: '#654B38', margin: 0, fontWeight: '500' }}>
             Showing {displayedProducts.length} bakes {selectedCategory !== 'all' ? `in ${modalCategoryList.find(c => c.id === selectedCategory)?.label || selectedCategory}` : ''}
           </p>
         </div>
@@ -974,18 +971,18 @@ export default function Shop() {
                 gap: '0.5rem', 
                 padding: '0.4rem 1rem', 
                 borderRadius: '999px', 
-                backgroundColor: '#244f21', 
-                border: '1.5px solid #b9cd94', 
-                color: '#FFFDF9', 
+                backgroundColor: '#2F6B3A', 
+                border: '1.5px solid #2F6B3A', 
+                color: '#FFFFFF', 
                 fontSize: '0.82rem', 
                 fontWeight: '800' 
               }}
             >
-              <Check size={14} color="#b9cd94" />
+              <Check size={14} color="#FFFFFF" />
               <span>ACTIVE FILTER: {modalCategoryList.find(c => c.id === selectedCategory)?.label?.toUpperCase()}</span>
               <button 
                 onClick={() => setSelectedCategory('all')} 
-                style={{ backgroundColor: 'transparent', border: 'none', color: '#FFFDF9', cursor: 'pointer', marginLeft: '0.25rem', fontWeight: '900', padding: 0 }}
+                style={{ backgroundColor: 'transparent', border: 'none', color: '#FFFFFF', cursor: 'pointer', marginLeft: '0.25rem', fontWeight: '900', padding: 0 }}
                 title="Clear Category Filter"
               >
                 ✕
@@ -1005,7 +1002,7 @@ export default function Shop() {
           }}
         >
           <div style={{ position: 'relative', flexGrow: 1 }}>
-            <Search size={20} color="var(--accent-gold)" style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 2 }} />
+            <Search size={20} color="#2F6B3A" style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 2 }} />
             <input 
               type="text"
               placeholder="Search cookies, ingredients, hampers..."
@@ -1015,9 +1012,9 @@ export default function Shop() {
                 width: '100%',
                 padding: '0.85rem 1.25rem 0.85rem 3.4rem',
                 borderRadius: '999px',
-                backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                border: '1.5px solid rgba(255, 255, 255, 0.25)',
-                color: '#FFFDF9',
+                backgroundColor: '#FFF9F0',
+                border: '1.5px solid #DCC8AE',
+                color: '#32180D',
                 fontSize: isMobile ? '0.88rem' : '0.95rem',
                 outline: 'none',
                 boxSizing: 'border-box'
@@ -1030,9 +1027,9 @@ export default function Shop() {
             style={{
               padding: '0.85rem 1.35rem',
               borderRadius: '999px',
-              backgroundColor: 'rgba(36, 79, 33, 0.85)',
-              border: '1.5px solid #b9cd94',
-              color: '#FFFDF9',
+              backgroundColor: '#2F6B3A',
+              border: 'none',
+              color: '#FFFFFF',
               fontWeight: '850',
               fontSize: '0.88rem',
               cursor: 'pointer',
@@ -1040,10 +1037,10 @@ export default function Shop() {
               alignItems: 'center',
               gap: '0.45rem',
               flexShrink: 0,
-              boxShadow: '0 4px 14px rgba(36, 79, 33, 0.4)'
+              boxShadow: '0 4px 14px rgba(47, 107, 58, 0.25)'
             }}
           >
-            <Filter size={17} color="var(--accent-gold)" />
+            <Filter size={17} color="#FFFFFF" />
             <span>Filter</span>
           </button>
         </div>
@@ -1055,16 +1052,16 @@ export default function Shop() {
               <ProductCard key={product._id || product.slug} product={product} />
             ))
           ) : (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 1.5rem', color: '#F5EBDD', backgroundColor: 'rgba(35, 21, 13, 0.65)', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '24px' }}>
-              <Sparkles size={32} color="var(--accent-gold)" style={{ marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', margin: '0 0 0.4rem 0', fontWeight: '800' }}>No products yet</h3>
-              <p style={{ fontSize: '0.95rem', color: '#F5EBDD', margin: '0 auto 1.5rem', maxWidth: '480px', lineHeight: '1.5', opacity: 0.9 }}>
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 1.5rem', color: '#654B38', backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', borderRadius: '24px' }}>
+              <Sparkles size={32} color="#2F6B3A" style={{ marginBottom: '0.75rem' }} />
+              <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#32180D', margin: '0 0 0.4rem 0', fontWeight: '800' }}>No products yet</h3>
+              <p style={{ fontSize: '0.95rem', color: '#654B38', margin: '0 auto 1.5rem', maxWidth: '480px', lineHeight: '1.5' }}>
                 We're preparing something delicious for this collection. Check back soon.
               </p>
               <button 
                 onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
                 className="btn-primary" 
-                style={{ padding: '0.75rem 1.75rem', backgroundColor: '#244f21', color: '#FFF', borderRadius: '999px', border: '1px solid #b9cd94', fontWeight: '800', cursor: 'pointer' }}
+                style={{ padding: '0.75rem 1.75rem', backgroundColor: '#2F6B3A', color: '#FFF', borderRadius: '999px', border: 'none', fontWeight: '800', cursor: 'pointer' }}
               >
                 Reset All Filters
               </button>
@@ -1086,24 +1083,24 @@ export default function Shop() {
             style={{ 
               padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem', 
               borderRadius: '24px', 
-              backgroundColor: 'rgba(35, 21, 13, 0.75)',
-              border: '1.5px solid var(--accent-gold)',
-              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
+              backgroundColor: '#FFF9F0',
+              border: '1.5px solid #DCC8AE',
+              boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
               textAlign: 'center'
             }}
           >
-            <span style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
               NOT SURE WHAT TO CHOOSE?
             </span>
 
-            <h2 style={{ fontSize: isMobile ? '1.75rem' : '2.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 1.5rem', lineHeight: '1.25' }}>
-              Find Your Perfect <span style={{ color: 'var(--accent-gold)' }}>MILASTY Bake</span>
+            <h2 style={{ fontSize: isMobile ? '1.75rem' : '2.4rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 1.5rem', lineHeight: '1.25' }}>
+              Find Your Perfect <span style={{ color: '#2F6B3A' }}>MILASTY Bake</span>
             </h2>
 
             {/* Questions Render */}
             {quizQuestions.map((q) => (
               <div key={q.id} style={{ marginBottom: '2rem' }}>
-                <p style={{ fontSize: isMobile ? '0.95rem' : '1.05rem', color: '#F5EBDD', marginBottom: '1.25rem', fontWeight: '600' }}>
+                <p style={{ fontSize: isMobile ? '0.95rem' : '1.05rem', color: '#654B38', marginBottom: '1.25rem', fontWeight: '600' }}>
                   {q.questionText}
                 </p>
 
@@ -1122,21 +1119,21 @@ export default function Shop() {
                         style={{
                           padding: isMobile ? '0.85rem 1.1rem' : '0.95rem 1.35rem',
                           borderRadius: '999px',
-                          backgroundColor: isOptionSelected ? '#244f21' : 'rgba(20, 10, 5, 0.65)',
-                          border: isOptionSelected ? '2px solid #b9cd94' : '1.5px solid rgba(255, 255, 255, 0.25)',
-                          color: '#FFFDF9',
+                          backgroundColor: isOptionSelected ? '#2F6B3A' : '#F1E5D4',
+                          border: isOptionSelected ? '2px solid #2F6B3A' : '1.5px solid #DCC8AE',
+                          color: isOptionSelected ? '#FFFFFF' : '#32180D',
                           fontWeight: '800',
                           fontSize: isMobile ? '0.88rem' : '0.95rem',
                           cursor: 'pointer',
                           transition: 'all 0.25s ease',
-                          boxShadow: isOptionSelected ? '0 6px 20px rgba(36, 79, 33, 0.5)' : '0 4px 12px rgba(0, 0, 0, 0.25)',
+                          boxShadow: isOptionSelected ? '0 6px 20px rgba(47, 107, 58, 0.25)' : 'none',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           gap: '0.5rem'
                         }}
                       >
-                        {isOptionSelected && <Check size={16} color="#b9cd94" />}
+                        {isOptionSelected && <Check size={16} color="#FFFFFF" />}
                         <span>{option.optionText}</span>
                       </button>
                     );
@@ -1147,8 +1144,8 @@ export default function Shop() {
 
             {/* Recommended Products Result Box */}
             {quizSelectedOption && (
-              <div style={{ marginTop: '2rem', borderTop: '1px dashed rgba(255,255,255,0.2)', paddingTop: '1.5rem', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
-                <h3 style={{ fontSize: '1.2rem', color: '#b9cd94', fontFamily: 'var(--font-serif)', marginBottom: '1rem', fontWeight: '800' }}>
+              <div style={{ marginTop: '2rem', borderTop: '1px dashed #DCC8AE', paddingTop: '1.5rem', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+                <h3 style={{ fontSize: '1.2rem', color: '#2F6B3A', fontFamily: 'var(--font-serif)', marginBottom: '1rem', fontWeight: '800' }}>
                   Recommended for You ({quizRecommendations.length})
                 </h3>
 
@@ -1159,10 +1156,10 @@ export default function Shop() {
                         key={prod.id || prod._id}
                         onClick={() => navigate(`/product/${prod.slug || prod.id || prod._id}`)}
                         style={{
-                          backgroundColor: 'rgba(20, 10, 5, 0.85)',
+                          backgroundColor: '#FCF8F1',
                           padding: isMobile ? '0.65rem' : '0.85rem',
                           borderRadius: '16px',
-                          border: '1px solid rgba(185, 205, 148, 0.3)',
+                          border: '1px solid #DCC8AE',
                           display: 'flex',
                           gap: '0.65rem',
                           alignItems: 'center',
@@ -1177,10 +1174,10 @@ export default function Shop() {
                       >
                         <img src={prod.image || prod.primary_image || '/images/image1.jpeg'} alt={prod.title} style={{ width: isMobile ? '48px' : '56px', height: isMobile ? '48px' : '56px', objectFit: 'cover', borderRadius: '10px', flexShrink: 0 }} />
                         <div style={{ flexGrow: 1, minWidth: 0, overflow: 'hidden' }}>
-                          <div style={{ fontWeight: '800', color: '#FFFDF9', fontSize: isMobile ? '0.82rem' : '0.92rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontWeight: '800', color: '#32180D', fontSize: isMobile ? '0.82rem' : '0.92rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {prod.title}
                           </div>
-                          <div style={{ color: '#b9cd94', fontWeight: '800', fontSize: isMobile ? '0.78rem' : '0.88rem', marginTop: '0.15rem' }}>
+                          <div style={{ color: '#2F6B3A', fontWeight: '800', fontSize: isMobile ? '0.78rem' : '0.88rem', marginTop: '0.15rem' }}>
                             ₹{prod.price}
                           </div>
                         </div>
@@ -1189,7 +1186,7 @@ export default function Shop() {
                             e.stopPropagation();
                             addToCart(prod, null, 1);
                           }}
-                          style={{ backgroundColor: '#244f21', color: '#FFF', border: '1px solid #b9cd94', padding: isMobile ? '0.35rem 0.65rem' : '0.45rem 0.85rem', borderRadius: '999px', fontWeight: '800', fontSize: isMobile ? '0.7rem' : '0.78rem', cursor: 'pointer', flexShrink: 0 }}
+                          style={{ backgroundColor: '#2F6B3A', color: '#FFF', border: 'none', padding: isMobile ? '0.35rem 0.65rem' : '0.45rem 0.85rem', borderRadius: '999px', fontWeight: '800', fontSize: isMobile ? '0.7rem' : '0.78rem', cursor: 'pointer', flexShrink: 0 }}
                         >
                           + Add
                         </button>
@@ -1197,7 +1194,7 @@ export default function Shop() {
                     ))}
                   </div>
                 ) : (
-                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>
+                  <p style={{ color: '#654B38', fontSize: '0.9rem' }}>
                     No specific bakes mapped for this option yet.
                   </p>
                 )}
@@ -1213,9 +1210,9 @@ export default function Shop() {
           style={{ 
             position: 'fixed', 
             inset: 0, 
-            backgroundColor: 'rgba(0, 0, 0, 0.8)', 
-            backdropFilter: 'blur(10px)', 
-            WebkitBackdropFilter: 'blur(10px)', 
+            backgroundColor: 'rgba(43, 20, 11, 0.6)', 
+            backdropFilter: 'blur(8px)', 
+            WebkitBackdropFilter: 'blur(8px)', 
             zIndex: 99999, 
             display: 'flex', 
             alignItems: 'center', 
@@ -1227,28 +1224,28 @@ export default function Shop() {
           <div 
             onClick={(e) => e.stopPropagation()}
             style={{ 
-              backgroundColor: 'rgba(26, 14, 8, 0.96)', 
+              backgroundColor: '#FFF9F0', 
               borderRadius: '24px', 
-              border: '1.5px solid var(--accent-gold)', 
+              border: '1.5px solid #DCC8AE', 
               padding: isMobile ? '1.25rem 1rem' : '2.25rem 2rem', 
               maxWidth: '720px', 
               width: '100%', 
               maxHeight: '85vh',
               display: 'flex',
               flexDirection: 'column',
-              color: '#FFFDF9',
-              boxShadow: '0 24px 60px rgba(0,0,0,0.85)',
+              color: '#32180D',
+              boxShadow: '0 24px 60px rgba(43, 20, 11, 0.2)',
               position: 'relative'
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', paddingBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #DCC8AE', paddingBottom: '1rem' }}>
               <div>
-                <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', margin: 0, fontWeight: '850', color: '#FFFDF9' }}>Explore All Collections</h3>
-                <span style={{ fontSize: '0.78rem', color: '#b9cd94', fontWeight: '700', marginTop: '0.2rem', display: 'block' }}>Showing {categories.length} dynamic store collections</span>
+                <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', margin: 0, fontWeight: '850', color: '#32180D' }}>Explore All Collections</h3>
+                <span style={{ fontSize: '0.78rem', color: '#2F6B3A', fontWeight: '700', marginTop: '0.2rem', display: 'block' }}>Showing {categories.length} dynamic store collections</span>
               </div>
               <button 
                 onClick={() => setExploreModalOpen(false)}
-                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: '50%', color: '#FFFDF9', cursor: 'pointer', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: '900' }}
+                style={{ backgroundColor: '#F1E5D4', border: 'none', borderRadius: '50%', color: '#32180D', cursor: 'pointer', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: '900' }}
               >
                 ✕
               </button>
@@ -1269,8 +1266,8 @@ export default function Shop() {
                       style={{
                         padding: '1.15rem 1rem',
                         borderRadius: '18px',
-                        backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.65)' : 'rgba(35, 21, 13, 0.65)',
-                        border: isSelected ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.15)',
+                        backgroundColor: isSelected ? '#E3EEDC' : '#FCF8F1',
+                        border: isSelected ? '2px solid #2F6B3A' : '1px solid #DCC8AE',
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
@@ -1279,21 +1276,21 @@ export default function Shop() {
                         transition: 'all 0.25s ease'
                       }}
                     >
-                      <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', marginBottom: '0.75rem', border: isSelected ? '2px solid #b9cd94' : '1.5px solid rgba(255,255,255,0.2)', position: 'relative' }}>
+                      <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', marginBottom: '0.75rem', border: isSelected ? '2px solid #2F6B3A' : '1.5px solid #DCC8AE', position: 'relative' }}>
                         <img src={img} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         {isSelected && (
-                          <div style={{ position: 'absolute', bottom: '4px', right: '4px', backgroundColor: '#244f21', borderRadius: '50%', padding: '2px', border: '1px solid #b9cd94' }}>
-                            <Check size={12} color="#b9cd94" strokeWidth={3} />
+                          <div style={{ position: 'absolute', bottom: '4px', right: '4px', backgroundColor: '#2F6B3A', borderRadius: '50%', padding: '2px', border: '1px solid #FFFFFF' }}>
+                            <Check size={12} color="#FFFFFF" strokeWidth={3} />
                           </div>
                         )}
                       </div>
-                      <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', color: isSelected ? '#b9cd94' : 'var(--accent-gold)', fontWeight: '850', textTransform: 'uppercase' }}>
+                      <span style={{ fontSize: '0.62rem', letterSpacing: '0.08em', color: isSelected ? '#24572E' : '#2F6B3A', fontWeight: '850', textTransform: 'uppercase' }}>
                         {String(idx + 1).padStart(2, '0')}
                       </span>
-                      <div style={{ fontSize: '0.88rem', fontWeight: '800', fontFamily: 'var(--font-serif)', color: isSelected ? '#b9cd94' : '#FFFDF9', marginTop: '0.2rem', textTransform: 'uppercase' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: '800', fontFamily: 'var(--font-serif)', color: isSelected ? '#24572E' : '#32180D', marginTop: '0.2rem', textTransform: 'uppercase' }}>
                         {cat.name}
                       </div>
-                      <span style={{ fontSize: '0.72rem', color: '#F5EBDD', opacity: 0.85, marginTop: '0.25rem', fontWeight: '700' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#654B38', marginTop: '0.25rem', fontWeight: '700' }}>
                         {pCount} {pCount === 1 ? 'Product' : 'Products'}
                       </span>
                     </div>
@@ -1311,9 +1308,9 @@ export default function Shop() {
           style={{ 
             position: 'fixed', 
             inset: 0, 
-            backgroundColor: 'rgba(0, 0, 0, 0.8)', 
-            backdropFilter: 'blur(10px)', 
-            WebkitBackdropFilter: 'blur(10px)', 
+            backgroundColor: 'rgba(43, 20, 11, 0.6)', 
+            backdropFilter: 'blur(8px)', 
+            WebkitBackdropFilter: 'blur(8px)', 
             zIndex: 99999, 
             display: 'flex', 
             alignItems: 'center', 
@@ -1325,31 +1322,31 @@ export default function Shop() {
           <div 
             onClick={(e) => e.stopPropagation()}
             style={{ 
-              backgroundColor: 'rgba(26, 14, 8, 0.96)', 
+              backgroundColor: '#FFF9F0', 
               borderRadius: '24px', 
-              border: '1.5px solid var(--accent-gold)', 
+              border: '1.5px solid #DCC8AE', 
               padding: isMobile ? '1.5rem 1.15rem' : '2rem 1.75rem', 
               maxWidth: '450px', 
               width: '100%', 
               maxHeight: '85vh',
               display: 'flex',
               flexDirection: 'column',
-              color: '#FFFDF9',
-              boxShadow: '0 20px 50px rgba(0,0,0,0.85)',
+              color: '#32180D',
+              boxShadow: '0 20px 50px rgba(43, 20, 11, 0.2)',
               position: 'relative'
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', paddingBottom: '0.85rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', margin: 0, fontWeight: '800', color: 'var(--accent-gold)' }}>Filter Categories</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #DCC8AE', paddingBottom: '0.85rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', margin: 0, fontWeight: '800', color: '#32180D' }}>Filter Categories</h3>
               <button 
                 onClick={() => setFilterModalOpen(false)}
-                style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: '50%', color: '#FFFDF9', cursor: 'pointer', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: '900' }}
+                style={{ backgroundColor: '#F1E5D4', border: 'none', borderRadius: '50%', color: '#32180D', cursor: 'pointer', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: '900' }}
               >
                 ✕
               </button>
             </div>
 
-            <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', marginBottom: '1rem', fontWeight: '500' }}>
+            <p style={{ fontSize: '0.85rem', color: '#654B38', marginBottom: '1rem', fontWeight: '500' }}>
               Select a category filter to explore bakes:
             </p>
 
@@ -1365,9 +1362,9 @@ export default function Shop() {
                     style={{
                       padding: '0.85rem 1.25rem',
                       borderRadius: '16px',
-                      backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
-                      border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.2)',
-                      color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.9)',
+                      backgroundColor: isSelected ? '#2F6B3A' : '#F1E5D4',
+                      border: isSelected ? '1.5px solid #2F6B3A' : '1px solid #DCC8AE',
+                      color: isSelected ? '#FFFFFF' : '#32180D',
                       fontWeight: '800',
                       fontSize: '0.9rem',
                       display: 'flex',
@@ -1378,14 +1375,14 @@ export default function Shop() {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <span style={{ fontSize: '0.72rem', color: isSelected ? '#b9cd94' : 'var(--accent-gold)', fontWeight: '850' }}>{cat.number}</span>
+                      <span style={{ fontSize: '0.72rem', color: isSelected ? '#FFFFFF' : '#2F6B3A', fontWeight: '850' }}>{cat.number}</span>
                       <span>{cat.label}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <span style={{ fontSize: '0.74rem', color: isSelected ? '#FFFDF9' : 'rgba(255,255,255,0.6)', fontWeight: '600' }}>
+                      <span style={{ fontSize: '0.74rem', color: isSelected ? '#FFFFFF' : '#654B38', fontWeight: '600' }}>
                         {pCount} {pCount === 1 ? 'Product' : 'Products'}
                       </span>
-                      {isSelected && <Check size={16} color="#b9cd94" strokeWidth={3} />}
+                      {isSelected && <Check size={16} color="#FFFFFF" strokeWidth={3} />}
                     </div>
                   </button>
                 );

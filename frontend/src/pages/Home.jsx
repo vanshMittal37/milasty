@@ -472,7 +472,7 @@ export default function Home() {
         </video>
       </div>
 
-      {/* Dark Cover Overlay */}
+      {/* Dark Cover Overlay - faint warm gradient overlay */}
       <div
         style={{
           position: 'fixed',
@@ -480,14 +480,14 @@ export default function Home() {
           left: 0,
           width: '100%',
           height: '100%',
-          background: 'rgba(20, 10, 5, 0.22)',
+          background: 'rgba(247, 240, 229, 0.15)',
           zIndex: 2,
           pointerEvents: 'none',
         }}
       />
 
       {/* Home Main Content Layer */}
-      <div className="home-content" style={{ position: 'relative', zIndex: 3, backgroundColor: '#F5EBDD' }}>
+      <div className="home-content" style={{ position: 'relative', zIndex: 3, backgroundColor: '#F7F0E5' }}>
 
         {/* ================================================================== */}
         {/* SECTION 1 — HERO                                                   */}
@@ -498,14 +498,14 @@ export default function Home() {
           style={{
             position: 'relative',
             minHeight: isMobile ? 'auto' : '680px',
-            backgroundColor: '#F5EBDD',
-            backgroundImage: 'radial-gradient(ellipse at 70% 30%, #FBF6ED 0%, #F5EBDD 60%, #EFE1CF 100%)',
+            backgroundColor: '#F7F0E5',
+            backgroundImage: 'radial-gradient(ellipse at 70% 30%, #FCF8F1 0%, #F7F0E5 60%, #E6D4BC 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             boxSizing: 'border-box',
             padding: isMobile ? '3.5rem 1.25rem 3rem' : '4.5rem 2.5rem',
-            borderBottom: '1px solid rgba(120, 75, 40, 0.12)',
+            borderBottom: '1px solid #DCC8AE',
             overflow: 'hidden',
           }}
         >
@@ -538,10 +538,10 @@ export default function Home() {
                 color: '#2F6B3A',
                 fontWeight: '800',
                 marginBottom: '1rem',
-                backgroundColor: 'rgba(47, 107, 58, 0.08)',
+                backgroundColor: '#E3EEDC',
                 padding: '0.35rem 0.9rem',
                 borderRadius: '999px',
-                border: '1px solid rgba(47, 107, 58, 0.2)',
+                border: '1px solid rgba(47, 107, 58, 0.25)',
               }}>
                 <Leaf size={14} color="#2F6B3A" />
                 <span>HANDCRAFTED MILLET BAKES</span>
@@ -552,7 +552,7 @@ export default function Home() {
                 style={{
                   fontSize: 'clamp(2.6rem, 5vw, 4.4rem)',
                   lineHeight: '1.08',
-                  color: '#2B140B',
+                  color: '#32180D',
                   marginBottom: '1.25rem',
                   letterSpacing: '-0.02em',
                   fontFamily: 'var(--font-serif)',
@@ -567,7 +567,7 @@ export default function Home() {
                 className="hero-subheading"
                 style={{
                   fontSize: 'clamp(1rem, 1.8vw, 1.18rem)',
-                  color: '#5A3422',
+                  color: '#654B38',
                   lineHeight: '1.65',
                   marginBottom: '2rem',
                   maxWidth: '560px',
@@ -585,7 +585,7 @@ export default function Home() {
                   gap: '0.6rem',
                   alignItems: 'center',
                   fontSize: '0.88rem',
-                  color: '#2A170F',
+                  color: '#32180D',
                   fontWeight: '700',
                   flexWrap: 'wrap',
                   justifyContent: isMobile ? 'center' : 'flex-start',
@@ -596,9 +596,9 @@ export default function Home() {
                     <Star key={i} size={15} fill="#2F6B3A" color="#2F6B3A" />
                   ))}
                 </div>
-                <span style={{ fontWeight: '800', color: '#2B140B' }}>4.9/5</span>
-                <span style={{ color: '#634B3B' }}>|</span>
-                <span style={{ color: '#634B3B', textDecoration: 'underline' }}>Loved by 10,000+ Conscious Snackers</span>
+                <span style={{ fontWeight: '800', color: '#32180D' }}>4.9/5</span>
+                <span style={{ color: '#806A57' }}>|</span>
+                <span style={{ color: '#654B38', textDecoration: 'underline' }}>Loved by 10,000+ Conscious Snackers</span>
               </div>
 
               {/* Action Buttons */}
@@ -631,11 +631,11 @@ export default function Home() {
                   style={{
                     padding: '0.9rem 2rem',
                     fontSize: '0.95rem',
-                    borderColor: '#2B140B',
-                    color: '#2B140B',
+                    borderColor: '#32180D',
+                    color: '#32180D',
                     fontWeight: '800',
                     backgroundColor: 'transparent',
-                    border: '1.5px solid #2B140B',
+                    border: '1.5px solid #32180D',
                     borderRadius: '999px',
                     textDecoration: 'none',
                     display: 'inline-flex',
@@ -659,8 +659,8 @@ export default function Home() {
                 position: 'relative',
                 borderRadius: '28px',
                 overflow: 'hidden',
-                boxShadow: '0 20px 50px rgba(42, 23, 15, 0.15)',
-                border: '4px solid #FFFFFF',
+                boxShadow: '0 20px 50px rgba(43, 20, 11, 0.08)',
+                border: '4px solid #FFF9F0',
                 width: '100%',
                 maxHeight: '520px',
               }}>
@@ -691,12 +691,10 @@ export default function Home() {
           ref={trustRef}
           className="reveal-fade-up trust-section"
           style={{
-            backgroundColor: 'rgba(20, 10, 5, 0.55)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
+            backgroundColor: '#F1E5D4',
             padding: '1.75rem 0',
-            borderTop: '1px solid rgba(255, 255, 255, 0.15)',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+            borderTop: '1px solid #DCC8AE',
+            borderBottom: '1px solid #DCC8AE',
           }}
         >
           <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
@@ -707,7 +705,7 @@ export default function Home() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 gap: isMobile ? '0.75rem 1.25rem' : '2.5rem',
-                color: '#FFFDF9',
+                color: '#32180D',
                 fontSize: isMobile ? '0.82rem' : '0.95rem',
                 fontWeight: '800',
                 letterSpacing: '0.02em',
@@ -715,22 +713,22 @@ export default function Home() {
               }}
             >
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                <ShieldCheck size={18} color="#b9cd94" />
+                <ShieldCheck size={18} color="#2F6B3A" />
                 <span>No Maida & no Palm Oil</span>
               </div>
-              <span style={{ color: 'rgba(255, 255, 255, 0.35)', display: isMobile ? 'none' : 'inline' }}>•</span>
+              <span style={{ color: '#9A846F', display: isMobile ? 'none' : 'inline' }}>•</span>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Flame size={18} color="#b9cd94" />
+                <Flame size={18} color="#2F6B3A" />
                 <span>Baked in Desi Ghee</span>
               </div>
-              <span style={{ color: 'rgba(255, 255, 255, 0.35)', display: isMobile ? 'none' : 'inline' }}>•</span>
+              <span style={{ color: '#9A846F', display: isMobile ? 'none' : 'inline' }}>•</span>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Sparkles size={18} color="#b9cd94" />
+                <Sparkles size={18} color="#2F6B3A" />
                 <span>Naturally sweetened with Jaggery</span>
               </div>
-              <span style={{ color: 'rgba(255, 255, 255, 0.35)', display: isMobile ? 'none' : 'inline' }}>•</span>
+              <span style={{ color: '#9A846F', display: isMobile ? 'none' : 'inline' }}>•</span>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Leaf size={18} color="#b9cd94" />
+                <Leaf size={18} color="#2F6B3A" />
                 <span>Made with Millets</span>
               </div>
             </div>
@@ -745,17 +743,17 @@ export default function Home() {
           className="reveal-fade-up categories-section"
           style={{
             padding: isMobile ? '4rem 0' : '6rem 0',
-            backgroundColor: 'transparent',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+            backgroundColor: '#F7F0E5',
+            borderBottom: '1px solid #DCC8AE',
           }}
         >
           <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
             
             <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3rem' }}>
-              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2F6B3A', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                 Explore by Category
               </span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
                 Something for Every Craving
               </h2>
             </div>
@@ -779,17 +777,15 @@ export default function Home() {
                     style={{
                       padding: isMobile ? '0.55rem 1.15rem' : '0.75rem 1.5rem',
                       borderRadius: '999px',
-                      backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
-                      border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
-                      color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.8)',
-                      backdropFilter: 'blur(12px)',
-                      WebkitBackdropFilter: 'blur(12px)',
+                      backgroundColor: isSelected ? '#2F6B3A' : '#F1E5D4',
+                      border: isSelected ? '1.5px solid #2F6B3A' : '1px solid #DCC8AE',
+                      color: isSelected ? '#FFFFFF' : '#32180D',
                       cursor: 'pointer',
                       fontSize: isMobile ? '0.82rem' : '0.9rem',
                       fontWeight: '800',
                       letterSpacing: '0.02em',
                       transition: 'all 0.25s ease',
-                      boxShadow: isSelected ? '0 6px 20px rgba(36, 79, 33, 0.45)' : 'none'
+                      boxShadow: isSelected ? '0 6px 20px rgba(47, 107, 58, 0.25)' : 'none'
                     }}
                   >
                     {cat.name || cat.label}
@@ -805,9 +801,9 @@ export default function Home() {
                   style={{
                     padding: '0.55rem 1.35rem',
                     borderRadius: '999px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px solid #b9cd94',
-                    color: '#b9cd94',
+                    backgroundColor: '#FFF9F0',
+                    border: '1px solid #DCC8AE',
+                    color: '#32180D',
                     fontSize: '0.82rem',
                     fontWeight: '800',
                     cursor: 'pointer',
@@ -852,9 +848,9 @@ export default function Home() {
                   alignItems: 'center',
                   gap: '0.5rem',
                   padding: '0.85rem 2rem',
-                  backgroundColor: 'rgba(36, 79, 33, 0.8)',
+                  backgroundColor: '#2F6B3A',
                   color: '#FFFFFF',
-                  border: '1.5px solid #b9cd94',
+                  border: 'none',
                   borderRadius: '999px',
                   fontWeight: '800',
                   fontSize: '0.9rem',
@@ -877,20 +873,20 @@ export default function Home() {
           className="reveal-fade-up bestsellers-section"
           style={{
             padding: isMobile ? '4rem 0' : '6.5rem 0',
-            backgroundColor: 'transparent',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+            backgroundColor: '#FCF8F1',
+            borderBottom: '1px solid #DCC8AE',
           }}
         >
           <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
             
             <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3rem' }}>
-              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2F6B3A', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                 THE ONES PEOPLE COME BACK FOR
               </span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
-                Your Next <span style={{ color: 'var(--accent-gold)' }}>Favourite Bake</span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
+                Your Next <span style={{ color: '#2F6B3A' }}>Favourite Bake</span>
               </h2>
-              <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
+              <p style={{ color: '#654B38', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
                 Discover the MILASTY bestsellers loved by our customers.
               </p>
             </div>
@@ -908,8 +904,8 @@ export default function Home() {
 
                 if (bestsellers.length === 0) {
                   return (
-                    <div style={{ textAlign: 'center', color: '#FFFDF9', gridColumn: '1 / -1', padding: '2rem' }}>
-                      <p style={{ fontSize: '1rem', opacity: 0.8 }}>No bestseller products marked yet. Mark products as Bestseller in Admin to feature them here.</p>
+                    <div style={{ textAlign: 'center', color: '#654B38', gridColumn: '1 / -1', padding: '2rem' }}>
+                      <p style={{ fontSize: '1rem', opacity: 0.85 }}>No bestseller products marked yet. Mark products as Bestseller in Admin to feature them here.</p>
                     </div>
                   );
                 }
@@ -929,19 +925,19 @@ export default function Home() {
                   alignItems: 'center',
                   gap: '0.6rem',
                   padding: isMobile ? '0.85rem 1.85rem' : '1rem 2.5rem',
-                  backgroundColor: '#244f21',
+                  backgroundColor: '#2F6B3A',
                   color: '#FFFFFF',
-                  border: '1.5px solid #b9cd94',
+                  border: 'none',
                   borderRadius: '999px',
                   fontWeight: '850',
                   fontSize: '0.92rem',
                   letterSpacing: '0.04em',
                   textDecoration: 'none',
-                  boxShadow: '0 8px 24px rgba(36, 79, 33, 0.35)'
+                  boxShadow: '0 8px 24px rgba(47, 107, 58, 0.25)'
                 }}
               >
                 <span>EXPLORE ALL BESTSELLERS</span>
-                <ArrowRight size={18} color="#b9cd94" />
+                <ArrowRight size={18} color="#FFFFFF" />
               </Link>
             </div>
 
@@ -956,21 +952,21 @@ export default function Home() {
           ref={whyRef}
           className="reveal-fade-up why-section"
           style={{
-            backgroundColor: 'transparent',
+            backgroundColor: '#F7F0E5',
             padding: isMobile ? '4rem 0' : '6.5rem 0',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+            borderBottom: '1px solid #DCC8AE',
           }}
         >
           <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 1rem' }}>
             
             <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2F6B3A', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                 WHY MILASTY?
               </span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', marginBottom: '0.75rem' }}>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', marginBottom: '0.75rem' }}>
                 Because Better Ingredients Matter.
               </h2>
-              <p style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', color: '#F5EBDD', fontWeight: '500', maxWidth: '650px', margin: '0 auto' }}>
+              <p style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', color: '#654B38', fontWeight: '500', maxWidth: '650px', margin: '0 auto' }}>
                 Thoughtfully made bakes, with ingredients you can recognise and flavours you'll genuinely crave.
               </p>
             </div>
@@ -989,16 +985,16 @@ export default function Home() {
                 style={{
                   borderRadius: '24px',
                   padding: isMobile ? '1.75rem 1.25rem' : '2.25rem',
-                  backgroundColor: 'rgba(36, 79, 33, 0.55)',
-                  border: '1.5px solid #b9cd94',
-                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+                  backgroundColor: '#FFF9F0',
+                  border: '1.5px solid #2F6B3A',
+                  boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.75rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(185, 205, 148, 0.3)' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <CheckCircle2 size={18} color="#b9cd94" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.75rem', paddingBottom: '1rem', borderBottom: '1px solid #DCC8AE' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CheckCircle2 size={18} color="#2F6B3A" />
                   </div>
-                  <h3 style={{ fontSize: '1.2rem', color: '#FFFDF9', fontWeight: '900', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <h3 style={{ fontSize: '1.2rem', color: '#24572E', fontWeight: '900', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     WHAT GOES INTO MILASTY
                   </h3>
                 </div>
@@ -1011,10 +1007,10 @@ export default function Home() {
                     { title: "Ingredient transparency:", desc: "We believe you should know exactly what goes into your snack." }
                   ].map((item, idx) => (
                     <div key={idx} style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
-                      <span style={{ color: '#b9cd94', fontWeight: '900', fontSize: '1.1rem', lineHeight: '1.2' }}>✓</span>
+                      <span style={{ color: '#2F6B3A', fontWeight: '900', fontSize: '1.1rem', lineHeight: '1.2' }}>✓</span>
                       <div>
-                        <h4 style={{ fontSize: '1rem', color: '#FFFDF9', fontWeight: '800', margin: '0 0 0.25rem' }}>{item.title}</h4>
-                        <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.85)', margin: 0, lineHeight: '1.5' }}>{item.desc}</p>
+                        <h4 style={{ fontSize: '1rem', color: '#32180D', fontWeight: '800', margin: '0 0 0.25rem' }}>{item.title}</h4>
+                        <p style={{ fontSize: '0.88rem', color: '#654B38', margin: 0, lineHeight: '1.5' }}>{item.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -1027,16 +1023,16 @@ export default function Home() {
                 style={{
                   borderRadius: '24px',
                   padding: isMobile ? '1.75rem 1.25rem' : '2.25rem',
-                  backgroundColor: 'rgba(35, 21, 13, 0.65)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.2)',
-                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+                  backgroundColor: '#FFF9F0',
+                  border: '1.5px solid #DCC8AE',
+                  boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.75rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(220, 50, 50, 0.2)', border: '1px solid rgba(255, 100, 100, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <X size={18} color="#ff8888" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.75rem', paddingBottom: '1rem', borderBottom: '1px solid #DCC8AE' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#FCE8E8', border: '1px solid #E06666', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <X size={18} color="#C0392B" />
                   </div>
-                  <h3 style={{ fontSize: '1.2rem', color: '#FFFDF9', fontWeight: '900', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <h3 style={{ fontSize: '1.2rem', color: '#32180D', fontWeight: '900', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     WHAT WE CHOOSE TO LEAVE OUT
                   </h3>
                 </div>
@@ -1049,10 +1045,10 @@ export default function Home() {
                     { title: "No unnecessary emulsifier, chemicals or additives:", desc: "We keep our recipes thoughtfully simple." }
                   ].map((item, idx) => (
                     <div key={idx} style={{ display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
-                      <span style={{ color: '#ff8888', fontWeight: '900', fontSize: '1.1rem', lineHeight: '1.2' }}>✕</span>
+                      <span style={{ color: '#C0392B', fontWeight: '900', fontSize: '1.1rem', lineHeight: '1.2' }}>✕</span>
                       <div>
-                        <h4 style={{ fontSize: '1rem', color: '#FFFDF9', fontWeight: '800', margin: '0 0 0.25rem' }}>{item.title}</h4>
-                        <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.80)', margin: 0, lineHeight: '1.5' }}>{item.desc}</p>
+                        <h4 style={{ fontSize: '1rem', color: '#32180D', fontWeight: '800', margin: '0 0 0.25rem' }}>{item.title}</h4>
+                        <p style={{ fontSize: '0.88rem', color: '#654B38', margin: 0, lineHeight: '1.5' }}>{item.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -1073,8 +1069,8 @@ export default function Home() {
             className="reveal-fade-up mood-section"
             style={{
               padding: isMobile ? '4rem 0' : '6.5rem 0',
-              backgroundColor: 'transparent',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+              backgroundColor: '#FCF8F1',
+              borderBottom: '1px solid #DCC8AE',
               position: 'relative',
               backgroundImage: discoveryConfig.background_image_url ? `url(${discoveryConfig.background_image_url})` : 'none',
               backgroundSize: 'cover',
@@ -1085,15 +1081,15 @@ export default function Home() {
               
               <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3rem' }}>
                 {discoveryConfig.eyebrow && (
-                  <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2F6B3A', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                     {discoveryConfig.eyebrow}
                   </span>
                 )}
-                <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
+                <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
                   {discoveryConfig.title || 'Find Your Perfect MILASTY Snack'}
                 </h2>
                 {discoveryConfig.description && (
-                  <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
+                  <p style={{ color: '#654B38', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
                     {discoveryConfig.description}
                   </p>
                 )}
@@ -1120,16 +1116,14 @@ export default function Home() {
                         style={{
                           padding: isMobile ? '0.65rem 1.15rem' : '0.85rem 1.65rem',
                           borderRadius: '999px',
-                          backgroundColor: isSelected ? '#244f21' : 'rgba(35, 21, 13, 0.65)',
-                          border: isSelected ? '1.5px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
-                          color: isSelected ? '#FFFDF9' : 'rgba(255, 255, 255, 0.85)',
-                          backdropFilter: 'blur(16px)',
-                          WebkitBackdropFilter: 'blur(16px)',
+                          backgroundColor: isSelected ? '#2F6B3A' : '#F1E5D4',
+                          border: isSelected ? '1.5px solid #2F6B3A' : '1px solid #DCC8AE',
+                          color: isSelected ? '#FFFFFF' : '#32180D',
                           cursor: 'pointer',
                           fontSize: isMobile ? '0.82rem' : '0.92rem',
                           fontWeight: '800',
                           transition: 'all 0.25s ease',
-                          boxShadow: isSelected ? '0 8px 24px rgba(36, 79, 33, 0.45)' : 'none'
+                          boxShadow: isSelected ? '0 8px 24px rgba(47, 107, 58, 0.25)' : 'none'
                         }}
                       >
                         <span>{mood.name}</span>
@@ -1147,7 +1141,7 @@ export default function Home() {
 
                   if (moodProducts.length === 0) {
                     return (
-                      <div style={{ textAlign: 'center', color: '#FFFDF9', gridColumn: '1 / -1', padding: '3rem 1rem', backgroundColor: 'rgba(35, 21, 13, 0.65)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.15)' }}>
+                      <div style={{ textAlign: 'center', color: '#654B38', gridColumn: '1 / -1', padding: '3rem 1rem', backgroundColor: '#FFF9F0', borderRadius: '20px', border: '1px solid #DCC8AE' }}>
                         <p style={{ fontSize: '1rem', opacity: 0.85, margin: 0 }}>No snacks added to this collection yet.</p>
                       </div>
                     );
@@ -1169,9 +1163,9 @@ export default function Home() {
                     alignItems: 'center',
                     gap: '0.5rem',
                     padding: '0.85rem 2rem',
-                    backgroundColor: '#244f21',
+                    backgroundColor: '#2F6B3A',
                     color: '#FFFFFF',
-                    border: '1.5px solid #b9cd94',
+                    border: 'none',
                     borderRadius: '999px',
                     fontWeight: '800',
                     fontSize: '0.9rem',
@@ -1179,7 +1173,7 @@ export default function Home() {
                   }}
                 >
                   <span>{discoveryConfig.explore_button_text || 'EXPLORE ALL SNACKS →'}</span>
-                  <ArrowRight size={16} color="#b9cd94" />
+                  <ArrowRight size={16} color="#FFFFFF" />
                 </Link>
               </div>
 
@@ -1194,22 +1188,22 @@ export default function Home() {
           ref={ingredientsSectionRef}
           className="reveal-fade-up honest-baking-section"
           style={{
-            backgroundColor: 'transparent',
+            backgroundColor: '#F7F0E5',
             padding: isMobile ? '4rem 0' : '6.5rem 0',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+            borderBottom: '1px solid #DCC8AE',
           }}
         >
           <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
             
             <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'flex-end', marginBottom: '3.5rem', gap: '1.5rem' }}>
               <div>
-                <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
                   HONEST INGREDIENTS
                 </span>
-                <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.75rem', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+                <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 0.75rem' }}>
                   Know What Goes Into Your Bite.
                 </h2>
-                <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500', maxWidth: '640px' }}>
+                <p style={{ color: '#654B38', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500', maxWidth: '640px' }}>
                   We believe you deserve to know what's in the food you eat. That's why we keep our ingredients transparent and our labels easy to understand.
                 </p>
               </div>
@@ -1223,7 +1217,7 @@ export default function Home() {
                     alignItems: 'center',
                     gap: '0.5rem',
                     padding: '0.85rem 1.85rem',
-                    backgroundColor: '#c89b3c',
+                    backgroundColor: '#2F6B3A',
                     color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '999px',
@@ -1238,13 +1232,13 @@ export default function Home() {
                 <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
                   <button 
                     onClick={() => scrollLeft(ingredientsRef)} 
-                    style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
                     <ChevronLeft size={16} />
                   </button>
                   <button 
                     onClick={() => scrollRight(ingredientsRef)} 
-                    style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(245,235,221,0.25)', color: '#FFFDF9', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
                     <ChevronRight size={16} />
                   </button>
@@ -1268,19 +1262,19 @@ export default function Home() {
                 const itemsToDisplay = showAllIngredients ? activeList : activeList.slice(0, 4);
 
                 return itemsToDisplay.map((ingredient, idx) => (
-                  <div key={ingredient.id || ingredient.name || idx} className="glass-card" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px' }}>
+                  <div key={ingredient.id || ingredient.name || idx} className="glass-card" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px', backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE' }}>
                     <img 
                       src={ingredient.image || ingredient.imageUrl || ingredient.image_url || ingredient.img} 
                       alt={ingredient.name} 
-                      style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(185, 205, 148, 0.4)', margin: '0 auto 1.25rem', display: 'block', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }} 
+                      style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #DCC8AE', margin: '0 auto 1.25rem', display: 'block', boxShadow: '0 4px 12px rgba(43,20,11,0.08)' }} 
                     />
-                    <h4 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#FFFDF9', margin: '0 0 0.2rem 0' }}>{ingredient.name}</h4>
+                    <h4 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#32180D', margin: '0 0 0.2rem 0' }}>{ingredient.name}</h4>
                     {(ingredient.subtitle || ingredient.type) && (
-                      <span style={{ fontSize: '0.8rem', color: '#b9cd94', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      <span style={{ fontSize: '0.8rem', color: '#2F6B3A', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                         {ingredient.subtitle || ingredient.type}
                       </span>
                     )}
-                    <p style={{ fontSize: '0.85rem', color: '#F5EBDD', lineHeight: '1.55', marginTop: '0.45rem', padding: '0 0.5rem', fontWeight: '550' }}>
+                    <p style={{ fontSize: '0.85rem', color: '#654B38', lineHeight: '1.55', marginTop: '0.45rem', padding: '0 0.5rem', fontWeight: '550' }}>
                       {ingredient.description || ingredient.desc}
                     </p>
                   </div>
@@ -1295,9 +1289,9 @@ export default function Home() {
                   style={{
                     padding: '0.75rem 1.75rem',
                     borderRadius: '999px',
-                    backgroundColor: 'rgba(36, 79, 33, 0.8)',
-                    border: '1.5px solid #b9cd94',
-                    color: '#FFFDF9',
+                    backgroundColor: '#FFF9F0',
+                    border: '1.5px solid #DCC8AE',
+                    color: '#32180D',
                     fontSize: '0.88rem',
                     fontWeight: '800',
                     cursor: 'pointer',
@@ -1320,20 +1314,20 @@ export default function Home() {
           className="reveal-fade-up pillars-section"
           style={{
             padding: isMobile ? '4rem 0' : '6.5rem 0',
-            backgroundColor: 'transparent',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+            backgroundColor: '#EFE3D1',
+            borderBottom: '1px solid #DCC8AE',
           }}
         >
           <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
             
             <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3.5rem' }}>
-              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2F6B3A', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                 OUR PROMISE
               </span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
-                Some Things We Simply <span style={{ color: 'var(--accent-gold)' }}>Won't Compromise On.</span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
+                Some Things We Simply <span style={{ color: '#2F6B3A' }}>Won't Compromise On.</span>
               </h2>
-              <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
+              <p style={{ color: '#654B38', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
                 Because “healthy” shouldn't be a marketing trick. It should be reflected in the ingredients.
               </p>
             </div>
@@ -1382,9 +1376,9 @@ export default function Home() {
                     style={{
                       borderRadius: '20px',
                       padding: isMobile ? '1.25rem 1rem' : '2rem 1.5rem',
-                      backgroundColor: 'rgba(35, 21, 13, 0.65)',
-                      border: '1px solid rgba(255, 255, 255, 0.18)',
-                      boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                      backgroundColor: '#FFF9F0',
+                      border: '1px solid #DCC8AE',
+                      boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
@@ -1397,20 +1391,20 @@ export default function Home() {
                   >
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                        <span style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: '850', color: 'var(--accent-gold)', letterSpacing: '0.08em', textTransform: 'uppercase', backgroundColor: 'rgba(200, 155, 60, 0.15)', padding: '0.2rem 0.5rem', borderRadius: '999px', border: '1px solid rgba(200, 155, 60, 0.3)' }}>
+                        <span style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: '850', color: '#24572E', letterSpacing: '0.08em', textTransform: 'uppercase', backgroundColor: '#E3EEDC', padding: '0.2rem 0.5rem', borderRadius: '999px', border: '1px solid rgba(47, 107, 58, 0.25)' }}>
                           PILLAR 0{idx + 1}
                         </span>
-                        <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <IconComp size={isMobile ? 15 : 18} color="var(--accent-gold)" />
+                        <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <IconComp size={isMobile ? 15 : 18} color="#2F6B3A" />
                         </div>
                       </div>
 
-                      <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '0.5rem', lineHeight: '1.25' }}>
+                      <h3 style={{ fontSize: isMobile ? '1rem' : '1.25rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '0.5rem', lineHeight: '1.25' }}>
                         {p.title}
                       </h3>
                     </div>
 
-                    <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: '#F5EBDD', lineHeight: '1.55', margin: 0, fontWeight: '500', flexGrow: 1, display: 'flex', alignItems: 'flex-start' }}>
+                    <p style={{ fontSize: isMobile ? '0.8rem' : '0.9rem', color: '#654B38', lineHeight: '1.55', margin: 0, fontWeight: '500', flexGrow: 1, display: 'flex', alignItems: 'flex-start' }}>
                       {p.desc}
                     </p>
                   </div>
@@ -1438,18 +1432,18 @@ export default function Home() {
           className="reveal-fade-up faq-section"
           style={{
             padding: isMobile ? '4rem 0' : '6.5rem 0',
-            backgroundColor: 'transparent',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+            backgroundColor: '#FCF8F1',
+            borderBottom: '1px solid #DCC8AE',
           }}
         >
           <div className="container" style={{ maxWidth: '850px', margin: '0 auto', padding: '0 1rem' }}>
             
             <div style={{ textAlign: 'center', marginBottom: isMobile ? '2.25rem' : '3.5rem' }}>
-              <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#2F6B3A', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                 HELP CENTER
               </span>
-              <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
-                Frequently Asked <span style={{ color: 'var(--accent-gold)' }}>Questions</span>
+              <h2 style={{ fontSize: isMobile ? '2rem' : '2.8rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
+                Frequently Asked <span style={{ color: '#2F6B3A' }}>Questions</span>
               </h2>
             </div>
 
@@ -1463,11 +1457,9 @@ export default function Home() {
                     className="glass-card"
                     style={{ 
                       borderRadius: '20px', 
-                      backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                      backdropFilter: 'blur(16px)',
-                      WebkitBackdropFilter: 'blur(16px)',
-                      border: isOpen ? '1.5px solid var(--accent-gold)' : '1px solid rgba(255, 255, 255, 0.15)',
-                      boxShadow: isOpen ? '0 12px 32px rgba(0, 0, 0, 0.4)' : '0 4px 16px rgba(0, 0, 0, 0.2)',
+                      backgroundColor: '#FFF9F0',
+                      border: isOpen ? '1.5px solid #2F6B3A' : '1px solid #DCC8AE',
+                      boxShadow: isOpen ? '0 8px 24px rgba(43, 20, 11, 0.08)' : '0 4px 16px rgba(43, 20, 11, 0.04)',
                       overflow: 'hidden',
                       boxSizing: 'border-box',
                       width: '100%',
@@ -1490,13 +1482,13 @@ export default function Home() {
                         gap: '1rem'
                       }}
                     >
-                      <span style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', fontWeight: '800', color: '#FFFDF9', flex: 1, fontFamily: 'var(--font-sans)' }}>
+                      <span style={{ fontSize: isMobile ? '0.92rem' : '1.05rem', fontWeight: '800', color: '#32180D', flex: 1, fontFamily: 'var(--font-sans)' }}>
                         {faq.q}
                       </span>
                       <ChevronDown 
                         size={20} 
                         style={{ 
-                          color: 'var(--accent-gold)', 
+                          color: '#2F6B3A', 
                           transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', 
                           transition: 'transform 0.3s ease',
                           flexShrink: 0
@@ -1505,7 +1497,7 @@ export default function Home() {
                     </button>
                     
                     {isOpen && (
-                      <div style={{ padding: isMobile ? '0 1.25rem 1.25rem 1.25rem' : '0 1.75rem 1.5rem 1.75rem', fontSize: isMobile ? '0.88rem' : '0.95rem', color: 'rgba(255, 255, 255, 0.88)', lineHeight: '1.65', fontWeight: '500', borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1rem' }}>
+                      <div style={{ padding: isMobile ? '0 1.25rem 1.25rem 1.25rem' : '0 1.75rem 1.5rem 1.75rem', fontSize: isMobile ? '0.88rem' : '0.95rem', color: '#654B38', lineHeight: '1.65', fontWeight: '500', borderTop: '1px solid #DCC8AE', paddingTop: '1rem' }}>
                         {faq.a}
                       </div>
                     )}
@@ -1525,20 +1517,20 @@ export default function Home() {
           className="reveal-fade-up nutrition-lab-section"
           style={{
             padding: isMobile ? '4rem 0' : '6.5rem 0',
-            backgroundColor: 'transparent',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+            backgroundColor: '#F7F0E5',
+            borderBottom: '1px solid #DCC8AE',
           }}
         >
           <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
             
             <div style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 3.5rem' }}>
-              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#b9cd94', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2F6B3A', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                 TESTED. DOCUMENTED. TRANSPARENT.
               </span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.75rem', lineHeight: '1.2' }}>
                 See the Proof Behind the Pack.
               </h2>
-              <p style={{ color: 'rgba(255, 255, 255, 0.88)', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
+              <p style={{ color: '#654B38', fontSize: isMobile ? '0.92rem' : '1.05rem', margin: 0, fontWeight: '500' }}>
                 Want to know more than what's on the front of the box? Explore our nutritional information, ingredient details and available laboratory reports.
               </p>
             </div>
@@ -1551,9 +1543,9 @@ export default function Home() {
                 style={{
                   borderRadius: '24px',
                   padding: '2.25rem 1.75rem',
-                  backgroundColor: 'rgba(35, 21, 13, 0.65)',
-                  border: '1px solid rgba(255, 255, 255, 0.18)',
-                  boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                  backgroundColor: '#FFF9F0',
+                  border: '1px solid #DCC8AE',
+                  boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -1561,13 +1553,13 @@ export default function Home() {
                 }}
               >
                 <div>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                    <Apple size={22} color="var(--accent-gold)" />
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <Apple size={22} color="#2F6B3A" />
                   </div>
-                  <h3 style={{ fontSize: '1.3rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.3rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>
                     1. NUTRITION
                   </h3>
-                  <p style={{ fontSize: '0.92rem', color: '#F5EBDD', lineHeight: '1.6', margin: '0 0 1.75rem', fontWeight: '500' }}>
+                  <p style={{ fontSize: '0.92rem', color: '#654B38', lineHeight: '1.6', margin: '0 0 1.75rem', fontWeight: '500' }}>
                     See the nutritional information for our products.
                   </p>
                 </div>
@@ -1578,7 +1570,7 @@ export default function Home() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    color: '#b9cd94',
+                    color: '#2F6B3A',
                     fontWeight: '800',
                     fontSize: '0.9rem',
                     textDecoration: 'none'
@@ -1594,9 +1586,9 @@ export default function Home() {
                 style={{
                   borderRadius: '24px',
                   padding: '2.25rem 1.75rem',
-                  backgroundColor: 'rgba(35, 21, 13, 0.65)',
-                  border: '1px solid rgba(255, 255, 255, 0.18)',
-                  boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                  backgroundColor: '#FFF9F0',
+                  border: '1px solid #DCC8AE',
+                  boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -1604,13 +1596,13 @@ export default function Home() {
                 }}
               >
                 <div>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                    <Leaf size={22} color="var(--accent-gold)" />
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <Leaf size={22} color="#2F6B3A" />
                   </div>
-                  <h3 style={{ fontSize: '1.3rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.3rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>
                     2. INGREDIENTS
                   </h3>
-                  <p style={{ fontSize: '0.92rem', color: '#F5EBDD', lineHeight: '1.6', margin: '0 0 1.75rem', fontWeight: '500' }}>
+                  <p style={{ fontSize: '0.92rem', color: '#654B38', lineHeight: '1.6', margin: '0 0 1.75rem', fontWeight: '500' }}>
                     Explore what's inside each bake.
                   </p>
                 </div>
@@ -1621,7 +1613,7 @@ export default function Home() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    color: '#b9cd94',
+                    color: '#2F6B3A',
                     fontWeight: '800',
                     fontSize: '0.9rem',
                     textDecoration: 'none'
@@ -1637,9 +1629,9 @@ export default function Home() {
                 style={{
                   borderRadius: '24px',
                   padding: '2.25rem 1.75rem',
-                  backgroundColor: 'rgba(35, 21, 13, 0.65)',
-                  border: '1px solid rgba(255, 255, 255, 0.18)',
-                  boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                  backgroundColor: '#FFF9F0',
+                  border: '1px solid #DCC8AE',
+                  boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -1647,13 +1639,13 @@ export default function Home() {
                 }}
               >
                 <div>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                    <FileCheck size={22} color="var(--accent-gold)" />
+                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <FileCheck size={22} color="#2F6B3A" />
                   </div>
-                  <h3 style={{ fontSize: '1.3rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.3rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '800', marginBottom: '0.75rem' }}>
                     3. LAB REPORTS
                   </h3>
-                  <p style={{ fontSize: '0.92rem', color: '#F5EBDD', lineHeight: '1.6', margin: '0 0 1.75rem', fontWeight: '500' }}>
+                  <p style={{ fontSize: '0.92rem', color: '#654B38', lineHeight: '1.6', margin: '0 0 1.75rem', fontWeight: '500' }}>
                     View available testing and reports.
                   </p>
                 </div>
@@ -1664,7 +1656,7 @@ export default function Home() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.5rem',
-                    color: '#b9cd94',
+                    color: '#2F6B3A',
                     fontWeight: '800',
                     fontSize: '0.9rem',
                     textDecoration: 'none'
@@ -1686,17 +1678,17 @@ export default function Home() {
           className="reveal-fade-up gifting-corporate-section"
           style={{
             padding: isMobile ? '4rem 0' : '6.5rem 0',
-            backgroundColor: 'transparent',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+            backgroundColor: '#F1E5D4',
+            borderBottom: '1px solid #DCC8AE',
           }}
         >
           <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
             
             <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3.5rem' }}>
-              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2F6B3A', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                 MADE TO SHARE
               </span>
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '2.8rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
                 Good Food Is Better When It's Shared.
               </h2>
             </div>
@@ -1710,9 +1702,9 @@ export default function Home() {
                 style={{
                   borderRadius: '28px',
                   padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
-                  backgroundColor: 'rgba(36, 79, 33, 0.55)',
-                  border: '1.5px solid #b9cd94',
-                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+                  backgroundColor: '#FFF9F0',
+                  border: '1.5px solid #DCC8AE',
+                  boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -1720,16 +1712,16 @@ export default function Home() {
                 }}
               >
                 <div>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#244f21', border: '1px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                    <Gift size={24} color="var(--accent-gold)" />
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                    <Gift size={24} color="#2F6B3A" />
                   </div>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '850', color: '#b9cd94', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: '850', color: '#2F6B3A', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>
                     CELEBRATIONS & MOMENTS
                   </span>
-                  <h3 style={{ fontSize: isMobile ? '1.6rem' : '2rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: isMobile ? '1.6rem' : '2rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '1rem' }}>
                     GIFTING
                   </h3>
-                  <p style={{ fontSize: isMobile ? '0.92rem' : '1.02rem', color: '#F5EBDD', lineHeight: '1.7', margin: '0 0 2rem', fontWeight: '500' }}>
+                  <p style={{ fontSize: isMobile ? '0.92rem' : '1.02rem', color: '#654B38', lineHeight: '1.7', margin: '0 0 2rem', fontWeight: '500' }}>
                     Thoughtful gifts, made with millet. Cookies, brownies, crackers and curated hampers for birthdays, festivals, celebrations and special moments.
                   </p>
                 </div>
@@ -1743,14 +1735,14 @@ export default function Home() {
                       alignItems: 'center',
                       gap: '0.5rem',
                       padding: '0.85rem 2rem',
-                      backgroundColor: '#c89b3c',
+                      backgroundColor: '#2F6B3A',
                       color: '#FFFFFF',
                       border: 'none',
                       borderRadius: '999px',
                       fontWeight: '800',
                       fontSize: '0.92rem',
                       textDecoration: 'none',
-                      boxShadow: '0 8px 24px rgba(200, 155, 60, 0.35)'
+                      boxShadow: '0 8px 24px rgba(47, 107, 58, 0.25)'
                     }}
                   >
                     <span>Explore Gift Hampers →</span>
@@ -1764,9 +1756,9 @@ export default function Home() {
                 style={{
                   borderRadius: '28px',
                   padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
-                  backgroundColor: 'rgba(35, 21, 13, 0.65)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.2)',
-                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+                  backgroundColor: '#FFF9F0',
+                  border: '1.5px solid #DCC8AE',
+                  boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -1774,16 +1766,16 @@ export default function Home() {
                 }}
               >
                 <div>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(200, 155, 60, 0.15)', border: '1px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                    <Building2 size={24} color="var(--accent-gold)" />
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                    <Building2 size={24} color="#2F6B3A" />
                   </div>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '850', color: 'var(--accent-gold)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: '850', color: '#2F6B3A', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>
                     OFFICES & EVENTS
                   </span>
-                  <h3 style={{ fontSize: isMobile ? '1.6rem' : '2rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '1rem' }}>
+                  <h3 style={{ fontSize: isMobile ? '1.6rem' : '2rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '850', marginBottom: '1rem' }}>
                     CORPORATE & BULK ORDERS
                   </h3>
-                  <p style={{ fontSize: isMobile ? '0.92rem' : '1.02rem', color: '#F5EBDD', lineHeight: '1.7', margin: '0 0 2rem', fontWeight: '500' }}>
+                  <p style={{ fontSize: isMobile ? '0.92rem' : '1.02rem', color: '#654B38', lineHeight: '1.7', margin: '0 0 2rem', fontWeight: '500' }}>
                     Better snacking for teams, offices & events. Custom snack boxes and gifting solutions for offices, startups, events and corporate occasions.
                   </p>
                 </div>
@@ -1797,14 +1789,14 @@ export default function Home() {
                       alignItems: 'center',
                       gap: '0.5rem',
                       padding: '0.85rem 2rem',
-                      backgroundColor: '#244f21',
+                      backgroundColor: '#2F6B3A',
                       color: '#FFFFFF',
-                      border: '1.5px solid #b9cd94',
+                      border: 'none',
                       borderRadius: '999px',
                       fontWeight: '800',
                       fontSize: '0.92rem',
                       textDecoration: 'none',
-                      boxShadow: '0 8px 24px rgba(36, 79, 33, 0.35)'
+                      boxShadow: '0 8px 24px rgba(47, 107, 58, 0.25)'
                     }}
                   >
                     <span>Enquire for Bulk Orders →</span>
@@ -1823,7 +1815,7 @@ export default function Home() {
         <section
           ref={finalCtaRef}
           className="reveal-fade-up cta-section"
-          style={{ padding: isMobile ? '4rem 0 5rem' : '5.5rem 0 7rem', backgroundColor: 'transparent' }}
+          style={{ padding: isMobile ? '4rem 0 5rem' : '5.5rem 0 7rem', backgroundColor: '#F7F0E5' }}
         >
           <div className="container" style={{ maxWidth: '960px', margin: '0 auto', padding: '0 1rem' }}>
             <div
@@ -1831,22 +1823,20 @@ export default function Home() {
               style={{
                 padding: isMobile ? '3.5rem 1.5rem' : '5rem 2.5rem',
                 textAlign: 'center',
-                color: '#FFFFFF',
+                color: '#32180D',
                 position: 'relative',
                 borderRadius: '32px',
-                border: '1.5px solid rgba(200, 155, 60, 0.4)',
-                backgroundColor: 'rgba(36, 79, 33, 0.50)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+                border: '1.5px solid #DCC8AE',
+                backgroundColor: '#FFF9F0',
+                boxShadow: '0 12px 40px rgba(43, 20, 11, 0.08)',
                 overflow: 'hidden',
               }}
             >
-              <h2 style={{ fontSize: isMobile ? '2.1rem' : '3.2rem', color: '#FFFFFF', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.18' }}>
-                Ready to Upgrade Your <span style={{ color: 'var(--accent-gold)' }}>Everyday Snack?</span>
+              <h2 style={{ fontSize: isMobile ? '2.1rem' : '3.2rem', color: '#32180D', marginBottom: '1.25rem', fontFamily: 'var(--font-serif)', fontWeight: '800', lineHeight: '1.18' }}>
+                Ready to Upgrade Your <span style={{ color: '#2F6B3A' }}>Everyday Snack?</span>
               </h2>
               
-              <p style={{ color: 'rgba(255, 255, 255, 0.92)', fontSize: isMobile ? '0.95rem' : '1.15rem', maxWidth: '620px', margin: '0 auto 2.5rem', lineHeight: '1.7', fontWeight: '500' }}>
+              <p style={{ color: '#654B38', fontSize: isMobile ? '0.95rem' : '1.15rem', maxWidth: '620px', margin: '0 auto 2.5rem', lineHeight: '1.7', fontWeight: '500' }}>
                 Discover freshly baked millet snacks & desserts made with pure Desi Ghee and Organic Jaggery. Delivered fresh all across India.
               </p>
               
@@ -1856,7 +1846,7 @@ export default function Home() {
                 style={{
                   padding: isMobile ? '0.95rem 2.2rem' : '1.1rem 2.75rem',
                   fontSize: isMobile ? '0.95rem' : '1.05rem',
-                  backgroundColor: '#c89b3c',
+                  backgroundColor: '#2F6B3A',
                   color: '#FFFFFF',
                   border: 'none',
                   fontWeight: '800',
@@ -1865,13 +1855,13 @@ export default function Home() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.6rem',
-                  boxShadow: '0 10px 30px rgba(200, 155, 60, 0.4)'
+                  boxShadow: '0 8px 24px rgba(47, 107, 58, 0.25)'
                 }}
               >
                 <span>Explore all Fresh Bakes →</span>
               </Link>
 
-              <div style={{ marginTop: '2.25rem', fontSize: '0.85rem', color: '#b9cd94', letterSpacing: '0.08em', fontWeight: '800', textTransform: 'uppercase' }}>
+              <div style={{ marginTop: '2.25rem', fontSize: '0.85rem', color: '#2F6B3A', letterSpacing: '0.08em', fontWeight: '800', textTransform: 'uppercase' }}>
                 Pan-India Shipping • Freshly Baked on Order
               </div>
             </div>

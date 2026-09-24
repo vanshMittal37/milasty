@@ -1,43 +1,58 @@
 :root {
-  --bg-main: #F5EBDD;
-  /* Warm cream */
-  --bg-card: #FFFFFF;
-  /* Pure Ivory / Soft Card */
-  --bg-subtle: #FBF6ED;
-  /* Soft Ivory */
-  --bg-sand: #EFE1CF;
-  /* Secondary Cream / Warm Beige */
+  /* MILASTY Official Color System */
+  --milasty-cream-primary: #F7F0E5;
+  --milasty-cream-secondary: #F1E5D4;
+  --milasty-ivory: #FCF8F1;
+  --milasty-beige: #E6D4BC;
 
-  --primary-dark: #2F6B3A;
-  /* MILASTY Natural Green */
-  --primary-brown: #2B140B;
-  /* Deep Chocolate */
-  --primary-light: #5A3422;
-  /* Medium Cocoa */
+  --milasty-card-primary: #FFF9F0;
+  --milasty-card-secondary: #F3E6D4;
+  --milasty-card-highlight: #EFE3D1;
 
-  --accent-terracotta: #2F6B3A;
-  --accent-gold: #2F6B3A;
-  /* Natural Green Accent */
-  --accent-btn-bg: #2F6B3A;
-  /* Button MILASTY Green */
-  --accent-olive: #557A43;
-  --accent-amber: #2F6B3A;
+  --milasty-text-primary: #2B170D;
+  --milasty-text-heading: #32180D;
+  --milasty-text-secondary: #654B38;
+  --milasty-text-muted: #806A57;
+  --milasty-text-very-muted: #9A846F;
 
-  --text-dark: #2A170F;
-  /* Primary Dark Chocolate Text */
-  --text-muted: #634B3B;
-  /* Secondary Cocoa Text */
-  --text-light: #806B59;
-  /* Muted Text */
+  --milasty-green-primary: #2F6B3A;
+  --milasty-green-dark: #24572E;
+  --milasty-green-light: #E3EEDC;
 
-  --border-color: rgba(120, 75, 40, 0.16);
-  /* Soft warm beige/brown border */
-  --border-gold: rgba(47, 107, 58, 0.32);
-  /* Soft green border */
+  --milasty-navbar: #2B140B;
+  --milasty-brown-dark: #3A1D10;
+  --milasty-brown-medium: #5A3623;
 
-  --shadow-sm: 0 4px 16px rgba(42, 23, 15, 0.05);
-  --shadow-md: 0 8px 24px rgba(42, 23, 15, 0.08);
-  --shadow-lg: 0 16px 40px rgba(42, 23, 15, 0.12);
+  --milasty-border: #DCC8AE;
+  --milasty-border-soft: rgba(75, 45, 25, 0.14);
+
+  /* Mapped Component Tokens */
+  --bg-main: var(--milasty-cream-primary);
+  --bg-card: var(--milasty-card-primary);
+  --bg-subtle: var(--milasty-ivory);
+  --bg-sand: var(--milasty-cream-secondary);
+
+  --primary-dark: var(--milasty-green-primary);
+  --primary-brown: var(--milasty-navbar);
+  --primary-light: var(--milasty-brown-medium);
+
+  --accent-terracotta: var(--milasty-green-primary);
+  --accent-gold: var(--milasty-green-primary);
+  --accent-btn-bg: var(--milasty-green-primary);
+  --accent-olive: var(--milasty-green-dark);
+  --accent-amber: var(--milasty-green-primary);
+
+  --text-dark: var(--milasty-text-primary);
+  --text-heading: var(--milasty-text-heading);
+  --text-muted: var(--milasty-text-secondary);
+  --text-light: var(--milasty-text-muted);
+
+  --border-color: var(--milasty-border);
+  --border-gold: var(--milasty-green-primary);
+
+  --shadow-sm: 0 4px 16px rgba(43, 20, 11, 0.05);
+  --shadow-md: 0 8px 24px rgba(43, 20, 11, 0.08);
+  --shadow-lg: 0 16px 40px rgba(43, 20, 11, 0.12);
 
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -49,7 +64,7 @@
   --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Unified MILASTY Admin Dashboard Design Tokens — Premium Dark Graphite & Olive System */
+  /* Unified MILASTY Admin Dashboard Design Tokens */
   --admin-bg: #0B0F0D;
   --admin-surface: #101512;
   --admin-surface-card: #141A17;
@@ -119,7 +134,7 @@ body.customer-portal-body .account-dashboard-page {
   color: var(--text-dark) !important;
 }
 
-/* Customer Dashboard uses DARK GREEN admin theme — NOT the brown cocoa theme */
+/* Customer Dashboard uses DARK GREEN admin theme */
 .account-dashboard-page {
   background-color: #090D0A !important;
   color: #F0F4F1 !important;
@@ -128,7 +143,6 @@ body.customer-portal-body .account-dashboard-page {
   flex-direction: column;
 }
 
-/* Override global serif heading rule inside customer portal & dashboard */
 .account-dashboard-page h1,
 .account-dashboard-page h2,
 .account-dashboard-page h3,
@@ -148,7 +162,7 @@ body.customer-portal-body .account-dashboard-page {
   font-size: 1.3rem !important;
 }
 
-/* Green border card treatment for all dashboard cards & glass-cards inside customer portal */
+/* Dashboard Cards inside customer portal */
 .milasty-dash-card,
 body.customer-portal-body .glass-card,
 .customer-portal-body .glass-card,
@@ -185,72 +199,31 @@ section,
 .checkout-form,
 .checkout-grid {
   background-color: transparent !important;
-  color: var(--text-dark) !important;
+  color: var(--milasty-text-primary) !important;
 }
 
-h1:not(.light-bg-page *):not(.milasty-auth-page *),
-h2:not(.light-bg-page *):not(.milasty-auth-page *),
-h3:not(.light-bg-page *):not(.milasty-auth-page *),
-h4:not(.light-bg-page *):not(.milasty-auth-page *),
-h5:not(.light-bg-page *):not(.milasty-auth-page *) {
+/* Global Heading & Text Contrast Rules for Light Cream Theme */
+h1:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *),
+h2:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *),
+h3:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *),
+h4:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *),
+h5:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *) {
   font-family: var(--font-serif);
-  font-weight: 700;
-  color: var(--text-light) !important;
+  font-weight: 800;
+  color: var(--milasty-text-heading) !important;
 }
 
-p:not(.light-bg-page *):not(.milasty-auth-page *),
-span:not(.light-bg-page *):not(.milasty-auth-page *),
-li:not(.light-bg-page *):not(.milasty-auth-page *),
-label:not(.light-bg-page *):not(.milasty-auth-page *),
-td:not(.light-bg-page *):not(.milasty-auth-page *),
-th:not(.light-bg-page *):not(.milasty-auth-page *) {
-  color: var(--text-muted);
+p:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *):not(.btn-primary *),
+li:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *):not(.btn-primary *),
+label:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *),
+td:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *),
+th:not(.navbar *):not(.announcement-bar *):not(.account-dashboard-page *):not(.admin-body *) {
+  color: var(--milasty-text-secondary);
 }
-
-/* ── Light-background page overrides ── */
-.light-bg-page h1,
-.light-bg-page h2,
-.light-bg-page h3,
-.light-bg-page h4,
-.light-bg-page h5,
-.milasty-auth-page h1,
-.milasty-auth-card h1,
-.auth-heading {
-  color: #2B1710 !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-.light-bg-page p,
-.light-bg-page label,
-.milasty-auth-card p,
-.milasty-auth-card label,
-.auth-subtitle,
-.auth-label {
-  color: #5A4438 !important;
-}
-
-.auth-security-text {
-  color: #675449 !important;
-}
-
-.auth-badge {
-  background-color: #E8EFE3 !important;
-  color: #355A3B !important;
-  border-color: #C9D7C3 !important;
-}
-
 
 input::placeholder,
 textarea::placeholder {
-  color: #7A5535 !important;
-  opacity: 0.8 !important;
-  font-weight: 500 !important;
-}
-
-.light-bg-page input::placeholder,
-.light-bg-page textarea::placeholder {
-  color: #7A5535 !important;
+  color: var(--milasty-text-muted) !important;
   opacity: 0.85 !important;
   font-weight: 500 !important;
 }
@@ -273,55 +246,56 @@ button {
   padding: 0 1.5rem;
 }
 
-/* Glassmorphism Cards */
-.glass-card {
-  background: rgba(35, 21, 13, 0.65) !important;
-  background-color: rgba(35, 21, 13, 0.65) !important;
-  backdrop-filter: blur(16px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
-  border: 1px solid rgba(245, 220, 180, 0.22) !important;
-  box-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.35) !important;
+/* Warm Ivory Bakery Cards (Replacing old dark translucent glass-cards) */
+.glass-card:not(.account-dashboard-page *):not(.customer-main-area *) {
+  background: var(--milasty-card-primary) !important;
+  background-color: var(--milasty-card-primary) !important;
+  border: 1px solid var(--milasty-border) !important;
+  box-shadow: 0 4px 16px rgba(43, 20, 11, 0.05) !important;
   border-radius: var(--radius-md) !important;
   transition: all var(--transition-normal);
+  color: var(--milasty-text-primary) !important;
   width: 100% !important;
   box-sizing: border-box !important;
 }
 
-.glass-card:hover {
-  border: 1px solid rgba(185, 205, 148, 0.45) !important;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.50) !important;
+.glass-card:not(.account-dashboard-page *):not(.customer-main-area *):hover {
+  border: 1px solid var(--milasty-green-primary) !important;
+  box-shadow: 0 10px 24px rgba(43, 20, 11, 0.12) !important;
   transform: translateY(-4px);
 }
 
-/* Buttons */
+/* Primary Green Button */
 .btn-primary {
-  background-color: #244f21 !important;
+  background-color: var(--milasty-green-primary) !important;
   color: #FFFFFF !important;
   padding: 0.85rem 1.75rem;
   border-radius: var(--radius-full);
-  font-weight: 750;
+  font-weight: 800;
   font-size: 0.95rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 16px rgba(47, 107, 58, 0.25);
   transition: all var(--transition-normal);
+  border: none !important;
 }
 
 .btn-primary:hover {
-  background-color: #1b3d19 !important;
+  background-color: var(--milasty-green-dark) !important;
   color: #FFFFFF !important;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 6px 20px rgba(47, 107, 58, 0.35);
 }
 
+/* Secondary Cream Button */
 .btn-secondary {
-  background-color: rgba(36, 79, 33, 0.25) !important;
-  color: #b9cd94 !important;
-  border: 1.5px solid #b9cd94 !important;
+  background-color: var(--milasty-card-primary) !important;
+  color: var(--milasty-text-heading) !important;
+  border: 1.5px solid var(--milasty-text-heading) !important;
   padding: 0.8rem 1.6rem;
   border-radius: var(--radius-full);
-  font-weight: 750;
+  font-weight: 800;
   font-size: 0.95rem;
   display: inline-flex;
   align-items: center;
@@ -330,9 +304,9 @@ button {
 }
 
 .btn-secondary:hover {
-  background-color: #244f21 !important;
+  background-color: var(--milasty-green-primary) !important;
   color: #FFFFFF !important;
-  border-color: #244f21 !important;
+  border-color: var(--milasty-green-primary) !important;
   transform: translateY(-1px);
 }
 
@@ -341,13 +315,13 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background-color: var(--bg-subtle);
-  color: var(--primary-brown);
+  background-color: var(--milasty-green-light);
+  color: var(--milasty-green-primary);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 0.3rem 0.75rem;
   border-radius: var(--radius-full);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--milasty-green-primary);
 }
 
 .badge-gold {
@@ -1263,9 +1237,9 @@ a {
   width: 100% !important;
   padding: 0.75rem 2.5rem 0.75rem 3rem !important;
   border-radius: 999px;
-  background-color: rgba(35, 21, 13, 0.85);
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
-  color: #FFFDF9;
+  background-color: var(--milasty-card-primary);
+  border: 1.5px solid var(--milasty-border);
+  color: var(--milasty-text-heading);
   font-size: 0.92rem;
   outline: none;
   box-sizing: border-box !important;
@@ -1273,12 +1247,13 @@ a {
 }
 
 .shop-search-input::placeholder {
-  color: rgba(245, 235, 221, 0.65) !important;
+  color: var(--milasty-text-muted) !important;
+  opacity: 0.85;
 }
 
 .shop-search-input:focus {
-  border-color: var(--accent-gold) !important;
-  box-shadow: 0 0 12px rgba(200, 155, 60, 0.25);
+  border-color: var(--milasty-green-primary) !important;
+  box-shadow: 0 0 12px rgba(47, 107, 58, 0.25);
 }
 
 .shop-sort-wrap {
@@ -1291,9 +1266,9 @@ a {
 .shop-sort-select {
   padding: 0.7rem 1.25rem;
   border-radius: 999px;
-  background-color: rgba(20, 10, 5, 0.65);
-  border: 1px solid rgba(197, 160, 89, 0.3);
-  color: var(--primary-dark);
+  background-color: var(--milasty-card-primary);
+  border: 1.5px solid var(--milasty-border);
+  color: var(--milasty-text-heading);
   font-size: 0.85rem;
   font-weight: 700;
   outline: none;
@@ -1320,17 +1295,23 @@ a {
   letter-spacing: 0.04em;
   cursor: pointer;
   transition: all 0.25s ease;
-  background-color: rgba(36, 79, 33, 0.12);
-  color: #b9cd94;
-  border: 1.5px solid rgba(185, 205, 148, 0.35);
+  background-color: var(--milasty-cream-secondary);
+  color: var(--milasty-text-heading);
+  border: 1.5px solid var(--milasty-border);
   box-sizing: border-box;
 }
 
+.shop-cat-btn:hover {
+  background-color: var(--milasty-green-light);
+  color: var(--milasty-green-dark);
+  border-color: var(--milasty-green-primary);
+}
+
 .shop-cat-btn.active {
-  background-color: #244f21 !important;
+  background-color: var(--milasty-green-primary) !important;
   color: #FFFFFF !important;
-  border: 1.5px solid #244f21 !important;
-  box-shadow: 0 4px 14px rgba(36, 79, 33, 0.35) !important;
+  border: 1.5px solid var(--milasty-green-primary) !important;
+  box-shadow: 0 4px 14px rgba(47, 107, 58, 0.35) !important;
 }
 
 /* Mobile Filter & Product Grid Adjustments (< 768px) */

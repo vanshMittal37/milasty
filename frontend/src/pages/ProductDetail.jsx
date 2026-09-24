@@ -175,9 +175,9 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#140A05' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', color: '#FFFDF9' }}>
-          <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid rgba(185, 205, 148, 0.2)', borderTopColor: '#b9cd94', borderRadius: '50%' }} />
+      <div style={{ minHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F0E5' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', color: '#32180D' }}>
+          <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid #DCC8AE', borderTopColor: '#2F6B3A', borderRadius: '50%' }} />
           <span style={{ fontSize: '0.95rem', fontWeight: '600', letterSpacing: '0.05em' }}>Loading Product Details...</span>
         </div>
       </div>
@@ -186,10 +186,10 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div style={{ minHeight: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#140A05', color: '#FFFDF9', textAlign: 'center', padding: '2rem' }}>
+      <div style={{ minHeight: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F0E5', color: '#32180D', textAlign: 'center', padding: '2rem' }}>
         <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '1rem' }}>Product Not Found</h2>
-        <p style={{ color: '#F5EBDD', marginBottom: '1.5rem' }}>The product you are looking for does not exist or has been removed.</p>
-        <Link to="/shop" className="btn-primary" style={{ padding: '0.75rem 1.5rem', borderRadius: '999px', backgroundColor: '#244f21', color: '#FFF', textDecoration: 'none' }}>
+        <p style={{ color: '#654B38', marginBottom: '1.5rem' }}>The product you are looking for does not exist or has been removed.</p>
+        <Link to="/shop" className="btn-primary" style={{ padding: '0.75rem 1.5rem', borderRadius: '999px', backgroundColor: '#2F6B3A', color: '#FFFFFF', textDecoration: 'none' }}>
           Back to Shop Catalog
         </Link>
       </div>
@@ -354,7 +354,7 @@ export default function ProductDetail() {
   const labReportUrl = product.labReportUrl || product.lab_report_url || product.lab_report || product.labReport;
 
   return (
-    <div style={{ backgroundColor: '#140A05', color: '#FFFDF9', minHeight: '100vh', paddingTop: '1rem', paddingBottom: '5rem' }}>
+    <div style={{ backgroundColor: '#F7F0E5', color: '#2B170D', minHeight: '100vh', paddingTop: '1rem', paddingBottom: '5rem' }}>
       
       {/* Auth Prompt Modal for Logged-Out Guest Purchases */}
       <AuthPromptModal
@@ -375,20 +375,20 @@ export default function ProductDetail() {
             alignItems: 'center', 
             gap: '0.5rem', 
             fontSize: '0.85rem', 
-            color: '#F5EBDD', 
+            color: '#654B38', 
             marginBottom: '2rem',
             flexWrap: 'wrap'
           }}
         >
-          <Link to="/" style={{ color: '#F5EBDD', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = '#b9cd94'} onMouseOut={(e) => e.target.style.color = '#F5EBDD'}>
+          <Link to="/" style={{ color: '#654B38', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = '#2F6B3A'} onMouseOut={(e) => e.target.style.color = '#654B38'}>
             Home
           </Link>
-          <ChevronRight size={14} color="rgba(245, 235, 221, 0.4)" />
-          <Link to="/shop" style={{ color: '#F5EBDD', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = '#b9cd94'} onMouseOut={(e) => e.target.style.color = '#F5EBDD'}>
+          <ChevronRight size={14} color="#806A57" />
+          <Link to="/shop" style={{ color: '#654B38', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e) => e.target.style.color = '#2F6B3A'} onMouseOut={(e) => e.target.style.color = '#654B38'}>
             Shop
           </Link>
-          <ChevronRight size={14} color="rgba(245, 235, 221, 0.4)" />
-          <span style={{ color: '#b9cd94', fontWeight: '700' }}>{product.title}</span>
+          <ChevronRight size={14} color="#806A57" />
+          <span style={{ color: '#2F6B3A', fontWeight: '700' }}>{product.title}</span>
         </nav>
 
         {/* 2-Column Product Detail Layout */}
@@ -417,9 +417,9 @@ export default function ProductDetail() {
                 paddingTop: '100%', 
                 borderRadius: '20px', 
                 overflow: 'hidden', 
-                backgroundColor: 'rgba(20, 10, 5, 0.4)', 
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                boxShadow: '0 16px 40px rgba(0,0,0,0.35)',
+                backgroundColor: '#FFF9F0', 
+                border: '1px solid #DCC8AE',
+                boxShadow: '0 8px 30px rgba(75, 45, 25, 0.08)',
                 cursor: 'zoom-in',
                 userSelect: 'none'
               }}
@@ -445,15 +445,15 @@ export default function ProductDetail() {
                     position: 'absolute', 
                     top: '16px', 
                     left: '16px', 
-                    backgroundColor: '#244f21', 
-                    color: '#FFFDF9', 
-                    border: '1px solid #b9cd94',
+                    backgroundColor: '#2F6B3A', 
+                    color: '#FFFFFF', 
+                    border: '1px solid #2F6B3A',
                     padding: '0.35rem 0.85rem', 
                     borderRadius: '999px', 
                     fontSize: '0.75rem', 
                     fontWeight: '800',
                     letterSpacing: '0.05em',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    boxShadow: '0 4px 12px rgba(47, 107, 58, 0.25)',
                     zIndex: 2
                   }}
                 >
@@ -467,10 +467,10 @@ export default function ProductDetail() {
                   position: 'absolute',
                   bottom: '16px',
                   right: '16px',
-                  backgroundColor: 'rgba(20, 10, 5, 0.75)',
+                  backgroundColor: '#FFF9F0',
                   backdropFilter: 'blur(6px)',
-                  color: '#b9cd94',
-                  border: '1px solid rgba(185, 205, 148, 0.3)',
+                  color: '#2F6B3A',
+                  border: '1px solid #DCC8AE',
                   padding: '0.3rem 0.75rem',
                   borderRadius: '999px',
                   fontSize: '0.72rem',
@@ -500,10 +500,9 @@ export default function ProductDetail() {
                       width: '36px',
                       height: '36px',
                       borderRadius: '50%',
-                      backgroundColor: 'rgba(20, 10, 5, 0.7)',
-                      backdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      color: '#FFFDF9',
+                      backgroundColor: '#FFF9F0',
+                      border: '1px solid #DCC8AE',
+                      color: '#32180D',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -530,10 +529,9 @@ export default function ProductDetail() {
                       width: '36px',
                       height: '36px',
                       borderRadius: '50%',
-                      backgroundColor: 'rgba(20, 10, 5, 0.7)',
-                      backdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      color: '#FFFDF9',
+                      backgroundColor: '#FFF9F0',
+                      border: '1px solid #DCC8AE',
+                      color: '#32180D',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -571,7 +569,7 @@ export default function ProductDetail() {
                         width: idx === selectedImageIndex ? '20px' : '8px',
                         height: '8px',
                         borderRadius: '999px',
-                        backgroundColor: idx === selectedImageIndex ? '#b9cd94' : 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: idx === selectedImageIndex ? '#2F6B3A' : '#DCC8AE',
                         transition: 'all 0.3s ease',
                         cursor: 'pointer'
                       }}
@@ -596,13 +594,13 @@ export default function ProductDetail() {
                         borderRadius: '12px',
                         overflow: 'hidden',
                         padding: 0,
-                        backgroundColor: 'transparent',
-                        border: isActive ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
+                        backgroundColor: '#FFF9F0',
+                        border: isActive ? '2px solid #2F6B3A' : '1px solid #DCC8AE',
                         cursor: 'pointer',
                         transition: 'all 0.2s',
-                        boxShadow: isActive ? '0 0 14px rgba(185, 205, 148, 0.45)' : 'none',
+                        boxShadow: isActive ? '0 0 14px rgba(47, 107, 58, 0.25)' : 'none',
                         flexShrink: 0,
-                        opacity: isActive ? 1 : 0.7
+                        opacity: isActive ? 1 : 0.75
                       }}
                     >
                       <img src={img} alt={`Thumbnail ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -624,11 +622,11 @@ export default function ProductDetail() {
                   fontWeight: '800', 
                   textTransform: 'uppercase', 
                   letterSpacing: '0.08em', 
-                  color: '#b9cd94', 
-                  backgroundColor: 'rgba(36, 79, 33, 0.4)', 
+                  color: '#2F6B3A', 
+                  backgroundColor: '#E3EEDC', 
                   padding: '0.25rem 0.75rem', 
                   borderRadius: '999px',
-                  border: '1px solid rgba(185, 205, 148, 0.3)'
+                  border: '1px solid #DCC8AE'
                 }}
               >
                 {product.category || 'Milasty Bakes'}
@@ -642,11 +640,11 @@ export default function ProductDetail() {
                     fontWeight: '700', 
                     textTransform: 'uppercase', 
                     letterSpacing: '0.05em', 
-                    color: '#F5EBDD', 
-                    backgroundColor: 'rgba(255, 255, 255, 0.08)', 
+                    color: '#32180D', 
+                    backgroundColor: '#F1E5D4', 
                     padding: '0.25rem 0.75rem', 
                     borderRadius: '999px',
-                    border: '1px solid rgba(255, 255, 255, 0.12)'
+                    border: '1px solid #DCC8AE'
                   }}
                 >
                   {b}
@@ -660,7 +658,7 @@ export default function ProductDetail() {
                 fontFamily: 'var(--font-serif)', 
                 fontSize: 'clamp(1.85rem, 3.5vw, 2.5rem)', 
                 fontWeight: '850', 
-                color: '#FFFDF9', 
+                color: '#32180D', 
                 margin: 0, 
                 lineHeight: '1.2' 
               }}
@@ -669,7 +667,7 @@ export default function ProductDetail() {
             </h1>
 
             {product.subtitle && product.subtitle.trim() !== '' && (
-              <p style={{ fontSize: '1rem', color: '#F5EBDD', margin: 0, fontWeight: '500', opacity: 0.9 }}>
+              <p style={{ fontSize: '1rem', color: '#654B38', margin: 0, fontWeight: '500' }}>
                 {product.subtitle}
               </p>
             )}
@@ -677,31 +675,31 @@ export default function ProductDetail() {
             {/* Rating / Review Info */}
             {((reviewsData.totalReviews || product.reviewCount || 0) > 0) ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', color: '#b9cd94' }}>
+                <div style={{ display: 'flex', color: '#2F6B3A' }}>
                   {[1, 2, 3, 4, 5].map((s) => (
                     <Star
                       key={s}
                       size={15}
-                      fill={s <= Math.round(reviewsData.averageRating || product.rating || 0) ? '#b9cd94' : 'none'}
-                      color="#b9cd94"
+                      fill={s <= Math.round(reviewsData.averageRating || product.rating || 0) ? '#2F6B3A' : 'none'}
+                      color="#2F6B3A"
                     />
                   ))}
                 </div>
-                <span style={{ fontSize: '0.88rem', fontWeight: '750', color: '#FFFDF9' }}>
+                <span style={{ fontSize: '0.88rem', fontWeight: '750', color: '#32180D' }}>
                   {Number(reviewsData.averageRating || product.rating || 5).toFixed(1)}
                 </span>
-                <span style={{ fontSize: '0.82rem', color: '#F5EBDD', opacity: 0.8 }}>
+                <span style={{ fontSize: '0.82rem', color: '#806A57' }}>
                   ({reviewsData.totalReviews || product.reviewCount} {(reviewsData.totalReviews || product.reviewCount) === 1 ? 'Review' : 'Reviews'})
                 </span>
               </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', color: 'rgba(255, 255, 255, 0.2)' }}>
+                <div style={{ display: 'flex', color: '#DCC8AE' }}>
                   {[1, 2, 3, 4, 5].map((s) => (
-                    <Star key={s} size={15} fill="none" color="rgba(245, 235, 221, 0.4)" />
+                    <Star key={s} size={15} fill="none" color="#DCC8AE" />
                   ))}
                 </div>
-                <span style={{ fontSize: '0.82rem', color: '#F5EBDD', opacity: 0.7, fontWeight: '600' }}>
+                <span style={{ fontSize: '0.82rem', color: '#806A57', fontWeight: '600' }}>
                   (No reviews yet)
                 </span>
               </div>
@@ -709,7 +707,7 @@ export default function ProductDetail() {
 
             {/* Description */}
             {product.description && (
-              <p style={{ fontSize: '0.95rem', color: '#F5EBDD', lineHeight: '1.6', margin: 0, opacity: 0.95 }}>
+              <p style={{ fontSize: '0.95rem', color: '#654B38', lineHeight: '1.6', margin: 0 }}>
                 {product.description}
               </p>
             )}
@@ -717,7 +715,7 @@ export default function ProductDetail() {
             {/* Product Benefits Section */}
             {((Array.isArray(product.benefits) && product.benefits.length > 0) || (typeof product.benefits === 'string' && product.benefits.trim().length > 0)) && (
               <div style={{ marginTop: '0.4rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <span style={{ fontSize: '0.74rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#b9cd94' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2F6B3A' }}>
                   Key Bake Benefits
                 </span>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
@@ -731,16 +729,16 @@ export default function ProductDetail() {
                           display: 'inline-flex', 
                           alignItems: 'center', 
                           gap: '0.35rem', 
-                          backgroundColor: 'rgba(36, 79, 33, 0.35)', 
-                          border: '1px solid rgba(185, 205, 148, 0.35)', 
+                          backgroundColor: '#E3EEDC', 
+                          border: '1px solid #DCC8AE', 
                           padding: '0.3rem 0.75rem', 
                           borderRadius: '999px', 
                           fontSize: '0.8rem', 
-                          color: '#FFFDF9', 
+                          color: '#2F6B3A', 
                           fontWeight: '700' 
                         }}
                       >
-                        <CheckCircle2 size={13} color="#b9cd94" />
+                        <CheckCircle2 size={13} color="#2F6B3A" />
                         <span>{cleanB}</span>
                       </div>
                     );
@@ -751,11 +749,11 @@ export default function ProductDetail() {
 
             {/* Price Section */}
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.85rem', marginTop: '0.5rem', marginBottom: '0.25rem' }}>
-              <span style={{ fontSize: '2rem', fontWeight: '900', color: '#FFFDF9' }}>
+              <span style={{ fontSize: '2rem', fontWeight: '900', color: '#32180D' }}>
                 ₹{currentPrice}
               </span>
               {hasDiscount && (
-                <span style={{ fontSize: '1.2rem', color: 'rgba(245, 235, 221, 0.5)', textDecoration: 'line-through', fontWeight: '600' }}>
+                <span style={{ fontSize: '1.2rem', color: '#806A57', textDecoration: 'line-through', fontWeight: '600' }}>
                   ₹{currentOriginalPrice}
                 </span>
               )}
@@ -764,7 +762,7 @@ export default function ProductDetail() {
             {/* Variant Pack Size Selector */}
             {hasVariants && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#b9cd94' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2F6B3A' }}>
                   Select Pack Size
                 </label>
                 <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -784,23 +782,23 @@ export default function ProductDetail() {
                         style={{
                           padding: '0.65rem 1.15rem',
                           borderRadius: '12px',
-                          border: isSelected ? '2px solid #b9cd94' : '1px solid rgba(255, 255, 255, 0.18)',
-                          backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.45)' : 'rgba(20, 10, 5, 0.3)',
-                          color: isSelected ? '#FFFDF9' : '#F5EBDD',
+                          border: isSelected ? '2px solid #2F6B3A' : '1px solid #DCC8AE',
+                          backgroundColor: isSelected ? '#E3EEDC' : '#FFF9F0',
+                          color: isSelected ? '#2F6B3A' : '#32180D',
                           cursor: 'pointer',
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
                           gap: '0.15rem',
                           transition: 'all 0.2s',
-                          boxShadow: isSelected ? '0 4px 14px rgba(36, 79, 33, 0.4)' : 'none',
+                          boxShadow: isSelected ? '0 4px 14px rgba(47, 107, 58, 0.15)' : 'none',
                           opacity: isVOut ? 0.6 : 1
                         }}
                       >
                         <span style={{ fontSize: '0.9rem', fontWeight: '800' }}>{v.weight || v.name}</span>
-                        <span style={{ fontSize: '0.78rem', color: isSelected ? '#b9cd94' : '#F5EBDD', fontWeight: '700' }}>₹{v.price}</span>
+                        <span style={{ fontSize: '0.78rem', color: isSelected ? '#2F6B3A' : '#654B38', fontWeight: '700' }}>₹{v.price}</span>
                         {isVOut && (
-                          <span style={{ fontSize: '0.62rem', color: '#ff6b6b', fontWeight: '800', textTransform: 'uppercase' }}>Out of Stock</span>
+                          <span style={{ fontSize: '0.62rem', color: '#dc2626', fontWeight: '800', textTransform: 'uppercase' }}>Out of Stock</span>
                         )}
                       </button>
                     );
@@ -812,22 +810,22 @@ export default function ProductDetail() {
             {/* Independent Stock Alert Badge */}
             <div style={{ marginTop: '0.25rem' }}>
               {currentStock <= 0 ? (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: 'rgba(220, 38, 38, 0.15)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '800' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '800' }}>
                   <AlertTriangle size={15} />
                   <span>Out of Stock</span>
                 </div>
               ) : currentStock <= 5 ? (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: 'rgba(217, 119, 6, 0.18)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.35)', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '800' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: '#fef3c7', color: '#d97706', border: '1px solid #fde68a', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '800' }}>
                   <Sparkles size={15} />
                   <span>⚡ Only {currentStock} packs left — order soon!</span>
                 </div>
               ) : currentStock <= LOW_STOCK_THRESHOLD ? (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: 'rgba(217, 119, 6, 0.12)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.25)', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.75rem' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: '#fef3c7', color: '#d97706', border: '1px solid #fde68a', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.75rem' }}>
                   <Sparkles size={15} />
                   <span>⚡ Only {currentStock} packs left</span>
                 </div>
               ) : (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', color: '#b9cd94', fontSize: '0.85rem', fontWeight: '700' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', color: '#2F6B3A', fontSize: '0.85rem', fontWeight: '700' }}>
                   <CheckCircle2 size={16} />
                   <span>In Stock ({currentStock} available)</span>
                 </div>
@@ -840,8 +838,8 @@ export default function ProductDetail() {
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)', 
-                  border: '1px solid rgba(255, 255, 255, 0.15)', 
+                  backgroundColor: '#FFF9F0', 
+                  border: '1px solid #DCC8AE', 
                   borderRadius: '999px',
                   padding: '0.25rem 0.5rem'
                 }}
@@ -853,7 +851,7 @@ export default function ProductDetail() {
                   style={{
                     backgroundColor: 'transparent',
                     border: 'none',
-                    color: quantity <= 1 || currentStock <= 0 ? 'rgba(255, 255, 255, 0.25)' : '#FFFDF9',
+                    color: quantity <= 1 || currentStock <= 0 ? '#DCC8AE' : '#32180D',
                     width: '32px',
                     height: '32px',
                     display: 'flex',
@@ -864,7 +862,7 @@ export default function ProductDetail() {
                 >
                   <Minus size={14} />
                 </button>
-                <span style={{ padding: '0 0.85rem', fontWeight: '800', fontSize: '0.95rem', minWidth: '32px', textAlign: 'center' }}>
+                <span style={{ padding: '0 0.85rem', fontWeight: '800', fontSize: '0.95rem', minWidth: '32px', textAlign: 'center', color: '#32180D' }}>
                   {quantity}
                 </span>
                 <button
@@ -874,7 +872,7 @@ export default function ProductDetail() {
                   style={{
                     backgroundColor: 'transparent',
                     border: 'none',
-                    color: quantity >= currentStock || currentStock <= 0 ? 'rgba(255, 255, 255, 0.25)' : '#FFFDF9',
+                    color: quantity >= currentStock || currentStock <= 0 ? '#DCC8AE' : '#32180D',
                     width: '32px',
                     height: '32px',
                     display: 'flex',
@@ -897,9 +895,9 @@ export default function ProductDetail() {
                   minWidth: '200px',
                   padding: '0.85rem 1.75rem',
                   borderRadius: '999px',
-                  backgroundColor: currentStock <= 0 ? 'rgba(255, 255, 255, 0.1)' : '#244f21',
-                  color: currentStock <= 0 ? 'rgba(255, 255, 255, 0.4)' : '#FFFFFF',
-                  border: currentStock <= 0 ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid #b9cd94',
+                  backgroundColor: currentStock <= 0 ? '#E6D4BC' : '#2F6B3A',
+                  color: currentStock <= 0 ? '#806A57' : '#FFFFFF',
+                  border: currentStock <= 0 ? '1px solid #DCC8AE' : '1px solid #2F6B3A',
                   fontSize: '0.95rem',
                   fontWeight: '850',
                   display: 'flex',
@@ -908,10 +906,10 @@ export default function ProductDetail() {
                   gap: '0.5rem',
                   cursor: currentStock <= 0 ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s',
-                  boxShadow: currentStock > 0 ? '0 6px 20px rgba(36, 79, 33, 0.4)' : 'none'
+                  boxShadow: currentStock > 0 ? '0 6px 20px rgba(47, 107, 58, 0.3)' : 'none'
                 }}
               >
-                <ShoppingBag size={18} color={currentStock > 0 ? '#b9cd94' : 'rgba(255, 255, 255, 0.4)'} />
+                <ShoppingBag size={18} color={currentStock > 0 ? '#FFFFFF' : '#806A57'} />
                 <span>{currentStock <= 0 ? 'Out of Stock' : btnText}</span>
               </button>
 
@@ -924,17 +922,17 @@ export default function ProductDetail() {
                   width: '48px',
                   height: '48px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  backgroundColor: '#FFF9F0',
+                  border: '1px solid #DCC8AE',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  color: wishlisted ? '#b9cd94' : '#FFFDF9',
+                  color: wishlisted ? '#2F6B3A' : '#32180D',
                   transition: 'all 0.2s'
                 }}
               >
-                <Heart size={20} fill={wishlisted ? '#b9cd94' : 'none'} color={wishlisted ? '#b9cd94' : '#FFFDF9'} />
+                <Heart size={20} fill={wishlisted ? '#2F6B3A' : 'none'} color={wishlisted ? '#2F6B3A' : '#32180D'} />
               </button>
             </div>
 
@@ -944,12 +942,12 @@ export default function ProductDetail() {
                 marginTop: '1.25rem', 
                 padding: '1.2rem', 
                 borderRadius: '16px', 
-                backgroundColor: 'rgba(255, 255, 255, 0.04)', 
-                border: '1px solid rgba(255, 255, 255, 0.1)' 
+                backgroundColor: '#FFF9F0', 
+                border: '1px solid #DCC8AE' 
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', fontWeight: '800', color: '#b9cd94' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', fontWeight: '800', color: '#2F6B3A' }}>
                   <Truck size={18} />
                   <span>Check Delivery Availability</span>
                 </div>
@@ -964,7 +962,7 @@ export default function ProductDetail() {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#b9cd94',
+                      color: '#2F6B3A',
                       fontSize: '0.8rem',
                       fontWeight: '700',
                       cursor: 'pointer',
@@ -995,9 +993,9 @@ export default function ProductDetail() {
                         flex: 1,
                         padding: '0.6rem 0.85rem',
                         borderRadius: '10px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                        border: pincodeError ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.2)',
-                        color: '#FFFDF9',
+                        backgroundColor: '#FCF8F1',
+                        border: pincodeError ? '1px solid #ef4444' : '1px solid #DCC8AE',
+                        color: '#32180D',
                         fontSize: '0.9rem',
                         fontFamily: 'monospace',
                         fontWeight: '700',
@@ -1011,9 +1009,9 @@ export default function ProductDetail() {
                       style={{
                         padding: '0.6rem 1.25rem',
                         borderRadius: '10px',
-                        backgroundColor: '#244f21',
-                        border: '1px solid #b9cd94',
-                        color: '#FFFDF9',
+                        backgroundColor: '#2F6B3A',
+                        border: '1px solid #2F6B3A',
+                        color: '#FFFFFF',
                         fontSize: '0.85rem',
                         fontWeight: '800',
                         cursor: checkingPincode ? 'not-allowed' : 'pointer',
@@ -1035,32 +1033,32 @@ export default function ProductDetail() {
                 /* Display Mode B: Checked Result Mode */
                 <div>
                   {deliveryInfo.available ? (
-                    <div style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '12px', padding: '0.9rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#22c55e', fontWeight: '800', fontSize: '0.9rem', marginBottom: '0.35rem' }}>
+                    <div style={{ backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', borderRadius: '12px', padding: '0.9rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#2F6B3A', fontWeight: '800', fontSize: '0.9rem', marginBottom: '0.35rem' }}>
                         <CheckCircle2 size={17} />
                         <span>
                           {deliveryInfo.isSavedAddress ? '✓ Delivery available to your address' : `✓ Delivery available to PIN ${deliveryInfo.pincode}`}
                         </span>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.82rem', color: '#F5EBDD', paddingLeft: '1.5rem' }}>
-                        <div>Location: <strong style={{ color: '#FFFDF9' }}>{deliveryInfo.pincode}{deliveryInfo.city ? `, ${deliveryInfo.city}` : ''}{deliveryInfo.state ? `, ${deliveryInfo.state}` : ''}</strong></div>
-                        <div>Delivery Charge: <strong style={{ color: Number(deliveryInfo.deliveryCharge) === 0 ? '#22c55e' : '#b9cd94' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.82rem', color: '#654B38', paddingLeft: '1.5rem' }}>
+                        <div>Location: <strong style={{ color: '#32180D' }}>{deliveryInfo.pincode}{deliveryInfo.city ? `, ${deliveryInfo.city}` : ''}{deliveryInfo.state ? `, ${deliveryInfo.state}` : ''}</strong></div>
+                        <div>Delivery Charge: <strong style={{ color: '#2F6B3A' }}>
                           {Number(deliveryInfo.deliveryCharge) === 0 ? 'FREE Delivery' : `₹${deliveryInfo.deliveryCharge}`}
                         </strong></div>
-                        <div>Estimated Dispatch: <strong style={{ color: '#FFFDF9' }}>{deliveryInfo.estimatedDays || '3–5 business days'}</strong></div>
+                        <div>Estimated Dispatch: <strong style={{ color: '#32180D' }}>{deliveryInfo.estimatedDays || '3–5 business days'}</strong></div>
                       </div>
 
                       {/* If user checked a temporary PIN while logged in, offer to save it */}
                       {isAuthenticated && deliveryInfo.isTemp && (
-                        <div style={{ marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px dashed rgba(34, 197, 94, 0.25)', display: 'flex', justifyContent: 'flex-end' }}>
+                        <div style={{ marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px dashed #DCC8AE', display: 'flex', justifyContent: 'flex-end' }}>
                           <button
                             type="button"
                             onClick={handleSaveTempPinToAddress}
                             disabled={savingAddress}
                             style={{
-                              background: 'rgba(34, 197, 94, 0.18)',
-                              border: '1px solid rgba(34, 197, 94, 0.4)',
-                              color: '#22c55e',
+                              background: '#FFF9F0',
+                              border: '1px solid #2F6B3A',
+                              color: '#2F6B3A',
                               fontSize: '0.75rem',
                               fontWeight: '800',
                               padding: '0.3rem 0.75rem',
@@ -1078,12 +1076,12 @@ export default function ProductDetail() {
                       )}
                     </div>
                   ) : (
-                    <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', padding: '0.9rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#ef4444', fontWeight: '800', fontSize: '0.9rem', marginBottom: '0.35rem' }}>
+                    <div style={{ backgroundColor: '#fee2e2', border: '1px solid #fca5a5', borderRadius: '12px', padding: '0.9rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#dc2626', fontWeight: '800', fontSize: '0.9rem', marginBottom: '0.35rem' }}>
                         <XCircle size={17} />
                         <span>Delivery is currently unavailable at {deliveryInfo.pincode}</span>
                       </div>
-                      <p style={{ margin: 0, fontSize: '0.8rem', color: '#F5EBDD', paddingLeft: '1.5rem', lineHeight: '1.4' }}>
+                      <p style={{ margin: 0, fontSize: '0.8rem', color: '#991b1b', paddingLeft: '1.5rem', lineHeight: '1.4' }}>
                         {deliveryInfo.message || `Sorry, we do not currently deliver to PIN code ${deliveryInfo.pincode}.`}
                       </p>
                     </div>
@@ -1096,16 +1094,16 @@ export default function ProductDetail() {
         </div>
 
         {/* Accordions / Information Tabs Section */}
-        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.12)', paddingTop: '3rem', marginBottom: '4rem' }}>
-          <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.12)', marginBottom: '1.5rem', overflowX: 'auto' }}>
+        <div style={{ borderTop: '1px solid #DCC8AE', paddingTop: '3rem', marginBottom: '4rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid #DCC8AE', marginBottom: '1.5rem', overflowX: 'auto' }}>
             <button
               onClick={() => setActiveTab('nutrition')}
               style={{
                 padding: '0.75rem 1.25rem',
                 border: 'none',
                 backgroundColor: 'transparent',
-                color: activeTab === 'nutrition' ? '#b9cd94' : '#F5EBDD',
-                borderBottom: activeTab === 'nutrition' ? '2px solid #b9cd94' : '2px solid transparent',
+                color: activeTab === 'nutrition' ? '#2F6B3A' : '#654B38',
+                borderBottom: activeTab === 'nutrition' ? '2px solid #2F6B3A' : '2px solid transparent',
                 fontWeight: '800',
                 fontSize: '0.95rem',
                 cursor: 'pointer',
@@ -1120,8 +1118,8 @@ export default function ProductDetail() {
                 padding: '0.75rem 1.25rem',
                 border: 'none',
                 backgroundColor: 'transparent',
-                color: activeTab === 'ingredients' ? '#b9cd94' : '#F5EBDD',
-                borderBottom: activeTab === 'ingredients' ? '2px solid #b9cd94' : '2px solid transparent',
+                color: activeTab === 'ingredients' ? '#2F6B3A' : '#654B38',
+                borderBottom: activeTab === 'ingredients' ? '2px solid #2F6B3A' : '2px solid transparent',
                 fontWeight: '800',
                 fontSize: '0.95rem',
                 cursor: 'pointer',
@@ -1137,8 +1135,8 @@ export default function ProductDetail() {
                   padding: '0.75rem 1.25rem',
                   border: 'none',
                   backgroundColor: 'transparent',
-                  color: activeTab === 'labreport' ? '#b9cd94' : '#F5EBDD',
-                  borderBottom: activeTab === 'labreport' ? '2px solid #b9cd94' : '2px solid transparent',
+                  color: activeTab === 'labreport' ? '#2F6B3A' : '#654B38',
+                  borderBottom: activeTab === 'labreport' ? '2px solid #2F6B3A' : '2px solid transparent',
                   fontWeight: '800',
                   fontSize: '0.95rem',
                   cursor: 'pointer',
@@ -1154,8 +1152,8 @@ export default function ProductDetail() {
                 padding: '0.75rem 1.25rem',
                 border: 'none',
                 backgroundColor: 'transparent',
-                color: activeTab === 'reviews' ? '#b9cd94' : '#F5EBDD',
-                borderBottom: activeTab === 'reviews' ? '2px solid #b9cd94' : '2px solid transparent',
+                color: activeTab === 'reviews' ? '#2F6B3A' : '#654B38',
+                borderBottom: activeTab === 'reviews' ? '2px solid #2F6B3A' : '2px solid transparent',
                 fontWeight: '800',
                 fontSize: '0.95rem',
                 cursor: 'pointer',
@@ -1167,16 +1165,16 @@ export default function ProductDetail() {
           </div>
 
           {activeTab === 'nutrition' && (
-            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div style={{ backgroundColor: '#FFF9F0', padding: '1.5rem', borderRadius: '16px', border: '1px solid #DCC8AE' }}>
               {safeNutritionFacts.length > 0 ? (
                 <div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: labReportUrl ? '1.5rem' : 0 }}>
                     {safeNutritionFacts.map((item, idx) => (
-                      <div key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '0.5rem' }}>
-                        <span style={{ fontSize: '0.78rem', color: '#b9cd94', textTransform: 'uppercase', fontWeight: '700', display: 'block' }}>
+                      <div key={idx} style={{ borderBottom: '1px solid #DCC8AE', paddingBottom: '0.5rem' }}>
+                        <span style={{ fontSize: '0.78rem', color: '#2F6B3A', textTransform: 'uppercase', fontWeight: '700', display: 'block' }}>
                           {item.label}
                         </span>
-                        <span style={{ fontSize: '1rem', fontWeight: '800', color: '#FFFDF9' }}>
+                        <span style={{ fontSize: '1rem', fontWeight: '800', color: '#32180D' }}>
                           {item.value} {item.unit}
                         </span>
                       </div>
@@ -1184,12 +1182,12 @@ export default function ProductDetail() {
                   </div>
 
                   {labReportUrl && (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(36, 79, 33, 0.25)', border: '1px solid rgba(185, 205, 148, 0.3)', padding: '0.85rem 1.25rem', borderRadius: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', padding: '0.85rem 1.25rem', borderRadius: '12px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                        <ShieldCheck size={20} color="#b9cd94" />
+                        <ShieldCheck size={20} color="#2F6B3A" />
                         <div>
-                          <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#FFFDF9' }}>Verified Laboratory Analysis Available</div>
-                          <div style={{ fontSize: '0.78rem', color: '#F5EBDD', opacity: 0.8 }}>Independently tested for purity, nutrition levels &amp; heavy metals.</div>
+                          <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#32180D' }}>Verified Laboratory Analysis Available</div>
+                          <div style={{ fontSize: '0.78rem', color: '#654B38' }}>Independently tested for purity, nutrition levels &amp; heavy metals.</div>
                         </div>
                       </div>
                       <a
@@ -1200,9 +1198,9 @@ export default function ProductDetail() {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '0.4rem',
-                          backgroundColor: '#244f21',
-                          color: '#FFFDF9',
-                          border: '1px solid #b9cd94',
+                          backgroundColor: '#2F6B3A',
+                          color: '#FFFFFF',
+                          border: '1px solid #2F6B3A',
                           padding: '0.45rem 0.95rem',
                           borderRadius: '8px',
                           fontSize: '0.82rem',
@@ -1217,7 +1215,7 @@ export default function ProductDetail() {
                 </div>
               ) : (
                 <div>
-                  <p style={{ color: '#F5EBDD', margin: 0, lineHeight: '1.6' }}>
+                  <p style={{ color: '#654B38', margin: 0, lineHeight: '1.6' }}>
                     Rich in fiber, vitamins, deshi ghee goodness, and essential minerals. No added artificial additives.
                   </p>
                   {labReportUrl && (
@@ -1230,9 +1228,9 @@ export default function ProductDetail() {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '0.4rem',
-                          backgroundColor: '#244f21',
-                          color: '#FFFDF9',
-                          border: '1px solid #b9cd94',
+                          backgroundColor: '#2F6B3A',
+                          color: '#FFFFFF',
+                          border: '1px solid #2F6B3A',
                           padding: '0.45rem 0.95rem',
                           borderRadius: '8px',
                           fontSize: '0.82rem',
@@ -1250,10 +1248,10 @@ export default function ProductDetail() {
           )}
 
           {activeTab === 'ingredients' && (
-            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div style={{ backgroundColor: '#FFF9F0', padding: '1.5rem', borderRadius: '16px', border: '1px solid #DCC8AE' }}>
               {ingredientsList.length > 0 ? (
                 <div>
-                  <h4 style={{ fontSize: '0.9rem', color: '#b9cd94', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.85rem' }}>
+                  <h4 style={{ fontSize: '0.9rem', color: '#2F6B3A', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.85rem' }}>
                     Crafted With Natural Ingredients
                   </h4>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -1263,9 +1261,9 @@ export default function ProductDetail() {
                         style={{
                           fontSize: '0.85rem',
                           fontWeight: '700',
-                          color: '#FFFDF9',
-                          backgroundColor: 'rgba(20, 10, 5, 0.4)',
-                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          color: '#32180D',
+                          backgroundColor: '#FCF8F1',
+                          border: '1px solid #DCC8AE',
                           padding: '0.4rem 0.85rem',
                           borderRadius: '999px'
                         }}
@@ -1274,12 +1272,12 @@ export default function ProductDetail() {
                       </span>
                     ))}
                   </div>
-                  <p style={{ color: '#F5EBDD', fontSize: '0.85rem', opacity: 0.8, margin: 0, lineHeight: '1.5' }}>
+                  <p style={{ color: '#654B38', fontSize: '0.85rem', margin: 0, lineHeight: '1.5' }}>
                     Handcrafted using 100% natural ingredients, organic millets, Desi Cow Ghee, and unrefined organic jaggery. No refined palm oil, no artificial preservatives, zero maida.
                   </p>
                 </div>
               ) : (
-                <p style={{ color: '#F5EBDD', lineHeight: '1.6', margin: 0 }}>
+                <p style={{ color: '#654B38', lineHeight: '1.6', margin: 0 }}>
                   Handcrafted using 100% natural ingredients, organic millets, Desi Cow Ghee, and unrefined organic jaggery. No refined palm oil, no artificial preservatives, zero maida.
                 </p>
               )}
@@ -1287,10 +1285,10 @@ export default function ProductDetail() {
           )}
 
           {activeTab === 'labreport' && labReportUrl && (
-            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '2rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.08)', textAlign: 'center' }}>
-              <ShieldCheck size={40} color="#b9cd94" style={{ margin: '0 auto 1rem' }} />
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#FFFDF9', margin: '0 0 0.5rem 0' }}>Official Quality &amp; Nutrition Lab Report</h3>
-              <p style={{ color: '#F5EBDD', fontSize: '0.9rem', opacity: 0.85, maxWidth: '500px', margin: '0 auto 1.5rem auto' }}>
+            <div style={{ backgroundColor: '#FFF9F0', padding: '2rem', borderRadius: '16px', border: '1px solid #DCC8AE', textAlign: 'center' }}>
+              <ShieldCheck size={40} color="#2F6B3A" style={{ margin: '0 auto 1rem' }} />
+              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#32180D', margin: '0 0 0.5rem 0' }}>Official Quality &amp; Nutrition Lab Report</h3>
+              <p style={{ color: '#654B38', fontSize: '0.9rem', maxWidth: '500px', margin: '0 auto 1.5rem auto' }}>
                 Every batch of {product.title} is certified by NABL-accredited food safety testing laboratories. Click below to inspect the complete lab report document.
               </p>
               <a
@@ -1301,15 +1299,15 @@ export default function ProductDetail() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
-                  backgroundColor: '#244f21',
-                  color: '#FFFDF9',
-                  border: '1px solid #b9cd94',
+                  backgroundColor: '#2F6B3A',
+                  color: '#FFFFFF',
+                  border: '1px solid #2F6B3A',
                   padding: '0.75rem 1.75rem',
                   borderRadius: '999px',
                   fontSize: '0.95rem',
                   fontWeight: '850',
                   textDecoration: 'none',
-                  boxShadow: '0 4px 16px rgba(36, 79, 33, 0.4)'
+                  boxShadow: '0 4px 16px rgba(47, 107, 58, 0.3)'
                 }}
               >
                 <FileText size={18} /> View / Download Full Lab Certificate <ExternalLink size={15} />
@@ -1318,19 +1316,19 @@ export default function ProductDetail() {
           )}
 
           {activeTab === 'reviews' && (
-            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', padding: '2rem', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div style={{ backgroundColor: '#FFF9F0', padding: '2rem', borderRadius: '20px', border: '1px solid #DCC8AE' }}>
               {/* Reviews Summary Header */}
-              <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '2rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                <div style={{ textAlign: 'center', paddingRight: '2rem', borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                  <div style={{ fontSize: '3rem', fontWeight: '900', color: '#FFFDF9', lineHeight: 1 }}>
+              <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '2rem', paddingBottom: '1.5rem', borderBottom: '1px solid #DCC8AE' }}>
+                <div style={{ textAlign: 'center', paddingRight: '2rem', borderRight: '1px solid #DCC8AE' }}>
+                  <div style={{ fontSize: '3rem', fontWeight: '900', color: '#32180D', lineHeight: 1 }}>
                     {reviewsData.averageRating || '0.0'}
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', margin: '0.4rem 0', color: '#b9cd94' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center', margin: '0.4rem 0', color: '#2F6B3A' }}>
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <Star key={s} size={16} fill={s <= Math.round(reviewsData.averageRating || 0) ? '#b9cd94' : 'none'} color="#b9cd94" />
+                      <Star key={s} size={16} fill={s <= Math.round(reviewsData.averageRating || 0) ? '#2F6B3A' : 'none'} color="#2F6B3A" />
                     ))}
                   </div>
-                  <span style={{ fontSize: '0.8rem', color: '#F5EBDD', opacity: 0.8, fontWeight: '600' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#806A57', fontWeight: '600' }}>
                     Based on {reviewsData.totalReviews || 0} reviews
                   </span>
                 </div>
@@ -1341,10 +1339,10 @@ export default function ProductDetail() {
                     const count = reviewsData.ratingDistribution?.[num] || 0;
                     const pct = reviewsData.totalReviews > 0 ? (count / reviewsData.totalReviews) * 100 : 0;
                     return (
-                      <div key={num} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem', color: '#F5EBDD' }}>
+                      <div key={num} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem', color: '#654B38' }}>
                         <span style={{ width: '24px', fontWeight: '700' }}>{num}★</span>
-                        <div style={{ flex: 1, height: '6px', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '999px', overflow: 'hidden' }}>
-                          <div style={{ width: `${pct}%`, height: '100%', backgroundColor: '#b9cd94', borderRadius: '999px', transition: 'width 0.5s ease-out' }} />
+                        <div style={{ flex: 1, height: '6px', backgroundColor: '#F1E5D4', borderRadius: '999px', overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', backgroundColor: '#2F6B3A', borderRadius: '999px', transition: 'width 0.5s ease-out' }} />
                         </div>
                         <span style={{ width: '24px', textAlign: 'right', opacity: 0.7, fontWeight: '600' }}>{count}</span>
                       </div>
@@ -1357,29 +1355,29 @@ export default function ProductDetail() {
               {Array.isArray(reviewsData.reviews) && reviewsData.reviews.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   {reviewsData.reviews.map((rev) => (
-                    <div key={rev.id} style={{ padding: '1.25rem', backgroundColor: 'rgba(0, 0, 0, 0.25)', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <div key={rev.id} style={{ padding: '1.25rem', backgroundColor: '#FCF8F1', borderRadius: '14px', border: '1px solid #DCC8AE' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                          <strong style={{ fontSize: '0.95rem', color: '#FFFDF9' }}>{rev.reviewerName}</strong>
+                          <strong style={{ fontSize: '0.95rem', color: '#32180D' }}>{rev.reviewerName}</strong>
                           {rev.isVerifiedPurchase && (
-                            <span style={{ fontSize: '0.72rem', backgroundColor: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '0.15rem 0.5rem', borderRadius: '999px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                            <span style={{ fontSize: '0.72rem', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1px solid #DCC8AE', padding: '0.15rem 0.5rem', borderRadius: '999px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
                               <CheckCircle2 size={11} /> Verified Purchase
                             </span>
                           )}
                         </div>
-                        <span style={{ fontSize: '0.78rem', color: 'rgba(245, 235, 221, 0.6)' }}>
+                        <span style={{ fontSize: '0.78rem', color: '#806A57' }}>
                           {new Date(rev.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </span>
                       </div>
 
-                      <div style={{ display: 'flex', color: '#b9cd94', marginBottom: '0.5rem' }}>
+                      <div style={{ display: 'flex', color: '#2F6B3A', marginBottom: '0.5rem' }}>
                         {[1, 2, 3, 4, 5].map((s) => (
-                          <Star key={s} size={14} fill={s <= rev.rating ? '#b9cd94' : 'none'} color="#b9cd94" />
+                          <Star key={s} size={14} fill={s <= rev.rating ? '#2F6B3A' : 'none'} color="#2F6B3A" />
                         ))}
                       </div>
 
                       {rev.comment && (
-                        <p style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.5', margin: '0 0 0.5rem 0' }}>
+                        <p style={{ fontSize: '0.9rem', color: '#654B38', lineHeight: '1.5', margin: '0 0 0.5rem 0' }}>
                           {rev.comment}
                         </p>
                       )}
@@ -1390,7 +1388,7 @@ export default function ProductDetail() {
                           src={rev.reviewImageUrl} 
                           alt="Customer review photo" 
                           onClick={() => setSelectedModalImage(rev.reviewImageUrl)}
-                          style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.2)', cursor: 'pointer', marginTop: '0.5rem' }} 
+                          style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #DCC8AE', cursor: 'pointer', marginTop: '0.5rem' }} 
                         />
                       )}
                     </div>
@@ -1398,9 +1396,9 @@ export default function ProductDetail() {
                 </div>
               ) : (
                 <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-                  <Star size={36} color="var(--accent-gold)" style={{ margin: '0 auto 0.75rem', opacity: 0.8 }} />
-                  <h4 style={{ fontSize: '1.1rem', color: '#FFFDF9', fontWeight: '800', margin: '0 0 0.35rem 0' }}>No reviews yet</h4>
-                  <p style={{ fontSize: '0.88rem', color: '#F5EBDD', opacity: 0.7, margin: 0 }}>Be the first to share your experience with this artisan millet bake!</p>
+                  <Star size={36} color="#2F6B3A" style={{ margin: '0 auto 0.75rem', opacity: 0.8 }} />
+                  <h4 style={{ fontSize: '1.1rem', color: '#32180D', fontWeight: '800', margin: '0 0 0.35rem 0' }}>No reviews yet</h4>
+                  <p style={{ fontSize: '0.88rem', color: '#654B38', margin: 0 }}>Be the first to share your experience with this artisan millet bake!</p>
                 </div>
               )}
             </div>
@@ -1570,7 +1568,7 @@ export default function ProductDetail() {
         {/* Related Products Section */}
         {relatedProducts.length > 0 && (
           <div>
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: '800', color: '#FFFDF9', marginBottom: '1.5rem' }}>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: '800', color: '#32180D', marginBottom: '1.5rem' }}>
               You May Also Like
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>

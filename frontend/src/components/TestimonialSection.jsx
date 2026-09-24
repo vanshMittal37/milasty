@@ -130,15 +130,15 @@ export default function TestimonialSection() {
       {/* ------------------------------------------------------------- */}
       <div
         style={{
-          backgroundColor: '#E5D3BF',
+          backgroundColor: '#FFF9F0',
           borderRadius: isMobile ? '18px' : '28px',
-          boxShadow: '0 16px 36px rgba(0, 0, 0, 0.4)',
+          boxShadow: '0 8px 28px rgba(43, 20, 11, 0.06)',
           overflow: 'hidden',
           display: 'grid',
           gridTemplateColumns: isMobile ? '1fr' : '42% 58%',
           alignItems: 'stretch',
           position: 'relative',
-          border: '1px solid #D9C3AE',
+          border: '1.5px solid #DCC8AE',
         }}
       >
         {/* Left Image Section */}
@@ -150,7 +150,7 @@ export default function TestimonialSection() {
             minHeight: isMobile ? '180px' : '380px',
             maxHeight: isMobile ? '220px' : 'none',
             overflow: 'hidden',
-            backgroundColor: '#2A1D15',
+            backgroundColor: '#F1E5D4',
           }}
         >
           <img
@@ -176,7 +176,7 @@ export default function TestimonialSection() {
                 bottom: 0,
                 width: '50px',
                 height: '100%',
-                color: '#E5D3BF',
+                color: '#FFF9F0',
                 pointerEvents: 'none',
                 zIndex: 2,
               }}
@@ -205,21 +205,21 @@ export default function TestimonialSection() {
           <div style={{ marginBottom: isMobile ? '0.75rem' : '1rem' }}>
             <span
               style={{
-                backgroundColor: '#D9C3AE',
-                color: '#4A341E',
+                backgroundColor: '#E3EEDC',
+                color: '#24572E',
                 padding: isMobile ? '0.35rem 0.85rem' : '0.4rem 1rem',
                 borderRadius: '20px',
                 fontSize: isMobile ? '0.72rem' : '0.74rem',
-                fontWeight: '700',
+                fontWeight: '800',
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.35rem',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+                border: '1px solid rgba(47, 107, 58, 0.25)',
               }}
             >
-              <span style={{ color: '#8C6C38' }}>★</span> CELEBRITY PICK
+              <span style={{ color: '#2F6B3A' }}>★</span> CELEBRITY PICK
             </span>
           </div>
 
@@ -228,17 +228,17 @@ export default function TestimonialSection() {
             style={{
               display: 'flex',
               gap: '4px',
-              color: '#586E37',
+              color: '#2F6B3A',
               marginBottom: isMobile ? '0.65rem' : '1rem',
             }}
           >
             {[...Array(5)].map((_, i) => (
-              <Star key={i} size={isMobile ? 16 : 18} fill="#586E37" color="#586E37" />
+              <Star key={i} size={isMobile ? 16 : 18} fill="#2F6B3A" color="#2F6B3A" />
             ))}
           </div>
 
           {/* Large Quote Mark */}
-          <div style={{ marginBottom: isMobile ? '0.4rem' : '0.5rem', color: '#9E805E' }}>
+          <div style={{ marginBottom: isMobile ? '0.4rem' : '0.5rem', color: '#2F6B3A' }}>
             <Quote size={isMobile ? 28 : 42} style={{ transform: 'rotate(180deg)' }} />
           </div>
 
@@ -248,7 +248,7 @@ export default function TestimonialSection() {
               fontSize: isMobile ? '0.95rem' : '1.18rem',
               fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
               fontStyle: 'italic',
-              color: '#3B2A1E',
+              color: '#32180D',
               lineHeight: isMobile ? '1.6' : '1.65',
               marginBottom: isMobile ? '1.25rem' : '1.75rem',
               fontWeight: '500',
@@ -264,9 +264,9 @@ export default function TestimonialSection() {
           <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.85rem' : '1.1rem' }}>
             <div
               style={{
-                width: '2.5px',
+                width: '3px',
                 height: isMobile ? '38px' : '44px',
-                backgroundColor: '#9B8161',
+                backgroundColor: '#2F6B3A',
                 borderRadius: '2px',
               }}
             />
@@ -276,7 +276,7 @@ export default function TestimonialSection() {
                   margin: 0,
                   fontSize: isMobile ? '1.02rem' : '1.12rem',
                   fontWeight: '800',
-                  color: '#281B13',
+                  color: '#32180D',
                   fontFamily: 'var(--font-serif), Georgia, serif',
                   lineHeight: '1.2',
                 }}
@@ -287,7 +287,7 @@ export default function TestimonialSection() {
                 style={{
                   margin: '0.2rem 0 0',
                   fontSize: isMobile ? '0.82rem' : '0.86rem',
-                  color: '#4F6331',
+                  color: '#2F6B3A',
                   fontWeight: '700',
                 }}
               >
@@ -306,9 +306,9 @@ export default function TestimonialSection() {
               position: 'absolute',
               bottom: '5px',
               right: '10px',
-              opacity: isMobile ? 0.12 : 0.16,
+              opacity: 0.08,
               pointerEvents: 'none',
-              color: '#604C37',
+              color: '#32180D',
             }}
           >
             <path
@@ -334,7 +334,7 @@ export default function TestimonialSection() {
       >
         <span
           style={{
-            color: 'var(--accent-gold, #c89b3c)',
+            color: '#2F6B3A',
             fontSize: isMobile ? '0.78rem' : '0.85rem',
             fontWeight: '800',
             letterSpacing: '0.12em',
@@ -348,7 +348,7 @@ export default function TestimonialSection() {
         <h2
           style={{
             fontSize: isMobile ? '1.8rem' : '2.6rem',
-            color: '#FFFDF9',
+            color: '#32180D',
             fontFamily: 'var(--font-serif)',
             fontWeight: '800',
             margin: '0 0 0.5rem',
@@ -359,7 +359,7 @@ export default function TestimonialSection() {
         </h2>
         <p
           style={{
-            color: 'rgba(255, 255, 255, 0.88)',
+            color: '#654B38',
             fontSize: isMobile ? '0.9rem' : '1.05rem',
             margin: 0,
             fontWeight: '500',
@@ -402,12 +402,10 @@ export default function TestimonialSection() {
               >
                 <div
                   style={{
-                    backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
+                    backgroundColor: '#FFF9F0',
                     borderRadius: '18px',
-                    border: '1px solid rgba(185, 205, 148, 0.25)',
-                    boxShadow: '0 10px 28px rgba(0, 0, 0, 0.4)',
+                    border: '1px solid #DCC8AE',
+                    boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                     padding: '1.25rem 1.15rem',
                     display: 'flex',
                     flexDirection: 'column',
@@ -422,17 +420,17 @@ export default function TestimonialSection() {
                       style={{
                         display: 'flex',
                         gap: '3px',
-                        color: '#8CB051',
+                        color: '#2F6B3A',
                         marginBottom: '0.65rem',
                       }}
                     >
                       {[...Array(review.rating)].map((_, i) => (
-                        <Star key={i} size={15} fill="#8CB051" color="#8CB051" />
+                        <Star key={i} size={15} fill="#2F6B3A" color="#2F6B3A" />
                       ))}
                     </div>
 
                     {/* Quote Icon */}
-                    <div style={{ marginBottom: '0.35rem', color: '#9B7D57' }}>
+                    <div style={{ marginBottom: '0.35rem', color: '#2F6B3A' }}>
                       <Quote size={24} style={{ transform: 'rotate(180deg)' }} />
                     </div>
 
@@ -443,7 +441,7 @@ export default function TestimonialSection() {
                         fontFamily:
                           'var(--font-serif), "Playfair Display", Georgia, serif',
                         fontStyle: 'italic',
-                        color: '#F0E6D8',
+                        color: '#32180D',
                         lineHeight: '1.55',
                         marginBottom: '1.25rem',
                         fontWeight: '500',
@@ -456,7 +454,7 @@ export default function TestimonialSection() {
                   {/* Bottom Customer Info */}
                   <div
                     style={{
-                      borderTop: '1px dotted #4A3A2C',
+                      borderTop: '1px solid #DCC8AE',
                       paddingTop: '0.85rem',
                       display: 'flex',
                       alignItems: 'center',
@@ -478,7 +476,7 @@ export default function TestimonialSection() {
                           height: '38px',
                           borderRadius: '50%',
                           objectFit: 'cover',
-                          border: '1.5px solid rgba(255, 255, 255, 0.2)',
+                          border: '1.5px solid #DCC8AE',
                         }}
                       />
                       <div>
@@ -487,7 +485,7 @@ export default function TestimonialSection() {
                             margin: 0,
                             fontSize: '0.9rem',
                             fontWeight: '700',
-                            color: '#FFFDF9',
+                            color: '#32180D',
                           }}
                         >
                           {review.name}
@@ -496,7 +494,7 @@ export default function TestimonialSection() {
                           <span
                             style={{
                               fontSize: '0.72rem',
-                              color: '#8CB051',
+                              color: '#2F6B3A',
                               fontWeight: '600',
                               display: 'inline-flex',
                               alignItems: 'center',
@@ -504,13 +502,13 @@ export default function TestimonialSection() {
                               marginTop: '0.1rem',
                             }}
                           >
-                            <CheckCircle2 size={12} color="#8CB051" /> Verified Buyer
+                            <CheckCircle2 size={12} color="#2F6B3A" /> Verified Buyer
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div style={{ opacity: 0.35, color: '#8CB051' }}>
+                    <div style={{ opacity: 0.4, color: '#2F6B3A' }}>
                       <svg
                         width="20"
                         height="20"
@@ -552,9 +550,9 @@ export default function TestimonialSection() {
                 width: '32px',
                 height: '32px',
                 borderRadius: '50%',
-                border: '1px solid rgba(185, 205, 148, 0.4)',
-                backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                color: '#A3B580',
+                border: '1px solid #DCC8AE',
+                backgroundColor: '#FFF9F0',
+                color: '#32180D',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -576,7 +574,7 @@ export default function TestimonialSection() {
                     height: '7px',
                     borderRadius: '4px',
                     backgroundColor:
-                      activeMobileIdx === idx ? '#A3B580' : 'rgba(255, 255, 255, 0.25)',
+                      activeMobileIdx === idx ? '#2F6B3A' : '#DCC8AE',
                     border: 'none',
                     padding: 0,
                     cursor: 'pointer',
@@ -595,9 +593,9 @@ export default function TestimonialSection() {
                 width: '32px',
                 height: '32px',
                 borderRadius: '50%',
-                border: '1px solid rgba(185, 205, 148, 0.4)',
-                backgroundColor: 'rgba(35, 21, 13, 0.85)',
-                color: '#A3B580',
+                border: '1px solid #DCC8AE',
+                backgroundColor: '#FFF9F0',
+                color: '#32180D',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -623,27 +621,27 @@ export default function TestimonialSection() {
             <div
               key={review.id}
               style={{
-                backgroundColor: 'rgba(35, 21, 13, 0.75)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
+                backgroundColor: '#FFF9F0',
                 borderRadius: '20px',
-                border: '1px solid rgba(185, 205, 148, 0.25)',
-                boxShadow: '0 12px 32px rgba(0, 0, 0, 0.4)',
+                border: '1px solid #DCC8AE',
+                boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
                 padding: '1.75rem',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 position: 'relative',
                 overflow: 'hidden',
-                transition: 'transform 0.3s ease, border-color 0.3s ease',
+                transition: 'transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.borderColor = 'rgba(185, 205, 148, 0.5)';
+                e.currentTarget.style.borderColor = '#2F6B3A';
+                e.currentTarget.style.boxShadow = '0 10px 24px rgba(43, 20, 11, 0.1)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'rgba(185, 205, 148, 0.25)';
+                e.currentTarget.style.borderColor = '#DCC8AE';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(43, 20, 11, 0.05)';
               }}
             >
               <div>
@@ -652,17 +650,17 @@ export default function TestimonialSection() {
                   style={{
                     display: 'flex',
                     gap: '4px',
-                    color: '#8CB051',
+                    color: '#2F6B3A',
                     marginBottom: '0.85rem',
                   }}
                 >
                   {[...Array(review.rating)].map((_, i) => (
-                    <Star key={i} size={16} fill="#8CB051" color="#8CB051" />
+                    <Star key={i} size={16} fill="#2F6B3A" color="#2F6B3A" />
                   ))}
                 </div>
 
                 {/* Quote Icon */}
-                <div style={{ marginBottom: '0.5rem', color: '#9B7D57' }}>
+                <div style={{ marginBottom: '0.5rem', color: '#2F6B3A' }}>
                   <Quote size={28} style={{ transform: 'rotate(180deg)' }} />
                 </div>
 
@@ -673,7 +671,7 @@ export default function TestimonialSection() {
                     fontFamily:
                       'var(--font-serif), "Playfair Display", Georgia, serif',
                     fontStyle: 'italic',
-                    color: '#F0E6D8',
+                    color: '#32180D',
                     lineHeight: '1.65',
                     marginBottom: '1.75rem',
                     fontWeight: '500',
@@ -686,7 +684,7 @@ export default function TestimonialSection() {
               {/* Bottom Customer Info & Verified Badge */}
               <div
                 style={{
-                  borderTop: '1px dotted #4A3A2C',
+                  borderTop: '1px solid #DCC8AE',
                   paddingTop: '1rem',
                   display: 'flex',
                   alignItems: 'center',
@@ -708,7 +706,7 @@ export default function TestimonialSection() {
                       height: '42px',
                       borderRadius: '50%',
                       objectFit: 'cover',
-                      border: '1.5px solid rgba(255, 255, 255, 0.2)',
+                      border: '1.5px solid #DCC8AE',
                     }}
                   />
                   <div>
@@ -717,7 +715,7 @@ export default function TestimonialSection() {
                         margin: 0,
                         fontSize: '0.95rem',
                         fontWeight: '700',
-                        color: '#FFFDF9',
+                        color: '#32180D',
                       }}
                     >
                       {review.name}
@@ -726,7 +724,7 @@ export default function TestimonialSection() {
                       <span
                         style={{
                           fontSize: '0.76rem',
-                          color: '#8CB051',
+                          color: '#2F6B3A',
                           fontWeight: '600',
                           display: 'inline-flex',
                           alignItems: 'center',
@@ -734,14 +732,14 @@ export default function TestimonialSection() {
                           marginTop: '0.15rem',
                         }}
                       >
-                        <CheckCircle2 size={13} color="#8CB051" /> Verified Buyer
+                        <CheckCircle2 size={13} color="#2F6B3A" /> Verified Buyer
                       </span>
                     )}
                   </div>
                 </div>
 
                 {/* Watermark leaf icon */}
-                <div style={{ opacity: 0.35, color: '#8CB051' }}>
+                <div style={{ opacity: 0.4, color: '#2F6B3A' }}>
                   <svg
                     width="22"
                     height="22"

@@ -6,233 +6,6 @@ import { useCart } from '../context/CartContext';
 import { initialProducts } from '../data/seedData';
 import ProductCard from '../components/ProductCard';
 
-// Encapsulated Sub-Component for individual Wishlist Cards
-function WishlistProductCard({ product }) {
-  const { addToCart, showToast } = useCart();
-  const { wishlistItems, toggleWishlist } = useWishlist();
-  const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
-  const [btnText, setBtnText] = useState('Add to Cart');
-
-  const selectedVariant = product.variants?.[selectedVariantIdx] || product.variants?.[0] || product;
-  const unitPrice = selectedVariant.price || product.price;
-
-  // Determine if this item is currently in the wishlist
-  const isAdded = wishlistItems.some(item => item._id === product._id || item.slug === product.slug);
-
-  const handleAddToCart = async () => {
-    setBtnText('Adding...');
-    try {
-      await addToCart(product, selectedVariant, 1);
-      setBtnText('✓ Added');
-      setTimeout(() => setBtnText('Add to Cart'), 1500);
-    } catch (e) {
-      setBtnText('Error');
-      setTimeout(() => setBtnText('Add to Cart'), 1500);
-    }
-  };
-
-  const handleHeartClick = () => {
-    toggleWishlist(product);
-    if (showToast) {
-      showToast(
-        isAdded ? '✓ Removed from wishlist' : '✓ Saved to wishlist',
-        'success'
-      );
-    }
-  };
-
-  return (
-    <div 
-      className="glass-card" 
-      style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        overflow: 'hidden', 
-        position: 'relative',
-        transition: 'transform 0.2s',
-        height: '100%'
-      }}
-      onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-      onMouseOut={(e) => e.currentTarget.style.transform = 'none'}
-    >
-      {/* Top Image area */}
-      <div style={{ position: 'relative', paddingTop: '80%', overflow: 'hidden', backgroundColor: 'transparent' }}>
-        <Link to={`/product/${product.slug}`}>
-          <img 
-            src={product.image} 
-            alt={product.title} 
-            style={{ 
-              position: 'absolute', 
-              top: 0, 
-              left: 0, 
-              width: '100%', 
-              height: '100%', 
-              objectFit: 'cover',
-              transition: 'transform 0.3s ease'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          />
-        </Link>
-
-        {/* Badge */}
-        {product.badges && product.badges.length > 0 && (
-          <span 
-            style={{
-              position: 'absolute',
-              top: '16px',
-              left: '16px',
-              fontSize: '0.65rem',
-              fontWeight: '800',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              color: '#24130D',
-              backgroundColor: 'var(--accent-gold)',
-              padding: '0.3rem 0.65rem',
-              borderRadius: '999px',
-              zIndex: 5
-            }}
-          >
-            {product.badges[0]}
-          </span>
-        )}
-
-        {/* Heart Quick Add/Remove */}
-        <button
-          onClick={handleHeartClick}
-          style={{
-            position: 'absolute',
-            top: '16px',
-            right: '16px',
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            backgroundColor: 'var(--bg-subtle)',
-            border: '1px solid var(--border-color)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            boxShadow: 'var(--shadow-sm)',
-            color: isAdded ? 'var(--accent-gold)' : 'var(--text-muted)',
-            zIndex: 5
-          }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-sand)')}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-subtle)')}
-          title={isAdded ? "Remove from Wishlist" : "Add to Wishlist"}
-        >
-          <Heart size={16} fill={isAdded ? "var(--accent-gold)" : "none"} color={isAdded ? "var(--accent-gold)" : "currentColor"} />
-        </button>
-      </div>
-
-      {/* Details Area */}
-      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'space-between' }}>
-        <div>
-          {/* Rating */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.5rem' }}>
-            {product.reviewCount > 0 ? (
-              <>
-                <div style={{ display: 'flex', color: 'var(--accent-gold)' }}>
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={11} fill={i < Math.round(product.rating) ? 'var(--accent-gold)' : 'none'} color="var(--accent-gold)" />
-                  ))}
-                </div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '700' }}>
-                  {Number(product.rating).toFixed(1)} ({product.reviewCount})
-                </span>
-              </>
-            ) : (
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600' }}>
-                No reviews yet
-              </span>
-            )}
-          </div>
-
-          {/* Title */}
-          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: '0 0 0.35rem 0' }}>
-            <Link to={`/product/${product.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-              {product.title}
-            </Link>
-          </h3>
-
-          {/* Description */}
-          <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: '0 0 1.25rem 0', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: '500' }}>
-            {product.subtitle || product.description}
-          </p>
-
-          {/* Variant Selectors Removed */}
-        </div>
-
-        {/* Pricing & Actions bottom container */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '700' }}>Price</span>
-            <div style={{ fontSize: '1.2rem', fontWeight: '900', color: 'var(--accent-gold)' }}>
-              ₹{unitPrice}
-              {selectedVariant.originalPrice && (
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textDecoration: 'line-through', marginLeft: '0.4rem', fontWeight: '500' }}>
-                  ₹{selectedVariant.originalPrice}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '0.5rem', width: '100%', alignItems: 'center' }}>
-            <Link
-              to={`/product/${product.slug}`}
-              className="btn-secondary"
-              title="View Details"
-              style={{
-                flex: 1,
-                padding: '0.7rem',
-                borderRadius: '12px',
-                fontWeight: '800',
-                textAlign: 'center',
-                borderColor: 'var(--accent-gold)',
-                color: 'var(--accent-gold)',
-                textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'transparent',
-                minHeight: '40px',
-                gap: '0.35rem'
-              }}
-            >
-              <Eye size={16} />
-              <span style={{ fontSize: '0.76rem' }}>Details</span>
-            </Link>
-
-            <button
-              onClick={handleAddToCart}
-              className="btn-primary add-cart-btn"
-              title="Add to Cart"
-              style={{
-                padding: '0.7rem 1rem',
-                borderRadius: '12px',
-                backgroundColor: 'var(--accent-gold)',
-                color: '#24130D',
-                border: 'none',
-                fontWeight: '800',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.35rem',
-                cursor: 'pointer',
-                minHeight: '40px',
-                flex: 1
-              }}
-            >
-              <ShoppingBag size={15} />
-              <span className="cart-btn-text" style={{ fontSize: '0.76rem' }}>Cart</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function WishlistPage() {
   const { wishlistItems, toggleWishlist } = useWishlist();
   const { addToCart, showToast } = useCart();
@@ -248,13 +21,6 @@ export default function WishlistPage() {
   const scrollRight = (ref) => {
     if (ref.current) {
       ref.current.scrollBy({ left: 320, behavior: 'smooth' });
-    }
-  };
-
-  const handleQuickRemove = (product) => {
-    toggleWishlist(product);
-    if (showToast) {
-      showToast(`✓ Removed from wishlist`, 'info');
     }
   };
 
@@ -307,29 +73,17 @@ export default function WishlistPage() {
         maxWidth: '100%',
         overflowX: 'hidden',
         boxSizing: 'border-box',
-        position: 'relative',
-        backgroundImage: 'url(/images/ritiual_background_image.jpeg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#F7F0E5',
+        color: '#2B170D'
       }}
     >
-      {/* Dark overlay for readability */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(135deg, rgba(20, 10, 5, 0.30) 0%, rgba(36, 19, 13, 0.22) 100%)',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }} />
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div>
 
       {/* 1. HERO SECTION */}
       <section
         className="wishlist-hero-section"
         style={{
-          padding: '5rem 1.5rem 3.5rem',
+          padding: '3rem 1.5rem 2.5rem',
           textAlign: 'center',
           maxWidth: '800px',
           margin: '0 auto',
@@ -337,15 +91,12 @@ export default function WishlistPage() {
         }}
       >
         <div 
-          className="glass-card"
           style={{
-            backgroundColor: 'rgba(20, 10, 5, 0.18)',
-            backdropFilter: 'blur(15px) saturate(140%)',
-            WebkitBackdropFilter: 'blur(15px) saturate(140%)',
-            borderRadius: '28px',
-            border: '1px solid rgba(255, 255, 255, 0.20)',
-            boxShadow: '0 12px 36px rgba(0, 0, 0, 0.25)',
-            padding: '2.75rem 2rem 2.25rem',
+            backgroundColor: '#FFF9F0',
+            borderRadius: '24px',
+            border: '1px solid #DCC8AE',
+            boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)',
+            padding: '2.5rem 2rem 2rem',
             display: 'inline-block',
             width: '100%',
             boxSizing: 'border-box',
@@ -356,12 +107,12 @@ export default function WishlistPage() {
               fontSize: '0.74rem',
               textTransform: 'uppercase',
               letterSpacing: '0.12em',
-              color: '#b9cd94',
+              color: '#2F6B3A',
               fontWeight: '850',
-              backgroundColor: 'rgba(36, 79, 33, 0.35)',
+              backgroundColor: '#E3EEDC',
               padding: '0.4rem 0.95rem',
               borderRadius: '999px',
-              border: '1.5px solid rgba(185, 205, 148, 0.4)',
+              border: '1px solid #DCC8AE',
               display: 'inline-block',
               marginBottom: '1rem'
             }}
@@ -369,25 +120,24 @@ export default function WishlistPage() {
             Saved For Later
           </span>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <Heart size={26} color="#b9cd94" fill="#b9cd94" />
+            <Heart size={26} color="#2F6B3A" fill="#2F6B3A" />
             <h1
               style={{
                 fontSize: '2.5rem',
                 fontFamily: 'var(--font-serif)',
-                color: '#FFFDF9',
+                color: '#32180D',
                 fontWeight: '850',
                 margin: 0,
-                letterSpacing: '-0.01em',
-                textShadow: '0 2px 8px rgba(0,0,0,0.4)'
+                letterSpacing: '-0.01em'
               }}
             >
               My Wishlist
             </h1>
           </div>
-          <p style={{ fontSize: '1rem', color: '#F5EBDD', lineHeight: '1.6', margin: '0 0 0.85rem 0', fontWeight: '550' }}>
+          <p style={{ fontSize: '1rem', color: '#654B38', lineHeight: '1.6', margin: '0 0 0.85rem 0', fontWeight: '500' }}>
             Keep your favourite MILASTY bakes close and discover them whenever you're ready.
           </p>
-          <span style={{ fontSize: '0.82rem', color: '#b9cd94', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em', backgroundColor: 'rgba(36, 79, 33, 0.35)', padding: '0.35rem 0.85rem', borderRadius: '8px', border: '1px solid rgba(185, 205, 148, 0.4)', display: 'inline-block' }}>
+          <span style={{ fontSize: '0.82rem', color: '#2F6B3A', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.06em', backgroundColor: '#E3EEDC', padding: '0.35rem 0.85rem', borderRadius: '8px', border: '1px solid #DCC8AE', display: 'inline-block' }}>
             {wishlistItems.length} {wishlistItems.length === 1 ? 'ITEM' : 'ITEMS'} SAVED
           </span>
         </div>
@@ -397,28 +147,25 @@ export default function WishlistPage() {
       <div className="container wishlist-main-container" style={{ maxWidth: '1200px' }}>
         
         {wishlistItems.length === 0 ? (
-          /* 7. EMPTY WISHLIST STATE */
+          /* EMPTY WISHLIST STATE */
           <div style={{ display: 'flex', flexDirection: 'column', gap: '5rem' }}>
             <div
-              className="glass-card"
               style={{
-                padding: '4rem 2rem',
+                padding: '3.5rem 2rem',
                 textAlign: 'center',
-                backgroundColor: 'rgba(20, 10, 5, 0.18)',
-                backdropFilter: 'blur(15px) saturate(140%)',
-                WebkitBackdropFilter: 'blur(15px) saturate(140%)',
+                backgroundColor: '#FFF9F0',
                 borderRadius: '24px',
-                border: '1px solid rgba(255, 255, 255, 0.20)',
+                border: '1px solid #DCC8AE',
                 maxWidth: '620px',
                 margin: '0 auto',
-                boxShadow: '0 12px 36px rgba(0, 0, 0, 0.25)'
+                boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)'
               }}
             >
-              <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(36, 79, 33, 0.4)', border: '1px solid rgba(185, 205, 148, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b9cd94', margin: '0 auto 1.5rem' }}>
-                <Heart size={28} color="#b9cd94" />
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2F6B3A', margin: '0 auto 1.5rem' }}>
+                <Heart size={28} color="#2F6B3A" />
               </div>
-              <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: '0 0 0.5rem' }}>Nothing saved yet.</h3>
-              <p style={{ color: '#F5EBDD', fontSize: '0.92rem', lineHeight: '1.6', marginBottom: '2rem', marginTop: '0.5rem', fontWeight: '550' }}>
+              <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 0.5rem' }}>Nothing saved yet.</h3>
+              <p style={{ color: '#654B38', fontSize: '0.92rem', lineHeight: '1.6', marginBottom: '2rem', marginTop: '0.5rem', fontWeight: '500' }}>
                 Your favourite MILASTY bakes will appear here when you tap the heart icon.
               </p>
 
@@ -429,7 +176,7 @@ export default function WishlistPage() {
                   style={{
                     padding: '0.9rem 2.25rem',
                     fontSize: '0.9rem',
-                    backgroundColor: '#244f21',
+                    backgroundColor: '#2F6B3A',
                     color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '999px',
@@ -444,7 +191,7 @@ export default function WishlistPage() {
                   to="/shop"
                   style={{
                     fontSize: '0.84rem',
-                    color: '#b9cd94',
+                    color: '#2F6B3A',
                     fontWeight: '850',
                     textDecoration: 'none',
                     textTransform: 'uppercase',
@@ -456,25 +203,25 @@ export default function WishlistPage() {
               </div>
             </div>
 
-            {/* 8. RECOMMENDED PRODUCTS */}
-            <section style={{ borderTop: '1px solid rgba(255, 255, 255, 0.15)', paddingTop: '5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem' }}>
+            {/* RECOMMENDED PRODUCTS */}
+            <section style={{ borderTop: '1px solid #DCC8AE', paddingTop: '4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem' }}>
                 <div>
-                  <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Recommendations</span>
-                  <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+                  <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Recommendations</span>
+                  <h2 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0 }}>
                     You May Also Love
                   </h2>
                 </div>
                 <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
                   <button
                     onClick={() => scrollLeft(recRef)}
-                    style={{ backgroundColor: 'rgba(255, 250, 242, 0.65)', border: '1px solid rgba(100,65,35,0.20)', color: '#24130D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
                     <ChevronLeft size={16} />
                   </button>
                   <button
                     onClick={() => scrollRight(recRef)}
-                    style={{ backgroundColor: 'rgba(255, 250, 242, 0.65)', border: '1px solid rgba(100,65,35,0.20)', color: '#24130D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
                     <ChevronRight size={16} />
                   </button>
@@ -486,7 +233,7 @@ export default function WishlistPage() {
                 className="wishlist-recommendations-grid"
                 style={{ 
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
                   gap: '1.5rem',
                   width: '100%',
                 }}
@@ -500,20 +247,20 @@ export default function WishlistPage() {
         ) : (
           /* WISHLIST HAS PRODUCTS */
           <div>
-            {/* 6. WISHLIST TOOLBAR */}
+            {/* WISHLIST TOOLBAR */}
             <div
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                justify: 'space-between',
                 alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: '1rem',
                 marginBottom: '2rem',
                 paddingBottom: '1rem',
-                borderBottom: '1px solid rgba(100, 65, 35, 0.15)'
+                borderBottom: '1px solid #DCC8AE'
               }}
             >
-              <span style={{ fontSize: '0.9rem', color: '#6A564A', fontWeight: '700' }}>
+              <span style={{ fontSize: '0.9rem', color: '#654B38', fontWeight: '700' }}>
                 Showing {sortedWishlistItems.length} {sortedWishlistItems.length === 1 ? 'saved bake' : 'saved bakes'}
               </span>
 
@@ -526,11 +273,11 @@ export default function WishlistPage() {
                   style={{
                     padding: '0.65rem 1rem',
                     borderRadius: '12px',
-                    border: '1.5px solid rgba(100, 65, 35, 0.22)',
+                    border: '1px solid #DCC8AE',
                     fontSize: '0.8rem',
-                    color: '#24130D',
+                    color: '#32180D',
                     fontWeight: '700',
-                    backgroundColor: 'rgba(245, 235, 220, 0.55)',
+                    backgroundColor: '#FFF9F0',
                     outline: 'none',
                     cursor: 'pointer',
                     minHeight: '38px'
@@ -549,7 +296,7 @@ export default function WishlistPage() {
                     padding: '0.65rem 1.25rem',
                     fontSize: '0.8rem',
                     borderRadius: '12px',
-                    backgroundColor: '#24130D',
+                    backgroundColor: '#2F6B3A',
                     color: '#FFFFFF',
                     border: 'none',
                     fontWeight: '800',
@@ -567,7 +314,7 @@ export default function WishlistPage() {
               </div>
             </div>
 
-            {/* 2. WISHLIST PRODUCT GRID */}
+            {/* WISHLIST PRODUCT GRID */}
             <div
               className="wishlist-items-grid"
               style={{
@@ -585,25 +332,25 @@ export default function WishlistPage() {
               ))}
             </div>
 
-            {/* 8. YOU MAY ALSO LOVE RECOMMENDATIONS */}
-            <section style={{ borderTop: '1px solid rgba(255, 255, 255, 0.18)', paddingTop: '4rem', marginBottom: '4rem' }}>
+            {/* YOU MAY ALSO LOVE RECOMMENDATIONS */}
+            <section style={{ borderTop: '1px solid #DCC8AE', paddingTop: '4rem', marginBottom: '4rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                  <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', fontWeight: '850', display: 'block', marginBottom: '0.25rem' }}>Recommendations</span>
-                  <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '850', margin: 0 }}>You May Also Love</h2>
+                  <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.25rem' }}>Recommendations</span>
+                  <h2 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0 }}>You May Also Love</h2>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button 
                     onClick={() => scrollLeft(recRef)} 
                     aria-label="Scroll Left" 
-                    style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '38px', height: '38px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '38px', height: '38px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
                     <ChevronLeft size={16} />
                   </button>
                   <button 
                     onClick={() => scrollRight(recRef)} 
                     aria-label="Scroll Right" 
-                    style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFFDF9', width: '38px', height: '38px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '38px', height: '38px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
                     <ChevronRight size={16} />
                   </button>
@@ -615,7 +362,7 @@ export default function WishlistPage() {
                 className="wishlist-recommendations-grid"
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
                   gap: '1.5rem',
                   width: '100%',
                 }}
@@ -626,21 +373,19 @@ export default function WishlistPage() {
               </div>
             </section>
 
-            {/* 9. STILL EXPLORING CTA */}
-            <section style={{ borderTop: '1px solid rgba(255, 255, 255, 0.18)', paddingTop: '6rem', textAlign: 'center' }}>
+            {/* STILL EXPLORING CTA */}
+            <section style={{ borderTop: '1px solid #DCC8AE', paddingTop: '4rem', textAlign: 'center' }}>
               <div style={{
-                backgroundColor: 'rgba(18, 9, 4, 0.30)',
-                backdropFilter: 'blur(30px) saturate(150%)',
-                WebkitBackdropFilter: 'blur(30px) saturate(150%)',
+                backgroundColor: '#FFF9F0',
                 borderRadius: '24px',
-                border: '1px solid rgba(255, 255, 255, 0.20)',
-                boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                border: '1px solid #DCC8AE',
+                boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)',
                 padding: '3.5rem 2rem',
               }}>
-                <h2 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: '#FFFDF9', fontWeight: '800', marginBottom: '0.75rem', margin: '0 0 0.75rem' }}>
+                <h2 style={{ fontSize: '2.4rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '800', marginBottom: '0.75rem', margin: '0 0 0.75rem' }}>
                   Still Exploring?
                 </h2>
-                <p style={{ fontSize: '1rem', color: '#F5EBDD', lineHeight: '1.65', marginBottom: '2.25rem', fontWeight: '500', marginTop: '0.5rem' }}>
+                <p style={{ fontSize: '1rem', color: '#654B38', lineHeight: '1.65', marginBottom: '2.25rem', fontWeight: '500', marginTop: '0.5rem' }}>
                   Discover more handcrafted MILASTY bakes made for your everyday rituals.
                 </p>
                 <Link
@@ -648,11 +393,11 @@ export default function WishlistPage() {
                   style={{
                     padding: '0.95rem 2.25rem',
                     fontSize: '0.9rem',
-                    backgroundColor: '#244f21',
+                    backgroundColor: '#2F6B3A',
                     color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '999px',
-                    fontWeight: '800',
+                    fontWeight: '850',
                     textDecoration: 'none',
                     display: 'inline-block'
                   }}
@@ -666,18 +411,10 @@ export default function WishlistPage() {
 
       </div>
 
-      {/* Hidden scrollbar styles */}
-      <style>{`
-        .horizontal-scroll-container::-webkit-scrollbar {
-          display: none !important;
-        }
-        .horizontal-scroll-container {
-          -ms-overflow-style: none !important;
-          scrollbar-width: none !important;
-        }
-      `}</style>
-
       </div>
+    </div>
+  );
+}
     </div>
   );
 }
