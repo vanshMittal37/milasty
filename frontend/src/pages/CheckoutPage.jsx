@@ -13,7 +13,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cartItems, subtotal, appliedCoupon, couponDiscountAmount, updateCartItemCustomization, removeCartItemCustomization, clearCart } = useCart();
   const { user, isAuthenticated, addAddress, updateAddress } = useAuth();
-  const { calculateDeliveryFee } = useDelivery();
+  const { deliveryInfo, calculateDeliveryFee } = useDelivery();
 
   const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
 

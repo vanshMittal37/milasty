@@ -32,6 +32,7 @@ export default function CartDrawer() {
   const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
 
   const {
+    deliveryInfo,
     calculateDeliveryFee,
   } = useDelivery();
   const [pincodeInput, setPincodeInput] = useState('');
