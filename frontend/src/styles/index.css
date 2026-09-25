@@ -4218,4 +4218,12 @@ footer input[type="text"] {
   z-index: 0 !important;
   opacity: 1 !important;
   visibility: visible !important;
+}
+
+/* Ensure Header Cart Button Icon is always crisp white */
+.cart-button svg,
+button.cart-button svg,
+.btn-primary.cart-button svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
