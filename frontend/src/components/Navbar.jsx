@@ -360,7 +360,7 @@ export default function Navbar() {
                     transition: 'all 0.25s ease'
                   }}
                 >
-                  <ShoppingBag size={19} strokeWidth={2.2} color="#FFFFFF" />
+                  <ShoppingBag size={18} strokeWidth={2.4} color="#FFFFFF" stroke="#FFFFFF" style={{ color: '#FFFFFF', stroke: '#FFFFFF', display: 'block' }} />
                   <span 
                     className="cart-badge"
                     style={{ 

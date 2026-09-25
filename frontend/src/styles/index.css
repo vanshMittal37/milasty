@@ -2520,17 +2520,16 @@ a {
   }
 
   .cart-button {
-    width: 44px !important;
-    height: 44px !important;
+    width: 40px !important;
+    height: 40px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 0 !important;
     border-radius: 50% !important;
     position: relative !important;
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+    background-color: #244f21 !important;
+    border: 1px solid #b9cd94 !important;
     color: #FFFFFF !important;
   }
 
@@ -4223,7 +4222,13 @@ footer input[type="text"] {
 /* Ensure Header Cart Button Icon is always crisp white */
 .cart-button svg,
 button.cart-button svg,
-.btn-primary.cart-button svg {
+.btn-primary.cart-button svg,
+.cart-button svg path,
+button.cart-button svg path,
+.cart-button svg rect,
+button.cart-button svg rect {
   color: #FFFFFF !important;
   stroke: #FFFFFF !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
