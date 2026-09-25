@@ -4176,8 +4176,32 @@ footer input[type="text"] {
 }
 
 /* ==========================================
-   HOME PAGE SECOND BACKGROUND (home_bg.jpeg)
+   HOME PAGE BACKGROUND & TYPOGRAPHY SYSTEM
    ========================================== */
+.home-hero-section .hero-heading {
+  text-align: left !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.home-hero-section .hero-heading span {
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: inherit !important;
+  font-family: inherit !important;
+  font-style: normal !important;
+}
+
+@media (max-width: 767px) {
+  .home-hero-section .hero-heading {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
 .home-content-wrapper {
   position: relative !important;
   background-color: #F7EEDC !important;
@@ -4186,7 +4210,7 @@ footer input[type="text"] {
 .home-content-background {
   position: absolute !important;
   inset: 0 !important;
-  background-image: url('/images/home_bg.jpeg') !important;
+  background-image: url('/home_bg.png'), url('/images/home_bg.jpeg') !important;
   background-size: cover !important;
   background-position: center top !important;
   background-attachment: fixed !important;

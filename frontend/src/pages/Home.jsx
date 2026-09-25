@@ -193,7 +193,7 @@ export default function Home() {
     <div className="home-page-container" style={{ backgroundColor: '#F7F0E5', position: 'relative', overflowX: 'hidden' }}>
 
       {/* ================================================================== */}
-      {/* 1. HERO SECTION — IMAGE 1: home_section_one.jpeg                   */}
+      {/* 1. HERO SECTION — IMAGE 1: home_section_one.png                    */}
       {/* ================================================================== */}
       <section
         ref={heroRef}
@@ -217,7 +217,7 @@ export default function Home() {
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundImage: 'url(/images/home_section_one.jpeg)',
+            backgroundImage: 'url(/home_section_one.png)',
             backgroundSize: 'cover',
             backgroundPosition: isMobile ? 'center center' : 'center right',
             backgroundRepeat: 'no-repeat',
@@ -225,15 +225,15 @@ export default function Home() {
           }}
         />
 
-        {/* Layer 1: Warm Soft Gradient Overlay for Left Content Readability */}
+        {/* Layer 1: Soft Gradient Overlay — Left side text contrast while keeping right side visual photography crisp */}
         <div
           className="hero-overlay-layer"
           style={{
             position: 'absolute',
             inset: 0,
             background: isMobile
-              ? 'linear-gradient(to bottom, rgba(247, 240, 229, 0.88) 0%, rgba(247, 240, 229, 0.72) 100%)'
-              : 'linear-gradient(to right, rgba(247, 240, 229, 0.94) 0%, rgba(247, 240, 229, 0.82) 48%, rgba(247, 240, 229, 0.15) 100%)',
+              ? 'linear-gradient(to bottom, rgba(250, 243, 230, 0.94) 0%, rgba(250, 243, 230, 0.78) 55%, rgba(250, 243, 230, 0.15) 100%)'
+              : 'linear-gradient(to right, rgba(250, 243, 230, 0.96) 0%, rgba(250, 243, 230, 0.82) 42%, rgba(250, 243, 230, 0.25) 72%, rgba(250, 243, 230, 0) 100%)',
             zIndex: 1,
             pointerEvents: 'none',
           }}
@@ -249,12 +249,12 @@ export default function Home() {
             margin: '0 auto',
             width: '100%',
             display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '1.15fr 0.85fr',
-            gap: isMobile ? '2rem' : '3.5rem',
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 1.25fr',
+            gap: isMobile ? '2rem' : '3rem',
             alignItems: 'center',
           }}
         >
-          {/* Left Column: Real HTML Editable Content & CTAs */}
+          {/* Left Column: Real HTML Editable Content & CTAs (~42-45% width) */}
           <div
             style={{
               display: 'flex',
@@ -285,21 +285,25 @@ export default function Home() {
               <span>HANDCRAFTED MILLET BAKES</span>
             </div>
 
-            {/* Heading */}
+            {/* Heading — Ancient Grains & Modern Cravings have EQUAL visual hierarchy */}
             <h1
               className="hero-heading"
               style={{
-                fontSize: 'clamp(2.6rem, 5.2vw, 4.4rem)',
-                lineHeight: '1.08',
-                color: '#3A1F14',
+                fontSize: isMobile ? 'clamp(38px, 9.5vw, 54px)' : 'clamp(44px, 5vw, 76px)',
+                lineHeight: '1.05',
                 marginBottom: '1.25rem',
                 letterSpacing: '-0.02em',
                 fontFamily: 'var(--font-serif, Georgia, serif)',
                 fontWeight: '800',
+                textAlign: isMobile ? 'center' : 'left',
               }}
             >
-              Ancient Grains.<br />
-              <span style={{ color: '#1F6B35', fontStyle: 'italic' }}>Modern Cravings.</span>
+              <span style={{ color: '#3A1F14', display: 'block', fontSize: 'inherit', fontWeight: 'inherit', lineHeight: 'inherit' }}>
+                Ancient Grains.
+              </span>
+              <span style={{ color: '#1F6B35', display: 'block', fontSize: 'inherit', fontWeight: 'inherit', lineHeight: 'inherit' }}>
+                Modern Cravings.
+              </span>
             </h1>
 
             {/* Description */}
@@ -312,6 +316,7 @@ export default function Home() {
                 marginBottom: '2rem',
                 maxWidth: '560px',
                 fontWeight: '500',
+                textAlign: isMobile ? 'center' : 'left',
               }}
             >
               Delicious cookies, crackers & brownies made with <strong>millets</strong>, <strong>jaggery & desi ghee</strong> — crafted for the way you snack today.
@@ -386,7 +391,7 @@ export default function Home() {
                   fontSize: '0.95rem',
                   color: '#3A1F14',
                   fontWeight: '800',
-                  backgroundColor: 'rgba(255, 249, 239, 0.8)',
+                  backgroundColor: 'rgba(255, 249, 239, 0.85)',
                   border: '1.5px solid #3A1F14',
                   borderRadius: '999px',
                   textDecoration: 'none',
@@ -403,11 +408,11 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right Column: Visual Placement Frame on Desktop */}
+          {/* Right Column: Visual Placement Area (~55-58% width) */}
           {!isMobile && (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              {/* Transparent spacer allowing the background image's photography to show crisply */}
-              <div style={{ width: '100%', minHeight: '400px' }} />
+              {/* Transparent spacer allowing the background image's millet product photography to show crisp & clear */}
+              <div style={{ width: '100%', minHeight: '420px' }} />
             </div>
           )}
         </div>
@@ -455,7 +460,7 @@ export default function Home() {
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundImage: 'url(/images/home_bg.jpeg)',
+            backgroundImage: 'url(/home_bg.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center top',
             backgroundAttachment: 'fixed',
