@@ -200,14 +200,12 @@ export default function Home() {
         className="home-hero-section"
         style={{
           position: 'relative',
-          minHeight: isMobile ? 'auto' : '680px',
-          height: isMobile ? 'auto' : '82vh',
-          maxHeight: '900px',
+          minHeight: isMobile ? 'auto' : '540px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           boxSizing: 'border-box',
-          padding: isMobile ? '3.5rem 1.25rem 4rem' : '4.5rem 2.5rem 5rem',
+          padding: isMobile ? '2.5rem 1.25rem 2.5rem' : '3.75rem 2.5rem 3rem',
           overflow: 'hidden',
         }}
       >
@@ -234,6 +232,20 @@ export default function Home() {
             background: isMobile
               ? 'linear-gradient(to bottom, rgba(250, 243, 230, 0.94) 0%, rgba(250, 243, 230, 0.78) 55%, rgba(250, 243, 230, 0.15) 100%)'
               : 'linear-gradient(to right, rgba(250, 243, 230, 0.96) 0%, rgba(250, 243, 230, 0.82) 42%, rgba(250, 243, 230, 0.25) 72%, rgba(250, 243, 230, 0) 100%)',
+            zIndex: 1,
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Layer 1.5: Bottom Organic Fade directly into home_bg to eliminate any blank gap */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '70px',
+            background: 'linear-gradient(to bottom, rgba(250, 243, 230, 0) 0%, rgba(247, 238, 220, 0.5) 60%, rgba(247, 238, 220, 0.95) 100%)',
             zIndex: 1,
             pointerEvents: 'none',
           }}
@@ -412,37 +424,11 @@ export default function Home() {
           {!isMobile && (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               {/* Transparent spacer allowing the background image's millet product photography to show crisp & clear */}
-              <div style={{ width: '100%', minHeight: '420px' }} />
+              <div style={{ width: '100%', minHeight: '360px' }} />
             </div>
           )}
         </div>
       </section>
-
-      {/* ================================================================== */}
-      {/* ORGANIC CURVED SVG TRANSITION FROM HERO TO HOME_BG                */}
-      {/* ================================================================== */}
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 4,
-          marginTop: '-40px',
-          lineHeight: 0,
-          overflow: 'hidden',
-          pointerEvents: 'none',
-        }}
-      >
-        <svg
-          viewBox="0 0 1440 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          style={{ width: '100%', height: 'auto', display: 'block' }}
-        >
-          <path
-            d="M0,32L48,42.7C96,53,192,75,288,80C384,85,480,75,576,64C672,53,768,43,864,48C960,53,1056,75,1152,80C1248,85,1344,75,1392,70L1440,64L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
-            fill="#F7EEDC"
-          />
-        </svg>
-      </div>
 
       {/* ================================================================== */}
       {/* 2. HOME CONTENT WRAPPER — IMAGE 2: home_bg.jpeg (CONTINUOUS BG)    */}
