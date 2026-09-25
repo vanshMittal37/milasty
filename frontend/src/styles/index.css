@@ -183,6 +183,8 @@
   border-color: rgba(47, 125, 50, 0.35) !important;
   color: #215C27 !important;
 }
+
+:root {
   /* Dark Customer-Portal MILASTY Admin Design Tokens */
   --admin-bg: #090D0A;
   --admin-surface: #0D120E;
@@ -3373,12 +3375,6 @@ footer.transparent-blurred-footer {
   align-items: center !important;
   justify-content: center !important;
   color: #85B870 !important;
-}
-  border: 1px solid var(--admin-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--admin-accent);
 }
 
 .shipping-step-card:hover {
