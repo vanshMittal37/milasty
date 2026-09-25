@@ -242,6 +242,11 @@ export const createPaymentSession = async (req, res) => {
       }
     }
 
+    const customizationSummary = validatedItems
+      .filter((i) => i.customization_note)
+      .map((i) => `${i.product_title} (${i.variant_name}): "${i.customization_note}"`)
+      .join(' | ');
+
     // Save session in memory store & optional DB table
     const sessionData = {
       id: razorpayOrder.id,
@@ -262,6 +267,7 @@ export const createPaymentSession = async (req, res) => {
       coupon_code: validatedCouponCode,
       grandTotal,
       amountInPaise,
+      notes: customizationSummary || null,
       status: 'created',
       createdAt: new Date().toISOString(),
     };
@@ -342,6 +348,7 @@ export const finalizeOrderFromPayment = async ({
     payment_id: razorpay_payment_id || razorpay_order_id || null,
     payment_status: 'paid',
     order_status: 'confirmed',
+    notes: session?.notes || null,
   };
 
   let newOrder = null;
@@ -367,13 +374,23 @@ export const finalizeOrderFromPayment = async ({
           unit_price: item.unit_price,
           quantity: item.quantity,
           total_price: item.total_price,
-          customization_note: item.customization_note || null,
+          customization_note: item.customization_note || item.customizationNote || item.instruction || item.notes || null,
         }));
 
-        const { data: insertedItems } = await supabase
+        let { data: insertedItems, error: itemsErr } = await supabase
           .from('order_items')
           .insert(orderItemsRows)
           .select();
+
+        if (itemsErr) {
+          console.warn('Verify payment order_items insert warning:', itemsErr.message);
+          const fallbackRows = orderItemsRows.map(({ customization_note, ...rest }) => rest);
+          const { data: fbItems } = await supabase
+            .from('order_items')
+            .insert(fallbackRows)
+            .select();
+          insertedItems = fbItems ? fbItems.map((item, idx) => ({ ...item, customization_note: session.items[idx]?.customization_note || null })) : null;
+        }
 
         if (insertedItems) {
           newOrder.order_items = insertedItems;

@@ -118,10 +118,12 @@ export default function AdminOrderList() {
 
     // Customization filter
     if (customizationFilter) {
-      const items = o.order_items || o.items || [];
-      const customizedCount = items.filter((i) => (i.customization_note || i.customizationNote || '').trim().length > 0).length;
-      if (customizationFilter === 'customized' && customizedCount === 0) return false;
-      if (customizationFilter === 'not_customized' && customizedCount > 0) return false;
+      const items = o.items || o.order_items || [];
+      const hasNotesOnOrder = Boolean((o.notes || o.special_instructions || '').trim());
+      const customizedCount = items.filter((i) => (i.customization_note || i.customizationNote || i.instruction || i.notes || '').trim().length > 0).length;
+      const isCustomized = customizedCount > 0 || hasNotesOnOrder;
+      if (customizationFilter === 'customized' && !isCustomized) return false;
+      if (customizationFilter === 'not_customized' && isCustomized) return false;
     }
 
     return true;
@@ -257,8 +259,8 @@ export default function AdminOrderList() {
                 const payStatus = (o.paymentStatus || o.payment_status || 'pending').toLowerCase();
                 const payMethod = o.paymentMethod || o.payment_method || 'Cash on Delivery';
 
-                const orderItemsList = o.order_items || o.items || [];
-                const customizedCount = orderItemsList.filter((i) => (i.customization_note || i.customizationNote || '').trim().length > 0).length;
+                const orderItemsList = o.items || o.order_items || [];
+                const customizedCount = orderItemsList.filter((i) => (i.customization_note || i.customizationNote || i.instruction || i.notes || '').trim().length > 0).length || (o.notes ? 1 : 0);
 
                 return (
                   <tr key={o.id || o._id}>
@@ -477,6 +479,26 @@ export default function AdminOrderList() {
               </div>
             </div>
 
+            {/* Order Level Customization Summary Banner */}
+            {selectedOrder.notes && (
+              <div style={{
+                marginBottom: '1.25rem',
+                padding: '0.85rem 1rem',
+                backgroundColor: 'rgba(217, 119, 6, 0.12)',
+                border: '1px solid rgba(217, 119, 6, 0.35)',
+                borderRadius: '12px',
+                color: '#F5F5F5',
+              }}>
+                <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#F59E0B', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <Sparkles size={14} color="#F59E0B" />
+                  <span>Order Customization Summary</span>
+                </div>
+                <div style={{ fontSize: '0.86rem', fontWeight: '600', fontStyle: 'italic', color: '#FDE68A', lineHeight: '1.4' }}>
+                  "{selectedOrder.notes}"
+                </div>
+              </div>
+            )}
+
             {/* Ordered Items List */}
             <div style={{ marginBottom: '1.5rem' }}>
               <h4 style={{ fontSize: '0.85rem', color: 'var(--admin-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', fontWeight: '800' }}>
@@ -484,7 +506,7 @@ export default function AdminOrderList() {
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {(selectedOrder.items || selectedOrder.order_items || []).map((item, idx) => {
-                  const note = item.customization_note || item.customizationNote;
+                  const note = item.customization_note || item.customizationNote || item.instruction || item.notes;
                   return (
                     <div key={idx} style={{ padding: '0.85rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--admin-border)', borderRadius: '10px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

@@ -152,7 +152,7 @@ export const createOrder = async (req, res) => {
       const itemTotal = unitPrice * item.quantity;
       subtotal += itemTotal;
 
-      const rawNote = item.customization_note || item.customizationNote || item.instruction || null;
+      const rawNote = item.customization_note || item.customizationNote || item.instruction || item.notes || null;
       const cleanNote = rawNote ? String(rawNote).trim().slice(0, 300) : null;
 
       validatedItems.push({
@@ -165,8 +165,14 @@ export const createOrder = async (req, res) => {
         quantity: item.quantity,
         total_price: itemTotal,
         customization_note: cleanNote || null,
+        customizationNote: cleanNote || null,
       });
     }
+
+    const customizationSummary = validatedItems
+      .filter((i) => i.customization_note)
+      .map((i) => `${i.product_title} (${i.variant_name}): "${i.customization_note}"`)
+      .join(' | ');
 
     // SERVER-ENFORCED DELIVERY CHARGE FROM DATABASE
     const { deliveryFee, city: deliveryCity, state: deliveryState } = await getDeliveryChargeForPincode(finalPincode, subtotal);
@@ -261,6 +267,7 @@ export const createOrder = async (req, res) => {
             payment_id: paymentId || null,
             payment_status: paymentId ? 'paid' : (isCod ? 'pending' : 'pending'),
             order_status: isCod ? 'confirmed' : 'pending',
+            notes: customizationSummary || null,
           },
         ])
         .select()
@@ -269,14 +276,33 @@ export const createOrder = async (req, res) => {
       if (!orderErr && data) {
         order = data;
         const orderItemsRows = validatedItems.map((v) => ({
-          ...v,
           order_id: order.id,
+          product_id: v.product_id,
+          product_title: v.product_title,
+          product_image: v.product_image || null,
+          variant_id: v.variant_id || null,
+          variant_name: v.variant_name,
+          unit_price: v.unit_price,
+          quantity: v.quantity,
+          total_price: v.total_price,
+          customization_note: v.customization_note || null,
         }));
-        const { data: insertedItems } = await supabase
+
+        let { data: insertedItems, error: itemsErr } = await supabase
           .from('order_items')
           .insert(orderItemsRows)
           .select();
-          
+
+        if (itemsErr) {
+          console.warn('Primary order_items insert warning:', itemsErr.message);
+          const fallbackRows = orderItemsRows.map(({ customization_note, ...rest }) => rest);
+          const { data: fbItems } = await supabase
+            .from('order_items')
+            .insert(fallbackRows)
+            .select();
+          insertedItems = fbItems ? fbItems.map((item, idx) => ({ ...item, customization_note: validatedItems[idx]?.customization_note || null })) : null;
+        }
+
         if (insertedItems) {
           order.order_items = insertedItems;
         }
@@ -429,6 +455,29 @@ export const formatOrderPayload = (o) => {
   const couponCodeVal = o.coupon_code || o.couponCode || null;
   const phoneVal = o.customer_phone || o.customerPhone || o.phone || '';
 
+  const rawItems = o.items || o.order_items || [];
+  const notesFromOrder = o.notes || o.special_instructions || o.customization_notes || null;
+
+  const formattedItems = (rawItems || []).map((item) => {
+    const note = item.customization_note || item.customizationNote || item.instruction || item.notes || null;
+    return {
+      ...item,
+      productId: item.product_id || item.productId,
+      product_id: item.product_id || item.productId,
+      title: item.product_title || item.title || item.product_name || 'Bakery Item',
+      product_title: item.product_title || item.title || item.product_name || 'Bakery Item',
+      variantName: item.variant_name || item.variantName || item.variantWeight || item.variant_weight || 'Standard Pack',
+      variant_name: item.variant_name || item.variantName || item.variantWeight || item.variant_weight || 'Standard Pack',
+      price: Number(item.unit_price || item.unitPrice || item.price || 0),
+      unit_price: Number(item.unit_price || item.unitPrice || item.price || 0),
+      quantity: item.quantity || 1,
+      totalPrice: Number(item.total_price || item.totalPrice || ((item.unit_price || item.price || 0) * (item.quantity || 1))),
+      total_price: Number(item.total_price || item.totalPrice || ((item.unit_price || item.price || 0) * (item.quantity || 1))),
+      customization_note: note,
+      customizationNote: note,
+    };
+  });
+
   return {
     ...o,
     orderId: o.id || o.order_number,
@@ -457,15 +506,10 @@ export const formatOrderPayload = (o) => {
     rawPaymentMethod: o.payment_method || 'razorpay',
     paymentId: o.payment_id || null,
     createdAt: o.created_at || new Date().toISOString(),
-    items: (o.order_items || []).map((item) => ({
-      ...item,
-      productId: item.product_id,
-      title: item.product_title || 'Bakery Item',
-      variantName: item.variant_name || 'Standard Pack',
-      price: Number(item.unit_price || 0),
-      quantity: item.quantity || 1,
-      totalPrice: Number(item.total_price || (item.unit_price * item.quantity)),
-    })),
+    notes: notesFromOrder,
+    special_instructions: notesFromOrder,
+    items: formattedItems,
+    order_items: formattedItems,
   };
 };
 
