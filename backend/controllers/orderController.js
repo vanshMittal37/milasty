@@ -245,106 +245,145 @@ export const createOrder = async (req, res) => {
 
     let order = null;
 
+    // Base row without optional columns that may not exist in older DB schemas
+    const baseOrderRow = {
+      order_number: orderNumber,
+      user_id: resolvedUserId || null,
+      customer_name: customerName || req.user?.name || 'Customer',
+      customer_email: finalEmail || req.user?.email || '',
+      customer_phone: finalPhone || req.user?.phone || '',
+      shipping_address: formattedAddress,
+      pincode: finalPincode,
+      subtotal,
+      delivery_fee: deliveryFee,
+      discount_amount: discountAmount,
+      coupon_id: validatedCouponId,
+      coupon_code: validatedCouponCode,
+      grand_total: grandTotal,
+      payment_method: cleanPaymentMethod,
+      payment_id: paymentId || null,
+      payment_status: paymentId ? 'paid' : 'pending',
+      order_status: isCod ? 'confirmed' : 'pending',
+    };
+
     try {
-      const { data, error: orderErr } = await supabase
+      // Try inserting with notes column (added in later migration)
+      let { data, error: orderErr } = await supabase
         .from('orders')
-        .insert([
-          {
-            order_number: orderNumber,
-            user_id: resolvedUserId || null,
-            customer_name: customerName || req.user?.name || 'Customer',
-            customer_email: finalEmail || req.user?.email || '',
-            customer_phone: finalPhone || req.user?.phone || '',
-            shipping_address: formattedAddress,
-            pincode: finalPincode,
-            subtotal,
-            delivery_fee: deliveryFee,
-            discount_amount: discountAmount,
-            coupon_id: validatedCouponId,
-            coupon_code: validatedCouponCode,
-            grand_total: grandTotal,
-            payment_method: cleanPaymentMethod,
-            payment_id: paymentId || null,
-            payment_status: paymentId ? 'paid' : (isCod ? 'pending' : 'pending'),
-            order_status: isCod ? 'confirmed' : 'pending',
-            notes: customizationSummary || null,
-          },
-        ])
+        .insert([{ ...baseOrderRow, notes: customizationSummary || null }])
         .select()
         .single();
 
-      if (!orderErr && data) {
-        order = data;
-        const orderItemsRows = validatedItems.map((v) => ({
-          order_id: order.id,
-          product_id: v.product_id,
-          product_title: v.product_title,
-          product_image: v.product_image || null,
-          variant_id: v.variant_id || null,
-          variant_name: v.variant_name,
-          unit_price: v.unit_price,
-          quantity: v.quantity,
-          total_price: v.total_price,
-          customization_note: v.customization_note || null,
-        }));
+      // If notes column doesn't exist in the schema, retry without it
+      if (orderErr && (orderErr.message?.toLowerCase().includes('notes') || orderErr.code === '42703')) {
+        console.warn('[ORDER] notes column not in schema, retrying without it');
+        const retry = await supabase
+          .from('orders')
+          .insert([baseOrderRow])
+          .select()
+          .single();
+        data = retry.data;
+        orderErr = retry.error;
+      }
 
-        let { data: insertedItems, error: itemsErr } = await supabase
+      if (orderErr || !data) {
+        console.error('[ORDER] Supabase insert failed:', orderErr?.message || 'no data returned');
+        return res.status(500).json({
+          message: 'Failed to create order in the database. Please try again.',
+          error: orderErr?.message,
+        });
+      }
+
+      order = data;
+
+      // Full row including optional columns (may not exist in older DB schemas)
+      const orderItemsRows = validatedItems.map((v) => ({
+        order_id: order.id,
+        product_id: v.product_id,
+        product_title: v.product_title,
+        product_image: v.product_image || null,
+        variant_id: v.variant_id || null,
+        variant_name: v.variant_name,
+        unit_price: v.unit_price,
+        quantity: v.quantity,
+        total_price: v.total_price,
+        customization_note: v.customization_note || null,
+      }));
+
+      // Guaranteed-only columns that always exist in the schema
+      const guaranteedItemRows = validatedItems.map((v) => ({
+        order_id: order.id,
+        product_id: v.product_id,
+        product_title: v.product_title,
+        variant_name: v.variant_name || 'Standard Pack',
+        unit_price: v.unit_price,
+        quantity: v.quantity,
+        total_price: v.total_price,
+      }));
+
+      let { data: insertedItems, error: itemsErr } = await supabase
+        .from('order_items')
+        .insert(orderItemsRows)
+        .select();
+
+      if (itemsErr) {
+        console.warn('[ORDER] order_items full insert failed, retrying with guaranteed columns:', itemsErr.message);
+        const { data: fbItems, error: fbErr } = await supabase
           .from('order_items')
-          .insert(orderItemsRows)
+          .insert(guaranteedItemRows)
           .select();
-
-        if (itemsErr) {
-          console.warn('Primary order_items insert warning:', itemsErr.message);
-          const fallbackRows = orderItemsRows.map(({ customization_note, ...rest }) => rest);
-          const { data: fbItems } = await supabase
-            .from('order_items')
-            .insert(fallbackRows)
-            .select();
-          insertedItems = fbItems ? fbItems.map((item, idx) => ({ ...item, customization_note: validatedItems[idx]?.customization_note || null })) : null;
+        if (fbErr) {
+          console.warn('[ORDER] order_items guaranteed insert also failed:', fbErr.message);
         }
+        // Merge back optional data client-side
+        insertedItems = fbItems ? fbItems.map((item, idx) => ({
+          ...item,
+          product_image: validatedItems[idx]?.product_image || null,
+          variant_id: validatedItems[idx]?.variant_id || null,
+          customization_note: validatedItems[idx]?.customization_note || null,
+        })) : null;
+      }
 
-        if (insertedItems) {
-          order.order_items = insertedItems;
-        }
+      if (insertedItems) {
+        order.order_items = insertedItems;
+      }
 
-        // Record Coupon Usage for COD orders
-        if (isCod && validatedCouponId) {
-          try {
-            const { data: cData } = await supabase
+      // Record Coupon Usage for COD orders
+      if (isCod && validatedCouponId) {
+        try {
+          const { data: cData } = await supabase
+            .from('coupons')
+            .select('id, usage_count')
+            .eq('id', validatedCouponId)
+            .maybeSingle();
+
+          if (cData) {
+            await supabase
               .from('coupons')
-              .select('id, usage_count')
-              .eq('id', validatedCouponId)
-              .maybeSingle();
+              .update({
+                usage_count: Number(cData.usage_count || 0) + 1,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', cData.id);
 
-            if (cData) {
+            if (req.user) {
               await supabase
-                .from('coupons')
-                .update({
-                  usage_count: Number(cData.usage_count || 0) + 1,
-                  updated_at: new Date().toISOString()
-                })
-                .eq('id', cData.id);
-
-              if (req.user) {
-                await supabase
-                  .from('coupon_usages')
-                  .insert([{
-                    coupon_id: cData.id,
-                    user_id: req.user.id || req.user._id,
-                    order_id: order.id,
-                    discount_amount: discountAmount,
-                  }]);
-              }
+                .from('coupon_usages')
+                .insert([{
+                  coupon_id: cData.id,
+                  user_id: req.user.id || req.user._id,
+                  order_id: order.id,
+                  discount_amount: discountAmount,
+                }]);
             }
-          } catch (cErr) {
-            console.warn('COD coupon usage notice:', cErr.message);
           }
+        } catch (cErr) {
+          console.warn('COD coupon usage notice:', cErr.message);
         }
-      } else if (orderErr) {
-        console.error('Supabase order insert error:', orderErr.message);
       }
     } catch (e) {
-      console.warn('Supabase order table insert exception:', e.message);
+      console.error('[ORDER] Exception during order creation:', e.message);
+      return res.status(500).json({ message: 'An error occurred while creating your order.', error: e.message });
     }
 
     // For COD orders, perform immediate stock deduction
@@ -409,24 +448,10 @@ export const createOrder = async (req, res) => {
       }
     }
 
+    // If order is still null here, the DB insert must have returned early with a 500
+    // This guard prevents returning a phantom order in unexpected code paths
     if (!order) {
-      order = {
-        id: `ord_${Date.now()}`,
-        order_number: orderNumber,
-        customer_name: customerName,
-        customer_email: finalEmail,
-        customer_phone: finalPhone,
-        shipping_address: formattedAddress,
-        pincode: finalPincode,
-        subtotal,
-        delivery_fee: deliveryFee,
-        discount_amount: discountAmount,
-        grand_total: grandTotal,
-        order_status: isCod ? 'confirmed' : 'pending',
-        payment_status: paymentId ? 'paid' : 'pending',
-        payment_method: cleanPaymentMethod,
-        order_items: validatedItems,
-      };
+      return res.status(500).json({ message: 'Order could not be persisted to the database. Please contact support.' });
     }
 
     return res.status(201).json({
