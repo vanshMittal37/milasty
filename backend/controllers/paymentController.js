@@ -1,6 +1,7 @@
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { supabase } from '../config/supabase.js';
+import { calculateDeliveryCharge } from './deliveryChargeController.js';
 
 // In-memory active payment sessions store (keyed by razorpay_order_id)
 const paymentSessions = new Map();
@@ -12,38 +13,19 @@ const getRazorpayInstance = () => {
 };
 
 /**
- * Helper: Calculate delivery charge from delivery_areas DB table
+ * Helper: Calculate delivery charge using Centralized Delivery Calculator
  */
 export const getDeliveryChargeForPincode = async (pincode, subtotal) => {
-  let deliveryFee = 0;
-  let city = '';
-  let state = '';
-  const cleanPin = String(pincode || '').trim();
-
-  if (cleanPin && /^\d{6}$/.test(cleanPin)) {
-    try {
-      const { data: area } = await supabase
-        .from('delivery_areas')
-        .select('*')
-        .eq('pincode', cleanPin)
-        .eq('status', 'active')
-        .maybeSingle();
-
-      if (area) {
-        deliveryFee = Number(area.delivery_charge || 0);
-        city = area.city || '';
-        state = area.state || '';
-      } else {
-        deliveryFee = subtotal >= 499 || subtotal === 0 ? 0 : 49;
-      }
-    } catch (e) {
-      deliveryFee = subtotal >= 499 || subtotal === 0 ? 0 : 49;
-    }
-  } else {
-    deliveryFee = subtotal >= 499 || subtotal === 0 ? 0 : 49;
+  const res = await calculateDeliveryCharge(subtotal);
+  if (!res.success) {
+    throw new Error(res.error || 'Delivery charge calculation failed');
   }
-
-  return { deliveryFee, city, state };
+  return {
+    deliveryFee: res.deliveryFee,
+    isFreeDelivery: res.isFreeDelivery,
+    city: '',
+    state: ''
+  };
 };
 
 /**

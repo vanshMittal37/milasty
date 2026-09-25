@@ -10,6 +10,7 @@ import { initialProducts } from '../data/seedData';
 import ProductCard from '../components/ProductCard';
 import PriceDisplay from '../components/PriceDisplay';
 import AuthPromptModal from '../components/AuthPromptModal';
+import AllIndiaDeliveryBadge from '../components/common/AllIndiaDeliveryBadge';
 import { LOW_STOCK_THRESHOLD } from '../config/constants';
 
 export default function ProductDetail() {
@@ -992,159 +993,8 @@ export default function ProductDetail() {
               </button>
             </div>
 
-            {/* Pincode Serviceability Check Box */}
-            <div 
-              style={{ 
-                marginTop: '1.25rem', 
-                padding: '1.2rem', 
-                borderRadius: '16px', 
-                backgroundColor: '#FFF9F0', 
-                border: '1px solid #DCC8AE' 
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', fontWeight: '800', color: '#2F6B3A' }}>
-                  <Truck size={18} />
-                  <span>Check Delivery Availability</span>
-                </div>
-                {deliveryInfo && deliveryInfo.checked && (
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      setIsChangingPin(!isChangingPin);
-                      setInputPincode('');
-                      setPincodeError('');
-                    }} 
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#2F6B3A',
-                      fontSize: '0.8rem',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      textDecoration: 'underline',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                    }}
-                  >
-                    <MapPin size={13} />
-                    <span>{isChangingPin ? 'Cancel' : 'Change PIN'}</span>
-                  </button>
-                )}
-              </div>
-
-              {/* Display Mode A: Input Mode */}
-              {(!deliveryInfo || !deliveryInfo.checked || isChangingPin) ? (
-                <div>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <input
-                      type="text"
-                      maxLength={6}
-                      value={inputPincode}
-                      onChange={(e) => setInputPincode(e.target.value.replace(/\D/g, ''))}
-                      placeholder="Enter 6-digit Indian PIN code"
-                      onKeyDown={(e) => { if (e.key === 'Enter') handleCheckPincode(); }}
-                      style={{
-                        flex: 1,
-                        padding: '0.6rem 0.85rem',
-                        borderRadius: '10px',
-                        backgroundColor: '#FCF8F1',
-                        border: pincodeError ? '1px solid #ef4444' : '1px solid #DCC8AE',
-                        color: '#32180D',
-                        fontSize: '0.9rem',
-                        fontFamily: 'monospace',
-                        fontWeight: '700',
-                        outline: 'none',
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleCheckPincode}
-                      disabled={checkingPincode}
-                      style={{
-                        padding: '0.6rem 1.25rem',
-                        borderRadius: '10px',
-                        backgroundColor: '#2F6B3A',
-                        border: '1px solid #2F6B3A',
-                        color: '#FFFFFF',
-                        fontSize: '0.85rem',
-                        fontWeight: '800',
-                        cursor: checkingPincode ? 'not-allowed' : 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                      }}
-                    >
-                      {checkingPincode ? 'Checking...' : 'Check'}
-                    </button>
-                  </div>
-                  {pincodeError && (
-                    <p style={{ marginTop: '0.45rem', fontSize: '0.78rem', color: '#ef4444', margin: '0.45rem 0 0 0', fontWeight: '600' }}>
-                      {pincodeError}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                /* Display Mode B: Checked Result Mode */
-                <div>
-                  {deliveryInfo.available ? (
-                    <div style={{ backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', borderRadius: '12px', padding: '0.9rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#2F6B3A', fontWeight: '800', fontSize: '0.9rem', marginBottom: '0.35rem' }}>
-                        <CheckCircle2 size={17} />
-                        <span>
-                          {deliveryInfo.isSavedAddress ? '✓ Delivery available to your address' : `✓ Delivery available to PIN ${deliveryInfo.pincode}`}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.82rem', color: '#654B38', paddingLeft: '1.5rem' }}>
-                        <div>Location: <strong style={{ color: '#32180D' }}>{deliveryInfo.pincode}{deliveryInfo.city ? `, ${deliveryInfo.city}` : ''}{deliveryInfo.state ? `, ${deliveryInfo.state}` : ''}</strong></div>
-                        <div>Delivery Charge: <strong style={{ color: '#2F6B3A' }}>
-                          {Number(deliveryInfo.deliveryCharge) === 0 ? 'FREE Delivery' : `₹${deliveryInfo.deliveryCharge}`}
-                        </strong></div>
-                        <div>Estimated Dispatch: <strong style={{ color: '#32180D' }}>{deliveryInfo.estimatedDays || '3–5 business days'}</strong></div>
-                      </div>
-
-                      {/* If user checked a temporary PIN while logged in, offer to save it */}
-                      {isAuthenticated && deliveryInfo.isTemp && (
-                        <div style={{ marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px dashed #DCC8AE', display: 'flex', justifyContent: 'flex-end' }}>
-                          <button
-                            type="button"
-                            onClick={handleSaveTempPinToAddress}
-                            disabled={savingAddress}
-                            style={{
-                              background: '#FFF9F0',
-                              border: '1px solid #2F6B3A',
-                              color: '#2F6B3A',
-                              fontSize: '0.75rem',
-                              fontWeight: '800',
-                              padding: '0.3rem 0.75rem',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.3rem',
-                            }}
-                          >
-                            <Save size={13} />
-                            <span>{savingAddress ? 'Saving...' : 'Save this PIN to my addresses'}</span>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div style={{ backgroundColor: '#fee2e2', border: '1px solid #fca5a5', borderRadius: '12px', padding: '0.9rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#dc2626', fontWeight: '800', fontSize: '0.9rem', marginBottom: '0.35rem' }}>
-                        <XCircle size={17} />
-                        <span>Delivery is currently unavailable at {deliveryInfo.pincode}</span>
-                      </div>
-                      <p style={{ margin: 0, fontSize: '0.8rem', color: '#991b1b', paddingLeft: '1.5rem', lineHeight: '1.4' }}>
-                        {deliveryInfo.message || `Sorry, we do not currently deliver to PIN code ${deliveryInfo.pincode}.`}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+            {/* All India Delivery Available Badge */}
+            <AllIndiaDeliveryBadge style={{ marginTop: '1.25rem' }} />
 
           </div>
         </div>

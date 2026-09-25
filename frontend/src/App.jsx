@@ -43,7 +43,7 @@ import AdminDashboardMain from './pages/admin/AdminDashboardMain';
 import AdminProductList from './pages/admin/AdminProductList';
 import AdminProductForm from './pages/admin/AdminProductForm';
 import AdminCategories from './pages/admin/AdminCategories';
-import AdminDeliveryAreas from './pages/admin/AdminDeliveryAreas';
+import AdminDeliveryCharges from './pages/admin/AdminDeliveryCharges';
 import AdminOrderList from './pages/admin/AdminOrderList';
 import AdminCustomerList from './pages/admin/AdminCustomerList';
 import AdminCouponList from './pages/admin/AdminCouponList';
@@ -161,7 +161,8 @@ export default function App() {
                       <Route path="products/add" element={<AdminProductForm />} />
                       <Route path="products/edit/:id" element={<AdminProductForm />} />
                       <Route path="categories" element={<AdminCategories />} />
-                      <Route path="delivery-areas" element={<AdminDeliveryAreas />} />
+                      <Route path="delivery-charges" element={<AdminDeliveryCharges />} />
+                      <Route path="delivery-areas" element={<AdminDeliveryCharges />} />
                       <Route path="orders" element={<AdminOrderList />} />
                       <Route path="customers" element={<AdminCustomerList />} />
                       <Route path="inquiries" element={<AdminInquiryList />} />

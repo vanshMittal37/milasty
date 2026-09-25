@@ -74,7 +74,7 @@ export default function AdminLayout() {
       items: [
         { label: 'Orders Log', path: '/admin/orders', icon: ShoppingCart },
         { label: 'Coupons', path: '/admin/coupons', icon: Ticket },
-        { label: 'Delivery Areas', path: '/admin/delivery-areas', icon: Truck },
+        { label: 'Delivery Charges', path: '/admin/delivery-charges', icon: Truck },
       ]
     },
     {
@@ -105,7 +105,7 @@ export default function AdminLayout() {
     if (path.includes('/admin/products')) return { title: 'Products', breadcrumb: 'Catalog / Products' };
     if (path.includes('/admin/categories')) return { title: 'Categories', breadcrumb: 'Catalog / Categories' };
     if (path.includes('/admin/prebookings')) return { title: 'Pre-Booking Products', breadcrumb: 'Catalog / Pre-Bookings' };
-    if (path.includes('/admin/delivery-areas')) return { title: 'Delivery Areas', breadcrumb: 'Fulfillment / Delivery Areas' };
+    if (path.includes('/admin/delivery-charges') || path.includes('/admin/delivery-areas')) return { title: 'Delivery Charges', breadcrumb: 'Fulfillment / Delivery Charges' };
     if (path.includes('/admin/orders')) return { title: 'Orders Log', breadcrumb: 'Sales / Orders Log' };
     if (path.includes('/admin/customers')) return { title: 'Customers', breadcrumb: 'Users / Customer List' };
     if (path.includes('/admin/inquiries')) return { title: 'Customer Inquiries', breadcrumb: 'Support / Customer Inquiries' };

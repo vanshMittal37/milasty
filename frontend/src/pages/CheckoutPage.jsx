@@ -7,12 +7,13 @@ import { useDelivery } from '../context/DeliveryContext';
 import api from '../api/axios';
 import ModalPortal from '../components/ModalPortal';
 import CustomizeItemModal from '../components/CustomizeItemModal';
+import AllIndiaDeliveryBadge from '../components/common/AllIndiaDeliveryBadge';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const { cartItems, subtotal, deliveryFee: defaultDeliveryFee, grandTotal: defaultGrandTotal, appliedCoupon, couponDiscountAmount, updateCartItemCustomization, removeCartItemCustomization, clearCart } = useCart();
+  const { cartItems, subtotal, appliedCoupon, couponDiscountAmount, updateCartItemCustomization, removeCartItemCustomization, clearCart } = useCart();
   const { user, isAuthenticated, addAddress, updateAddress } = useAuth();
-  const { deliveryInfo, checkPincode } = useDelivery();
+  const { calculateDeliveryFee } = useDelivery();
 
   const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
 
@@ -211,16 +212,13 @@ export default function CheckoutPage() {
     }
   };
 
-  // Calculate dynamic delivery fee based on verified deliveryInfo for selected PIN
-  const cleanPin = (formData.pincode || '').trim();
-  const isDeliverable = deliveryInfo && (deliveryInfo.available ?? deliveryInfo.isDeliverable);
-  const isCurrentPinChecked = deliveryInfo && deliveryInfo.pincode === cleanPin;
+  // Calculate dynamic delivery fee based on order value rules across India
+  const eligibleSubtotal = Math.max(0, subtotal - couponDiscountAmount);
+  const deliveryCalc = calculateDeliveryFee(eligibleSubtotal);
+  const effectiveDeliveryFee = deliveryCalc.fee;
+  const isFreeDelivery = deliveryCalc.isFree;
 
-  const effectiveDeliveryFee = (isCurrentPinChecked && isDeliverable)
-    ? Number(deliveryInfo.deliveryCharge || 0)
-    : (subtotal >= 499 || subtotal === 0 ? 0 : 49);
-
-  const effectiveGrandTotal = Math.max(0, subtotal - couponDiscountAmount + effectiveDeliveryFee);
+  const effectiveGrandTotal = eligibleSubtotal + effectiveDeliveryFee;
 
   if (cartItems.length === 0) {
     return (
@@ -243,21 +241,6 @@ export default function CheckoutPage() {
     setErrorMessage('');
     if (fieldErrors[name]) {
       setFieldErrors(prev => ({ ...prev, [name]: '' }));
-    }
-
-    if (name === 'pincode') {
-      const pin = value.trim();
-      if (pin.length === 6 && /^\d{6}$/.test(pin)) {
-        checkPincode(pin).then(res => {
-          if (res && (res.available || res.isDeliverable) && res.city && res.state) {
-            setFormData(prev => ({
-              ...prev,
-              city: prev.city || res.city,
-              state: prev.state || res.state
-            }));
-          }
-        });
-      }
     }
   };
 
@@ -283,8 +266,6 @@ export default function CheckoutPage() {
       errors.pincode = 'Pincode is required';
     } else if (!/^\d{6}$/.test(pinVal)) {
       errors.pincode = 'Please enter a valid 6-digit pincode';
-    } else if (isCurrentPinChecked && !isDeliverable) {
-      errors.pincode = `Delivery currently unavailable to PIN code ${pinVal}`;
     }
 
     setFieldErrors(errors);
@@ -618,33 +599,8 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  {/* Delivery Serviceability Status Badge for Selected Address */}
-                  {isCurrentPinChecked && (
-                    <div style={{
-                      padding: '0.65rem 0.85rem',
-                      borderRadius: '10px',
-                      fontSize: '0.8rem',
-                      fontWeight: '700',
-                      backgroundColor: isDeliverable ? '#EAEFE5' : '#FADBD8',
-                      color: isDeliverable ? '#2F6B3A' : '#78281F',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.45rem',
-                      border: isDeliverable ? '1px solid #2F6B3A' : '1px solid #C0392B'
-                    }}>
-                      {isDeliverable ? (
-                        <>
-                          <CheckCircle2 size={16} />
-                          <span>Delivery available to {deliveryInfo.city || selectedAddress.city} (Delivery Fee: {effectiveDeliveryFee === 0 ? 'FREE' : `₹${effectiveDeliveryFee}`})</span>
-                        </>
-                      ) : (
-                        <>
-                          <AlertTriangle size={16} />
-                          <span>⚠ Delivery unavailable to PIN code {selectedAddress.pincode}. Please select another saved address or add a new address.</span>
-                        </>
-                      )}
-                    </div>
-                  )}
+                  {/* All India Delivery Available Badge */}
+                  <AllIndiaDeliveryBadge compact style={{ marginTop: '0.65rem' }} />
                 </div>
               ) : savedAddresses.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '1.75rem', backgroundColor: '#F3EDE2', borderRadius: '16px', border: '1.5px dashed #D8CCB8', marginBottom: '1.5rem' }}>
@@ -990,21 +946,26 @@ export default function CheckoutPage() {
                 </div>
               )}
 
+              {/* All India Delivery Badge in Summary */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <AllIndiaDeliveryBadge compact style={{ width: '100%', justifyContent: 'center' }} />
+              </div>
+
               {/* Submit Checkout Button */}
               <button
                 type="submit"
-                disabled={loading || (isCurrentPinChecked && !isDeliverable)}
+                disabled={loading}
                 style={{
                   width: '100%',
                   justifyContent: 'center',
                   padding: '1.1rem',
                   fontSize: '0.98rem',
-                  backgroundColor: (isCurrentPinChecked && !isDeliverable) ? '#E4D1B7' : '#2F6B3A',
+                  backgroundColor: '#2F6B3A',
                   border: 'none',
                   borderRadius: '999px',
                   fontWeight: '800',
-                  color: (isCurrentPinChecked && !isDeliverable) ? '#A38C7A' : '#FFFFFF',
-                  cursor: (isCurrentPinChecked && !isDeliverable) ? 'not-allowed' : 'pointer',
+                  color: '#FFFFFF',
+                  cursor: loading ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',
@@ -1017,8 +978,6 @@ export default function CheckoutPage() {
               >
                 {loading ? (
                   <span>{paymentMethod === 'COD' ? 'Placing Order...' : 'Initiating Secure Checkout...'}</span>
-                ) : (isCurrentPinChecked && !isDeliverable) ? (
-                  <span>Delivery Unavailable</span>
                 ) : paymentMethod === 'COD' ? (
                   <>
                     <CheckCircle2 size={16} />
