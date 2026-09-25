@@ -458,17 +458,18 @@ export default function Home() {
             backgroundImage: 'url(/images/home_bg.jpeg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center top',
+            backgroundAttachment: 'fixed',
             backgroundRepeat: 'no-repeat',
             zIndex: 0,
           }}
         />
 
-        {/* Layer 1: Warm Cream Overlay for Optimal Readability */}
+        {/* Layer 1: Subtle Light Warm Overlay to ensure image visibility & text readability */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundColor: 'rgba(247, 238, 220, 0.62)',
+            backgroundColor: 'rgba(247, 238, 220, 0.22)',
             zIndex: 1,
             pointerEvents: 'none',
           }}

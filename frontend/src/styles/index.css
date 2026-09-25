@@ -4177,4 +4177,25 @@ footer input[type="text"] {
   .contact-form-card {
     border-width: 1px !important;
   }
+}
+
+/* ==========================================
+   HOME PAGE SECOND BACKGROUND (home_bg.jpeg)
+   ========================================== */
+.home-content-wrapper {
+  position: relative !important;
+  background-color: #F7EEDC !important;
+}
+
+.home-content-background {
+  position: absolute !important;
+  inset: 0 !important;
+  background-image: url('/images/home_bg.jpeg') !important;
+  background-size: cover !important;
+  background-position: center top !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+  z-index: 0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
