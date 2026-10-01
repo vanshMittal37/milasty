@@ -7,8 +7,11 @@ import { calculateDeliveryCharge } from './deliveryChargeController.js';
 const paymentSessions = new Map();
 
 const getRazorpayInstance = () => {
-  const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_test_MILASTY_Key_2026';
-  const key_secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_test_MILASTY_Secret_2026';
+  const key_id = process.env.RAZORPAY_KEY_ID;
+  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+  if (!key_id || !key_secret) {
+    throw new Error('Razorpay credentials not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in environment variables.');
+  }
   return new Razorpay({ key_id, key_secret });
 };
 
@@ -181,17 +184,8 @@ export const createPaymentSession = async (req, res) => {
     };
 
     let razorpayOrder;
-    try {
-      const razorpay = getRazorpayInstance();
-      razorpayOrder = await razorpay.orders.create(options);
-    } catch (e) {
-      console.warn('Razorpay API notice (using fallback test order ID):', e.message);
-      razorpayOrder = {
-        id: `order_${Math.random().toString(36).substring(2, 14)}`,
-        amount: amountInPaise,
-        currency: 'INR',
-      };
-    }
+    const razorpay = getRazorpayInstance();
+    razorpayOrder = await razorpay.orders.create(options);
 
     // Log calculation details
     console.log('--- RAZORPAY PAYMENT SESSION CREATED ---', {
@@ -258,7 +252,7 @@ export const createPaymentSession = async (req, res) => {
 
     return res.json({
       success: true,
-      keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_MILASTY_Key_2026',
+      keyId: process.env.RAZORPAY_KEY_ID,
       razorpayOrderId: razorpayOrder.id,
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency || 'INR',
@@ -539,17 +533,19 @@ export const verifyRazorpayPayment = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Missing Razorpay order or payment details' });
     }
 
-    const key_secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_test_MILASTY_Secret_2026';
+    const key_secret = process.env.RAZORPAY_KEY_SECRET;
+    if (!key_secret) {
+      console.error('[VERIFY] RAZORPAY_KEY_SECRET not configured');
+      return res.status(500).json({ success: false, message: 'Payment verification not configured on server.' });
+    }
+
     const hmac = crypto.createHmac('sha256', key_secret);
     hmac.update((rzpOrderId || '') + '|' + (razorpay_payment_id || ''));
     const generated_signature = hmac.digest('hex');
 
-    const isTestMode = !razorpay_signature || rzpOrderId?.startsWith('order_') || razorpay_signature === 'test_signature';
-    const isValidSignature = generated_signature === razorpay_signature || isTestMode;
-
-    if (!isValidSignature) {
-      console.warn('Invalid Razorpay signature submitted');
-      return res.status(400).json({ success: false, message: 'Invalid payment signature' });
+    if (!razorpay_signature || generated_signature !== razorpay_signature) {
+      console.warn('[VERIFY] Invalid Razorpay signature. Expected:', generated_signature, 'Got:', razorpay_signature);
+      return res.status(400).json({ success: false, message: 'Invalid payment signature. Payment not verified.' });
     }
 
     // Finalize order into database
@@ -620,9 +616,17 @@ export const handleRazorpayWebhook = async (req, res) => {
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || process.env.RAZORPAY_KEY_SECRET;
     const receivedSignature = req.headers['x-razorpay-signature'];
 
-    if (webhookSecret && receivedSignature) {
+    // req.body will be a raw Buffer (due to express.raw middleware in server.js)
+    const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.from(JSON.stringify(req.body));
+
+    if (!webhookSecret) {
+      console.warn('[WEBHOOK] RAZORPAY_WEBHOOK_SECRET not set — skipping signature verification (not recommended for production)');
+    } else if (!receivedSignature) {
+      console.warn('[WEBHOOK] No x-razorpay-signature header received — rejecting');
+      return res.status(400).json({ status: 'missing_signature' });
+    } else {
       const hmac = crypto.createHmac('sha256', webhookSecret);
-      hmac.update(JSON.stringify(req.body));
+      hmac.update(rawBody);
       const expectedSignature = hmac.digest('hex');
 
       if (expectedSignature !== receivedSignature) {
@@ -631,8 +635,10 @@ export const handleRazorpayWebhook = async (req, res) => {
       }
     }
 
-    const event = req.body.event;
-    const payload = req.body.payload;
+    // Parse the raw body as JSON for event processing
+    const bodyData = Buffer.isBuffer(rawBody) ? JSON.parse(rawBody.toString('utf8')) : req.body;
+    const event = bodyData.event;
+    const payload = bodyData.payload;
 
     console.log('[WEBHOOK RECEIVED] Event:', event);
 

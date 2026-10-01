@@ -75,8 +75,6 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
-  const [showSimulatedPaymentModal, setShowSimulatedPaymentModal] = useState(false);
-  const [simulatePaymentData, setSimulatePaymentData] = useState(null);
 
   // Load Razorpay script dynamically
   useEffect(() => {
@@ -381,26 +379,21 @@ export default function CheckoutPage() {
         }
       };
 
-      const isDummyKey = keyId.startsWith('rzp_test_MILASTY');
-      if (window.Razorpay && !isDummyKey) {
-        console.log('Opening Razorpay Checkout Popup...');
-        const rzp = new window.Razorpay(options);
-        rzp.open();
-      } else {
-        // Show sandbox payment simulator modal if dummy key
-        console.warn('Opening Sandbox Payment Simulator...');
-        setSimulatePaymentData({
-          razorpayOrderId,
-          amount,
-          currency,
-          grandTotal,
-          customerName: formData.customerName,
-          email: formData.email,
-          phone: formData.phone,
-          options
-        });
-        setShowSimulatedPaymentModal(true);
+      if (!window.Razorpay) {
+        setErrorMessage('Payment gateway could not be loaded. Please refresh and try again.');
+        setLoading(false);
+        return;
       }
+
+      console.log('Opening Razorpay Checkout...');
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response) {
+        console.error('Razorpay payment failed:', response.error);
+        api.post('/payments/fail', { razorpay_order_id: razorpayOrderId }).catch(() => {});
+        setErrorMessage(`Payment failed: ${response.error?.description || 'Unknown error'}. Please try again.`);
+        setLoading(false);
+      });
+      rzp.open();
     } catch (error) {
       console.error('Razorpay payment session failed:', error);
       setErrorMessage(error.response?.data?.message || 'Error processing your order. Please try again.');
@@ -1355,95 +1348,6 @@ export default function CheckoutPage() {
             </div>
 
           </form>
-        </div>
-      </ModalPortal>
-
-      {/* Simulated Payment Modal */}
-      <ModalPortal
-        isOpen={showSimulatedPaymentModal && !!simulatePaymentData}
-        onClose={() => {
-          setShowSimulatedPaymentModal(false);
-          if (simulatePaymentData?.options?.modal?.ondismiss) {
-            simulatePaymentData.options.modal.ondismiss();
-          }
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: '#FBF6ED',
-            borderRadius: '24px',
-            border: '1px solid #E4D1B7',
-            width: '100%',
-            maxWidth: '460px',
-            padding: '2.5rem',
-            boxShadow: '0 16px 48px rgba(43, 20, 11, 0.15)',
-            position: 'relative'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <Lock size={18} color="#2F6B3A" />
-            <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2F6B3A', fontWeight: '800' }}>MILASTY SECURE PAYMENT</span>
-          </div>
-          <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#2B140B', fontWeight: '800', margin: '0 0 1.25rem' }}>
-            Razorpay Sandbox Simulator
-          </h3>
-
-          <div style={{ backgroundColor: '#F3EDE2', border: '1.5px solid #D8CCB8', borderRadius: '16px', padding: '1.15rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem', fontSize: '0.88rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#6B584C' }}>Customer Name</span>
-              <span style={{ fontWeight: '700', color: '#2B140B' }}>{simulatePaymentData?.customerName}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#6B584C' }}>Razorpay Order ID</span>
-              <span style={{ fontWeight: '700', color: '#2B140B', fontFamily: 'monospace' }}>{simulatePaymentData?.razorpayOrderId}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#6B584C' }}>Exact Amount to Pay</span>
-              <span style={{ fontWeight: '850', color: '#2F6B3A', fontSize: '1.15rem' }}>₹{simulatePaymentData?.grandTotal}</span>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <button
-              type="button"
-              onClick={async () => {
-                setShowSimulatedPaymentModal(false);
-                const response = {
-                  razorpay_order_id: simulatePaymentData.razorpayOrderId,
-                  razorpay_payment_id: 'pay_simulated_' + Math.random().toString(36).substring(2, 10),
-                  razorpay_signature: 'test_signature'
-                };
-                await simulatePaymentData.options.handler(response);
-              }}
-              style={{ width: '100%', height: '48px', borderRadius: '999px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#2F6B3A', border: 'none', color: '#FFFFFF', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem', boxShadow: '0 4px 16px rgba(47, 107, 58, 0.3)' }}
-            >
-              Simulate Successful Payment
-            </button>
-            <button
-              type="button"
-              onClick={async () => {
-                setShowSimulatedPaymentModal(false);
-                await api.post('/payments/fail', { razorpay_order_id: simulatePaymentData.razorpayOrderId }).catch(() => { });
-                setErrorMessage('Payment failed. Your order has not been placed.');
-                setLoading(false);
-              }}
-              style={{ width: '100%', height: '48px', borderRadius: '999px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#C0392B', border: 'none', color: '#FFFFFF', fontWeight: '850', cursor: 'pointer', fontSize: '0.88rem' }}
-            >
-              Simulate Failed Payment
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setShowSimulatedPaymentModal(false);
-                if (simulatePaymentData?.options?.modal?.ondismiss) {
-                  simulatePaymentData.options.modal.ondismiss();
-                }
-              }}
-              style={{ width: '100%', height: '44px', borderRadius: '999px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E4D1B7', color: '#2B140B', backgroundColor: 'transparent', cursor: 'pointer', fontSize: '0.82rem', fontWeight: '800' }}
-            >
-              Cancel / Close (No Order Created)
-            </button>
-          </div>
         </div>
       </ModalPortal>
 

@@ -91,6 +91,9 @@ export function DeliveryProvider({ children }) {
     };
   }, []);
 
+  // No-op: backward-compat for components that call clearDeliveryInfo
+  const clearDeliveryInfo = useCallback(() => {}, []);
+
   return (
     <DeliveryContext.Provider
       value={{
@@ -100,6 +103,7 @@ export function DeliveryProvider({ children }) {
         fetchDeliveryRules,
         calculateDeliveryFee,
         checkPincode,
+        clearDeliveryInfo,
       }}
     >
       {children}
