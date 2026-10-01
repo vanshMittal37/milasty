@@ -412,33 +412,17 @@ export default function AccountDashboard() {
           <div style={{
             ...cardStyle,
             padding: '1.6rem 2rem',
-            background: 'linear-gradient(135deg, rgba(255,253,249,0.92), rgba(247,239,231,0.92))',
+            background: 'rgba(255, 255, 255, 0.75)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
             gap: '1.25rem',
             border: '1px solid #E5D9CE',
-            position: 'relative',
-            overflow: 'hidden',
           }}>
-            {/* Background Image Artwork Layer on right */}
-            <div style={{
-              position: 'absolute',
-              right: 0,
-              top: 0,
-              bottom: 0,
-              width: '320px',
-              backgroundImage: `url('/images/dashboard_bg_image.jpeg')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'right bottom',
-              opacity: 0.55,
-              pointerEvents: 'none',
-              maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)',
-              WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)',
-            }} />
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.1rem', position: 'relative', zIndex: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.1rem' }}>
               <div style={{
                 width: '48px', height: '48px', borderRadius: '14px',
                 backgroundColor: '#F5EDE5', color: T.brand,
@@ -461,7 +445,6 @@ export default function AccountDashboard() {
               borderRadius: '999px', backgroundColor: T.brand, color: '#FFFFFF',
               textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
               boxShadow: '0 4px 16px rgba(90, 46, 22, 0.22)', transition: 'all 0.18s ease',
-              position: 'relative', zIndex: 2,
             }}>
               <span>Visit Store</span>
               <ArrowRight size={16} />

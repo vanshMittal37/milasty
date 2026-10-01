@@ -203,21 +203,8 @@ export default function CustomerLayout() {
         borderTop: '1px solid #E7DED5',
         paddingTop: '1.25rem',
         marginTop: '0.5rem',
-        position: 'relative',
-        borderRadius: '12px',
-        overflow: 'hidden',
       }}>
-        {/* Organic leaf image decoration at bottom of sidebar */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `url('/images/dashboard_bg_image.jpeg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'bottom left',
-          opacity: 0.25,
-          pointerEvents: 'none',
-        }} />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', position: 'relative', zIndex: 2 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', minWidth: 0 }}>
             <div style={{
               width: '36px', height: '36px', borderRadius: '50%',
@@ -257,10 +244,11 @@ export default function CustomerLayout() {
     <div style={{
       display: 'flex',
       minHeight: '100vh',
+      width: '100%',
       backgroundColor: '#F5EBDD',
       backgroundImage: `url('/images/dashboard_bg_image.jpeg')`,
       backgroundSize: 'cover',
-      backgroundPosition: 'top right',
+      backgroundPosition: 'top center',
       backgroundAttachment: 'fixed',
       backgroundRepeat: 'no-repeat',
       color: '#21150F',
@@ -271,8 +259,9 @@ export default function CustomerLayout() {
         style={{
           width: '240px', position: 'fixed', top: 0, bottom: 0, left: 0,
           zIndex: 90, borderRight: '1px solid #E7DED5', height: '100vh',
-          backgroundColor: 'rgba(255, 255, 255, 0.90)',
+          backgroundColor: 'rgba(255, 255, 255, 0.75)',
           backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
         }}
         className="customer-desktop-sidebar"
       >
@@ -295,7 +284,7 @@ export default function CustomerLayout() {
           transform: mobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           boxShadow: '4px 0 30px rgba(90, 46, 22, 0.18)',
-          backgroundColor: 'rgba(255, 255, 255, 0.96)',
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
         }}
         className="customer-mobile-drawer"
       >
@@ -310,7 +299,7 @@ export default function CustomerLayout() {
         {/* MOBILE TOP HEADER */}
         <header
           style={{
-            height: '60px', backgroundColor: 'rgba(255, 255, 255, 0.90)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #E7DED5',
+            height: '60px', backgroundColor: 'rgba(255, 255, 255, 0.75)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #E7DED5',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '0 1.25rem', position: 'sticky', top: 0, zIndex: 80,
           }}
@@ -334,7 +323,7 @@ export default function CustomerLayout() {
               style={{
                 fontSize: '0.75rem', color: '#5A2E16', fontWeight: '700', textDecoration: 'none',
                 display: 'flex', alignItems: 'center', gap: '0.25rem',
-                backgroundColor: '#F5EDE5', padding: '0.35rem 0.75rem',
+                backgroundColor: 'rgba(245, 237, 229, 0.8)', padding: '0.35rem 0.75rem',
                 borderRadius: '8px', border: '1px solid #E7DED5',
               }}
             >
@@ -355,7 +344,7 @@ export default function CustomerLayout() {
         {/* DESKTOP TOP HEADER BAR */}
         <div
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.88)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #E7DED5',
+            backgroundColor: 'rgba(255, 255, 255, 0.75)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #E7DED5',
             padding: '0 2rem', height: '60px', display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 80,
           }}
