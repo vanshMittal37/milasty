@@ -4388,7 +4388,7 @@ body.admin-body h3, body.admin-body h4 {
 }
 
 /* ==============================================
-   INPUT & FORM OVERRIDES
+   INPUT & FORM OVERRIDES — PREMIUM STYLE
    ============================================== */
 
 body.customer-portal-body input[type="text"],
@@ -4398,21 +4398,54 @@ body.customer-portal-body input[type="tel"],
 body.customer-portal-body input[type="number"],
 body.customer-portal-body textarea,
 body.customer-portal-body select,
-body.admin-body input,
+body.admin-body input[type="text"],
+body.admin-body input[type="email"],
+body.admin-body input[type="password"],
+body.admin-body input[type="tel"],
+body.admin-body input[type="number"],
+body.admin-body input[type="url"],
+body.admin-body input[type="search"],
+body.admin-body input[type="date"],
+body.admin-body input[type="time"],
+body.admin-body input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="submit"]):not([type="button"]),
 body.admin-body textarea,
 body.admin-body select {
-  background-color: rgba(255, 255, 255, 0.88) !important;
+  background-color: rgba(255, 255, 255, 0.92) !important;
   color: #21150F !important;
-  border: 1px solid rgba(231, 222, 213, 0.8) !important;
+  border: 1.5px solid rgba(207, 194, 181, 0.75) !important;
   border-radius: 10px !important;
+  padding: 0.6rem 0.9rem !important;
+  font-size: 0.875rem !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease !important;
+  width: 100%;
+  box-sizing: border-box !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+body.admin-body select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23665A52' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  padding-right: 2.25rem !important;
+  cursor: pointer !important;
+}
+
+body.admin-body textarea {
+  min-height: 100px !important;
+  resize: vertical !important;
 }
 
 body.customer-portal-body input::placeholder,
 body.customer-portal-body textarea::placeholder,
 body.admin-body input::placeholder,
 body.admin-body textarea::placeholder {
-  color: #B0A09A !important;
+  color: #B8A99A !important;
   opacity: 1 !important;
+  font-weight: 400 !important;
 }
 
 body.customer-portal-body input:focus,
@@ -4423,8 +4456,131 @@ body.admin-body textarea:focus,
 body.admin-body select:focus {
   outline: none !important;
   border-color: #C68A3A !important;
-  box-shadow: 0 0 0 3px rgba(198, 138, 58, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(198, 138, 58, 0.14) !important;
   background-color: #FFFFFF !important;
+}
+
+body.admin-body input:hover,
+body.admin-body textarea:hover,
+body.admin-body select:hover {
+  border-color: rgba(198, 138, 58, 0.45) !important;
+}
+
+/* Admin form label */
+body.admin-body label {
+  display: block;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  color: #5A2E16 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  margin-bottom: 0.35rem !important;
+}
+
+/* ── PREMIUM SEARCH BAR ── */
+.admin-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-search-wrap .admin-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: #B8A99A;
+  pointer-events: none;
+  flex-shrink: 0;
+  transition: color 0.18s;
+}
+
+.admin-search-bar {
+  width: 100% !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1.5px solid rgba(207, 194, 181, 0.75) !important;
+  border-radius: 999px !important;
+  padding: 0.6rem 1rem 0.6rem 2.5rem !important;
+  font-size: 0.875rem !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 500 !important;
+  color: #21150F !important;
+  transition: all 0.2s ease !important;
+  outline: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.admin-search-bar::placeholder {
+  color: #B8A99A !important;
+  font-weight: 400 !important;
+}
+
+.admin-search-bar:focus {
+  border-color: #C68A3A !important;
+  box-shadow: 0 0 0 3px rgba(198, 138, 58, 0.12) !important;
+  background-color: #FFFFFF !important;
+}
+
+.admin-search-bar:focus + .admin-search-icon,
+.admin-search-wrap:focus-within .admin-search-icon {
+  color: #C68A3A !important;
+}
+
+/* Customer portal search bar - same style */
+body.customer-portal-body .admin-search-bar {
+  border-radius: 999px !important;
+}
+
+/* .admin-input used in search + filter bars — pill shape */
+.admin-input {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1.5px solid rgba(207, 194, 181, 0.75) !important;
+  border-radius: 10px !important;
+  padding: 0.55rem 0.9rem !important;
+  font-size: 0.875rem !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 500 !important;
+  color: #21150F !important;
+  transition: all 0.2s ease !important;
+  outline: none !important;
+  display: block;
+  width: 100%;
+  box-sizing: border-box !important;
+}
+
+.admin-input:hover {
+  border-color: rgba(198, 138, 58, 0.45) !important;
+}
+
+.admin-input:focus {
+  border-color: #C68A3A !important;
+  box-shadow: 0 0 0 3px rgba(198, 138, 58, 0.12) !important;
+  background: #FFFFFF !important;
+}
+
+.admin-input::placeholder {
+  color: #B8A99A !important;
+  font-weight: 400 !important;
+}
+
+/* When used as a search bar (has a preceding icon), make it pill shaped */
+div[style*="position: relative"] > .admin-input,
+.admin-search-wrap > .admin-input {
+  border-radius: 999px !important;
+  padding-left: 2.5rem !important;
+}
+
+/* Filter select – compact width */
+select.admin-input {
+  width: auto !important;
+  min-width: 140px !important;
+  border-radius: 10px !important;
+  padding-right: 2.25rem !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23665A52' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.65rem center !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  cursor: pointer !important;
 }
 
 /* ==============================================

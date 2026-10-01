@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, Package, ShoppingBag, Users, AlertTriangle, ArrowUpRight, 
@@ -122,7 +122,7 @@ export default function AdminDashboardMain() {
   const activityEvents = [
     ...(stats?.recentOrders || []).slice(0, 3).map((o) => ({
       title: `Order #${String(o.orderId || o.id || o._id || '0000').slice(-6).toUpperCase()}`,
-      desc: `${o.shippingAddress?.fullName || o.customerName || 'Customer'} â€¢ â‚¹${(o.totalAmount || 0).toLocaleString('en-IN')}`,
+      desc: `${o.shippingAddress?.fullName || o.customerName || 'Customer'} — Rs.${(o.totalAmount || 0).toLocaleString('en-IN')}`,
       time: 'Recent Order',
     })),
     ...outOfStockItems.slice(0, 2).map((item) => ({
@@ -149,7 +149,7 @@ export default function AdminDashboardMain() {
   const kpiData = [
     {
       label: 'Total Revenue',
-      value: `â‚¹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`,
+      value: `Rs.${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`,
       sub: 'Captured sales',
       sub2: 'Current period',
       icon: DollarSign,
@@ -171,7 +171,7 @@ export default function AdminDashboardMain() {
       label: 'Low Stock Variants',
       value: lowStockItems.length,
       sub: lowStockItems.length > 0 ? `${lowStockItems.length} Need Restock` : 'Stock Optimal',
-      sub2: `Threshold â‰¤ ${LOW_STOCK_THRESHOLD} units`,
+      sub2: `Threshold <= ${LOW_STOCK_THRESHOLD} units`,
       icon: AlertTriangle,
       color: lowStockItems.length > 0 ? '#F59E0B' : '#2E7D32',
       bg: lowStockItems.length > 0 ? 'rgba(245,158,11,0.12)' : '#EDF7EE',
@@ -331,7 +331,7 @@ export default function AdminDashboardMain() {
                   const y = 160 - (p.y / maxVal) * 140;
                   return (
                     <circle key={i} cx={x} cy={y} r="5" fill="#FFFFFF" stroke="#C68A3A" strokeWidth="2.5">
-                      <title>â‚¹{p.y}</title>
+                      <title>Rs.{p.y}</title>
                     </circle>
                   );
                 })}
@@ -372,11 +372,11 @@ export default function AdminDashboardMain() {
                         {item.title}
                       </div>
                       <div style={{ fontSize: '0.74rem', color: '#FF8A87', fontWeight: '700' }}>
-                        {item.variantName ? `${item.variantName} Â· ` : ''}Out of Stock
+                        {item.variantName ? `${item.variantName} · ` : ''}Out of Stock
                       </div>
                     </div>
                     <Link to={`/admin/products/edit/${item.productId}`} className="admin-btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.72rem', textDecoration: 'none' }}>
-                      Manage â†’
+                      Manage →
                     </Link>
                   </div>
                 ))}
@@ -406,11 +406,11 @@ export default function AdminDashboardMain() {
                           {item.title}
                         </div>
                         <div style={{ fontSize: '0.74rem', color: '#FBBF24', fontWeight: '700' }}>
-                          {item.variantName ? `${item.variantName} Â· ` : ''}Only {item.stock} left (â‚¹{item.price})
+                          {item.variantName ? `${item.variantName} · ` : ''}Only {item.stock} left (Rs.{item.price})
                         </div>
                       </div>
                       <Link to={`/admin/products/edit/${item.productId}`} className="admin-btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.72rem', textDecoration: 'none' }}>
-                        Manage â†’
+                        Manage →
                       </Link>
                     </div>
                   ))}
@@ -465,7 +465,7 @@ export default function AdminDashboardMain() {
                       <div style={{ fontWeight: '700', color: '#21150F', fontSize: '0.84rem' }}>{o.customerName}</div>
                       <div style={{ fontSize: '0.7rem', color: '#665A52' }}>{o.phone}</div>
                     </td>
-                    <td style={{ fontWeight: '800', color: '#21150F' }}>â‚¹{o.totalAmount}</td>
+                    <td style={{ fontWeight: '800', color: '#21150F' }}>Rs.{o.totalAmount}</td>
                     <td>
                       <span className={`admin-badge ${o.paymentStatus === 'Paid' ? 'admin-badge-success' : 'admin-badge-danger'}`}>
                         {o.paymentStatus}
