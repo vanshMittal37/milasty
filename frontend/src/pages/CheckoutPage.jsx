@@ -71,7 +71,7 @@ export default function CheckoutPage() {
   });
   const [savingAddress, setSavingAddress] = useState(false);
 
-  const [paymentMethod, setPaymentMethod] = useState('Razorpay'); // 'Razorpay' or 'COD'
+  const paymentMethod = 'Razorpay';
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
@@ -278,11 +278,6 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (isCurrentPinChecked && !isDeliverable) {
-      setErrorMessage(`We do not deliver to PIN code ${cleanPin}. Please select or add a serviceable delivery address.`);
-      return;
-    }
-
     setLoading(true);
     setErrorMessage('');
 
@@ -303,20 +298,9 @@ export default function CheckoutPage() {
         pincode: formData.pincode,
         items: cartItems,
         couponCode: appliedCoupon ? appliedCoupon.code : null,
-        paymentMethod,
+        paymentMethod: 'Razorpay',
         selectedAddressId: selectedAddressId || null,
       };
-
-      // COD FLOW: Immediately create confirmed COD order
-      if (paymentMethod === 'COD') {
-        const orderRes = await api.post('/orders', checkoutPayload);
-        const order = orderRes.data.order;
-        const orderId = order.id || order.orderId;
-
-        clearCart();
-        navigate(`/order-success/${orderId}`);
-        return;
-      }
 
       // ONLINE RAZORPAY FLOW: Create payment session (No order in DB yet!)
       console.log('Initiating payment session on server...');
@@ -537,9 +521,7 @@ export default function CheckoutPage() {
                     backgroundColor: '#FFFFFF',
                     borderRadius: '16px',
                     padding: '1.25rem',
-                    border: (isCurrentPinChecked && !isDeliverable)
-                      ? '1.5px solid #C0392B'
-                      : '1.5px solid #2F6B3A',
+                    border: '1.5px solid #2F6B3A',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '0.85rem',
@@ -759,64 +741,24 @@ export default function CheckoutPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
                 {/* Razorpay Online */}
-                <label
-                  onClick={() => setPaymentMethod('Razorpay')}
+                <div
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.85rem',
                     padding: '1.15rem 1.25rem',
                     borderRadius: '16px',
-                    border: paymentMethod === 'Razorpay' ? '2px solid #2F6B3A' : '1.5px solid #E4D1B7',
-                    backgroundColor: paymentMethod === 'Razorpay' ? '#EAEFE5' : '#FFFFFF',
-                    boxShadow: paymentMethod === 'Razorpay' ? '0 2px 10px rgba(47, 107, 58, 0.12)' : 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    border: '2px solid #2F6B3A',
+                    backgroundColor: '#EAEFE5',
+                    boxShadow: '0 2px 10px rgba(47, 107, 58, 0.12)',
                   }}
                 >
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="Razorpay"
-                    checked={paymentMethod === 'Razorpay'}
-                    onChange={() => setPaymentMethod('Razorpay')}
-                    style={{ accentColor: '#2F6B3A', width: '18px', height: '18px' }}
-                  />
+                  <CheckCircle2 size={20} color="#2F6B3A" />
                   <div>
                     <div style={{ fontWeight: '800', color: '#2B140B', fontSize: '0.98rem' }}>Secure Online Checkout (Razorpay)</div>
-                    <div style={{ fontSize: '0.82rem', color: '#6B584C', marginTop: '0.15rem' }}>Pay instantly using UPI, Cards, Netbanking, or Wallets</div>
+                    <div style={{ fontSize: '0.82rem', color: '#6B584C', marginTop: '0.15rem' }}>Pay instantly using UPI, Credit/Debit Cards, Netbanking, or Wallets</div>
                   </div>
-                </label>
-
-                {/* Cash on Delivery */}
-                <label
-                  onClick={() => setPaymentMethod('COD')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.85rem',
-                    padding: '1.15rem 1.25rem',
-                    borderRadius: '16px',
-                    border: paymentMethod === 'COD' ? '2px solid #2F6B3A' : '1.5px solid #E4D1B7',
-                    backgroundColor: paymentMethod === 'COD' ? '#EAEFE5' : '#FFFFFF',
-                    boxShadow: paymentMethod === 'COD' ? '0 2px 10px rgba(47, 107, 58, 0.12)' : 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="COD"
-                    checked={paymentMethod === 'COD'}
-                    onChange={() => setPaymentMethod('COD')}
-                    style={{ accentColor: '#2F6B3A', width: '18px', height: '18px' }}
-                  />
-                  <div>
-                    <div style={{ fontWeight: '800', color: '#2B140B', fontSize: '0.98rem' }}>Cash / Pay on Delivery (COD)</div>
-                    <div style={{ fontSize: '0.82rem', color: '#6B584C', marginTop: '0.15rem' }}>Pay cash or UPI upon delivery</div>
-                  </div>
-                </label>
+                </div>
               </div>
             </div>
           </div>
@@ -970,12 +912,7 @@ export default function CheckoutPage() {
                 }}
               >
                 {loading ? (
-                  <span>{paymentMethod === 'COD' ? 'Placing Order...' : 'Initiating Secure Checkout...'}</span>
-                ) : paymentMethod === 'COD' ? (
-                  <>
-                    <CheckCircle2 size={16} />
-                    <span>Place Order (₹{effectiveGrandTotal})</span>
-                  </>
+                  <span>Initiating Secure Checkout...</span>
                 ) : (
                   <>
                     <Lock size={16} />

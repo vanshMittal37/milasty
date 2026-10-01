@@ -120,6 +120,49 @@
   transform: translateY(0) !important;
 }
 
+/* Navbar Cart Icon Button — overrides btn-primary defaults to stay circular */
+button.cart-button {
+  width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  min-width: 40px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background-color: #244f21 !important;
+  border: 1px solid #b9cd94 !important;
+  color: #FFFFFF !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  cursor: pointer !important;
+  overflow: visible !important;
+  flex-shrink: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+button.cart-button:hover {
+  background-color: #1b3d19 !important;
+  border-color: #b9cd94 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+button.cart-button svg,
+button.cart-button svg path,
+button.cart-button svg rect,
+button.cart-button svg polyline,
+button.cart-button svg line {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+
 /* B. SECONDARY / OUTLINE BUTTON */
 .btn-secondary,
 .btn-outline,

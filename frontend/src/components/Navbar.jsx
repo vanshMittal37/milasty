@@ -343,7 +343,7 @@ export default function Navbar() {
                 <button 
                   onClick={toggleCart} 
                   aria-label="Shopping Cart"
-                  className="btn-primary cart-button" 
+                  className="cart-button" 
                   style={{ 
                     position: 'relative',
                     width: '40px',
@@ -357,10 +357,12 @@ export default function Navbar() {
                     justifyContent: 'center',
                     border: '1px solid #b9cd94',
                     cursor: 'pointer',
-                    transition: 'all 0.25s ease'
+                    transition: 'all 0.25s ease',
+                    flexShrink: 0,
+                    overflow: 'visible',
                   }}
                 >
-                  <ShoppingBag size={18} strokeWidth={2.4} color="#FFFFFF" stroke="#FFFFFF" style={{ color: '#FFFFFF', stroke: '#FFFFFF', display: 'block' }} />
+                  <ShoppingBag size={18} strokeWidth={2.4} color="#FFFFFF" stroke="#FFFFFF" style={{ color: '#FFFFFF', stroke: '#FFFFFF', display: 'block', flexShrink: 0 }} />
                   <span 
                     className="cart-badge"
                     style={{ 
