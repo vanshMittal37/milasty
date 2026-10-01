@@ -230,33 +230,33 @@ export default function AdminDashboardMain() {
             <div
               key={k.label}
               style={{
-                background: '#141A16',
-                border: '1px solid rgba(255, 255, 255, 0.10)',
+                background: 'rgba(255, 255, 255, 0.88)',
+                border: '1px solid #E5D9CE',
                 borderTop: `4px solid ${k.topColor}`,
                 borderRadius: '16px',
                 padding: '1.25rem 1.35rem',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '0.85rem',
-                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.35)',
+                boxShadow: '0 4px 20px rgba(90, 46, 22, 0.06)',
                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                 cursor: 'default'
               }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(0,0,0,0.50)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.35)'; }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(90, 46, 22, 0.12)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 20px rgba(90, 46, 22, 0.06)'; }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: '0.68rem', color: '#7B8E80', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{k.label}</span>
+                <span style={{ fontSize: '0.68rem', color: '#665A52', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{k.label}</span>
                 <div style={{ padding: '0.5rem', borderRadius: '10px', backgroundColor: k.bg, color: k.color }}>
                   <Icon size={18} />
                 </div>
               </div>
-              <div style={{ fontSize: '2rem', fontWeight: '900', color: '#F5F5F5', letterSpacing: '-0.03em', lineHeight: '1' }}>
+              <div style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: '#21150F', letterSpacing: '-0.03em', lineHeight: '1' }}>
                 {k.value}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.65rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #E7DED5', paddingTop: '0.65rem' }}>
                 <span style={{ fontSize: '0.75rem', color: k.color, fontWeight: '800' }}>{k.sub}</span>
-                <span style={{ fontSize: '0.72rem', color: '#A7ADB8', fontWeight: '600' }}>{k.sub2}</span>
+                <span style={{ fontSize: '0.72rem', color: '#888888', fontWeight: '600' }}>{k.sub2}</span>
               </div>
             </div>
           );

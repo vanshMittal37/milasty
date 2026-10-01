@@ -179,6 +179,7 @@ export default function App() {
                     {/* Customer Portal (Separate Shell, No Website Navbar) */}
                     <Route element={<CustomerLayout />}>
                       <Route path="/account" element={<AccountDashboard />} />
+                      <Route path="/dashboard" element={<Navigate to="/account" replace />} />
                       <Route path="/account/orders" element={<OrderHistoryPage />} />
                       <Route path="/account/orders/:id" element={<CustomerOrderDetailPage />} />
                       <Route path="/account/inquiries" element={<CustomerInquiryList />} />

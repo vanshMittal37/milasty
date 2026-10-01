@@ -236,14 +236,26 @@ export default function CustomerLayout() {
     </div>
   );
 
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#FCFAF7' }}>
+  ret  return (
+    <div style={{
+      display: 'flex',
+      minHeight: '100vh',
+      backgroundColor: '#FCFAF7',
+      backgroundImage: `linear-gradient(rgba(252, 250, 247, 0.82), rgba(252, 250, 247, 0.88)), url('/images/dashboard_bg_image.jpeg')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      backgroundRepeat: 'no-repeat',
+      color: '#21150F',
+    }}>
 
       {/* DESKTOP FIXED SIDEBAR */}
       <aside
         style={{
           width: '240px', position: 'fixed', top: 0, bottom: 0, left: 0,
           zIndex: 90, borderRight: '1px solid #E7DED5', height: '100vh',
+          backgroundColor: 'rgba(255, 255, 255, 0.90)',
+          backdropFilter: 'blur(12px)',
         }}
         className="customer-desktop-sidebar"
       >
@@ -266,6 +278,7 @@ export default function CustomerLayout() {
           transform: mobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           boxShadow: '4px 0 30px rgba(90, 46, 22, 0.18)',
+          backgroundColor: 'rgba(255, 255, 255, 0.96)',
         }}
         className="customer-mobile-drawer"
       >
@@ -274,13 +287,13 @@ export default function CustomerLayout() {
 
       {/* MAIN CONTENT WRAPPER */}
       <div
-        style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0, backgroundColor: '#FCFAF7' }}
+        style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0, backgroundColor: 'transparent' }}
         className="customer-main-area"
       >
         {/* MOBILE TOP HEADER */}
         <header
           style={{
-            height: '60px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E7DED5',
+            height: '60px', backgroundColor: 'rgba(255, 255, 255, 0.90)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #E7DED5',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '0 1.25rem', position: 'sticky', top: 0, zIndex: 80,
           }}
@@ -294,7 +307,7 @@ export default function CustomerLayout() {
             >
               <Menu size={22} />
             </button>
-            <span style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: '#171717' }}>
+            <span style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: '#21150F' }}>
               MILASTY
             </span>
           </div>
@@ -325,7 +338,7 @@ export default function CustomerLayout() {
         {/* DESKTOP TOP HEADER BAR */}
         <div
           style={{
-            backgroundColor: '#FFFFFF', borderBottom: '1px solid #E7DED5',
+            backgroundColor: 'rgba(255, 255, 255, 0.88)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #E7DED5',
             padding: '0 2rem', height: '60px', display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 80,
           }}
@@ -337,8 +350,8 @@ export default function CustomerLayout() {
             backgroundColor: '#FCFAF7', border: '1px solid #E7DED5',
             borderRadius: '10px', padding: '0.5rem 1rem', width: '280px',
           }}>
-            <Search size={14} color="#AAAAAA" style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: '0.82rem', color: '#AAAAAA', fontWeight: '500' }}>
+            <Search size={14} color="#888888" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '0.82rem', color: '#888888', fontWeight: '500' }}>
               Search your account...
             </span>
           </div>
@@ -351,6 +364,7 @@ export default function CustomerLayout() {
               backgroundColor: '#5A2E16', color: '#FFFFFF',
               fontWeight: '700', fontSize: '0.82rem', textDecoration: 'none',
               transition: 'all 0.18s ease',
+              boxShadow: '0 2px 8px rgba(90, 46, 22, 0.15)',
             }}>
               <Store size={14} />
               <span>Visit Store</span>
@@ -367,7 +381,7 @@ export default function CustomerLayout() {
                 {userInitial}
               </div>
               <div style={{ display: 'none' }} className="cp-user-name-label">
-                <span style={{ fontSize: '0.83rem', fontWeight: '700', color: '#171717' }}>{userName}</span>
+                <span style={{ fontSize: '0.83rem', fontWeight: '700', color: '#21150F' }}>{userName}</span>
               </div>
             </div>
           </div>
@@ -376,16 +390,16 @@ export default function CustomerLayout() {
         {/* PAGE HEADER */}
         <div style={{
           padding: '1.75rem 2rem 0',
-          backgroundColor: '#FCFAF7',
+          backgroundColor: 'transparent',
         }}>
-          <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#AAAAAA', fontWeight: '800', marginBottom: '0.3rem' }}>
+          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#C68A3A', fontWeight: '800', marginBottom: '0.3rem' }}>
             {category}
           </div>
           <h1 style={{
-            fontSize: isDashboard ? '1.65rem' : '1.4rem',
-            fontFamily: 'var(--font-sans)',
+            fontSize: isDashboard ? '1.75rem' : '1.45rem',
+            fontFamily: 'var(--font-serif)',
             fontWeight: '800',
-            color: '#171717',
+            color: '#21150F',
             margin: 0,
             letterSpacing: '-0.02em',
             lineHeight: 1.2,
@@ -393,11 +407,11 @@ export default function CustomerLayout() {
             {title}
           </h1>
           {subtitle && (
-            <p style={{ fontSize: '0.85rem', color: '#666666', margin: '0.3rem 0 0 0', fontWeight: '500' }}>
+            <p style={{ fontSize: '0.85rem', color: '#665A52', margin: '0.3rem 0 0 0', fontWeight: '500' }}>
               {subtitle}
             </p>
           )}
-        </div>
+        </div></div>
 
         {/* MAIN OUTLET */}
         <main style={{ padding: '1.5rem 2rem 3rem', flexGrow: 1 }}>

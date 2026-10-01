@@ -4497,4 +4497,123 @@ body.customer-portal-body select:focus {
     display: block !important;
   }
 }
+
+/* ============================================================
+   MILASTY UNIFIED DASHBOARD DESIGN SYSTEM (CUSTOMER & ADMIN)
+   Common background: /images/dashboard_bg_image.jpeg
+   ============================================================ */
+
+/* Common Dashboard Layout Background */
+body.customer-portal-body,
+body.admin-body {
+  background-color: #FCFAF7 !important;
+  background-image: linear-gradient(rgba(252, 250, 247, 0.82), rgba(252, 250, 247, 0.88)), url('/images/dashboard_bg_image.jpeg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+  color: #21150F !important;
+}
+
+/* Force dark readable typography across both portals */
+body.customer-portal-body *,
+body.admin-body * {
+  color: inherit;
+}
+
+body.customer-portal-body h1, body.customer-portal-body h2, body.customer-portal-body h3, body.customer-portal-body h4,
+body.admin-body h1, body.admin-body h2, body.admin-body h3, body.admin-body h4 {
+  color: #21150F !important;
+}
+
+/* Translucent Card Overrides */
+body.customer-portal-body .glass-card,
+body.admin-body .glass-card,
+body.admin-body .admin-card,
+body.admin-body .bg-neutral-900,
+body.admin-body .bg-stone-900,
+body.admin-body .bg-dark {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid #E5D9CE !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(90, 46, 22, 0.06) !important;
+  color: #21150F !important;
+}
+
+/* Input & Select Box Overrides */
+body.customer-portal-body input[type="text"],
+body.customer-portal-body input[type="email"],
+body.customer-portal-body input[type="password"],
+body.customer-portal-body input[type="tel"],
+body.customer-portal-body input[type="number"],
+body.customer-portal-body textarea,
+body.customer-portal-body select,
+body.admin-body input,
+body.admin-body textarea,
+body.admin-body select {
+  background-color: #FFFFFF !important;
+  color: #21150F !important;
+  border: 1px solid #E5D9CE !important;
+  border-radius: 10px !important;
+}
+
+body.customer-portal-body input::placeholder,
+body.customer-portal-body textarea::placeholder,
+body.admin-body input::placeholder,
+body.admin-body textarea::placeholder {
+  color: #888888 !important;
+  opacity: 1 !important;
+}
+
+body.customer-portal-body input:focus,
+body.customer-portal-body textarea:focus,
+body.customer-portal-body select:focus,
+body.admin-body input:focus,
+body.admin-body textarea:focus,
+body.admin-body select:focus {
+  outline: none !important;
+  border-color: #C68A3A !important;
+  box-shadow: 0 0 0 3px rgba(198, 138, 58, 0.15) !important;
+}
+
+/* Admin Table Overrides */
+body.admin-body table {
+  background-color: rgba(255, 255, 255, 0.90) !important;
+  border-color: #E5D9CE !important;
+  color: #21150F !important;
+}
+
+body.admin-body th {
+  background-color: #F7F0E8 !important;
+  color: #5A2E16 !important;
+  font-weight: 800 !important;
+  border-bottom: 1px solid #E5D9CE !important;
+}
+
+body.admin-body td {
+  border-bottom: 1px solid #F3EBE3 !important;
+  color: #21150F !important;
+}
+
+body.admin-body tr:hover td {
+  background-color: #FCFAF7 !important;
+}
+
+/* Primary Button Override */
+body.customer-portal-body .btn-primary,
+body.admin-body .btn-primary,
+body.admin-body button[type="submit"] {
+  background-color: #5A2E16 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #5A2E16 !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+}
+
+body.customer-portal-body .btn-primary:hover,
+body.admin-body .btn-primary:hover,
+body.admin-body button[type="submit"]:hover {
+  background-color: #4A230F !important;
+  border-color: #4A230F !important;
+}
 

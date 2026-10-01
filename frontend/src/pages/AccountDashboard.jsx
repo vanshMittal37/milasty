@@ -148,7 +148,7 @@ export default function AccountDashboard() {
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
-    if (queryTab) setActiveTab(queryTab);
+    setActiveTab(queryTab || 'overview');
   }, [queryTab]);
 
   useEffect(() => {
@@ -266,85 +266,183 @@ export default function AccountDashboard() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
 
           {/* 1. Profile Summary Card */}
-          <div style={{ ...cardStyle, padding: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.5rem' }}>
+          <div style={{
+            ...cardStyle,
+            padding: '1.75rem 2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1.5rem',
+            position: 'relative',
+          }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
               {/* Avatar */}
               <div style={{
-                width: '62px', height: '62px', borderRadius: '50%',
-                backgroundColor: T.brandLight, border: `2px solid ${T.border}`,
+                width: '72px', height: '72px', borderRadius: '50%',
+                backgroundColor: '#F5EDE5', border: '3px solid #E7DED5',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1.6rem', fontFamily: 'var(--font-sans)', fontWeight: '900', color: T.brand, flexShrink: 0,
+                fontSize: '1.8rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: T.brand, flexShrink: 0,
+                boxShadow: '0 4px 12px rgba(90, 46, 22, 0.08)',
               }}>
                 {userInitial}
               </div>
               <div>
-                <div style={{ fontSize: '1.1rem', fontWeight: '800', color: T.textPrimary, marginBottom: '0.35rem' }}>{user?.name || 'Customer'}</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', fontSize: '0.83rem', color: T.textMuted, fontWeight: '500' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Mail size={13} color={T.accent} /> {user?.email}</span>
-                  {user?.phone && <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Phone size={13} color={T.accent} /> {user.phone}</span>}
+                <div style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: T.textPrimary, marginBottom: '0.35rem' }}>
+                  {user?.name || 'Customer'}
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.85rem', color: T.textSecondary, fontWeight: '500' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Mail size={14} color={T.accent} /> {user?.email}
+                  </span>
+                  {user?.phone && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Phone size={14} color={T.accent} /> {user.phone}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
-              {[
-                { label: 'Edit Profile', icon: Edit3, onClick: () => setActiveTab('profile'), color: T.brand, bg: T.brandLight },
-                { label: 'Change Password', icon: Lock, onClick: () => setActiveTab('password'), color: T.textSecondary, bg: T.surfaceAlt },
-                { label: 'Logout', icon: LogOut, onClick: () => setShowLogoutModal(true), color: T.danger, bg: T.dangerBg, border: '#EF9A9A' },
-              ].map((btn) => {
-                const Icon = btn.icon;
-                return (
-                  <button
-                    key={btn.label}
-                    onClick={btn.onClick}
-                    style={{
-                      padding: '0.55rem 1.05rem', fontSize: '0.8rem', fontWeight: '700',
-                      borderRadius: '10px', border: `1px solid ${btn.border || T.border}`,
-                      color: btn.color, backgroundColor: btn.bg, cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', gap: '0.4rem',
-                      transition: 'all 0.18s ease',
-                    }}
-                  >
-                    <Icon size={14} />
-                    <span>{btn.label}</span>
-                  </button>
-                );
-              })}
+            {/* Right Quote */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '0.75rem',
+              paddingLeft: '1.5rem', borderLeft: '1px solid #E7DED5',
+            }} className="cp-profile-quote-box">
+              <span style={{ fontSize: '1.6rem' }}>🌾</span>
+              <div style={{ fontSize: '0.82rem', color: T.textSecondary, fontWeight: '500', maxWidth: '200px', lineHeight: '1.3' }}>
+                Grateful to have you in our MILASTY family.
+              </div>
+            </div>
+
+            {/* Action Buttons Row */}
+            <div style={{ width: '100%', display: 'flex', gap: '0.75rem', flexWrap: 'wrap', paddingTop: '1rem', borderTop: '1px solid #F3EBE3' }}>
+              <button
+                onClick={() => setActiveTab('profile')}
+                style={{
+                  padding: '0.6rem 1.25rem', fontSize: '0.83rem', fontWeight: '700',
+                  borderRadius: '12px', border: `1px solid ${T.border}`,
+                  color: T.brand, backgroundColor: '#F7F0E8', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '0.45rem',
+                  transition: 'all 0.18s ease',
+                }}
+              >
+                <Edit3 size={15} />
+                <span>Edit Profile</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('password')}
+                style={{
+                  padding: '0.6rem 1.25rem', fontSize: '0.83rem', fontWeight: '700',
+                  borderRadius: '12px', border: `1px solid ${T.border}`,
+                  color: T.textSecondary, backgroundColor: '#F7F0E8', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '0.45rem',
+                  transition: 'all 0.18s ease',
+                }}
+              >
+                <Lock size={15} />
+                <span>Change Password</span>
+              </button>
+              <button
+                onClick={() => setShowLogoutModal(true)}
+                style={{
+                  padding: '0.6rem 1.25rem', fontSize: '0.83rem', fontWeight: '700',
+                  borderRadius: '12px', border: '1px solid #FEECEC',
+                  color: T.danger, backgroundColor: '#FFF5F5', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '0.45rem',
+                  transition: 'all 0.18s ease',
+                }}
+              >
+                <LogOut size={15} />
+                <span>Logout</span>
+              </button>
             </div>
           </div>
 
           {/* 2. Account Summary Stat Cards */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: T.textPrimary, margin: 0 }}>Account Summary</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <h2 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: T.textPrimary, margin: 0 }}>Account Summary</h2>
+                <span style={{ fontSize: '1.2rem' }}>🌾</span>
+              </div>
+              <span style={{ fontSize: '0.8rem', color: T.textMuted, fontStyle: 'italic', fontWeight: '500' }}>
+                Wholesome snacks. Happier days.
+              </span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem' }}>
               {[
-                { label: 'Total Orders', desc: 'Track purchases', value: loadingOrders ? null : orders.length, icon: Package, iconBg: '#EAF2FF', iconColor: '#1565C0', onClick: () => setActiveTab('orders') },
-                { label: 'Saved Wishlist', desc: 'Favourite items', value: wishlistCount, icon: Heart, iconBg: '#FEECEC', iconColor: '#C62828', onClick: () => setActiveTab('wishlist') },
-                { label: 'Delivery Locations', desc: 'Saved addresses', value: user?.addresses?.length || 0, icon: MapPin, iconBg: T.accentLight, iconColor: T.accent, onClick: () => setActiveTab('addresses') },
-                { label: 'Cart Items', desc: 'Active items', value: totalItemCount, icon: ShoppingBag, iconBg: '#F3E8FF', iconColor: '#6B21A8', onClick: () => setIsCartOpen(true) },
+                { label: 'TOTAL ORDERS', desc: 'Track purchases →', value: loadingOrders ? null : orders.length, icon: Package, iconBg: '#F5EDE5', iconColor: T.brand, onClick: () => setActiveTab('orders') },
+                { label: 'SAVED WISHLIST', desc: 'Favourite items →', value: wishlistCount, icon: Heart, iconBg: '#FEECEC', iconColor: '#C62828', onClick: () => setActiveTab('wishlist') },
+                { label: 'DELIVERY LOCATIONS', desc: 'Saved addresses →', value: user?.addresses?.length || 0, icon: MapPin, iconBg: T.accentLight, iconColor: T.accent, onClick: () => setActiveTab('addresses') },
+                { label: 'CART ITEMS', desc: 'Active items →', value: totalItemCount, icon: ShoppingBag, iconBg: '#F3E8FF', iconColor: '#6B21A8', onClick: () => setIsCartOpen(true) },
               ].map((card) => {
                 const Icon = card.icon;
                 return (
-                  <div key={card.label} className="milasty-stat-card" onClick={card.onClick} role="button" tabIndex={0}>
-                    <div className="milasty-stat-icon-wrapper" style={{ backgroundColor: card.iconBg }}>
-                      <Icon size={22} color={card.iconColor} />
+                  <div key={card.label} className="milasty-stat-card" onClick={card.onClick} role="button" tabIndex={0} style={{
+                    ...cardStyle, padding: '1.25rem 1.4rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.1rem', transition: 'all 0.2s ease',
+                  }}>
+                    <div style={{
+                      width: '46px', height: '46px', borderRadius: '50%',
+                      backgroundColor: card.iconBg, display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', flexShrink: 0,
+                    }}>
+                      <Icon size={20} color={card.iconColor} />
                     </div>
                     <div>
-                      <div style={{ fontSize: '0.68rem', color: T.textMuted, fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{card.label}</div>
+                      <div style={{ fontSize: '0.66rem', color: T.textMuted, fontWeight: '800', letterSpacing: '0.08em' }}>{card.label}</div>
                       {card.value === null ? (
-                        <SkeletonBox height="22px" width="50px" borderRadius="6px" />
+                        <SkeletonBox height="24px" width="50px" borderRadius="6px" />
                       ) : (
-                        <div style={{ fontSize: '1.5rem', fontWeight: '900', color: T.textPrimary, lineHeight: 1.2 }}>{card.value}</div>
+                        <div style={{ fontSize: '1.6rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: T.textPrimary, lineHeight: 1.2 }}>{card.value}</div>
                       )}
-                      <div style={{ fontSize: '0.74rem', color: card.iconColor, fontWeight: '600' }}>{card.desc}</div>
+                      <div style={{ fontSize: '0.74rem', color: card.iconColor, fontWeight: '700', marginTop: '0.1rem' }}>{card.desc}</div>
                     </div>
                   </div>
                 );
               })}
             </div>
+          </div>
+
+          {/* Store Banner Promo */}
+          <div style={{
+            ...cardStyle,
+            padding: '1.4rem 1.75rem',
+            background: 'linear-gradient(135deg, rgba(255,253,249,0.95), rgba(247,239,231,0.95))',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1.25rem',
+            border: '1px solid #E5D9CE',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{
+                width: '44px', height: '44px', borderRadius: '12px',
+                backgroundColor: '#F5EDE5', color: T.brand,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '1.4rem', flexShrink: 0,
+              }}>
+                🌾
+              </div>
+              <div>
+                <div style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: T.textPrimary }}>
+                  Explore our handcrafted millet bakes
+                </div>
+                <div style={{ fontSize: '0.82rem', color: T.textSecondary, marginTop: '0.15rem' }}>
+                  Discover new flavours, healthy snacks and exclusive offers.
+                </div>
+              </div>
+            </div>
+            <Link to="/shop" style={{
+              padding: '0.65rem 1.4rem', fontSize: '0.85rem', fontWeight: '800',
+              borderRadius: '999px', backgroundColor: T.brand, color: '#FFFFFF',
+              textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.45rem',
+              boxShadow: '0 4px 14px rgba(90, 46, 22, 0.18)', transition: 'all 0.18s ease',
+            }}>
+              <span>Visit Store</span>
+              <ArrowRight size={15} />
+            </Link>
           </div>
 
           {/* 3. Quick Actions + Recent Orders */}

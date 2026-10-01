@@ -130,47 +130,48 @@ export default function AdminLayout() {
         flexDirection: 'column', 
         height: '100%', 
         justifyContent: 'space-between',
-        backgroundColor: '#0D120E',
-        color: '#A7ADB8',
-        padding: '1.75rem 1.25rem',
+        backgroundColor: 'rgba(255, 255, 255, 0.92)',
+        backdropFilter: 'blur(12px)',
+        color: '#4A3B2E',
+        padding: '1.5rem 1.15rem',
         overflowY: 'auto'
       }}
     >
       <div>
         {/* Brand Logo Header */}
-        <div style={{ marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.10)', paddingBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ marginBottom: '1.75rem', borderBottom: '1px solid #E7DED5', paddingBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div 
               style={{
-                width: '32px',
-                height: '32px',
+                width: '34px',
+                height: '34px',
                 borderRadius: '8px',
-                backgroundColor: '#274C37',
+                backgroundColor: '#5A2E16',
                 color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontWeight: '900',
                 fontFamily: 'var(--font-serif)',
-                fontSize: '0.95rem',
-                border: '1px solid rgba(255,255,255,0.15)',
-                flexShrink: 0
+                fontSize: '1rem',
+                flexShrink: 0,
+                boxShadow: '0 2px 8px rgba(90, 46, 22, 0.2)',
               }}
             >
               M
             </div>
             <div>
-              <h2 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.04em', margin: 0, color: '#F5F5F5', lineHeight: '1.1' }}>
-                MILASTY<span style={{ color: '#85B870' }}>.</span>
+              <h2 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.04em', margin: 0, color: '#21150F', lineHeight: '1.1' }}>
+                MILASTY<span style={{ color: '#C68A3A' }}>.</span>
               </h2>
-              <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#85B870', fontWeight: '800', marginTop: '0.1rem' }}>
-                Store Management
+              <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#C68A3A', fontWeight: '800', marginTop: '0.1rem' }}>
+                Admin Portal
               </div>
             </div>
           </div>
           <button 
             onClick={() => setMobileSidebarOpen(false)}
-            style={{ background: 'none', border: 'none', color: '#A7ADB8', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0.2rem' }}
+            style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0.2rem' }}
             className="admin-hamburger-btn"
           >
             <X size={18} />
@@ -178,13 +179,13 @@ export default function AdminLayout() {
         </div>
 
         {/* Sidebar Nav Items */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {sections.map((section) => (
             <div key={section.title}>
-              <h3 style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7B8E80', fontWeight: '800', marginBottom: '0.65rem' }}>
+              <h3 style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#888888', fontWeight: '800', marginBottom: '0.5rem', paddingLeft: '0.4rem' }}>
                 {section.title}
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                 {section.items.map((item) => {
                   const Icon = item.icon;
                   const active = location.pathname === item.path;
@@ -197,31 +198,32 @@ export default function AdminLayout() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.75rem',
-                        padding: '0.6rem 0.85rem',
-                        borderRadius: '8px',
-                        fontSize: '0.82rem',
+                        padding: '0.55rem 0.85rem',
+                        borderRadius: '10px',
+                        fontSize: '0.83rem',
                         fontWeight: '700',
                         textDecoration: 'none',
-                        color: active ? '#FFFFFF' : '#A7ADB8',
-                        backgroundColor: active ? 'rgba(39, 76, 55, 0.45)' : 'transparent',
-                        borderLeft: active ? '3px solid #85B870' : '3px solid transparent',
-                        transition: 'all 0.2s ease',
+                        color: active ? '#FFFFFF' : '#4A3B2E',
+                        backgroundColor: active ? '#5A2E16' : 'transparent',
+                        borderLeft: active ? '4px solid #C68A3A' : '4px solid transparent',
+                        boxShadow: active ? '0 4px 12px rgba(90, 46, 22, 0.2)' : 'none',
+                        transition: 'all 0.18s ease',
                       }}
                       onMouseEnter={(e) => {
                         if (!active) {
-                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)';
-                          e.currentTarget.style.color = '#FFFFFF';
+                          e.currentTarget.style.backgroundColor = '#F5EDE5';
+                          e.currentTarget.style.color = '#5A2E16';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!active) {
                           e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = '#A7ADB8';
+                          e.currentTarget.style.color = '#4A3B2E';
                         }
                       }}
                       className="admin-sidebar-link"
                     >
-                      <Icon size={16} color={active ? '#85B870' : '#7B8E80'} />
+                      <Icon size={16} color={active ? '#FFFFFF' : '#5A2E16'} />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -233,7 +235,7 @@ export default function AdminLayout() {
       </div>
 
       {/* Sidebar Profile Card Footer */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.10)', paddingTop: '1.25rem', marginTop: '2rem' }}>
+      <div style={{ borderTop: '1px solid #E7DED5', paddingTop: '1rem', marginTop: '1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
             <div 
@@ -241,21 +243,21 @@ export default function AdminLayout() {
                 width: '36px', 
                 height: '36px', 
                 borderRadius: '50%', 
-                backgroundColor: '#274C37', 
+                backgroundColor: '#F5EDE5', 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
-                color: '#FFFFFF',
+                color: '#5A2E16',
                 fontWeight: '900',
                 fontSize: '0.88rem',
-                border: '1px solid rgba(255, 255, 255, 0.15)'
+                border: '1px solid #E7DED5'
               }}
             >
               M
             </div>
             <div>
-              <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#F5F5F5' }}>Milasty Admin</div>
-              <div style={{ fontSize: '0.66rem', color: '#7B8E80', fontWeight: '600' }}>Store Manager</div>
+              <div style={{ fontSize: '0.83rem', fontWeight: '800', color: '#21150F' }}>Milasty Admin</div>
+              <div style={{ fontSize: '0.66rem', color: '#888888', fontWeight: '600' }}>Store Manager</div>
             </div>
           </div>
           
@@ -263,13 +265,14 @@ export default function AdminLayout() {
             onClick={() => setShowLogoutModal(true)} 
             style={{ 
               background: 'none', 
-              border: 'none', 
-              color: '#FF8A87', 
+              border: '1px solid #FEECEC', 
+              color: '#C62828', 
               cursor: 'pointer',
               padding: '0.4rem',
               display: 'flex',
               alignItems: 'center',
-              borderRadius: '6px',
+              borderRadius: '8px',
+              backgroundColor: '#FFF5F5',
               transition: 'all 0.2s'
             }}
             title="Log Out"
@@ -282,7 +285,20 @@ export default function AdminLayout() {
   );
 
   return (
-    <div className="admin-page-wrapper" style={{ display: 'flex' }}>
+    <div 
+      className="admin-page-wrapper" 
+      style={{ 
+        display: 'flex', 
+        minHeight: '100vh',
+        backgroundColor: '#FCFAF7',
+        backgroundImage: `linear-gradient(rgba(252, 250, 247, 0.82), rgba(252, 250, 247, 0.88)), url('/images/dashboard_bg_image.jpeg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat',
+        color: '#21150F',
+      }}
+    >
       
       {/* ==================================================
           DESKTOP SIDEBAR (Fixed Left)
@@ -297,7 +313,9 @@ export default function AdminLayout() {
           zIndex: 90,
           display: 'none',
           height: '100vh',
-          borderRight: '1px solid rgba(255,255,255,0.10)',
+          borderRight: '1px solid #E7DED5',
+          backgroundColor: 'rgba(255, 255, 255, 0.90)',
+          backdropFilter: 'blur(12px)',
           overflowY: 'auto'
         }}
         className="admin-desktop-sidebar"
@@ -327,7 +345,7 @@ export default function AdminLayout() {
             left: 0, 
             width: '100%', 
             height: '100%', 
-            backgroundColor: 'rgba(0, 0, 0, 0.75)', 
+            backgroundColor: 'rgba(50, 30, 15, 0.45)', 
             zIndex: 1000,
             backdropFilter: 'blur(4px)'
           }}
@@ -346,7 +364,8 @@ export default function AdminLayout() {
           transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           height: '100vh',
           overflowY: 'auto',
-          boxShadow: mobileSidebarOpen ? '6px 0 25px rgba(0,0,0,0.5)' : 'none'
+          backgroundColor: 'rgba(255, 255, 255, 0.96)',
+          boxShadow: mobileSidebarOpen ? '6px 0 25px rgba(90,46,22,0.15)' : 'none'
         }}
       >
         <SidebarContent />
@@ -361,7 +380,8 @@ export default function AdminLayout() {
           display: 'flex', 
           flexDirection: 'column', 
           minWidth: 0,
-          marginLeft: 0
+          marginLeft: 0,
+          backgroundColor: 'transparent'
         }}
         className="admin-main-container"
       >
@@ -372,14 +392,15 @@ export default function AdminLayout() {
             position: 'sticky', 
             top: 0, 
             zIndex: 80, 
-            backgroundColor: '#0D120E', 
-            borderBottom: '1px solid rgba(255, 255, 255, 0.10)', 
-            padding: '0.5rem 1.5rem',
+            backgroundColor: 'rgba(255, 255, 255, 0.88)', 
+            backdropFilter: 'blur(10px)',
+            borderBottom: '1px solid #E7DED5', 
+            padding: '0.5rem 1.75rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            height: '72px',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.30)',
+            height: '70px',
+            boxShadow: '0 2px 10px rgba(90, 46, 22, 0.05)',
           }}
         >
           {/* Left: Mobile hamburger menu toggle & titles */}
@@ -389,7 +410,7 @@ export default function AdminLayout() {
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#85B870',
+                color: '#5A2E16',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -409,10 +430,10 @@ export default function AdminLayout() {
             </button>
             
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <span style={{ fontSize: '0.62rem', fontWeight: '800', textTransform: 'uppercase', color: '#7B8E80', letterSpacing: '0.08em', lineHeight: '1.2' }}>
+              <span style={{ fontSize: '0.62rem', fontWeight: '800', textTransform: 'uppercase', color: '#C68A3A', letterSpacing: '0.08em', lineHeight: '1.2' }}>
                 {pageBreadcrumb}
               </span>
-              <h1 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.4rem)', fontFamily: 'var(--font-serif)', color: '#F5F5F5', fontWeight: '800', margin: 0, lineHeight: '1.2' }}>
+              <h1 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.4rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '900', margin: 0, lineHeight: '1.2' }}>
                 {pageTitle}
               </h1>
             </div>
@@ -423,31 +444,31 @@ export default function AdminLayout() {
             <Link 
               to="/" 
               style={{ 
-                color: '#F5F5F5', 
-                fontSize: '0.76rem', 
+                color: '#5A2E16', 
+                fontSize: '0.78rem', 
                 fontWeight: '700',
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '0.4rem', 
                 textDecoration: 'none',
-                backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                backgroundColor: '#F5EDE5',
                 padding: '0.5rem 1rem',
                 borderRadius: '999px',
-                border: '1px solid rgba(255, 255, 255, 0.14)',
+                border: '1px solid #E7DED5',
                 transition: 'all 0.2s ease'
               }}
               className="desktop-links"
             >
-              <Globe size={14} color="#85B870" />
+              <Globe size={14} color="#5A2E16" />
               <span>View Store</span>
             </Link>
 
             {/* Notification bell button */}
             <button
               style={{
-                background: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.14)',
-                color: '#F5F5F5',
+                background: '#FFFFFF',
+                border: '1px solid #E7DED5',
+                color: '#5A2E16',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -472,7 +493,7 @@ export default function AdminLayout() {
                   cursor: 'pointer',
                   padding: '0.35rem 0.65rem',
                   borderRadius: '999px',
-                  backgroundColor: profileDropdownOpen ? 'rgba(255,255,255,0.08)' : 'transparent',
+                  backgroundColor: profileDropdownOpen ? '#F5EDE5' : 'transparent',
                   border: '1px solid transparent',
                   transition: 'all 0.2s ease'
                 }}
@@ -482,27 +503,27 @@ export default function AdminLayout() {
                     width: '34px', 
                     height: '34px', 
                     borderRadius: '50%', 
-                    backgroundColor: '#274C37', 
+                    backgroundColor: '#5A2E16', 
                     color: '#FFFFFF', 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
                     fontWeight: '900',
                     fontSize: '0.88rem',
-                    border: '1.5px solid #85B870'
+                    border: '1.5px solid #C68A3A'
                   }}
                 >
                   M
                 </div>
                 <div className="desktop-links" style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#F5F5F5', lineHeight: '1.2' }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#21150F', lineHeight: '1.2' }}>
                     Milasty Admin
                   </span>
-                  <span style={{ fontSize: '0.66rem', color: '#7B8E80', fontWeight: '600' }}>
+                  <span style={{ fontSize: '0.66rem', color: '#665A52', fontWeight: '600' }}>
                     Super Admin
                   </span>
                 </div>
-                <ChevronDown size={13} color="#A7ADB8" style={{ transform: profileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                <ChevronDown size={13} color="#5A2E16" style={{ transform: profileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
               </div>
 
               {/* Profile Dropdown Menu */}
@@ -513,20 +534,20 @@ export default function AdminLayout() {
                     top: 'calc(100% + 8px)',
                     right: 0,
                     width: '230px',
-                    backgroundColor: '#141A16',
-                    border: '1px solid rgba(255, 255, 255, 0.14)',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #E7DED5',
                     borderRadius: '16px',
                     padding: '0.5rem',
-                    boxShadow: '0 12px 40px rgba(0, 0, 0, 0.60)',
+                    boxShadow: '0 12px 40px rgba(90, 46, 22, 0.15)',
                     zIndex: 200,
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '0.2rem'
                   }}
                 >
-                  <div style={{ padding: '0.66rem 0.85rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '0.25rem' }}>
-                    <div style={{ fontWeight: '800', fontSize: '0.85rem', color: '#F5F5F5' }}>Milasty Admin</div>
-                    <div style={{ fontSize: '0.72rem', color: '#A7ADB8', marginTop: '0.15rem', fontWeight: '500' }}>admin@milasty.com</div>
+                  <div style={{ padding: '0.66rem 0.85rem', borderBottom: '1px solid #E7DED5', marginBottom: '0.25rem' }}>
+                    <div style={{ fontWeight: '800', fontSize: '0.85rem', color: '#21150F' }}>Milasty Admin</div>
+                    <div style={{ fontSize: '0.72rem', color: '#665A52', marginTop: '0.15rem', fontWeight: '500' }}>admin@milasty.com</div>
                   </div>
 
                   <button 
@@ -539,7 +560,7 @@ export default function AdminLayout() {
                       padding: '0.6rem 0.8rem',
                       background: 'none',
                       border: 'none',
-                      color: '#F5F5F5',
+                      color: '#21150F',
                       fontSize: '0.82rem',
                       fontWeight: '600',
                       borderRadius: '8px',
@@ -547,10 +568,10 @@ export default function AdminLayout() {
                       textAlign: 'left',
                       transition: 'background-color 0.15s ease'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)'}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5EDE5'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
-                    <UserCheck size={15} color="#85B870" />
+                    <UserCheck size={15} color="#5A2E16" />
                     <span>Profile Settings</span>
                   </button>
 
@@ -564,7 +585,7 @@ export default function AdminLayout() {
                       padding: '0.6rem 0.8rem',
                       background: 'none',
                       border: 'none',
-                      color: '#F5F5F5',
+                      color: '#21150F',
                       fontSize: '0.82rem',
                       fontWeight: '600',
                       borderRadius: '8px',
@@ -572,14 +593,14 @@ export default function AdminLayout() {
                       textAlign: 'left',
                       transition: 'background-color 0.15s ease'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)'}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5EDE5'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
-                    <KeyRound size={15} color="#85B870" />
+                    <KeyRound size={15} color="#5A2E16" />
                     <span>Security & Password</span>
                   </button>
 
-                  <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', marginTop: '0.25rem', paddingTop: '0.25rem' }}>
+                  <div style={{ borderTop: '1px solid #E7DED5', marginTop: '0.25rem', paddingTop: '0.25rem' }}>
                     <button 
                       onClick={() => { setProfileDropdownOpen(false); setShowLogoutModal(true); }}
                       style={{
@@ -590,7 +611,7 @@ export default function AdminLayout() {
                         padding: '0.6rem 0.8rem',
                         background: 'none',
                         border: 'none',
-                        color: '#FF8A87',
+                        color: '#C62828',
                         fontSize: '0.82rem',
                         fontWeight: '700',
                         borderRadius: '8px',
@@ -598,7 +619,7 @@ export default function AdminLayout() {
                         textAlign: 'left',
                         transition: 'background-color 0.15s ease'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(217, 83, 79, 0.15)'}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFF5F5'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       <LogOut size={15} />
