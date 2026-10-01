@@ -22,6 +22,7 @@ router.get('/my-inquiries/:id', protect, getMyInquiryById);
 
 // Admin Management Endpoints (Admin Only)
 router.get('/admin/all', protect, adminOnly, getAllInquiriesAdmin);
+router.get('/admin', protect, adminOnly, getAllInquiriesAdmin);
 router.get('/admin/:id', protect, adminOnly, getInquiryByIdAdmin);
 router.patch('/admin/:id/status', protect, adminOnly, updateInquiryStatus);
 router.patch('/admin/:id/response', protect, adminOnly, saveAdminResponse);

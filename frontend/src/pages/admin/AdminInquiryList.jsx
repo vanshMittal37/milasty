@@ -79,7 +79,12 @@ export default function AdminInquiryList() {
     else setLoading(true);
 
     try {
-      const res = await api.get('/inquiries/admin');
+      let res;
+      try {
+        res = await api.get('/inquiries/admin/all');
+      } catch (err404) {
+        res = await api.get('/inquiries/admin');
+      }
       if (res.data && res.data.success && Array.isArray(res.data.inquiries)) {
         let list = res.data.inquiries;
 
