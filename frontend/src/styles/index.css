@@ -312,9 +312,9 @@ body {
   overflow-x: hidden;
 }
 
+/* body.admin-body base background is set in the Unified Dashboard Design System section below */
 body.admin-body {
-  background-color: var(--admin-bg) !important;
-  color: var(--admin-text-primary) !important;
+  color: var(--admin-text-primary, #21150F) !important;
 }
 
 
@@ -377,20 +377,20 @@ body.customer-portal-body {
   --cp-radius-lg:       18px;
   --cp-radius-xl:       24px;
 
-  background-color: var(--cp-bg) !important;
+  /* Background & color are set in Unified Dashboard Design System section below */
   color: var(--cp-text-primary) !important;
 }
 
-/* 2. MAIN AREA BACKGROUNDS */
+/* 2. MAIN AREA BACKGROUNDS — transparent so body bg-image shows through */
 body.customer-portal-body main,
 body.customer-portal-body .customer-main-area,
 body.customer-portal-body .account-dashboard-page {
-  background-color: var(--cp-bg) !important;
+  background-color: transparent !important;
   color: var(--cp-text-primary) !important;
 }
 
 .account-dashboard-page {
-  background-color: var(--cp-bg, #FCFAF7) !important;
+  background-color: transparent !important;
   color: var(--cp-text-primary, #171717) !important;
   min-height: 100vh;
   display: flex;

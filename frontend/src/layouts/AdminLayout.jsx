@@ -640,7 +640,7 @@ export default function AdminLayout() {
             maxWidth: '1400px',
             width: '100%',
             margin: '0 auto',
-            backgroundColor: 'var(--admin-bg)'
+            backgroundColor: 'transparent'
           }}
           className="admin-workspace-area"
         >
