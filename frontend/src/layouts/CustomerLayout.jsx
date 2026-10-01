@@ -236,7 +236,7 @@ export default function CustomerLayout() {
     </div>
   );
 
-  ret  return (
+  return (
     <div style={{
       display: 'flex',
       minHeight: '100vh',
@@ -411,7 +411,7 @@ export default function CustomerLayout() {
               {subtitle}
             </p>
           )}
-        </div></div>
+        </div>
 
         {/* MAIN OUTLET */}
         <main style={{ padding: '1.5rem 2rem 3rem', flexGrow: 1 }}>
