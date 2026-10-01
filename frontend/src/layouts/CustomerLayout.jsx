@@ -257,10 +257,10 @@ export default function CustomerLayout() {
     <div style={{
       display: 'flex',
       minHeight: '100vh',
-      backgroundColor: '#FBF6F0',
-      backgroundImage: `linear-gradient(rgba(251, 246, 240, 0.15), rgba(251, 246, 240, 0.25)), url('/images/dashboard_bg_image.jpeg')`,
+      backgroundColor: '#F5EBDD',
+      backgroundImage: `url('/images/dashboard_bg_image.jpeg')`,
       backgroundSize: 'cover',
-      backgroundPosition: 'center top',
+      backgroundPosition: 'top right',
       backgroundAttachment: 'fixed',
       backgroundRepeat: 'no-repeat',
       color: '#21150F',
@@ -408,27 +408,8 @@ export default function CustomerLayout() {
         <div style={{
           padding: '1.75rem 2rem 0',
           backgroundColor: 'transparent',
-          position: 'relative',
-          overflow: 'hidden',
-          borderRadius: '16px',
         }}>
-          {isDashboard && (
-            <div style={{
-              position: 'absolute',
-              right: 0,
-              top: '-10px',
-              bottom: 0,
-              width: '380px',
-              backgroundImage: `url('/images/dashboard_bg_image.jpeg')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'right center',
-              opacity: 0.75,
-              pointerEvents: 'none',
-              maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)',
-              WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)',
-            }} className="desktop-links" />
-          )}
-          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#C68A3A', fontWeight: '800', marginBottom: '0.3rem', position: 'relative', zIndex: 2 }}>
+          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#C68A3A', fontWeight: '800', marginBottom: '0.3rem' }}>
             {category}
           </div>
           <h1 style={{
@@ -439,13 +420,11 @@ export default function CustomerLayout() {
             margin: 0,
             letterSpacing: '-0.02em',
             lineHeight: 1.2,
-            position: 'relative',
-            zIndex: 2,
           }}>
             {title}
           </h1>
           {subtitle && (
-            <p style={{ fontSize: '0.88rem', color: '#665A52', margin: '0.35rem 0 0 0', fontWeight: '500', position: 'relative', zIndex: 2 }}>
+            <p style={{ fontSize: '0.88rem', color: '#665A52', margin: '0.35rem 0 0 0', fontWeight: '500' }}>
               {subtitle}
             </p>
           )}

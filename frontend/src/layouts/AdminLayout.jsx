@@ -290,10 +290,10 @@ export default function AdminLayout() {
       style={{ 
         display: 'flex', 
         minHeight: '100vh',
-        backgroundColor: '#FBF6F0',
-        backgroundImage: `linear-gradient(rgba(251, 246, 240, 0.15), rgba(251, 246, 240, 0.25)), url('/images/dashboard_bg_image.jpeg')`,
+        backgroundColor: '#F5EBDD',
+        backgroundImage: `url('/images/dashboard_bg_image.jpeg')`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center top',
+        backgroundPosition: 'top right',
         backgroundAttachment: 'fixed',
         backgroundRepeat: 'no-repeat',
         color: '#21150F',
