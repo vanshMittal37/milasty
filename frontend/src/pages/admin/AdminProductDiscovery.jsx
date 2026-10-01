@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Compass, Plus, Edit2, Trash2, X, ArrowUp, ArrowDown, 
   Search, Sparkles, Layers, AlertTriangle 
@@ -238,7 +238,7 @@ export default function AdminProductDiscovery() {
 
   if (loading) {
     return (
-      <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--admin-text-secondary)' }}>
+      <div style={{ padding: '3rem', textAlign: 'center', color: '#4A3B2E' }}>
         <div className="admin-spinner" style={{ margin: '0 auto 1rem' }} />
         <p>Loading Product Discovery configuration...</p>
       </div>
@@ -254,12 +254,12 @@ export default function AdminProductDiscovery() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-            <Compass size={24} color="var(--admin-accent)" />
-            <h1 style={{ fontSize: '1.6rem', color: 'var(--admin-text-primary)', fontFamily: 'var(--font-serif)', margin: 0 }}>
+            <Compass size={24} color="#C68A3A" />
+            <h1 style={{ fontSize: '1.6rem', color: '#21150F', fontFamily: 'var(--font-serif)', margin: 0 }}>
               Product Discovery by Mood
             </h1>
           </div>
-          <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.88rem', margin: 0 }}>
+          <p style={{ color: '#4A3B2E', fontSize: '0.88rem', margin: 0 }}>
             Manage the interactive "Find Your Perfect MILASTY Snack" section on the homepage.
           </p>
         </div>
@@ -268,7 +268,7 @@ export default function AdminProductDiscovery() {
         <div 
           style={{ 
             backgroundColor: 'var(--admin-card-bg)', 
-            border: '1px solid var(--admin-border)', 
+            border: '1px solid rgba(231, 222, 213, 0.65)', 
             borderRadius: '12px', 
             padding: '0.75rem 1.25rem',
             display: 'flex',
@@ -277,7 +277,7 @@ export default function AdminProductDiscovery() {
           }}
         >
           <div>
-            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--admin-text-muted)', fontWeight: '800' }}>
+            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800' }}>
               SHOW ON HOMEPAGE
             </div>
             <div style={{ fontSize: '0.9rem', fontWeight: '800', color: sectionConfig.is_active ? '#A3C878' : '#E57373' }}>
@@ -307,23 +307,23 @@ export default function AdminProductDiscovery() {
 
       {/* Quick Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
-        <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1.25rem' }}>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--admin-text-muted)', fontWeight: '800', marginBottom: '0.35rem' }}>Section Visibility</div>
+        <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1.25rem' }}>
+          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800', marginBottom: '0.35rem' }}>Section Visibility</div>
           <div style={{ fontSize: '1.4rem', fontWeight: '900', color: sectionConfig.is_active ? '#A3C878' : '#E57373' }}>
             {sectionConfig.is_active ? 'Active' : 'Disabled'}
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1.25rem' }}>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--admin-text-muted)', fontWeight: '800', marginBottom: '0.35rem' }}>Mood Categories</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: '900', color: 'var(--admin-text-primary)' }}>
-            {activeMoodsCount} Active <span style={{ fontSize: '0.9rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>({moods.length} total)</span>
+        <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1.25rem' }}>
+          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800', marginBottom: '0.35rem' }}>Mood Categories</div>
+          <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#21150F' }}>
+            {activeMoodsCount} Active <span style={{ fontSize: '0.9rem', color: '#665A52', fontWeight: '600' }}>({moods.length} total)</span>
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1.25rem' }}>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--admin-text-muted)', fontWeight: '800', marginBottom: '0.35rem' }}>Assigned Products</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: '900', color: 'var(--admin-text-primary)' }}>
+        <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1.25rem' }}>
+          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800', marginBottom: '0.35rem' }}>Assigned Products</div>
+          <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#21150F' }}>
             {totalAssignedProductsCount} Unique Products
           </div>
         </div>
@@ -332,15 +332,15 @@ export default function AdminProductDiscovery() {
       {/* -------------------------------------------------------------------- */}
       {/* 2. SECTION CONTENT MANAGEMENT FORM                                   */}
       {/* -------------------------------------------------------------------- */}
-      <form onSubmit={handleSaveSectionConfig} style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid var(--admin-border)', borderRadius: '16px', padding: '1.75rem', marginBottom: '2.5rem' }}>
-        <h2 style={{ fontSize: '1.15rem', color: 'var(--admin-text-primary)', margin: '0 0 1.25rem', fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Sparkles size={18} color="var(--admin-accent)" />
+      <form onSubmit={handleSaveSectionConfig} style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '16px', padding: '1.75rem', marginBottom: '2.5rem' }}>
+        <h2 style={{ fontSize: '1.15rem', color: '#21150F', margin: '0 0 1.25rem', fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Sparkles size={18} color="#C68A3A" />
           Section Content Settings
         </h2>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--admin-text-secondary)', fontWeight: '700', marginBottom: '0.4rem' }}>
+            <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
               SECTION EYEBROW
             </label>
             <input
@@ -348,12 +348,12 @@ export default function AdminProductDiscovery() {
               value={sectionConfig.eyebrow}
               onChange={e => setSectionConfig({ ...sectionConfig, eyebrow: e.target.value })}
               placeholder="e.g. NOT SURE WHERE TO START?"
-              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid var(--admin-border)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--admin-text-secondary)', fontWeight: '700', marginBottom: '0.4rem' }}>
+            <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
               HEADLINE
             </label>
             <input
@@ -361,13 +361,13 @@ export default function AdminProductDiscovery() {
               value={sectionConfig.title}
               onChange={e => setSectionConfig({ ...sectionConfig, title: e.target.value })}
               placeholder="e.g. Find Your Perfect MILASTY Snack"
-              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid var(--admin-border)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
             />
           </div>
         </div>
 
         <div style={{ marginBottom: '1.25rem' }}>
-          <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--admin-text-secondary)', fontWeight: '700', marginBottom: '0.4rem' }}>
+          <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
             DESCRIPTION
           </label>
           <textarea
@@ -375,13 +375,13 @@ export default function AdminProductDiscovery() {
             value={sectionConfig.description}
             onChange={e => setSectionConfig({ ...sectionConfig, description: e.target.value })}
             placeholder="Subheading paragraph describing the mood selection..."
-            style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid var(--admin-border)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem', resize: 'vertical' }}
+            style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem', resize: 'vertical' }}
           />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--admin-text-secondary)', fontWeight: '700', marginBottom: '0.4rem' }}>
+            <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
               EXPLORE ALL BUTTON TEXT
             </label>
             <input
@@ -389,12 +389,12 @@ export default function AdminProductDiscovery() {
               value={sectionConfig.explore_button_text}
               onChange={e => setSectionConfig({ ...sectionConfig, explore_button_text: e.target.value })}
               placeholder="e.g. EXPLORE ALL SNACKS →"
-              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid var(--admin-border)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--admin-text-secondary)', fontWeight: '700', marginBottom: '0.4rem' }}>
+            <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
               EXPLORE ALL BUTTON DESTINATION URL
             </label>
             <input
@@ -402,7 +402,7 @@ export default function AdminProductDiscovery() {
               value={sectionConfig.explore_button_url}
               onChange={e => setSectionConfig({ ...sectionConfig, explore_button_url: e.target.value })}
               placeholder="e.g. /shop"
-              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid var(--admin-border)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
             />
           </div>
         </div>
@@ -431,14 +431,14 @@ export default function AdminProductDiscovery() {
       {/* -------------------------------------------------------------------- */}
       {/* 3. MOOD COLLECTIONS / CATEGORIES MANAGEMENT                          */}
       {/* -------------------------------------------------------------------- */}
-      <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid var(--admin-border)', borderRadius: '16px', padding: '1.75rem', marginBottom: '2.5rem' }}>
+      <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '16px', padding: '1.75rem', marginBottom: '2.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.15rem', color: 'var(--admin-text-primary)', margin: 0, fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Layers size={18} color="var(--admin-accent)" />
+            <h2 style={{ fontSize: '1.15rem', color: '#21150F', margin: 0, fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Layers size={18} color="#C68A3A" />
               Mood Categories / Collections ({moods.length})
             </h2>
-            <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.82rem', margin: '0.2rem 0 0' }}>
+            <p style={{ color: '#4A3B2E', fontSize: '0.82rem', margin: '0.2rem 0 0' }}>
               Create and manage mood categories and assign snacks to each category.
             </p>
           </div>
@@ -469,7 +469,7 @@ export default function AdminProductDiscovery() {
         {/* Mood Cards List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {moods.length === 0 ? (
-            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#665A52' }}>
               No mood categories found. Click <strong>"+ Create New Category"</strong> to make one.
             </div>
           ) : (
@@ -488,7 +488,7 @@ export default function AdminProductDiscovery() {
                   key={mood.id}
                   style={{
                     backgroundColor: '#1E1E1E',
-                    border: mood.is_active ? '1px solid var(--admin-border)' : '1px dashed #663333',
+                    border: mood.is_active ? '1px solid rgba(231, 222, 213, 0.65)' : '1px dashed #663333',
                     borderRadius: '12px',
                     padding: '1.25rem',
                     opacity: mood.is_active ? 1 : 0.75,
@@ -500,7 +500,7 @@ export default function AdminProductDiscovery() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-                        <span style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-accent)', backgroundColor: 'rgba(184, 204, 122, 0.12)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#C68A3A', backgroundColor: 'rgba(184, 204, 122, 0.12)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
                           ORDER #{mood.display_order || idx + 1}
                         </span>
                         <h3 style={{ fontSize: '1.05rem', color: '#FFFFFF', fontWeight: '800', margin: 0 }}>
@@ -522,7 +522,7 @@ export default function AdminProductDiscovery() {
                       </div>
 
                       {mood.description && (
-                        <p style={{ fontSize: '0.85rem', color: 'var(--admin-text-secondary)', margin: '0 0 0.5rem' }}>
+                        <p style={{ fontSize: '0.85rem', color: '#4A3B2E', margin: '0 0 0.5rem' }}>
                           {mood.description}
                         </p>
                       )}
@@ -549,7 +549,7 @@ export default function AdminProductDiscovery() {
                         type="button"
                         onClick={() => handleMoveMood(idx, -1)}
                         disabled={idx === 0}
-                        style={{ padding: '0.4rem', backgroundColor: '#2A2A2A', border: '1px solid var(--admin-border)', color: idx === 0 ? '#555' : '#FFF', borderRadius: '6px', cursor: idx === 0 ? 'not-allowed' : 'pointer' }}
+                        style={{ padding: '0.4rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', color: idx === 0 ? '#555' : '#FFF', borderRadius: '6px', cursor: idx === 0 ? 'not-allowed' : 'pointer' }}
                         title="Move Up"
                       >
                         <ArrowUp size={14} />
@@ -558,7 +558,7 @@ export default function AdminProductDiscovery() {
                         type="button"
                         onClick={() => handleMoveMood(idx, 1)}
                         disabled={idx === moods.length - 1}
-                        style={{ padding: '0.4rem', backgroundColor: '#2A2A2A', border: '1px solid var(--admin-border)', color: idx === moods.length - 1 ? '#555' : '#FFF', borderRadius: '6px', cursor: idx === moods.length - 1 ? 'not-allowed' : 'pointer' }}
+                        style={{ padding: '0.4rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', color: idx === moods.length - 1 ? '#555' : '#FFF', borderRadius: '6px', cursor: idx === moods.length - 1 ? 'not-allowed' : 'pointer' }}
                         title="Move Down"
                       >
                         <ArrowDown size={14} />
@@ -577,7 +577,7 @@ export default function AdminProductDiscovery() {
                       <button
                         type="button"
                         onClick={() => handleToggleMoodActive(mood)}
-                        style={{ padding: '0.45rem 0.75rem', backgroundColor: '#2A2A2A', border: '1px solid var(--admin-border)', color: mood.is_active ? '#FFB74D' : '#A3C878', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}
+                        style={{ padding: '0.45rem 0.75rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', color: mood.is_active ? '#FFB74D' : '#A3C878', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}
                       >
                         {mood.is_active ? 'Deactivate' : 'Activate'}
                       </button>
@@ -595,19 +595,19 @@ export default function AdminProductDiscovery() {
                   </div>
 
                   {/* Assigned Products Thumbnails */}
-                  <div style={{ paddingTop: '0.75rem', borderTop: '1px solid var(--admin-border)' }}>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                  <div style={{ paddingTop: '0.75rem', borderTop: '1px solid rgba(231, 222, 213, 0.65)' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#665A52', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
                       ASSIGNED PRODUCTS ({assignedProds.length}):
                     </div>
                     {assignedProds.length === 0 ? (
-                      <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', fontStyle: 'italic' }}>None</span>
+                      <span style={{ fontSize: '0.82rem', color: '#665A52', fontStyle: 'italic' }}>None</span>
                     ) : (
                       <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
                         {assignedProds.map((prod) => (
-                          <div key={prod.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', backgroundColor: '#2A2A2A', border: '1px solid var(--admin-border)', borderRadius: '6px', padding: '0.35rem 0.65rem', fontSize: '0.78rem', color: '#FFFDF9' }}>
+                          <div key={prod.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '6px', padding: '0.35rem 0.65rem', fontSize: '0.78rem', color: '#FFFDF9' }}>
                             {prod.image && <img src={prod.image} alt={prod.name} style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />}
                             <span>{prod.name}</span>
-                            <span style={{ color: 'var(--admin-accent)', fontWeight: '800' }}>₹{prod.price || prod.resolvedPrice || prod.originalPrice || 0}</span>
+                            <span style={{ color: '#C68A3A', fontWeight: '800' }}>₹{prod.price || prod.resolvedPrice || prod.originalPrice || 0}</span>
                           </div>
                         ))}
                       </div>
@@ -625,16 +625,16 @@ export default function AdminProductDiscovery() {
       {/* -------------------------------------------------------------------- */}
       {moodModalOpen && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ backgroundColor: '#1E1E1E', border: '1px solid var(--admin-border)', borderRadius: '20px', width: '100%', maxWidth: '750px', maxHeight: '90vh', overflowY: 'auto', padding: '1.75rem', boxShadow: '0 20px 50px rgba(0,0,0,0.7)' }}>
+          <div style={{ backgroundColor: '#1E1E1E', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '20px', width: '100%', maxWidth: '750px', maxHeight: '90vh', overflowY: 'auto', padding: '1.75rem', boxShadow: '0 20px 50px rgba(0,0,0,0.7)' }}>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--admin-border)', paddingBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '1rem' }}>
               <h3 style={{ fontSize: '1.2rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', margin: 0 }}>
                 {editingMood ? `Edit Category: ${editingMood.name}` : 'Create New Mood Category'}
               </h3>
               <button
                 type="button"
                 onClick={() => setMoodModalOpen(false)}
-                style={{ background: 'none', border: 'none', color: 'var(--admin-text-secondary)', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: '#4A3B2E', cursor: 'pointer' }}
               >
                 <X size={20} />
               </button>
@@ -643,7 +643,7 @@ export default function AdminProductDiscovery() {
             <form onSubmit={handleSaveMood}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--admin-text-secondary)', fontWeight: '700', marginBottom: '0.4rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
                     CATEGORY NAME *
                   </label>
                   <input
@@ -652,12 +652,12 @@ export default function AdminProductDiscovery() {
                     value={moodName}
                     onChange={e => setMoodName(e.target.value)}
                     placeholder="e.g. I CRAVE CHOCOLATE"
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#2A2A2A', border: '1px solid var(--admin-border)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--admin-text-secondary)', fontWeight: '700', marginBottom: '0.4rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
                     DISPLAY ORDER
                   </label>
                   <input
@@ -665,13 +665,13 @@ export default function AdminProductDiscovery() {
                     min={1}
                     value={moodOrder}
                     onChange={e => setMoodOrder(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#2A2A2A', border: '1px solid var(--admin-border)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
                   />
                 </div>
               </div>
 
               <div style={{ marginBottom: '1.25rem' }}>
-                <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--admin-text-secondary)', fontWeight: '700', marginBottom: '0.4rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
                   SHORT DESCRIPTION
                 </label>
                 <input
@@ -679,7 +679,7 @@ export default function AdminProductDiscovery() {
                   value={moodDescription}
                   onChange={e => setMoodDescription(e.target.value)}
                   placeholder="e.g. For those moments when chocolate is non-negotiable."
-                  style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#2A2A2A', border: '1px solid var(--admin-border)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
                 />
               </div>
 
@@ -695,27 +695,27 @@ export default function AdminProductDiscovery() {
               </div>
 
               {/* SEARCHABLE PRODUCT SELECTOR */}
-              <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '1.25rem', marginBottom: '1.5rem' }}>
+              <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1.25rem', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <label style={{ fontSize: '0.85rem', color: 'var(--admin-accent)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#C68A3A', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     ASSIGN PRODUCTS ({Array.from(new Set(selectedProductIds.map(String))).length} selected)
                   </label>
 
                   {/* Search Bar */}
                   <div style={{ position: 'relative', width: '220px' }}>
-                    <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
+                    <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#665A52' }} />
                     <input
                       type="text"
                       placeholder="Search products..."
                       value={productSearch}
                       onChange={e => setProductSearch(e.target.value)}
-                      style={{ width: '100%', padding: '0.4rem 0.6rem 0.4rem 2rem', backgroundColor: '#2A2A2A', border: '1px solid var(--admin-border)', borderRadius: '6px', color: '#FFF', fontSize: '0.8rem' }}
+                      style={{ width: '100%', padding: '0.4rem 0.6rem 0.4rem 2rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '6px', color: '#FFF', fontSize: '0.8rem' }}
                     />
                   </div>
                 </div>
 
                 {/* Filtered Products Checkbox List */}
-                <div style={{ maxHeight: '240px', overflowY: 'auto', border: '1px solid var(--admin-border)', borderRadius: '10px', backgroundColor: '#181818', padding: '0.75rem' }}>
+                <div style={{ maxHeight: '240px', overflowY: 'auto', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '10px', backgroundColor: '#181818', padding: '0.75rem' }}>
                   {(() => {
                     const filtered = availableProducts.filter(p => 
                       (p.name || '').toLowerCase().includes(productSearch.toLowerCase()) ||
@@ -723,17 +723,17 @@ export default function AdminProductDiscovery() {
                     );
 
                     if (filtered.length === 0) {
-                      return <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--admin-text-muted)', fontSize: '0.85rem' }}>No products match your search.</div>;
+                      return <div style={{ padding: '1.5rem', textAlign: 'center', color: '#665A52', fontSize: '0.85rem' }}>No products match your search.</div>;
                     }
 
                     return (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <div style={{ paddingBottom: '0.5rem', borderBottom: '1px solid var(--admin-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)', fontWeight: '700' }}>Showing {filtered.length} products</span>
+                        <div style={{ paddingBottom: '0.5rem', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.75rem', color: '#665A52', fontWeight: '700' }}>Showing {filtered.length} products</span>
                           <button
                             type="button"
                             onClick={() => handleSelectAllProducts(filtered)}
-                            style={{ background: 'none', border: 'none', color: 'var(--admin-accent)', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer' }}
+                            style={{ background: 'none', border: 'none', color: '#C68A3A', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer' }}
                           >
                             Toggle Select All
                           </button>
@@ -765,10 +765,10 @@ export default function AdminProductDiscovery() {
                                 {prod.image && <img src={prod.image} alt={prod.name} style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />}
                                 <div>
                                   <div style={{ fontSize: '0.85rem', color: '#FFFDF9', fontWeight: '700' }}>{prod.name}</div>
-                                  <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)' }}>{prod.category}</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#665A52' }}>{prod.category}</div>
                                 </div>
                               </div>
-                              <div style={{ fontSize: '0.82rem', color: 'var(--admin-accent)', fontWeight: '800' }}>
+                              <div style={{ fontSize: '0.82rem', color: '#C68A3A', fontWeight: '800' }}>
                                 ₹{prod.price || prod.resolvedPrice || prod.originalPrice || 0}
                               </div>
                             </label>
@@ -781,11 +781,11 @@ export default function AdminProductDiscovery() {
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid var(--admin-border)', paddingTop: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1.25rem' }}>
                 <button
                   type="button"
                   onClick={() => setMoodModalOpen(false)}
-                  style={{ padding: '0.65rem 1.25rem', backgroundColor: 'transparent', border: '1px solid var(--admin-border)', color: 'var(--admin-text-secondary)', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700' }}
+                  style={{ padding: '0.65rem 1.25rem', backgroundColor: 'transparent', border: '1px solid rgba(231, 222, 213, 0.65)', color: '#4A3B2E', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700' }}
                 >
                   Cancel
                 </button>
@@ -815,3 +815,4 @@ export default function AdminProductDiscovery() {
     </div>
   );
 }
+

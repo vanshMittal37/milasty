@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Search, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
@@ -48,13 +48,13 @@ export default function AdminProductList() {
       {/* Header section */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--admin-text-muted)', margin: '0 0 0.2rem 0' }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665A52', margin: '0 0 0.2rem 0' }}>
             Products
           </p>
-          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             Product Catalog
           </h2>
-          <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+          <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
             Manage catalog inventory, prices, discounts, variants, and stock status.
           </p>
         </div>
@@ -71,7 +71,7 @@ export default function AdminProductList() {
       {/* Search and Filters block */}
       <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flexGrow: 1, maxWidth: '420px' }}>
-          <Search size={16} color="var(--admin-text-muted)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+          <Search size={16} color="#665A52" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
             value={search}
@@ -87,8 +87,8 @@ export default function AdminProductList() {
       <div className="admin-table-container">
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', gap: '1rem' }}>
-            <RefreshCw size={20} className="animate-spin" color="var(--admin-accent)" />
-            <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Fetching products listing...</span>
+            <RefreshCw size={20} className="animate-spin" color="#C68A3A" />
+            <span style={{ fontSize: '0.82rem', color: '#665A52', fontWeight: '600' }}>Fetching products listing...</span>
           </div>
         ) : products.length > 0 ? (
           <table className="admin-table">
@@ -127,21 +127,21 @@ export default function AdminProductList() {
                 return (
                   <tr key={p._id || p.slug}>
                     <td style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                      <img src={p.image} alt={p.title} style={{ width: '44px', height: '44px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--admin-border)' }} />
+                      <img src={p.image} alt={p.title} style={{ width: '44px', height: '44px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(231, 222, 213, 0.65)' }} />
                       <div>
-                        <div style={{ fontWeight: '800', color: 'var(--admin-text-primary)', fontSize: '0.88rem' }}>{p.title}</div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', fontWeight: '600', marginTop: '0.15rem' }}>{p.subtitle || p.slug}</div>
+                        <div style={{ fontWeight: '800', color: '#21150F', fontSize: '0.88rem' }}>{p.title}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#665A52', fontWeight: '600', marginTop: '0.15rem' }}>{p.subtitle || p.slug}</div>
                       </div>
                     </td>
-                    <td style={{ textTransform: 'capitalize', fontWeight: '700', color: 'var(--admin-text-secondary)' }}>{p.category}</td>
-                    <td style={{ fontFamily: 'monospace', color: 'var(--admin-text-muted)', fontSize: '0.78rem', fontWeight: '600' }}>{p.sku || 'MLS-PRD'}</td>
+                    <td style={{ textTransform: 'capitalize', fontWeight: '700', color: '#4A3B2E' }}>{p.category}</td>
+                    <td style={{ fontFamily: 'monospace', color: '#665A52', fontSize: '0.78rem', fontWeight: '600' }}>{p.sku || 'MLS-PRD'}</td>
                     <td>
                       <PriceDisplay price={displayPrice} originalPrice={displayOrigPrice} size="small" />
                     </td>
                     <td>
                       {hasVariants ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                          <span style={{ fontWeight: '800', color: 'var(--admin-text-primary)', fontSize: '0.82rem' }}>
+                          <span style={{ fontWeight: '800', color: '#21150F', fontSize: '0.82rem' }}>
                             {p.variants.length} {p.variants.length === 1 ? 'Variant' : 'Variants'}
                           </span>
                           {lowStockVariantCount > 0 && (
@@ -150,13 +150,13 @@ export default function AdminProductList() {
                             </span>
                           )}
                           {outOfStockVariantCount > 0 && (
-                            <span style={{ fontSize: '0.68rem', color: 'var(--admin-danger)', fontWeight: '700' }}>
+                            <span style={{ fontSize: '0.68rem', color: '#C62828', fontWeight: '700' }}>
                               {outOfStockVariantCount} Out of Stock
                             </span>
                           )}
                         </div>
                       ) : (
-                        <span style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem' }}>No Variants</span>
+                        <span style={{ color: '#665A52', fontSize: '0.8rem' }}>No Variants</span>
                       )}
                     </td>
                     <td>
@@ -187,7 +187,7 @@ export default function AdminProductList() {
                         <button
                           onClick={() => setDeleteTargetId(p._id || p.slug)}
                           className="admin-icon-btn"
-                          style={{ color: 'var(--admin-danger)' }}
+                          style={{ color: '#C62828' }}
                           title="Delete product"
                         >
                           <Trash2 size={14} />
@@ -204,8 +204,8 @@ export default function AdminProductList() {
             <div className="admin-empty-icon">
               <Search size={24} />
             </div>
-            <h3 style={{ fontSize: '1.1rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>No products found</h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--admin-text-muted)', margin: 0 }}>Try adjusting your search criteria or add a new product.</p>
+            <h3 style={{ fontSize: '1.1rem', color: '#21150F', margin: 0, fontWeight: '800' }}>No products found</h3>
+            <p style={{ fontSize: '0.85rem', color: '#665A52', margin: 0 }}>Try adjusting your search criteria or add a new product.</p>
             <Link to="/admin/products/add" className="admin-btn-primary" style={{ marginTop: '0.5rem' }}>
               <Plus size={14} />
               <span>Add New Product</span>
@@ -227,4 +227,5 @@ export default function AdminProductList() {
     </div>
   );
 }
+
 

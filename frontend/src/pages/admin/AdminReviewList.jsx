@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Star, CheckCircle, XCircle, Trash2, Edit2, Plus, X, RefreshCw, ShieldAlert, Award, MessageSquare, Image, Check, Eye, EyeOff } from 'lucide-react';
 import api from '../../api/axios';
 import ConfirmationModal from '../../components/ConfirmationModal';
@@ -340,13 +340,13 @@ export default function AdminReviewList() {
       {/* Top Banner Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.25rem' }}>
         <div>
-          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--admin-text-muted)', margin: '0 0 0.2rem 0' }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665A52', margin: '0 0 0.2rem 0' }}>
             Reviews & Testimonials
           </p>
-          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             Review Management & Moderation
           </h2>
-          <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+          <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
             Moderate real customer product reviews or manage brand-level homepage testimonials.
           </p>
         </div>
@@ -381,7 +381,7 @@ export default function AdminReviewList() {
             padding: '0.65rem 1.25rem',
             border: 'none',
             backgroundColor: 'transparent',
-            color: activeMainTab === 'user-reviews' ? 'var(--admin-accent-gold)' : 'var(--admin-text-muted)',
+            color: activeMainTab === 'user-reviews' ? 'var(--admin-accent-gold)' : '#665A52',
             borderBottom: activeMainTab === 'user-reviews' ? '2.5px solid var(--admin-accent-gold)' : '2.5px solid transparent',
             fontWeight: '800',
             fontSize: '0.88rem',
@@ -401,7 +401,7 @@ export default function AdminReviewList() {
             padding: '0.65rem 1.25rem',
             border: 'none',
             backgroundColor: 'transparent',
-            color: activeMainTab === 'testimonials' ? 'var(--admin-accent-gold)' : 'var(--admin-text-muted)',
+            color: activeMainTab === 'testimonials' ? 'var(--admin-accent-gold)' : '#665A52',
             borderBottom: activeMainTab === 'testimonials' ? '2.5px solid var(--admin-accent-gold)' : '2.5px solid transparent',
             fontWeight: '800',
             fontSize: '0.88rem',
@@ -440,7 +440,7 @@ export default function AdminReviewList() {
                     borderRadius: '999px',
                     border: isSel ? '1px solid var(--admin-accent-gold)' : '1px solid var(--admin-border-subtle)',
                     backgroundColor: isSel ? 'rgba(201, 154, 50, 0.15)' : 'transparent',
-                    color: isSel ? 'var(--admin-accent-gold)' : 'var(--admin-text-secondary)',
+                    color: isSel ? 'var(--admin-accent-gold)' : '#4A3B2E',
                     fontSize: '0.78rem',
                     fontWeight: isSel ? '800' : '600',
                     cursor: 'pointer',
@@ -455,14 +455,14 @@ export default function AdminReviewList() {
 
           {/* Loading State */}
           {loadingReviews && (
-            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#665A52' }}>
               Loading user reviews from database...
             </div>
           )}
 
           {/* Reviews List */}
           {!loadingReviews && filteredReviews.length === 0 && (
-            <div className="admin-card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
+            <div className="admin-card" style={{ padding: '3rem', textAlign: 'center', color: '#665A52' }}>
               No reviews found matching status "{filterStatus}".
             </div>
           )}
@@ -497,10 +497,10 @@ export default function AdminReviewList() {
                           style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--admin-border-subtle)' }}
                         />
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <h4 style={{ fontSize: '0.9rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <h4 style={{ fontSize: '0.9rem', color: '#21150F', margin: 0, fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {rev.productTitle}
                           </h4>
-                          <span style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>
+                          <span style={{ fontSize: '0.74rem', color: '#665A52' }}>
                             {rev.orderId ? `Order #${rev.orderId}` : 'Direct Customer Review'}
                           </span>
                         </div>
@@ -509,7 +509,7 @@ export default function AdminReviewList() {
                       {/* Reviewer Details & Rating */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.5rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                          <strong style={{ fontSize: '0.85rem', color: 'var(--admin-text-primary)' }}>{rev.reviewerName}</strong>
+                          <strong style={{ fontSize: '0.85rem', color: '#21150F' }}>{rev.reviewerName}</strong>
                           {rev.isVerifiedPurchase && (
                             <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)', padding: '0.1rem 0.4rem', borderRadius: '999px', fontWeight: '800' }}>
                               ✓ Verified
@@ -543,7 +543,7 @@ export default function AdminReviewList() {
 
                       {/* Comment */}
                       {rev.comment && (
-                        <p style={{ fontSize: '0.84rem', color: 'var(--admin-text-secondary)', lineHeight: '1.45', margin: '0 0 0.5rem 0' }}>
+                        <p style={{ fontSize: '0.84rem', color: '#4A3B2E', lineHeight: '1.45', margin: '0 0 0.5rem 0' }}>
                           "{rev.comment}"
                         </p>
                       )}
@@ -551,7 +551,7 @@ export default function AdminReviewList() {
                       {/* Attached Photo */}
                       {rev.reviewImageUrl && (
                         <div style={{ marginTop: '0.65rem' }}>
-                          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--admin-text-muted)', display: 'block', marginBottom: '0.35rem' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#665A52', display: 'block', marginBottom: '0.35rem' }}>
                             📷 Customer Uploaded Photo (Click to Enlarge):
                           </span>
                           <img
@@ -602,7 +602,7 @@ export default function AdminReviewList() {
                         <button
                           onClick={() => handleToggleShowOnProduct(rev)}
                           title={rev.showOnProduct ? 'Visible on product page' : 'Hidden from product page'}
-                          style={{ background: 'none', border: 'none', color: rev.showOnProduct ? 'var(--admin-accent-gold)' : 'var(--admin-text-muted)', cursor: 'pointer', padding: '0.25rem' }}
+                          style={{ background: 'none', border: 'none', color: rev.showOnProduct ? 'var(--admin-accent-gold)' : '#665A52', cursor: 'pointer', padding: '0.25rem' }}
                         >
                           {rev.showOnProduct ? <Eye size={15} /> : <EyeOff size={15} />}
                         </button>
@@ -626,7 +626,7 @@ export default function AdminReviewList() {
                             setEditRevVerified(rev.isVerifiedPurchase);
                             setEditRevShowOnProduct(rev.showOnProduct);
                           }}
-                          style={{ background: 'none', border: 'none', color: 'var(--admin-text-secondary)', cursor: 'pointer', padding: '0.25rem' }}
+                          style={{ background: 'none', border: 'none', color: '#4A3B2E', cursor: 'pointer', padding: '0.25rem' }}
                         >
                           <Edit2 size={15} />
                         </button>
@@ -655,13 +655,13 @@ export default function AdminReviewList() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           
           {loadingTestimonials && (
-            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#665A52' }}>
               Loading testimonials from database...
             </div>
           )}
 
           {!loadingTestimonials && testimonials.length === 0 && (
-            <div className="admin-card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
+            <div className="admin-card" style={{ padding: '3rem', textAlign: 'center', color: '#665A52' }}>
               No brand testimonials created yet. Click "Add Testimonial" above.
             </div>
           )}
@@ -689,7 +689,7 @@ export default function AdminReviewList() {
                         style={{ width: '44px', height: '44px', objectFit: 'cover', borderRadius: '50%', border: '1.5px solid var(--admin-border-subtle)' }}
                       />
                       <div>
-                        <strong style={{ fontSize: '0.92rem', color: 'var(--admin-text-primary)', display: 'block' }}>{testim.name}</strong>
+                        <strong style={{ fontSize: '0.92rem', color: '#21150F', display: 'block' }}>{testim.name}</strong>
                         <span style={{ fontSize: '0.76rem', color: 'var(--admin-accent-gold)', fontWeight: '600' }}>{testim.role}</span>
                       </div>
                     </div>
@@ -702,7 +702,7 @@ export default function AdminReviewList() {
                     </div>
 
                     {/* Testimonial Content */}
-                    <p style={{ fontSize: '0.85rem', color: 'var(--admin-text-secondary)', fontStyle: 'italic', lineHeight: '1.5', margin: 0 }}>
+                    <p style={{ fontSize: '0.85rem', color: '#4A3B2E', fontStyle: 'italic', lineHeight: '1.5', margin: 0 }}>
                       "{testim.content}"
                     </p>
                   </div>
@@ -718,7 +718,7 @@ export default function AdminReviewList() {
                         fontWeight: '800',
                         cursor: 'pointer',
                         backgroundColor: testim.isPublished ? 'rgba(34, 197, 94, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                        color: testim.isPublished ? '#22c55e' : 'var(--admin-text-muted)',
+                        color: testim.isPublished ? '#22c55e' : '#665A52',
                         border: testim.isPublished ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid var(--admin-border-subtle)',
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -743,7 +743,7 @@ export default function AdminReviewList() {
                           setEditTShowOnShop(testim.showOnShop !== false);
                           setEditTProductId(testim.productId || testim.product_id || '');
                         }}
-                        style={{ background: 'none', border: 'none', color: 'var(--admin-text-secondary)', cursor: 'pointer', padding: '0.25rem' }}
+                        style={{ background: 'none', border: 'none', color: '#4A3B2E', cursor: 'pointer', padding: '0.25rem' }}
                       >
                         <Edit2 size={15} />
                       </button>
@@ -768,17 +768,17 @@ export default function AdminReviewList() {
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div className="admin-card" style={{ width: '100%', maxWidth: '520px', padding: '1.75rem', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1.15rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>Add Product Review</h3>
-              <button onClick={() => setShowAddReviewModal(false)} style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer' }}><X size={18} /></button>
+              <h3 style={{ fontSize: '1.15rem', color: '#21150F', margin: 0, fontWeight: '800' }}>Add Product Review</h3>
+              <button onClick={() => setShowAddReviewModal(false)} style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer' }}><X size={18} /></button>
             </div>
 
             <form onSubmit={handleCreateAdminReview} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Select Product *</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Select Product *</label>
                 <select
                   value={revProductId}
                   onChange={(e) => setRevProductId(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 >
                   {safeProducts.map((p) => {
                     const pVal = p.id || p._id || p.slug;
@@ -788,23 +788,23 @@ export default function AdminReviewList() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Reviewer Name *</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Reviewer Name *</label>
                 <input
                   type="text"
                   placeholder="e.g. Priya Sharma"
                   value={revName}
                   onChange={(e) => setRevName(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Rating (1-5 Stars)</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Rating (1-5 Stars)</label>
                 <select
                   value={revRating}
                   onChange={(e) => setRevRating(Number(e.target.value))}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 >
                   <option value={5}>★★★★★ 5 Stars</option>
                   <option value={4}>★★★★☆ 4 Stars</option>
@@ -815,33 +815,33 @@ export default function AdminReviewList() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Review Description</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Review Description</label>
                 <textarea
                   rows={3}
                   placeholder="Write review text..."
                   value={revComment}
                   onChange={(e) => setRevComment(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)', fontFamily: 'inherit' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F', fontFamily: 'inherit' }}
                 />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Review Image (Optional)</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Review Image (Optional)</label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => handleUploadPhoto(e, setRevImage, setUploadingRevImage)}
-                  style={{ fontSize: '0.8rem', color: 'var(--admin-text-secondary)' }}
+                  style={{ fontSize: '0.8rem', color: '#4A3B2E' }}
                 />
                 {uploadingRevImage && <span style={{ fontSize: '0.75rem', color: 'var(--admin-accent-gold)' }}>Uploading image...</span>}
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--admin-text-primary)' }}>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#21150F' }}>
                   <input type="checkbox" checked={revVerified} onChange={(e) => setRevVerified(e.target.checked)} />
                   Verified Purchase Badge
                 </label>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--admin-text-primary)' }}>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#21150F' }}>
                   <input type="checkbox" checked={revShowOnProduct} onChange={(e) => setRevShowOnProduct(e.target.checked)} />
                   Show on Product Page
                 </label>
@@ -861,17 +861,17 @@ export default function AdminReviewList() {
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div className="admin-card" style={{ width: '100%', maxWidth: '520px', padding: '1.75rem', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1.15rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>Edit Review</h3>
-              <button onClick={() => setEditingReview(null)} style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer' }}><X size={18} /></button>
+              <h3 style={{ fontSize: '1.15rem', color: '#21150F', margin: 0, fontWeight: '800' }}>Edit Review</h3>
+              <button onClick={() => setEditingReview(null)} style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer' }}><X size={18} /></button>
             </div>
 
             <form onSubmit={handleUpdateReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Product *</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Product *</label>
                 <select
                   value={editRevProductId}
                   onChange={(e) => setEditRevProductId(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 >
                   {safeProducts.map((p) => {
                     const pVal = p.id || p._id || p.slug;
@@ -881,22 +881,22 @@ export default function AdminReviewList() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Reviewer Name</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Reviewer Name</label>
                 <input
                   type="text"
                   value={editRevName}
                   onChange={(e) => setEditRevName(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Rating</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Rating</label>
                 <select
                   value={editRevRating}
                   onChange={(e) => setEditRevRating(Number(e.target.value))}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 >
                   <option value={5}>★★★★★ 5 Stars</option>
                   <option value={4}>★★★★☆ 4 Stars</option>
@@ -907,21 +907,21 @@ export default function AdminReviewList() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Review Text</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Review Text</label>
                 <textarea
                   rows={3}
                   value={editRevComment}
                   onChange={(e) => setEditRevComment(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)', fontFamily: 'inherit' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F', fontFamily: 'inherit' }}
                 />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Status</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Status</label>
                 <select
                   value={editRevStatus}
                   onChange={(e) => setEditRevStatus(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 >
                   <option value="approved">Approved</option>
                   <option value="pending">Pending</option>
@@ -930,11 +930,11 @@ export default function AdminReviewList() {
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--admin-text-primary)' }}>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#21150F' }}>
                   <input type="checkbox" checked={editRevVerified} onChange={(e) => setEditRevVerified(e.target.checked)} />
                   Verified Purchase Badge
                 </label>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--admin-text-primary)' }}>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#21150F' }}>
                   <input type="checkbox" checked={editRevShowOnProduct} onChange={(e) => setEditRevShowOnProduct(e.target.checked)} />
                   Show on Product Page
                 </label>
@@ -954,40 +954,40 @@ export default function AdminReviewList() {
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div className="admin-card" style={{ width: '100%', maxWidth: '520px', padding: '1.75rem', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1.15rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>Add Homepage Testimonial</h3>
-              <button onClick={() => setShowAddTestimonialModal(false)} style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer' }}><X size={18} /></button>
+              <h3 style={{ fontSize: '1.15rem', color: '#21150F', margin: 0, fontWeight: '800' }}>Add Homepage Testimonial</h3>
+              <button onClick={() => setShowAddTestimonialModal(false)} style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer' }}><X size={18} /></button>
             </div>
 
             <form onSubmit={handleCreateTestimonial} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Customer Name *</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Customer Name *</label>
                 <input
                   type="text"
                   placeholder="e.g. Dr. Sunita Rao"
                   value={tName}
                   onChange={(e) => setTName(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Role / Description</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Role / Description</label>
                 <input
                   type="text"
                   placeholder="e.g. Nutritionist & Wellness Coach"
                   value={tRole}
                   onChange={(e) => setTRole(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Rating</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Rating</label>
                 <select
                   value={tRating}
                   onChange={(e) => setTRating(Number(e.target.value))}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 >
                   <option value={5}>★★★★★ 5 Stars</option>
                   <option value={4}>★★★★☆ 4 Stars</option>
@@ -996,23 +996,23 @@ export default function AdminReviewList() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Testimonial Text *</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Testimonial Text *</label>
                 <textarea
                   rows={3}
                   placeholder="Enter testimonial content..."
                   value={tContent}
                   onChange={(e) => setTContent(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)', fontFamily: 'inherit' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F', fontFamily: 'inherit' }}
                 />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Associated Product (Optional)</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Associated Product (Optional)</label>
                 <select
                   value={tProductId}
                   onChange={(e) => setTProductId(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 >
                   <option value="">-- No Specific Product Linked --</option>
                   {safeProducts.map((p) => {
@@ -1023,27 +1023,27 @@ export default function AdminReviewList() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Photo (Optional)</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Photo (Optional)</label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => handleUploadPhoto(e, setTImage, setUploadingTImage)}
-                  style={{ fontSize: '0.8rem', color: 'var(--admin-text-secondary)' }}
+                  style={{ fontSize: '0.8rem', color: '#4A3B2E' }}
                 />
                 {uploadingTImage && <span style={{ fontSize: '0.75rem', color: 'var(--admin-accent-gold)' }}>Uploading photo...</span>}
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--admin-border)' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)' }}>Display Placement</span>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '0.75rem', borderRadius: '8px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', color: '#665A52' }}>Display Placement</span>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#21150F', cursor: 'pointer' }}>
                   <input type="checkbox" checked={tShowOnHome} onChange={(e) => setTShowOnHome(e.target.checked)} />
                   Show on Homepage Carousel
                 </label>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#21150F', cursor: 'pointer' }}>
                   <input type="checkbox" checked={tShowOnShop} onChange={(e) => setTShowOnShop(e.target.checked)} />
                   Show on Shop Page "Loved by MILASTY Customers"
                 </label>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#21150F', cursor: 'pointer' }}>
                   <input type="checkbox" checked={tIsPublished} onChange={(e) => setTIsPublished(e.target.checked)} />
                   Active / Published
                 </label>
@@ -1063,38 +1063,38 @@ export default function AdminReviewList() {
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
           <div className="admin-card" style={{ width: '100%', maxWidth: '520px', padding: '1.75rem', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1.15rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>Edit Testimonial</h3>
-              <button onClick={() => setEditingTestimonial(null)} style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer' }}><X size={18} /></button>
+              <h3 style={{ fontSize: '1.15rem', color: '#21150F', margin: 0, fontWeight: '800' }}>Edit Testimonial</h3>
+              <button onClick={() => setEditingTestimonial(null)} style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer' }}><X size={18} /></button>
             </div>
 
             <form onSubmit={handleUpdateTestimonialSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Customer Name</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Customer Name</label>
                 <input
                   type="text"
                   value={editTName}
                   onChange={(e) => setEditTName(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Role</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Role</label>
                 <input
                   type="text"
                   value={editTRole}
                   onChange={(e) => setEditTRole(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Associated Product (Optional)</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Associated Product (Optional)</label>
                 <select
                   value={editTProductId}
                   onChange={(e) => setEditTProductId(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 >
                   <option value="">-- No Specific Product Linked --</option>
                   {safeProducts.map((p) => {
@@ -1105,27 +1105,27 @@ export default function AdminReviewList() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.3rem' }}>Testimonial Text</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Testimonial Text</label>
                 <textarea
                   rows={3}
                   value={editTContent}
                   onChange={(e) => setEditTContent(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: 'var(--admin-text-primary)', fontFamily: 'inherit' }}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F', fontFamily: 'inherit' }}
                 />
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--admin-border)' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--admin-text-muted)' }}>Display Placement</span>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '0.75rem', borderRadius: '8px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', color: '#665A52' }}>Display Placement</span>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#21150F', cursor: 'pointer' }}>
                   <input type="checkbox" checked={editTShowOnHome} onChange={(e) => setEditTShowOnHome(e.target.checked)} />
                   Show on Homepage Carousel
                 </label>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#21150F', cursor: 'pointer' }}>
                   <input type="checkbox" checked={editTShowOnShop} onChange={(e) => setEditTShowOnShop(e.target.checked)} />
                   Show on Shop Page "Loved by MILASTY Customers"
                 </label>
-                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--admin-text-primary)', cursor: 'pointer' }}>
+                <label style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#21150F', cursor: 'pointer' }}>
                   <input type="checkbox" checked={editTIsPublished} onChange={(e) => setEditTIsPublished(e.target.checked)} />
                   Active / Published
                 </label>
@@ -1196,3 +1196,4 @@ export default function AdminReviewList() {
     </div>
   );
 }
+

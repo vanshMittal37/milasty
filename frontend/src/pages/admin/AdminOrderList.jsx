@@ -135,13 +135,13 @@ export default function AdminOrderList() {
       {/* Header Area */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--admin-text-muted)', margin: '0 0 0.2rem 0' }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665A52', margin: '0 0 0.2rem 0' }}>
             Orders Management
           </p>
-          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             Orders Log & Tracking
           </h2>
-          <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+          <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
             Monitor live customer purchases, verify payment status, and dispatch e-commerce packages.
           </p>
         </div>
@@ -155,7 +155,7 @@ export default function AdminOrderList() {
       {/* Filter and Search Bar */}
       <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flexGrow: 1, maxWidth: '380px' }}>
-          <Search size={16} color="var(--admin-text-muted)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+          <Search size={16} color="#665A52" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
             value={search}
@@ -168,7 +168,7 @@ export default function AdminOrderList() {
 
         {/* Order Status Filter */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <Filter size={15} color="var(--admin-text-muted)" />
+          <Filter size={15} color="#665A52" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -184,7 +184,7 @@ export default function AdminOrderList() {
 
         {/* Payment Filter */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <CreditCard size={15} color="var(--admin-text-muted)" />
+          <CreditCard size={15} color="#665A52" />
           <select
             value={paymentFilter}
             onChange={(e) => setPaymentFilter(e.target.value)}
@@ -201,7 +201,7 @@ export default function AdminOrderList() {
 
         {/* Customization Filter */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <Sparkles size={15} color="var(--admin-text-muted)" />
+          <Sparkles size={15} color="#665A52" />
           <select
             value={customizationFilter}
             onChange={(e) => setCustomizationFilter(e.target.value)}
@@ -219,8 +219,8 @@ export default function AdminOrderList() {
       <div className="admin-table-container">
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem', gap: '1rem' }}>
-            <RefreshCw size={20} className="animate-spin" color="var(--admin-accent)" />
-            <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Loading orders log...</span>
+            <RefreshCw size={20} className="animate-spin" color="#C68A3A" />
+            <span style={{ fontSize: '0.82rem', color: '#665A52', fontWeight: '600' }}>Loading orders log...</span>
           </div>
         ) : filteredOrders.length > 0 ? (
           <table className="admin-table">
@@ -264,25 +264,25 @@ export default function AdminOrderList() {
 
                 return (
                   <tr key={o.id || o._id}>
-                    <td style={{ fontFamily: 'monospace', fontWeight: '800', color: 'var(--admin-text-primary)' }}>
+                    <td style={{ fontFamily: 'monospace', fontWeight: '800', color: '#21150F' }}>
                       {orderNum}
                     </td>
                     <td>
-                      <div style={{ fontWeight: '700', color: 'var(--admin-text-primary)' }}>{custName}</div>
-                      <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>
+                      <div style={{ fontWeight: '700', color: '#21150F' }}>{custName}</div>
+                      <div style={{ fontSize: '0.74rem', color: '#665A52' }}>
                         {custEmail || custPhone || 'No contact provided'}
                       </div>
                     </td>
                     <td>
-                      <div style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--admin-text-primary)', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: '600', color: '#21150F', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {addrObj.line}
                       </div>
-                      <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                        <span style={{ fontFamily: 'monospace', fontWeight: '700', color: 'var(--admin-accent)' }}>{pin ? `PIN: ${pin}` : 'No PIN'}</span>
+                      <div style={{ fontSize: '0.74rem', color: '#665A52', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                        <span style={{ fontFamily: 'monospace', fontWeight: '700', color: '#C68A3A' }}>{pin ? `PIN: ${pin}` : 'No PIN'}</span>
                         â€¢ Fee: {Number(fee) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `â‚¹${fee}`}
                       </div>
                     </td>
-                    <td style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--admin-text-secondary)' }}>
+                    <td style={{ fontSize: '0.82rem', fontWeight: '600', color: '#4A3B2E' }}>
                       {payMethod}
                     </td>
                     <td>
@@ -290,7 +290,7 @@ export default function AdminOrderList() {
                         {payStatus === 'paid' ? 'Paid' : 'Pending'}
                       </span>
                     </td>
-                    <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>
+                    <td style={{ fontWeight: '800', color: '#21150F' }}>
                       â‚¹{total.toLocaleString('en-IN')}
                     </td>
                     <td>
@@ -309,7 +309,7 @@ export default function AdminOrderList() {
                           âœ¦ {customizedCount} Customized Item{customizedCount > 1 ? 's' : ''}
                         </span>
                       ) : (
-                        <span style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#665A52' }}>
                           No Customization
                         </span>
                       )}
@@ -352,8 +352,8 @@ export default function AdminOrderList() {
             <div className="admin-empty-icon">
               <Filter size={24} />
             </div>
-            <h3 style={{ fontSize: '1.1rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>No orders found</h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--admin-text-muted)', margin: 0 }}>No store orders matching your current query filters.</p>
+            <h3 style={{ fontSize: '1.1rem', color: '#21150F', margin: 0, fontWeight: '800' }}>No orders found</h3>
+            <p style={{ fontSize: '0.85rem', color: '#665A52', margin: 0 }}>No store orders matching your current query filters.</p>
           </div>
         )}
       </div>
@@ -385,12 +385,12 @@ export default function AdminOrderList() {
             boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
           }}>
             {/* Modal Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--admin-border)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
               <div>
-                <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--admin-accent)' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#C68A3A' }}>
                   Order Details Breakdown
                 </span>
-                <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', margin: '0.1rem 0 0 0', fontWeight: '800' }}>
+                <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#21150F', margin: '0.1rem 0 0 0', fontWeight: '800' }}>
                   {selectedOrder.orderNumber || selectedOrder.orderId || `MIL-${String(selectedOrder.id).slice(-6)}`}
                 </h3>
               </div>
@@ -406,7 +406,7 @@ export default function AdminOrderList() {
                 </button>
                 <button
                   onClick={() => setSelectedOrder(null)}
-                  style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', padding: '4px' }}
+                  style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer', padding: '4px' }}
                 >
                   <X size={20} />
                 </button>
@@ -415,57 +415,57 @@ export default function AdminOrderList() {
 
             {/* Customer & Shipping Summary Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
-              <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--admin-accent)', fontWeight: '700', fontSize: '0.8rem', marginBottom: '0.6rem' }}>
+              <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#C68A3A', fontWeight: '700', fontSize: '0.8rem', marginBottom: '0.6rem' }}>
                   <User size={15} /> Customer Details
                 </div>
-                <div style={{ fontSize: '0.88rem', fontWeight: '700', color: 'var(--admin-text-primary)' }}>
+                <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#21150F' }}>
                   {selectedOrder.customerName || selectedOrder.user?.name || 'Customer'}
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--admin-text-secondary)', margin: '0.2rem 0' }}>
+                <div style={{ fontSize: '0.8rem', color: '#4A3B2E', margin: '0.2rem 0' }}>
                   <Mail size={13} style={{ display: 'inline', marginRight: '4px' }} />
                   {selectedOrder.customerEmail || selectedOrder.user?.email || 'N/A'}
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--admin-text-secondary)' }}>
+                <div style={{ fontSize: '0.8rem', color: '#4A3B2E' }}>
                   <Phone size={13} style={{ display: 'inline', marginRight: '4px' }} />
                   {selectedOrder.customerPhone || selectedOrder.user?.phone || 'N/A'}
                 </div>
               </div>
 
-              <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--admin-accent)', fontWeight: '700', fontSize: '0.8rem', marginBottom: '0.6rem' }}>
+              <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#C68A3A', fontWeight: '700', fontSize: '0.8rem', marginBottom: '0.6rem' }}>
                   <MapPin size={15} /> Delivery Address
                 </div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--admin-text-primary)', lineHeight: '1.4' }}>
+                <div style={{ fontSize: '0.82rem', color: '#21150F', lineHeight: '1.4' }}>
                   {typeof selectedOrder.shippingAddress === 'object'
                     ? [selectedOrder.shippingAddress.fullName, selectedOrder.shippingAddress.building, selectedOrder.shippingAddress.addressLine, selectedOrder.shippingAddress.city, selectedOrder.shippingAddress.state].filter(Boolean).join(', ')
                     : selectedOrder.shippingAddress || 'N/A'}
                 </div>
-                <div style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-accent)', marginTop: '0.4rem' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#C68A3A', marginTop: '0.4rem' }}>
                   PIN: {selectedOrder.pincode || (typeof selectedOrder.shippingAddress === 'object' ? selectedOrder.shippingAddress.pincode : 'N/A')}
                 </div>
               </div>
             </div>
 
             {/* Payment & Status Banner */}
-            <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
+            <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
               <div>
-                <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', textTransform: 'uppercase', fontWeight: '700' }}>Payment Information</span>
-                <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--admin-text-primary)', marginTop: '0.1rem' }}>
+                <span style={{ fontSize: '0.72rem', color: '#665A52', textTransform: 'uppercase', fontWeight: '700' }}>Payment Information</span>
+                <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#21150F', marginTop: '0.1rem' }}>
                   {selectedOrder.paymentMethod || selectedOrder.payment_method || 'Cash on Delivery'}
                   <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', fontWeight: '700', padding: '2px 8px', borderRadius: '999px', background: (selectedOrder.paymentStatus || selectedOrder.payment_status) === 'paid' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(234, 179, 8, 0.15)', color: (selectedOrder.paymentStatus || selectedOrder.payment_status) === 'paid' ? '#22c55e' : '#eab308' }}>
                     {(selectedOrder.paymentStatus || selectedOrder.payment_status || 'pending').toUpperCase()}
                   </span>
                 </div>
                 {selectedOrder.paymentId && (
-                  <div style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: 'var(--admin-text-muted)', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '0.72rem', fontFamily: 'monospace', color: '#665A52', marginTop: '0.2rem' }}>
                     Payment ID: {selectedOrder.paymentId}
                   </div>
                 )}
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <span style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-secondary)' }}>Status:</span>
+                <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E' }}>Status:</span>
                 <select
                   value={STATUS_DISPLAY_MAP[(selectedOrder.orderStatus || selectedOrder.status || 'confirmed').toLowerCase()] || 'Confirmed'}
                   onChange={(e) => handleStatusChange(selectedOrder.id || selectedOrder._id, e.target.value)}
@@ -501,27 +501,27 @@ export default function AdminOrderList() {
 
             {/* Ordered Items List */}
             <div style={{ marginBottom: '1.5rem' }}>
-              <h4 style={{ fontSize: '0.85rem', color: 'var(--admin-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', fontWeight: '800' }}>
+              <h4 style={{ fontSize: '0.85rem', color: '#4A3B2E', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem', fontWeight: '800' }}>
                 Ordered Items ({(selectedOrder.items || selectedOrder.order_items || []).length})
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {(selectedOrder.items || selectedOrder.order_items || []).map((item, idx) => {
                   const note = item.customization_note || item.customizationNote || item.instruction || item.notes;
                   return (
-                    <div key={idx} style={{ padding: '0.85rem 1rem', background: 'rgba(252, 250, 247, 0.7)', border: '1px solid var(--admin-border)', borderRadius: '10px' }}>
+                    <div key={idx} style={{ padding: '0.85rem 1rem', background: 'rgba(252, 250, 247, 0.7)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '10px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                          <Package size={16} color="var(--admin-accent)" />
+                          <Package size={16} color="#C68A3A" />
                           <div>
-                            <div style={{ fontSize: '0.88rem', fontWeight: '700', color: 'var(--admin-text-primary)' }}>
+                            <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#21150F' }}>
                               {item.title || item.product_title || item.product_name || 'Bakery Item'}
                             </div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
+                            <div style={{ fontSize: '0.75rem', color: '#665A52' }}>
                               Variant: {item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard'} â€¢ Qty: {item.quantity}
                             </div>
                           </div>
                         </div>
-                        <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--admin-text-primary)' }}>
+                        <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#21150F' }}>
                           â‚¹{((item.totalPrice || item.total_price || (item.price * item.quantity)) || 0).toLocaleString('en-IN')}
                         </div>
                       </div>
@@ -544,7 +544,7 @@ export default function AdminOrderList() {
                           </div>
                         </div>
                       ) : (
-                        <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', marginTop: '0.4rem', fontStyle: 'italic' }}>
+                        <div style={{ fontSize: '0.72rem', color: '#665A52', marginTop: '0.4rem', fontStyle: 'italic' }}>
                           No customization requested for this product.
                         </div>
                       )}
@@ -555,12 +555,12 @@ export default function AdminOrderList() {
             </div>
 
             {/* Cost Breakdown */}
-            <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', alignItems: 'flex-end', fontSize: '0.85rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', color: 'var(--admin-text-secondary)' }}>
+            <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', alignItems: 'flex-end', fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', color: '#4A3B2E' }}>
                 <span>Subtotal:</span>
                 <span>â‚¹{(selectedOrder.subtotal || 0).toLocaleString('en-IN')}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', color: 'var(--admin-text-secondary)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', color: '#4A3B2E' }}>
                 <span>Delivery Fee:</span>
                 <span>{(selectedOrder.deliveryFee || selectedOrder.delivery_fee || 0) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `â‚¹${selectedOrder.deliveryFee || selectedOrder.delivery_fee}`}</span>
               </div>
@@ -570,7 +570,7 @@ export default function AdminOrderList() {
                   <span>-â‚¹{selectedOrder.discountAmount || selectedOrder.coupon_discount || selectedOrder.couponDiscount}</span>
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', fontSize: '1.1rem', fontWeight: '900', color: 'var(--admin-text-primary)', borderTop: '1px dashed var(--admin-border)', paddingTop: '0.5rem', marginTop: '0.2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', fontSize: '1.1rem', fontWeight: '900', color: '#21150F', borderTop: '1px dashed rgba(231, 222, 213, 0.65)', paddingTop: '0.5rem', marginTop: '0.2rem' }}>
                 <span>Grand Total:</span>
                 <span>â‚¹{(selectedOrder.grandTotal || selectedOrder.totalAmount || 0).toLocaleString('en-IN')}</span>
               </div>
@@ -680,4 +680,5 @@ export default function AdminOrderList() {
     </div>
   );
 }
+
 

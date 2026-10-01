@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   /* MILASTY Official Visual Color System (Section 1) */
   --milasty-dark-brown: #3A1F14;
   --milasty-deep-brown: #2A140D;
@@ -3183,15 +3183,31 @@ footer.transparent-blurred-footer {
   color: #21150F !important;
 }
 
-/* Headings */
-.admin-page-wrapper h1,
-.admin-page-wrapper h2,
-.admin-page-wrapper h3,
-.admin-page-wrapper h4,
-.admin-page-wrapper h5 {
+/* Headings — constrain size so browser defaults don't blow them up */
+.admin-page-wrapper h1 {
+  color: #21150F !important;
+  font-family: var(--font-serif) !important;
+  font-weight: 900 !important;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem) !important;
+}
+.admin-page-wrapper h2 {
   color: #21150F !important;
   font-family: var(--font-serif) !important;
   font-weight: 800 !important;
+  font-size: clamp(1.05rem, 2vw, 1.35rem) !important;
+}
+.admin-page-wrapper h3 {
+  color: #21150F !important;
+  font-family: var(--font-serif) !important;
+  font-weight: 800 !important;
+  font-size: clamp(0.92rem, 1.5vw, 1.1rem) !important;
+}
+.admin-page-wrapper h4,
+.admin-page-wrapper h5 {
+  color: #21150F !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
 }
 
 /* Body text */
@@ -3717,13 +3733,16 @@ optgroup {
   font-family: var(--font-sans);
 }
 
-select:focus,
+/* Neutral option hover — avoid site-wide brown bleeding */
+select:focus {
+  outline: none;
+}
 option:hover,
 option:focus,
 option:active,
 option:checked {
-  background-color: #F5EDE5 !important;
-  color: #5A2E16 !important;
+  background-color: #FFFFFF !important;
+  color: #21150F !important;
 }
 
 .admin-input select,

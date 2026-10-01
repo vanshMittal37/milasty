@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Tags, RefreshCw, Upload, Image as ImageIcon, Edit3, ShieldAlert, CheckCircle, Package, Layers, X, Search, Check } from 'lucide-react';
 import api from '../../api/axios';
 import ConfirmationModal from '../../components/ConfirmationModal';
@@ -209,13 +209,13 @@ export default function AdminCategories() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--admin-text-muted)', margin: '0 0 0.2rem 0' }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665A52', margin: '0 0 0.2rem 0' }}>
             Catalog Taxonomy
           </p>
-          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             Category Management
           </h2>
-          <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+          <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
             Control store collections, dynamic product filters, and collection hero images.
           </p>
         </div>
@@ -228,20 +228,20 @@ export default function AdminCategories() {
 
       {/* Analytics Summary Bar */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-        <div className="admin-card" style={{ padding: '1rem 1.25rem', borderLeft: '4px solid var(--admin-accent)' }}>
-          <span style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)', fontWeight: '750', textTransform: 'uppercase' }}>Total Categories</span>
-          <div style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--admin-text-primary)', marginTop: '0.2rem' }}>{totalCategories}</div>
+        <div className="admin-card" style={{ padding: '1rem 1.25rem', borderLeft: '4px solid #C68A3A' }}>
+          <span style={{ fontSize: '0.7rem', color: '#665A52', fontWeight: '750', textTransform: 'uppercase' }}>Total Categories</span>
+          <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#21150F', marginTop: '0.2rem' }}>{totalCategories}</div>
         </div>
         <div className="admin-card" style={{ padding: '1rem 1.25rem', borderLeft: '4px solid #3B82F6' }}>
-          <span style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)', fontWeight: '750', textTransform: 'uppercase' }}>Active Collections</span>
+          <span style={{ fontSize: '0.7rem', color: '#665A52', fontWeight: '750', textTransform: 'uppercase' }}>Active Collections</span>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#3B82F6', marginTop: '0.2rem' }}>{activeCategories}</div>
         </div>
         <div className="admin-card" style={{ padding: '1rem 1.25rem', borderLeft: '4px solid #10B981' }}>
-          <span style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)', fontWeight: '750', textTransform: 'uppercase' }}>With Products</span>
+          <span style={{ fontSize: '0.7rem', color: '#665A52', fontWeight: '750', textTransform: 'uppercase' }}>With Products</span>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#10B981', marginTop: '0.2rem' }}>{categoriesWithProducts}</div>
         </div>
         <div className="admin-card" style={{ padding: '1rem 1.25rem', borderLeft: '4px solid #F59E0B' }}>
-          <span style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)', fontWeight: '750', textTransform: 'uppercase' }}>Empty Collections</span>
+          <span style={{ fontSize: '0.7rem', color: '#665A52', fontWeight: '750', textTransform: 'uppercase' }}>Empty Collections</span>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#F59E0B', marginTop: '0.2rem' }}>{emptyCategories}</div>
         </div>
       </div>
@@ -251,14 +251,14 @@ export default function AdminCategories() {
 
         {/* Left Column: Create Category Form */}
         <div className="admin-card">
-          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
+          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
             Add New Category
           </h3>
           <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             
             {/* Name */}
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Category Name *
               </label>
               <input
@@ -273,7 +273,7 @@ export default function AdminCategories() {
 
             {/* Description */}
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Description
               </label>
               <textarea
@@ -287,8 +287,8 @@ export default function AdminCategories() {
             </div>
 
             {/* Mandatory Image Upload */}
-            <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--admin-border)' }}>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Category Image *
               </label>
               
@@ -308,7 +308,7 @@ export default function AdminCategories() {
                     alignItems: 'center',
                     gap: '0.35rem',
                     padding: '0 0.85rem',
-                    backgroundColor: 'var(--admin-accent)',
+                    backgroundColor: '#C68A3A',
                     color: '#ffffff',
                     borderRadius: '8px',
                     fontSize: '0.78rem',
@@ -331,16 +331,16 @@ export default function AdminCategories() {
 
               {/* Instant Image Preview */}
               {image ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'var(--admin-surface-card)', borderRadius: '8px', border: '1px solid var(--admin-border)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginTop: '0.5rem', padding: '0.5rem', backgroundColor: 'var(--admin-surface-card)', borderRadius: '8px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
                   <img src={image} alt="Category Preview" style={{ width: '60px', height: '60px', borderRadius: '8px', objectFit: 'cover' }} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--admin-text-primary)' }}>Image Ready</div>
-                    <div style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)' }}>Cloudinary URL stored</div>
+                    <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#21150F' }}>Image Ready</div>
+                    <div style={{ fontSize: '0.68rem', color: '#665A52' }}>Cloudinary URL stored</div>
                   </div>
                   <button
                     type="button"
                     onClick={() => setImage('')}
-                    style={{ backgroundColor: 'transparent', border: 'none', color: 'var(--admin-danger)', cursor: 'pointer', padding: '4px' }}
+                    style={{ backgroundColor: 'transparent', border: 'none', color: '#C62828', cursor: 'pointer', padding: '4px' }}
                     title="Remove Image"
                   >
                     <Trash2 size={16} />
@@ -354,22 +354,22 @@ export default function AdminCategories() {
             </div>
 
             {/* PRODUCTS IN THIS CATEGORY */}
-            <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--admin-border)' }}>
+            <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Products in this Category
                 </label>
-                <span style={{ fontSize: '0.7rem', color: 'var(--admin-accent)', fontWeight: '800' }}>
+                <span style={{ fontSize: '0.7rem', color: '#C68A3A', fontWeight: '800' }}>
                   Selected: {selectedProductIds.length}
                 </span>
               </div>
-              <p style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', margin: '0 0 0.75rem 0' }}>
+              <p style={{ fontSize: '0.68rem', color: '#665A52', margin: '0 0 0.75rem 0' }}>
                 Select the products that should appear in this collection.
               </p>
 
               {/* Search input */}
               <div style={{ position: 'relative', marginBottom: '0.6rem' }}>
-                <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
+                <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#665A52' }} />
                 <input
                   type="text"
                   value={productSearch}
@@ -381,9 +381,9 @@ export default function AdminCategories() {
               </div>
 
               {/* Product List Selector */}
-              <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', border: '1px solid var(--admin-border)', borderRadius: '8px', padding: '0.4rem', backgroundColor: 'var(--admin-surface-card)' }}>
+              <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', padding: '0.4rem', backgroundColor: 'var(--admin-surface-card)' }}>
                 {allProducts.length === 0 ? (
-                  <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', textAlign: 'center', padding: '1rem 0' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#665A52', textAlign: 'center', padding: '1rem 0' }}>
                     {productsLoading ? 'Loading store products...' : 'No products found'}
                   </div>
                 ) : (
@@ -408,7 +408,7 @@ export default function AdminCategories() {
                             padding: '0.4rem 0.6rem',
                             borderRadius: '6px',
                             backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.12)' : 'transparent',
-                            border: isSelected ? '1px solid var(--admin-accent)' : '1px solid transparent',
+                            border: isSelected ? '1px solid #C68A3A' : '1px solid transparent',
                             cursor: 'pointer',
                             userSelect: 'none'
                           }}
@@ -418,14 +418,14 @@ export default function AdminCategories() {
                               <img src={pImg} alt={pTitle} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
                             ) : (
                               <div style={{ width: '32px', height: '32px', borderRadius: '6px', backgroundColor: 'var(--admin-surface-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Package size={14} color="var(--admin-text-muted)" />
+                                <Package size={14} color="#665A52" />
                               </div>
                             )}
                             <div style={{ minWidth: 0, flex: 1 }}>
-                              <div style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                              <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#21150F', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                                 {pTitle}
                               </div>
-                              <div style={{ fontSize: '0.66rem', color: 'var(--admin-text-muted)' }}>
+                              <div style={{ fontSize: '0.66rem', color: '#665A52' }}>
                                 ₹{p.price || 0} {p.is_active !== false ? '• Active' : '• Inactive'}
                               </div>
                             </div>
@@ -434,8 +434,8 @@ export default function AdminCategories() {
                             width: '18px',
                             height: '18px',
                             borderRadius: '4px',
-                            border: isSelected ? 'none' : '1.5px solid var(--admin-border)',
-                            backgroundColor: isSelected ? 'var(--admin-accent)' : 'transparent',
+                            border: isSelected ? 'none' : '1.5px solid rgba(231, 222, 213, 0.65)',
+                            backgroundColor: isSelected ? '#C68A3A' : 'transparent',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -466,14 +466,14 @@ export default function AdminCategories() {
 
         {/* Right Column: Categories List */}
         <div className="admin-card">
-          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
+          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
             Active Store Collections
           </h3>
 
           {fetching ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem 0', gap: '0.5rem' }}>
-              <RefreshCw size={20} className="animate-spin" color="var(--admin-accent)" />
-              <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Fetching live database categories...</span>
+              <RefreshCw size={20} className="animate-spin" color="#C68A3A" />
+              <span style={{ fontSize: '0.8rem', color: '#665A52', fontWeight: '600' }}>Fetching live database categories...</span>
             </div>
           ) : categories.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
@@ -492,7 +492,7 @@ export default function AdminCategories() {
                       padding: '0.85rem 1rem',
                       borderRadius: '12px',
                       backgroundColor: 'var(--admin-surface-elevated)',
-                      border: '1px solid var(--admin-border)',
+                      border: '1px solid rgba(231, 222, 213, 0.65)',
                       gap: '0.85rem'
                     }}
                   >
@@ -501,20 +501,20 @@ export default function AdminCategories() {
                       <img 
                         src={img} 
                         alt={cat.name} 
-                        style={{ width: '48px', height: '48px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--admin-border)' }} 
+                        style={{ width: '48px', height: '48px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(231, 222, 213, 0.65)' }} 
                       />
                       
                       <div style={{ minWidth: 0, flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                          <span style={{ fontWeight: '800', color: 'var(--admin-text-primary)', fontSize: '0.9rem' }}>{cat.name}</span>
+                          <span style={{ fontWeight: '800', color: '#21150F', fontSize: '0.9rem' }}>{cat.name}</span>
                           <span className={`admin-badge ${isActive ? 'admin-badge-success' : 'admin-badge-warning'}`} style={{ fontSize: '0.62rem', padding: '0.1rem 0.45rem' }}>
                             {isActive ? 'Active' : 'Inactive'}
                           </span>
                         </div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', marginTop: '0.15rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                          <span>Slug: <strong style={{ color: 'var(--admin-accent)' }}>{cat.slug}</strong></span>
+                        <div style={{ fontSize: '0.72rem', color: '#665A52', marginTop: '0.15rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                          <span>Slug: <strong style={{ color: '#C68A3A' }}>{cat.slug}</strong></span>
                           <span>•</span>
-                          <span><strong style={{ color: 'var(--admin-text-primary)' }}>{pCount}</strong> {pCount === 1 ? 'Product' : 'Products'}</span>
+                          <span><strong style={{ color: '#21150F' }}>{pCount}</strong> {pCount === 1 ? 'Product' : 'Products'}</span>
                         </div>
                       </div>
                     </div>
@@ -524,7 +524,7 @@ export default function AdminCategories() {
                       <button
                         onClick={() => openEditModal(cat)}
                         className="admin-icon-btn"
-                        style={{ color: 'var(--admin-accent)' }}
+                        style={{ color: '#C68A3A' }}
                         title="Edit Category"
                       >
                         <Edit3 size={14} />
@@ -532,7 +532,7 @@ export default function AdminCategories() {
                       <button
                         onClick={() => setDeleteTargetId(cat._id || cat.id || cat.slug)}
                         className="admin-icon-btn"
-                        style={{ color: 'var(--admin-danger)' }}
+                        style={{ color: '#C62828' }}
                         title="Delete Category"
                       >
                         <Trash2 size={14} />
@@ -543,7 +543,7 @@ export default function AdminCategories() {
               })}
             </div>
           ) : (
-            <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--admin-text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>
+            <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#665A52', fontSize: '0.85rem', fontWeight: '600' }}>
               No categories defined.
             </div>
           )}
@@ -558,13 +558,13 @@ export default function AdminCategories() {
             
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexShrink: 0 }}>
-              <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0 }}>
+              <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0 }}>
                 Edit Collection Category
               </h3>
               <button
                 type="button"
                 onClick={() => { setEditModalOpen(false); setEditCategoryData(null); }}
-                style={{ backgroundColor: 'transparent', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', padding: '4px' }}
+                style={{ backgroundColor: 'transparent', border: 'none', color: '#665A52', cursor: 'pointer', padding: '4px' }}
               >
                 <X size={18} />
               </button>
@@ -573,7 +573,7 @@ export default function AdminCategories() {
             {/* Scrollable Form Body */}
             <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto', paddingRight: '0.4rem', gap: '1.15rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Category Name *</label>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Category Name *</label>
                 <input
                   type="text"
                   required
@@ -584,7 +584,7 @@ export default function AdminCategories() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Description</label>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Description</label>
                 <textarea
                   rows={3}
                   value={editCategoryData.description}
@@ -595,7 +595,7 @@ export default function AdminCategories() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Status</label>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Status</label>
                 <select
                   value={editCategoryData.status}
                   onChange={(e) => setEditCategoryData({ ...editCategoryData, status: e.target.value })}
@@ -607,13 +607,13 @@ export default function AdminCategories() {
               </div>
 
               {/* Image Change */}
-              <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '0.85rem', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Category Image</label>
+              <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '0.85rem', borderRadius: '10px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
+                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Category Image</label>
                 
                 {editCategoryData.image ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
                     <img src={editCategoryData.image} alt="Preview" style={{ width: '50px', height: '50px', borderRadius: '8px', objectFit: 'cover' }} />
-                    <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)' }}>Current Image Active</span>
+                    <span style={{ fontSize: '0.72rem', color: '#665A52' }}>Current Image Active</span>
                   </div>
                 ) : null}
 
@@ -631,22 +631,22 @@ export default function AdminCategories() {
               </div>
 
               {/* PRODUCTS IN THIS CATEGORY */}
-              <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '0.85rem', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
+              <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '0.85rem', borderRadius: '10px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Products in this Category
                   </label>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--admin-accent)', fontWeight: '800' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#C68A3A', fontWeight: '800' }}>
                     Selected: {(editCategoryData.productIds || []).length}
                   </span>
                 </div>
-                <p style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', margin: '0 0 0.65rem 0' }}>
+                <p style={{ fontSize: '0.68rem', color: '#665A52', margin: '0 0 0.65rem 0' }}>
                   Select the products that should appear in this collection.
                 </p>
 
                 {/* Search input */}
                 <div style={{ position: 'relative', marginBottom: '0.6rem' }}>
-                  <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-text-muted)' }} />
+                  <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#665A52' }} />
                   <input
                     type="text"
                     value={editProductSearch}
@@ -658,9 +658,9 @@ export default function AdminCategories() {
                 </div>
 
                 {/* Product List Selector */}
-                <div style={{ maxHeight: '140px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', border: '1px solid var(--admin-border)', borderRadius: '8px', padding: '0.4rem', backgroundColor: 'var(--admin-surface-card)' }}>
+                <div style={{ maxHeight: '140px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', padding: '0.4rem', backgroundColor: 'var(--admin-surface-card)' }}>
                   {allProducts.length === 0 ? (
-                    <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', textAlign: 'center', padding: '1rem 0' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#665A52', textAlign: 'center', padding: '1rem 0' }}>
                       {productsLoading ? 'Loading store products...' : 'No products found'}
                     </div>
                   ) : (
@@ -685,7 +685,7 @@ export default function AdminCategories() {
                               padding: '0.4rem 0.6rem',
                               borderRadius: '6px',
                               backgroundColor: isSelected ? 'rgba(36, 79, 33, 0.12)' : 'transparent',
-                              border: isSelected ? '1px solid var(--admin-accent)' : '1px solid transparent',
+                              border: isSelected ? '1px solid #C68A3A' : '1px solid transparent',
                               cursor: 'pointer',
                               userSelect: 'none'
                             }}
@@ -695,14 +695,14 @@ export default function AdminCategories() {
                                 <img src={pImg} alt={pTitle} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
                               ) : (
                                 <div style={{ width: '32px', height: '32px', borderRadius: '6px', backgroundColor: 'var(--admin-surface-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <Package size={14} color="var(--admin-text-muted)" />
+                                  <Package size={14} color="#665A52" />
                                 </div>
                               )}
                               <div style={{ minWidth: 0, flex: 1 }}>
-                                <div style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--admin-text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                                <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#21150F', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                                   {pTitle}
                                 </div>
-                                <div style={{ fontSize: '0.66rem', color: 'var(--admin-text-muted)' }}>
+                                <div style={{ fontSize: '0.66rem', color: '#665A52' }}>
                                   ₹{p.price || 0} {p.is_active !== false ? '• Active' : '• Inactive'}
                                 </div>
                               </div>
@@ -711,8 +711,8 @@ export default function AdminCategories() {
                               width: '18px',
                               height: '18px',
                               borderRadius: '4px',
-                              border: isSelected ? 'none' : '1.5px solid var(--admin-border)',
-                              backgroundColor: isSelected ? 'var(--admin-accent)' : 'transparent',
+                              border: isSelected ? 'none' : '1.5px solid rgba(231, 222, 213, 0.65)',
+                              backgroundColor: isSelected ? '#C68A3A' : 'transparent',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -736,7 +736,7 @@ export default function AdminCategories() {
                   gap: '0.75rem', 
                   marginTop: '0.5rem',
                   paddingTop: '0.85rem', 
-                  borderTop: '1px solid var(--admin-border)',
+                  borderTop: '1px solid rgba(231, 222, 213, 0.65)',
                   backgroundColor: 'var(--admin-surface-card)',
                   position: 'sticky',
                   bottom: 0,
@@ -780,3 +780,4 @@ export default function AdminCategories() {
     </div>
   );
 }
+

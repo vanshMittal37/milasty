@@ -242,7 +242,7 @@ export default function AdminInquiryList() {
           <h2 style={{ fontSize: '1.4rem', color: '#F4F5F0', fontWeight: '900', margin: 0 }}>
             Customer Inquiries
           </h2>
-          <p style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', margin: '0.2rem 0 0 0' }}>
+          <p style={{ fontSize: '0.82rem', color: '#665A52', margin: '0.2rem 0 0 0' }}>
             View and manage customer questions and contact requests.
           </p>
         </div>
@@ -255,8 +255,8 @@ export default function AdminInquiryList() {
             alignItems: 'center',
             gap: '0.4rem',
             padding: '0.5rem 1rem',
-            backgroundColor: 'var(--admin-surface)',
-            border: '1px solid var(--admin-border)',
+            backgroundColor: 'rgba(255, 255, 255, 0.82)',
+            border: '1px solid rgba(231, 222, 213, 0.65)',
             borderRadius: '8px',
             color: '#B8CC7A',
             fontSize: '0.8rem',
@@ -271,39 +271,39 @@ export default function AdminInquiryList() {
 
       {/* SUMMARY METRICS CARDS (REQUIREMENTS #21) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-        <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#F4F5F0' }}>{summary.totalQueries}</div>
           <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#665A52', fontWeight: '800', marginTop: '0.2rem' }}>Total</div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid rgba(184, 204, 122, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(184, 204, 122, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#B8CC7A' }}>{summary.new}</div>
           <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#B8CC7A', fontWeight: '800', marginTop: '0.2rem' }}>New</div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#F59E0B' }}>{summary.in_progress}</div>
           <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#F59E0B', fontWeight: '800', marginTop: '0.2rem' }}>In Progress</div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#60A5FA' }}>{summary.contacted}</div>
           <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#60A5FA', fontWeight: '800', marginTop: '0.2rem' }}>Contacted</div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#4ADE80' }}>{summary.resolved}</div>
           <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4ADE80', fontWeight: '800', marginTop: '0.2rem' }}>Resolved</div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid rgba(156, 163, 175, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(156, 163, 175, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#9CA3AF' }}>{summary.closed}</div>
           <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9CA3AF', fontWeight: '800', marginTop: '0.2rem' }}>Closed</div>
         </div>
       </div>
 
       {/* FILTER TABS & SEARCH / SORT BAR (REQUIREMENTS #22, #23, #64) */}
-      <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid var(--admin-border)', borderRadius: '14px', padding: '1.25rem', marginBottom: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '14px', padding: '1.25rem', marginBottom: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {/* Status Filter Tabs */}
         <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem' }}>
           {[
@@ -352,7 +352,7 @@ export default function AdminInquiryList() {
                 paddingLeft: '2.5rem',
                 paddingRight: '1rem',
                 backgroundColor: '#111713',
-                border: '1px solid var(--admin-border)',
+                border: '1px solid rgba(231, 222, 213, 0.65)',
                 borderRadius: '8px',
                 color: '#F4F5F0',
                 fontSize: '0.85rem',
@@ -371,7 +371,7 @@ export default function AdminInquiryList() {
                 height: '42px',
                 padding: '0 0.85rem',
                 backgroundColor: '#111713',
-                border: '1px solid var(--admin-border)',
+                border: '1px solid rgba(231, 222, 213, 0.65)',
                 borderRadius: '8px',
                 color: '#F4F5F0',
                 fontSize: '0.85rem',
@@ -405,8 +405,8 @@ export default function AdminInquiryList() {
       ) : inquiries.length === 0 ? (
         <div
           style={{
-            backgroundColor: 'var(--admin-surface)',
-            border: '1px solid var(--admin-border)',
+            backgroundColor: 'rgba(255, 255, 255, 0.82)',
+            border: '1px solid rgba(231, 222, 213, 0.65)',
             borderRadius: '16px',
             padding: '4rem 2rem',
             textAlign: 'center',
@@ -428,8 +428,8 @@ export default function AdminInquiryList() {
             <div
               key={inquiry.id || inquiry.inquiry_number}
               style={{
-                backgroundColor: 'var(--admin-surface)',
-                border: '1px solid var(--admin-border)',
+                backgroundColor: 'rgba(255, 255, 255, 0.82)',
+                border: '1px solid rgba(231, 222, 213, 0.65)',
                 borderRadius: '14px',
                 padding: '1.25rem 1.5rem',
                 display: 'flex',
@@ -533,7 +533,7 @@ export default function AdminInquiryList() {
           <div
             style={{
               backgroundColor: '#161D18',
-              border: '1px solid var(--admin-border)',
+              border: '1px solid rgba(231, 222, 213, 0.65)',
               borderRadius: '20px',
               maxWidth: '750px',
               width: '100%',
@@ -546,7 +546,7 @@ export default function AdminInquiryList() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--admin-border)', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
                   <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F4F5F0', margin: 0, fontWeight: '900' }}>
@@ -571,7 +571,7 @@ export default function AdminInquiryList() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               
               {/* SECTION 1: CUSTOMER INFORMATION */}
-              <div style={{ backgroundColor: '#111713', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--admin-border)' }}>
+              <div style={{ backgroundColor: '#111713', padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
                 <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8CC7A', fontWeight: '800', margin: '0 0 0.85rem 0' }}>
                   CUSTOMER INFORMATION
                 </h4>
@@ -682,7 +682,7 @@ export default function AdminInquiryList() {
                 <div
                   style={{
                     backgroundColor: '#111713',
-                    border: '1px solid var(--admin-border)',
+                    border: '1px solid rgba(231, 222, 213, 0.65)',
                     borderRadius: '10px',
                     padding: '1rem 1.25rem',
                     color: '#F4F5F0',
@@ -696,7 +696,7 @@ export default function AdminInquiryList() {
               </div>
 
               {/* SECTION 4: ADMIN STATUS CONTROL (REQUIREMENTS #11, #59) */}
-              <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '1.25rem' }}>
+              <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1.25rem' }}>
                 <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8CC7A', fontWeight: '800', margin: '0 0 0.5rem 0' }}>
                   STATUS MANAGEMENT
                 </h4>
@@ -708,7 +708,7 @@ export default function AdminInquiryList() {
                       height: '44px',
                       padding: '0 1rem',
                       backgroundColor: '#111713',
-                      border: '1px solid var(--admin-border)',
+                      border: '1px solid rgba(231, 222, 213, 0.65)',
                       borderRadius: '8px',
                       color: '#F4F5F0',
                       fontSize: '0.9rem',
@@ -751,7 +751,7 @@ export default function AdminInquiryList() {
               </div>
 
               {/* SECTION 5: ADMIN RESPONSE (PUBLIC TO CUSTOMER) (REQUIREMENTS #29, #30) */}
-              <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '1.25rem' }}>
+              <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1.25rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                   <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8CC7A', fontWeight: '800', margin: 0 }}>
                     ADMIN RESPONSE (VISIBLE TO CUSTOMER)
@@ -768,7 +768,7 @@ export default function AdminInquiryList() {
                     width: '100%',
                     padding: '0.85rem 1rem',
                     backgroundColor: '#111713',
-                    border: '1px solid var(--admin-border)',
+                    border: '1px solid rgba(231, 222, 213, 0.65)',
                     borderRadius: '8px',
                     color: '#F4F5F0',
                     fontSize: '0.88rem',
@@ -804,7 +804,7 @@ export default function AdminInquiryList() {
               </div>
 
               {/* SECTION 6: INTERNAL NOTES (ADMIN ONLY) (REQUIREMENTS #31) */}
-              <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '1.25rem' }}>
+              <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1.25rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                   <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#F59E0B', fontWeight: '800', margin: 0 }}>
                     INTERNAL NOTES (ADMIN ONLY)
@@ -821,7 +821,7 @@ export default function AdminInquiryList() {
                     width: '100%',
                     padding: '0.85rem 1rem',
                     backgroundColor: '#111713',
-                    border: '1px solid var(--admin-border)',
+                    border: '1px solid rgba(231, 222, 213, 0.65)',
                     borderRadius: '8px',
                     color: '#F4F5F0',
                     fontSize: '0.88rem',
@@ -863,4 +863,5 @@ export default function AdminInquiryList() {
     </div>
   );
 }
+
 

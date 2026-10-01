@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, HelpCircle, Eye, Check, Package, RefreshCw, Layers, Sparkles, X } from 'lucide-react';
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
@@ -212,10 +212,10 @@ export default function AdminQuizManagement() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, fontFamily: 'var(--font-serif)' }}>
+          <h2 style={{ fontSize: '1.4rem', color: '#21150F', fontWeight: '800', margin: 0, fontFamily: 'var(--font-serif)' }}>
             Recommendation Quiz Management
           </h2>
-          <p style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', margin: '0.2rem 0 0 0' }}>
+          <p style={{ fontSize: '0.82rem', color: '#665A52', margin: '0.2rem 0 0 0' }}>
             Configure questions, options, and product recommendation mappings for the "Find Your Perfect MILASTY Bake" section.
           </p>
         </div>
@@ -230,7 +230,7 @@ export default function AdminQuizManagement() {
             className="admin-btn-secondary"
             style={{ padding: '0.65rem 1rem', fontSize: '0.82rem' }}
           >
-            <Eye size={16} color="var(--admin-accent)" />
+            <Eye size={16} color="#C68A3A" />
             <span>Test Quiz Preview</span>
           </button>
           
@@ -248,13 +248,13 @@ export default function AdminQuizManagement() {
       {/* Main Content */}
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '4rem', gap: '0.75rem' }}>
-          <RefreshCw size={22} className="animate-spin" color="var(--admin-accent)" />
-          <span style={{ fontSize: '0.9rem', color: 'var(--admin-text-muted)' }}>Loading recommendation questions...</span>
+          <RefreshCw size={22} className="animate-spin" color="#C68A3A" />
+          <span style={{ fontSize: '0.9rem', color: '#665A52' }}>Loading recommendation questions...</span>
         </div>
       ) : questions.length === 0 ? (
-        <div className="admin-card" style={{ padding: '4rem 1.5rem', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
-          <HelpCircle size={36} color="var(--admin-text-muted)" style={{ marginBottom: '0.75rem' }} />
-          <h4 style={{ fontSize: '1.05rem', color: 'var(--admin-text-primary)', margin: '0 0 0.35rem 0', fontWeight: '700' }}>
+        <div className="admin-card" style={{ padding: '4rem 1.5rem', textAlign: 'center', color: '#665A52' }}>
+          <HelpCircle size={36} color="#665A52" style={{ marginBottom: '0.75rem' }} />
+          <h4 style={{ fontSize: '1.05rem', color: '#21150F', margin: '0 0 0.35rem 0', fontWeight: '700' }}>
             No recommendation questions configured
           </h4>
           <p style={{ fontSize: '0.82rem', margin: '0 auto 1.25rem', maxWidth: '420px' }}>
@@ -271,17 +271,17 @@ export default function AdminQuizManagement() {
             <div key={q.id} className="admin-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               
               {/* Question Header Card */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid var(--admin-border)', paddingBottom: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(143, 175, 91, 0.15)', color: 'var(--admin-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.85rem' }}>
+                  <span style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(143, 175, 91, 0.15)', color: '#C68A3A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.85rem' }}>
                     Q{qIndex + 1}
                   </span>
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0 }}>
+                    <h3 style={{ fontSize: '1.1rem', color: '#21150F', fontWeight: '800', margin: 0 }}>
                       "{q.questionText}"
                     </h3>
                     {q.subtitle && (
-                      <p style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)', margin: '0.15rem 0 0 0' }}>
+                      <p style={{ fontSize: '0.78rem', color: '#665A52', margin: '0.15rem 0 0 0' }}>
                         {q.subtitle}
                       </p>
                     )}
@@ -301,7 +301,7 @@ export default function AdminQuizManagement() {
                       setDeleteModalOpen(true);
                     }}
                     className="admin-icon-btn"
-                    style={{ color: 'var(--admin-danger)' }}
+                    style={{ color: '#C62828' }}
                     title="Delete Question"
                   >
                     <Trash2 size={14} />
@@ -312,7 +312,7 @@ export default function AdminQuizManagement() {
               {/* Options Header & Add Option Action */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
-                  <h4 style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-secondary)', fontWeight: '800', margin: 0 }}>
+                  <h4 style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#4A3B2E', fontWeight: '800', margin: 0 }}>
                     Quiz Answer Options ({q.options?.length || 0})
                   </h4>
                   <button
@@ -327,7 +327,7 @@ export default function AdminQuizManagement() {
 
                 {/* Options List */}
                 {!q.options || q.options.length === 0 ? (
-                  <div style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: 'var(--admin-surface-elevated)', borderRadius: '10px', color: 'var(--admin-text-muted)', fontSize: '0.8rem' }}>
+                  <div style={{ padding: '1.5rem', textAlign: 'center', backgroundColor: 'var(--admin-surface-elevated)', borderRadius: '10px', color: '#665A52', fontSize: '0.8rem' }}>
                     No options created for this question yet. Click "+ Add Option" above to create an option.
                   </div>
                 ) : (
@@ -339,7 +339,7 @@ export default function AdminQuizManagement() {
                           padding: '1rem 1.25rem',
                           borderRadius: '12px',
                           backgroundColor: 'var(--admin-surface-elevated)',
-                          border: '1px solid var(--admin-border)',
+                          border: '1px solid rgba(231, 222, 213, 0.65)',
                           display: 'flex',
                           flexDirection: 'column',
                           gap: '0.75rem',
@@ -348,14 +348,14 @@ export default function AdminQuizManagement() {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem' }}>
                           <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <span style={{ fontSize: '0.74rem', color: 'var(--admin-accent)', fontWeight: '800' }}>#{optIdx + 1}</span>
-                              <span style={{ fontWeight: '800', color: 'var(--admin-text-primary)', fontSize: '0.92rem' }}>
+                              <span style={{ fontSize: '0.74rem', color: '#C68A3A', fontWeight: '800' }}>#{optIdx + 1}</span>
+                              <span style={{ fontWeight: '800', color: '#21150F', fontSize: '0.92rem' }}>
                                 {opt.optionText}
                               </span>
                               {!opt.active && <span className="admin-badge admin-badge-danger" style={{ fontSize: '0.65rem' }}>Disabled</span>}
                             </div>
                             {opt.description && (
-                              <p style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)', margin: '0.2rem 0 0 0' }}>
+                              <p style={{ fontSize: '0.78rem', color: '#665A52', margin: '0.2rem 0 0 0' }}>
                                 {opt.description}
                               </p>
                             )}
@@ -371,7 +371,7 @@ export default function AdminQuizManagement() {
                                 setDeleteModalOpen(true);
                               }}
                               className="admin-icon-btn"
-                              style={{ color: 'var(--admin-danger)' }}
+                              style={{ color: '#C62828' }}
                               title="Delete Option"
                             >
                               <Trash2 size={13} />
@@ -380,8 +380,8 @@ export default function AdminQuizManagement() {
                         </div>
 
                         {/* Mapped Products Pills */}
-                        <div style={{ borderTop: '1px dashed var(--admin-border)', paddingTop: '0.65rem' }}>
-                          <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: 'var(--admin-text-muted)', fontWeight: '800', display: 'block', marginBottom: '0.4rem' }}>
+                        <div style={{ borderTop: '1px dashed rgba(231, 222, 213, 0.65)', paddingTop: '0.65rem' }}>
+                          <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: '#665A52', fontWeight: '800', display: 'block', marginBottom: '0.4rem' }}>
                             RECOMMENDED PRODUCTS ({opt.mappedProducts?.length || 0}):
                           </span>
                           {opt.mappedProducts && opt.mappedProducts.length > 0 ? (
@@ -399,7 +399,7 @@ export default function AdminQuizManagement() {
                                     border: '1px solid rgba(143, 175, 91, 0.3)',
                                     fontSize: '0.76rem',
                                     fontWeight: '700',
-                                    color: 'var(--admin-text-primary)'
+                                    color: '#21150F'
                                   }}
                                 >
                                   {prod.image && <img src={prod.image} alt="" style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover' }} />}
@@ -408,7 +408,7 @@ export default function AdminQuizManagement() {
                               ))}
                             </div>
                           ) : (
-                            <span style={{ fontSize: '0.74rem', color: 'var(--admin-danger)', fontStyle: 'italic' }}>
+                            <span style={{ fontSize: '0.74rem', color: '#C62828', fontStyle: 'italic' }}>
                               ⚠️ No products assigned yet. Click edit to map products.
                             </span>
                           )}
@@ -428,18 +428,18 @@ export default function AdminQuizManagement() {
       {/* QUESTION MODAL */}
       {qModalOpen && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid var(--admin-border)', borderRadius: '16px', maxWidth: '480px', width: '100%', padding: '1.75rem', color: 'var(--admin-text-primary)' }}>
+          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '16px', maxWidth: '480px', width: '100%', padding: '1.75rem', color: '#21150F' }}>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.75rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.75rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#21150F' }}>
                 {editingQuestion ? 'Edit Question' : 'Add New Question'}
               </h3>
-              <button onClick={() => setQModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
+              <button onClick={() => setQModalOpen(false)} style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
             </div>
 
             <form onSubmit={handleSaveQuestion} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Question Text *
                 </label>
                 <input
@@ -453,7 +453,7 @@ export default function AdminQuizManagement() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Subtitle / Instruction (Optional)
                 </label>
                 <input
@@ -467,7 +467,7 @@ export default function AdminQuizManagement() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Status</label>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Status</label>
                   <select value={qActive ? 'true' : 'false'} onChange={(e) => setQActive(e.target.value === 'true')} className="admin-input">
                     <option value="true">Active (Visible)</option>
                     <option value="false">Disabled (Hidden)</option>
@@ -475,7 +475,7 @@ export default function AdminQuizManagement() {
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Display Order</label>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Display Order</label>
                   <input type="number" value={qOrder} onChange={(e) => setQOrder(e.target.value)} className="admin-input" />
                 </div>
               </div>
@@ -493,19 +493,19 @@ export default function AdminQuizManagement() {
       {/* OPTION MODAL (WITH SEARCHABLE MULTI-PRODUCT SELECTOR) */}
       {optModalOpen && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid var(--admin-border)', borderRadius: '16px', maxWidth: '560px', width: '100%', padding: '1.75rem', color: 'var(--admin-text-primary)', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '16px', maxWidth: '560px', width: '100%', padding: '1.75rem', color: '#21150F', maxHeight: '90vh', overflowY: 'auto' }}>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.75rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.75rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: '#21150F' }}>
                 {editingOption ? 'Edit Quiz Option' : 'Add Quiz Option'}
               </h3>
-              <button onClick={() => setOptModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
+              <button onClick={() => setOptModalOpen(false)} style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
             </div>
 
             <form onSubmit={handleSaveOption} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Option Label *
                 </label>
                 <input
@@ -519,7 +519,7 @@ export default function AdminQuizManagement() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Description (Optional)
                 </label>
                 <input
@@ -533,7 +533,7 @@ export default function AdminQuizManagement() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Status</label>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Status</label>
                   <select value={optActive ? 'true' : 'false'} onChange={(e) => setOptActive(e.target.value === 'true')} className="admin-input">
                     <option value="true">Active (Visible)</option>
                     <option value="false">Disabled (Hidden)</option>
@@ -541,17 +541,17 @@ export default function AdminQuizManagement() {
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Display Order</label>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Display Order</label>
                   <input type="number" value={optOrder} onChange={(e) => setOptOrder(e.target.value)} className="admin-input" />
                 </div>
               </div>
 
               {/* SEARCHABLE MULTI-PRODUCT SELECTOR */}
-              <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '1rem' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--admin-accent)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+              <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1rem' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#C68A3A', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Map Recommended Products ({selectedProductIds.length} Selected) *
                 </label>
-                <p style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', margin: '0 0 0.65rem 0' }}>
+                <p style={{ fontSize: '0.74rem', color: '#665A52', margin: '0 0 0.65rem 0' }}>
                   Select existing products to recommend when a customer picks this option.
                 </p>
 
@@ -564,7 +564,7 @@ export default function AdminQuizManagement() {
                   style={{ marginBottom: '0.65rem' }}
                 />
 
-                <div style={{ maxHeight: '180px', overflowY: 'auto', border: '1px solid var(--admin-border)', borderRadius: '8px', backgroundColor: 'var(--admin-surface-elevated)', padding: '0.4rem' }}>
+                <div style={{ maxHeight: '180px', overflowY: 'auto', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', backgroundColor: 'var(--admin-surface-elevated)', padding: '0.4rem' }}>
                   {filteredProducts.map((p) => {
                     const pIdStr = String(p.id || p._id);
                     const isSelected = selectedProductIds.includes(pIdStr);
@@ -587,9 +587,9 @@ export default function AdminQuizManagement() {
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                           {p.image && <img src={p.image} alt="" style={{ width: '26px', height: '26px', borderRadius: '4px', objectFit: 'cover' }} />}
-                          <span style={{ fontSize: '0.82rem', fontWeight: isSelected ? '800' : '600', color: 'var(--admin-text-primary)' }}>{p.title}</span>
+                          <span style={{ fontSize: '0.82rem', fontWeight: isSelected ? '800' : '600', color: '#21150F' }}>{p.title}</span>
                         </div>
-                        {isSelected && <Check size={16} color="var(--admin-accent)" strokeWidth={3} />}
+                        {isSelected && <Check size={16} color="#C68A3A" strokeWidth={3} />}
                       </div>
                     );
                   })}
@@ -711,3 +711,4 @@ export default function AdminQuizManagement() {
     </div>
   );
 }
+

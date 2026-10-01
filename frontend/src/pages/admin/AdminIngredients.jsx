@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Eye, EyeOff, Sparkles, Image as ImageIcon, Check, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
@@ -168,12 +168,12 @@ export default function AdminIngredients() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <Sparkles size={24} color="var(--admin-accent)" />
-            <h1 style={{ fontSize: '1.75rem', fontWeight: '850', color: 'var(--admin-text-primary)', margin: 0, fontFamily: 'var(--font-serif)' }}>
+            <Sparkles size={24} color="#C68A3A" />
+            <h1 style={{ fontSize: '1.75rem', fontWeight: '850', color: '#21150F', margin: 0, fontFamily: 'var(--font-serif)' }}>
               Honest Ingredients CMS
             </h1>
           </div>
-          <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.9rem', margin: 0, fontWeight: '500' }}>
+          <p style={{ color: '#665A52', fontSize: '0.9rem', margin: 0, fontWeight: '500' }}>
             Manage clean ingredient stories shown on the homepage educational section.
           </p>
         </div>
@@ -198,15 +198,15 @@ export default function AdminIngredients() {
 
       {/* LIST GRID */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--admin-text-muted)' }}>
-          <RefreshCw size={32} className="animate-spin" style={{ marginBottom: '1rem', color: 'var(--admin-accent)' }} />
+        <div style={{ textAlign: 'center', padding: '4rem', color: '#665A52' }}>
+          <RefreshCw size={32} className="animate-spin" style={{ marginBottom: '1rem', color: '#C68A3A' }} />
           <p>Loading ingredients...</p>
         </div>
       ) : ingredients.length === 0 ? (
         <div className="admin-card" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-          <Sparkles size={48} color="var(--admin-accent)" style={{ marginBottom: '1rem', opacity: 0.5 }} />
-          <h3 style={{ color: 'var(--admin-text-primary)', margin: '0 0 0.5rem' }}>No Ingredients Found</h3>
-          <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+          <Sparkles size={48} color="#C68A3A" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+          <h3 style={{ color: '#21150F', margin: '0 0 0.5rem' }}>No Ingredients Found</h3>
+          <p style={{ color: '#665A52', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
             Add your first ingredient story to feature it on the homepage.
           </p>
           <button
@@ -231,7 +231,7 @@ export default function AdminIngredients() {
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   backgroundColor: 'var(--admin-surface-card)',
-                  border: '1px solid var(--admin-border)',
+                  border: '1px solid rgba(231, 222, 213, 0.65)',
                   opacity: ing.active ? 1 : 0.65,
                 }}
               >
@@ -241,17 +241,17 @@ export default function AdminIngredients() {
                       <img
                         src={imgSrc}
                         alt={ing.name}
-                        style={{ width: '64px', height: '64px', borderRadius: '14px', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--admin-border)' }}
+                        style={{ width: '64px', height: '64px', borderRadius: '14px', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(231, 222, 213, 0.65)' }}
                       />
                     ) : (
-                      <div style={{ width: '64px', height: '64px', borderRadius: '14px', backgroundColor: 'var(--admin-surface-elevated)', border: '1px solid var(--admin-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <ImageIcon size={28} color="var(--admin-accent)" />
+                      <div style={{ width: '64px', height: '64px', borderRadius: '14px', backgroundColor: 'var(--admin-surface-elevated)', border: '1px solid rgba(231, 222, 213, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <ImageIcon size={28} color="#C68A3A" />
                       </div>
                     )}
 
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
-                        <h3 style={{ fontSize: '1.1rem', color: 'var(--admin-text-primary)', margin: 0, fontWeight: '800' }}>
+                        <h3 style={{ fontSize: '1.1rem', color: '#21150F', margin: 0, fontWeight: '800' }}>
                           {ing.name}
                         </h3>
                         <button
@@ -261,7 +261,7 @@ export default function AdminIngredients() {
                             background: 'none',
                             border: 'none',
                             cursor: 'pointer',
-                            color: ing.active ? 'var(--admin-accent)' : 'var(--admin-text-muted)',
+                            color: ing.active ? '#C68A3A' : '#665A52',
                             padding: '0.2rem',
                           }}
                         >
@@ -269,19 +269,19 @@ export default function AdminIngredients() {
                         </button>
                       </div>
                       {ing.subtitle && (
-                        <p style={{ color: 'var(--admin-accent)', fontSize: '0.8rem', margin: '0.2rem 0 0', fontWeight: '600' }}>
+                        <p style={{ color: '#C68A3A', fontSize: '0.8rem', margin: '0.2rem 0 0', fontWeight: '600' }}>
                           {ing.subtitle}
                         </p>
                       )}
                     </div>
                   </div>
 
-                  <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.85rem', lineHeight: '1.55', margin: 0, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <p style={{ color: '#4A3B2E', fontSize: '0.85rem', lineHeight: '1.55', margin: 0, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {ing.description}
                   </p>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--admin-border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid rgba(231, 222, 213, 0.65)' }}>
                   <button
                     onClick={() => handleOpenEdit(ing)}
                     className="admin-btn-secondary"
@@ -323,14 +323,14 @@ export default function AdminIngredients() {
       {/* CREATE / EDIT MODAL */}
       {modalOpen && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ backgroundColor: 'var(--admin-surface-card)', border: '1px solid var(--admin-border)', borderRadius: '20px', padding: '2rem', maxWidth: '550px', width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
-            <h2 style={{ color: 'var(--admin-text-primary)', fontFamily: 'var(--font-serif)', margin: '0 0 1.5rem', fontSize: '1.4rem' }}>
+          <div style={{ backgroundColor: 'var(--admin-surface-card)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '20px', padding: '2rem', maxWidth: '550px', width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
+            <h2 style={{ color: '#21150F', fontFamily: 'var(--font-serif)', margin: '0 0 1.5rem', fontSize: '1.4rem' }}>
               {editingIngredient ? 'Edit Ingredient' : 'Add New Ingredient'}
             </h2>
 
             <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div>
-                <label style={{ display: 'block', color: 'var(--admin-text-secondary)', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                <label style={{ display: 'block', color: '#4A3B2E', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
                   Ingredient Name *
                 </label>
                 <input
@@ -344,7 +344,7 @@ export default function AdminIngredients() {
               </div>
 
               <div>
-                <label style={{ display: 'block', color: 'var(--admin-text-secondary)', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                <label style={{ display: 'block', color: '#4A3B2E', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
                   Subtitle / Tagline
                 </label>
                 <input
@@ -357,7 +357,7 @@ export default function AdminIngredients() {
               </div>
 
               <div>
-                <label style={{ display: 'block', color: 'var(--admin-text-secondary)', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                <label style={{ display: 'block', color: '#4A3B2E', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
                   Description / Story *
                 </label>
                 <textarea
@@ -372,22 +372,22 @@ export default function AdminIngredients() {
               </div>
 
               <div>
-                <label style={{ display: 'block', color: 'var(--admin-text-secondary)', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                <label style={{ display: 'block', color: '#4A3B2E', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
                   Ingredient Image
                 </label>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                   {image && (
-                    <img src={image} alt="Preview" style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', border: '1px solid var(--admin-border)' }} />
+                    <img src={image} alt="Preview" style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', border: '1px solid rgba(231, 222, 213, 0.65)' }} />
                   )}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
                     disabled={uploadingImage}
-                    style={{ color: 'var(--admin-text-secondary)', fontSize: '0.85rem' }}
+                    style={{ color: '#4A3B2E', fontSize: '0.85rem' }}
                   />
                 </div>
-                {uploadingImage && <span style={{ color: 'var(--admin-accent)', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Uploading image...</span>}
+                {uploadingImage && <span style={{ color: '#C68A3A', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Uploading image...</span>}
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -396,9 +396,9 @@ export default function AdminIngredients() {
                   id="ingActive"
                   checked={active}
                   onChange={(e) => setActive(e.target.checked)}
-                  style={{ width: '18px', height: '18px', accentColor: 'var(--admin-accent)' }}
+                  style={{ width: '18px', height: '18px', accentColor: '#C68A3A' }}
                 />
-                <label htmlFor="ingActive" style={{ color: 'var(--admin-text-primary)', fontSize: '0.9rem', cursor: 'pointer', fontWeight: '600' }}>
+                <label htmlFor="ingActive" style={{ color: '#21150F', fontSize: '0.9rem', cursor: 'pointer', fontWeight: '600' }}>
                   Active (Show on Homepage)
                 </label>
               </div>
@@ -437,3 +437,4 @@ export default function AdminIngredients() {
     </div>
   );
 }
+

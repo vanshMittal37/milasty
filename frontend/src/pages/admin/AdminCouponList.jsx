@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Ticket, Tag, RefreshCw, Star, CheckCircle, XCircle, Pencil, X } from 'lucide-react';
 import api from '../../api/axios';
 import ConfirmationModal from '../../components/ConfirmationModal';
@@ -156,13 +156,13 @@ export default function AdminCouponList() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--admin-text-muted)', margin: '0 0 0.2rem 0' }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665A52', margin: '0 0 0.2rem 0' }}>
             Coupons &amp; Discounts
           </p>
-          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             Promotions &amp; Discount Codes
           </h2>
-          <p style={{ color: 'var(--admin-text-secondary)', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+          <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
             Create and manage promotional discount voucher codes for store checkout and the top announcement bar.
           </p>
         </div>
@@ -172,12 +172,12 @@ export default function AdminCouponList() {
 
         {/* Left Card: Create Coupon Form */}
         <div className="admin-card">
-          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
+          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
             Create New Coupon
           </h3>
           <form onSubmit={handleCreateCoupon} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Coupon Code *
               </label>
               <input
@@ -193,7 +193,7 @@ export default function AdminCouponList() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Discount Type
                 </label>
                 <select
@@ -206,7 +206,7 @@ export default function AdminCouponList() {
                 </select>
               </div>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Discount Value *
                 </label>
                 <input
@@ -222,7 +222,7 @@ export default function AdminCouponList() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Min Order (₹)
                 </label>
                 <input
@@ -234,7 +234,7 @@ export default function AdminCouponList() {
                 />
               </div>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Max Cap (₹)
                 </label>
                 <input
@@ -248,7 +248,7 @@ export default function AdminCouponList() {
             </div>
 
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Description (Optional)
               </label>
               <input
@@ -260,12 +260,12 @@ export default function AdminCouponList() {
               />
             </div>
 
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.84rem', color: 'var(--admin-text-primary)', fontWeight: '600' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.84rem', color: '#21150F', fontWeight: '600' }}>
               <input
                 type="checkbox"
                 checked={isFeatured}
                 onChange={(e) => setIsFeatured(e.target.checked)}
-                style={{ width: '16px', height: '16px', accentColor: 'var(--admin-accent)' }}
+                style={{ width: '16px', height: '16px', accentColor: '#C68A3A' }}
               />
               <span>Feature on Top Announcement Bar</span>
             </label>
@@ -284,14 +284,14 @@ export default function AdminCouponList() {
 
         {/* Right Card: Coupons List */}
         <div className="admin-card">
-          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
+          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', marginBottom: '1.25rem', marginTop: 0 }}>
             Active Promotional Coupons
           </h3>
 
           {loading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2.5rem 0', gap: '0.5rem' }}>
-              <RefreshCw size={18} className="animate-spin" color="var(--admin-accent)" />
-              <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Fetching coupons...</span>
+              <RefreshCw size={18} className="animate-spin" color="#C68A3A" />
+              <span style={{ fontSize: '0.8rem', color: '#665A52', fontWeight: '600' }}>Fetching coupons...</span>
             </div>
           ) : coupons.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
@@ -313,25 +313,25 @@ export default function AdminCouponList() {
                       padding: '1rem 1.15rem',
                       borderRadius: '14px',
                       backgroundColor: 'var(--admin-surface-elevated)',
-                      border: isActive ? '1px solid var(--admin-border)' : '1px solid rgba(255, 91, 91, 0.2)',
+                      border: isActive ? '1px solid rgba(231, 222, 213, 0.65)' : '1px solid rgba(255, 91, 91, 0.2)',
                       opacity: isActive ? 1 : 0.75,
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: isActive ? 'rgba(143, 175, 91, 0.12)' : 'rgba(255, 91, 91, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isActive ? 'var(--admin-accent)' : '#ff5b5b' }}>
+                        <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: isActive ? 'rgba(143, 175, 91, 0.12)' : 'rgba(255, 91, 91, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isActive ? '#C68A3A' : '#ff5b5b' }}>
                           <Ticket size={18} />
                         </div>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span style={{ fontWeight: '800', color: 'var(--admin-text-primary)', fontSize: '0.98rem', letterSpacing: '0.04em' }}>{c.code}</span>
+                            <span style={{ fontWeight: '800', color: '#21150F', fontSize: '0.98rem', letterSpacing: '0.04em' }}>{c.code}</span>
                             {isFeat && (
                               <span style={{ fontSize: '0.68rem', fontWeight: '800', backgroundColor: 'rgba(185, 205, 148, 0.2)', color: '#b9cd94', padding: '0.15rem 0.45rem', borderRadius: '999px', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
                                 <Star size={10} fill="#b9cd94" /> Announcement Bar
                               </span>
                             )}
                           </div>
-                          <div style={{ fontSize: '0.76rem', color: 'var(--admin-text-muted)', marginTop: '0.15rem' }}>
+                          <div style={{ fontSize: '0.76rem', color: '#665A52', marginTop: '0.15rem' }}>
                             {discType === 'percentage' ? `${discVal}% OFF` : `₹${discVal} FLAT OFF`}
                             {minOrd > 0 ? ` • Min Order: ₹${minOrd}` : ''}
                             {maxCap > 0 ? ` • Max Cap: ₹${maxCap}` : ''}
@@ -369,7 +369,7 @@ export default function AdminCouponList() {
                         <button
                           onClick={() => handleToggleFeatured(c)}
                           className="admin-icon-btn"
-                          style={{ color: isFeat ? '#b9cd94' : 'var(--admin-text-muted)' }}
+                          style={{ color: isFeat ? '#b9cd94' : '#665A52' }}
                           title={isFeat ? 'Unfeature from Announcement Bar' : 'Feature on Announcement Bar'}
                         >
                           <Star size={15} fill={isFeat ? '#b9cd94' : 'none'} />
@@ -378,7 +378,7 @@ export default function AdminCouponList() {
                         <button
                           onClick={() => setDeleteTargetId(c.id || c._id || c.code)}
                           className="admin-icon-btn"
-                          style={{ color: 'var(--admin-danger)' }}
+                          style={{ color: '#C62828' }}
                           title="Delete Coupon"
                         >
                           <Trash2 size={15} />
@@ -386,7 +386,7 @@ export default function AdminCouponList() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: 'var(--admin-text-muted)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.45rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: '#665A52', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.45rem' }}>
                       <span>Uses: <strong>{c.usage_count || 0}</strong> {c.usage_limit ? `/ ${c.usage_limit}` : '(Unlimited)'}</span>
                       <span>{c.description || 'Promotional Discount'}</span>
                     </div>
@@ -395,7 +395,7 @@ export default function AdminCouponList() {
               })}
             </div>
           ) : (
-            <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--admin-text-muted)', fontSize: '0.85rem', fontWeight: '600' }}>
+            <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#665A52', fontSize: '0.85rem', fontWeight: '600' }}>
               No active promotional coupons.
             </div>
           )}
@@ -426,20 +426,20 @@ export default function AdminCouponList() {
             style={{
               width: '100%',
               maxWidth: '520px',
-              backgroundColor: 'var(--admin-surface)',
-              border: '1px solid var(--admin-border)',
+              backgroundColor: 'rgba(255, 255, 255, 0.82)',
+              border: '1px solid rgba(231, 222, 213, 0.65)',
               borderRadius: '16px',
               boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
               position: 'relative',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0 }}>
+              <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0 }}>
                 Edit Coupon — {editingCoupon.code}
               </h3>
               <button
                 onClick={() => setEditingCoupon(null)}
-                style={{ background: 'none', border: 'none', color: 'var(--admin-text-muted)', cursor: 'pointer', padding: '0.2rem' }}
+                style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer', padding: '0.2rem' }}
               >
                 <X size={18} />
               </button>
@@ -447,7 +447,7 @@ export default function AdminCouponList() {
 
             <form onSubmit={handleUpdateCouponSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Coupon Code *
                 </label>
                 <input
@@ -462,7 +462,7 @@ export default function AdminCouponList() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Discount Type
                   </label>
                   <select
@@ -475,7 +475,7 @@ export default function AdminCouponList() {
                   </select>
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Discount Value *
                   </label>
                   <input
@@ -491,7 +491,7 @@ export default function AdminCouponList() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Min Order (₹)
                   </label>
                   <input
@@ -503,7 +503,7 @@ export default function AdminCouponList() {
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Max Cap (₹)
                   </label>
                   <input
@@ -517,7 +517,7 @@ export default function AdminCouponList() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Description
                 </label>
                 <input
@@ -529,22 +529,22 @@ export default function AdminCouponList() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.2rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.84rem', color: 'var(--admin-text-primary)', fontWeight: '600' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.84rem', color: '#21150F', fontWeight: '600' }}>
                   <input
                     type="checkbox"
                     checked={editIsFeatured}
                     onChange={(e) => setEditIsFeatured(e.target.checked)}
-                    style={{ width: '16px', height: '16px', accentColor: 'var(--admin-accent)' }}
+                    style={{ width: '16px', height: '16px', accentColor: '#C68A3A' }}
                   />
                   <span>Feature on Top Announcement Bar</span>
                 </label>
 
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.84rem', color: 'var(--admin-text-primary)', fontWeight: '600' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.84rem', color: '#21150F', fontWeight: '600' }}>
                   <input
                     type="checkbox"
                     checked={editIsActive}
                     onChange={(e) => setEditIsActive(e.target.checked)}
-                    style={{ width: '16px', height: '16px', accentColor: 'var(--admin-accent)' }}
+                    style={{ width: '16px', height: '16px', accentColor: '#C68A3A' }}
                   />
                   <span>Coupon Is Active</span>
                 </label>
@@ -558,9 +558,9 @@ export default function AdminCouponList() {
                     flex: 1,
                     padding: '0.65rem',
                     borderRadius: '8px',
-                    border: '1px solid var(--admin-border)',
+                    border: '1px solid rgba(231, 222, 213, 0.65)',
                     backgroundColor: 'transparent',
-                    color: 'var(--admin-text-secondary)',
+                    color: '#4A3B2E',
                     fontWeight: '700',
                     cursor: 'pointer',
                   }}
@@ -594,4 +594,5 @@ export default function AdminCouponList() {
     </div>
   );
 }
+
 

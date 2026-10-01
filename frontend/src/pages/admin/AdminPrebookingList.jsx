@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Calendar, Search, RefreshCw, CheckCircle2, XCircle, Clock, Package, Upload } from 'lucide-react';
 import api from '../../api/axios';
@@ -81,10 +81,10 @@ export default function AdminPrebookingList() {
       {/* Page Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, fontFamily: 'var(--font-serif)' }}>
+          <h2 style={{ fontSize: '1.4rem', color: '#21150F', fontWeight: '800', margin: 0, fontFamily: 'var(--font-serif)' }}>
             Pre-Booking Products
           </h2>
-          <p style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', margin: '0.2rem 0 0 0' }}>
+          <p style={{ fontSize: '0.82rem', color: '#665A52', margin: '0.2rem 0 0 0' }}>
             Manage upcoming MILASTY products and their launch dates displayed in the "What's Next" section.
           </p>
         </div>
@@ -102,7 +102,7 @@ export default function AdminPrebookingList() {
       {/* Filter / Search Bar */}
       <div className="admin-card" style={{ padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <div style={{ position: 'relative', flex: 1 }}>
-          <Search size={16} color="var(--admin-text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+          <Search size={16} color="#665A52" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
             placeholder="Search pre-booking products..."
@@ -153,22 +153,22 @@ export default function AdminPrebookingList() {
                   const isUpcoming = launchDateObj ? launchDateObj > new Date() : true;
 
                   return (
-                    <tr key={item.id} style={{ borderBottom: '1px solid var(--admin-border)' }}>
+                    <tr key={item.id} style={{ borderBottom: '1px solid rgba(231, 222, 213, 0.65)' }}>
                       <td style={{ padding: '1rem 1.25rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                           {item.productImage ? (
                             <img src={item.productImage} alt={item.productTitle} style={{ width: '44px', height: '44px', borderRadius: '8px', objectFit: 'cover' }} />
                           ) : (
                             <div style={{ width: '44px', height: '44px', borderRadius: '8px', backgroundColor: 'var(--admin-surface-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <Package size={20} color="var(--admin-text-muted)" />
+                              <Package size={20} color="#665A52" />
                             </div>
                           )}
                           <div>
-                            <div style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>
+                            <div style={{ fontWeight: '800', color: '#21150F' }}>
                               {item.productTitle}
                             </div>
                             {item.customHeading && item.customHeading !== item.productTitle && (
-                              <div style={{ fontSize: '0.74rem', color: 'var(--admin-accent)' }}>
+                              <div style={{ fontSize: '0.74rem', color: '#C68A3A' }}>
                                 Title: {item.customHeading}
                               </div>
                             )}
@@ -176,9 +176,9 @@ export default function AdminPrebookingList() {
                         </div>
                       </td>
 
-                      <td style={{ padding: '1rem 1.25rem', fontWeight: '600', color: 'var(--admin-text-primary)' }}>
+                      <td style={{ padding: '1rem 1.25rem', fontWeight: '600', color: '#21150F' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <Calendar size={14} color="var(--admin-accent)" />
+                          <Calendar size={14} color="#C68A3A" />
                           <span>{formattedDate}</span>
                         </div>
                       </td>
@@ -195,11 +195,11 @@ export default function AdminPrebookingList() {
 
                       <td style={{ padding: '1rem 1.25rem' }}>
                         {item.preorderEnabled ? (
-                          <span style={{ color: 'var(--admin-accent)', fontWeight: '700', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <span style={{ color: '#C68A3A', fontWeight: '700', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                             <CheckCircle2 size={14} /> Enabled
                           </span>
                         ) : (
-                          <span style={{ color: 'var(--admin-text-muted)', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <span style={{ color: '#665A52', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                             <XCircle size={14} /> Closed
                           </span>
                         )}
@@ -220,7 +220,7 @@ export default function AdminPrebookingList() {
                               setDeleteModalOpen(true);
                             }}
                             className="admin-icon-btn"
-                            style={{ color: 'var(--admin-danger)' }}
+                            style={{ color: '#C62828' }}
                             title="Remove Pre-booking"
                           >
                             <Trash2 size={14} />
@@ -252,3 +252,4 @@ export default function AdminPrebookingList() {
     </div>
   );
 }
+

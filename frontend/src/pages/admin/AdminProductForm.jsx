@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus, 
@@ -750,8 +750,8 @@ export default function AdminProductForm() {
   if (loadingDetails) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', gap: '1rem' }}>
-        <RefreshCw size={24} className="animate-spin" color="var(--admin-accent)" />
-        <span style={{ fontSize: '0.88rem', color: 'var(--admin-text-muted)', fontWeight: '600' }}>Loading product details...</span>
+        <RefreshCw size={24} className="animate-spin" color="#C68A3A" />
+        <span style={{ fontSize: '0.88rem', color: '#665A52', fontWeight: '600' }}>Loading product details...</span>
       </div>
     );
   }
@@ -766,7 +766,7 @@ export default function AdminProductForm() {
           display: 'inline-flex', 
           alignItems: 'center', 
           gap: '0.45rem', 
-          color: 'var(--admin-accent)', 
+          color: '#C68A3A', 
           fontWeight: '800', 
           fontSize: '0.85rem',
           textDecoration: 'none',
@@ -777,11 +777,11 @@ export default function AdminProductForm() {
       </Link>
 
       <div className="admin-card" style={{ padding: '2rem' }}>
-        <div style={{ borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.85rem', marginBottom: '1.5rem' }}>
-          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--admin-text-muted)', letterSpacing: '0.07em', margin: '0 0 0.2rem 0' }}>
+        <div style={{ borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.85rem', marginBottom: '1.5rem' }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', color: '#665A52', letterSpacing: '0.07em', margin: '0 0 0.2rem 0' }}>
             {isEdit ? 'Modify Product Architecture' : 'New Product Entry'}
           </p>
-          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             {isEdit ? 'Edit Product Details' : 'Add New Product'}
           </h2>
         </div>
@@ -792,13 +792,13 @@ export default function AdminProductForm() {
           {/* SECTION 1: BASIC INFORMATION */}
           {/* ================================================================== */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.4rem' }}>
+            <h3 style={{ fontSize: '0.92rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.4rem' }}>
               1. Basic Information
             </h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Product Title / Name *
                 </label>
                 <input
@@ -819,7 +819,7 @@ export default function AdminProductForm() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   URL Slug *
                 </label>
                 <input
@@ -835,7 +835,7 @@ export default function AdminProductForm() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Category *
                 </label>
                 <select
@@ -863,7 +863,7 @@ export default function AdminProductForm() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Subtitle / Short Tagline
                 </label>
                 <input
@@ -877,7 +877,7 @@ export default function AdminProductForm() {
             </div>
 
             <div>
-              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                 Full Product Description *
               </label>
               <textarea
@@ -893,7 +893,7 @@ export default function AdminProductForm() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Catalog Status
                 </label>
                 <select
@@ -907,7 +907,7 @@ export default function AdminProductForm() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Featured Product
                 </label>
                 <select
@@ -921,7 +921,7 @@ export default function AdminProductForm() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Bestseller Product
                 </label>
                 <select
@@ -939,13 +939,13 @@ export default function AdminProductForm() {
           {/* ================================================================== */}
           {/* SECTION 2: PRODUCT MULTI-IMAGE GALLERY */}
           {/* ================================================================== */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1px solid var(--admin-border)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.5rem' }}>
               <div>
-                <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <h3 style={{ fontSize: '0.92rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   2. Product Images Multi-Gallery ({galleryImages.length})
                 </h3>
-                <p style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)', margin: '0.2rem 0 0 0' }}>
+                <p style={{ fontSize: '0.75rem', color: '#665A52', margin: '0.2rem 0 0 0' }}>
                   Upload multiple product images. Set primary image, reorder, or remove images.
                 </p>
               </div>
@@ -956,7 +956,7 @@ export default function AdminProductForm() {
                   alignItems: 'center',
                   gap: '0.4rem',
                   padding: '0.55rem 1.15rem',
-                  backgroundColor: 'var(--admin-accent)',
+                  backgroundColor: '#C68A3A',
                   color: '#ffffff',
                   borderRadius: '999px',
                   fontSize: '0.8rem',
@@ -1021,7 +1021,7 @@ export default function AdminProductForm() {
                         borderRadius: '12px',
                         overflow: 'hidden',
                         backgroundColor: 'var(--admin-surface-card)',
-                        border: isPrimary ? '2px solid var(--admin-accent)' : '1px solid var(--admin-border)',
+                        border: isPrimary ? '2px solid #C68A3A' : '1px solid rgba(231, 222, 213, 0.65)',
                         boxShadow: isPrimary ? '0 0 14px rgba(39, 76, 55, 0.35)' : 'none',
                         display: 'flex',
                         flexDirection: 'column',
@@ -1042,7 +1042,7 @@ export default function AdminProductForm() {
                               position: 'absolute', 
                               top: '6px', 
                               left: '6px', 
-                              backgroundColor: 'var(--admin-accent)', 
+                              backgroundColor: '#C68A3A', 
                               color: '#FFF', 
                               fontSize: '0.62rem', 
                               fontWeight: '900', 
@@ -1107,8 +1107,8 @@ export default function AdminProductForm() {
                       </div>
 
                       {/* Controls Footer */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.4rem 0.6rem', backgroundColor: 'var(--admin-surface-card)', borderTop: '1px solid var(--admin-border)' }}>
-                        <span style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--admin-text-muted)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.4rem 0.6rem', backgroundColor: 'var(--admin-surface-card)', borderTop: '1px solid rgba(231, 222, 213, 0.65)' }}>
+                        <span style={{ fontSize: '0.65rem', fontWeight: '800', color: '#665A52' }}>
                           #{idx + 1}
                         </span>
                         <div style={{ display: 'flex', gap: '0.25rem' }}>
@@ -1116,7 +1116,7 @@ export default function AdminProductForm() {
                             type="button"
                             disabled={idx === 0}
                             onClick={() => handleMoveImage(idx, -1)}
-                            style={{ background: 'none', border: 'none', color: idx === 0 ? 'var(--admin-border)' : 'var(--admin-text-primary)', cursor: idx === 0 ? 'default' : 'pointer', padding: '2px' }}
+                            style={{ background: 'none', border: 'none', color: idx === 0 ? 'rgba(231, 222, 213, 0.65)' : '#21150F', cursor: idx === 0 ? 'default' : 'pointer', padding: '2px' }}
                             title="Move Left/Up"
                           >
                             <ArrowUp size={14} />
@@ -1125,7 +1125,7 @@ export default function AdminProductForm() {
                             type="button"
                             disabled={idx === galleryImages.length - 1}
                             onClick={() => handleMoveImage(idx, 1)}
-                            style={{ background: 'none', border: 'none', color: idx === galleryImages.length - 1 ? 'var(--admin-border)' : 'var(--admin-text-primary)', cursor: idx === galleryImages.length - 1 ? 'default' : 'pointer', padding: '2px' }}
+                            style={{ background: 'none', border: 'none', color: idx === galleryImages.length - 1 ? 'rgba(231, 222, 213, 0.65)' : '#21150F', cursor: idx === galleryImages.length - 1 ? 'default' : 'pointer', padding: '2px' }}
                             title="Move Right/Down"
                           >
                             <ArrowDown size={14} />
@@ -1137,7 +1137,7 @@ export default function AdminProductForm() {
                 })}
               </div>
             ) : (
-              <div style={{ textAlign: 'center', padding: '2rem 1rem', border: '2px dashed var(--admin-border)', borderRadius: '12px', color: 'var(--admin-text-muted)' }}>
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', border: '2px dashed rgba(231, 222, 213, 0.65)', borderRadius: '12px', color: '#665A52' }}>
                 <ImageIcon size={32} style={{ marginBottom: '0.5rem', opacity: 0.6 }} />
                 <p style={{ fontSize: '0.85rem', fontWeight: '700', margin: '0 0 0.25rem 0' }}>No product gallery images uploaded yet</p>
                 <p style={{ fontSize: '0.75rem', margin: 0 }}>Click "+ Upload Images" above or paste an image URL.</p>
@@ -1149,10 +1149,10 @@ export default function AdminProductForm() {
           {/* SECTION 3: PRODUCT BADGES */}
           {/* ================================================================== */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.4rem' }}>
+            <h3 style={{ fontSize: '0.92rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.4rem' }}>
               3. Product Badges
             </h3>
-            <p style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)', margin: 0 }}>
+            <p style={{ fontSize: '0.75rem', color: '#665A52', margin: 0 }}>
               Select relevant highlight badges to display on product cards and detail pages.
             </p>
 
@@ -1171,16 +1171,16 @@ export default function AdminProductForm() {
                       fontSize: '0.78rem',
                       fontWeight: '800',
                       cursor: 'pointer',
-                      border: isSelected ? '1.5px solid var(--admin-accent)' : '1px solid var(--admin-border)',
+                      border: isSelected ? '1.5px solid #C68A3A' : '1px solid rgba(231, 222, 213, 0.65)',
                       backgroundColor: isSelected ? 'rgba(39, 76, 55, 0.25)' : 'var(--admin-surface-elevated)',
-                      color: isSelected ? 'var(--admin-accent)' : 'var(--admin-text-muted)',
+                      color: isSelected ? '#C68A3A' : '#665A52',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '0.35rem',
                       transition: 'all 0.2s ease',
                     }}
                   >
-                    {isSelected ? <CheckSquare size={14} color="var(--admin-accent)" /> : <Square size={14} />}
+                    {isSelected ? <CheckSquare size={14} color="#C68A3A" /> : <Square size={14} />}
                     <span>{badgeName}</span>
                   </button>
                 );
@@ -1206,7 +1206,7 @@ export default function AdminProductForm() {
             {badgesList.length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginTop: '0.25rem' }}>
                 {badgesList.map((b) => (
-                  <span key={b} style={{ backgroundColor: 'var(--admin-accent)', color: '#FFF', fontSize: '0.72rem', fontWeight: '800', padding: '0.25rem 0.65rem', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <span key={b} style={{ backgroundColor: '#C68A3A', color: '#FFF', fontSize: '0.72rem', fontWeight: '800', padding: '0.25rem 0.65rem', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                     {b}
                     <X size={12} style={{ cursor: 'pointer' }} onClick={() => removeBadge(b)} />
                   </span>
@@ -1218,11 +1218,11 @@ export default function AdminProductForm() {
           {/* ================================================================== */}
           {/* SECTION 4: INGREDIENTS */}
           {/* ================================================================== */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1px solid var(--admin-border)' }}>
-            <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.4rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
+            <h3 style={{ fontSize: '0.92rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.4rem' }}>
               4. Ingredients
             </h3>
-            <p style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)', margin: 0 }}>
+            <p style={{ fontSize: '0.75rem', color: '#665A52', margin: 0 }}>
               Add handcrafted ingredients that will display on the Product Detail page.
             </p>
 
@@ -1267,8 +1267,8 @@ export default function AdminProductForm() {
                       padding: '0.35rem 0.75rem',
                       borderRadius: '8px',
                       backgroundColor: 'var(--admin-surface-card)',
-                      border: '1px solid var(--admin-border)',
-                      color: 'var(--admin-text-primary)',
+                      border: '1px solid rgba(231, 222, 213, 0.65)',
+                      color: '#21150F',
                       fontSize: '0.8rem',
                       fontWeight: '700',
                       display: 'inline-flex',
@@ -1277,12 +1277,12 @@ export default function AdminProductForm() {
                     }}
                   >
                     <span>• {ing}</span>
-                    <X size={13} color="var(--admin-danger)" style={{ cursor: 'pointer' }} onClick={() => removeIngredient(idx)} />
+                    <X size={13} color="#C62828" style={{ cursor: 'pointer' }} onClick={() => removeIngredient(idx)} />
                   </span>
                 ))}
               </div>
             ) : (
-              <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)', fontStyle: 'italic' }}>
+              <div style={{ fontSize: '0.75rem', color: '#665A52', fontStyle: 'italic' }}>
                 No ingredients added yet.
               </div>
             )}
@@ -1291,19 +1291,19 @@ export default function AdminProductForm() {
           {/* ================================================================== */}
           {/* SECTION 5: NUTRITION FACTS */}
           {/* ================================================================== */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1px solid var(--admin-border)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
             <div>
-              <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.4rem' }}>
+              <h3 style={{ fontSize: '0.92rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.4rem' }}>
                 5. Nutrition Facts
               </h3>
-              <p style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)', margin: '0.35rem 0 0 0' }}>
+              <p style={{ fontSize: '0.75rem', color: '#665A52', margin: '0.35rem 0 0 0' }}>
                 Add the nutritional information that should appear on the product page and Nutrition section. Select only the fields that apply.
               </p>
             </div>
 
             {/* Selectable Nutrition Fields Checklist */}
             <div>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                 Select Relevant Nutrition Fields
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.5rem' }}>
@@ -1321,15 +1321,15 @@ export default function AdminProductForm() {
                         fontWeight: '700',
                         textAlign: 'left',
                         cursor: 'pointer',
-                        border: isChecked ? '1.5px solid var(--admin-accent)' : '1px solid var(--admin-border)',
+                        border: isChecked ? '1.5px solid #C68A3A' : '1px solid rgba(231, 222, 213, 0.65)',
                         backgroundColor: isChecked ? 'rgba(39, 76, 55, 0.25)' : 'var(--admin-surface-card)',
-                        color: isChecked ? 'var(--admin-accent)' : 'var(--admin-text-muted)',
+                        color: isChecked ? '#C68A3A' : '#665A52',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.35rem',
                       }}
                     >
-                      {isChecked ? <CheckSquare size={13} color="var(--admin-accent)" /> : <Square size={13} />}
+                      {isChecked ? <CheckSquare size={13} color="#C68A3A" /> : <Square size={13} />}
                       <span>{item.label}</span>
                     </button>
                   );
@@ -1339,8 +1339,8 @@ export default function AdminProductForm() {
 
             {/* Selected Nutrition Values Input Grid */}
             {Object.keys(nutritionMap).length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px dashed var(--admin-border)', paddingTop: '1rem' }}>
-                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', textTransform: 'uppercase' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px dashed rgba(231, 222, 213, 0.65)', paddingTop: '1rem' }}>
+                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', textTransform: 'uppercase' }}>
                   Configured Nutrition Values &amp; Units
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.85rem' }}>
@@ -1351,18 +1351,18 @@ export default function AdminProductForm() {
                         padding: '0.75rem',
                         borderRadius: '10px',
                         backgroundColor: 'var(--admin-surface-card)',
-                        border: '1px solid var(--admin-border)',
+                        border: '1px solid rgba(231, 222, 213, 0.65)',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '0.35rem',
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.78rem', fontWeight: '800', color: 'var(--admin-text-primary)' }}>{nObj.label}</span>
+                        <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#21150F' }}>{nObj.label}</span>
                         <button
                           type="button"
                           onClick={() => removeNutritionField(key)}
-                          style={{ background: 'none', border: 'none', color: 'var(--admin-danger)', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '700' }}
+                          style={{ background: 'none', border: 'none', color: '#C62828', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '700' }}
                         >
                           Remove
                         </button>
@@ -1394,8 +1394,8 @@ export default function AdminProductForm() {
             ) : null}
 
             {/* Custom Nutrition Field Builder */}
-            <div style={{ borderTop: '1px dashed var(--admin-border)', paddingTop: '0.85rem' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+            <div style={{ borderTop: '1px dashed rgba(231, 222, 213, 0.65)', paddingTop: '0.85rem' }}>
+              <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
                 Add Custom Nutrition Field
               </label>
               <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -1434,11 +1434,11 @@ export default function AdminProductForm() {
           {/* ================================================================== */}
           {/* SECTION 6: LAB REPORT */}
           {/* ================================================================== */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid var(--admin-border)', padding: '1.25rem', borderRadius: '14px', backgroundColor: 'var(--admin-surface-elevated)' }}>
-            <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.4rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid rgba(231, 222, 213, 0.65)', padding: '1.25rem', borderRadius: '14px', backgroundColor: 'var(--admin-surface-elevated)' }}>
+            <h3 style={{ fontSize: '0.92rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.4rem' }}>
               6. Lab Report
             </h3>
-            <p style={{ margin: 0, fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>
+            <p style={{ margin: 0, fontSize: '0.74rem', color: '#665A52' }}>
               Upload official NABL laboratory analysis report (PDF or image). Only products with an active lab report will show the "Download Lab Report" button.
             </p>
 
@@ -1458,7 +1458,7 @@ export default function AdminProductForm() {
                   alignItems: 'center',
                   gap: '0.35rem',
                   padding: '0.6rem 1rem',
-                  backgroundColor: 'var(--admin-accent)',
+                  backgroundColor: '#C68A3A',
                   color: '#ffffff',
                   borderRadius: '8px',
                   fontSize: '0.78rem',
@@ -1494,9 +1494,9 @@ export default function AdminProductForm() {
                     onClick={() => setFormData({ ...formData, labReportUrl: '' })}
                     style={{
                       padding: '0.6rem 0.85rem',
-                      backgroundColor: 'var(--admin-danger-bg)',
-                      color: 'var(--admin-danger)',
-                      border: '1px solid var(--admin-danger)',
+                      backgroundColor: '#FEECEC',
+                      color: '#C62828',
+                      border: '1px solid #C62828',
                       borderRadius: '8px',
                       fontSize: '0.78rem',
                       fontWeight: '700',
@@ -1518,15 +1518,15 @@ export default function AdminProductForm() {
           {/* SECTION 7: PRICING & VARIANTS */}
           {/* ================================================================== */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.4rem' }}>
+            <h3 style={{ fontSize: '0.92rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.4rem' }}>
               7. Pricing, Stock &amp; Pack Variants
             </h3>
 
             {/* Pricing Controls Box */}
-            <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--admin-border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.65)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     Base Price (₹)
                   </label>
                   <input
@@ -1539,7 +1539,7 @@ export default function AdminProductForm() {
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     Original Price / MRP (₹)
                   </label>
                   <input
@@ -1552,7 +1552,7 @@ export default function AdminProductForm() {
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     Discount Type
                   </label>
                   <select
@@ -1567,7 +1567,7 @@ export default function AdminProductForm() {
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     Discount Value
                   </label>
                   <input
@@ -1584,7 +1584,7 @@ export default function AdminProductForm() {
             {/* Stock & SKU */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1.25rem' }}>
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Total Stock Quantity
                 </label>
                 <input
@@ -1597,7 +1597,7 @@ export default function AdminProductForm() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Pieces / Pack Count
                 </label>
                 <input
@@ -1610,7 +1610,7 @@ export default function AdminProductForm() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   SKU Code
                 </label>
                 <input
@@ -1624,11 +1624,11 @@ export default function AdminProductForm() {
             </div>
 
             {/* Pack Variants List */}
-            <div style={{ border: '1px solid var(--admin-border)', padding: '1.25rem', borderRadius: '12px', backgroundColor: 'var(--admin-surface-elevated)' }}>
+            <div style={{ border: '1px solid rgba(231, 222, 213, 0.65)', padding: '1.25rem', borderRadius: '12px', backgroundColor: 'var(--admin-surface-elevated)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <div>
-                  <h4 style={{ fontSize: '0.92rem', color: 'var(--admin-text-primary)', fontWeight: '800', margin: 0 }}>Pack Weight Variants</h4>
-                  <p style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', margin: '0.15rem 0 0 0' }}>Add pack size options (e.g., 100g, 250g, 500g).</p>
+                  <h4 style={{ fontSize: '0.92rem', color: '#21150F', fontWeight: '800', margin: 0 }}>Pack Weight Variants</h4>
+                  <p style={{ fontSize: '0.74rem', color: '#665A52', margin: '0.15rem 0 0 0' }}>Add pack size options (e.g., 100g, 250g, 500g).</p>
                 </div>
                 <button type="button" onClick={addVariant} className="admin-btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.78rem' }}>
                   <Plus size={14} /> Add Variant Option
@@ -1638,31 +1638,31 @@ export default function AdminProductForm() {
               {formData.variants && formData.variants.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                   {formData.variants.map((v, index) => (
-                    <div key={index} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr)) 44px', gap: '0.75rem', alignItems: 'end', padding: '0.85rem', borderRadius: '10px', backgroundColor: 'var(--admin-surface-card)', border: '1px solid var(--admin-border)' }}>
+                    <div key={index} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr)) 44px', gap: '0.75rem', alignItems: 'end', padding: '0.85rem', borderRadius: '10px', backgroundColor: 'var(--admin-surface-card)', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
                       <div>
-                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Name</label>
+                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Name</label>
                         <input type="text" value={v.name} onChange={(e) => handleVariantChange(index, 'name', e.target.value)} placeholder="Regular Pack" className="admin-input" style={{ height: '36px', fontSize: '0.8rem' }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Weight</label>
+                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Weight</label>
                         <input type="text" value={v.weight} onChange={(e) => handleVariantChange(index, 'weight', e.target.value)} placeholder="100g" className="admin-input" style={{ height: '36px', fontSize: '0.8rem' }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Price (₹)</label>
+                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Price (₹)</label>
                         <input type="number" value={v.price} onChange={(e) => handleVariantChange(index, 'price', e.target.value)} placeholder="99" className="admin-input" style={{ height: '36px', fontSize: '0.8rem' }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Stock</label>
+                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Stock</label>
                         <input type="number" value={v.stock} onChange={(e) => handleVariantChange(index, 'stock', e.target.value)} placeholder="50" className="admin-input" style={{ height: '36px', fontSize: '0.8rem' }} />
                       </div>
-                      <button type="button" onClick={() => removeVariant(index)} className="admin-icon-btn" style={{ color: 'var(--admin-danger)', height: '36px' }}>
+                      <button type="button" onClick={() => removeVariant(index)} className="admin-icon-btn" style={{ color: '#C62828', height: '36px' }}>
                         <Trash2 size={14} />
                       </button>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)', fontStyle: 'italic', textAlign: 'center', padding: '1rem' }}>
+                <div style={{ fontSize: '0.78rem', color: '#665A52', fontStyle: 'italic', textAlign: 'center', padding: '1rem' }}>
                   No pack variants added. Product will use base price.
                 </div>
               )}
@@ -1673,7 +1673,7 @@ export default function AdminProductForm() {
           {/* SECTION 8: PRODUCT BENEFITS */}
           {/* ================================================================== */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--admin-border)', paddingBottom: '0.4rem' }}>
+            <h3 style={{ fontSize: '0.92rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.4rem' }}>
               8. Product Benefits
             </h3>
 
@@ -1695,9 +1695,9 @@ export default function AdminProductForm() {
             {benefitsList.length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
                 {benefitsList.map((b, idx) => (
-                  <span key={idx} style={{ backgroundColor: 'var(--admin-surface-elevated)', border: '1px solid var(--admin-border)', color: 'var(--admin-text-primary)', fontSize: '0.78rem', fontWeight: '700', padding: '0.35rem 0.75rem', borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span key={idx} style={{ backgroundColor: 'var(--admin-surface-elevated)', border: '1px solid rgba(231, 222, 213, 0.65)', color: '#21150F', fontSize: '0.78rem', fontWeight: '700', padding: '0.35rem 0.75rem', borderRadius: '8px', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
                     ✓ {b}
-                    <X size={13} color="var(--admin-danger)" style={{ cursor: 'pointer' }} onClick={() => removeBenefit(idx)} />
+                    <X size={13} color="#C62828" style={{ cursor: 'pointer' }} onClick={() => removeBenefit(idx)} />
                   </span>
                 ))}
               </div>
@@ -1707,13 +1707,13 @@ export default function AdminProductForm() {
           {/* ================================================================== */}
           {/* SECTION 9: PRE-BOOKING CONFIGURATION */}
           {/* ================================================================== */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1.5px solid var(--admin-accent)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1.5px solid #C68A3A' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <h3 style={{ fontSize: '0.92rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   9. Pre-Booking Section Config ("What's Next")
                 </h3>
-                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.74rem', color: '#665A52' }}>
                   Attach this product to the "What's Next from MILASTY" section on the shop page with a future launch date.
                 </p>
               </div>
@@ -1723,18 +1723,18 @@ export default function AdminProductForm() {
                   type="checkbox"
                   checked={prebookingEnabled}
                   onChange={(e) => setPrebookingEnabled(e.target.checked)}
-                  style={{ width: '18px', height: '18px', accentColor: 'var(--admin-accent)', cursor: 'pointer' }}
+                  style={{ width: '18px', height: '18px', accentColor: '#C68A3A', cursor: 'pointer' }}
                 />
-                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--admin-text-primary)' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#21150F' }}>
                   {prebookingEnabled ? 'Pre-Booking Active' : 'Pre-Booking Disabled'}
                 </span>
               </label>
             </div>
 
             {prebookingEnabled && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', borderTop: '1px dashed var(--admin-border)', paddingTop: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', borderTop: '1px dashed rgba(231, 222, 213, 0.65)', paddingTop: '1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     Launch Date *
                   </label>
                   <input
@@ -1744,13 +1744,13 @@ export default function AdminProductForm() {
                     onChange={(e) => setPrebookingLaunchDate(e.target.value)}
                     className="admin-input"
                   />
-                  <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', marginTop: '0.2rem', display: 'block' }}>
+                  <span style={{ fontSize: '0.68rem', color: '#665A52', marginTop: '0.2rem', display: 'block' }}>
                     Future date = Product appears in "What's Next". Past date = moves to "All Bakes".
                   </span>
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     Pre-Order Allowed
                   </label>
                   <select
@@ -1769,13 +1769,13 @@ export default function AdminProductForm() {
           {/* ================================================================== */}
           {/* SECTION 10: PRODUCT CUSTOMIZATION SETTINGS */}
           {/* ================================================================== */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1px solid var(--admin-border)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.25rem', borderRadius: '14px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h3 style={{ fontSize: '0.92rem', color: 'var(--admin-accent)', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <h3 style={{ fontSize: '0.92rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   10. Product Customization Settings
                 </h3>
-                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.74rem', color: '#665A52' }}>
                   Decide whether customers can add special instructions for this product (e.g. birthday notes, packing preferences).
                 </p>
               </div>
@@ -1785,17 +1785,17 @@ export default function AdminProductForm() {
                   type="checkbox"
                   checked={Boolean(formData.allow_customization)}
                   onChange={(e) => setFormData({ ...formData, allow_customization: e.target.checked })}
-                  style={{ width: '18px', height: '18px', accentColor: 'var(--admin-accent)', cursor: 'pointer' }}
+                  style={{ width: '18px', height: '18px', accentColor: '#C68A3A', cursor: 'pointer' }}
                 />
-                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--admin-text-primary)' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#21150F' }}>
                   {formData.allow_customization ? 'Customization Enabled' : 'Customization Disabled'}
                 </span>
               </label>
             </div>
 
             {formData.allow_customization && (
-              <div style={{ borderTop: '1px dashed var(--admin-border)', paddingTop: '1rem' }}>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: 'var(--admin-text-secondary)', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+              <div style={{ borderTop: '1px dashed rgba(231, 222, 213, 0.65)', paddingTop: '1rem' }}>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Customization Placeholder Text
                 </label>
                 <input
@@ -1806,7 +1806,7 @@ export default function AdminProductForm() {
                   className="admin-input"
                   style={{ width: '100%' }}
                 />
-                <span style={{ fontSize: '0.68rem', color: 'var(--admin-text-muted)', marginTop: '0.25rem', display: 'block' }}>
+                <span style={{ fontSize: '0.68rem', color: '#665A52', marginTop: '0.25rem', display: 'block' }}>
                   Optional placeholder shown inside the instruction text area on the product detail page.
                 </span>
               </div>
@@ -1840,3 +1840,4 @@ export default function AdminProductForm() {
     </div>
   );
 }
+
