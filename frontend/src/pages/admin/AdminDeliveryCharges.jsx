@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Plus, Edit2, Trash2, CheckCircle2, AlertTriangle, ShieldCheck, 
-  ToggleLeft, ToggleRight, X, RefreshCw, Truck, ArrowRight 
+  Plus, Edit2, Trash2, CheckCircle2, AlertTriangle, 
+  ToggleLeft, ToggleRight, X, RefreshCw, Truck, ArrowRight, ShieldCheck, Tag
 } from 'lucide-react';
 import api from '../../api/axios';
+import ConfirmationModal from '../../components/ConfirmationModal';
+import { useToast } from '../../context/ToastContext';
 
 export default function AdminDeliveryCharges() {
   const [rules, setRules] = useState([]);
   const [coverage, setCoverage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
+  const { toast } = useToast();
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,7 +30,6 @@ export default function AdminDeliveryCharges() {
 
   const fetchRules = async () => {
     setLoading(true);
-    setErrorMsg('');
     try {
       const res = await api.get('/delivery-charges');
       if (res.data && res.data.rules) {
@@ -38,7 +38,7 @@ export default function AdminDeliveryCharges() {
       }
     } catch (err) {
       console.error('Failed to load delivery rules:', err);
-      setErrorMsg(err.response?.data?.message || 'Failed to load delivery charge rules.');
+      toast.error(err.response?.data?.message || 'Failed to load delivery charge rules.');
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,6 @@ export default function AdminDeliveryCharges() {
       is_free_delivery: false,
       is_active: true,
     });
-    setErrorMsg('');
     setIsModalOpen(true);
   };
 
@@ -70,18 +69,15 @@ export default function AdminDeliveryCharges() {
       is_free_delivery: !!rule.is_free_delivery,
       is_active: !!rule.is_active,
     });
-    setErrorMsg('');
     setIsModalOpen(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
 
     const minNum = Number(formData.min_order_value);
     if (isNaN(minNum) || minNum < 0) {
-      setErrorMsg('Minimum Order Value must be a valid number >= 0.');
+      toast.error('Minimum Order Value must be a valid number >= 0.');
       return;
     }
 
@@ -89,7 +85,7 @@ export default function AdminDeliveryCharges() {
     if (formData.max_order_value !== '' && formData.max_order_value !== null) {
       maxNum = Number(formData.max_order_value);
       if (isNaN(maxNum) || maxNum <= minNum) {
-        setErrorMsg('Maximum Order Value must be greater than Minimum Order Value.');
+        toast.error('Maximum Order Value must be greater than Minimum Order Value.');
         return;
       }
     }
@@ -109,15 +105,15 @@ export default function AdminDeliveryCharges() {
     try {
       if (editingRule) {
         await api.put(`/delivery-charges/${editingRule.id}`, payload);
-        setSuccessMsg('Delivery rule updated successfully.');
+        toast.success('Delivery rule updated successfully.');
       } else {
         await api.post('/delivery-charges', payload);
-        setSuccessMsg('New delivery rule added successfully.');
+        toast.success('New delivery rule added successfully.');
       }
       setIsModalOpen(false);
       fetchRules();
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Failed to save delivery rule.');
+      toast.error(err.response?.data?.message || 'Failed to save delivery rule.');
     } finally {
       setSubmitting(false);
     }
@@ -129,9 +125,10 @@ export default function AdminDeliveryCharges() {
         ...rule,
         is_active: !rule.is_active,
       });
+      toast.success(`Delivery rule marked ${!rule.is_active ? 'Active' : 'Inactive'}.`);
       fetchRules();
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Failed to update rule status.');
+      toast.error(err.response?.data?.message || 'Failed to update rule status.');
     }
   };
 
@@ -140,207 +137,126 @@ export default function AdminDeliveryCharges() {
     setSubmitting(true);
     try {
       await api.delete(`/delivery-charges/${deletingRule.id}`);
-      setSuccessMsg('Delivery rule deleted successfully.');
+      toast.success('Delivery rule deleted successfully.');
       setDeletingRule(null);
       fetchRules();
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Failed to delete delivery rule.');
+      toast.error(err.response?.data?.message || 'Failed to delete delivery rule.');
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div style={{ padding: '1.75rem 2rem', color: '#FFF8F0', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       
       {/* Header Banner */}
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: '1rem',
-        marginBottom: '2rem',
-        paddingBottom: '1.25rem',
-        borderBottom: '1px solid rgba(232, 220, 203, 0.12)'
-      }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-            <span style={{ fontSize: '1.2rem' }}>🇮🇳</span>
-            <span style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.12em', color: '#E5C396', textTransform: 'uppercase' }}>
-              All India Shipping Engine
-            </span>
-          </div>
-          <h1 style={{ fontSize: '2rem', fontWeight: '900', color: '#FFF8F0', margin: 0, fontFamily: 'var(--font-serif, Georgia, serif)' }}>
-            Delivery Charges
-          </h1>
-          <p style={{ color: '#E8DCCB', opacity: 0.8, fontSize: '0.9rem', margin: '0.35rem 0 0 0' }}>
-            Configure order-value based delivery pricing slabs across India.
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665A52', margin: '0 0 0.2rem 0' }}>
+            Shipping &amp; Logistics
+          </p>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
+            Delivery Charge Rules
+          </h2>
+          <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+            Configure order-value based delivery pricing slabs for customer checkout across India.
           </p>
         </div>
 
         <button
           onClick={handleOpenAdd}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.75rem 1.4rem',
-            borderRadius: '12px',
-            backgroundColor: '#C59B68',
-            color: '#1C0D08',
-            fontWeight: '900',
-            fontSize: '0.88rem',
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(197, 155, 104, 0.25)',
-            transition: 'all 0.2s',
-          }}
+          className="admin-btn-primary"
         >
-          <Plus size={18} />
+          <Plus size={16} />
           <span>Add Delivery Rule</span>
         </button>
       </div>
 
-      {/* Alerts */}
-      {successMsg && (
-        <div style={{
-          backgroundColor: 'rgba(46, 125, 50, 0.2)',
-          border: '1px solid rgba(46, 125, 50, 0.5)',
-          color: '#81C784',
-          padding: '0.85rem 1.25rem',
-          borderRadius: '12px',
-          marginBottom: '1.5rem',
-          fontSize: '0.88rem',
-          fontWeight: '600',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <CheckCircle2 size={18} />
-            <span>{successMsg}</span>
-          </div>
-          <button onClick={() => setSuccessMsg('')} style={{ background: 'none', border: 'none', color: '#81C784', cursor: 'pointer' }}><X size={16} /></button>
-        </div>
-      )}
-
-      {errorMsg && (
-        <div style={{
-          backgroundColor: 'rgba(192, 57, 43, 0.2)',
-          border: '1px solid rgba(192, 57, 43, 0.5)',
-          color: '#E74C3C',
-          padding: '0.85rem 1.25rem',
-          borderRadius: '12px',
-          marginBottom: '1.5rem',
-          fontSize: '0.88rem',
-          fontWeight: '600',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <AlertTriangle size={18} />
-            <span>{errorMsg}</span>
-          </div>
-          <button onClick={() => setErrorMsg('')} style={{ background: 'none', border: 'none', color: '#E74C3C', cursor: 'pointer' }}><X size={16} /></button>
-        </div>
-      )}
-
       {/* Coverage Status Bar */}
       {coverage && (
         <div style={{
-          padding: '1.1rem 1.35rem',
-          borderRadius: '16px',
-          backgroundColor: coverage.isCovered ? 'rgba(47, 125, 50, 0.15)' : 'rgba(217, 119, 6, 0.15)',
-          border: coverage.isCovered ? '1px solid rgba(47, 125, 50, 0.4)' : '1px solid rgba(217, 119, 6, 0.4)',
-          marginBottom: '2rem',
+          padding: '1rem 1.25rem',
+          borderRadius: '14px',
+          backgroundColor: coverage.isCovered ? 'rgba(143, 175, 91, 0.12)' : 'rgba(217, 119, 6, 0.12)',
+          border: coverage.isCovered ? '1px solid rgba(143, 175, 91, 0.35)' : '1px solid rgba(217, 119, 6, 0.35)',
           display: 'flex',
           alignItems: 'center',
           gap: '0.85rem',
         }}>
           {coverage.isCovered ? (
-            <CheckCircle2 size={22} color="#81C784" style={{ flexShrink: 0 }} />
+            <CheckCircle2 size={20} color="#8FF75B" style={{ flexShrink: 0 }} />
           ) : (
-            <AlertTriangle size={22} color="#F59E0B" style={{ flexShrink: 0 }} />
+            <AlertTriangle size={20} color="#F59E0B" style={{ flexShrink: 0 }} />
           )}
           <div>
             <div style={{
               fontWeight: '800',
-              fontSize: '0.92rem',
-              color: coverage.isCovered ? '#81C784' : '#F59E0B',
+              fontSize: '0.88rem',
+              color: coverage.isCovered ? '#4D7C2B' : '#B45309',
               letterSpacing: '0.01em',
             }}>
-              {coverage.isCovered ? '✓ All Order Values Covered' : '⚠️ Order Value Coverage Warning'}
+              {coverage.isCovered ? 'Full Order Value Coverage' : 'Order Value Coverage Gap Detected'}
             </div>
-            <div style={{ fontSize: '0.82rem', color: '#E8DCCB', opacity: 0.85, marginTop: '2px' }}>
+            <div style={{ fontSize: '0.8rem', color: '#4A3B2E', marginTop: '2px', fontWeight: '500' }}>
               {coverage.message}
             </div>
           </div>
         </div>
       )}
 
-      {/* Rules Table */}
-      <div style={{
-        backgroundColor: '#271712',
-        border: '1px solid rgba(232, 220, 203, 0.12)',
-        borderRadius: '20px',
-        overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
-      }}>
+      {/* Main Admin Card - Rules Table */}
+      <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{
           padding: '1.25rem 1.5rem',
-          borderBottom: '1px solid rgba(232, 220, 203, 0.1)',
+          borderBottom: '1px solid rgba(231, 222, 213, 0.65)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.4)',
         }}>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: '800', margin: 0, color: '#FFF8F0' }}>
-            Configured Delivery Rules ({rules.length})
-          </h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <Truck size={18} color="#C68A3A" />
+            <h3 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0 }}>
+              Active Delivery Slabs ({rules.length})
+            </h3>
+          </div>
           <button
             onClick={fetchRules}
             disabled={loading}
-            style={{
-              background: 'none',
-              border: '1px solid rgba(232, 220, 203, 0.2)',
-              color: '#E8DCCB',
-              borderRadius: '8px',
-              padding: '0.35rem 0.75rem',
-              fontSize: '0.78rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-            }}
+            className="admin-icon-btn"
+            style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.75rem', borderRadius: '8px', border: '1px solid rgba(207, 194, 181, 0.5)' }}
           >
-            <RefreshCw size={13} className={loading ? 'spin' : ''} />
+            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
             <span>Refresh</span>
           </button>
         </div>
 
         {loading ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: '#E8DCCB', opacity: 0.7 }}>
-            Loading delivery rules...
+          <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#665A52', fontSize: '0.85rem', fontWeight: '600' }}>
+            <RefreshCw size={20} className="animate-spin" color="#C68A3A" style={{ marginBottom: '0.5rem' }} />
+            <div>Fetching delivery rules...</div>
           </div>
         ) : rules.length === 0 ? (
           <div style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
-            <Truck size={42} color="#C59B68" style={{ marginBottom: '1rem', opacity: 0.6 }} />
-            <h4 style={{ fontSize: '1.1rem', fontWeight: '800', margin: '0 0 0.5rem 0', color: '#FFF8F0' }}>No Delivery Rules Configured</h4>
-            <p style={{ fontSize: '0.85rem', color: '#E8DCCB', opacity: 0.7, margin: '0 0 1.25rem 0' }}>
-              Click "+ Add Delivery Rule" above to create your first pricing rule.
+            <Truck size={42} color="#C68A3A" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+            <h4 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.5rem 0', color: '#21150F' }}>
+              No Delivery Rules Configured
+            </h4>
+            <p style={{ fontSize: '0.85rem', color: '#665A52', margin: '0 0 1.25rem 0', fontWeight: '500' }}>
+              Click "+ Add Delivery Rule" to create your first delivery pricing slab.
             </p>
-            <button onClick={handleOpenAdd} style={{ padding: '0.65rem 1.25rem', borderRadius: '10px', backgroundColor: '#C59B68', color: '#1C0D08', border: 'none', fontWeight: '800', cursor: 'pointer' }}>
+            <button onClick={handleOpenAdd} className="admin-btn-primary">
               + Add Delivery Rule
             </button>
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
               <thead>
-                <tr style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', borderBottom: '1px solid rgba(232, 220, 203, 0.1)', color: '#E5C396', fontSize: '0.78rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                  <th style={{ padding: '1rem 1.5rem', fontWeight: '800' }}>Order Value Range</th>
-                  <th style={{ padding: '1rem 1.5rem', fontWeight: '800' }}>Delivery Charge</th>
+                <tr style={{ backgroundColor: 'rgba(247, 243, 238, 0.7)', borderBottom: '1px solid rgba(231, 222, 213, 0.7)', color: '#665A52', fontSize: '0.74rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                  <th style={{ padding: '1rem 1.5rem', fontWeight: '800' }}>Order Value Slab</th>
+                  <th style={{ padding: '1rem 1.5rem', fontWeight: '800' }}>Delivery Fee</th>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: '800' }}>Status</th>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: '800' }}>Last Updated</th>
                   <th style={{ padding: '1rem 1.5rem', fontWeight: '800', textAlign: 'right' }}>Actions</th>
@@ -357,12 +273,12 @@ export default function AdminDeliveryCharges() {
                     <tr
                       key={rule.id || idx}
                       style={{
-                        borderBottom: '1px solid rgba(232, 220, 203, 0.07)',
-                        backgroundColor: rule.is_active ? 'transparent' : 'rgba(0, 0, 0, 0.25)',
-                        opacity: rule.is_active ? 1 : 0.6,
+                        borderBottom: '1px solid rgba(231, 222, 213, 0.4)',
+                        backgroundColor: rule.is_active ? 'transparent' : 'rgba(0, 0, 0, 0.02)',
+                        opacity: rule.is_active ? 1 : 0.65,
                       }}
                     >
-                      <td style={{ padding: '1.1rem 1.5rem', fontWeight: '800', color: '#FFF8F0', fontSize: '0.95rem' }}>
+                      <td style={{ padding: '1.1rem 1.5rem', fontWeight: '800', color: '#21150F', fontSize: '0.92rem' }}>
                         {rangeText}
                       </td>
 
@@ -371,19 +287,18 @@ export default function AdminDeliveryCharges() {
                           <span style={{
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '4px',
-                            padding: '4px 10px',
+                            padding: '3px 10px',
                             borderRadius: '999px',
-                            backgroundColor: 'rgba(46, 125, 50, 0.25)',
-                            color: '#81C784',
+                            backgroundColor: 'rgba(143, 175, 91, 0.15)',
+                            color: '#4D7C2B',
                             fontWeight: '800',
-                            fontSize: '0.8rem',
-                            border: '1px solid rgba(46, 125, 50, 0.4)',
+                            fontSize: '0.78rem',
+                            border: '1px solid rgba(143, 175, 91, 0.4)',
                           }}>
-                            FREE
+                            FREE DELIVERY
                           </span>
                         ) : (
-                          <span style={{ fontWeight: '800', color: '#FFF8F0', fontSize: '0.95rem' }}>
+                          <span style={{ fontWeight: '800', color: '#21150F', fontSize: '0.92rem' }}>
                             ₹{rule.delivery_charge}
                           </span>
                         )}
@@ -396,65 +311,43 @@ export default function AdminDeliveryCharges() {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '6px',
-                            padding: '4px 10px',
-                            borderRadius: '999px',
-                            backgroundColor: rule.is_active ? 'rgba(46, 125, 50, 0.2)' : 'rgba(158, 158, 158, 0.2)',
-                            color: rule.is_active ? '#81C784' : '#9E9E9E',
-                            border: rule.is_active ? '1px solid rgba(46, 125, 50, 0.4)' : '1px solid rgba(158, 158, 158, 0.4)',
+                            padding: '0.35rem 0.75rem',
+                            borderRadius: '8px',
+                            backgroundColor: rule.is_active ? 'rgba(29, 59, 40, 0.6)' : 'rgba(217, 83, 79, 0.15)',
+                            color: rule.is_active ? '#85B870' : '#D9534F',
+                            border: 'none',
                             fontWeight: '700',
-                            fontSize: '0.78rem',
+                            fontSize: '0.74rem',
                             cursor: 'pointer',
                           }}
                         >
-                          {rule.is_active ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
+                          {rule.is_active ? <ToggleRight size={15} /> : <ToggleLeft size={15} />}
                           <span>{rule.is_active ? 'Active' : 'Inactive'}</span>
                         </button>
                       </td>
 
-                      <td style={{ padding: '1.1rem 1.5rem', color: '#E8DCCB', opacity: 0.6, fontSize: '0.8rem' }}>
+                      <td style={{ padding: '1.1rem 1.5rem', color: '#665A52', fontSize: '0.78rem', fontWeight: '500' }}>
                         {rule.updated_at ? new Date(rule.updated_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                       </td>
 
                       <td style={{ padding: '1.1rem 1.5rem', textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
                           <button
                             onClick={() => handleOpenEdit(rule)}
-                            style={{
-                              padding: '0.45rem 0.75rem',
-                              borderRadius: '8px',
-                              backgroundColor: 'rgba(232, 220, 203, 0.08)',
-                              color: '#E5C396',
-                              border: '1px solid rgba(232, 220, 203, 0.15)',
-                              cursor: 'pointer',
-                              fontWeight: '700',
-                              fontSize: '0.8rem',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                            }}
+                            className="admin-icon-btn"
+                            style={{ color: '#b9cd94' }}
+                            title="Edit Rule"
                           >
-                            <Edit2 size={13} />
-                            <span>Edit</span>
+                            <Edit2 size={15} />
                           </button>
 
                           <button
                             onClick={() => setDeletingRule(rule)}
-                            style={{
-                              padding: '0.45rem 0.75rem',
-                              borderRadius: '8px',
-                              backgroundColor: 'rgba(192, 57, 43, 0.15)',
-                              color: '#E74C3C',
-                              border: '1px solid rgba(192, 57, 43, 0.3)',
-                              cursor: 'pointer',
-                              fontWeight: '700',
-                              fontSize: '0.8rem',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                            }}
+                            className="admin-icon-btn"
+                            style={{ color: '#C62828' }}
+                            title="Delete Rule"
                           >
-                            <Trash2 size={13} />
-                            <span>Delete</span>
+                            <Trash2 size={15} />
                           </button>
                         </div>
                       </td>
@@ -477,30 +370,32 @@ export default function AdminDeliveryCharges() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 9999,
+          zIndex: 1000,
           padding: '1rem',
         }}>
           <div style={{
-            backgroundColor: '#1E110D',
-            border: '1px solid #C59B68',
-            borderRadius: '24px',
             width: '100%',
             maxWidth: '480px',
+            backgroundColor: 'rgba(255, 255, 255, 0.92)',
+            border: '1px solid rgba(231, 222, 213, 0.8)',
+            borderRadius: '18px',
             padding: '1.75rem',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-            color: '#FFF8F0',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3)',
+            color: '#21150F',
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', paddingBottom: '0.85rem', borderBottom: '1px solid rgba(232, 220, 203, 0.12)' }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, fontFamily: 'var(--font-serif, Georgia, serif)', color: '#FFF8F0' }}>
-                {editingRule ? 'Edit Delivery Rule' : 'Add Delivery Rule'}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', paddingBottom: '0.85rem', borderBottom: '1px solid rgba(231, 222, 213, 0.7)' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, fontFamily: 'var(--font-serif)', color: '#21150F' }}>
+                {editingRule ? 'Edit Delivery Pricing Rule' : 'Add New Delivery Rule'}
               </h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', color: '#E8DCCB', cursor: 'pointer' }}><X size={20} /></button>
+              <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer' }}>
+                <X size={18} />
+              </button>
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
               
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#E5C396', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Minimum Order Value (₹) *
                 </label>
                 <input
@@ -511,24 +406,13 @@ export default function AdminDeliveryCharges() {
                   value={formData.min_order_value}
                   onChange={(e) => setFormData(prev => ({ ...prev, min_order_value: e.target.value }))}
                   placeholder="0"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 0.9rem',
-                    borderRadius: '12px',
-                    backgroundColor: '#271712',
-                    border: '1.5px solid rgba(232, 220, 203, 0.2)',
-                    color: '#FFF8F0',
-                    fontSize: '0.95rem',
-                    fontWeight: '700',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
+                  className="admin-input"
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#E5C396', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Maximum Order Value (₹) <span style={{ textTransform: 'none', opacity: 0.6, fontWeight: '500' }}>(Optional — leave blank for no upper limit)</span>
+                <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Maximum Order Value (₹) <span style={{ textTransform: 'none', opacity: 0.7, fontWeight: '500' }}>(Optional)</span>
                 </label>
                 <input
                   type="number"
@@ -536,27 +420,16 @@ export default function AdminDeliveryCharges() {
                   step="1"
                   value={formData.max_order_value}
                   onChange={(e) => setFormData(prev => ({ ...prev, max_order_value: e.target.value }))}
-                  placeholder="e.g. 799 or leave blank"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 0.9rem',
-                    borderRadius: '12px',
-                    backgroundColor: '#271712',
-                    border: '1.5px solid rgba(232, 220, 203, 0.2)',
-                    color: '#FFF8F0',
-                    fontSize: '0.95rem',
-                    fontWeight: '700',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
+                  placeholder="e.g. 799 (Leave empty for no upper limit)"
+                  className="admin-input"
                 />
               </div>
 
               {/* Free Delivery Toggle */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', backgroundColor: '#271712', borderRadius: '12px', border: '1px solid rgba(232, 220, 203, 0.12)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', backgroundColor: 'var(--admin-surface-elevated)', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.7)' }}>
                 <div>
-                  <div style={{ fontWeight: '800', fontSize: '0.9rem', color: '#FFF8F0' }}>Free Delivery</div>
-                  <div style={{ fontSize: '0.76rem', color: '#E8DCCB', opacity: 0.7 }}>Set delivery charge to ₹0 (FREE)</div>
+                  <div style={{ fontWeight: '800', fontSize: '0.86rem', color: '#21150F' }}>Free Delivery Slab</div>
+                  <div style={{ fontSize: '0.74rem', color: '#665A52' }}>Set shipping fee to ₹0 for this order slab</div>
                 </div>
                 <input
                   type="checkbox"
@@ -566,14 +439,14 @@ export default function AdminDeliveryCharges() {
                     is_free_delivery: e.target.checked,
                     delivery_charge: e.target.checked ? '0' : (prev.delivery_charge === '0' ? '40' : prev.delivery_charge)
                   }))}
-                  style={{ width: '20px', height: '20px', accentColor: '#C59B68', cursor: 'pointer' }}
+                  style={{ width: '18px', height: '18px', accentColor: '#C68A3A', cursor: 'pointer' }}
                 />
               </div>
 
               {!formData.is_free_delivery && (
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', color: '#E5C396', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    Delivery Charge (₹) *
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Delivery Fee (₹) *
                   </label>
                   <input
                     type="number"
@@ -583,33 +456,22 @@ export default function AdminDeliveryCharges() {
                     value={formData.delivery_charge}
                     onChange={(e) => setFormData(prev => ({ ...prev, delivery_charge: e.target.value }))}
                     placeholder="40"
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem 0.9rem',
-                      borderRadius: '12px',
-                      backgroundColor: '#271712',
-                      border: '1.5px solid rgba(232, 220, 203, 0.2)',
-                      color: '#FFF8F0',
-                      fontSize: '0.95rem',
-                      fontWeight: '700',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                    }}
+                    className="admin-input"
                   />
                 </div>
               )}
 
               {/* Active Toggle */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', backgroundColor: '#271712', borderRadius: '12px', border: '1px solid rgba(232, 220, 203, 0.12)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', backgroundColor: 'var(--admin-surface-elevated)', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.7)' }}>
                 <div>
-                  <div style={{ fontWeight: '800', fontSize: '0.9rem', color: '#FFF8F0' }}>Rule Status</div>
-                  <div style={{ fontSize: '0.76rem', color: '#E8DCCB', opacity: 0.7 }}>Inactive rules are not used for calculations</div>
+                  <div style={{ fontWeight: '800', fontSize: '0.86rem', color: '#21150F' }}>Rule Status</div>
+                  <div style={{ fontSize: '0.74rem', color: '#665A52' }}>Active rules apply immediately to store checkout</div>
                 </div>
                 <input
                   type="checkbox"
                   checked={formData.is_active}
                   onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
-                  style={{ width: '20px', height: '20px', accentColor: '#81C784', cursor: 'pointer' }}
+                  style={{ width: '18px', height: '18px', accentColor: '#C68A3A', cursor: 'pointer' }}
                 />
               </div>
 
@@ -617,14 +479,24 @@ export default function AdminDeliveryCharges() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  style={{ flex: 1, padding: '0.85rem', borderRadius: '12px', border: '1px solid rgba(232, 220, 203, 0.2)', backgroundColor: 'transparent', color: '#E8DCCB', fontWeight: '800', cursor: 'pointer' }}
+                  style={{
+                    flex: 1,
+                    padding: '0.65rem',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(231, 222, 213, 0.65)',
+                    backgroundColor: 'transparent',
+                    color: '#4A3B2E',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                  }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  style={{ flex: 1, padding: '0.85rem', borderRadius: '12px', border: 'none', backgroundColor: '#C59B68', color: '#1C0D08', fontWeight: '900', cursor: submitting ? 'not-allowed' : 'pointer' }}
+                  className="admin-btn-primary"
+                  style={{ flex: 1 }}
                 >
                   {submitting ? 'Saving...' : 'Save Delivery Rule'}
                 </button>
@@ -635,55 +507,16 @@ export default function AdminDeliveryCharges() {
       )}
 
       {/* DELETE CONFIRMATION MODAL */}
-      {deletingRule && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-          padding: '1rem',
-        }}>
-          <div style={{
-            backgroundColor: '#1E110D',
-            border: '1px solid rgba(192, 57, 43, 0.4)',
-            borderRadius: '24px',
-            width: '100%',
-            maxWidth: '420px',
-            padding: '1.75rem',
-            textAlign: 'center',
-            color: '#FFF8F0',
-          }}>
-            <AlertTriangle size={42} color="#E74C3C" style={{ marginBottom: '1rem' }} />
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '900', margin: '0 0 0.5rem 0' }}>
-              Delete Delivery Rule?
-            </h3>
-            <p style={{ fontSize: '0.88rem', color: '#E8DCCB', opacity: 0.8, margin: '0 0 1.5rem 0', lineHeight: 1.5 }}>
-              Are you sure you want to delete this delivery rule ({deletingRule.max_order_value !== null ? `₹${deletingRule.min_order_value}–₹${deletingRule.max_order_value}` : `₹${deletingRule.min_order_value}+`})?
-              Existing completed orders will not be affected.
-            </p>
-
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button
-                onClick={() => setDeletingRule(null)}
-                style={{ flex: 1, padding: '0.8rem', borderRadius: '12px', border: '1px solid rgba(232, 220, 203, 0.2)', backgroundColor: 'transparent', color: '#E8DCCB', fontWeight: '800', cursor: 'pointer' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={submitting}
-                style={{ flex: 1, padding: '0.8rem', borderRadius: '12px', border: 'none', backgroundColor: '#E74C3C', color: '#FFFFFF', fontWeight: '900', cursor: submitting ? 'not-allowed' : 'pointer' }}
-              >
-                {submitting ? 'Deleting...' : 'Delete Rule'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={!!deletingRule}
+        title="Delete Delivery Rule?"
+        message={deletingRule ? `Are you sure you want to delete this delivery rule (${deletingRule.max_order_value !== null && deletingRule.max_order_value !== undefined ? `₹${deletingRule.min_order_value}–₹${deletingRule.max_order_value}` : `₹${deletingRule.min_order_value}+`})?` : ''}
+        confirmText="Delete Rule"
+        cancelText="Cancel"
+        isDanger={true}
+        onConfirm={handleDelete}
+        onCancel={() => setDeletingRule(null)}
+      />
 
     </div>
   );

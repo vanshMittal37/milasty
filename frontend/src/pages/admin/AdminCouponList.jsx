@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Ticket, Tag, RefreshCw, Star, CheckCircle, XCircle, Pencil, X } from 'lucide-react';
 import api from '../../api/axios';
 import ConfirmationModal from '../../components/ConfirmationModal';
@@ -235,7 +235,7 @@ export default function AdminCouponList() {
               </div>
               <div>
                 <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Max Cap (₹)
+                  Max Discount (₹)
                 </label>
                 <input
                   type="number"
@@ -320,7 +320,7 @@ export default function AdminCouponList() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: isActive ? 'rgba(143, 175, 91, 0.12)' : 'rgba(255, 91, 91, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isActive ? '#C68A3A' : '#ff5b5b' }}>
-                          <Ticket size={18} />
+                          <Tag size={18} />
                         </div>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -334,7 +334,7 @@ export default function AdminCouponList() {
                           <div style={{ fontSize: '0.76rem', color: '#665A52', marginTop: '0.15rem' }}>
                             {discType === 'percentage' ? `${discVal}% OFF` : `₹${discVal} FLAT OFF`}
                             {minOrd > 0 ? ` • Min Order: ₹${minOrd}` : ''}
-                            {maxCap > 0 ? ` • Max Cap: ₹${maxCap}` : ''}
+                            {maxCap > 0 ? ` • Max Discount: ₹${maxCap}` : ''}
                           </div>
                         </div>
                       </div>
