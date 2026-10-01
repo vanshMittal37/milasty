@@ -725,43 +725,8 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Payment method selection card */}
-            <div style={{
-              padding: '2rem',
-              backgroundColor: '#FBF6ED',
-              borderRadius: '24px',
-              border: '1px solid #E4D1B7',
-              boxShadow: '0 4px 20px rgba(43, 20, 11, 0.05)',
-            }}>
-              <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: '#2B140B', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 0 1.25rem' }}>
-                <CreditCard size={20} color="#2F6B3A" />
-                <span>2. Payment Option</span>
-              </h2>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-
-                {/* Razorpay Online */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.85rem',
-                    padding: '1.15rem 1.25rem',
-                    borderRadius: '16px',
-                    border: '2px solid #2F6B3A',
-                    backgroundColor: '#EAEFE5',
-                    boxShadow: '0 2px 10px rgba(47, 107, 58, 0.12)',
-                  }}
-                >
-                  <CheckCircle2 size={20} color="#2F6B3A" />
-                  <div>
-                    <div style={{ fontWeight: '800', color: '#2B140B', fontSize: '0.98rem' }}>Secure Online Checkout (Razorpay)</div>
-                    <div style={{ fontSize: '0.82rem', color: '#6B584C', marginTop: '0.15rem' }}>Pay instantly using UPI, Credit/Debit Cards, Netbanking, or Wallets</div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
+
 
           {/* RIGHT: Order Summary details */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', position: 'sticky', top: '100px' }}>
