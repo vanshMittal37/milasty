@@ -302,7 +302,7 @@ export default function AdminLayout() {
           }
         `}</style>
         {renderSidebarInner()}
-      </div>iv>
+      </div>
 
       {/* ==================================================
           MOBILE SIDEBAR DRAWER (Collapsible neutral overlay)
@@ -334,7 +334,7 @@ export default function AdminLayout() {
           boxShadow: mobileSidebarOpen ? '6px 0 40px rgba(90,46,22,0.2)' : 'none'
         }}
       >
-        <SidebarContent />
+        {renderSidebarInner()}
       </div>
 
       {/* ==================================================
