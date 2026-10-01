@@ -123,7 +123,7 @@ export default function AdminLayout() {
     setMobileSidebarOpen(false);
   };
 
-  const SidebarContent = () => (
+  const renderSidebarInner = () => (
     <div 
       style={{ 
         display: 'flex', 
@@ -249,7 +249,7 @@ export default function AdminLayout() {
           <button 
             onClick={() => setShowLogoutModal(true)} 
             style={{ 
-              background: 'rgba(255,255,255,0.7)', border: '1px solid #FEECEC', color: '#C62828', 
+              background: 'rgba(255,255,255,0.7)', border: '1px solid #FEECEC', color: '#C68A3A', 
               cursor: 'pointer', padding: '0.4rem', display: 'flex', alignItems: 'center',
               borderRadius: '8px', transition: 'all 0.2s'
             }}
@@ -278,9 +278,7 @@ export default function AdminLayout() {
       }}
     >
       
-      {/* ==================================================
-          DESKTOP SIDEBAR (Fixed Left)
-         ================================================== */}
+      {/* DESKTOP SIDEBAR (Fixed Left) */}
       <div 
         style={{ 
           width: '260px', position: 'fixed', top: 0, bottom: 0, left: 0,
@@ -303,8 +301,8 @@ export default function AdminLayout() {
             }
           }
         `}</style>
-        <SidebarContent />
-      </div>
+        {renderSidebarInner()}
+      </div>iv>
 
       {/* ==================================================
           MOBILE SIDEBAR DRAWER (Collapsible neutral overlay)

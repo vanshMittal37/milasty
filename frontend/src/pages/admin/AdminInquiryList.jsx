@@ -1,71 +1,70 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  MessageSquare, Search, Filter, Mail, Phone, Calendar, 
-  ExternalLink, CheckCircle2, Clock, User, FileText, X, Save, RefreshCw
+  MessageSquare, Search, RefreshCw, Eye, CheckCircle2, 
+  Clock, Mail, Phone, ExternalLink, Send, FileText, Filter, AlertCircle, X, ChevronDown, Check
 } from 'lucide-react';
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
 
-// Helper for status styling in Admin
-export function AdminStatusBadge({ status }) {
-  const s = String(status || 'new').toLowerCase();
-  
-  let bg = 'rgba(255, 255, 255, 0.08)';
-  let color = '#C5CBC5';
-  let border = 'rgba(255, 255, 255, 0.15)';
-  let label = 'NEW';
+function AdminStatusBadge({ status }) {
+  const getStyle = () => {
+    switch (status) {
+      case 'new':
+        return { bg: 'rgba(198, 138, 58, 0.15)', color: '#C68A3A', border: 'rgba(198, 138, 58, 0.35)', label: 'NEW' };
+      case 'in_progress':
+        return { bg: 'rgba(245, 158, 11, 0.15)', color: '#B45309', border: 'rgba(245, 158, 11, 0.35)', label: 'IN PROGRESS' };
+      case 'contacted':
+        return { bg: 'rgba(59, 130, 246, 0.15)', color: '#1D4ED8', border: 'rgba(59, 130, 246, 0.35)', label: 'CONTACTED' };
+      case 'resolved':
+        return { bg: 'rgba(143, 175, 91, 0.18)', color: '#4D7C2B', border: 'rgba(143, 175, 91, 0.35)', label: 'RESOLVED' };
+      case 'closed':
+        return { bg: 'rgba(102, 90, 82, 0.15)', color: '#665A52', border: 'rgba(102, 90, 82, 0.35)', label: 'CLOSED' };
+      default:
+        return { bg: 'rgba(102, 90, 82, 0.15)', color: '#665A52', border: 'rgba(102, 90, 82, 0.35)', label: (status || 'UNKNOWN').toUpperCase() };
+    }
+  };
 
-  if (s === 'new') {
-    bg = 'rgba(184, 204, 122, 0.15)';
-    color = '#B8CC7A';
-    border = 'rgba(184, 204, 122, 0.3)';
-    label = 'NEW';
-  } else if (s === 'in_progress' || s === 'in progress') {
-    bg = 'rgba(245, 158, 11, 0.15)';
-    color = '#F59E0B';
-    border = 'rgba(245, 158, 11, 0.3)';
-    label = 'IN PROGRESS';
-  } else if (s === 'contacted') {
-    bg = 'rgba(59, 130, 246, 0.15)';
-    color = '#60A5FA';
-    border = 'rgba(59, 130, 246, 0.3)';
-    label = 'CONTACTED';
-  } else if (s === 'resolved') {
-    bg = 'rgba(34, 197, 94, 0.15)';
-    color = '#4ADE80';
-    border = 'rgba(34, 197, 94, 0.3)';
-    label = 'RESOLVED';
-  } else if (s === 'closed') {
-    bg = 'rgba(156, 163, 175, 0.15)';
-    color = '#9CA3AF';
-    border = 'rgba(156, 163, 175, 0.3)';
-    label = 'CLOSED';
-  }
-
+  const s = getStyle();
   return (
     <span
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        padding: '0.2rem 0.65rem',
-        borderRadius: '6px',
-        fontSize: '0.7rem',
+        padding: '0.2rem 0.6rem',
+        borderRadius: '999px',
+        fontSize: '0.68rem',
         fontWeight: '800',
-        backgroundColor: bg,
-        color: color,
-        border: `1px solid ${border}`,
-        letterSpacing: '0.05em',
+        letterSpacing: '0.04em',
+        backgroundColor: s.bg,
+        color: s.color,
+        border: `1px solid ${s.border}`,
       }}
     >
-      {label}
+      {s.label}
     </span>
   );
 }
 
 export default function AdminInquiryList() {
   const { toast } = useToast();
-
   const [inquiries, setInquiries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
+
+  // Modal State
+  const [selectedInquiry, setSelectedInquiry] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalStatus, setModalStatus] = useState('new');
+  const [modalResponse, setModalResponse] = useState('');
+  const [modalNotes, setModalNotes] = useState('');
+  const [savingStatus, setSavingStatus] = useState(false);
+  const [savingResponse, setSavingResponse] = useState(false);
+  const [savingNotes, setSavingNotes] = useState(false);
+
+  // Summary Counts
   const [summary, setSummary] = useState({
     totalQueries: 0,
     new: 0,
@@ -74,45 +73,60 @@ export default function AdminInquiryList() {
     resolved: 0,
     closed: 0,
   });
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Filters & Controls
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState('newest');
-
-  // Selected Inquiry Modal state
-  const [selectedInquiry, setSelectedInquiry] = useState(null);
-  const [modalStatus, setModalStatus] = useState('new');
-  const [modalResponse, setModalResponse] = useState('');
-  const [modalNotes, setModalNotes] = useState('');
-  const [savingStatus, setSavingStatus] = useState(false);
-  const [savingResponse, setSavingResponse] = useState(false);
-  const [savingNotes, setSavingNotes] = useState(false);
 
   const fetchInquiries = async (isManualRefresh = false) => {
     if (isManualRefresh) setRefreshing(true);
     else setLoading(true);
 
     try {
-      const response = await api.get('/inquiries/admin/all', {
-        params: {
-          status: statusFilter,
-          search: searchQuery,
-          sort: sortOrder,
-        }
-      });
+      const res = await api.get('/inquiries/admin');
+      if (res.data && res.data.success && Array.isArray(res.data.inquiries)) {
+        let list = res.data.inquiries;
 
-      if (response.data && response.data.success) {
-        setInquiries(response.data.inquiries || []);
-        if (response.data.summary) {
-          setSummary(response.data.summary);
+        // Compute summary counts
+        const counts = {
+          totalQueries: list.length,
+          new: list.filter(i => i.status === 'new').length,
+          in_progress: list.filter(i => i.status === 'in_progress').length,
+          contacted: list.filter(i => i.status === 'contacted').length,
+          resolved: list.filter(i => i.status === 'resolved').length,
+          closed: list.filter(i => i.status === 'closed').length,
+        };
+        setSummary(counts);
+
+        // Filter by status
+        if (statusFilter !== 'all') {
+          list = list.filter(i => i.status === statusFilter);
+        }
+
+        // Filter by search query
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase().trim();
+          list = list.filter(i => 
+            (i.inquiry_number || '').toLowerCase().includes(q) ||
+            (i.name || '').toLowerCase().includes(q) ||
+            (i.email || '').toLowerCase().includes(q) ||
+            (i.phone || '').toLowerCase().includes(q) ||
+            (i.message || '').toLowerCase().includes(q)
+          );
+        }
+
+        // Sort
+        list.sort((a, b) => {
+          const dateA = new Date(a.created_at || 0).getTime();
+          const dateB = new Date(b.created_at || 0).getTime();
+          return sortBy === 'newest' ? dateB - dateA : dateA - dateB;
+        });
+
+        setInquiries(list);
+
+        if (isManualRefresh) {
+          toast.success('Inquiry list updated.');
         }
       }
     } catch (err) {
-      console.error('Fetch admin inquiries error:', err);
-      toast.error('Error loading inquiries database.');
+      console.error('Failed to load inquiries:', err);
+      toast.error('Unable to fetch customer inquiries.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -121,21 +135,19 @@ export default function AdminInquiryList() {
 
   useEffect(() => {
     fetchInquiries();
-  }, [statusFilter, searchQuery, sortOrder]);
+  }, [statusFilter, searchQuery, sortBy]);
 
+  // Modal Open Handler
   const openInquiryModal = (inquiry) => {
     setSelectedInquiry(inquiry);
     setModalStatus(inquiry.status || 'new');
     setModalResponse(inquiry.admin_response || '');
     setModalNotes(inquiry.admin_notes || '');
+    setIsModalOpen(true);
   };
 
-  const closeInquiryModal = () => {
-    setSelectedInquiry(null);
-  };
-
-  // Status update
-  const handleUpdateStatus = async () => {
+  // Status save
+  const handleSaveStatus = async () => {
     if (!selectedInquiry) return;
     setSavingStatus(true);
     try {
@@ -145,7 +157,7 @@ export default function AdminInquiryList() {
       });
 
       if (res.data && res.data.success) {
-        toast.success('Status updated successfully.');
+        toast.success('Inquiry status updated.');
         setSelectedInquiry(res.data.inquiry);
         fetchInquiries();
       }
@@ -191,7 +203,7 @@ export default function AdminInquiryList() {
       });
 
       if (res.data && res.data.success) {
-        toast.success('Internal notes saved successfully.');
+        toast.success('Internal notes saved.');
         setSelectedInquiry(res.data.inquiry);
         fetchInquiries();
       }
@@ -203,7 +215,6 @@ export default function AdminInquiryList() {
     }
   };
 
-  // Formatting helpers for Email / WhatsApp / Call
   const getMailtoUrl = (inquiry) => {
     const subject = encodeURIComponent(`Regarding your MILASTY inquiry (${inquiry.inquiry_number})`);
     const body = encodeURIComponent(`Hello ${inquiry.name},\n\nThank you for reaching out to MILASTY regarding your inquiry (${inquiry.inquiry_number}).\n\n`);
@@ -215,10 +226,6 @@ export default function AdminInquiryList() {
     const phoneWithCountry = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
     const text = encodeURIComponent(`Hello ${inquiry.name}, this is MILASTY regarding your inquiry (${inquiry.inquiry_number}).`);
     return `https://wa.me/${phoneWithCountry}?text=${text}`;
-  };
-
-  const getTelUrl = (inquiry) => {
-    return `tel:${inquiry.phone}`;
   };
 
   const formatDate = (dateStr) => {
@@ -235,14 +242,18 @@ export default function AdminInquiryList() {
   };
 
   return (
-    <div style={{ width: '100%', minWidth: 0 }}>
-      {/* Header & Subtitle */}
-      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      
+      {/* Header & Refresh */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', color: '#F4F5F0', fontWeight: '900', margin: 0 }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665A52', margin: '0 0 0.2rem 0' }}>
+            Customer Support
+          </p>
+          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
             Customer Inquiries
           </h2>
-          <p style={{ fontSize: '0.82rem', color: '#665A52', margin: '0.2rem 0 0 0' }}>
+          <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
             View and manage customer questions and contact requests.
           </p>
         </div>
@@ -250,62 +261,40 @@ export default function AdminInquiryList() {
         <button
           onClick={() => fetchInquiries(true)}
           disabled={refreshing || loading}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.5rem 1rem',
-            backgroundColor: 'rgba(255, 255, 255, 0.82)',
-            border: '1px solid rgba(231, 222, 213, 0.65)',
-            borderRadius: '8px',
-            color: '#B8CC7A',
-            fontSize: '0.8rem',
-            fontWeight: '700',
-            cursor: 'pointer',
-          }}
+          className="admin-btn-secondary"
         >
           <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
           <span>Refresh List</span>
         </button>
       </div>
 
-      {/* SUMMARY METRICS CARDS (REQUIREMENTS #21) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#F4F5F0' }}>{summary.totalQueries}</div>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#665A52', fontWeight: '800', marginTop: '0.2rem' }}>Total</div>
-        </div>
-
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(184, 204, 122, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#B8CC7A' }}>{summary.new}</div>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#B8CC7A', fontWeight: '800', marginTop: '0.2rem' }}>New</div>
-        </div>
-
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#F59E0B' }}>{summary.in_progress}</div>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#F59E0B', fontWeight: '800', marginTop: '0.2rem' }}>In Progress</div>
-        </div>
-
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#60A5FA' }}>{summary.contacted}</div>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#60A5FA', fontWeight: '800', marginTop: '0.2rem' }}>Contacted</div>
-        </div>
-
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#4ADE80' }}>{summary.resolved}</div>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4ADE80', fontWeight: '800', marginTop: '0.2rem' }}>Resolved</div>
-        </div>
-
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(156, 163, 175, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#9CA3AF' }}>{summary.closed}</div>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9CA3AF', fontWeight: '800', marginTop: '0.2rem' }}>Closed</div>
-        </div>
+      {/* SUMMARY METRICS CARDS */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem' }}>
+        {[
+          { label: 'Total', count: summary.totalQueries, color: '#21150F' },
+          { label: 'New', count: summary.new, color: '#C68A3A' },
+          { label: 'In Progress', count: summary.in_progress, color: '#B45309' },
+          { label: 'Contacted', count: summary.contacted, color: '#1D4ED8' },
+          { label: 'Resolved', count: summary.resolved, color: '#4D7C2B' },
+          { label: 'Closed', count: summary.closed, color: '#665A52' },
+        ].map((item, idx) => (
+          <div 
+            key={idx}
+            className="admin-card"
+            style={{ padding: '1rem', textAlign: 'center', backgroundColor: 'rgba(255, 255, 255, 0.85)' }}
+          >
+            <div style={{ fontSize: '1.5rem', fontWeight: '900', color: item.color }}>{item.count}</div>
+            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#665A52', fontWeight: '800', marginTop: '0.2rem' }}>
+              {item.label}
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* FILTER TABS & SEARCH / SORT BAR (REQUIREMENTS #22, #23, #64) */}
-      <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.82)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '14px', padding: '1.25rem', marginBottom: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {/* FILTER TABS & SEARCH / SORT BAR */}
+      <div className="admin-card" style={{ padding: '1.25rem' }}>
         {/* Status Filter Tabs */}
-        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.35rem', marginBottom: '1rem' }}>
           {[
             { key: 'all', label: 'All' },
             { key: 'new', label: 'New' },
@@ -322,13 +311,14 @@ export default function AdminInquiryList() {
                 style={{
                   padding: '0.45rem 1rem',
                   borderRadius: '8px',
-                  fontSize: '0.8rem',
+                  fontSize: '0.78rem',
                   fontWeight: '800',
-                  border: isActive ? '1px solid #B8CC7A' : '1px solid transparent',
-                  backgroundColor: isActive ? 'rgba(184, 204, 122, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                  color: isActive ? '#B8CC7A' : '#C5CBC5',
+                  border: isActive ? '1px solid #C68A3A' : '1px solid transparent',
+                  backgroundColor: isActive ? 'rgba(198, 138, 58, 0.12)' : 'rgba(255, 255, 255, 0.4)',
+                  color: isActive ? '#C68A3A' : '#4A3B2E',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
+                  transition: 'all 0.18s',
                 }}
               >
                 {tab.label}
@@ -338,46 +328,26 @@ export default function AdminInquiryList() {
         </div>
 
         {/* Search & Sort Controls */}
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ flex: 1, minWidth: '240px', position: 'relative' }}>
-            <Search size={16} color="#665A52" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+            <Search size={16} color="#665A52" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', zIndex: 2 }} />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by inquiry #, name, email, phone, message..."
-              style={{
-                width: '100%',
-                height: '42px',
-                paddingLeft: '2.5rem',
-                paddingRight: '1rem',
-                backgroundColor: '#111713',
-                border: '1px solid rgba(231, 222, 213, 0.65)',
-                borderRadius: '8px',
-                color: '#F4F5F0',
-                fontSize: '0.85rem',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
+              className="admin-input"
+              style={{ paddingLeft: '2.75rem !important' }}
             />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.78rem', color: '#665A52', fontWeight: '700' }}>Sort:</span>
+            <span style={{ fontSize: '0.8rem', color: '#665A52', fontWeight: '700' }}>Sort:</span>
             <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              style={{
-                height: '42px',
-                padding: '0 0.85rem',
-                backgroundColor: '#111713',
-                border: '1px solid rgba(231, 222, 213, 0.65)',
-                borderRadius: '8px',
-                color: '#F4F5F0',
-                fontSize: '0.85rem',
-                outline: 'none',
-                cursor: 'pointer',
-              }}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="admin-input"
+              style={{ width: '150px' }}
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
@@ -386,37 +356,19 @@ export default function AdminInquiryList() {
         </div>
       </div>
 
-      {/* INQUIRY LIST OR EMPTY STATE (REQUIREMENTS #24, #62) */}
+      {/* INQUIRY LIST */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#665A52' }}>
-          <div
-            style={{
-              width: '36px',
-              height: '36px',
-              border: '3px solid rgba(184, 204, 122, 0.2)',
-              borderTopColor: '#B8CC7A',
-              borderRadius: '50%',
-              margin: '0 auto 1rem',
-              animation: 'spin 1s linear infinite',
-            }}
-          />
-          <p style={{ fontSize: '0.88rem', margin: 0 }}>Loading database queries...</p>
+        <div style={{ textAlign: 'center', padding: '3.5rem 1rem', color: '#665A52' }}>
+          <RefreshCw size={22} className="animate-spin" color="#C68A3A" style={{ marginBottom: '0.5rem' }} />
+          <p style={{ fontSize: '0.85rem', margin: 0, fontWeight: '600' }}>Loading customer inquiries...</p>
         </div>
       ) : inquiries.length === 0 ? (
-        <div
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.82)',
-            border: '1px solid rgba(231, 222, 213, 0.65)',
-            borderRadius: '16px',
-            padding: '4rem 2rem',
-            textAlign: 'center',
-          }}
-        >
-          <MessageSquare size={36} color="#665A52" style={{ margin: '0 auto 1rem' }} />
-          <h3 style={{ fontSize: '1.1rem', color: '#F4F5F0', fontWeight: '800', marginBottom: '0.3rem' }}>
-            No customer inquiries yet.
+        <div className="admin-card" style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
+          <MessageSquare size={38} color="#C68A3A" style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
+          <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', marginBottom: '0.3rem' }}>
+            No customer inquiries found.
           </h3>
-          <p style={{ fontSize: '0.85rem', color: '#665A52', margin: 0 }}>
+          <p style={{ fontSize: '0.84rem', color: '#665A52', margin: 0, fontWeight: '500' }}>
             {searchQuery || statusFilter !== 'all'
               ? 'No inquiries match your current search or status filter.'
               : 'Customer queries submitted via the contact form will appear here.'}
@@ -427,441 +379,248 @@ export default function AdminInquiryList() {
           {inquiries.map((inquiry) => (
             <div
               key={inquiry.id || inquiry.inquiry_number}
+              className="admin-card"
               style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.82)',
-                border: '1px solid rgba(231, 222, 213, 0.65)',
-                borderRadius: '14px',
-                padding: '1.25rem 1.5rem',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '1rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.92)',
               }}
             >
-              {/* Row Top: Number, Name, Contact, Status, Date */}
+              {/* Row Top */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem' }}>
-                    <span style={{ fontSize: '1.05rem', fontWeight: '900', color: '#F4F5F0', fontFamily: 'var(--font-sans)' }}>
+                    <span style={{ fontSize: '1rem', fontWeight: '800', color: '#21150F' }}>
                       {inquiry.inquiry_number}
                     </span>
                     <AdminStatusBadge status={inquiry.status} />
                     {inquiry.user_id ? (
-                      <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: '800' }}>
+                      <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(59, 130, 246, 0.12)', color: '#1D4ED8', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: '800' }}>
                         LOGGED IN CUSTOMER
                       </span>
                     ) : (
-                      <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(245, 237, 229, 0.5)', color: '#665A52', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: '800' }}>
+                      <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(245, 237, 229, 0.8)', color: '#665A52', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: '800' }}>
                         GUEST
                       </span>
                     )}
                   </div>
 
-                  <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#F4F5F0' }}>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#21150F' }}>
                     {inquiry.name}
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: '#665A52', display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.2rem' }}>
-                    <span>âœ‰ {inquiry.email}</span>
-                    {inquiry.phone && <span>ðŸ“ž {inquiry.phone}</span>}
+                  <div style={{ fontSize: '0.8rem', color: '#665A52', display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.25rem', alignItems: 'center' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}><Mail size={13} color="#C68A3A" /> {inquiry.email}</span>
+                    {inquiry.phone && <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}><Phone size={13} color="#C68A3A" /> {inquiry.phone}</span>}
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <div style={{ fontSize: '0.78rem', color: '#665A52', textAlign: 'right' }}>
-                    <div>Submitted:</div>
-                    <div style={{ color: '#F4F5F0', fontWeight: '700' }}>{formatDate(inquiry.created_at)}</div>
+                    <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: '700' }}>Submitted:</div>
+                    <div style={{ color: '#21150F', fontWeight: '700' }}>{formatDate(inquiry.created_at)}</div>
                   </div>
 
                   <button
                     onClick={() => openInquiryModal(inquiry)}
-                    style={{
-                      padding: '0.55rem 1.25rem',
-                      backgroundColor: '#5A2E16',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontSize: '0.82rem',
-                      fontWeight: '800',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.35rem',
-                    }}
+                    className="admin-btn-primary"
+                    style={{ padding: '0.55rem 1.25rem', fontSize: '0.82rem' }}
                   >
-                    <span>View / Manage</span>
+                    View / Manage
                   </button>
                 </div>
               </div>
 
-              {/* Message Snippet */}
-              <div
-                style={{
-                  backgroundColor: '#111713',
-                  borderRadius: '8px',
-                  padding: '0.85rem 1rem',
-                  fontSize: '0.86rem',
-                  color: '#C5CBC5',
-                  lineHeight: '1.5',
+              {/* Message Box */}
+              <div 
+                style={{ 
+                  backgroundColor: 'var(--admin-surface-elevated)', 
+                  padding: '0.85rem 1.15rem', 
+                  borderRadius: '10px', 
+                  border: '1px solid rgba(231, 222, 213, 0.65)',
                 }}
               >
-                <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#665A52', fontWeight: '800', marginBottom: '0.2rem' }}>
-                  Customer Message:
+                <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#665A52', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
+                  CUSTOMER MESSAGE:
                 </div>
-                "{inquiry.message}"
+                <div style={{ fontSize: '0.86rem', color: '#21150F', fontStyle: 'italic', lineHeight: '1.4' }}>
+                  "{inquiry.message}"
+                </div>
               </div>
+
+              {/* Admin Response Snippet if present */}
+              {inquiry.admin_response && (
+                <div style={{ backgroundColor: 'rgba(198, 138, 58, 0.08)', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid rgba(198, 138, 58, 0.25)' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#C68A3A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>
+                    ADMIN RESPONSE SAVED:
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: '#21150F', fontWeight: '500' }}>
+                    {inquiry.admin_response}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
 
-      {/* DETAILED INQUIRY MANAGEMENT MODAL (REQUIREMENTS #25, #26, #27, #28, #29, #31, #59) */}
-      {selectedInquiry && (
+      {/* DETAIL & MANAGEMENT MODAL */}
+      {isModalOpen && selectedInquiry && (
         <div
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.75)',
-            backdropFilter: 'blur(5px)',
-            zIndex: 1000,
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(4px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '1.5rem',
-            overflowY: 'auto',
+            zIndex: 1000,
+            padding: '1rem',
           }}
-          onClick={closeInquiryModal}
         >
           <div
+            className="admin-card"
             style={{
-              backgroundColor: '#161D18',
-              border: '1px solid rgba(231, 222, 213, 0.65)',
-              borderRadius: '20px',
-              maxWidth: '750px',
               width: '100%',
+              maxWidth: '620px',
               maxHeight: '90vh',
               overflowY: 'auto',
-              padding: '2rem',
-              boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
-              boxSizing: 'border-box',
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              borderRadius: '16px',
+              padding: '1.75rem',
+              color: '#21150F',
             }}
-            onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(231, 222, 213, 0.7)', paddingBottom: '0.85rem' }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-                  <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#F4F5F0', margin: 0, fontWeight: '900' }}>
-                    {selectedInquiry.inquiry_number}
-                  </h3>
-                  <AdminStatusBadge status={selectedInquiry.status} />
-                </div>
-                <div style={{ fontSize: '0.78rem', color: '#665A52' }}>
-                  Submitted on {formatDate(selectedInquiry.created_at)}
-                </div>
+                <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#C68A3A', textTransform: 'uppercase' }}>
+                  Inquiry #{selectedInquiry.inquiry_number}
+                </span>
+                <h3 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0 }}>
+                  Customer Question Details
+                </h3>
               </div>
-
               <button
-                onClick={closeInquiryModal}
-                style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer', padding: '0.3rem' }}
+                onClick={() => setIsModalOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer', padding: '0.2rem' }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Modal Content Sections */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              
-              {/* SECTION 1: CUSTOMER INFORMATION */}
-              <div style={{ backgroundColor: '#111713', padding: '1.25rem', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
-                <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8CC7A', fontWeight: '800', margin: '0 0 0.85rem 0' }}>
-                  CUSTOMER INFORMATION
-                </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                  <div>
-                    <div style={{ fontSize: '0.72rem', color: '#665A52', fontWeight: '700' }}>Name</div>
-                    <div style={{ fontSize: '0.92rem', color: '#F4F5F0', fontWeight: '800' }}>{selectedInquiry.name}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '0.72rem', color: '#665A52', fontWeight: '700' }}>Email Address</div>
-                    <div style={{ fontSize: '0.92rem', color: '#F4F5F0', fontWeight: '800' }}>{selectedInquiry.email}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '0.72rem', color: '#665A52', fontWeight: '700' }}>WhatsApp / Phone</div>
-                    <div style={{ fontSize: '0.92rem', color: '#F4F5F0', fontWeight: '800' }}>{selectedInquiry.phone || 'Not provided'}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* SECTION 2: MANUAL CONTACT OPTIONS (REQUIREMENTS #25, #26, #27, #28) */}
+            {/* Customer Details */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
               <div>
-                <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8CC7A', fontWeight: '800', margin: '0 0 0.75rem 0' }}>
-                  MANUAL CONTACT OPTIONS
-                </h4>
-                <p style={{ fontSize: '0.78rem', color: '#665A52', margin: '0 0 0.85rem 0' }}>
-                  Clicking these buttons opens your mail client, WhatsApp web/app, or phone dialer. MILASTY does NOT send automatic messages.
-                </p>
-
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  {/* Email Button */}
-                  <a
-                    href={getMailtoUrl(selectedInquiry)}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.45rem',
-                      padding: '0.65rem 1.15rem',
-                      backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                      border: '1px solid rgba(59, 130, 246, 0.4)',
-                      borderRadius: '8px',
-                      color: '#60A5FA',
-                      fontSize: '0.85rem',
-                      fontWeight: '800',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    <Mail size={16} />
-                    <span>Email Customer</span>
-                  </a>
-
-                  {/* WhatsApp Button */}
-                  {selectedInquiry.phone && (
-                    <a
-                      href={getWhatsappUrl(selectedInquiry)}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.45rem',
-                        padding: '0.65rem 1.15rem',
-                        backgroundColor: 'rgba(34, 197, 94, 0.15)',
-                        border: '1px solid rgba(34, 197, 94, 0.4)',
-                        borderRadius: '8px',
-                        color: '#4ADE80',
-                        fontSize: '0.85rem',
-                        fontWeight: '800',
-                        textDecoration: 'none',
-                      }}
-                    >
-                      <MessageSquare size={16} />
-                      <span>WhatsApp</span>
-                    </a>
-                  )}
-
-                  {/* Call Button */}
-                  {selectedInquiry.phone && (
-                    <a
-                      href={getTelUrl(selectedInquiry)}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.45rem',
-                        padding: '0.65rem 1.15rem',
-                        backgroundColor: 'rgba(245, 158, 11, 0.15)',
-                        border: '1px solid rgba(245, 158, 11, 0.4)',
-                        borderRadius: '8px',
-                        color: '#F59E0B',
-                        fontSize: '0.85rem',
-                        fontWeight: '800',
-                        textDecoration: 'none',
-                      }}
-                    >
-                      <Phone size={16} />
-                      <span>Call Customer</span>
-                    </a>
-                  )}
-                </div>
+                <div style={{ fontSize: '0.7rem', color: '#665A52', fontWeight: '700', textTransform: 'uppercase' }}>Customer Name</div>
+                <div style={{ fontWeight: '800', color: '#21150F', fontSize: '0.92rem' }}>{selectedInquiry.name}</div>
               </div>
-
-              {/* SECTION 3: INQUIRY MESSAGE */}
               <div>
-                <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8CC7A', fontWeight: '800', margin: '0 0 0.5rem 0' }}>
-                  CUSTOMER MESSAGE
-                </h4>
-                <div
-                  style={{
-                    backgroundColor: '#111713',
-                    border: '1px solid rgba(231, 222, 213, 0.65)',
-                    borderRadius: '10px',
-                    padding: '1rem 1.25rem',
-                    color: '#F4F5F0',
-                    fontSize: '0.9rem',
-                    lineHeight: '1.6',
-                    whiteSpace: 'pre-wrap',
-                  }}
+                <div style={{ fontSize: '0.7rem', color: '#665A52', fontWeight: '700', textTransform: 'uppercase' }}>Submitted Date</div>
+                <div style={{ fontWeight: '700', color: '#21150F', fontSize: '0.88rem' }}>{formatDate(selectedInquiry.created_at)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '0.7rem', color: '#665A52', fontWeight: '700', textTransform: 'uppercase' }}>Email Address</div>
+                <div style={{ fontWeight: '700', color: '#21150F', fontSize: '0.85rem' }}>{selectedInquiry.email}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '0.7rem', color: '#665A52', fontWeight: '700', textTransform: 'uppercase' }}>Phone Number</div>
+                <div style={{ fontWeight: '700', color: '#21150F', fontSize: '0.85rem' }}>{selectedInquiry.phone || 'N/A'}</div>
+              </div>
+            </div>
+
+            {/* Quick Contact Buttons */}
+            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+              <a
+                href={getMailtoUrl(selectedInquiry)}
+                target="_blank"
+                rel="noreferrer"
+                className="admin-btn-secondary"
+                style={{ fontSize: '0.78rem', textDecoration: 'none' }}
+              >
+                <Mail size={14} color="#C68A3A" /> Reply via Email
+              </a>
+              {selectedInquiry.phone && (
+                <a
+                  href={getWhatsappUrl(selectedInquiry)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="admin-btn-secondary"
+                  style={{ fontSize: '0.78rem', textDecoration: 'none' }}
                 >
-                  {selectedInquiry.message}
-                </div>
+                  <Send size={14} color="#C68A3A" /> WhatsApp Customer
+                </a>
+              )}
+            </div>
+
+            {/* Message Body */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                Customer Inquiry Message
+              </label>
+              <div style={{ backgroundColor: '#FFFFFF', border: '1.5px solid rgba(207, 194, 181, 0.75)', borderRadius: '10px', padding: '1rem', fontSize: '0.88rem', color: '#21150F', lineHeight: '1.5' }}>
+                {selectedInquiry.message}
               </div>
+            </div>
 
-              {/* SECTION 4: ADMIN STATUS CONTROL (REQUIREMENTS #11, #59) */}
-              <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1.25rem' }}>
-                <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8CC7A', fontWeight: '800', margin: '0 0 0.5rem 0' }}>
-                  STATUS MANAGEMENT
-                </h4>
-                <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <select
-                    value={modalStatus}
-                    onChange={(e) => setModalStatus(e.target.value)}
-                    style={{
-                      height: '44px',
-                      padding: '0 1rem',
-                      backgroundColor: '#111713',
-                      border: '1px solid rgba(231, 222, 213, 0.65)',
-                      borderRadius: '8px',
-                      color: '#F4F5F0',
-                      fontSize: '0.9rem',
-                      fontWeight: '700',
-                      outline: 'none',
-                      cursor: 'pointer',
-                      flex: 1,
-                      minWidth: '180px',
-                    }}
-                  >
-                    <option value="new">New</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="contacted">Contacted</option>
-                    <option value="resolved">Resolved</option>
-                    <option value="closed">Closed</option>
-                  </select>
-
-                  <button
-                    onClick={handleUpdateStatus}
-                    disabled={savingStatus}
-                    style={{
-                      height: '44px',
-                      padding: '0 1.25rem',
-                      backgroundColor: '#5A2E16',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontSize: '0.85rem',
-                      fontWeight: '800',
-                      cursor: savingStatus ? 'not-allowed' : 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.45rem',
-                    }}
-                  >
-                    <Save size={16} />
-                    <span>{savingStatus ? 'Updating...' : 'Update Status'}</span>
-                  </button>
-                </div>
+            {/* Status Selector */}
+            <div style={{ marginBottom: '1.25rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                Update Inquiry Status
+              </label>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <select
+                  value={modalStatus}
+                  onChange={(e) => setModalStatus(e.target.value)}
+                  className="admin-input"
+                  style={{ flex: 1 }}
+                >
+                  <option value="new">New</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="closed">Closed</option>
+                </select>
+                <button
+                  onClick={handleSaveStatus}
+                  disabled={savingStatus}
+                  className="admin-btn-primary"
+                  style={{ padding: '0.55rem 1rem', fontSize: '0.8rem' }}
+                >
+                  {savingStatus ? 'Saving...' : 'Update Status'}
+                </button>
               </div>
+            </div>
 
-              {/* SECTION 5: ADMIN RESPONSE (PUBLIC TO CUSTOMER) (REQUIREMENTS #29, #30) */}
-              <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1.25rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8CC7A', fontWeight: '800', margin: 0 }}>
-                    ADMIN RESPONSE (VISIBLE TO CUSTOMER)
-                  </h4>
-                  <span style={{ fontSize: '0.7rem', color: '#665A52' }}>Customer will see this in "My Inquiries"</span>
-                </div>
-
-                <textarea
-                  rows={3}
-                  value={modalResponse}
-                  onChange={(e) => setModalResponse(e.target.value)}
-                  placeholder="Write an official response for the customer (e.g. 'Thank you for reaching out. We offer bulk custom orders...')"
-                  style={{
-                    width: '100%',
-                    padding: '0.85rem 1rem',
-                    backgroundColor: '#111713',
-                    border: '1px solid rgba(231, 222, 213, 0.65)',
-                    borderRadius: '8px',
-                    color: '#F4F5F0',
-                    fontSize: '0.88rem',
-                    lineHeight: '1.5',
-                    outline: 'none',
-                    resize: 'vertical',
-                    boxSizing: 'border-box',
-                    marginBottom: '0.75rem',
-                  }}
-                />
-
+            {/* Admin Response Area */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                Official Admin Response / Notes
+              </label>
+              <textarea
+                rows={3}
+                value={modalResponse}
+                onChange={(e) => setModalResponse(e.target.value)}
+                placeholder="Enter official resolution or response summary..."
+                className="admin-input"
+                style={{ width: '100%', resize: 'vertical' }}
+              />
+              <div style={{ textAlign: 'right', marginTop: '0.5rem' }}>
                 <button
                   onClick={handleSaveResponse}
                   disabled={savingResponse}
-                  style={{
-                    height: '40px',
-                    padding: '0 1.25rem',
-                    backgroundColor: '#5A2E16',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '0.82rem',
-                    fontWeight: '800',
-                    cursor: savingResponse ? 'not-allowed' : 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.45rem',
-                  }}
+                  className="admin-btn-primary"
+                  style={{ padding: '0.5rem 1.2rem', fontSize: '0.8rem' }}
                 >
-                  <Save size={15} />
-                  <span>{savingResponse ? 'Saving...' : 'Save Admin Response'}</span>
+                  {savingResponse ? 'Saving...' : 'Save Response'}
                 </button>
               </div>
-
-              {/* SECTION 6: INTERNAL NOTES (ADMIN ONLY) (REQUIREMENTS #31) */}
-              <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1.25rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#F59E0B', fontWeight: '800', margin: 0 }}>
-                    INTERNAL NOTES (ADMIN ONLY)
-                  </h4>
-                  <span style={{ fontSize: '0.7rem', color: '#665A52' }}>Private notes, hidden from customer</span>
-                </div>
-
-                <textarea
-                  rows={2}
-                  value={modalNotes}
-                  onChange={(e) => setModalNotes(e.target.value)}
-                  placeholder="Add internal notes (e.g. 'Customer interested in 100 boxes for Diwali, follow up on Monday')"
-                  style={{
-                    width: '100%',
-                    padding: '0.85rem 1rem',
-                    backgroundColor: '#111713',
-                    border: '1px solid rgba(231, 222, 213, 0.65)',
-                    borderRadius: '8px',
-                    color: '#F4F5F0',
-                    fontSize: '0.88rem',
-                    lineHeight: '1.5',
-                    outline: 'none',
-                    resize: 'vertical',
-                    boxSizing: 'border-box',
-                    marginBottom: '0.75rem',
-                  }}
-                />
-
-                <button
-                  onClick={handleSaveNotes}
-                  disabled={savingNotes}
-                  style={{
-                    height: '40px',
-                    padding: '0 1.25rem',
-                    backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                    border: '1px solid rgba(245, 158, 11, 0.4)',
-                    color: '#F59E0B',
-                    borderRadius: '8px',
-                    fontSize: '0.82rem',
-                    fontWeight: '800',
-                    cursor: savingNotes ? 'not-allowed' : 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.45rem',
-                  }}
-                >
-                  <Save size={15} />
-                  <span>{savingNotes ? 'Saving...' : 'Save Internal Notes'}</span>
-                </button>
-              </div>
-
             </div>
+
           </div>
         </div>
       )}
     </div>
   );
 }
-
-

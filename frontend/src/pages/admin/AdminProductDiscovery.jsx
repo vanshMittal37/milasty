@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Compass, Plus, Edit2, Trash2, X, ArrowUp, ArrowDown, 
   Search, Sparkles, Layers, AlertTriangle 
@@ -63,7 +63,6 @@ export default function AdminProductDiscovery() {
     }
   };
 
-  // Section Config Handlers
   const handleSaveSectionConfig = async (e) => {
     if (e) e.preventDefault();
     setSavingSection(true);
@@ -92,7 +91,6 @@ export default function AdminProductDiscovery() {
     }
   };
 
-  // Mood Modal Openers
   const handleOpenAddMood = () => {
     setEditingMood(null);
     setMoodName('');
@@ -104,70 +102,81 @@ export default function AdminProductDiscovery() {
     setMoodModalOpen(true);
   };
 
-  const handleOpenEditMood = (m) => {
-    setEditingMood(m);
-    setMoodName(m.name || '');
-    setMoodDescription(m.description || '');
-    setMoodOrder(m.display_order || 1);
-    setMoodActive(m.is_active !== false);
-    // Ensure product_ids are deduplicated
-    const uniqueIds = Array.from(new Set((m.product_ids || []).map(id => String(id))));
-    setSelectedProductIds(uniqueIds);
+  const handleOpenEditMood = (mood) => {
+    setEditingMood(mood);
+    setMoodName(mood.name || '');
+    setMoodDescription(mood.description || '');
+    setMoodOrder(mood.display_order || 1);
+    setMoodActive(mood.is_active ?? true);
+    setSelectedProductIds(Array.isArray(mood.product_ids) ? mood.product_ids : []);
     setProductSearch('');
     setMoodModalOpen(true);
   };
 
-  // Save Mood Handler
+  const handleToggleProductSelection = (productId) => {
+    const strId = String(productId);
+    setSelectedProductIds(prev => {
+      const exists = prev.some(id => String(id) === strId);
+      if (exists) {
+        return prev.filter(id => String(id) !== strId);
+      } else {
+        return [...prev, productId];
+      }
+    });
+  };
+
+  const handleSelectAllProducts = (filteredProds) => {
+    const filteredIds = filteredProds.map(p => p.id);
+    const allSelected = filteredIds.every(id => selectedProductIds.some(spid => String(spid) === String(id)));
+
+    if (allSelected) {
+      setSelectedProductIds(prev => prev.filter(id => !filteredIds.some(fid => String(fid) === String(id))));
+    } else {
+      const newIds = new Set([...selectedProductIds, ...filteredIds]);
+      setSelectedProductIds(Array.from(newIds));
+    }
+  };
+
   const handleSaveMood = async (e) => {
     e.preventDefault();
     if (!moodName.trim()) {
-      toast.error('Mood category name is required.');
+      toast.error('Please enter a category name.');
       return;
     }
 
     setSavingMood(true);
-    // Deduplicate product IDs before sending
-    const uniqueIds = Array.from(new Set(selectedProductIds.map(id => String(id))));
-
     const payload = {
       name: moodName.trim(),
       description: moodDescription.trim(),
-      display_order: Number(moodOrder || 1),
+      display_order: Number(moodOrder) || 1,
       is_active: moodActive,
-      product_ids: uniqueIds,
+      product_ids: selectedProductIds,
     };
 
     try {
       if (editingMood) {
-        await api.put(`/product-discovery/admin/moods/${editingMood.id}`, payload);
-        toast.success('Mood category updated successfully.');
+        const res = await api.put(`/product-discovery/admin/moods/${editingMood.id}`, payload);
+        if (res.data && res.data.success) {
+          toast.success(`Category "${moodName}" updated.`);
+          setMoodModalOpen(false);
+          fetchDiscoveryData();
+        }
       } else {
-        await api.post('/product-discovery/admin/moods', payload);
-        toast.success('Mood category created successfully.');
+        const res = await api.post('/product-discovery/admin/moods', payload);
+        if (res.data && res.data.success) {
+          toast.success(`New category "${moodName}" created.`);
+          setMoodModalOpen(false);
+          fetchDiscoveryData();
+        }
       }
-      setMoodModalOpen(false);
-      fetchDiscoveryData();
     } catch (err) {
       console.error('Error saving mood:', err);
-      toast.error('Failed to save mood category.');
+      toast.error(err.response?.data?.message || 'Failed to save mood category.');
     } finally {
       setSavingMood(false);
     }
   };
 
-  // Toggle Mood Active Status
-  const handleToggleMoodActive = async (m) => {
-    try {
-      const newActive = !m.is_active;
-      await api.put(`/product-discovery/admin/moods/${m.id}`, { is_active: newActive });
-      setMoods(prev => prev.map(item => item.id === m.id ? { ...item, is_active: newActive } : item));
-      toast.success(`Category "${m.name}" ${newActive ? 'activated' : 'deactivated'}.`);
-    } catch (err) {
-      toast.error('Failed to update mood status.');
-    }
-  };
-
-  // Reorder Moods Handler
   const handleMoveMood = async (index, direction) => {
     const targetIdx = index + direction;
     if (targetIdx < 0 || targetIdx >= moods.length) return;
@@ -177,127 +186,105 @@ export default function AdminProductDiscovery() {
     newMoods[index] = newMoods[targetIdx];
     newMoods[targetIdx] = temp;
 
-    // Update display orders
-    const reordered = newMoods.map((m, idx) => ({ ...m, display_order: idx + 1 }));
-    setMoods(reordered);
+    const orderedPayload = newMoods.map((m, i) => ({
+      id: m.id,
+      display_order: i + 1,
+    }));
+
+    setMoods(newMoods);
 
     try {
-      await api.post('/product-discovery/admin/moods/reorder', {
-        orderedIds: reordered.map(m => m.id),
-      });
-      toast.success('Mood order updated.');
+      await api.put('/product-discovery/admin/moods/reorder', { orders: orderedPayload });
+      toast.success('Mood display order updated.');
     } catch (err) {
-      toast.error('Failed to reorder moods.');
+      console.error('Failed to reorder moods:', err);
+      toast.error('Failed to update category display order.');
       fetchDiscoveryData();
     }
   };
 
-  // Delete Mood Handler
   const handleConfirmDeleteMood = async () => {
     if (!moodToDelete) return;
     try {
-      await api.delete(`/product-discovery/admin/moods/${moodToDelete.id}`);
-      toast.success(`Category "${moodToDelete.name}" deleted.`);
-      setDeleteModalOpen(false);
-      setMoodToDelete(null);
-      fetchDiscoveryData();
+      const res = await api.delete(`/product-discovery/admin/moods/${moodToDelete.id}`);
+      if (res.data && res.data.success) {
+        toast.success(`Category "${moodToDelete.name}" deleted.`);
+        setMoodToDelete(null);
+        setDeleteModalOpen(false);
+        fetchDiscoveryData();
+      }
     } catch (err) {
+      console.error('Failed to delete mood category:', err);
       toast.error('Failed to delete mood category.');
     }
   };
 
-  // Product Selector Checkbox Toggle
-  const handleToggleProductSelection = (pid) => {
-    const strId = String(pid);
-    setSelectedProductIds(prev => {
-      const exists = prev.some(id => String(id) === strId);
-      if (exists) {
-        return prev.filter(id => String(id) !== strId);
-      } else {
-        return Array.from(new Set([...prev, strId]));
-      }
-    });
-  };
-
-  const handleSelectAllProducts = (filteredList) => {
-    const allFilteredIds = filteredList.map(p => String(p.id));
-    const isAllSelected = allFilteredIds.every(id => selectedProductIds.some(spid => String(spid) === id));
-    if (isAllSelected) {
-      setSelectedProductIds(prev => prev.filter(id => !allFilteredIds.includes(String(id))));
-    } else {
-      const combined = new Set([...selectedProductIds.map(String), ...allFilteredIds]);
-      setSelectedProductIds(Array.from(combined));
-    }
-  };
-
-  // Calculate Metrics
-  const activeMoodsCount = moods.filter(m => m.is_active !== false).length;
-  const totalAssignedProductsCount = Array.from(
-    new Set(moods.flatMap(m => (m.product_ids || []).map(String)))
-  ).length;
+  const activeMoodsCount = moods.filter(m => m.is_active).length;
+  const totalAssignedProductsCount = new Set(
+    moods.flatMap(m => (m.product_ids || []).map(String))
+  ).size;
 
   if (loading) {
     return (
-      <div style={{ padding: '3rem', textAlign: 'center', color: '#4A3B2E' }}>
-        <div className="admin-spinner" style={{ margin: '0 auto 1rem' }} />
-        <p>Loading Product Discovery configuration...</p>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 1rem' }}>
+        <Compass size={32} color="#C68A3A" className="animate-spin" style={{ marginBottom: '1rem' }} />
+        <span style={{ fontSize: '0.9rem', color: '#665A52', fontWeight: '700' }}>Loading Product Discovery settings...</span>
       </div>
     );
   }
 
   return (
-    <div style={{ paddingBottom: '4rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       
-      {/* -------------------------------------------------------------------- */}
-      {/* 1. TOP HEADER & METRICS                                              */}
-      {/* -------------------------------------------------------------------- */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
+      {/* Top Header & Section Status Card */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-            <Compass size={24} color="#C68A3A" />
-            <h1 style={{ fontSize: '1.6rem', color: '#21150F', fontFamily: 'var(--font-serif)', margin: 0 }}>
+          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665A52', margin: '0 0 0.2rem 0' }}>
+            Storefront Discovery
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <Compass size={22} color="#C68A3A" />
+            <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
               Product Discovery by Mood
-            </h1>
+            </h2>
           </div>
-          <p style={{ color: '#4A3B2E', fontSize: '0.88rem', margin: 0 }}>
-            Manage the interactive "Find Your Perfect MILASTY Snack" section on the homepage.
+          <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
+            Manage the interactive "Find Your Perfect MILASTY Snack" section on the storefront homepage.
           </p>
         </div>
 
         {/* Global ON / OFF Section Toggle Card */}
         <div 
+          className="admin-card"
           style={{ 
-            backgroundColor: 'var(--admin-card-bg)', 
-            border: '1px solid rgba(231, 222, 213, 0.65)', 
-            borderRadius: '12px', 
             padding: '0.75rem 1.25rem',
             display: 'flex',
             alignItems: 'center',
-            gap: '1rem'
+            gap: '1rem',
+            backgroundColor: 'rgba(255, 255, 255, 0.92)',
           }}
         >
           <div>
-            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800' }}>
-              SHOW ON HOMEPAGE
+            <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800' }}>
+              HOMEPAGE SECTION
             </div>
-            <div style={{ fontSize: '0.9rem', fontWeight: '800', color: sectionConfig.is_active ? '#A3C878' : '#E57373' }}>
-              {sectionConfig.is_active ? 'SECTION IS ACTIVE' : 'SECTION IS HIDDEN'}
+            <div style={{ fontSize: '0.86rem', fontWeight: '800', color: sectionConfig.is_active ? '#4D7C2B' : '#C62828' }}>
+              {sectionConfig.is_active ? 'SECTION ACTIVE' : 'SECTION HIDDEN'}
             </div>
           </div>
           <button
             type="button"
             onClick={() => handleToggleSectionActive(!sectionConfig.is_active)}
             style={{
-              padding: '0.5rem 1.15rem',
+              padding: '0.45rem 1rem',
               borderRadius: '999px',
               border: 'none',
-              backgroundColor: sectionConfig.is_active ? '#2E4C1E' : '#4A1D1D',
-              color: sectionConfig.is_active ? '#C5E1A5' : '#FFCDD2',
+              backgroundColor: sectionConfig.is_active ? 'rgba(143, 175, 91, 0.2)' : 'rgba(198, 40, 40, 0.12)',
+              color: sectionConfig.is_active ? '#4D7C2B' : '#C62828',
               fontWeight: '800',
-              fontSize: '0.82rem',
+              fontSize: '0.78rem',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
             }}
           >
             {sectionConfig.is_active ? 'ON (VISIBLE)' : 'OFF (HIDDEN)'}
@@ -306,41 +293,39 @@ export default function AdminProductDiscovery() {
       </div>
 
       {/* Quick Summary Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
-        <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1.25rem' }}>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800', marginBottom: '0.35rem' }}>Section Visibility</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: '900', color: sectionConfig.is_active ? '#A3C878' : '#E57373' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+        <div className="admin-card" style={{ padding: '1.25rem' }}>
+          <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800', marginBottom: '0.35rem' }}>Section Status</div>
+          <div style={{ fontSize: '1.4rem', fontWeight: '900', color: sectionConfig.is_active ? '#4D7C2B' : '#C62828' }}>
             {sectionConfig.is_active ? 'Active' : 'Disabled'}
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1.25rem' }}>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800', marginBottom: '0.35rem' }}>Mood Categories</div>
+        <div className="admin-card" style={{ padding: '1.25rem' }}>
+          <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800', marginBottom: '0.35rem' }}>Mood Categories</div>
           <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#21150F' }}>
-            {activeMoodsCount} Active <span style={{ fontSize: '0.9rem', color: '#665A52', fontWeight: '600' }}>({moods.length} total)</span>
+            {activeMoodsCount} Active <span style={{ fontSize: '0.85rem', color: '#665A52', fontWeight: '600' }}>({moods.length} total)</span>
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1.25rem' }}>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800', marginBottom: '0.35rem' }}>Assigned Products</div>
+        <div className="admin-card" style={{ padding: '1.25rem' }}>
+          <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#665A52', fontWeight: '800', marginBottom: '0.35rem' }}>Assigned Products</div>
           <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#21150F' }}>
-            {totalAssignedProductsCount} Unique Products
+            {totalAssignedProductsCount} Unique Snacks
           </div>
         </div>
       </div>
 
-      {/* -------------------------------------------------------------------- */}
-      {/* 2. SECTION CONTENT MANAGEMENT FORM                                   */}
-      {/* -------------------------------------------------------------------- */}
-      <form onSubmit={handleSaveSectionConfig} style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '16px', padding: '1.75rem', marginBottom: '2.5rem' }}>
-        <h2 style={{ fontSize: '1.15rem', color: '#21150F', margin: '0 0 1.25rem', fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      {/* Section Content Settings */}
+      <form onSubmit={handleSaveSectionConfig} className="admin-card" style={{ padding: '1.75rem' }}>
+        <h3 style={{ fontSize: '1.1rem', color: '#21150F', margin: '0 0 1.25rem', fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '800' }}>
           <Sparkles size={18} color="#C68A3A" />
           Section Content Settings
-        </h2>
+        </h3>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
+            <label style={{ display: 'block', fontSize: '0.74rem', color: '#4A3B2E', fontWeight: '800', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               SECTION EYEBROW
             </label>
             <input
@@ -348,40 +333,41 @@ export default function AdminProductDiscovery() {
               value={sectionConfig.eyebrow}
               onChange={e => setSectionConfig({ ...sectionConfig, eyebrow: e.target.value })}
               placeholder="e.g. NOT SURE WHERE TO START?"
-              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+              className="admin-input"
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
-              HEADLINE
+            <label style={{ display: 'block', fontSize: '0.74rem', color: '#4A3B2E', fontWeight: '800', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              MAIN HEADLINE
             </label>
             <input
               type="text"
               value={sectionConfig.title}
               onChange={e => setSectionConfig({ ...sectionConfig, title: e.target.value })}
               placeholder="e.g. Find Your Perfect MILASTY Snack"
-              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+              className="admin-input"
             />
           </div>
         </div>
 
         <div style={{ marginBottom: '1.25rem' }}>
-          <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
-            DESCRIPTION
+          <label style={{ display: 'block', fontSize: '0.74rem', color: '#4A3B2E', fontWeight: '800', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            SECTION DESCRIPTION
           </label>
           <textarea
             rows={2}
             value={sectionConfig.description}
             onChange={e => setSectionConfig({ ...sectionConfig, description: e.target.value })}
-            placeholder="Subheading paragraph describing the mood selection..."
-            style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem', resize: 'vertical' }}
+            placeholder="e.g. Something light. Something crunchy. Something chocolatey."
+            className="admin-input"
+            style={{ width: '100%', resize: 'vertical' }}
           />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
+            <label style={{ display: 'block', fontSize: '0.74rem', color: '#4A3B2E', fontWeight: '800', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               EXPLORE ALL BUTTON TEXT
             </label>
             <input
@@ -389,20 +375,20 @@ export default function AdminProductDiscovery() {
               value={sectionConfig.explore_button_text}
               onChange={e => setSectionConfig({ ...sectionConfig, explore_button_text: e.target.value })}
               placeholder="e.g. EXPLORE ALL SNACKS →"
-              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+              className="admin-input"
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
-              EXPLORE ALL BUTTON DESTINATION URL
+            <label style={{ display: 'block', fontSize: '0.74rem', color: '#4A3B2E', fontWeight: '800', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              EXPLORE ALL DESTINATION URL
             </label>
             <input
               type="text"
               value={sectionConfig.explore_button_url}
               onChange={e => setSectionConfig({ ...sectionConfig, explore_button_url: e.target.value })}
               placeholder="e.g. /shop"
-              style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#252525', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+              className="admin-input"
             />
           </div>
         </div>
@@ -411,34 +397,23 @@ export default function AdminProductDiscovery() {
           <button
             type="submit"
             disabled={savingSection}
-            style={{
-              padding: '0.75rem 2rem',
-              backgroundColor: '#2E4C1E',
-              color: '#FFFFFF',
-              border: '1.5px solid #A3C878',
-              borderRadius: '8px',
-              fontWeight: '800',
-              fontSize: '0.9rem',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(46, 76, 30, 0.4)'
-            }}
+            className="admin-btn-primary"
+            style={{ padding: '0.65rem 1.75rem' }}
           >
             {savingSection ? 'Saving Settings...' : 'Save Section Settings'}
           </button>
         </div>
       </form>
 
-      {/* -------------------------------------------------------------------- */}
-      {/* 3. MOOD COLLECTIONS / CATEGORIES MANAGEMENT                          */}
-      {/* -------------------------------------------------------------------- */}
-      <div style={{ backgroundColor: 'var(--admin-card-bg)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '16px', padding: '1.75rem', marginBottom: '2.5rem' }}>
+      {/* Mood Categories / Collections */}
+      <div className="admin-card" style={{ padding: '1.75rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.15rem', color: '#21150F', margin: 0, fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.1rem', color: '#21150F', margin: 0, fontFamily: 'var(--font-serif)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '800' }}>
               <Layers size={18} color="#C68A3A" />
               Mood Categories / Collections ({moods.length})
-            </h2>
-            <p style={{ color: '#4A3B2E', fontSize: '0.82rem', margin: '0.2rem 0 0' }}>
+            </h3>
+            <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0', fontWeight: '500' }}>
               Create and manage mood categories and assign snacks to each category.
             </p>
           </div>
@@ -446,35 +421,20 @@ export default function AdminProductDiscovery() {
           <button
             type="button"
             onClick={handleOpenAddMood}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.7rem 1.5rem',
-              backgroundColor: '#2E4C1E',
-              color: '#FFFFFF',
-              border: '1.5px solid #A3C878',
-              borderRadius: '8px',
-              fontWeight: '800',
-              fontSize: '0.88rem',
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(46, 76, 30, 0.3)'
-            }}
+            className="admin-btn-primary"
           >
-            <Plus size={18} />
-            <span>+ Create New Category</span>
+            <Plus size={16} />
+            <span>Create New Category</span>
           </button>
         </div>
 
-        {/* Mood Cards List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {moods.length === 0 ? (
-            <div style={{ padding: '2rem', textAlign: 'center', color: '#665A52' }}>
+            <div style={{ padding: '2.5rem', textAlign: 'center', color: '#665A52', fontSize: '0.85rem', fontWeight: '600' }}>
               No mood categories found. Click <strong>"+ Create New Category"</strong> to make one.
             </div>
           ) : (
             moods.map((mood, idx) => {
-              // Deduplicate product IDs for mapping
               const uniquePids = Array.from(new Set((mood.product_ids || []).map(String)));
               const assignedProds = uniquePids
                 .map(pid => availableProducts.find(p => String(p.id) === String(pid)))
@@ -487,34 +447,34 @@ export default function AdminProductDiscovery() {
                 <div
                   key={mood.id}
                   style={{
-                    backgroundColor: '#1E1E1E',
-                    border: mood.is_active ? '1px solid rgba(231, 222, 213, 0.65)' : '1px dashed #663333',
-                    borderRadius: '12px',
+                    backgroundColor: 'var(--admin-surface-elevated)',
+                    border: mood.is_active ? '1px solid rgba(231, 222, 213, 0.65)' : '1px dashed rgba(255, 91, 91, 0.4)',
+                    borderRadius: '14px',
                     padding: '1.25rem',
                     opacity: mood.is_active ? 1 : 0.75,
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '1rem'
+                    gap: '1rem',
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-                        <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#C68A3A', backgroundColor: 'rgba(184, 204, 122, 0.12)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                        <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#C68A3A', backgroundColor: 'rgba(198, 138, 58, 0.12)', padding: '0.2rem 0.55rem', borderRadius: '6px' }}>
                           ORDER #{mood.display_order || idx + 1}
                         </span>
-                        <h3 style={{ fontSize: '1.05rem', color: '#FFFFFF', fontWeight: '800', margin: 0 }}>
+                        <h4 style={{ fontSize: '1.05rem', color: '#21150F', fontWeight: '800', margin: 0, fontFamily: 'var(--font-serif)' }}>
                           {mood.name}
-                        </h3>
+                        </h4>
                         <span
                           style={{
-                            fontSize: '0.7rem',
+                            fontSize: '0.68rem',
                             fontWeight: '800',
                             padding: '0.15rem 0.55rem',
                             borderRadius: '999px',
-                            backgroundColor: mood.is_active ? 'rgba(163, 200, 120, 0.2)' : 'rgba(255, 100, 100, 0.2)',
-                            color: mood.is_active ? '#A3C878' : '#FF8888',
-                            border: mood.is_active ? '1px solid #A3C878' : '1px solid #FF8888',
+                            backgroundColor: mood.is_active ? 'rgba(143, 175, 91, 0.18)' : 'rgba(255, 91, 91, 0.12)',
+                            color: mood.is_active ? '#4D7C2B' : '#C62828',
+                            border: mood.is_active ? '1px solid rgba(143, 175, 91, 0.35)' : '1px solid rgba(255, 91, 91, 0.3)',
                           }}
                         >
                           {mood.is_active ? 'ACTIVE' : 'INACTIVE'}
@@ -522,7 +482,7 @@ export default function AdminProductDiscovery() {
                       </div>
 
                       {mood.description && (
-                        <p style={{ fontSize: '0.85rem', color: '#4A3B2E', margin: '0 0 0.5rem' }}>
+                        <p style={{ fontSize: '0.84rem', color: '#4A3B2E', margin: '0 0 0.5rem', fontWeight: '500' }}>
                           {mood.description}
                         </p>
                       )}
@@ -530,26 +490,25 @@ export default function AdminProductDiscovery() {
                       {/* Warning Badges */}
                       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.4rem' }}>
                         {is0Products && (
-                          <span style={{ fontSize: '0.75rem', color: '#FFB74D', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontWeight: '700' }}>
-                            <AlertTriangle size={14} /> This category has no products assigned.
+                          <span style={{ fontSize: '0.75rem', color: '#B45309', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontWeight: '700' }}>
+                            <AlertTriangle size={14} /> No products assigned to this category.
                           </span>
                         )}
                         {hasInactiveProducts && (
-                          <span style={{ fontSize: '0.75rem', color: '#E57373', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontWeight: '700' }}>
-                            <AlertTriangle size={14} /> 1 or more assigned products are inactive.
+                          <span style={{ fontSize: '0.75rem', color: '#C62828', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontWeight: '700' }}>
+                            <AlertTriangle size={14} /> 1 or more assigned products are currently inactive.
                           </span>
                         )}
                       </div>
                     </div>
 
                     {/* Actions */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      {/* Reorder Buttons */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                       <button
                         type="button"
                         onClick={() => handleMoveMood(idx, -1)}
                         disabled={idx === 0}
-                        style={{ padding: '0.4rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', color: idx === 0 ? '#555' : '#FFF', borderRadius: '6px', cursor: idx === 0 ? 'not-allowed' : 'pointer' }}
+                        className="admin-icon-btn"
                         title="Move Up"
                       >
                         <ArrowUp size={14} />
@@ -558,35 +517,35 @@ export default function AdminProductDiscovery() {
                         type="button"
                         onClick={() => handleMoveMood(idx, 1)}
                         disabled={idx === moods.length - 1}
-                        style={{ padding: '0.4rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', color: idx === moods.length - 1 ? '#555' : '#FFF', borderRadius: '6px', cursor: idx === moods.length - 1 ? 'not-allowed' : 'pointer' }}
+                        className="admin-icon-btn"
                         title="Move Down"
                       >
                         <ArrowDown size={14} />
                       </button>
 
-                      {/* Edit Mood */}
                       <button
                         type="button"
                         onClick={() => handleOpenEditMood(mood)}
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.45rem 0.85rem', backgroundColor: 'rgba(184, 204, 122, 0.15)', border: '1px solid #B8CC7A', color: '#B8CC7A', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}
+                        className="admin-icon-btn"
+                        style={{ color: '#b9cd94', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.45rem 0.85rem' }}
                       >
-                        <Edit2 size={14} /> Edit & Assign Products
+                        <Edit2 size={14} /> <span>Edit &amp; Assign Products</span>
                       </button>
 
-                      {/* Toggle Active */}
                       <button
                         type="button"
                         onClick={() => handleToggleMoodActive(mood)}
-                        style={{ padding: '0.45rem 0.75rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', color: mood.is_active ? '#FFB74D' : '#A3C878', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}
+                        className="admin-icon-btn"
+                        title={mood.is_active ? 'Deactivate' : 'Activate'}
                       >
                         {mood.is_active ? 'Deactivate' : 'Activate'}
                       </button>
 
-                      {/* Delete */}
                       <button
                         type="button"
                         onClick={() => { setMoodToDelete(mood); setDeleteModalOpen(true); }}
-                        style={{ padding: '0.45rem 0.65rem', backgroundColor: 'rgba(255,100,100,0.1)', border: '1px solid rgba(255,100,100,0.3)', color: '#FF8888', borderRadius: '6px', cursor: 'pointer' }}
+                        className="admin-icon-btn"
+                        style={{ color: '#C62828' }}
                         title="Delete Category"
                       >
                         <Trash2 size={14} />
@@ -596,7 +555,7 @@ export default function AdminProductDiscovery() {
 
                   {/* Assigned Products Thumbnails */}
                   <div style={{ paddingTop: '0.75rem', borderTop: '1px solid rgba(231, 222, 213, 0.65)' }}>
-                    <div style={{ fontSize: '0.72rem', color: '#665A52', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                    <div style={{ fontSize: '0.7rem', color: '#665A52', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
                       ASSIGNED PRODUCTS ({assignedProds.length}):
                     </div>
                     {assignedProds.length === 0 ? (
@@ -604,7 +563,21 @@ export default function AdminProductDiscovery() {
                     ) : (
                       <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
                         {assignedProds.map((prod) => (
-                          <div key={prod.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '6px', padding: '0.35rem 0.65rem', fontSize: '0.78rem', color: '#FFFDF9' }}>
+                          <div 
+                            key={prod.id} 
+                            style={{ 
+                              display: 'inline-flex', 
+                              alignItems: 'center', 
+                              gap: '0.4rem', 
+                              backgroundColor: '#FFFFFF', 
+                              border: '1px solid rgba(231, 222, 213, 0.7)', 
+                              borderRadius: '8px', 
+                              padding: '0.35rem 0.65rem', 
+                              fontSize: '0.78rem', 
+                              color: '#21150F',
+                              fontWeight: '600',
+                            }}
+                          >
                             {prod.image && <img src={prod.image} alt={prod.name} style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />}
                             <span>{prod.name}</span>
                             <span style={{ color: '#C68A3A', fontWeight: '800' }}>₹{prod.price || prod.resolvedPrice || prod.originalPrice || 0}</span>
@@ -620,21 +593,19 @@ export default function AdminProductDiscovery() {
         </div>
       </div>
 
-      {/* -------------------------------------------------------------------- */}
-      {/* 4. ADD / EDIT MOOD MODAL                                             */}
-      {/* -------------------------------------------------------------------- */}
+      {/* ADD / EDIT MOOD MODAL */}
       {moodModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div style={{ backgroundColor: '#1E1E1E', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '20px', width: '100%', maxWidth: '750px', maxHeight: '90vh', overflowY: 'auto', padding: '1.75rem', boxShadow: '0 20px 50px rgba(0,0,0,0.7)' }}>
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid rgba(231, 222, 213, 0.8)', borderRadius: '18px', width: '100%', maxWidth: '750px', maxHeight: '90vh', overflowY: 'auto', padding: '1.75rem', boxShadow: '0 20px 50px rgba(0,0,0,0.4)', color: '#21150F' }}>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '1rem' }}>
-              <h3 style={{ fontSize: '1.2rem', color: '#FFFDF9', fontFamily: 'var(--font-serif)', margin: 0 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(231, 222, 213, 0.7)', paddingBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.2rem', color: '#21150F', fontFamily: 'var(--font-serif)', margin: 0, fontWeight: '800' }}>
                 {editingMood ? `Edit Category: ${editingMood.name}` : 'Create New Mood Category'}
               </h3>
               <button
                 type="button"
                 onClick={() => setMoodModalOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#4A3B2E', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer' }}
               >
                 <X size={20} />
               </button>
@@ -643,7 +614,7 @@ export default function AdminProductDiscovery() {
             <form onSubmit={handleSaveMood}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.74rem', color: '#4A3B2E', fontWeight: '800', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     CATEGORY NAME *
                   </label>
                   <input
@@ -652,12 +623,12 @@ export default function AdminProductDiscovery() {
                     value={moodName}
                     onChange={e => setMoodName(e.target.value)}
                     placeholder="e.g. I CRAVE CHOCOLATE"
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+                    className="admin-input"
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.74rem', color: '#4A3B2E', fontWeight: '800', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     DISPLAY ORDER
                   </label>
                   <input
@@ -665,13 +636,13 @@ export default function AdminProductDiscovery() {
                     min={1}
                     value={moodOrder}
                     onChange={e => setMoodOrder(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+                    className="admin-input"
                   />
                 </div>
               </div>
 
               <div style={{ marginBottom: '1.25rem' }}>
-                <label style={{ display: 'block', fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', marginBottom: '0.4rem' }}>
+                <label style={{ display: 'block', fontSize: '0.74rem', color: '#4A3B2E', fontWeight: '800', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   SHORT DESCRIPTION
                 </label>
                 <input
@@ -679,25 +650,26 @@ export default function AdminProductDiscovery() {
                   value={moodDescription}
                   onChange={e => setMoodDescription(e.target.value)}
                   placeholder="e.g. For those moments when chocolate is non-negotiable."
-                  style={{ width: '100%', padding: '0.65rem 0.85rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '8px', color: '#FFFFFF', fontSize: '0.88rem' }}
+                  className="admin-input"
                 />
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.88rem', color: '#FFFDF9', fontWeight: '700' }}>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.85rem', color: '#21150F', fontWeight: '700' }}>
                   <input
                     type="checkbox"
                     checked={moodActive}
                     onChange={e => setMoodActive(e.target.checked)}
+                    style={{ width: '16px', height: '16px', accentColor: '#C68A3A' }}
                   />
                   <span>Active Category (Show on Homepage)</span>
                 </label>
               </div>
 
               {/* SEARCHABLE PRODUCT SELECTOR */}
-              <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1.25rem', marginBottom: '1.5rem' }}>
+              <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.7)', paddingTop: '1.25rem', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <label style={{ fontSize: '0.85rem', color: '#C68A3A', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <label style={{ fontSize: '0.78rem', color: '#C68A3A', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     ASSIGN PRODUCTS ({Array.from(new Set(selectedProductIds.map(String))).length} selected)
                   </label>
 
@@ -709,13 +681,14 @@ export default function AdminProductDiscovery() {
                       placeholder="Search products..."
                       value={productSearch}
                       onChange={e => setProductSearch(e.target.value)}
-                      style={{ width: '100%', padding: '0.4rem 0.6rem 0.4rem 2rem', backgroundColor: '#2A2A2A', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '6px', color: '#FFF', fontSize: '0.8rem' }}
+                      className="admin-input"
+                      style={{ paddingLeft: '2.5rem !important' }}
                     />
                   </div>
                 </div>
 
                 {/* Filtered Products Checkbox List */}
-                <div style={{ maxHeight: '240px', overflowY: 'auto', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '10px', backgroundColor: '#181818', padding: '0.75rem' }}>
+                <div style={{ maxHeight: '240px', overflowY: 'auto', border: '1px solid rgba(231, 222, 213, 0.75)', borderRadius: '10px', backgroundColor: '#FFFFFF', padding: '0.75rem' }}>
                   {(() => {
                     const filtered = availableProducts.filter(p => 
                       (p.name || '').toLowerCase().includes(productSearch.toLowerCase()) ||
@@ -750,9 +723,9 @@ export default function AdminProductDiscovery() {
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
                                 padding: '0.5rem 0.75rem',
-                                borderRadius: '6px',
-                                backgroundColor: isChecked ? 'rgba(46, 76, 30, 0.35)' : 'transparent',
-                                border: isChecked ? '1px solid #A3C878' : '1px solid transparent',
+                                borderRadius: '8px',
+                                backgroundColor: isChecked ? 'rgba(198, 138, 58, 0.12)' : 'transparent',
+                                border: isChecked ? '1px solid rgba(198, 138, 58, 0.4)' : '1px solid transparent',
                                 cursor: 'pointer'
                               }}
                             >
@@ -761,10 +734,11 @@ export default function AdminProductDiscovery() {
                                   type="checkbox"
                                   checked={isChecked}
                                   onChange={() => handleToggleProductSelection(prod.id)}
+                                  style={{ accentColor: '#C68A3A' }}
                                 />
                                 {prod.image && <img src={prod.image} alt={prod.name} style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />}
                                 <div>
-                                  <div style={{ fontSize: '0.85rem', color: '#FFFDF9', fontWeight: '700' }}>{prod.name}</div>
+                                  <div style={{ fontSize: '0.85rem', color: '#21150F', fontWeight: '700' }}>{prod.name}</div>
                                   <div style={{ fontSize: '0.72rem', color: '#665A52' }}>{prod.category}</div>
                                 </div>
                               </div>
@@ -781,7 +755,7 @@ export default function AdminProductDiscovery() {
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid rgba(231, 222, 213, 0.7)', paddingTop: '1.25rem' }}>
                 <button
                   type="button"
                   onClick={() => setMoodModalOpen(false)}
@@ -792,7 +766,8 @@ export default function AdminProductDiscovery() {
                 <button
                   type="submit"
                   disabled={savingMood}
-                  style={{ padding: '0.65rem 1.75rem', backgroundColor: '#2E4C1E', border: '1.5px solid #A3C878', color: '#FFFFFF', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '800' }}
+                  className="admin-btn-primary"
+                  style={{ padding: '0.65rem 1.75rem' }}
                 >
                   {savingMood ? 'Saving...' : 'Save Category'}
                 </button>
@@ -815,4 +790,3 @@ export default function AdminProductDiscovery() {
     </div>
   );
 }
-

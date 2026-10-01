@@ -4562,11 +4562,13 @@ body.customer-portal-body .admin-search-bar {
   font-weight: 400 !important;
 }
 
-/* When used as a search bar (has a preceding icon), make it pill shaped */
 div[style*="position: relative"] > .admin-input,
-.admin-search-wrap > .admin-input {
+div[style*="position: relative"] > input,
+div[style*="position:relative"] > input,
+.admin-search-wrap > input,
+.admin-search-bar {
   border-radius: 999px !important;
-  padding-left: 2.5rem !important;
+  padding-left: 2.75rem !important;
 }
 
 /* Filter select – compact width */

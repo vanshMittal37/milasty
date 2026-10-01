@@ -173,9 +173,9 @@ export default function AdminDashboardMain() {
       sub: lowStockItems.length > 0 ? `${lowStockItems.length} Need Restock` : 'Stock Optimal',
       sub2: `Threshold <= ${LOW_STOCK_THRESHOLD} units`,
       icon: AlertTriangle,
-      color: lowStockItems.length > 0 ? '#F59E0B' : '#2E7D32',
-      bg: lowStockItems.length > 0 ? 'rgba(245,158,11,0.12)' : '#EDF7EE',
-      topColor: lowStockItems.length > 0 ? '#F59E0B' : '#2E7D32',
+      color: lowStockItems.length > 0 ? '#F59E0B' : '#C68A3A',
+      bg: lowStockItems.length > 0 ? 'rgba(245,158,11,0.12)' : 'rgba(198,138,58,0.12)',
+      topColor: lowStockItems.length > 0 ? '#F59E0B' : '#C68A3A',
     },
     {
       label: 'Out of Stock Variants',

@@ -279,7 +279,7 @@ export default function AdminOrderList() {
                       </div>
                       <div style={{ fontSize: '0.74rem', color: '#665A52', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                         <span style={{ fontFamily: 'monospace', fontWeight: '700', color: '#C68A3A' }}>{pin ? `PIN: ${pin}` : 'No PIN'}</span>
-                        â€¢ Fee: {Number(fee) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `â‚¹${fee}`}
+                        â€¢ Fee: {Number(fee) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `₹${fee}`}
                       </div>
                     </td>
                     <td style={{ fontSize: '0.82rem', fontWeight: '600', color: '#4A3B2E' }}>
@@ -291,7 +291,7 @@ export default function AdminOrderList() {
                       </span>
                     </td>
                     <td style={{ fontWeight: '800', color: '#21150F' }}>
-                      â‚¹{total.toLocaleString('en-IN')}
+                      ₹{total.toLocaleString('en-IN')}
                     </td>
                     <td>
                       {customizedCount > 0 ? (
@@ -522,7 +522,7 @@ export default function AdminOrderList() {
                           </div>
                         </div>
                         <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#21150F' }}>
-                          â‚¹{((item.totalPrice || item.total_price || (item.price * item.quantity)) || 0).toLocaleString('en-IN')}
+                          ₹{((item.totalPrice || item.total_price || (item.price * item.quantity)) || 0).toLocaleString('en-IN')}
                         </div>
                       </div>
 
@@ -558,21 +558,21 @@ export default function AdminOrderList() {
             <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', alignItems: 'flex-end', fontSize: '0.85rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', color: '#4A3B2E' }}>
                 <span>Subtotal:</span>
-                <span>â‚¹{(selectedOrder.subtotal || 0).toLocaleString('en-IN')}</span>
+                <span>₹{(selectedOrder.subtotal || 0).toLocaleString('en-IN')}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', color: '#4A3B2E' }}>
                 <span>Delivery Fee:</span>
-                <span>{(selectedOrder.deliveryFee || selectedOrder.delivery_fee || 0) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `â‚¹${selectedOrder.deliveryFee || selectedOrder.delivery_fee}`}</span>
+                <span>{(selectedOrder.deliveryFee || selectedOrder.delivery_fee || 0) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `₹${selectedOrder.deliveryFee || selectedOrder.delivery_fee}`}</span>
               </div>
               {(selectedOrder.discountAmount > 0 || selectedOrder.coupon_discount > 0 || selectedOrder.couponDiscount > 0) && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '260px', color: '#22c55e' }}>
                   <span>Discount {(selectedOrder.couponCode || selectedOrder.coupon_code) ? `(${selectedOrder.couponCode || selectedOrder.coupon_code})` : ''}:</span>
-                  <span>-â‚¹{selectedOrder.discountAmount || selectedOrder.coupon_discount || selectedOrder.couponDiscount}</span>
+                  <span>-₹{selectedOrder.discountAmount || selectedOrder.coupon_discount || selectedOrder.couponDiscount}</span>
                 </div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', fontSize: '1.1rem', fontWeight: '900', color: '#21150F', borderTop: '1px dashed rgba(231, 222, 213, 0.65)', paddingTop: '0.5rem', marginTop: '0.2rem' }}>
                 <span>Grand Total:</span>
-                <span>â‚¹{(selectedOrder.grandTotal || selectedOrder.totalAmount || 0).toLocaleString('en-IN')}</span>
+                <span>₹{(selectedOrder.grandTotal || selectedOrder.totalAmount || 0).toLocaleString('en-IN')}</span>
               </div>
             </div>
 
@@ -610,7 +610,7 @@ export default function AdminOrderList() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #3A1F14', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, color: '#3A1F14' }}>MILASTY â€” ORDER PREPARATION & PACKING SLIP</h2>
+                <h2 style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, color: '#3A1F14' }}>MILASTY — ORDER PREPARATION & PACKING SLIP</h2>
                 <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#2F7D32', marginTop: '0.2rem' }}>
                   {selectedOrder.orderNumber || selectedOrder.orderId || `MIL-${String(selectedOrder.id).slice(-6)}`}
                 </div>
@@ -680,5 +680,7 @@ export default function AdminOrderList() {
     </div>
   );
 }
+
+
 
 

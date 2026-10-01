@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Shield, UserX, UserCheck, RefreshCw, Search } from 'lucide-react';
 import api from '../../api/axios';
 
@@ -131,7 +131,7 @@ export default function AdminCustomerList() {
                       <div style={{ fontSize: '0.76rem', color: '#665A52', fontWeight: '600' }}>{c.phone || 'No phone provided'}</div>
                     </td>
                     <td style={{ fontWeight: '800', color: '#21150F', fontSize: '0.92rem' }}>{c.totalOrders || 0}</td>
-                    <td style={{ fontWeight: '800', color: '#2E7D32', fontSize: '0.92rem' }}>â‚¹{(c.totalSpent || 0).toLocaleString('en-IN')}</td>
+                    <td style={{ fontWeight: '800', color: '#C68A3A', fontSize: '0.92rem' }}>₹{(c.totalSpent || 0).toLocaleString('en-IN')}</td>
                     <td>
                       <span className={`admin-badge ${isDisabled ? 'admin-badge-danger' : 'admin-badge-success'}`}>
                         {isDisabled ? 'Disabled' : 'Active'}
@@ -167,4 +167,5 @@ export default function AdminCustomerList() {
     </div>
   );
 }
+
 
