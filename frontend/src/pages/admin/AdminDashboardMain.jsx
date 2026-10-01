@@ -273,24 +273,22 @@ export default function AdminDashboardMain() {
         <div className="admin-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', color: '#F5F5F5', fontWeight: '800', margin: 0 }}>Sales Overview</h3>
-              <p style={{ fontSize: '0.78rem', color: '#A7ADB8', margin: '0.2rem 0 0', fontWeight: '500' }}>Revenue performance over time</p>
+              <h3 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0 }}>Sales Overview</h3>
+              <p style={{ fontSize: '0.78rem', color: '#665A52', margin: '0.2rem 0 0', fontWeight: '500' }}>Revenue performance over time</p>
             </div>
-            <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: '#19221C', padding: '0.25rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.10)' }}>
+            <div style={{ display: 'flex', gap: '0.35rem', backgroundColor: 'rgba(245,237,229,0.8)', padding: '0.25rem', borderRadius: '8px', border: '1px solid rgba(231,222,213,0.7)' }}>
               {['7 Days', '30 Days', '3 Months'].map(range => (
                 <button
                   key={range}
                   onClick={() => setActiveRange(range)}
                   style={{
                     border: 'none',
-                    background: range === activeRange ? '#274C37' : 'transparent',
-                    color: range === activeRange ? '#FFFFFF' : '#A7ADB8',
-                    fontSize: '0.72rem',
-                    padding: '0.35rem 0.75rem',
-                    borderRadius: '6px',
-                    fontWeight: '800',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
+                    background: range === activeRange ? 'linear-gradient(135deg, #5A2E16, #7C3D20)' : 'transparent',
+                    color: range === activeRange ? '#FFFFFF' : '#665A52',
+                    fontSize: '0.72rem', padding: '0.35rem 0.75rem',
+                    borderRadius: '6px', fontWeight: '800',
+                    cursor: 'pointer', transition: 'all 0.15s',
+                    boxShadow: range === activeRange ? '0 2px 8px rgba(90,46,22,0.2)' : 'none',
                   }}
                 >
                   {range}
@@ -301,15 +299,15 @@ export default function AdminDashboardMain() {
 
           {chartPoints.length > 0 ? (
             <div style={{ position: 'relative', width: '100%', height: '200px' }}>
-              <svg viewBox="0 0 500 180" width="100%" height="100%" style={{ overflow: 'visible' }}>
+                          <svg viewBox="0 0 500 180" width="100%" height="100%" style={{ overflow: 'visible' }}>
                 <defs>
                   <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#85B870" stopOpacity="0.25" />
-                    <stop offset="100%" stopColor="#85B870" stopOpacity="0.01" />
+                    <stop offset="0%" stopColor="#5A2E16" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#5A2E16" stopOpacity="0.02" />
                   </linearGradient>
                 </defs>
                 {[0, 45, 90, 135].map(y => (
-                  <line key={y} x1="0" y1={y} x2="500" y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+                  <line key={y} x1="0" y1={y} x2="500" y2={y} stroke="rgba(90,46,22,0.08)" strokeWidth="1" />
                 ))}
                 <path
                   d={chartPoints.reduce((acc, p, i) => {
@@ -317,11 +315,8 @@ export default function AdminDashboardMain() {
                     const y = 160 - (p.y / maxVal) * 140;
                     return acc + `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
                   }, '')}
-                  fill="none"
-                  stroke="#85B870"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  fill="none" stroke="#C68A3A" strokeWidth="2.5"
+                  strokeLinecap="round" strokeLinejoin="round"
                 />
                 <path
                   d={chartPoints.reduce((acc, p, i) => {
@@ -335,7 +330,7 @@ export default function AdminDashboardMain() {
                   const x = (i / (chartPoints.length - 1 || 1)) * 500;
                   const y = 160 - (p.y / maxVal) * 140;
                   return (
-                    <circle key={i} cx={x} cy={y} r="5" fill="#141A16" stroke="#85B870" strokeWidth="2.5">
+                    <circle key={i} cx={x} cy={y} r="5" fill="#FFFFFF" stroke="#C68A3A" strokeWidth="2.5">
                       <title>₹{p.y}</title>
                     </circle>
                   );
@@ -343,10 +338,10 @@ export default function AdminDashboardMain() {
               </svg>
             </div>
           ) : (
-            <div style={{ height: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', border: '1.5px dashed rgba(255,255,255,0.12)', borderRadius: '12px', backgroundColor: '#161D18' }}>
-              <TrendingUp size={24} color="#85B870" />
-              <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#F5F5F5' }}>No sales data yet</span>
-              <span style={{ fontSize: '0.76rem', color: '#A7ADB8', fontWeight: '500', textAlign: 'center', maxWidth: '280px' }}>Sales performance will appear here once orders are completed.</span>
+                        <div style={{ height: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', border: '1.5px dashed rgba(90,46,22,0.15)', borderRadius: '12px', backgroundColor: 'rgba(245,237,229,0.4)' }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C68A3A" strokeWidth="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+              <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#21150F' }}>No sales data yet</span>
+              <span style={{ fontSize: '0.76rem', color: '#888888', fontWeight: '500', textAlign: 'center', maxWidth: '280px' }}>Sales performance will appear here once orders are completed.</span>
             </div>
           )}
         </div>
@@ -356,10 +351,10 @@ export default function AdminDashboardMain() {
           
           {/* Out of stock box */}
           {outOfStockItems.length > 0 && (
-            <div className="admin-card" style={{ display: 'flex', flexDirection: 'column', borderColor: 'rgba(217, 83, 79, 0.30)', backgroundColor: '#141A16' }}>
+            <div className="admin-card" style={{ display: 'flex', flexDirection: 'column', borderColor: 'rgba(198, 40, 40, 0.2)' }}>
               <div style={{ marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#FF8A87', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#C62828', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <XCircle size={16} color="#FF8A87" /> OUT OF STOCK
                   </h3>
                   <p style={{ fontSize: '0.75rem', color: '#A7ADB8', margin: '0.15rem 0 0', fontWeight: '600' }}>
@@ -373,7 +368,7 @@ export default function AdminDashboardMain() {
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 0.85rem', background: 'rgba(217, 83, 79, 0.12)', borderRadius: '10px', border: '1px solid rgba(217, 83, 79, 0.25)' }}>
                     <img src={item.image} alt={item.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)' }} />
                     <div style={{ flexGrow: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#F5F5F5', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#21150F', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {item.title}
                       </div>
                       <div style={{ fontSize: '0.74rem', color: '#FF8A87', fontWeight: '700' }}>
@@ -392,7 +387,7 @@ export default function AdminDashboardMain() {
           {/* Low Stock Alert Box */}
           <div className="admin-card" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div style={{ marginBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#F5F5F5', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <AlertTriangle size={16} color="#FBBF24" /> LOW STOCK ALERT
               </h3>
               <p style={{ fontSize: '0.75rem', color: '#A7ADB8', margin: '0.15rem 0 0', fontWeight: '600' }}>
@@ -407,7 +402,7 @@ export default function AdminDashboardMain() {
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 0.85rem', background: 'rgba(245, 158, 11, 0.12)', borderRadius: '10px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
                       <img src={item.image} alt={item.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)' }} />
                       <div style={{ flexGrow: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#F5F5F5', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#21150F', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {item.title}
                         </div>
                         <div style={{ fontSize: '0.74rem', color: '#FBBF24', fontWeight: '700' }}>
@@ -421,10 +416,10 @@ export default function AdminDashboardMain() {
                   ))}
                 </div>
               ) : (
-                <div style={{ padding: '1.5rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(39, 76, 55, 0.35)', borderRadius: '10px', border: '1px dashed rgba(133, 184, 112, 0.30)' }}>
-                  <CheckCircle size={24} color="#85B870" />
-                  <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#85B870' }}>Inventory looks healthy</span>
-                  <span style={{ fontSize: '0.72rem', color: '#A7ADB8', fontWeight: '500' }}>No variant products are low on stock.</span>
+                                <div style={{ padding: '1.5rem 1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(46, 125, 50, 0.08)', borderRadius: '10px', border: '1px dashed rgba(46, 125, 50, 0.25)' }}>
+                  <CheckCircle size={24} color="#2E7D32" />
+                  <span style={{ fontSize: '0.84rem', fontWeight: '800', color: '#2E7D32' }}>Inventory looks healthy</span>
+                  <span style={{ fontSize: '0.72rem', color: '#888888', fontWeight: '500' }}>No variant products are low on stock.</span>
                 </div>
               )}
             </div>

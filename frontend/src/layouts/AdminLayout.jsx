@@ -130,8 +130,7 @@ export default function AdminLayout() {
         flexDirection: 'column', 
         height: '100%', 
         justifyContent: 'space-between',
-        backgroundColor: 'rgba(255, 255, 255, 0.92)',
-        backdropFilter: 'blur(12px)',
+        backgroundColor: 'transparent',
         color: '#4A3B2E',
         padding: '1.5rem 1.15rem',
         overflowY: 'auto'
@@ -143,28 +142,21 @@ export default function AdminLayout() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div 
               style={{
-                width: '34px',
-                height: '34px',
-                borderRadius: '8px',
-                backgroundColor: '#5A2E16',
+                width: '36px', height: '36px', borderRadius: '10px',
+                background: 'linear-gradient(135deg, #5A2E16, #7C3D20)',
                 color: '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: '900',
-                fontFamily: 'var(--font-serif)',
-                fontSize: '1rem',
-                flexShrink: 0,
-                boxShadow: '0 2px 8px rgba(90, 46, 22, 0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: '900', fontFamily: 'var(--font-serif)', fontSize: '1rem',
+                flexShrink: 0, boxShadow: '0 4px 12px rgba(90, 46, 22, 0.3)',
               }}
             >
               M
             </div>
             <div>
-              <h2 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.04em', margin: 0, color: '#21150F', lineHeight: '1.1' }}>
+              <h2 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.04em', margin: 0, color: '#21150F', lineHeight: '1.1' }}>
                 MILASTY<span style={{ color: '#C68A3A' }}>.</span>
               </h2>
-              <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#C68A3A', fontWeight: '800', marginTop: '0.1rem' }}>
+              <div style={{ fontSize: '0.55rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#C68A3A', fontWeight: '800', marginTop: '0.1rem' }}>
                 Admin Portal
               </div>
             </div>
@@ -179,13 +171,13 @@ export default function AdminLayout() {
         </div>
 
         {/* Sidebar Nav Items */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {sections.map((section) => (
             <div key={section.title}>
-              <h3 style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#888888', fontWeight: '800', marginBottom: '0.5rem', paddingLeft: '0.4rem' }}>
+              <h3 style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#B0A09A', fontWeight: '800', marginBottom: '0.4rem', paddingLeft: '0.5rem' }}>
                 {section.title}
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
                 {section.items.map((item) => {
                   const Icon = item.icon;
                   const active = location.pathname === item.path;
@@ -195,23 +187,18 @@ export default function AdminLayout() {
                       to={item.path}
                       onClick={handleLinkClick}
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem',
-                        padding: '0.55rem 0.85rem',
-                        borderRadius: '10px',
-                        fontSize: '0.83rem',
-                        fontWeight: '700',
+                        display: 'flex', alignItems: 'center', gap: '0.65rem',
+                        padding: '0.6rem 0.75rem', borderRadius: '10px',
+                        fontSize: '0.83rem', fontWeight: active ? '800' : '600',
                         textDecoration: 'none',
                         color: active ? '#FFFFFF' : '#4A3B2E',
-                        backgroundColor: active ? '#5A2E16' : 'transparent',
-                        borderLeft: active ? '4px solid #C68A3A' : '4px solid transparent',
-                        boxShadow: active ? '0 4px 12px rgba(90, 46, 22, 0.2)' : 'none',
+                        background: active ? 'linear-gradient(135deg, #5A2E16, #7C3D20)' : 'transparent',
+                        boxShadow: active ? '0 4px 16px rgba(90, 46, 22, 0.28)' : 'none',
                         transition: 'all 0.18s ease',
                       }}
                       onMouseEnter={(e) => {
                         if (!active) {
-                          e.currentTarget.style.backgroundColor = '#F5EDE5';
+                          e.currentTarget.style.backgroundColor = 'rgba(90, 46, 22, 0.07)';
                           e.currentTarget.style.color = '#5A2E16';
                         }
                       }}
@@ -223,7 +210,7 @@ export default function AdminLayout() {
                       }}
                       className="admin-sidebar-link"
                     >
-                      <Icon size={16} color={active ? '#FFFFFF' : '#5A2E16'} />
+                      <Icon size={16} color={active ? '#FFFFFF' : '#5A2E16'} style={{ flexShrink: 0, opacity: active ? 1 : 0.75 }} />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -234,50 +221,41 @@ export default function AdminLayout() {
         </nav>
       </div>
 
-      {/* Sidebar Profile Card Footer */}
-      <div style={{ borderTop: '1px solid #E7DED5', paddingTop: '1rem', marginTop: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* Botanical Footer + Profile */}
+      <div>
+        <div style={{ textAlign: 'center', padding: '0.75rem 0.5rem 0.75rem', borderTop: '1px solid rgba(231,222,213,0.6)', marginTop: '0.5rem' }}>
+          <div style={{ fontSize: '1.6rem', lineHeight: 1, marginBottom: '0.3rem' }}>🌿</div>
+          <div style={{ fontSize: '0.6rem', color: '#B0A09A', fontWeight: '600', fontStyle: 'italic' }}>Good Food, Good Mood</div>
+        </div>
+        <div style={{ 
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0.75rem', borderRadius: '12px',
+          backgroundColor: 'rgba(245, 237, 229, 0.6)',
+          border: '1px solid rgba(231, 222, 213, 0.5)',
+          marginTop: '0.5rem',
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
-            <div 
-              style={{ 
-                width: '36px', 
-                height: '36px', 
-                borderRadius: '50%', 
-                backgroundColor: '#F5EDE5', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                color: '#5A2E16',
-                fontWeight: '900',
-                fontSize: '0.88rem',
-                border: '1px solid #E7DED5'
-              }}
-            >
-              M
-            </div>
+            <div style={{ 
+              width: '32px', height: '32px', borderRadius: '50%', 
+              background: 'linear-gradient(135deg, #5A2E16, #7C3D20)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#FFFFFF', fontWeight: '900', fontSize: '0.84rem',
+            }}>M</div>
             <div>
-              <div style={{ fontSize: '0.83rem', fontWeight: '800', color: '#21150F' }}>Milasty Admin</div>
-              <div style={{ fontSize: '0.66rem', color: '#888888', fontWeight: '600' }}>Store Manager</div>
+              <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#21150F' }}>Milasty Admin</div>
+              <div style={{ fontSize: '0.62rem', color: '#888888', fontWeight: '600' }}>Store Manager</div>
             </div>
           </div>
-          
           <button 
             onClick={() => setShowLogoutModal(true)} 
             style={{ 
-              background: 'none', 
-              border: '1px solid #FEECEC', 
-              color: '#C62828', 
-              cursor: 'pointer',
-              padding: '0.4rem',
-              display: 'flex',
-              alignItems: 'center',
-              borderRadius: '8px',
-              backgroundColor: '#FFF5F5',
-              transition: 'all 0.2s'
+              background: 'rgba(255,255,255,0.7)', border: '1px solid #FEECEC', color: '#C62828', 
+              cursor: 'pointer', padding: '0.4rem', display: 'flex', alignItems: 'center',
+              borderRadius: '8px', transition: 'all 0.2s'
             }}
             title="Log Out"
           >
-            <LogOut size={16} />
+            <LogOut size={15} />
           </button>
         </div>
       </div>
@@ -305,17 +283,12 @@ export default function AdminLayout() {
          ================================================== */}
       <div 
         style={{ 
-          width: '260px', 
-          position: 'fixed', 
-          top: 0, 
-          bottom: 0, 
-          left: 0, 
-          zIndex: 90,
-          display: 'none',
-          height: '100vh',
-          borderRight: '1px solid #E7DED5',
-          backgroundColor: 'rgba(255, 255, 255, 0.90)',
-          backdropFilter: 'blur(12px)',
+          width: '260px', position: 'fixed', top: 0, bottom: 0, left: 0,
+          zIndex: 90, display: 'none', height: '100vh',
+          borderRight: '1px solid rgba(231, 222, 213, 0.5)',
+          backgroundColor: 'rgba(255, 255, 255, 0.72)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
           overflowY: 'auto'
         }}
         className="admin-desktop-sidebar"
@@ -353,19 +326,14 @@ export default function AdminLayout() {
       )}
       <div 
         style={{ 
-          position: 'fixed', 
-          top: 0, 
-          bottom: 0, 
-          left: 0, 
-          width: '260px', 
-          maxWidth: '85vw',
+          position: 'fixed', top: 0, bottom: 0, left: 0, width: '260px', maxWidth: '85vw',
           zIndex: 1001, 
           transform: mobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-          height: '100vh',
-          overflowY: 'auto',
-          backgroundColor: 'rgba(255, 255, 255, 0.96)',
-          boxShadow: mobileSidebarOpen ? '6px 0 25px rgba(90,46,22,0.15)' : 'none'
+          height: '100vh', overflowY: 'auto',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+          boxShadow: mobileSidebarOpen ? '6px 0 40px rgba(90,46,22,0.2)' : 'none'
         }}
       >
         <SidebarContent />
@@ -389,18 +357,14 @@ export default function AdminLayout() {
         {/* STICKY TOP BAR */}
         <header 
           style={{ 
-            position: 'sticky', 
-            top: 0, 
-            zIndex: 80, 
-            backgroundColor: 'rgba(255, 255, 255, 0.88)', 
-            backdropFilter: 'blur(10px)',
-            borderBottom: '1px solid #E7DED5', 
+            position: 'sticky', top: 0, zIndex: 80,
+            backgroundColor: 'rgba(255, 255, 255, 0.70)',
+            backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+            borderBottom: '1px solid rgba(231, 222, 213, 0.5)',
             padding: '0.5rem 1.75rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             height: '70px',
-            boxShadow: '0 2px 10px rgba(90, 46, 22, 0.05)',
+            boxShadow: '0 2px 20px rgba(90, 46, 22, 0.05)',
           }}
         >
           {/* Left: Mobile hamburger menu toggle & titles */}

@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   /* MILASTY Official Visual Color System (Section 1) */
   --milasty-dark-brown: #3A1F14;
   --milasty-deep-brown: #2A140D;
@@ -4498,12 +4498,13 @@ body.customer-portal-body select:focus {
   }
 }
 
+
 /* ============================================================
    MILASTY UNIFIED DASHBOARD DESIGN SYSTEM (CUSTOMER & ADMIN)
    Common background: /images/dashboard_bg_image.jpeg
    ============================================================ */
 
-/* Common Dashboard Layout Background */
+/* Body background - single source of truth */
 body.customer-portal-body,
 body.admin-body {
   background-color: #F5EBDD !important;
@@ -4515,32 +4516,60 @@ body.admin-body {
   color: #21150F !important;
 }
 
-/* Force dark readable typography across both portals */
-body.customer-portal-body *,
-body.admin-body * {
-  color: inherit;
-}
+/* ==============================================
+   PREMIUM GLASSMORPHISM CARD STYLES
+   ============================================== */
 
-body.customer-portal-body h1, body.customer-portal-body h2, body.customer-portal-body h3, body.customer-portal-body h4,
-body.admin-body h1, body.admin-body h2, body.admin-body h3, body.admin-body h4 {
+body.customer-portal-body .cp-card,
+body.customer-portal-body .milasty-stat-card,
+body.customer-portal-body .glass-card {
+  background: rgba(255, 255, 255, 0.80) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(231, 222, 213, 0.65) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 24px rgba(90, 46, 22, 0.07) !important;
   color: #21150F !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
 
-/* Translucent Card Overrides */
-body.customer-portal-body .glass-card,
-body.admin-body .glass-card,
+body.customer-portal-body .cp-card:hover,
+body.customer-portal-body .milasty-stat-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(90, 46, 22, 0.12) !important;
+  border-color: rgba(197, 138, 53, 0.35) !important;
+}
+
 body.admin-body .admin-card,
+body.admin-body .glass-card,
 body.admin-body .bg-neutral-900,
 body.admin-body .bg-stone-900,
 body.admin-body .bg-dark {
-  background-color: rgba(255, 255, 255, 0.88) !important;
-  border: 1px solid #E5D9CE !important;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 20px rgba(90, 46, 22, 0.06) !important;
+  background: rgba(255, 255, 255, 0.80) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(231, 222, 213, 0.65) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 24px rgba(90, 46, 22, 0.07) !important;
+  color: #21150F !important;
+  padding: 1.4rem 1.5rem !important;
+}
+
+/* ==============================================
+   TYPOGRAPHY
+   ============================================== */
+
+body.customer-portal-body h1, body.customer-portal-body h2,
+body.customer-portal-body h3, body.customer-portal-body h4,
+body.admin-body h1, body.admin-body h2,
+body.admin-body h3, body.admin-body h4 {
   color: #21150F !important;
 }
 
-/* Input & Select Box Overrides */
+/* ==============================================
+   INPUT & FORM OVERRIDES
+   ============================================== */
+
 body.customer-portal-body input[type="text"],
 body.customer-portal-body input[type="email"],
 body.customer-portal-body input[type="password"],
@@ -4551,9 +4580,9 @@ body.customer-portal-body select,
 body.admin-body input,
 body.admin-body textarea,
 body.admin-body select {
-  background-color: #FFFFFF !important;
+  background-color: rgba(255, 255, 255, 0.88) !important;
   color: #21150F !important;
-  border: 1px solid #E5D9CE !important;
+  border: 1px solid rgba(231, 222, 213, 0.8) !important;
   border-radius: 10px !important;
 }
 
@@ -4561,7 +4590,7 @@ body.customer-portal-body input::placeholder,
 body.customer-portal-body textarea::placeholder,
 body.admin-body input::placeholder,
 body.admin-body textarea::placeholder {
-  color: #888888 !important;
+  color: #B0A09A !important;
   opacity: 1 !important;
 }
 
@@ -4574,46 +4603,127 @@ body.admin-body select:focus {
   outline: none !important;
   border-color: #C68A3A !important;
   box-shadow: 0 0 0 3px rgba(198, 138, 58, 0.15) !important;
+  background-color: #FFFFFF !important;
 }
 
-/* Admin Table Overrides */
+/* ==============================================
+   ADMIN TABLE OVERRIDES
+   ============================================== */
+
 body.admin-body table {
-  background-color: rgba(255, 255, 255, 0.90) !important;
-  border-color: #E5D9CE !important;
+  background-color: rgba(255, 255, 255, 0.82) !important;
+  border-color: rgba(231, 222, 213, 0.65) !important;
   color: #21150F !important;
 }
 
 body.admin-body th {
-  background-color: #F7F0E8 !important;
+  background-color: rgba(247, 240, 232, 0.9) !important;
   color: #5A2E16 !important;
   font-weight: 800 !important;
-  border-bottom: 1px solid #E5D9CE !important;
+  border-bottom: 1px solid rgba(231, 222, 213, 0.7) !important;
 }
 
 body.admin-body td {
-  border-bottom: 1px solid #F3EBE3 !important;
+  border-bottom: 1px solid rgba(231, 222, 213, 0.5) !important;
   color: #21150F !important;
 }
 
 body.admin-body tr:hover td {
-  background-color: #FCFAF7 !important;
+  background-color: rgba(252, 250, 247, 0.8) !important;
 }
 
-/* Primary Button Override */
+/* ==============================================
+   BUTTON OVERRIDES
+   ============================================== */
+
 body.customer-portal-body .btn-primary,
 body.admin-body .btn-primary,
 body.admin-body button[type="submit"] {
-  background-color: #5A2E16 !important;
+  background: linear-gradient(135deg, #5A2E16, #7C3D20) !important;
   color: #FFFFFF !important;
   border: 1px solid #5A2E16 !important;
   border-radius: 10px !important;
   font-weight: 700 !important;
+  box-shadow: 0 4px 16px rgba(90, 46, 22, 0.2) !important;
 }
 
 body.customer-portal-body .btn-primary:hover,
 body.admin-body .btn-primary:hover,
 body.admin-body button[type="submit"]:hover {
-  background-color: #4A230F !important;
+  background: linear-gradient(135deg, #4A230F, #5A2E16) !important;
   border-color: #4A230F !important;
+  box-shadow: 0 6px 20px rgba(90, 46, 22, 0.28) !important;
 }
-
+
+body.admin-body .admin-btn-secondary {
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: #5A2E16 !important;
+  border: 1px solid rgba(231, 222, 213, 0.8) !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+}
+
+body.admin-body .admin-btn-primary {
+  background: linear-gradient(135deg, #5A2E16, #7C3D20) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 16px rgba(90, 46, 22, 0.2) !important;
+}
+
+/* ==============================================
+   BADGE OVERRIDES
+   ============================================== */
+
+body.admin-body .admin-badge-success {
+  background-color: rgba(237, 247, 238, 0.9) !important;
+  color: #2E7D32 !important;
+  border: 1px solid rgba(165, 214, 167, 0.6) !important;
+}
+
+body.admin-body .admin-badge-warning {
+  background-color: rgba(254, 249, 236, 0.9) !important;
+  color: #B7791F !important;
+  border: 1px solid rgba(245, 216, 137, 0.6) !important;
+}
+
+body.admin-body .admin-badge-danger {
+  background-color: rgba(254, 236, 236, 0.9) !important;
+  color: #C62828 !important;
+  border: 1px solid rgba(239, 154, 154, 0.6) !important;
+}
+
+/* ==============================================
+   SKELETON PULSE ANIMATION
+   ============================================== */
+
+.milasty-skeleton-pulse {
+  background: linear-gradient(90deg,
+    rgba(231,222,213,0.5) 25%,
+    rgba(245,237,229,0.8) 50%,
+    rgba(231,222,213,0.5) 75%
+  );
+  background-size: 200% 100%;
+  animation: milasty-skeleton-shimmer 1.6s infinite ease-in-out;
+}
+
+@keyframes milasty-skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Responsive sidebar visibility */
+@media (max-width: 1023px) {
+  .customer-desktop-sidebar { display: none !important; }
+  .customer-desktop-topbar  { display: none !important; }
+  .customer-mobile-header-bar { display: flex !important; }
+  .customer-main-area { margin-left: 0 !important; }
+}
+
+@media (min-width: 1024px) {
+  .customer-desktop-sidebar { display: block !important; }
+  .customer-desktop-topbar  { display: flex !important; }
+  .customer-mobile-header-bar { display: none !important; }
+  .customer-main-area { margin-left: 240px !important; }
+}
