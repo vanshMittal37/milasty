@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Search, Filter, RefreshCw, Eye, ArrowUpRight, X, Package, CreditCard, MapPin, User, Mail, Phone, Calendar, CheckCircle, Clock, Sparkles, Printer } from 'lucide-react';
 import api from '../../api/axios';
 
@@ -279,7 +279,7 @@ export default function AdminOrderList() {
                       </div>
                       <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                         <span style={{ fontFamily: 'monospace', fontWeight: '700', color: 'var(--admin-accent)' }}>{pin ? `PIN: ${pin}` : 'No PIN'}</span>
-                        • Fee: {Number(fee) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `₹${fee}`}
+                        â€¢ Fee: {Number(fee) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `â‚¹${fee}`}
                       </div>
                     </td>
                     <td style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--admin-text-secondary)' }}>
@@ -291,7 +291,7 @@ export default function AdminOrderList() {
                       </span>
                     </td>
                     <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>
-                      ₹{total.toLocaleString('en-IN')}
+                      â‚¹{total.toLocaleString('en-IN')}
                     </td>
                     <td>
                       {customizedCount > 0 ? (
@@ -306,7 +306,7 @@ export default function AdminOrderList() {
                           fontWeight: '700',
                         }}>
                           <Sparkles size={11} />
-                          ✦ {customizedCount} Customized Item{customizedCount > 1 ? 's' : ''}
+                          âœ¦ {customizedCount} Customized Item{customizedCount > 1 ? 's' : ''}
                         </span>
                       ) : (
                         <span style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
@@ -415,7 +415,7 @@ export default function AdminOrderList() {
 
             {/* Customer & Shipping Summary Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
-              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1rem' }}>
+              <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--admin-accent)', fontWeight: '700', fontSize: '0.8rem', marginBottom: '0.6rem' }}>
                   <User size={15} /> Customer Details
                 </div>
@@ -432,7 +432,7 @@ export default function AdminOrderList() {
                 </div>
               </div>
 
-              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1rem' }}>
+              <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--admin-accent)', fontWeight: '700', fontSize: '0.8rem', marginBottom: '0.6rem' }}>
                   <MapPin size={15} /> Delivery Address
                 </div>
@@ -448,7 +448,7 @@ export default function AdminOrderList() {
             </div>
 
             {/* Payment & Status Banner */}
-            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
+            <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
               <div>
                 <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', textTransform: 'uppercase', fontWeight: '700' }}>Payment Information</span>
                 <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--admin-text-primary)', marginTop: '0.1rem' }}>
@@ -487,7 +487,7 @@ export default function AdminOrderList() {
                 backgroundColor: 'rgba(217, 119, 6, 0.12)',
                 border: '1px solid rgba(217, 119, 6, 0.35)',
                 borderRadius: '12px',
-                color: '#F5F5F5',
+                color: '#21150F',
               }}>
                 <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#F59E0B', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                   <Sparkles size={14} color="#F59E0B" />
@@ -508,7 +508,7 @@ export default function AdminOrderList() {
                 {(selectedOrder.items || selectedOrder.order_items || []).map((item, idx) => {
                   const note = item.customization_note || item.customizationNote || item.instruction || item.notes;
                   return (
-                    <div key={idx} style={{ padding: '0.85rem 1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--admin-border)', borderRadius: '10px' }}>
+                    <div key={idx} style={{ padding: '0.85rem 1rem', background: 'rgba(252, 250, 247, 0.7)', border: '1px solid var(--admin-border)', borderRadius: '10px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                           <Package size={16} color="var(--admin-accent)" />
@@ -517,12 +517,12 @@ export default function AdminOrderList() {
                               {item.title || item.product_title || item.product_name || 'Bakery Item'}
                             </div>
                             <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
-                              Variant: {item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard'} • Qty: {item.quantity}
+                              Variant: {item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard'} â€¢ Qty: {item.quantity}
                             </div>
                           </div>
                         </div>
                         <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--admin-text-primary)' }}>
-                          ₹{((item.totalPrice || item.total_price || (item.price * item.quantity)) || 0).toLocaleString('en-IN')}
+                          â‚¹{((item.totalPrice || item.total_price || (item.price * item.quantity)) || 0).toLocaleString('en-IN')}
                         </div>
                       </div>
 
@@ -537,7 +537,7 @@ export default function AdminOrderList() {
                           color: '#3A1F14',
                         }}>
                           <div style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#2F7D32', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '0.2rem' }}>
-                            <Sparkles size={13} color="#2F7D32" /> ✦ CUSTOMER INSTRUCTION
+                            <Sparkles size={13} color="#2F7D32" /> âœ¦ CUSTOMER INSTRUCTION
                           </div>
                           <div style={{ fontSize: '0.85rem', fontWeight: '600', fontStyle: 'italic', color: '#2A140D', lineHeight: '1.4' }}>
                             "{note}"
@@ -558,21 +558,21 @@ export default function AdminOrderList() {
             <div style={{ borderTop: '1px solid var(--admin-border)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', alignItems: 'flex-end', fontSize: '0.85rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', color: 'var(--admin-text-secondary)' }}>
                 <span>Subtotal:</span>
-                <span>₹{(selectedOrder.subtotal || 0).toLocaleString('en-IN')}</span>
+                <span>â‚¹{(selectedOrder.subtotal || 0).toLocaleString('en-IN')}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', color: 'var(--admin-text-secondary)' }}>
                 <span>Delivery Fee:</span>
-                <span>{(selectedOrder.deliveryFee || selectedOrder.delivery_fee || 0) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `₹${selectedOrder.deliveryFee || selectedOrder.delivery_fee}`}</span>
+                <span>{(selectedOrder.deliveryFee || selectedOrder.delivery_fee || 0) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `â‚¹${selectedOrder.deliveryFee || selectedOrder.delivery_fee}`}</span>
               </div>
               {(selectedOrder.discountAmount > 0 || selectedOrder.coupon_discount > 0 || selectedOrder.couponDiscount > 0) && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '260px', color: '#22c55e' }}>
                   <span>Discount {(selectedOrder.couponCode || selectedOrder.coupon_code) ? `(${selectedOrder.couponCode || selectedOrder.coupon_code})` : ''}:</span>
-                  <span>-₹{selectedOrder.discountAmount || selectedOrder.coupon_discount || selectedOrder.couponDiscount}</span>
+                  <span>-â‚¹{selectedOrder.discountAmount || selectedOrder.coupon_discount || selectedOrder.couponDiscount}</span>
                 </div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px', fontSize: '1.1rem', fontWeight: '900', color: 'var(--admin-text-primary)', borderTop: '1px dashed var(--admin-border)', paddingTop: '0.5rem', marginTop: '0.2rem' }}>
                 <span>Grand Total:</span>
-                <span>₹{(selectedOrder.grandTotal || selectedOrder.totalAmount || 0).toLocaleString('en-IN')}</span>
+                <span>â‚¹{(selectedOrder.grandTotal || selectedOrder.totalAmount || 0).toLocaleString('en-IN')}</span>
               </div>
             </div>
 
@@ -610,7 +610,7 @@ export default function AdminOrderList() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #3A1F14', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, color: '#3A1F14' }}>MILASTY — ORDER PREPARATION & PACKING SLIP</h2>
+                <h2 style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, color: '#3A1F14' }}>MILASTY â€” ORDER PREPARATION & PACKING SLIP</h2>
                 <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#2F7D32', marginTop: '0.2rem' }}>
                   {selectedOrder.orderNumber || selectedOrder.orderId || `MIL-${String(selectedOrder.id).slice(-6)}`}
                 </div>
@@ -643,9 +643,9 @@ export default function AdminOrderList() {
 
             <div style={{ border: '2px solid #2F7D32', borderRadius: '10px', padding: '1rem', background: '#FBF6EE', marginBottom: '1.25rem' }}>
               <div style={{ fontSize: '0.9rem', fontWeight: '900', textTransform: 'uppercase', color: '#2F7D32', textAlign: 'center', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
-                ━━━━━━━━━━━━━━━━━━━━━━━━<br />
+                â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”<br />
                 CUSTOMER CUSTOMIZATION & SPECIAL INSTRUCTIONS<br />
-                ━━━━━━━━━━━━━━━━━━━━━━━━
+                â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
               </div>
 
               {(selectedOrder.items || selectedOrder.order_items || []).map((item, i) => {
@@ -653,11 +653,11 @@ export default function AdminOrderList() {
                 return (
                   <div key={i} style={{ marginBottom: '1rem', borderBottom: '1px dashed rgba(47,125,50,0.3)', paddingBottom: '0.75rem' }}>
                     <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#3A1F14' }}>
-                      {i + 1}. {item.title || item.product_title || item.product_name || 'Item'} × {item.quantity}
+                      {i + 1}. {item.title || item.product_title || item.product_name || 'Item'} Ã— {item.quantity}
                     </div>
                     {note ? (
                       <div style={{ marginTop: '0.3rem', padding: '0.5rem', background: '#FFF', border: '1px solid #2F7D32', borderRadius: '6px', fontSize: '0.88rem', fontWeight: '700', color: '#2A140D' }}>
-                        ✦ CUSTOMER INSTRUCTION:<br />
+                        âœ¦ CUSTOMER INSTRUCTION:<br />
                         <span style={{ fontStyle: 'italic', color: '#166534' }}>"{note}"</span>
                       </div>
                     ) : (
@@ -680,3 +680,4 @@ export default function AdminOrderList() {
     </div>
   );
 }
+

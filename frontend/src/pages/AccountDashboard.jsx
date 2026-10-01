@@ -16,18 +16,18 @@ import api from '../api/axios';
 
 // — Design tokens (mirrors --cp-* variables for inline JS)
 const T = {
-  bg:            '#FCFAF7',
-  surface:       '#FFFFFF',
-  surfaceAlt:    '#F7F2EC',
+  bg:            'transparent',
+  surface:       'rgba(255, 255, 255, 0.80)',
+  surfaceAlt:    'rgba(245, 237, 229, 0.7)',
   brand:         '#5A2E16',
   brandLight:    '#F5EDE5',
-  accent:        '#C58A35',
+  accent:        '#C68A3A',
   accentLight:   '#FEF9EC',
-  border:        '#E7DED5',
-  textPrimary:   '#171717',
+  border:        'rgba(231, 222, 213, 0.65)',
+  textPrimary:   '#21150F',
   textSecondary: '#4A3B2E',
-  textMuted:     '#888888',
-  textLabel:     '#666666',
+  textMuted:     '#665A52',
+  textLabel:     '#4A3B2E',
   success:       '#2E7D32',
   successBg:     '#EDF7EE',
   warning:       '#B7791F',
@@ -36,8 +36,8 @@ const T = {
   dangerBg:      '#FEECEC',
   info:          '#1565C0',
   infoBg:        '#EAF2FF',
-  shadow:        '0 2px 10px rgba(90, 46, 22, 0.07)',
-  shadowMd:      '0 4px 20px rgba(90, 46, 22, 0.10)',
+  shadow:        '0 4px 24px rgba(90, 46, 22, 0.07)',
+  shadowMd:      '0 8px 32px rgba(90, 46, 22, 0.10)',
 };
 
 // Skeleton Loader
@@ -103,12 +103,12 @@ const labelStyle = {
 // Card style
 const cardStyle = {
   backgroundColor: 'rgba(255, 255, 255, 0.82)',
-  backdropFilter: 'blur(10px)',
-  WebkitBackdropFilter: 'blur(10px)',
-  border: `1px solid ${T.border}`,
-  borderRadius: '16px',
-  boxShadow: T.shadow,
-  transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: `1px solid rgba(231, 222, 213, 0.65)`,
+  borderRadius: '18px',
+  boxShadow: '0 4px 24px rgba(90, 46, 22, 0.07)',
+  transition: 'box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease',
 };
 
 export default function AccountDashboard() {

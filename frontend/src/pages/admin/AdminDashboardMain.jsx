@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, Package, ShoppingBag, Users, AlertTriangle, ArrowUpRight, 
@@ -50,7 +50,7 @@ export default function AdminDashboardMain() {
         <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(143,175,91,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <RefreshCw size={20} className="animate-spin" color="var(--admin-accent)" />
         </div>
-        <span style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Loading analytics…</span>
+        <span style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Loading analyticsâ€¦</span>
       </div>
     );
   }
@@ -122,7 +122,7 @@ export default function AdminDashboardMain() {
   const activityEvents = [
     ...(stats?.recentOrders || []).slice(0, 3).map((o) => ({
       title: `Order #${String(o.orderId || o.id || o._id || '0000').slice(-6).toUpperCase()}`,
-      desc: `${o.shippingAddress?.fullName || o.customerName || 'Customer'} • ₹${(o.totalAmount || 0).toLocaleString('en-IN')}`,
+      desc: `${o.shippingAddress?.fullName || o.customerName || 'Customer'} â€¢ â‚¹${(o.totalAmount || 0).toLocaleString('en-IN')}`,
       time: 'Recent Order',
     })),
     ...outOfStockItems.slice(0, 2).map((item) => ({
@@ -149,7 +149,7 @@ export default function AdminDashboardMain() {
   const kpiData = [
     {
       label: 'Total Revenue',
-      value: `₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`,
+      value: `â‚¹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`,
       sub: 'Captured sales',
       sub2: 'Current period',
       icon: DollarSign,
@@ -171,7 +171,7 @@ export default function AdminDashboardMain() {
       label: 'Low Stock Variants',
       value: lowStockItems.length,
       sub: lowStockItems.length > 0 ? `${lowStockItems.length} Need Restock` : 'Stock Optimal',
-      sub2: `Threshold ≤ ${LOW_STOCK_THRESHOLD} units`,
+      sub2: `Threshold â‰¤ ${LOW_STOCK_THRESHOLD} units`,
       icon: AlertTriangle,
       color: lowStockItems.length > 0 ? '#F59E0B' : 'var(--admin-success)',
       bg: lowStockItems.length > 0 ? 'rgba(245,158,11,0.12)' : 'var(--admin-success-bg)',
@@ -192,11 +192,11 @@ export default function AdminDashboardMain() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
 
-      {/* ── HEADER ── */}
+      {/* â”€â”€ HEADER â”€â”€ */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <p style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--admin-text-muted)', margin: '0 0 0.3rem 0' }}>
-            {timeOfDay} 👋
+            {timeOfDay} ðŸ‘‹
           </p>
           <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', fontWeight: '800', color: 'var(--admin-text-primary)', margin: 0, lineHeight: '1.25' }}>
             Store Performance Overview
@@ -218,7 +218,7 @@ export default function AdminDashboardMain() {
         </div>
       </div>
 
-      {/* ── KPI CARDS ── */}
+      {/* â”€â”€ KPI CARDS â”€â”€ */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1.1rem' }} className="admin-kpi-row">
         <style>{`
           @media (min-width: 1200px) { .admin-kpi-row { grid-template-columns: repeat(4, 1fr) !important; } }
@@ -263,7 +263,7 @@ export default function AdminDashboardMain() {
         })}
       </div>
 
-      {/* ── SALES CHART + LOW STOCK ── */}
+      {/* â”€â”€ SALES CHART + LOW STOCK â”€â”€ */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }} className="admin-dashboard-split">
         <style>{`
           @media (min-width: 1024px) { .admin-dashboard-split { grid-template-columns: 2fr 1fr !important; } }
@@ -331,7 +331,7 @@ export default function AdminDashboardMain() {
                   const y = 160 - (p.y / maxVal) * 140;
                   return (
                     <circle key={i} cx={x} cy={y} r="5" fill="#FFFFFF" stroke="#C68A3A" strokeWidth="2.5">
-                      <title>₹{p.y}</title>
+                      <title>â‚¹{p.y}</title>
                     </circle>
                   );
                 })}
@@ -357,7 +357,7 @@ export default function AdminDashboardMain() {
                   <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#C62828', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <XCircle size={16} color="#FF8A87" /> OUT OF STOCK
                   </h3>
-                  <p style={{ fontSize: '0.75rem', color: '#A7ADB8', margin: '0.15rem 0 0', fontWeight: '600' }}>
+                  <p style={{ fontSize: '0.75rem', color: '#665A52', margin: '0.15rem 0 0', fontWeight: '600' }}>
                     {outOfStockItems.length} {outOfStockItems.length === 1 ? 'variant is unavailable' : 'variants are unavailable'}
                   </p>
                 </div>
@@ -366,17 +366,17 @@ export default function AdminDashboardMain() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                 {outOfStockItems.slice(0, 3).map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 0.85rem', background: 'rgba(217, 83, 79, 0.12)', borderRadius: '10px', border: '1px solid rgba(217, 83, 79, 0.25)' }}>
-                    <img src={item.image} alt={item.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)' }} />
+                    <img src={item.image} alt={item.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(231,222,213,0.6)' }} />
                     <div style={{ flexGrow: 1, minWidth: 0 }}>
                       <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#21150F', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {item.title}
                       </div>
                       <div style={{ fontSize: '0.74rem', color: '#FF8A87', fontWeight: '700' }}>
-                        {item.variantName ? `${item.variantName} · ` : ''}Out of Stock
+                        {item.variantName ? `${item.variantName} Â· ` : ''}Out of Stock
                       </div>
                     </div>
                     <Link to={`/admin/products/edit/${item.productId}`} className="admin-btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.72rem', textDecoration: 'none' }}>
-                      Manage →
+                      Manage â†’
                     </Link>
                   </div>
                 ))}
@@ -390,7 +390,7 @@ export default function AdminDashboardMain() {
               <h3 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <AlertTriangle size={16} color="#FBBF24" /> LOW STOCK ALERT
               </h3>
-              <p style={{ fontSize: '0.75rem', color: '#A7ADB8', margin: '0.15rem 0 0', fontWeight: '600' }}>
+              <p style={{ fontSize: '0.75rem', color: '#665A52', margin: '0.15rem 0 0', fontWeight: '600' }}>
                 {lowStockItems.length} {lowStockItems.length === 1 ? 'variant needs attention' : 'variants need attention'}
               </p>
             </div>
@@ -400,17 +400,17 @@ export default function AdminDashboardMain() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   {lowStockItems.slice(0, 4).map((item, idx) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 0.85rem', background: 'rgba(245, 158, 11, 0.12)', borderRadius: '10px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
-                      <img src={item.image} alt={item.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)' }} />
+                      <img src={item.image} alt={item.title} style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(231,222,213,0.6)' }} />
                       <div style={{ flexGrow: 1, minWidth: 0 }}>
                         <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#21150F', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {item.title}
                         </div>
                         <div style={{ fontSize: '0.74rem', color: '#FBBF24', fontWeight: '700' }}>
-                          {item.variantName ? `${item.variantName} · ` : ''}Only {item.stock} left (₹{item.price})
+                          {item.variantName ? `${item.variantName} Â· ` : ''}Only {item.stock} left (â‚¹{item.price})
                         </div>
                       </div>
                       <Link to={`/admin/products/edit/${item.productId}`} className="admin-btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.72rem', textDecoration: 'none' }}>
-                        Manage →
+                        Manage â†’
                       </Link>
                     </div>
                   ))}
@@ -424,14 +424,14 @@ export default function AdminDashboardMain() {
               )}
             </div>
 
-            <Link to="/admin/products" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem', fontSize: '0.8rem', fontWeight: '800', color: '#85B870', textDecoration: 'none', marginTop: '0.85rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.75rem' }}>
+            <Link to="/admin/products" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem', fontSize: '0.8rem', fontWeight: '800', color: '#C68A3A', textDecoration: 'none', marginTop: '0.85rem', borderTop: '1px solid rgba(231, 222, 213, 0.6)', paddingTop: '0.75rem' }}>
               Manage Inventory <ArrowUpRight size={14} />
             </Link>
         </div>
       </div>
     </div>
 
-      {/* ── RECENT ORDERS TABLE ── */}
+      {/* â”€â”€ RECENT ORDERS TABLE â”€â”€ */}
       <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.2rem 1.4rem', borderBottom: '1px solid var(--admin-border)', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
@@ -465,7 +465,7 @@ export default function AdminDashboardMain() {
                       <div style={{ fontWeight: '700', color: 'var(--admin-text-primary)', fontSize: '0.84rem' }}>{o.customerName}</div>
                       <div style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)' }}>{o.phone}</div>
                     </td>
-                    <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>₹{o.totalAmount}</td>
+                    <td style={{ fontWeight: '800', color: 'var(--admin-text-primary)' }}>â‚¹{o.totalAmount}</td>
                     <td>
                       <span className={`admin-badge ${o.paymentStatus === 'Paid' ? 'admin-badge-success' : 'admin-badge-danger'}`}>
                         {o.paymentStatus}
@@ -494,7 +494,7 @@ export default function AdminDashboardMain() {
         </div>
       </div>
 
-      {/* ── QUICK ACTIONS ── */}
+      {/* â”€â”€ QUICK ACTIONS â”€â”€ */}
       <div>
         <p style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--admin-text-muted)', margin: '0 0 0.75rem' }}>Quick Actions</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(195px, 1fr))', gap: '1rem' }}>
@@ -537,7 +537,7 @@ export default function AdminDashboardMain() {
         </div>
       </div>
 
-      {/* ── ACTIVITY + STORE HEALTH ── */}
+      {/* â”€â”€ ACTIVITY + STORE HEALTH â”€â”€ */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem', paddingBottom: '1rem' }} className="admin-dashboard-footer">
         <style>{`
           @media (min-width: 1024px) { .admin-dashboard-footer { grid-template-columns: 1fr 1fr !important; } }
@@ -586,7 +586,7 @@ export default function AdminDashboardMain() {
                   <span style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--admin-text-primary)' }}>{label}</span>
                 </div>
                 <span className={`admin-badge ${ok ? 'admin-badge-success' : 'admin-badge-danger'}`}>
-                  {ok ? '● Active' : '○ Offline'}
+                  {ok ? 'â— Active' : 'â—‹ Offline'}
                 </span>
               </div>
             ))}
@@ -597,3 +597,4 @@ export default function AdminDashboardMain() {
     </div>
   );
 }
+

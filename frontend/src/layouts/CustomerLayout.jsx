@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { 
   LayoutDashboard, Package, Heart, MapPin, User, Lock, LogOut, Menu, X, 
-  Store, ChevronRight, MessageSquare, ShoppingBag, Search, Bell
+  Store, ChevronRight, MessageSquare, ShoppingBag, Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -374,17 +374,14 @@ export default function CustomerLayout() {
           }}
           className="customer-desktop-topbar"
         >
-          {/* Search */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '0.6rem',
-            backgroundColor: 'rgba(252, 250, 247, 0.8)', border: '1px solid rgba(231, 222, 213, 0.7)',
-            borderRadius: '12px', padding: '0.55rem 1rem', width: '260px',
-            backdropFilter: 'blur(8px)',
-          }}>
-            <Search size={14} color="#B0A09A" style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: '0.82rem', color: '#B0A09A', fontWeight: '500' }}>
-              Search your account...
-            </span>
+          {/* Greeting */}
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ fontSize: '0.62rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#C68A3A' }}>
+              {getGreeting()}
+            </div>
+            <div style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: '#21150F', lineHeight: 1.2 }}>
+              {userName} ✨
+            </div>
           </div>
 
           {/* Right side */}

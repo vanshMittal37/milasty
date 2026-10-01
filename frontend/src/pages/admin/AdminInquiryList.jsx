@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   MessageSquare, Search, Filter, Mail, Phone, Calendar, 
   ExternalLink, CheckCircle2, Clock, User, FileText, X, Save, RefreshCw
@@ -273,7 +273,7 @@ export default function AdminInquiryList() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
         <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid var(--admin-border)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#F4F5F0' }}>{summary.totalQueries}</div>
-          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9DA69F', fontWeight: '800', marginTop: '0.2rem' }}>Total</div>
+          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#665A52', fontWeight: '800', marginTop: '0.2rem' }}>Total</div>
         </div>
 
         <div style={{ backgroundColor: 'var(--admin-surface)', border: '1px solid rgba(184, 204, 122, 0.3)', borderRadius: '12px', padding: '1.25rem 1rem', textAlign: 'center' }}>
@@ -340,7 +340,7 @@ export default function AdminInquiryList() {
         {/* Search & Sort Controls */}
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '240px', position: 'relative' }}>
-            <Search size={16} color="#7B8E80" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+            <Search size={16} color="#665A52" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
               value={searchQuery}
@@ -363,7 +363,7 @@ export default function AdminInquiryList() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.78rem', color: '#9DA69F', fontWeight: '700' }}>Sort:</span>
+            <span style={{ fontSize: '0.78rem', color: '#665A52', fontWeight: '700' }}>Sort:</span>
             <select
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
@@ -388,7 +388,7 @@ export default function AdminInquiryList() {
 
       {/* INQUIRY LIST OR EMPTY STATE (REQUIREMENTS #24, #62) */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#9DA69F' }}>
+        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#665A52' }}>
           <div
             style={{
               width: '36px',
@@ -412,11 +412,11 @@ export default function AdminInquiryList() {
             textAlign: 'center',
           }}
         >
-          <MessageSquare size={36} color="#7B8E80" style={{ margin: '0 auto 1rem' }} />
+          <MessageSquare size={36} color="#665A52" style={{ margin: '0 auto 1rem' }} />
           <h3 style={{ fontSize: '1.1rem', color: '#F4F5F0', fontWeight: '800', marginBottom: '0.3rem' }}>
             No customer inquiries yet.
           </h3>
-          <p style={{ fontSize: '0.85rem', color: '#9DA69F', margin: 0 }}>
+          <p style={{ fontSize: '0.85rem', color: '#665A52', margin: 0 }}>
             {searchQuery || statusFilter !== 'all'
               ? 'No inquiries match your current search or status filter.'
               : 'Customer queries submitted via the contact form will appear here.'}
@@ -450,7 +450,7 @@ export default function AdminInquiryList() {
                         LOGGED IN CUSTOMER
                       </span>
                     ) : (
-                      <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#9DA69F', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: '800' }}>
+                      <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(245, 237, 229, 0.5)', color: '#665A52', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: '800' }}>
                         GUEST
                       </span>
                     )}
@@ -459,14 +459,14 @@ export default function AdminInquiryList() {
                   <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#F4F5F0' }}>
                     {inquiry.name}
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: '#9DA69F', display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.2rem' }}>
-                    <span>✉ {inquiry.email}</span>
-                    {inquiry.phone && <span>📞 {inquiry.phone}</span>}
+                  <div style={{ fontSize: '0.8rem', color: '#665A52', display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.2rem' }}>
+                    <span>âœ‰ {inquiry.email}</span>
+                    {inquiry.phone && <span>ðŸ“ž {inquiry.phone}</span>}
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <div style={{ fontSize: '0.78rem', color: '#9DA69F', textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.78rem', color: '#665A52', textAlign: 'right' }}>
                     <div>Submitted:</div>
                     <div style={{ color: '#F4F5F0', fontWeight: '700' }}>{formatDate(inquiry.created_at)}</div>
                   </div>
@@ -475,7 +475,7 @@ export default function AdminInquiryList() {
                     onClick={() => openInquiryModal(inquiry)}
                     style={{
                       padding: '0.55rem 1.25rem',
-                      backgroundColor: '#274C37',
+                      backgroundColor: '#5A2E16',
                       color: '#FFFFFF',
                       border: 'none',
                       borderRadius: '8px',
@@ -503,7 +503,7 @@ export default function AdminInquiryList() {
                   lineHeight: '1.5',
                 }}
               >
-                <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#7B8E80', fontWeight: '800', marginBottom: '0.2rem' }}>
+                <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#665A52', fontWeight: '800', marginBottom: '0.2rem' }}>
                   Customer Message:
                 </div>
                 "{inquiry.message}"
@@ -554,14 +554,14 @@ export default function AdminInquiryList() {
                   </h3>
                   <AdminStatusBadge status={selectedInquiry.status} />
                 </div>
-                <div style={{ fontSize: '0.78rem', color: '#9DA69F' }}>
+                <div style={{ fontSize: '0.78rem', color: '#665A52' }}>
                   Submitted on {formatDate(selectedInquiry.created_at)}
                 </div>
               </div>
 
               <button
                 onClick={closeInquiryModal}
-                style={{ background: 'none', border: 'none', color: '#9DA69F', cursor: 'pointer', padding: '0.3rem' }}
+                style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer', padding: '0.3rem' }}
               >
                 <X size={20} />
               </button>
@@ -577,15 +577,15 @@ export default function AdminInquiryList() {
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                   <div>
-                    <div style={{ fontSize: '0.72rem', color: '#7B8E80', fontWeight: '700' }}>Name</div>
+                    <div style={{ fontSize: '0.72rem', color: '#665A52', fontWeight: '700' }}>Name</div>
                     <div style={{ fontSize: '0.92rem', color: '#F4F5F0', fontWeight: '800' }}>{selectedInquiry.name}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.72rem', color: '#7B8E80', fontWeight: '700' }}>Email Address</div>
+                    <div style={{ fontSize: '0.72rem', color: '#665A52', fontWeight: '700' }}>Email Address</div>
                     <div style={{ fontSize: '0.92rem', color: '#F4F5F0', fontWeight: '800' }}>{selectedInquiry.email}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.72rem', color: '#7B8E80', fontWeight: '700' }}>WhatsApp / Phone</div>
+                    <div style={{ fontSize: '0.72rem', color: '#665A52', fontWeight: '700' }}>WhatsApp / Phone</div>
                     <div style={{ fontSize: '0.92rem', color: '#F4F5F0', fontWeight: '800' }}>{selectedInquiry.phone || 'Not provided'}</div>
                   </div>
                 </div>
@@ -596,7 +596,7 @@ export default function AdminInquiryList() {
                 <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8CC7A', fontWeight: '800', margin: '0 0 0.75rem 0' }}>
                   MANUAL CONTACT OPTIONS
                 </h4>
-                <p style={{ fontSize: '0.78rem', color: '#9DA69F', margin: '0 0 0.85rem 0' }}>
+                <p style={{ fontSize: '0.78rem', color: '#665A52', margin: '0 0 0.85rem 0' }}>
                   Clicking these buttons opens your mail client, WhatsApp web/app, or phone dialer. MILASTY does NOT send automatic messages.
                 </p>
 
@@ -732,7 +732,7 @@ export default function AdminInquiryList() {
                     style={{
                       height: '44px',
                       padding: '0 1.25rem',
-                      backgroundColor: '#274C37',
+                      backgroundColor: '#5A2E16',
                       color: '#FFFFFF',
                       border: 'none',
                       borderRadius: '8px',
@@ -756,7 +756,7 @@ export default function AdminInquiryList() {
                   <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#B8CC7A', fontWeight: '800', margin: 0 }}>
                     ADMIN RESPONSE (VISIBLE TO CUSTOMER)
                   </h4>
-                  <span style={{ fontSize: '0.7rem', color: '#9DA69F' }}>Customer will see this in "My Inquiries"</span>
+                  <span style={{ fontSize: '0.7rem', color: '#665A52' }}>Customer will see this in "My Inquiries"</span>
                 </div>
 
                 <textarea
@@ -786,7 +786,7 @@ export default function AdminInquiryList() {
                   style={{
                     height: '40px',
                     padding: '0 1.25rem',
-                    backgroundColor: '#274C37',
+                    backgroundColor: '#5A2E16',
                     color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '8px',
@@ -809,7 +809,7 @@ export default function AdminInquiryList() {
                   <h4 style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#F59E0B', fontWeight: '800', margin: 0 }}>
                     INTERNAL NOTES (ADMIN ONLY)
                   </h4>
-                  <span style={{ fontSize: '0.7rem', color: '#9DA69F' }}>Private notes, hidden from customer</span>
+                  <span style={{ fontSize: '0.7rem', color: '#665A52' }}>Private notes, hidden from customer</span>
                 </div>
 
                 <textarea
@@ -863,3 +863,4 @@ export default function AdminInquiryList() {
     </div>
   );
 }
+
