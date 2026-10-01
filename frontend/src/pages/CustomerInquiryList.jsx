@@ -1,70 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageSquare, Calendar, ChevronRight, Clock, RefreshCw, AlertCircle } from 'lucide-react';
+import { MessageSquare, Calendar, ChevronRight, Clock, RefreshCw, AlertCircle, Plus } from 'lucide-react';
 import api from '../api/axios';
 
-// Helper component for customer status badges matching MILASTY design system
+const T = {
+  bg: '#FCFAF7', surface: '#FFFFFF', surfaceAlt: '#F7F2EC',
+  brand: '#5A2E16', brandLight: '#F5EDE5',
+  accent: '#C58A35', accentLight: '#FEF9EC',
+  border: '#E7DED5',
+  textPrimary: '#171717', textSecondary: '#4A3B2E', textMuted: '#888888',
+  success: '#2E7D32', successBg: '#EDF7EE',
+  danger: '#C62828', dangerBg: '#FEECEC',
+  warning: '#B7791F', warningBg: '#FEF9EC',
+  info: '#1565C0', infoBg: '#EAF2FF',
+  shadow: '0 2px 10px rgba(90, 46, 22, 0.07)',
+};
+
 export function InquiryStatusBadge({ status }) {
   const s = String(status || 'new').toLowerCase();
-  
-  let bg = 'rgba(185, 205, 148, 0.15)';
-  let color = '#b9cd94';
-  let border = 'rgba(185, 205, 148, 0.3)';
-  let label = 'New';
-  let dotColor = '#b9cd94';
-
-  if (s === 'in_progress' || s === 'in progress') {
-    bg = 'rgba(245, 158, 11, 0.15)';
-    color = '#F59E0B';
-    border = 'rgba(245, 158, 11, 0.3)';
-    label = 'In Progress';
-    dotColor = '#F59E0B';
-  } else if (s === 'contacted') {
-    bg = 'rgba(59, 130, 246, 0.15)';
-    color = '#60A5FA';
-    border = 'rgba(59, 130, 246, 0.3)';
-    label = 'Contacted';
-    dotColor = '#60A5FA';
-  } else if (s === 'resolved') {
-    bg = 'rgba(34, 197, 94, 0.15)';
-    color = '#4ADE80';
-    border = 'rgba(34, 197, 94, 0.3)';
-    label = 'Resolved';
-    dotColor = '#4ADE80';
-  } else if (s === 'closed') {
-    bg = 'rgba(156, 163, 175, 0.15)';
-    color = '#9CA3AF';
-    border = 'rgba(156, 163, 175, 0.3)';
-    label = 'Closed';
-    dotColor = '#9CA3AF';
-  }
-
+  const map = {
+    new:         { bg: T.infoBg,    color: T.info,    label: 'New' },
+    in_progress: { bg: T.warningBg, color: T.warning, label: 'In Progress' },
+    'in progress': { bg: T.warningBg, color: T.warning, label: 'In Progress' },
+    contacted:   { bg: '#F3E8FF',  color: '#6B21A8', label: 'Contacted' },
+    resolved:    { bg: T.successBg, color: T.success, label: 'Resolved' },
+    closed:      { bg: '#F3F4F6',  color: '#6B7280', label: 'Closed' },
+  };
+  const style = map[s] || { bg: T.infoBg, color: T.info, label: status || 'New' };
   return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '0.4rem',
-        padding: '0.25rem 0.75rem',
-        borderRadius: '999px',
-        fontSize: '0.75rem',
-        fontWeight: '800',
-        backgroundColor: bg,
-        color: color,
-        border: `1px solid ${border}`,
-        letterSpacing: '0.04em',
-        textTransform: 'uppercase',
-      }}
-    >
-      <span
-        style={{
-          width: '6px',
-          height: '6px',
-          borderRadius: '50%',
-          backgroundColor: dotColor,
-        }}
-      />
-      {label}
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+      padding: '0.25rem 0.75rem', borderRadius: '999px',
+      fontSize: '0.72rem', fontWeight: '700',
+      backgroundColor: style.bg, color: style.color,
+      letterSpacing: '0.04em', textTransform: 'uppercase',
+      whiteSpace: 'nowrap',
+    }}>
+      <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: style.color, flexShrink: 0 }} />
+      {style.label}
     </span>
   );
 }
@@ -79,289 +52,178 @@ export default function CustomerInquiryList() {
     if (isManualRefresh) setRefreshing(true);
     else setLoading(true);
     setError(null);
-
     try {
       const response = await api.get('/inquiries/my-inquiries');
-      if (response.data && response.data.success) {
+      if (response.data?.success) {
         setInquiries(response.data.inquiries || []);
       } else {
         setInquiries([]);
       }
     } catch (err) {
       console.error('Fetch customer inquiries error:', err);
-      setError('Unable to load your inquiries right now. Please try again.');
+      setError('Unable to load your inquiries. Please try again.');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
-  useEffect(() => {
-    fetchInquiries();
-  }, []);
+  useEffect(() => { fetchInquiries(); }, []);
 
   const formatDate = (dateStr) => {
     if (!dateStr) return 'Recently';
     try {
-      return new Date(dateStr).toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      });
-    } catch (e) {
-      return dateStr;
-    }
+      return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch (e) { return dateStr; }
+  };
+
+  const cardStyle = {
+    backgroundColor: T.surface, border: `1px solid ${T.border}`,
+    borderRadius: '14px', boxShadow: T.shadow,
   };
 
   return (
     <div style={{ width: '100%', minWidth: 0 }}>
-      {/* Header & Refresh Action Bar */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '1.75rem',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
+
+      {/* Header Row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', color: '#F0F4F1', fontWeight: '800', margin: 0, fontFamily: 'var(--font-sans)' }}>
-            My Inquiries ({inquiries.length})
+          <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: T.textPrimary, margin: 0 }}>
+            My Inquiries {!loading && `(${inquiries.length})`}
           </h2>
-          <p style={{ fontSize: '0.82rem', color: '#9EB0A2', margin: '0.25rem 0 0 0' }}>
-            View your questions and track your inquiries with MILASTY.
+          <p style={{ fontSize: '0.82rem', color: T.textMuted, margin: '0.2rem 0 0 0' }}>
+            View your questions and support requests.
           </p>
         </div>
-
-        <button
-          onClick={() => fetchInquiries(true)}
-          disabled={refreshing || loading}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.45rem 0.9rem',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '8px',
-            color: '#85B870',
-            fontSize: '0.8rem',
-            fontWeight: '700',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-          }}
-        >
-          <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
-          <span>{refreshing ? 'Refreshing...' : 'Refresh Status'}</span>
-        </button>
-      </div>
-
-      {/* Loading State */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#9EB0A2' }}>
-          <div
-            style={{
-              width: '40px',
-              height: '40px',
-              border: '3px solid rgba(133, 184, 112, 0.2)',
-              borderTopColor: '#85B870',
-              borderRadius: '50%',
-              margin: '0 auto 1rem',
-              animation: 'spin 1s linear infinite',
-            }}
-          />
-          <p style={{ fontSize: '0.9rem', margin: 0 }}>Loading your inquiries...</p>
-        </div>
-      ) : error ? (
-        <div
-          style={{
-            padding: '1.5rem',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            borderRadius: '12px',
-            color: '#FCA5A5',
-            fontSize: '0.9rem',
-            textAlign: 'center',
-          }}
-        >
-          <AlertCircle size={24} style={{ margin: '0 auto 0.5rem' }} />
-          <p style={{ margin: 0 }}>{error}</p>
+        <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center' }}>
           <button
-            onClick={() => fetchInquiries()}
+            onClick={() => fetchInquiries(true)}
+            disabled={refreshing || loading}
             style={{
-              marginTop: '1rem',
-              padding: '0.4rem 1rem',
-              backgroundColor: '#274C37',
-              color: '#FFF',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontWeight: '700',
+              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+              padding: '0.5rem 0.9rem', borderRadius: '8px',
+              border: `1px solid ${T.border}`, backgroundColor: T.surface,
+              color: T.textSecondary, fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer',
             }}
           >
+            <RefreshCw size={13} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </button>
+          <Link to="/contact" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+            padding: '0.5rem 1rem', borderRadius: '8px',
+            backgroundColor: T.brand, color: '#FFFFFF',
+            fontSize: '0.8rem', fontWeight: '700', textDecoration: 'none',
+          }}>
+            <Plus size={14} /> New Inquiry
+          </Link>
+        </div>
+      </div>
+
+      {/* Loading */}
+      {loading && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          {[1, 2, 3].map((i) => (
+            <div key={i} style={{ ...cardStyle, padding: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '10px', backgroundColor: '#EDE8E1', animation: 'milastyPulse 1.5s ease-in-out infinite', flexShrink: 0 }} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                <div style={{ height: '14px', width: '160px', backgroundColor: '#EDE8E1', borderRadius: '4px', animation: 'milastyPulse 1.5s ease-in-out infinite' }} />
+                <div style={{ height: '12px', width: '100px', backgroundColor: '#EDE8E1', borderRadius: '4px', animation: 'milastyPulse 1.5s ease-in-out infinite' }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Error */}
+      {!loading && error && (
+        <div style={{ ...cardStyle, padding: '2rem', textAlign: 'center', backgroundColor: T.dangerBg, border: `1px solid #EF9A9A` }}>
+          <AlertCircle size={28} color={T.danger} style={{ margin: '0 auto 0.75rem' }} />
+          <p style={{ color: T.danger, fontSize: '0.9rem', margin: '0 0 1rem' }}>{error}</p>
+          <button onClick={() => fetchInquiries()} style={{ padding: '0.5rem 1.25rem', backgroundColor: T.brand, color: '#FFFFFF', border: 'none', borderRadius: '8px', fontWeight: '700', cursor: 'pointer' }}>
             Try Again
           </button>
         </div>
-      ) : inquiries.length === 0 ? (
-        /* Empty State */
-        <div
-          style={{
-            backgroundColor: '#0D120E',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '16px',
-            padding: '4rem 2rem',
-            textAlign: 'center',
-          }}
-        >
-          <div
-            style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(39, 76, 55, 0.4)',
-              color: '#85B870',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 1.25rem',
-              border: '1px solid rgba(133, 184, 112, 0.3)',
-            }}
-          >
-            <MessageSquare size={26} />
+      )}
+
+      {/* Empty State */}
+      {!loading && !error && inquiries.length === 0 && (
+        <div style={{ ...cardStyle, padding: '4rem 2rem', textAlign: 'center' }}>
+          <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: T.accentLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.15rem' }}>
+            <MessageSquare size={28} color={T.accent} />
           </div>
-          <h3 style={{ fontSize: '1.15rem', color: '#F0F4F1', fontWeight: '800', marginBottom: '0.4rem' }}>
-            No inquiries yet.
-          </h3>
-          <p style={{ fontSize: '0.88rem', color: '#9EB0A2', maxWidth: '400px', margin: '0 auto 1.75rem' }}>
-            Have a question? Contact the MILASTY team.
+          <h3 style={{ fontSize: '1rem', fontWeight: '800', color: T.textPrimary, margin: '0 0 0.35rem 0' }}>No Inquiries Yet</h3>
+          <p style={{ fontSize: '0.85rem', color: T.textMuted, maxWidth: '340px', margin: '0 auto 1.5rem' }}>
+            Have a question about your order or products? Our team is here to help.
           </p>
-          <Link
-            to="/contact"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.65rem 1.5rem',
-              backgroundColor: '#274C37',
-              color: '#FFFFFF',
-              borderRadius: '8px',
-              fontWeight: '800',
-              fontSize: '0.88rem',
-              textDecoration: 'none',
-              boxShadow: '0 4px 14px rgba(39, 76, 55, 0.3)',
-            }}
-          >
-            <MessageSquare size={16} />
-            <span>Contact Us</span>
+          <Link to="/contact" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+            padding: '0.65rem 1.5rem', backgroundColor: T.brand, color: '#FFFFFF',
+            borderRadius: '999px', fontWeight: '700', textDecoration: 'none', fontSize: '0.85rem',
+          }}>
+            <MessageSquare size={15} /> Contact MILASTY Team
           </Link>
         </div>
-      ) : (
-        /* Inquiry Cards Grid */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 340px), 1fr))', gap: '1.25rem' }}>
+      )}
+
+      {/* Inquiry List */}
+      {!loading && !error && inquiries.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
           {inquiries.map((inquiry) => {
-            const hasResponse = Boolean(inquiry.admin_response && inquiry.admin_response.trim());
+            const inquiryId = inquiry._id || inquiry.id;
+            const subject = inquiry.subject || inquiry.topic || 'General Inquiry';
+            const message = inquiry.message || inquiry.details || '';
+            const status = inquiry.status || 'new';
+            const hasReply = inquiry.reply || inquiry.adminReply;
+            const dateLabel = formatDate(inquiry.createdAt);
 
             return (
-              <div
-                key={inquiry.id || inquiry.inquiry_number}
-                style={{
-                  backgroundColor: '#0D120E',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '16px',
-                  padding: '1.5rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  transition: 'all 0.2s ease',
-                  boxSizing: 'border-box',
-                }}
+              <Link
+                key={inquiryId}
+                to={`/account/inquiries/${inquiryId}`}
+                style={{ textDecoration: 'none' }}
               >
-                <div>
-                  {/* Top Card Bar: Number & Status Badge */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <div style={{ fontSize: '1.05rem', fontWeight: '900', color: '#F0F4F1', fontFamily: 'var(--font-sans)', letterSpacing: '0.02em' }}>
-                      {inquiry.inquiry_number || 'INQ-1000'}
+                <div style={{
+                  ...cardStyle, padding: '1.25rem',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  gap: '1rem', flexWrap: 'wrap',
+                  transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
+                  cursor: 'pointer',
+                }}>
+                  {/* Left: Icon + Content */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      width: '42px', height: '42px', borderRadius: '10px',
+                      backgroundColor: hasReply ? T.successBg : T.accentLight,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    }}>
+                      <MessageSquare size={18} color={hasReply ? T.success : T.accent} />
                     </div>
-                    <InquiryStatusBadge status={inquiry.status} />
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: '0.9rem', fontWeight: '700', color: T.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {subject}
+                      </div>
+                      <div style={{ fontSize: '0.76rem', color: T.textMuted, marginTop: '0.15rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {message.length > 80 ? message.slice(0, 80) + '...' : message}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.3rem', fontSize: '0.72rem', color: T.textMuted }}>
+                        <Calendar size={11} /> {dateLabel}
+                        {hasReply && (
+                          <span style={{ color: T.success, fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                            · ✓ Reply received
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Submission Date */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: '#7B8E80', marginBottom: '1rem', fontWeight: '600' }}>
-                    <Calendar size={14} color="#7B8E80" />
-                    <span>Submitted: {formatDate(inquiry.created_at)}</span>
+                  {/* Right: Badge + Arrow */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+                    <InquiryStatusBadge status={status} />
+                    <ChevronRight size={16} color={T.textMuted} />
                   </div>
-
-                  {/* Message Preview */}
-                  <div style={{ marginBottom: '1.25rem' }}>
-                    <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#85B870', fontWeight: '800', marginBottom: '0.35rem' }}>
-                      Your Message
-                    </div>
-                    <p
-                      style={{
-                        fontSize: '0.88rem',
-                        color: '#D1D7D2',
-                        lineHeight: '1.5',
-                        margin: 0,
-                        fontWeight: '500',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      "{inquiry.message}"
-                    </p>
-                  </div>
-
-                  {/* Response indicator tag */}
-                  {hasResponse && (
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                        padding: '0.25rem 0.6rem',
-                        backgroundColor: 'rgba(39, 76, 55, 0.35)',
-                        border: '1px solid rgba(133, 184, 112, 0.3)',
-                        borderRadius: '6px',
-                        color: '#85B870',
-                        fontSize: '0.74rem',
-                        fontWeight: '700',
-                        marginBottom: '1.25rem',
-                      }}
-                    >
-                      <span>Response received from MILASTY</span>
-                    </div>
-                  )}
                 </div>
-
-                {/* Card Action Button */}
-                <Link
-                  to={`/account/inquiries/${inquiry.id || inquiry.inquiry_number}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.45rem',
-                    width: '100%',
-                    padding: '0.6rem 1rem',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    color: '#F0F4F1',
-                    fontSize: '0.82rem',
-                    fontWeight: '800',
-                    textDecoration: 'none',
-                    transition: 'all 0.2s ease',
-                    boxSizing: 'border-box',
-                  }}
-                >
-                  <span>View Details</span>
-                  <ChevronRight size={15} color="#85B870" />
-                </Link>
-              </div>
+              </Link>
             );
           })}
         </div>

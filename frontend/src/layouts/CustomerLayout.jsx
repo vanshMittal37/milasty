@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { 
   LayoutDashboard, Package, Heart, MapPin, User, Lock, LogOut, Menu, X, 
-  Store, Home as HomeIcon, ChevronRight, Bell, ShieldCheck, MessageSquare
+  Store, ChevronRight, MessageSquare, ShoppingBag, Search, Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -21,15 +21,14 @@ export default function CustomerLayout() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  // Protect layout: Redirect to login if not authenticated
+  // Protect layout
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
     }
   }, [isAuthenticated, navigate]);
 
-  // Toggle body class for customer portal dark green theme
-  // (class-based !important beats the global brown body !important)
+  // Apply light theme body class
   useEffect(() => {
     document.body.classList.add('customer-portal-body');
     return () => {
@@ -37,9 +36,12 @@ export default function CustomerLayout() {
     };
   }, []);
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  // Close drawer on route change
+  useEffect(() => {
+    setMobileSidebarOpen(false);
+  }, [location.pathname, location.search]);
+
+  if (!isAuthenticated) return null;
 
   const confirmLogout = () => {
     setShowLogoutModal(false);
@@ -48,6 +50,18 @@ export default function CustomerLayout() {
     navigate('/login', { replace: true });
   };
 
+  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
+  const userName = user?.name || 'Customer';
+
+  // Get greeting based on time
+  const getGreeting = () => {
+    const hr = new Date().getHours();
+    if (hr < 12) return 'Good Morning';
+    if (hr < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
+  // Navigation sections
   const navSections = [
     {
       title: 'MAIN',
@@ -67,10 +81,9 @@ export default function CustomerLayout() {
       ]
     },
     {
-      title: 'SYSTEM / STORE',
+      title: 'STORE',
       items: [
-        { label: 'Visit Store', path: '/shop', icon: Store, external: true },
-        { label: 'Home', path: '/', icon: HomeIcon, external: true },
+        { label: 'Visit Store', path: '/shop', icon: Store },
       ]
     }
   ];
@@ -78,199 +91,145 @@ export default function CustomerLayout() {
   const getPageHeaderInfo = () => {
     const path = location.pathname;
     const search = location.search;
-
     if (path === '/account') {
       if (search.includes('tab=addresses')) return { category: 'ACCOUNT / ADDRESSES', title: 'Delivery Locations', subtitle: 'Manage your saved shipping addresses for fast checkout.' };
-      if (search.includes('tab=profile')) return { category: 'ACCOUNT / PROFILE', title: 'Personal Profile', subtitle: 'Manage your account name, email and phone number.' };
-      if (search.includes('tab=password')) return { category: 'ACCOUNT / SECURITY', title: 'Security & Password', subtitle: 'Update your account password and security settings.' };
-      return { category: 'ACCOUNT / OVERVIEW', title: 'Dashboard', subtitle: "Here's what's happening with your MILASTY account today." };
+      if (search.includes('tab=profile')) return { category: 'ACCOUNT / PROFILE', title: 'My Profile', subtitle: 'Manage your account name, email and phone number.' };
+      if (search.includes('tab=password')) return { category: 'ACCOUNT / SECURITY', title: 'Change Password', subtitle: 'Update your account password and security settings.' };
+      return { category: 'ACCOUNT OVERVIEW', title: `${getGreeting()}, ${userName} ☀️`, subtitle: "Here's what's happening with your MILASTY account today." };
     }
-    if (path.includes('/account/orders/')) {
-      return { category: 'ACCOUNT / ORDERS', title: 'Order Details', subtitle: 'View order summary, items, and tracking status.' };
-    }
-    if (path === '/account/orders') {
-      return { category: 'ACCOUNT / ORDERS', title: 'My Orders', subtitle: 'Track and review your past purchases and order status.' };
-    }
-    if (path.includes('/account/inquiries')) {
-      return { category: 'ACCOUNT / INQUIRIES', title: 'My Inquiries', subtitle: 'View your questions and track your inquiries with MILASTY.' };
-    }
-    if (path === '/wishlist') {
-      return { category: 'ACCOUNT / WISHLIST', title: 'My Wishlist', subtitle: 'Your saved favorite bakes and rituals.' };
-    }
+    if (path.includes('/account/orders/')) return { category: 'ACCOUNT / ORDERS', title: 'Order Details', subtitle: 'View order summary, items, and tracking status.' };
+    if (path === '/account/orders') return { category: 'ACCOUNT / ORDERS', title: 'My Orders', subtitle: 'Track and manage your MILASTY purchases.' };
+    if (path.includes('/account/inquiries')) return { category: 'ACCOUNT / SUPPORT', title: 'My Inquiries', subtitle: 'View your questions and support requests.' };
+    if (path === '/wishlist') return { category: 'ACCOUNT / WISHLIST', title: 'My Wishlist', subtitle: 'Your saved favourite bakes and products.' };
     return { category: 'ACCOUNT / PORTAL', title: 'Customer Portal', subtitle: 'Manage your MILASTY account.' };
   };
 
   const { category, title, subtitle } = getPageHeaderInfo();
-  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
+  const isDashboard = location.pathname === '/account' && !location.search;
 
-  const SidebarContent = () => (
-    <div 
-      style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        height: '100%', 
+  const isNavActive = (item) => {
+    if (item.path.includes('?')) {
+      return (location.pathname + location.search) === item.path;
+    }
+    return location.pathname === item.path && !location.search;
+  };
+
+  const SidebarContent = ({ onClose }) => (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      backgroundColor: '#FFFFFF',
+      padding: '1.5rem 1rem',
+      overflowY: 'auto',
+      gap: '0',
+    }}>
+      {/* Brand Header */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#0D120E',
-        color: '#9EB0A2',
-        padding: '1.75rem 1.25rem',
-        overflowY: 'auto'
-      }}
-    >
-      <div>
-        {/* Brand Header */}
-        <div style={{ marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.10)', paddingBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div 
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '7px',
-                backgroundColor: '#274C37',
-                color: '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: '900',
-                fontFamily: 'var(--font-serif)',
-                fontSize: '0.85rem',
-                border: '1px solid rgba(255,255,255,0.15)',
-                flexShrink: 0
-              }}
-            >
-              M
+        marginBottom: '1.75rem',
+        paddingBottom: '1.25rem',
+        borderBottom: '1px solid #E7DED5',
+      }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none' }}>
+          <div style={{
+            width: '32px', height: '32px', borderRadius: '8px',
+            backgroundColor: '#5A2E16', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', flexShrink: 0,
+          }}>
+            <span style={{ color: '#FFFFFF', fontWeight: '900', fontFamily: 'var(--font-serif)', fontSize: '0.9rem' }}>M</span>
+          </div>
+          <div>
+            <div style={{ fontSize: '0.9rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.06em', color: '#171717', lineHeight: '1.1' }}>
+              MILASTY
             </div>
-            <div>
-              <div style={{ fontSize: '0.92rem', fontFamily: 'var(--font-serif)', fontWeight: '900', letterSpacing: '0.04em', margin: 0, color: '#F5F5F5', lineHeight: '1.1' }}>
-                MILASTY
-              </div>
-              <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#85B870', fontWeight: '800', marginTop: '0.1rem' }}>
-                Customer Portal
-              </div>
+            <div style={{ fontSize: '0.55rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#C58A35', fontWeight: '700', marginTop: '0.1rem' }}>
+              Customer Portal
             </div>
           </div>
-          <button 
-            onClick={() => setMobileSidebarOpen(false)}
-            style={{ background: 'none', border: 'none', color: '#A7ADB8', cursor: 'pointer', display: 'none', padding: '0.2rem' }}
-            className="customer-mobile-close-btn"
-          >
+        </Link>
+        {onClose && (
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '0.25rem', display: 'flex', alignItems: 'center' }}>
             <X size={18} />
           </button>
-        </div>
-
-        {/* Navigation Sections */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {navSections.map((sec) => (
-            <div key={sec.title}>
-              <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7B8E80', fontWeight: '800', marginBottom: '0.65rem' }}>
-                {sec.title}
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                {sec.items.map((item) => {
-                  const Icon = item.icon;
-                  const currentPath = location.pathname + location.search;
-                  const isActive = !item.external && (
-                    item.path.includes('?') 
-                      ? currentPath === item.path 
-                      : (location.pathname === item.path && !location.search)
-                  );
-
-                  return (
-                    <Link
-                      key={item.label}
-                      to={item.path}
-                      onClick={() => setMobileSidebarOpen(false)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '0.6rem 0.85rem',
-                        borderRadius: '8px',
-                        fontSize: '0.82rem',
-                        fontWeight: '700',
-                        textDecoration: 'none',
-                        color: isActive ? '#FFFFFF' : '#A7ADB8',
-                        backgroundColor: isActive ? 'rgba(39, 76, 55, 0.45)' : 'transparent',
-                        borderLeft: isActive ? '3px solid #85B870' : '3px solid transparent',
-                        transition: 'all 0.2s ease',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <Icon size={16} color={isActive ? '#85B870' : '#7B8E80'} />
-                        <span>{item.label}</span>
-                      </div>
-                      {item.badge !== undefined && item.badge > 0 && (
-                        <span 
-                          style={{
-                            fontSize: '0.7rem',
-                            fontWeight: '800',
-                            backgroundColor: isActive ? '#85B870' : 'rgba(255,255,255,0.08)',
-                            color: isActive ? '#0F1115' : '#F5F5F5',
-                            padding: '0.15rem 0.5rem',
-                            borderRadius: '999px'
-                          }}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </nav>
+        )}
       </div>
 
-      {/* Sidebar Footer User Card & Logout */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.10)', paddingTop: '1.25rem', marginTop: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* Navigation */}
+      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+        {navSections.map((sec) => (
+          <div key={sec.title}>
+            <div className="milasty-sidebar-section-title">{sec.title}</div>
+            <div className="milasty-sidebar-nav">
+              {sec.items.map((item) => {
+                const Icon = item.icon;
+                const active = isNavActive(item);
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.path}
+                    onClick={() => onClose && onClose()}
+                    className={`milasty-sidebar-item${active ? ' active' : ''}`}
+                  >
+                    <Icon size={16} style={{ flexShrink: 0 }} />
+                    <span style={{ flexGrow: 1 }}>{item.label}</span>
+                    {item.badge !== undefined && item.badge > 0 && (
+                      <span style={{
+                        fontSize: '0.68rem',
+                        fontWeight: '800',
+                        backgroundColor: active ? '#C58A35' : '#F0E8DE',
+                        color: active ? '#FFFFFF' : '#5A2E16',
+                        padding: '0.1rem 0.45rem',
+                        borderRadius: '999px',
+                        minWidth: '18px',
+                        textAlign: 'center',
+                      }}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="milasty-sidebar-divider" />
+          </div>
+        ))}
+      </nav>
+
+      {/* Sidebar Footer — User Card */}
+      <div style={{ borderTop: '1px solid #E7DED5', paddingTop: '1.25rem', marginTop: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', minWidth: 0 }}>
-            <div 
-              style={{ 
-                width: '36px', 
-                height: '36px', 
-                borderRadius: '50%', 
-                backgroundColor: '#274C37', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                color: '#FFFFFF',
-                fontWeight: '900',
-                fontSize: '0.9rem',
-                border: '1px solid rgba(255,255,255,0.15)',
-                flexShrink: 0
-              }}
-            >
+            <div style={{
+              width: '36px', height: '36px', borderRadius: '50%',
+              backgroundColor: '#F5EDE5', border: '2px solid #E7DED5',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#5A2E16', fontWeight: '900', fontSize: '0.9rem', flexShrink: 0,
+            }}>
               {userInitial}
             </div>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#F5F5F5', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {user?.name || 'Customer'}
+              <div style={{ fontSize: '0.83rem', fontWeight: '700', color: '#171717', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {userName}
               </div>
-              <div style={{ fontSize: '0.66rem', color: '#7B8E80', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {user?.email || 'Authenticated User'}
+              <div style={{ fontSize: '0.66rem', color: '#888', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user?.email || ''}
               </div>
             </div>
           </div>
-          
-          <button 
+          <button
             type="button"
-            onClick={() => setShowLogoutModal(true)} 
-            style={{ 
-              background: 'none', 
-              border: 'none', 
-              color: '#D9534F', 
-              cursor: 'pointer',
-              padding: '0.45rem',
-              display: 'flex',
-              alignItems: 'center',
-              borderRadius: '6px',
-              transition: 'all 0.2s',
-              flexShrink: 0
-            }}
+            onClick={() => setShowLogoutModal(true)}
             title="Log Out"
+            style={{
+              background: 'none', border: '1px solid #FEECEC', cursor: 'pointer',
+              color: '#C62828', padding: '0.4rem', borderRadius: '8px',
+              display: 'flex', alignItems: 'center', transition: 'all 0.18s', flexShrink: 0,
+            }}
           >
-            <LogOut size={16} />
+            <LogOut size={15} />
           </button>
         </div>
       </div>
@@ -278,198 +237,177 @@ export default function CustomerLayout() {
   );
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#090D0A', color: '#F0F4F1' }}>
-      
-      {/* DESKTOP PERMANENT SIDEBAR */}
-      <aside 
-        style={{ 
-          width: '260px', 
-          position: 'fixed', 
-          top: 0, 
-          bottom: 0, 
-          left: 0, 
-          zIndex: 90,
-          borderRight: '1px solid rgba(255,255,255,0.10)',
-          height: '100vh',
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#FCFAF7' }}>
+
+      {/* DESKTOP FIXED SIDEBAR */}
+      <aside
+        style={{
+          width: '240px', position: 'fixed', top: 0, bottom: 0, left: 0,
+          zIndex: 90, borderRight: '1px solid #E7DED5', height: '100vh',
         }}
         className="customer-desktop-sidebar"
       >
-        <SidebarContent />
+        <SidebarContent onClose={null} />
       </aside>
 
-      {/* MOBILE SIDEBAR DRAWER OVERLAY */}
+      {/* MOBILE OVERLAY */}
       {mobileSidebarOpen && (
-        <div 
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.75)',
-            backdropFilter: 'blur(4px)',
-            zIndex: 998,
-          }}
+        <div
+          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(50, 30, 15, 0.45)', backdropFilter: 'blur(4px)', zIndex: 998 }}
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
 
       {/* MOBILE DRAWER */}
-      <aside 
+      <aside
         style={{
-          position: 'fixed',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          width: '280px',
+          position: 'fixed', top: 0, bottom: 0, left: 0, width: '260px',
           zIndex: 999,
           transform: mobileSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-          boxShadow: '4px 0 24px rgba(0,0,0,0.5)',
+          boxShadow: '4px 0 30px rgba(90, 46, 22, 0.18)',
         }}
         className="customer-mobile-drawer"
       >
-        <SidebarContent />
+        <SidebarContent onClose={() => setMobileSidebarOpen(false)} />
       </aside>
 
       {/* MAIN CONTENT WRAPPER */}
-      <div 
-        style={{ 
-          flexGrow: 1, 
-          display: 'flex', 
-          flexDirection: 'column', 
-          minWidth: 0,
-        }}
+      <div
+        style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0, backgroundColor: '#FCFAF7' }}
         className="customer-main-area"
       >
-        {/* MOBILE TOP HEADER BAR (Hidden on desktop via CSS) */}
-        <header 
-          style={{ 
-            height: '64px', 
-            backgroundColor: '#0D120E', 
-            borderBottom: '1px solid rgba(255,255,255,0.07)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between', 
-            padding: '0 1.25rem', 
-            position: 'sticky', 
-            top: 0, 
-            zIndex: 80 
+        {/* MOBILE TOP HEADER */}
+        <header
+          style={{
+            height: '60px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E7DED5',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '0 1.25rem', position: 'sticky', top: 0, zIndex: 80,
           }}
           className="customer-mobile-header-bar"
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <button 
+            <button
               type="button"
               onClick={() => setMobileSidebarOpen(true)}
-              style={{ background: 'none', border: 'none', color: '#F5F5F5', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0.2rem' }}
+              style={{ background: 'none', border: 'none', color: '#5A2E16', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0.2rem' }}
             >
               <Menu size={22} />
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: '#F5F5F5' }}>
-                MILASTY
-              </span>
-              <span style={{ fontSize: '0.62rem', backgroundColor: 'rgba(39, 76, 55, 0.45)', color: '#85B870', padding: '0.15rem 0.5rem', borderRadius: '999px', fontWeight: '800' }}>
-                PORTAL
-              </span>
-            </div>
+            <span style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: '#171717' }}>
+              MILASTY
+            </span>
           </div>
-
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Link 
-              to="/shop" 
-              style={{ 
-                fontSize: '0.75rem', 
-                color: '#85B870', 
-                fontWeight: '800', 
-                textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.25rem',
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                padding: '0.35rem 0.75rem',
-                borderRadius: '6px',
-                border: '1px solid rgba(255,255,255,0.10)'
+            <Link
+              to="/shop"
+              style={{
+                fontSize: '0.75rem', color: '#5A2E16', fontWeight: '700', textDecoration: 'none',
+                display: 'flex', alignItems: 'center', gap: '0.25rem',
+                backgroundColor: '#F5EDE5', padding: '0.35rem 0.75rem',
+                borderRadius: '8px', border: '1px solid #E7DED5',
               }}
             >
               <span>Store</span>
               <ChevronRight size={12} />
             </Link>
-
-            <div 
-              style={{ 
-                width: '32px', 
-                height: '32px', 
-                borderRadius: '50%', 
-                backgroundColor: '#274C37', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                color: '#FFFFFF',
-                fontWeight: '900',
-                fontSize: '0.85rem',
-                border: '1px solid rgba(255,255,255,0.15)'
-              }}
-            >
+            <div style={{
+              width: '32px', height: '32px', borderRadius: '50%',
+              backgroundColor: '#F5EDE5', border: '1.5px solid #E7DED5',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#5A2E16', fontWeight: '900', fontSize: '0.85rem',
+            }}>
               {userInitial}
             </div>
           </div>
         </header>
 
-        {/* DASHBOARD TOP HEADER SECTION */}
-        <div 
-          style={{ 
-            padding: '1.75rem 2rem 0', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '1rem'
+        {/* DESKTOP TOP HEADER BAR */}
+        <div
+          style={{
+            backgroundColor: '#FFFFFF', borderBottom: '1px solid #E7DED5',
+            padding: '0 2rem', height: '60px', display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 80,
           }}
+          className="customer-desktop-topbar"
         >
-          <div>
-            <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#7B8E80', fontWeight: '800', marginBottom: '0.25rem' }}>
-              {category}
-            </div>
-            <h1 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-sans)', color: '#F0F4F1', fontWeight: '800', margin: 0, letterSpacing: '-0.01em', lineHeight: 1.2 }}>
-              {title}
-            </h1>
-            <p style={{ fontSize: '0.82rem', color: '#9EB0A2', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
-              {subtitle}
-            </p>
+          {/* Search */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '0.6rem',
+            backgroundColor: '#FCFAF7', border: '1px solid #E7DED5',
+            borderRadius: '10px', padding: '0.5rem 1rem', width: '280px',
+          }}>
+            <Search size={14} color="#AAAAAA" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '0.82rem', color: '#AAAAAA', fontWeight: '500' }}>
+              Search your account...
+            </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Link
-              to="/shop"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                padding: '0.55rem 1.15rem',
-                borderRadius: '8px',
-                backgroundColor: '#274C37',
-                color: '#FFFFFF',
-                fontWeight: '800',
-                fontSize: '0.82rem',
-                textDecoration: 'none',
-                transition: 'all 0.2s',
-                boxShadow: '0 4px 14px rgba(39, 76, 55, 0.3)',
-              }}
-            >
+          {/* Right side */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Link to="/shop" style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+              padding: '0.5rem 1rem', borderRadius: '10px',
+              backgroundColor: '#5A2E16', color: '#FFFFFF',
+              fontWeight: '700', fontSize: '0.82rem', textDecoration: 'none',
+              transition: 'all 0.18s ease',
+            }}>
+              <Store size={14} />
               <span>Visit Store</span>
-              <ChevronRight size={15} />
+              <ChevronRight size={13} />
             </Link>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{
+                width: '34px', height: '34px', borderRadius: '50%',
+                backgroundColor: '#F5EDE5', border: '2px solid #E7DED5',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#5A2E16', fontWeight: '900', fontSize: '0.88rem', flexShrink: 0,
+              }}>
+                {userInitial}
+              </div>
+              <div style={{ display: 'none' }} className="cp-user-name-label">
+                <span style={{ fontSize: '0.83rem', fontWeight: '700', color: '#171717' }}>{userName}</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* MAIN ROUTED OUTLET / CONTENT AREA */}
-        <main style={{ padding: '1.75rem 2rem 3rem', flexGrow: 1 }}>
+        {/* PAGE HEADER */}
+        <div style={{
+          padding: '1.75rem 2rem 0',
+          backgroundColor: '#FCFAF7',
+        }}>
+          <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#AAAAAA', fontWeight: '800', marginBottom: '0.3rem' }}>
+            {category}
+          </div>
+          <h1 style={{
+            fontSize: isDashboard ? '1.65rem' : '1.4rem',
+            fontFamily: 'var(--font-sans)',
+            fontWeight: '800',
+            color: '#171717',
+            margin: 0,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.2,
+          }}>
+            {title}
+          </h1>
+          {subtitle && (
+            <p style={{ fontSize: '0.85rem', color: '#666666', margin: '0.3rem 0 0 0', fontWeight: '500' }}>
+              {subtitle}
+            </p>
+          )}
+        </div>
+
+        {/* MAIN OUTLET */}
+        <main style={{ padding: '1.5rem 2rem 3rem', flexGrow: 1 }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <Outlet />
           </div>
         </main>
       </div>
 
-      {/* LOGOUT CONFIRMATION MODAL */}
+      {/* LOGOUT MODAL */}
       <ConfirmationModal
         isOpen={showLogoutModal}
         title="Logout from MILASTY?"

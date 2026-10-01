@@ -317,19 +317,159 @@ body.admin-body {
   color: var(--admin-text-primary) !important;
 }
 
+
+/* =====================================================
+   CUSTOMER PORTAL — PREMIUM LIGHT THEME
+   ===================================================== */
+
+/* 1. SCOPED CSS VARIABLES */
 body.customer-portal-body {
-  background-color: #090D0A !important;
-  color: #F0F4F1 !important;
+  /* Backgrounds */
+  --cp-bg:              #FCFAF7;
+  --cp-surface:         #FFFFFF;
+  --cp-surface-alt:     #F7F2EC;
+  --cp-sidebar-bg:      #FFFFFF;
+
+  /* Text */
+  --cp-text-primary:    #171717;
+  --cp-text-secondary:  #4A3B2E;
+  --cp-text-muted:      #888888;
+  --cp-text-label:      #666666;
+
+  /* Brand */
+  --cp-brand:           #5A2E16;
+  --cp-brand-hover:     #6B3518;
+  --cp-brand-dark:      #3A2115;
+  --cp-brand-light:     #F5EDE5;
+
+  /* Accent */
+  --cp-accent:          #C58A35;
+  --cp-accent-light:    #F5EDE5;
+
+  /* Border */
+  --cp-border:          #E7DED5;
+  --cp-border-hover:    #C58A35;
+
+  /* Status */
+  --cp-success:         #2E7D32;
+  --cp-success-bg:      #EDF7EE;
+  --cp-warning:         #B7791F;
+  --cp-warning-bg:      #FEF9EC;
+  --cp-danger:          #C62828;
+  --cp-danger-bg:       #FEECEC;
+  --cp-info:            #1565C0;
+  --cp-info-bg:         #EAF2FF;
+
+  /* Sidebar active */
+  --cp-nav-active-bg:   #F5EDE5;
+  --cp-nav-active-text: #5A2E16;
+  --cp-nav-text:        #4A3B2E;
+  --cp-nav-muted:       #888888;
+
+  /* Shadows */
+  --cp-shadow-sm:       0 1px 4px rgba(90, 46, 22, 0.07);
+  --cp-shadow-md:       0 4px 16px rgba(90, 46, 22, 0.10);
+  --cp-shadow-lg:       0 8px 30px rgba(90, 46, 22, 0.12);
+
+  /* Radius */
+  --cp-radius-sm:       10px;
+  --cp-radius-md:       14px;
+  --cp-radius-lg:       18px;
+  --cp-radius-xl:       24px;
+
+  background-color: var(--cp-bg) !important;
+  color: var(--cp-text-primary) !important;
 }
 
+/* 2. MAIN AREA BACKGROUNDS */
 body.customer-portal-body main,
 body.customer-portal-body .customer-main-area,
 body.customer-portal-body .account-dashboard-page {
-  background-color: #090D0A !important;
-  color: #F0F4F1 !important;
+  background-color: var(--cp-bg) !important;
+  color: var(--cp-text-primary) !important;
 }
 
-/* Universal Page & Section Background Overrides for Warm Cream Theme */
+.account-dashboard-page {
+  background-color: var(--cp-bg, #FCFAF7) !important;
+  color: var(--cp-text-primary, #171717) !important;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 3. HEADING & TEXT RESETS in customer portal */
+.account-dashboard-page h1,
+.account-dashboard-page h2,
+.account-dashboard-page h3,
+.account-dashboard-page h4,
+.account-dashboard-page h5,
+.customer-main-area h1,
+.customer-main-area h2,
+.customer-main-area h3,
+.customer-main-area h4,
+.customer-main-area h5 {
+  font-family: var(--font-sans) !important;
+  font-weight: 800;
+  color: var(--cp-text-primary, #171717) !important;
+}
+
+.customer-main-area h1 {
+  font-size: 1.55rem !important;
+  color: var(--cp-text-primary, #171717) !important;
+}
+
+/* 4. CARD STYLES — LIGHT THEME */
+.cp-card,
+.milasty-dash-card,
+body.customer-portal-body .glass-card,
+.customer-portal-body .glass-card,
+.customer-main-area .glass-card,
+.account-dashboard-page .glass-card {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E7DED5 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 10px rgba(90, 46, 22, 0.06) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.18s ease;
+  color: var(--cp-text-primary, #171717) !important;
+}
+
+.cp-card:hover,
+.milasty-dash-card:hover,
+body.customer-portal-body .glass-card:hover,
+.customer-portal-body .glass-card:hover,
+.customer-main-area .glass-card:hover,
+.account-dashboard-page .glass-card:hover {
+  border-color: #C58A35 !important;
+  box-shadow: 0 6px 22px rgba(90, 46, 22, 0.11) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 5. FORM INPUTS — LIGHT */
+body.customer-portal-body input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+body.customer-portal-body select,
+body.customer-portal-body textarea {
+  background-color: #FFFFFF !important;
+  color: #171717 !important;
+  border: 1px solid #E7DED5 !important;
+  border-radius: 10px !important;
+}
+
+body.customer-portal-body input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+body.customer-portal-body select:focus,
+body.customer-portal-body textarea:focus {
+  border-color: #C58A35 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(197, 138, 53, 0.12) !important;
+}
+
+body.customer-portal-body input::placeholder,
+body.customer-portal-body textarea::placeholder {
+  color: #AAAAAA !important;
+  opacity: 1 !important;
+}
+
+
 .products-page,
 .shop-page,
 .contact-page,
@@ -374,64 +514,7 @@ body.customer-portal-body .account-dashboard-page {
 
 
 
-/* Customer Dashboard uses DARK GREEN admin theme */
-.account-dashboard-page {
-  background-color: #090D0A !important;
-  color: #F0F4F1 !important;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
 
-.account-dashboard-page h1,
-.account-dashboard-page h2,
-.account-dashboard-page h3,
-.account-dashboard-page h4,
-.account-dashboard-page h5,
-.customer-main-area h1,
-.customer-main-area h2,
-.customer-main-area h3,
-.customer-main-area h4,
-.customer-main-area h5 {
-  font-family: var(--font-sans) !important;
-  font-weight: 800;
-  color: #F0F4F1 !important;
-}
-
-.customer-main-area h1 {
-  font-size: 1.3rem !important;
-}
-
-/* Dashboard Cards inside customer portal */
-.milasty-dash-card,
-body.customer-portal-body .glass-card,
-.customer-portal-body .glass-card,
-.customer-main-area .glass-card,
-.account-dashboard-page .glass-card {
-  background: #111613 !important;
-  background-color: #111613 !important;
-  border: 1px solid rgba(133, 184, 112, 0.28) !important;
-  border-radius: 16px !important;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  color: #F0F4F1 !important;
-}
-
-.milasty-dash-card:hover,
-body.customer-portal-body .glass-card:hover,
-.customer-portal-body .glass-card:hover,
-.customer-main-area .glass-card:hover,
-.account-dashboard-page .glass-card:hover {
-  border-color: rgba(133, 184, 112, 0.55) !important;
-  box-shadow: 0 6px 20px rgba(29, 59, 40, 0.2) !important;
-}
-
-body.customer-portal-body input,
-body.customer-portal-body select,
-body.customer-portal-body textarea {
-  background-color: #161C18 !important;
-  color: #F0F4F1 !important;
-  border: 1px solid rgba(133, 184, 112, 0.25) !important;
-}
 
 main section,
 section,
@@ -3635,64 +3718,69 @@ footer.transparent-blurred-footer {
 }
 
 .milasty-sidebar-section-title {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: #7B8E80;
+  color: #999999;
   padding: 0 0.75rem;
   margin-bottom: 0.35rem;
+  margin-top: 0.5rem;
 }
 
 .milasty-sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.2rem;
 }
 
 .milasty-sidebar-item {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  padding: 0.75rem 0.95rem;
-  border-radius: 12px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #9EB0A2;
+  gap: 0.8rem;
+  padding: 0.72rem 0.95rem;
+  border-radius: 10px;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: #4A3B2E;
   text-decoration: none;
   background: transparent;
   border: none;
+  border-left: 3px solid transparent;
   width: 100%;
   cursor: pointer;
   text-align: left;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 
 .milasty-sidebar-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #F0F4F1;
+  background: #F5EDE5;
+  color: #5A2E16;
+  border-left-color: #E7DED5;
 }
 
 .milasty-sidebar-item.active {
-  background: #1D3B28 !important;
-  color: #FFFFFF !important;
-  box-shadow: 0 4px 14px rgba(29, 59, 40, 0.4);
+  background: #F5EDE5 !important;
+  color: #5A2E16 !important;
+  border-left-color: #C58A35 !important;
+  font-weight: 700 !important;
 }
 
 .milasty-sidebar-item.active svg {
-  color: #FFFFFF !important;
+  color: #C58A35 !important;
+  stroke: #C58A35 !important;
 }
 
 .milasty-sidebar-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-  margin: 0.2rem 0;
+  background: #E7DED5;
+  margin: 0.5rem 0;
 }
 
-/* Stat Cards matching Image 2 */
+/* Stat Cards — Premium Light Theme */
 .milasty-stat-card {
-  background: #111613;
-  border: 1px solid rgba(133, 184, 112, 0.25);
+  background: #FFFFFF;
+  border: 1px solid #E7DED5;
   border-radius: 16px;
   padding: 1.35rem;
   display: flex;
@@ -3700,13 +3788,13 @@ footer.transparent-blurred-footer {
   gap: 1.15rem;
   cursor: pointer;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 10px rgba(90, 46, 22, 0.06);
 }
 
 .milasty-stat-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(133, 184, 112, 0.6);
-  box-shadow: 0 10px 28px rgba(39, 76, 55, 0.25);
+  transform: translateY(-2px);
+  border-color: #C58A35;
+  box-shadow: 0 8px 24px rgba(90, 46, 22, 0.11);
 }
 
 .milasty-stat-icon-wrapper {
@@ -3719,24 +3807,24 @@ footer.transparent-blurred-footer {
   flex-shrink: 0;
 }
 
-/* Skeleton Loading Animation */
+/* Skeleton Loading Animation — Light */
 @keyframes milastyPulse {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
 
 .milasty-skeleton-pulse {
   animation: milastyPulse 1.5s ease-in-out infinite;
-  background: rgba(255, 255, 255, 0.06);
+  background: #EDE8E1;
   border-radius: 10px;
 }
 
-/* Mobile Drawer Overlay */
+/* Mobile Drawer Overlay — Light Theme */
 .milasty-drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(8, 12, 9, 0.8);
-  backdrop-filter: blur(5px);
+  background: rgba(50, 30, 15, 0.45);
+  backdrop-filter: blur(4px);
   z-index: 1100;
 }
 
@@ -3747,14 +3835,14 @@ footer.transparent-blurred-footer {
   width: 280px;
   max-width: 85vw;
   height: 100vh;
-  background: #0D120E;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: #FFFFFF;
+  border-right: 1px solid #E7DED5;
   z-index: 1110;
   padding: 2rem 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 10px 0 40px rgba(90, 46, 22, 0.15);
   overflow-y: auto;
 }
 
@@ -4274,4 +4362,139 @@ button.cart-button svg rect {
   stroke: #FFFFFF !important;
   opacity: 1 !important;
   visibility: visible !important;
-}
+}
+
+/* ============================================================
+   CUSTOMER PORTAL — LIGHT THEME OVERRIDES & FIXES
+   Applied via body.customer-portal-body
+   ============================================================ */
+
+/* Sidebar width fix: 240px in layout */
+@media (min-width: 1025px) {
+  .customer-main-area {
+    margin-left: 240px !important;
+  }
+}
+
+/* Desktop topbar: show on desktop, hide mobile bar */
+@media (min-width: 1025px) {
+  .customer-desktop-topbar {
+    display: flex !important;
+  }
+  .customer-mobile-header-bar {
+    display: none !important;
+  }
+}
+@media (max-width: 1024px) {
+  .customer-desktop-topbar {
+    display: none !important;
+  }
+}
+
+/* Spin keyframe for loading spinners */
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ── PORTAL BODY SCOPE ── */
+body.customer-portal-body {
+  background-color: #FCFAF7 !important;
+  color: #171717 !important;
+}
+
+/* Force all text inside portal to be dark */
+body.customer-portal-body * {
+  color: inherit;
+}
+
+/* Override dark global select styles inside portal */
+body.customer-portal-body select,
+body.customer-portal-body option,
+body.customer-portal-body optgroup {
+  background-color: #FFFFFF !important;
+  color: #171717 !important;
+  border-color: #E7DED5 !important;
+}
+
+body.customer-portal-body select:focus {
+  background-color: #FFFFFF !important;
+  color: #171717 !important;
+  border-color: #C58A35 !important;
+  box-shadow: 0 0 0 3px rgba(197, 138, 53, 0.15) !important;
+}
+
+/* Portal page outer wrapper */
+body.customer-portal-body .account-dashboard-page {
+  min-height: auto;
+  background: transparent;
+  padding: 0;
+}
+
+/* Fix any glass-card or dark card leakage inside portal */
+body.customer-portal-body .glass-card {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E7DED5 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 10px rgba(90, 46, 22, 0.07) !important;
+  color: #171717 !important;
+}
+
+/* Ensure all headings are dark */
+body.customer-portal-body h1,
+body.customer-portal-body h2,
+body.customer-portal-body h3,
+body.customer-portal-body h4 {
+  color: #171717 !important;
+}
+
+/* Ensure inputs inside portal are light-themed */
+body.customer-portal-body input[type="text"],
+body.customer-portal-body input[type="email"],
+body.customer-portal-body input[type="password"],
+body.customer-portal-body input[type="tel"],
+body.customer-portal-body input[type="number"],
+body.customer-portal-body textarea {
+  background-color: #FFFFFF !important;
+  color: #171717 !important;
+  border-color: #E7DED5 !important;
+}
+
+body.customer-portal-body input::placeholder,
+body.customer-portal-body textarea::placeholder {
+  color: #AAAAAA !important;
+  opacity: 1 !important;
+}
+
+body.customer-portal-body input:focus,
+body.customer-portal-body textarea:focus,
+body.customer-portal-body select:focus {
+  outline: none !important;
+  border-color: #C58A35 !important;
+  box-shadow: 0 0 0 3px rgba(197, 138, 53, 0.15) !important;
+}
+
+/* Stat card hover */
+.milasty-stat-card:focus {
+  outline: none;
+  border-color: #C58A35;
+  box-shadow: 0 8px 24px rgba(90, 46, 22, 0.11);
+}
+
+/* ── PORTAL RESPONSIVE CONTENT PADDING ── */
+@media (max-width: 768px) {
+  body.customer-portal-body main {
+    padding: 1.25rem 1rem 3rem !important;
+  }
+  body.customer-portal-body .account-dashboard-page {
+    padding: 0;
+  }
+}
+
+/* User name label on desktop topbar */
+@media (min-width: 1200px) {
+  .cp-user-name-label {
+    display: block !important;
+  }
+}
+

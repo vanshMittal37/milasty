@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Package, Clock, Truck, ChevronRight, Search, Filter, AlertCircle, ShoppingBag, ShieldCheck, Star, Camera, CheckCircle2 } from 'lucide-react';
 import api from '../api/axios';
@@ -177,146 +177,136 @@ export default function OrderHistoryPage() {
 
   if (!isAuthenticated) return null;
 
+  // Design tokens
+  const T = {
+    bg: '#FCFAF7', surface: '#FFFFFF', surfaceAlt: '#F7F2EC',
+    brand: '#5A2E16', brandLight: '#F5EDE5',
+    accent: '#C58A35', accentLight: '#FEF9EC',
+    border: '#E7DED5',
+    textPrimary: '#171717', textSecondary: '#4A3B2E', textMuted: '#888888',
+    success: '#2E7D32', successBg: '#EDF7EE',
+    danger: '#C62828', dangerBg: '#FEECEC',
+    warning: '#B7791F', warningBg: '#FEF9EC',
+    shadow: '0 2px 10px rgba(90, 46, 22, 0.07)',
+  };
+
+  const cardStyle = {
+    backgroundColor: T.surface, border: `1px solid ${T.border}`,
+    borderRadius: '16px', boxShadow: T.shadow,
+  };
+
+  const StatusBadge = ({ status }) => {
+    const s = String(status || 'Confirmed');
+    const map = {
+      Pending:       { bg: T.warningBg, color: T.warning },
+      Confirmed:     { bg: '#EAF2FF', color: '#1565C0' },
+      Processing:    { bg: '#F3E8FF', color: '#6B21A8' },
+      Packed:        { bg: '#F3E8FF', color: '#6B21A8' },
+      Shipped:       { bg: T.accentLight, color: T.accent },
+      'Out for Delivery': { bg: T.accentLight, color: T.accent },
+      Delivered:     { bg: T.successBg, color: T.success },
+      Cancelled:     { bg: T.dangerBg, color: T.danger },
+    };
+    const style = map[s] || { bg: '#F3F4F6', color: '#6B7280' };
+    return (
+      <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', fontSize: '0.72rem', fontWeight: '700', backgroundColor: style.bg, color: style.color, display: 'inline-block', whiteSpace: 'nowrap' }}>
+        {s}
+      </span>
+    );
+  };
+
   return (
-    <div className="account-dashboard-page" style={{ backgroundColor: 'transparent', minHeight: '100vh', padding: '0 0 4rem' }}>
-      <div className="container" style={{ maxWidth: '1150px' }}>
-        
-        {/* Breadcrumb Header */}
-        <div style={{ fontSize: '0.78rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
-          <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</Link>
-          <span style={{ margin: '0 0.5rem' }}>/</span>
-          <Link to="/account" style={{ color: 'inherit', textDecoration: 'none' }}>My Account</Link>
-          <span style={{ margin: '0 0.5rem' }}>/</span>
-          <span style={{ color: 'var(--accent-gold)' }}>Order History</span>
-        </div>
+    <div className="account-dashboard-page" style={{ backgroundColor: T.bg, minHeight: '100vh', padding: '0 0 4rem' }}>
+      <div className="container" style={{ maxWidth: '1080px' }}>
 
-        {/* Page Title & Stats Banner */}
-        <div 
-          className="glass-card" 
-          style={{ 
-            padding: '2rem 2.25rem', 
-            backgroundColor: 'transparent', 
-            marginBottom: '2rem', 
-            borderRadius: '24px', 
-            border: '1px solid rgba(245, 235, 221, 0.25)',
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)'
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-            <div>
-              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-gold)', fontWeight: '800', display: 'block', marginBottom: '0.35rem' }}>Customer Dashboard</span>
-              <h1 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>My Orders</h1>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: '0.45rem 0 0 0', fontWeight: '500' }}>
-                Track live shipments and share feedback on your delivered artisan bakes.
-              </p>
-            </div>
+        {/* Summary Header */}
+        <div style={{ ...cardStyle, padding: '1.75rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+          <div>
+            <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: T.textMuted, fontWeight: '800', marginBottom: '0.3rem' }}>ACCOUNT / ORDERS</div>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: '800', color: T.textPrimary, margin: 0, letterSpacing: '-0.02em' }}>My Orders</h1>
+            <p style={{ color: T.textMuted, fontSize: '0.85rem', margin: '0.3rem 0 0 0' }}>Track your shipments and rate delivered products.</p>
+          </div>
 
-            {/* Summary Stat Pills */}
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <div style={{ padding: '0.75rem 1.25rem', backgroundColor: 'rgba(255, 255, 255, 0.04)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.12)', textAlign: 'center' }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: '900', color: 'var(--text-light)', display: 'block', lineHeight: 1 }}>{totalOrders}</span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Orders</span>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            {[
+              { label: 'Total Orders', value: totalOrders, color: T.textPrimary },
+              { label: 'In Progress', value: activeOrders, color: T.accent },
+              { label: 'Delivered', value: deliveredOrders, color: T.success },
+            ].map((stat) => (
+              <div key={stat.label} style={{ padding: '0.85rem 1.15rem', backgroundColor: T.surfaceAlt, borderRadius: '12px', border: `1px solid ${T.border}`, textAlign: 'center', minWidth: '90px' }}>
+                <div style={{ fontSize: '1.4rem', fontWeight: '900', color: stat.color, lineHeight: 1 }}>{stat.value}</div>
+                <div style={{ fontSize: '0.68rem', fontWeight: '700', color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.15rem' }}>{stat.label}</div>
               </div>
-              <div style={{ padding: '0.75rem 1.25rem', backgroundColor: 'rgba(255, 255, 255, 0.04)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.12)', textAlign: 'center' }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: '900', color: 'var(--accent-gold)', display: 'block', lineHeight: 1 }}>{activeOrders}</span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>In Progress</span>
-              </div>
-              <div style={{ padding: '0.75rem 1.25rem', backgroundColor: 'rgba(255, 255, 255, 0.04)', borderRadius: '16px', border: '1px solid rgba(245, 235, 221, 0.12)', textAlign: 'center' }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: '900', color: '#81c784', display: 'block', lineHeight: 1 }}>{deliveredOrders}</span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Delivered</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Filters & Search Toolbar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
-          
-          {/* Status Filter Tabs */}
+        {/* Filter Toolbar */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem' }}>
-            {['All', 'Active', 'Delivered', 'Cancelled'].map((filter) => {
-              const isSelected = selectedFilter === filter;
+            {['All', 'Active', 'Delivered', 'Cancelled'].map((f) => {
+              const sel = selectedFilter === f;
               return (
-                <button
-                  key={filter}
-                  onClick={() => setSelectedFilter(filter)}
-                  style={{
-                    padding: '0.55rem 1.1rem',
-                    borderRadius: '999px',
-                    border: isSelected ? '1px solid var(--accent-gold)' : '1px solid rgba(245, 235, 221, 0.15)',
-                    backgroundColor: isSelected ? 'rgba(201, 154, 50, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                    color: isSelected ? 'var(--accent-gold)' : 'var(--text-muted)',
-                    fontSize: '0.82rem',
-                    fontWeight: isSelected ? '800' : '600',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  {filter}
+                <button key={f} onClick={() => setSelectedFilter(f)} style={{
+                  padding: '0.5rem 1rem', borderRadius: '999px', border: `1px solid ${sel ? T.brand : T.border}`,
+                  backgroundColor: sel ? T.brand : T.surface,
+                  color: sel ? '#FFFFFF' : T.textSecondary,
+                  fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap',
+                  transition: 'all 0.18s ease',
+                }}>
+                  {f}
                 </button>
               );
             })}
           </div>
 
-          {/* Search Box */}
-          <div style={{ position: 'relative', width: '100%', maxWidth: '280px' }}>
-            <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }} />
-            <input 
-              type="text" 
-              placeholder="Search by Order ID..." 
+          <div style={{ position: 'relative', width: '100%', maxWidth: '260px' }}>
+            <Search size={15} color={T.textMuted} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+            <input
+              type="text"
+              placeholder="Search by Order ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.65rem 1rem 0.65rem 2.25rem',
-                borderRadius: '10px',
-                border: '1px solid rgba(245, 235, 221, 0.25)',
-                fontSize: '0.85rem',
-                outline: 'none',
-                fontFamily: 'inherit',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                color: 'var(--text-light)'
-              }}
+              style={{ width: '100%', height: '42px', padding: '0 1rem 0 36px', borderRadius: '10px', border: `1px solid ${T.border}`, fontSize: '0.85rem', outline: 'none', backgroundColor: T.surface, color: T.textPrimary, boxSizing: 'border-box' }}
             />
           </div>
         </div>
 
-        {/* LOADING STATE */}
+        {/* LOADING */}
         {loading && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {[1, 2].map((i) => (
-              <div 
-                key={i} 
-                className="glass-card" 
-                style={{ padding: '2rem', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)', opacity: 0.7 }}
-              >
-                <div style={{ height: '20px', width: '140px', backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px', marginBottom: '1rem' }} />
-                <div style={{ height: '60px', backgroundColor: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {[1, 2, 3].map((i) => (
+              <div key={i} style={{ ...cardStyle, padding: '1.75rem' }}>
+                <div style={{ height: '16px', width: '140px', backgroundColor: '#EDE8E1', borderRadius: '6px', marginBottom: '1rem', animation: 'milastyPulse 1.5s ease-in-out infinite' }} />
+                <div style={{ height: '60px', backgroundColor: '#EDE8E1', borderRadius: '10px', animation: 'milastyPulse 1.5s ease-in-out infinite' }} />
               </div>
             ))}
           </div>
         )}
 
-        {/* ERROR STATE */}
+        {/* ERROR */}
         {!loading && error && (
-          <div className="glass-card" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
-            <AlertCircle size={44} color="var(--accent-terracotta)" style={{ margin: '0 auto 1.25rem' }} />
-            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>Unable to Load Your Orders</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '0.5rem 0 1.5rem' }}>We encountered an error connecting to our server. Please try again.</p>
-            <button onClick={fetchMyOrders} className="btn-primary" style={{ padding: '0.8rem 2rem', backgroundColor: 'var(--accent-gold)', border: 'none', borderRadius: '999px', color: '#24130D', cursor: 'pointer', fontWeight: '800' }}>
+          <div style={{ ...cardStyle, padding: '4rem 2rem', textAlign: 'center' }}>
+            <AlertCircle size={44} color={T.danger} style={{ margin: '0 auto 1.25rem' }} />
+            <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: T.textPrimary, margin: '0 0 0.45rem 0' }}>Unable to Load Orders</h3>
+            <p style={{ color: T.textMuted, fontSize: '0.88rem', margin: '0 0 1.5rem' }}>We encountered an error. Please try again.</p>
+            <button onClick={fetchMyOrders} style={{ padding: '0.7rem 1.75rem', backgroundColor: T.brand, color: '#FFFFFF', border: 'none', borderRadius: '999px', fontWeight: '700', cursor: 'pointer' }}>
               Try Again
             </button>
           </div>
         )}
 
-        {/* EMPTY STATE */}
+        {/* EMPTY */}
         {!loading && !error && filteredOrders.length === 0 && (
-          <div className="glass-card" style={{ padding: '5rem 2rem', textAlign: 'center', backgroundColor: 'transparent', borderRadius: '24px', border: '1px solid rgba(245, 235, 221, 0.25)' }}>
-            <ShoppingBag size={48} color="var(--accent-gold)" style={{ margin: '0 auto 1.25rem' }} />
-            <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontWeight: '800', margin: 0 }}>No Orders Found</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: '0.5rem auto 1.75rem', maxWidth: '300px' }}>Your next wholesome snack is waiting. Discover MILASTY's handcrafted bakes.</p>
-            <Link to="/shop" className="btn-primary" style={{ padding: '0.85rem 2rem', backgroundColor: 'var(--accent-gold)', border: 'none', borderRadius: '999px', color: '#24130D', textDecoration: 'none', fontWeight: '850', fontSize: '0.9rem' }}>
+          <div style={{ ...cardStyle, padding: '5rem 2rem', textAlign: 'center' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: T.brandLight, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+              <ShoppingBag size={28} color={T.brand} />
+            </div>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: T.textPrimary, margin: '0 0 0.35rem 0' }}>No Orders Found</h3>
+            <p style={{ color: T.textMuted, fontSize: '0.88rem', margin: '0 0 1.5rem' }}>
+              {searchTerm || selectedFilter !== 'All' ? 'Try adjusting your search or filters.' : 'Your next wholesome snack is waiting.'}
+            </p>
+            <Link to="/shop" style={{ padding: '0.75rem 1.75rem', backgroundColor: T.brand, color: '#FFFFFF', borderRadius: '999px', textDecoration: 'none', fontWeight: '700', fontSize: '0.88rem' }}>
               Explore Fresh Bakes →
             </Link>
           </div>
@@ -324,7 +314,7 @@ export default function OrderHistoryPage() {
 
         {/* ORDERS LIST */}
         {!loading && !error && filteredOrders.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {filteredOrders.map((order) => {
               const totalItems = order.items?.reduce((acc, i) => acc + i.quantity, 0) || 0;
               const isDelivered = String(order.orderStatus).toLowerCase() === 'delivered';
@@ -332,271 +322,129 @@ export default function OrderHistoryPage() {
               const isPaid = String(order.paymentStatus).toLowerCase() === 'paid';
               const orderItemsList = order.order_items || order.items || [];
               const hasCustomization = orderItemsList.some((i) => Boolean(i.customization_note || i.customizationNote));
-              
               const firstItem = orderItemsList[0] || {};
               const firstItemImage = firstItem.image || firstItem.product_image || '/images/image1.jpeg';
 
               return (
-                <div 
-                  key={order._id || order.id || order.orderId} 
-                  className="glass-card" 
-                  style={{ 
-                    padding: '1.75rem', 
-                    backgroundColor: 'rgba(50, 26, 18, 0.40)', 
-                    borderRadius: '20px', 
-                    border: '1px solid rgba(245, 235, 221, 0.2)',
-                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.25)',
-                  }}
-                >
-                  
-                  {/* Order Card Header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(245, 235, 221, 0.12)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+                <div key={order._id || order.id || order.orderId} style={{ ...cardStyle, padding: '1.5rem' }}>
+
+                  {/* Card Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', borderBottom: `1px solid ${T.border}`, paddingBottom: '1rem', marginBottom: '1.15rem' }}>
                     <div>
-                      <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#b9cd94', fontWeight: '800', display: 'block', marginBottom: '0.15rem' }}>Order Number</span>
-                      <span style={{ fontSize: '1.2rem', fontWeight: '850', color: '#FFFDF9' }}>#{order.orderNumber || order.orderId}</span>
+                      <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: T.textMuted, fontWeight: '700', marginBottom: '0.15rem' }}>Order Number</div>
+                      <div style={{ fontSize: '1.05rem', fontWeight: '800', color: T.textPrimary }}>#{order.orderNumber || order.orderId}</div>
                     </div>
-                    
-                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
                       {hasCustomization && (
-                        <span 
-                          style={{ 
-                            backgroundColor: 'rgba(47, 125, 50, 0.25)', 
-                            color: '#9BCB88', 
-                            border: '1px solid rgba(155, 203, 136, 0.4)',
-                            fontSize: '0.72rem',
-                            fontWeight: '800',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.04em',
-                            padding: '0.25rem 0.65rem',
-                            borderRadius: '999px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.25rem'
-                          }}
-                        >
+                        <span style={{ backgroundColor: T.successBg, color: T.success, border: `1px solid #A5D6A7`, fontSize: '0.68rem', fontWeight: '700', padding: '0.2rem 0.6rem', borderRadius: '999px' }}>
                           ✦ Customized
                         </span>
                       )}
-
-                      <span 
-                        style={{ 
-                          backgroundColor: isCancelled ? 'rgba(217, 83, 79, 0.15)' : (isDelivered ? 'rgba(129, 199, 132, 0.2)' : 'rgba(36, 79, 33, 0.25)'), 
-                          color: isCancelled ? '#ef5350' : (isDelivered ? '#81c784' : '#b9cd94'),
-                          border: isCancelled ? '1px solid rgba(217, 83, 79, 0.3)' : (isDelivered ? '1px solid rgba(129, 199, 132, 0.3)' : '1px solid rgba(185, 205, 148, 0.3)'),
-                          fontSize: '0.72rem',
-                          fontWeight: '800',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.04em',
-                          padding: '0.25rem 0.65rem',
-                          borderRadius: '999px'
-                        }}
-                      >
-                        {isDelivered ? '✓ Delivered' : (order.orderStatus || 'Confirmed')}
+                      <StatusBadge status={order.orderStatus || 'Confirmed'} />
+                      <span style={{ fontSize: '0.76rem', fontWeight: '600', color: isPaid ? T.success : T.warning, display: 'flex', alignItems: 'center', gap: '0.25rem', backgroundColor: isPaid ? T.successBg : T.warningBg, padding: '0.25rem 0.65rem', borderRadius: '8px' }}>
+                        <ShieldCheck size={12} /> {order.paymentMethod} · {isPaid ? 'Paid' : 'Pending'}
                       </span>
-
-                      <span
-                        style={{
-                          fontSize: '0.75rem',
-                          fontWeight: '700',
-                          color: isPaid ? '#81c784' : '#e5c158',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.3rem',
-                          backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                          padding: '0.25rem 0.65rem',
-                          borderRadius: '8px',
-                          border: '1px solid rgba(255, 255, 255, 0.1)'
-                        }}
-                      >
-                        <ShieldCheck size={13} />
-                        {order.paymentMethod} · {isPaid ? 'Paid' : 'Pending'}
-                      </span>
-
-                      <div style={{ fontSize: '0.8rem', color: 'rgba(255, 253, 249, 0.6)', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: '600' }}>
-                        <Clock size={13} />
-                        <span>{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      <div style={{ fontSize: '0.78rem', color: T.textMuted, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                        <Clock size={12} />
+                        {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </div>
                     </div>
                   </div>
 
-                  {/* Order Items Preview */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-                    <div style={{ display: 'flex', gap: '1.1rem', alignItems: 'center' }}>
-                      <img 
-                        src={firstItemImage} 
-                        alt="Product preview" 
-                        style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '10px', border: '1px solid rgba(245, 235, 221, 0.15)' }} 
-                      />
+                  {/* Items Preview */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                      <img src={firstItemImage} alt="Product" style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '10px', border: `1px solid ${T.border}`, flexShrink: 0 }} />
                       <div>
-                        <div style={{ fontSize: '0.95rem', color: '#FFFDF9', fontWeight: '800', marginBottom: '0.15rem' }}>
+                        <div style={{ fontSize: '0.95rem', color: T.textPrimary, fontWeight: '700' }}>
                           {firstItem.title || firstItem.product_title || 'Millet Bakery Item'}
                           {firstItem.variantName && firstItem.variantName !== 'default' && (
-                            <span style={{ fontSize: '0.8rem', color: '#b9cd94', marginLeft: '0.4rem', fontWeight: '600' }}>
-                              ({firstItem.variantName})
-                            </span>
+                            <span style={{ fontSize: '0.78rem', color: T.accent, marginLeft: '0.4rem' }}>({firstItem.variantName})</span>
                           )}
                         </div>
-                        <div style={{ fontSize: '0.78rem', color: 'rgba(255, 253, 249, 0.65)', fontWeight: '600' }}>
-                          {totalItems} {totalItems === 1 ? 'pack' : 'packs'} in this order
-                          {order.items?.length > 1 && ` (and ${order.items.length - 1} other item${order.items.length > 2 ? 's' : ''})`}
+                        <div style={{ fontSize: '0.76rem', color: T.textMuted, marginTop: '0.1rem' }}>
+                          {totalItems} {totalItems === 1 ? 'pack' : 'packs'}
+                          {order.items?.length > 1 && ` + ${order.items.length - 1} more`}
                         </div>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
                       <div style={{ textAlign: 'right' }}>
-                        <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'rgba(255, 253, 249, 0.6)', fontWeight: '700', display: 'block', marginBottom: '0.15rem' }}>Total Amount</span>
-                        <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#FFFDF9' }}>₹{order.totalAmount || order.grandTotal || 0}</div>
+                        <div style={{ fontSize: '0.68rem', color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '600' }}>Total</div>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '900', color: T.textPrimary }}>₹{order.totalAmount || order.grandTotal || 0}</div>
                       </div>
-                      
-                      <Link 
-                        to={`/account/orders/${order.id || order.orderId}`} 
-                        className="btn-secondary" 
-                        style={{ 
-                          padding: '0.65rem 1.15rem', 
-                          fontSize: '0.82rem',
-                          borderRadius: '10px',
-                          border: '1px solid rgba(245, 235, 221, 0.25)',
-                          color: '#b9cd94',
-                          fontWeight: '800',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.25rem',
-                          textDecoration: 'none'
-                        }}
-                      >
-                        <span>View Order</span>
-                        <ChevronRight size={14} />
+                      <Link to={`/account/orders/${order.id || order._id || order.orderId}`} style={{
+                        padding: '0.6rem 1.15rem', fontSize: '0.82rem', borderRadius: '10px',
+                        border: `1px solid ${T.border}`, color: T.brand, backgroundColor: T.brandLight,
+                        fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '0.25rem',
+                        textDecoration: 'none',
+                      }}>
+                        View Order <ChevronRight size={14} />
                       </Link>
                     </div>
                   </div>
 
-                  {/* ======================================================== */}
-                  {/* DELIVERED ORDER PRODUCT REVIEWS SECTION                  */}
-                  {/* ======================================================== */}
+                  {/* DELIVERED: Review Section */}
                   {isDelivered && (
-                    <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(245, 235, 221, 0.15)' }}>
-                      <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: 'var(--accent-gold)', margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <Star size={16} fill="var(--accent-gold)" color="var(--accent-gold)" />
-                        <span>How was your experience? Rate your products</span>
+                    <div style={{ marginTop: '1.25rem', paddingTop: '1.1rem', borderTop: `1px solid ${T.border}` }}>
+                      <h4 style={{ fontSize: '0.9rem', fontWeight: '700', color: T.brand, margin: '0 0 0.85rem 0', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <Star size={15} fill={T.accent} color={T.accent} /> Rate your products
                       </h4>
-
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                         {order.items?.map((item) => {
                           const pId = item.product_id || item.productId;
                           const pTitle = item.title || item.product_title || 'Artisan Bake';
                           const pVariant = item.variantName || item.variant_name;
-
                           const existingReview = myReviews.find((r) => r.productId === pId);
                           const currentState = reviewFormState[pId] || { rating: 5, comment: '', image: '', loading: false, error: '', success: false };
 
-                          // If already reviewed or submitted in current session
                           if (existingReview || currentState.success) {
                             return (
-                              <div key={pId} style={{ padding: '0.9rem 1.15rem', backgroundColor: 'rgba(36, 79, 33, 0.2)', borderRadius: '12px', border: '1px solid rgba(185, 205, 148, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+                              <div key={pId} style={{ padding: '0.85rem 1rem', backgroundColor: T.successBg, borderRadius: '10px', border: `1px solid #A5D6A7`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
                                 <div>
-                                  <strong style={{ fontSize: '0.88rem', color: '#FFFDF9', display: 'block' }}>
-                                    {pTitle} {pVariant && pVariant !== 'Standard Pack' ? `(${pVariant})` : ''}
-                                  </strong>
-                                  <span style={{ fontSize: '0.78rem', color: '#81c784', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.2rem' }}>
-                                    <CheckCircle2 size={13} />
-                                    Review submitted — Awaiting moderation
-                                  </span>
+                                  <div style={{ fontSize: '0.88rem', fontWeight: '700', color: T.textPrimary }}>{pTitle} {pVariant && pVariant !== 'Standard Pack' ? `(${pVariant})` : ''}</div>
+                                  <div style={{ fontSize: '0.76rem', color: T.success, fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.1rem' }}>
+                                    <CheckCircle2 size={12} /> Review submitted — Awaiting moderation
+                                  </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: '0.2rem' }}>
-                                  {[1, 2, 3, 4, 5].map((s) => (
-                                    <Star 
-                                      key={s} 
-                                      size={14} 
-                                      fill={s <= (existingReview?.rating || currentState.rating || 5) ? 'var(--accent-gold)' : 'none'} 
-                                      color="var(--accent-gold)" 
-                                    />
-                                  ))}
+                                  {[1,2,3,4,5].map((s) => <Star key={s} size={14} fill={s <= (existingReview?.rating || currentState.rating || 5) ? T.accent : 'none'} color={T.accent} />)}
                                 </div>
                               </div>
                             );
                           }
 
-                          // Review Submission Form
                           return (
-                            <div key={pId} style={{ padding: '1.15rem', backgroundColor: 'rgba(0, 0, 0, 0.25)', borderRadius: '14px', border: '1px solid rgba(245, 235, 221, 0.15)' }}>
+                            <div key={pId} style={{ padding: '1.1rem', backgroundColor: T.surfaceAlt, borderRadius: '12px', border: `1px solid ${T.border}` }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                                <span style={{ fontSize: '0.9rem', fontWeight: '800', color: '#FFFDF9' }}>
+                                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: T.textPrimary }}>
                                   {pTitle} {pVariant && pVariant !== 'Standard Pack' ? `(${pVariant})` : ''}
                                 </span>
-
-                                {/* 5 Star Interactive Rating */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                                  {[1, 2, 3, 4, 5].map((s) => (
-                                    <button
-                                      key={s}
-                                      type="button"
-                                      onClick={() => handleStarClick(pId, s)}
-                                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.15rem', display: 'flex', alignItems: 'center' }}
-                                    >
-                                      <Star
-                                        size={22}
-                                        fill={s <= (currentState.rating || 5) ? 'var(--accent-gold)' : 'none'}
-                                        color={s <= (currentState.rating || 5) ? 'var(--accent-gold)' : 'rgba(255, 255, 255, 0.25)'}
-                                      />
+                                <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                  {[1,2,3,4,5].map((s) => (
+                                    <button key={s} type="button" onClick={() => handleStarClick(pId, s)}
+                                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.1rem' }}>
+                                      <Star size={20} fill={s <= (currentState.rating || 5) ? T.accent : 'none'} color={s <= (currentState.rating || 5) ? T.accent : T.border} />
                                     </button>
                                   ))}
                                 </div>
                               </div>
-
-                              {/* Feedback Text Input */}
-                              <textarea
-                                rows={2}
-                                placeholder="Write your feedback (optional)..."
+                              <textarea rows={2} placeholder="Write your feedback (optional)..."
                                 value={currentState.comment || ''}
                                 onChange={(e) => handleCommentChange(pId, e.target.value)}
-                                style={{
-                                  width: '100%',
-                                  padding: '0.65rem 0.85rem',
-                                  borderRadius: '10px',
-                                  border: '1px solid rgba(245, 235, 221, 0.2)',
-                                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                                  color: '#FFFDF9',
-                                  fontSize: '0.85rem',
-                                  outline: 'none',
-                                  fontFamily: 'inherit',
-                                  resize: 'vertical',
-                                  marginBottom: '0.75rem',
-                                }}
+                                style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: `1px solid ${T.border}`, backgroundColor: T.surface, color: T.textPrimary, fontSize: '0.85rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical', marginBottom: '0.65rem', boxSizing: 'border-box' }}
                               />
-
-                              {/* Error alert */}
-                              {currentState.error && (
-                                <div style={{ color: '#ef5350', fontSize: '0.78rem', fontWeight: '600', marginBottom: '0.65rem' }}>
-                                  ⚠️ {currentState.error}
-                                </div>
-                              )}
-
-                              {/* Actions */}
+                              {currentState.error && <div style={{ color: T.danger, fontSize: '0.78rem', marginBottom: '0.5rem' }}>⚠️ {currentState.error}</div>}
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-                                <label style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: '#b9cd94', fontWeight: '700' }}>
+                                <label style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: T.brand, fontWeight: '700' }}>
                                   <Camera size={14} />
-                                  <span>{currentState.uploadingImage ? 'Uploading photo...' : (currentState.image ? '✓ Photo Attached' : 'Add Photo (optional)')}</span>
-                                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => handlePhotoUpload(pId, e)} style={{ display: 'none' }} />
+                                  {currentState.uploadingImage ? 'Uploading...' : (currentState.image ? '✓ Photo Attached' : 'Add Photo')}
+                                  <input type="file" accept="image/*" onChange={(e) => handlePhotoUpload(pId, e)} style={{ display: 'none' }} />
                                 </label>
-
-                                <button
-                                  type="button"
-                                  disabled={currentState.loading || currentState.uploadingImage}
+                                <button type="button" disabled={currentState.loading || currentState.uploadingImage}
                                   onClick={() => handleSubmitReview(order.id || order._id, pId, item.id)}
-                                  style={{
-                                    padding: '0.55rem 1.35rem',
-                                    backgroundColor: 'var(--accent-gold)',
-                                    color: '#24130D',
-                                    border: 'none',
-                                    borderRadius: '10px',
-                                    fontWeight: '850',
-                                    fontSize: '0.82rem',
-                                    cursor: currentState.loading ? 'wait' : 'pointer',
-                                    opacity: currentState.loading ? 0.7 : 1,
-                                    transition: 'all 0.2s',
-                                  }}
-                                >
+                                  style={{ padding: '0.5rem 1.25rem', backgroundColor: T.accent, color: '#FFFFFF', border: 'none', borderRadius: '8px', fontWeight: '700', fontSize: '0.82rem', cursor: 'pointer', opacity: currentState.loading ? 0.7 : 1 }}>
                                   {currentState.loading ? 'Submitting...' : 'Submit Review'}
                                 </button>
                               </div>
@@ -606,7 +454,6 @@ export default function OrderHistoryPage() {
                       </div>
                     </div>
                   )}
-
                 </div>
               );
             })}
