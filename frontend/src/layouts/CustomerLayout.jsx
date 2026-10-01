@@ -199,8 +199,25 @@ export default function CustomerLayout() {
       </nav>
 
       {/* Sidebar Footer — User Card */}
-      <div style={{ borderTop: '1px solid #E7DED5', paddingTop: '1.25rem', marginTop: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
+      <div style={{
+        borderTop: '1px solid #E7DED5',
+        paddingTop: '1.25rem',
+        marginTop: '0.5rem',
+        position: 'relative',
+        borderRadius: '12px',
+        overflow: 'hidden',
+      }}>
+        {/* Organic leaf image decoration at bottom of sidebar */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: `url('/images/dashboard_bg_image.jpeg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'bottom left',
+          opacity: 0.25,
+          pointerEvents: 'none',
+        }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', position: 'relative', zIndex: 2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', minWidth: 0 }}>
             <div style={{
               width: '36px', height: '36px', borderRadius: '50%',
@@ -224,7 +241,7 @@ export default function CustomerLayout() {
             onClick={() => setShowLogoutModal(true)}
             title="Log Out"
             style={{
-              background: 'none', border: '1px solid #FEECEC', cursor: 'pointer',
+              background: '#FFFFFF', border: '1px solid #FEECEC', cursor: 'pointer',
               color: '#C62828', padding: '0.4rem', borderRadius: '8px',
               display: 'flex', alignItems: 'center', transition: 'all 0.18s', flexShrink: 0,
             }}
@@ -391,23 +408,44 @@ export default function CustomerLayout() {
         <div style={{
           padding: '1.75rem 2rem 0',
           backgroundColor: 'transparent',
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: '16px',
         }}>
-          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#C68A3A', fontWeight: '800', marginBottom: '0.3rem' }}>
+          {isDashboard && (
+            <div style={{
+              position: 'absolute',
+              right: 0,
+              top: '-10px',
+              bottom: 0,
+              width: '380px',
+              backgroundImage: `url('/images/dashboard_bg_image.jpeg')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'right center',
+              opacity: 0.75,
+              pointerEvents: 'none',
+              maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)',
+            }} className="desktop-links" />
+          )}
+          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#C68A3A', fontWeight: '800', marginBottom: '0.3rem', position: 'relative', zIndex: 2 }}>
             {category}
           </div>
           <h1 style={{
-            fontSize: isDashboard ? '1.75rem' : '1.45rem',
+            fontSize: isDashboard ? '1.85rem' : '1.45rem',
             fontFamily: 'var(--font-serif)',
-            fontWeight: '800',
+            fontWeight: '900',
             color: '#21150F',
             margin: 0,
             letterSpacing: '-0.02em',
             lineHeight: 1.2,
+            position: 'relative',
+            zIndex: 2,
           }}>
             {title}
           </h1>
           {subtitle && (
-            <p style={{ fontSize: '0.85rem', color: '#665A52', margin: '0.3rem 0 0 0', fontWeight: '500' }}>
+            <p style={{ fontSize: '0.88rem', color: '#665A52', margin: '0.35rem 0 0 0', fontWeight: '500', position: 'relative', zIndex: 2 }}>
               {subtitle}
             </p>
           )}

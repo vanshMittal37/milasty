@@ -407,41 +407,60 @@ export default function AccountDashboard() {
           {/* Store Banner Promo */}
           <div style={{
             ...cardStyle,
-            padding: '1.4rem 1.75rem',
-            background: 'linear-gradient(135deg, rgba(255,253,249,0.95), rgba(247,239,231,0.95))',
+            padding: '1.6rem 2rem',
+            background: 'linear-gradient(135deg, rgba(255,253,249,0.92), rgba(247,239,231,0.92))',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
             gap: '1.25rem',
             border: '1px solid #E5D9CE',
+            position: 'relative',
+            overflow: 'hidden',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {/* Background Image Artwork Layer on right */}
+            <div style={{
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: '320px',
+              backgroundImage: `url('/images/dashboard_bg_image.jpeg')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'right bottom',
+              opacity: 0.55,
+              pointerEvents: 'none',
+              maskImage: 'linear-gradient(to left, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage: 'linear-gradient(to left, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%)',
+            }} />
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.1rem', position: 'relative', zIndex: 2 }}>
               <div style={{
-                width: '44px', height: '44px', borderRadius: '12px',
+                width: '48px', height: '48px', borderRadius: '14px',
                 backgroundColor: '#F5EDE5', color: T.brand,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1.4rem', flexShrink: 0,
+                fontSize: '1.5rem', flexShrink: 0, border: '1px solid #E7DED5',
               }}>
                 🌾
               </div>
               <div>
-                <div style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: T.textPrimary }}>
+                <div style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', fontWeight: '900', color: T.textPrimary }}>
                   Explore our handcrafted millet bakes
                 </div>
-                <div style={{ fontSize: '0.82rem', color: T.textSecondary, marginTop: '0.15rem' }}>
+                <div style={{ fontSize: '0.84rem', color: T.textSecondary, marginTop: '0.15rem' }}>
                   Discover new flavours, healthy snacks and exclusive offers.
                 </div>
               </div>
             </div>
             <Link to="/shop" style={{
-              padding: '0.65rem 1.4rem', fontSize: '0.85rem', fontWeight: '800',
+              padding: '0.7rem 1.6rem', fontSize: '0.88rem', fontWeight: '800',
               borderRadius: '999px', backgroundColor: T.brand, color: '#FFFFFF',
-              textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.45rem',
-              boxShadow: '0 4px 14px rgba(90, 46, 22, 0.18)', transition: 'all 0.18s ease',
+              textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+              boxShadow: '0 4px 16px rgba(90, 46, 22, 0.22)', transition: 'all 0.18s ease',
+              position: 'relative', zIndex: 2,
             }}>
               <span>Visit Store</span>
-              <ArrowRight size={15} />
+              <ArrowRight size={16} />
             </Link>
           </div>
 
