@@ -4506,10 +4506,10 @@ body.customer-portal-body select:focus {
 /* Common Dashboard Layout Background */
 body.customer-portal-body,
 body.admin-body {
-  background-color: #FCFAF7 !important;
-  background-image: linear-gradient(rgba(252, 250, 247, 0.82), rgba(252, 250, 247, 0.88)), url('/images/dashboard_bg_image.jpeg') !important;
+  background-color: #FBF6F0 !important;
+  background-image: linear-gradient(rgba(251, 246, 240, 0.15), rgba(251, 246, 240, 0.25)), url('/images/dashboard_bg_image.jpeg') !important;
   background-size: cover !important;
-  background-position: center !important;
+  background-position: center top !important;
   background-attachment: fixed !important;
   background-repeat: no-repeat !important;
   color: #21150F !important;

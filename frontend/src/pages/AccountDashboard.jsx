@@ -102,8 +102,12 @@ const labelStyle = {
 
 // Card style
 const cardStyle = {
-  backgroundColor: T.surface, border: `1px solid ${T.border}`,
-  borderRadius: '16px', boxShadow: T.shadow,
+  backgroundColor: 'rgba(255, 255, 255, 0.82)',
+  backdropFilter: 'blur(10px)',
+  WebkitBackdropFilter: 'blur(10px)',
+  border: `1px solid ${T.border}`,
+  borderRadius: '16px',
+  boxShadow: T.shadow,
   transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
 };
 
