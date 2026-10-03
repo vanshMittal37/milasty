@@ -433,7 +433,7 @@ export default function ProductDetail() {
                   left: 0, 
                   width: '100%', 
                   height: '100%', 
-                  objectFit: 'cover',
+                  objectFit: 'contain',
                   transition: 'opacity 0.3s ease, transform 0.4s ease'
                 }} 
               />
@@ -875,7 +875,7 @@ export default function ProductDetail() {
                       fontSize: '0.88rem',
                       borderRadius: '10px',
                       border: '1px solid rgba(58, 31, 20, 0.22)',
-                      backgroundColor: '#FFFFFF',
+                      backgroundColor: '#FFF9F0',
                       color: '#3A1F14',
                       resize: 'vertical',
                       fontFamily: 'var(--font-sans)',

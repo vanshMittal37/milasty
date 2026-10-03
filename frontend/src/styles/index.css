@@ -425,9 +425,9 @@ body.customer-portal-body .glass-card,
 .customer-portal-body .glass-card,
 .customer-main-area .glass-card,
 .account-dashboard-page .glass-card {
-  background: #FFFFFF !important;
-  background-color: #FFFFFF !important;
-  border: 1px solid #E7DED5 !important;
+  background: #FFF9F0 !important;
+  background-color: #FFF9F0 !important;
+  border: 1px solid #DCC8AE !important;
   border-radius: 16px !important;
   box-shadow: 0 2px 10px rgba(90, 46, 22, 0.06) !important;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.18s ease;

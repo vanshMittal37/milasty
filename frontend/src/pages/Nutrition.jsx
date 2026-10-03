@@ -373,17 +373,17 @@ export default function Nutrition() {
           <div className="desktop-only-table" style={{ borderRadius: '24px', overflowX: 'auto', border: '1.5px solid #5C3A21', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)', backgroundColor: '#FFF9F0', maxWidth: '100%' }}>
             <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
-                <tr style={{ backgroundColor: '#F1E5D4', color: '#32180D' }}>
-                  <th style={{ padding: '1.75rem 1.5rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '850', width: '22%' }}>Metric</th>
+                <tr style={{ backgroundColor: '#32180D', color: '#FFF9F0' }}>
+                  <th style={{ padding: '1.75rem 1.5rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: '900', color: '#FFF9F0', width: '22%' }}>Metric</th>
                   {dailyProducts.map((p, idx) => (
                     <th key={idx} style={{ padding: '1.75rem 1.5rem', verticalAlign: 'top', width: '26%' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ width: '100px', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #DCC8AE' }}>
+                        <div style={{ width: '100px', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1.5px solid #5C3A21', backgroundColor: '#FFF9F0' }}>
                           <img src={p.image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                         <div>
-                          <h4 style={{ fontSize: '0.95rem', fontWeight: '850', color: '#32180D', margin: '0 0 0.25rem 0' }}>{p.title}</h4>
-                          <p style={{ fontSize: '0.76rem', color: '#654B38', lineHeight: '1.4', margin: 0, fontWeight: '500', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.subtitle || p.description}</p>
+                          <h4 style={{ fontSize: '0.98rem', fontWeight: '900', color: '#FFFFFF', margin: '0 0 0.35rem 0', lineHeight: '1.3' }}>{p.title}</h4>
+                          <p style={{ fontSize: '0.78rem', color: '#E3D2C0', lineHeight: '1.45', margin: 0, fontWeight: '600', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.subtitle || p.description}</p>
                         </div>
                       </div>
                     </th>

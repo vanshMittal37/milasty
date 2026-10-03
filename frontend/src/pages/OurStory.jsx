@@ -99,8 +99,9 @@ function OrbitJourneySection() {
                 bottom: '35px', 
                 left: '50%', 
                 transform: 'translateX(-50%)', 
-                width: '2px', 
-                backgroundColor: '#DCC8AE', 
+                width: '3px', 
+                backgroundColor: '#2F6B3A', 
+                boxShadow: '0 0 6px rgba(47, 107, 58, 0.25)',
                 zIndex: 1 
               }} 
             />
@@ -214,16 +215,17 @@ function OrbitJourneySection() {
           /* DESKTOP / TABLET ALTERNATING INFOGRAPHIC LAYOUT */
           <div style={{ position: 'relative', width: '100%', margin: '0 auto' }}>
             
-            {/* Central Vertical Dashed Line Path */}
+            {/* Central Vertical Solid Line Path */}
             <div 
               style={{ 
                 position: 'absolute', 
-                top: '20px', 
-                bottom: '20px', 
+                top: '25px', 
+                bottom: '25px', 
                 left: '50%', 
                 transform: 'translateX(-50%)', 
-                width: '2px', 
-                borderLeft: '2px dashed #DCC8AE', 
+                width: '3px', 
+                backgroundColor: '#2F6B3A', 
+                boxShadow: '0 0 8px rgba(47, 107, 58, 0.3)',
                 zIndex: 1 
               }} 
             />
