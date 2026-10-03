@@ -147,10 +147,10 @@ function OrbitJourneySection() {
                     {/* Main Card Container */}
                     <div
                       style={{
-                        backgroundColor: '#FFF9F0',
+                        backgroundColor: '#F4EBDD',
                         borderRadius: '24px',
-                        border: isHighlight ? '2px solid #2F6B3A' : '1px solid #DCC8AE',
-                        boxShadow: isHighlight ? '0 10px 30px rgba(47, 107, 58, 0.15)' : '0 4px 16px rgba(75, 45, 25, 0.05)',
+                        border: isHighlight ? '2px solid #2F6B3A' : '1.5px solid #5C3A21',
+                        boxShadow: isHighlight ? '0 10px 30px rgba(47, 107, 58, 0.18)' : '0 6px 18px rgba(75, 45, 25, 0.08)',
                         padding: '1.5rem 1.15rem 1.35rem',
                         display: 'flex',
                         alignItems: 'center',
@@ -265,11 +265,11 @@ function OrbitJourneySection() {
                         style={{
                           padding: '1.75rem 1.6rem',
                           borderRadius: '22px',
-                          backgroundColor: '#FFF9F0',
-                          border: isHighlight ? '2px solid #2F6B3A' : '1px solid #DCC8AE',
+                          backgroundColor: '#F4EBDD',
+                          border: isHighlight ? '2px solid #2F6B3A' : '1.5px solid #5C3A21',
                           boxShadow: isHighlight 
-                            ? '0 12px 32px rgba(47, 107, 58, 0.15)' 
-                            : '0 4px 16px rgba(75, 45, 25, 0.05)',
+                            ? '0 12px 32px rgba(47, 107, 58, 0.18)' 
+                            : '0 6px 18px rgba(75, 45, 25, 0.08)',
                           transform: isHighlight ? 'scale(1.02)' : 'scale(1)',
                           transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                           boxSizing: 'border-box',

@@ -278,12 +278,12 @@ export default function Nutrition() {
           >
             <div
               style={{
-                backgroundColor: '#FFF9F0',
+                backgroundColor: '#F4EBDD',
                 border: '1.5px solid #5C3A21',
                 padding: '2rem 1.75rem',
                 borderRadius: '20px',
                 boxSizing: 'border-box',
-                boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)'
+                boxShadow: '0 6px 20px rgba(75, 45, 25, 0.08)'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
@@ -298,12 +298,12 @@ export default function Nutrition() {
 
             <div
               style={{
-                backgroundColor: '#FFF9F0',
+                backgroundColor: '#F4EBDD',
                 border: '1.5px solid #5C3A21',
                 padding: '2rem 1.75rem',
                 borderRadius: '20px',
                 boxSizing: 'border-box',
-                boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)'
+                boxShadow: '0 6px 20px rgba(75, 45, 25, 0.08)'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
@@ -318,12 +318,12 @@ export default function Nutrition() {
 
             <div
               style={{
-                backgroundColor: '#FFF9F0',
+                backgroundColor: '#F4EBDD',
                 border: '1.5px solid #5C3A21',
                 padding: '2rem 1.75rem',
                 borderRadius: '20px',
                 boxSizing: 'border-box',
-                boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)'
+                boxShadow: '0 6px 20px rgba(75, 45, 25, 0.08)'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
@@ -338,12 +338,12 @@ export default function Nutrition() {
 
             <div
               style={{
-                backgroundColor: '#FFF9F0',
+                backgroundColor: '#F4EBDD',
                 border: '1.5px solid #5C3A21',
                 padding: '2rem 1.75rem',
                 borderRadius: '20px',
                 boxSizing: 'border-box',
-                boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)'
+                boxShadow: '0 6px 20px rgba(75, 45, 25, 0.08)'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
@@ -373,17 +373,19 @@ export default function Nutrition() {
           <div className="desktop-only-table" style={{ borderRadius: '24px', overflowX: 'auto', border: '1.5px solid #5C3A21', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)', backgroundColor: '#FFF9F0', maxWidth: '100%' }}>
             <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
-                <tr style={{ backgroundColor: '#32180D', color: '#FFF9F0' }}>
-                  <th style={{ padding: '1.75rem 1.5rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: '900', color: '#FFF9F0', width: '22%' }}>Metric</th>
+                <tr style={{ backgroundColor: '#EFE4D4', borderBottom: '2px solid #5C3A21' }}>
+                  <th style={{ padding: '1.75rem 1.5rem', fontSize: '0.95rem', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: '900', color: '#32180D', width: '22%' }}>
+                    <span style={{ color: '#32180D', fontWeight: '900', fontSize: '0.95rem' }}>METRIC</span>
+                  </th>
                   {dailyProducts.map((p, idx) => (
                     <th key={idx} style={{ padding: '1.75rem 1.5rem', verticalAlign: 'top', width: '26%' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ width: '100px', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1.5px solid #5C3A21', backgroundColor: '#FFF9F0' }}>
+                        <div style={{ width: '100px', height: '100px', borderRadius: '14px', overflow: 'hidden', border: '2px solid #5C3A21', backgroundColor: '#FFF9F0', boxShadow: '0 4px 12px rgba(75, 45, 25, 0.08)' }}>
                           <img src={p.image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                         <div>
-                          <h4 style={{ fontSize: '0.98rem', fontWeight: '900', color: '#FFFFFF', margin: '0 0 0.35rem 0', lineHeight: '1.3' }}>{p.title}</h4>
-                          <p style={{ fontSize: '0.78rem', color: '#E3D2C0', lineHeight: '1.45', margin: 0, fontWeight: '600', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.subtitle || p.description}</p>
+                          <h4 style={{ fontSize: '1rem', fontWeight: '900', color: '#32180D', margin: '0 0 0.35rem 0', lineHeight: '1.3' }}>{p.title}</h4>
+                          <p style={{ fontSize: '0.8rem', color: '#5C3A21', lineHeight: '1.45', margin: 0, fontWeight: '600', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.subtitle || p.description}</p>
                         </div>
                       </div>
                     </th>
@@ -731,28 +733,28 @@ export default function Nutrition() {
                 </p>
 
                 <div className="grain-to-bake-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
-                  <div style={{ backgroundColor: '#FFF9F0', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px' }}>
+                  <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
                     <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>01</span>
                       <span>Ancient Grains</span>
                     </h4>
                     <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Sourced native Bajra, Jowar, and Ragi flour.</p>
                   </div>
-                  <div style={{ backgroundColor: '#FFF9F0', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px' }}>
+                  <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
                     <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>02</span>
                       <span>Selected Ingredients</span>
                     </h4>
                     <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Pure cow Desi Ghee & unrefined organic jaggery.</p>
                   </div>
-                  <div style={{ backgroundColor: '#FFF9F0', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px' }}>
+                  <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
                     <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>03</span>
                       <span>Slow Baking</span>
                     </h4>
                     <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Slow-baked in temperature-controlled oven bakes.</p>
                   </div>
-                  <div style={{ backgroundColor: '#FFF9F0', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px' }}>
+                  <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
                     <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>04</span>
                       <span>Finished Bake</span>
@@ -806,7 +808,7 @@ export default function Nutrition() {
             onTouchEnd={() => setIsIngredientsHovered(false)}
           >
             {whyIngredientsData.map((item, idx) => (
-              <div key={idx} style={{ backgroundColor: '#FFF9F0', border: '1.5px solid #5C3A21', padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box', boxShadow: '0 4px 16px rgba(75, 45, 25, 0.05)' }}>
+              <div key={idx} style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box', boxShadow: '0 6px 20px rgba(75, 45, 25, 0.08)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                   <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>0{idx + 1}</span>
                   {item.icon}
@@ -949,19 +951,19 @@ export default function Nutrition() {
             </p>
 
             <div className="know-what-you-eat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '1.25rem', textAlign: 'left' }}>
-              <div style={{ backgroundColor: '#FFF9F0', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px' }}>
+              <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ingredient Transparency</h4>
                 <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Clear ingredient information on every pack.</p>
               </div>
-              <div style={{ backgroundColor: '#FFF9F0', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px' }}>
+              <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Nutritional Info</h4>
                 <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Per 100g nutritional values clearly listed.</p>
               </div>
-              <div style={{ backgroundColor: '#FFF9F0', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px' }}>
+              <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Product Specific Data</h4>
                 <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Specific calculations shown for individual bakes.</p>
               </div>
-              <div style={{ backgroundColor: '#FFF9F0', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px' }}>
+              <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Lab Reports</h4>
                 <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Downloadable certified reports available.</p>
               </div>

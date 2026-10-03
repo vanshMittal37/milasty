@@ -50,7 +50,7 @@ export default function ProcessTimeline() {
               className="glass-card"
               style={{
                 padding: '1.75rem',
-                backgroundColor: '#FFF9F0',
+                backgroundColor: '#F4EBDD',
                 borderRadius: '20px',
                 border: '1.5px solid #5C3A21',
                 position: 'relative',
