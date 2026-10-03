@@ -53,10 +53,40 @@ export default function Nutrition() {
   }, []);
 
   const displayProducts = products && products.length > 0 ? products : initialProducts;
-  const dailyProducts = displayProducts.filter((p) => {
+  let dailyProducts = displayProducts.filter((p) => {
     const reportUrl = p.labReportUrl || p.lab_report_url;
     return reportUrl && typeof reportUrl === 'string' && reportUrl.trim() !== '';
   }).slice(0, 5);
+  if (dailyProducts.length === 0) {
+    dailyProducts = displayProducts.slice(0, 5);
+  }
+
+  const getNutrVal = (product, keys, defaultUnit = '') => {
+    if (!product) return '—';
+    const nf = product.nutritionFacts || product.nutrition_facts || {};
+    
+    for (const k of keys) {
+      const val = nf[k];
+      if (val !== undefined && val !== null && val !== '') {
+        if (typeof val === 'object' && val !== null) {
+          const vStr = val.value !== undefined && val.value !== null ? String(val.value).trim() : '';
+          const uStr = val.unit ? String(val.unit).trim() : defaultUnit;
+          if (!vStr) return '—';
+          if (uStr && !vStr.toLowerCase().includes(uStr.toLowerCase())) {
+            return `${vStr}${uStr.startsWith('/') ? '' : ' '}${uStr}`.trim();
+          }
+          return vStr;
+        }
+        const vStr = String(val).trim();
+        if (!vStr) return '—';
+        if (defaultUnit && !vStr.toLowerCase().includes(defaultUnit.toLowerCase())) {
+          return `${vStr}${defaultUnit.startsWith('/') ? '' : ' '}${defaultUnit}`.trim();
+        }
+        return vStr;
+      }
+    }
+    return '—';
+  };
 
   // Auto-scroll Nutrition At A Glance cards (every 2.0s with hover/touch pause)
   useEffect(() => {
@@ -368,14 +398,11 @@ export default function Nutrition() {
                       <span>Energy (kcal)</span>
                     </div>
                   </td>
-                  {dailyProducts.map((p, idx) => {
-                    const val = p.nutritionFacts?.energyKcal;
-                    return (
-                      <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
-                        {val !== undefined && val !== null && val !== '' ? `${val} kcal` : '—'}
-                      </td>
-                    );
-                  })}
+                  {dailyProducts.map((p, idx) => (
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
+                      {getNutrVal(p, ['energyKcal', 'energy_kcal', 'energy'], 'kcal')}
+                    </td>
+                  ))}
                 </tr>
 
                 <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FFF9F0' }}>
@@ -385,14 +412,11 @@ export default function Nutrition() {
                       <span>Protein (g)</span>
                     </div>
                   </td>
-                  {dailyProducts.map((p, idx) => {
-                    const val = p.nutritionFacts?.proteinG;
-                    return (
-                      <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
-                        {val !== undefined && val !== null && val !== '' ? `${val}g` : '—'}
-                      </td>
-                    );
-                  })}
+                  {dailyProducts.map((p, idx) => (
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
+                      {getNutrVal(p, ['proteinG', 'protein_g', 'protein'], 'g')}
+                    </td>
+                  ))}
                 </tr>
 
                 <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FCF8F1' }}>
@@ -402,14 +426,11 @@ export default function Nutrition() {
                       <span>Carbohydrates (g)</span>
                     </div>
                   </td>
-                  {dailyProducts.map((p, idx) => {
-                    const val = p.nutritionFacts?.carbohydrateG;
-                    return (
-                      <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
-                        {val !== undefined && val !== null && val !== '' ? `${val}g` : '—'}
-                      </td>
-                    );
-                  })}
+                  {dailyProducts.map((p, idx) => (
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
+                      {getNutrVal(p, ['carbohydrateG', 'carbohydrates', 'carbs'], 'g')}
+                    </td>
+                  ))}
                 </tr>
 
                 <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FFF9F0' }}>
@@ -447,14 +468,11 @@ export default function Nutrition() {
                       <span>Dietary Fiber (g)</span>
                     </div>
                   </td>
-                  {dailyProducts.map((p, idx) => {
-                    const val = p.nutritionFacts?.dietaryFiberG;
-                    return (
-                      <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
-                        {val !== undefined && val !== null && val !== '' ? `${val}g` : '—'}
-                      </td>
-                    );
-                  })}
+                  {dailyProducts.map((p, idx) => (
+                    <td key={idx} style={{ padding: '1.25rem 1.5rem', fontWeight: '800', color: '#2B170D', fontSize: '0.9rem' }}>
+                      {getNutrVal(p, ['dietaryFiberG', 'dietary_fiber', 'fiber'], 'g')}
+                    </td>
+                  ))}
                 </tr>
 
                 <tr style={{ backgroundColor: '#FCF8F1' }}>
@@ -539,81 +557,85 @@ export default function Nutrition() {
             }}
             style={{ touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none' }}
           >
-            {dailyProducts[glanceIndex] && (
-              <div
-                key={glanceIndex}
-                style={{
-                  backgroundColor: '#FFF9F0',
-                  border: '1.5px solid #5C3A21',
-                  borderRadius: '24px',
-                  overflow: 'hidden',
-                  width: '100%',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', borderBottom: '1px solid #DCC8AE' }}>
-                  <img src={dailyProducts[glanceIndex].image} alt={dailyProducts[glanceIndex].title} style={{ width: '60px', height: '60px', borderRadius: '12px', objectFit: 'cover' }} />
-                  <div>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#32180D', margin: '0 0 0.15rem 0' }}>{dailyProducts[glanceIndex].title}</h3>
-                    <p style={{ fontSize: '0.78rem', color: '#654B38', margin: 0, fontWeight: '500' }}>{dailyProducts[glanceIndex].subtitle || dailyProducts[glanceIndex].description}</p>
-                  </div>
-                </div>
-
-                <div style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#654B38', fontWeight: '700' }}>Energy</span>
-                    <span style={{ color: '#32180D', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.energyKcal} kcal</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#654B38', fontWeight: '700' }}>Protein</span>
-                    <span style={{ color: '#32180D', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.proteinG}g</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#654B38', fontWeight: '700' }}>Carbohydrates</span>
-                    <span style={{ color: '#32180D', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.carbohydrateG}g</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#654B38', fontWeight: '700' }}>Added Sugar</span>
-                    <span style={{ color: '#2F6B3A', fontWeight: '900' }}>0g (100% Jaggery)</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#654B38', fontWeight: '700' }}>Fat Type</span>
-                    <span style={{ color: '#2F6B3A', fontWeight: '900' }}>100% Desi Ghee</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#654B38', fontWeight: '700' }}>Dietary Fiber</span>
-                    <span style={{ color: '#32180D', fontWeight: '900' }}>{dailyProducts[glanceIndex].nutritionFacts?.dietaryFiberG}g</span>
-                  </div>
-
-                  {dailyProducts[glanceIndex].labReportUrl && (
-                    <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #DCC8AE', marginTop: '0.35rem' }}>
-                      <button
-                        onClick={() => handleDownload(dailyProducts[glanceIndex].labReportUrl, `${dailyProducts[glanceIndex].title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
-                        className="btn-primary"
-                        style={{
-                          padding: '0.65rem 0',
-                          fontSize: '0.8rem',
-                          fontWeight: '850',
-                          backgroundColor: '#2F6B3A',
-                          color: '#FFFFFF',
-                          borderRadius: '12px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '0.35rem',
-                          width: '100%',
-                          border: 'none',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <Download size={14} />
-                        <span>Download Lab Report</span>
-                      </button>
+            {dailyProducts.length > 0 && (() => {
+              const activeGlance = dailyProducts[glanceIndex] || dailyProducts[0];
+              const activeReportUrl = activeGlance.labReportUrl || activeGlance.lab_report_url || '';
+              return (
+                <div
+                  key={glanceIndex}
+                  style={{
+                    backgroundColor: '#FFF9F0',
+                    border: '1.5px solid #5C3A21',
+                    borderRadius: '24px',
+                    overflow: 'hidden',
+                    width: '100%',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', borderBottom: '1px solid #DCC8AE' }}>
+                    <img src={activeGlance.image} alt={activeGlance.title} style={{ width: '60px', height: '60px', borderRadius: '12px', objectFit: 'cover' }} />
+                    <div>
+                      <h3 style={{ fontSize: '1.05rem', fontWeight: '850', color: '#32180D', margin: '0 0 0.15rem 0' }}>{activeGlance.title}</h3>
+                      <p style={{ fontSize: '0.78rem', color: '#654B38', margin: 0, fontWeight: '500' }}>{activeGlance.subtitle || activeGlance.description}</p>
                     </div>
-                  )}
+                  </div>
+
+                  <div style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                      <span style={{ color: '#654B38', fontWeight: '700' }}>Energy</span>
+                      <span style={{ color: '#32180D', fontWeight: '900' }}>{getNutrVal(activeGlance, ['energyKcal', 'energy_kcal', 'energy'], 'kcal')}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                      <span style={{ color: '#654B38', fontWeight: '700' }}>Protein</span>
+                      <span style={{ color: '#32180D', fontWeight: '900' }}>{getNutrVal(activeGlance, ['proteinG', 'protein_g', 'protein'], 'g')}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                      <span style={{ color: '#654B38', fontWeight: '700' }}>Carbohydrates</span>
+                      <span style={{ color: '#32180D', fontWeight: '900' }}>{getNutrVal(activeGlance, ['carbohydrateG', 'carbohydrates', 'carbs'], 'g')}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                      <span style={{ color: '#654B38', fontWeight: '700' }}>Added Sugar</span>
+                      <span style={{ color: '#2F6B3A', fontWeight: '900' }}>0g (100% Jaggery)</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                      <span style={{ color: '#654B38', fontWeight: '700' }}>Fat Type</span>
+                      <span style={{ color: '#2F6B3A', fontWeight: '900' }}>100% Desi Ghee</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                      <span style={{ color: '#654B38', fontWeight: '700' }}>Dietary Fiber</span>
+                      <span style={{ color: '#32180D', fontWeight: '900' }}>{getNutrVal(activeGlance, ['dietaryFiberG', 'dietary_fiber', 'fiber'], 'g')}</span>
+                    </div>
+
+                    {activeReportUrl && (
+                      <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #DCC8AE', marginTop: '0.35rem' }}>
+                        <button
+                          onClick={() => handleDownload(activeReportUrl, `${activeGlance.title.replace(/\s+/g, '_')}_Lab_Report.pdf`)}
+                          className="btn-primary"
+                          style={{
+                            padding: '0.65rem 0',
+                            fontSize: '0.8rem',
+                            fontWeight: '850',
+                            backgroundColor: '#2F6B3A',
+                            color: '#FFFFFF',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.35rem',
+                            width: '100%',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Download size={14} />
+                          <span>Download Lab Report</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Carousel Manual Control Strip with Arrows & Dots */}
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.85rem', marginTop: '1.25rem' }}>
