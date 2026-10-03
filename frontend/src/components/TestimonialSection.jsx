@@ -402,7 +402,7 @@ export default function TestimonialSection() {
               >
                 <div
                   style={{
-                    backgroundColor: '#FFF9F0',
+                    backgroundColor: '#F4EBDD',
                     borderRadius: '18px',
                     border: '1.5px solid #D8C4A9',
                     boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
@@ -551,7 +551,7 @@ export default function TestimonialSection() {
                 height: '32px',
                 borderRadius: '50%',
                 border: '1px solid #DCC8AE',
-                backgroundColor: '#FFF9F0',
+                backgroundColor: '#F4EBDD',
                 color: '#32180D',
                 display: 'flex',
                 alignItems: 'center',
@@ -594,7 +594,7 @@ export default function TestimonialSection() {
                 height: '32px',
                 borderRadius: '50%',
                 border: '1px solid #DCC8AE',
-                backgroundColor: '#FFF9F0',
+                backgroundColor: '#F4EBDD',
                 color: '#32180D',
                 display: 'flex',
                 alignItems: 'center',
@@ -621,7 +621,7 @@ export default function TestimonialSection() {
             <div
               key={review.id}
               style={{
-                backgroundColor: '#FFF9F0',
+                backgroundColor: '#F4EBDD',
                 borderRadius: '20px',
                 border: '1.5px solid #5C3A21',
                 boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',

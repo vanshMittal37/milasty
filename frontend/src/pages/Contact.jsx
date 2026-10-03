@@ -119,7 +119,7 @@ export default function Contact() {
   ];
 
   const shopCardStyle = {
-    backgroundColor: '#FFF9F0',
+    backgroundColor: '#F4EBDD',
     borderRadius: '24px',
     border: '1.5px solid #5C3A21',
     boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)',

@@ -227,18 +227,75 @@ export default function ProductCard({ product }) {
           <h3
             className="card-title"
             style={{
-              fontSize: '1rem',
+              fontSize: '1.02rem',
               fontFamily: 'var(--font-serif)',
               fontWeight: '800',
               lineHeight: '1.3',
               marginBottom: '0.35rem',
-              color: '#32180D',
+              color: '#3A1F14',
             }}
           >
-            <Link to={`/product/${product.slug || product._id || product.id}`} style={{ color: '#32180D', textDecoration: 'none' }}>
+            <Link to={`/product/${product.slug || product._id || product.id}`} style={{ color: '#3A1F14', textDecoration: 'none' }}>
               {product.title}
             </Link>
           </h3>
+
+          {/* Metric / Weight / Variant Label Badge & Selectors */}
+          {product?.variants && product.variants.length > 1 ? (
+            <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '0.55rem', alignItems: 'center' }}>
+              {product.variants.map((v, vIdx) => {
+                const metricText = v.label || v.weight || v.name || `${v.unit || ''}`;
+                const isSelected = selectedVariantIndex === vIdx;
+                return (
+                  <button
+                    key={vIdx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setSelectedVariantIndex(vIdx);
+                    }}
+                    style={{
+                      fontSize: '0.72rem',
+                      fontWeight: '800',
+                      padding: '0.2rem 0.55rem',
+                      borderRadius: '6px',
+                      border: isSelected ? '1.5px solid #2F6B3A' : '1px solid #C5B095',
+                      backgroundColor: isSelected ? '#2F6B3A' : '#E6D4BC',
+                      color: isSelected ? '#FFFFFF' : '#3A1F14',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      lineHeight: '1.2'
+                    }}
+                  >
+                    {metricText}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            (selectedVariant?.label || selectedVariant?.weight || selectedVariant?.name || product?.weight || product?.unit) && (
+              <div style={{ marginBottom: '0.55rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span
+                  className="card-metric-badge"
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: '800',
+                    color: '#3A1F14',
+                    backgroundColor: '#E6D4BC',
+                    border: '1px solid #C5B095',
+                    padding: '0.18rem 0.6rem',
+                    borderRadius: '6px',
+                    display: 'inline-block',
+                    letterSpacing: '0.02em',
+                    lineHeight: '1.2'
+                  }}
+                >
+                  {selectedVariant?.label || selectedVariant?.weight || selectedVariant?.name || `${product?.weight || ''} ${product?.unit || ''}`.trim()}
+                </span>
+              </div>
+            )
+          )}
 
           {/* Subtitle / Description */}
           <p

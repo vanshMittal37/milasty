@@ -27,7 +27,7 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
               style={{
                 padding: '1.5rem',
                 borderRadius: '16px',
-                backgroundColor: isSelected ? '#FFFFFF' : 'rgba(255, 255, 255, 0.4)',
+                backgroundColor: isSelected ? '#F4EBDD' : '#EBE0CF',
                 border: isSelected ? '2px solid #5C4028' : '1px solid rgba(226, 215, 199, 0.6)',
                 boxShadow: isSelected ? '0 12px 28px rgba(74, 53, 37, 0.12)' : 'none',
                 cursor: 'pointer',
@@ -81,7 +81,7 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
         className="glass-card animate-fade-in"
         style={{
           padding: '2rem',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#F4EBDD',
           borderRadius: '24px',
           border: '1.5px solid #E2D7C7',
           boxShadow: '0 20px 40px rgba(74, 53, 37, 0.15)',

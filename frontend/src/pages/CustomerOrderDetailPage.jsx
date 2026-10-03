@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   CheckCircle2, Clock, MapPin, ShieldAlert, ArrowLeft, PackageCheck, AlertCircle,
   Copy, Check, MessageCircle, ChevronRight, Package, Truck, ShoppingBag, RefreshCw,
-  ClipboardList, Archive, Send, Star, XCircle
+  ClipboardList, Archive, Send, Star, XCircle, Navigation, ExternalLink, Loader2
 } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -246,6 +246,8 @@ export default function CustomerOrderDetailPage() {
   const [cancelLoading, setCancelLoading] = useState(false);
   const [cancelError, setCancelError] = useState('');
   const [copyToast, setCopyToast] = useState(false);
+  const [shipTracking, setShipTracking] = useState(null);
+  const [trackLoading, setTrackLoading] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) { navigate('/login'); }
@@ -256,9 +258,27 @@ export default function CustomerOrderDetailPage() {
     setLoading(true);
     try {
       const res = await api.get(`/orders/detail/${id}`);
-      setOrder(res.data);
+      const fetchedOrder = res.data;
+      setOrder(fetchedOrder);
+      // Auto-fetch tracking if order is shipped or beyond
+      const st = String(fetchedOrder?.orderStatus || fetchedOrder?.status || '').toLowerCase();
+      if (['shipped', 'out_for_delivery', 'out for delivery', 'delivered'].includes(st)) {
+        fetchShipTracking(fetchedOrder?.id || fetchedOrder?._id || id);
+      }
     } catch (e) { console.error('Error fetching order', e); }
     finally { setLoading(false); }
+  };
+
+  const fetchShipTracking = async (orderId) => {
+    setTrackLoading(true);
+    try {
+      const res = await api.get(`/shiprat/order/${orderId}/tracking`);
+      if (res.data?.success) setShipTracking(res.data);
+    } catch (e) {
+      console.warn('Tracking fetch notice:', e.message);
+    } finally {
+      setTrackLoading(false);
+    }
   };
 
   const handleCancelOrder = async (e) => {
@@ -386,7 +406,135 @@ export default function CustomerOrderDetailPage() {
         {/* ── ORDER PROGRESS TRACKER ── */}
         <OrderProgressTracker currentStatus={currentStatus} />
 
-        {/* ── CANCELLED BANNER ── */}
+        {/* ── SHIPRATH LIVE TRACKING CARD ── */}
+        {(shipTracking || trackLoading) && (
+          <div style={{
+            ...cardStyle,
+            padding: '1.5rem',
+            marginBottom: '1.25rem',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(245,237,229,0.85) 100%)',
+            border: '1px solid rgba(198,138,58,0.25)',
+          }}>
+            <h3 style={{
+              fontSize: '0.78rem', fontWeight: '900', color: T.textPrimary,
+              margin: '0 0 1rem 0', textTransform: 'uppercase', letterSpacing: '0.1em',
+              display: 'flex', alignItems: 'center', gap: '0.5rem',
+            }}>
+              <span style={{ width: '3px', height: '14px', borderRadius: '2px', backgroundColor: T.accent, display: 'inline-block' }} />
+              <Navigation size={14} color={T.accent} />
+              Live Shipment Tracking
+            </h3>
+
+            {trackLoading && !shipTracking && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: T.textMuted, fontSize: '0.87rem' }}>
+                <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                Fetching live tracking data...
+              </div>
+            )}
+
+            {shipTracking && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {/* AWB & Courier Row */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                  {shipTracking.awb && (
+                    <div style={{
+                      flex: 1, minWidth: '160px',
+                      padding: '0.85rem 1rem',
+                      backgroundColor: 'rgba(245,237,229,0.6)',
+                      borderRadius: '10px',
+                      border: `1px solid rgba(198,138,58,0.2)`,
+                    }}>
+                      <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.accent, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>AWB Number</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary, fontFamily: 'monospace', letterSpacing: '0.05em' }}>{shipTracking.awb}</div>
+                    </div>
+                  )}
+                  {shipTracking.courier_name && (
+                    <div style={{
+                      flex: 1, minWidth: '160px',
+                      padding: '0.85rem 1rem',
+                      backgroundColor: 'rgba(245,237,229,0.6)',
+                      borderRadius: '10px',
+                      border: `1px solid rgba(198,138,58,0.2)`,
+                    }}>
+                      <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.accent, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>Courier Partner</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary }}>{shipTracking.courier_name}</div>
+                    </div>
+                  )}
+                  {shipTracking.tracking?.estimated_delivery && (
+                    <div style={{
+                      flex: 1, minWidth: '160px',
+                      padding: '0.85rem 1rem',
+                      backgroundColor: 'rgba(237,247,238,0.7)',
+                      borderRadius: '10px',
+                      border: `1px solid rgba(46,125,50,0.2)`,
+                    }}>
+                      <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.success, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>Est. Delivery</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.success }}>{shipTracking.tracking.estimated_delivery}</div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Latest tracking event */}
+                {shipTracking.tracking?.shipment_track?.[0] && (
+                  <div style={{
+                    padding: '0.85rem 1rem',
+                    backgroundColor: T.infoBg,
+                    borderRadius: '10px',
+                    border: `1px solid rgba(21,101,192,0.15)`,
+                    display: 'flex', alignItems: 'flex-start', gap: '0.7rem',
+                  }}>
+                    <Truck size={16} color={T.info} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+                    <div>
+                      <div style={{ fontSize: '0.82rem', fontWeight: '700', color: T.info }}>
+                        {shipTracking.tracking.shipment_track[0].activity || 'In transit'}
+                      </div>
+                      {shipTracking.tracking.shipment_track[0].location && (
+                        <div style={{ fontSize: '0.75rem', color: T.textMuted, marginTop: '0.15rem' }}>
+                          📍 {shipTracking.tracking.shipment_track[0].location}
+                        </div>
+                      )}
+                      {shipTracking.tracking.shipment_track[0].date && (
+                        <div style={{ fontSize: '0.72rem', color: T.textMuted, marginTop: '0.1rem' }}>
+                          {new Date(shipTracking.tracking.shipment_track[0].date).toLocaleString('en-IN')}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Full tracking link */}
+                {shipTracking.tracking_url && (
+                  <a
+                    href={shipTracking.tracking_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                      padding: '0.6rem 1.2rem',
+                      background: T.brandGrad,
+                      color: '#FFFFFF',
+                      borderRadius: '999px',
+                      textDecoration: 'none',
+                      fontSize: '0.8rem', fontWeight: '700',
+                      alignSelf: 'flex-start',
+                      boxShadow: '0 4px 12px rgba(90,46,22,0.18)',
+                    }}
+                  >
+                    <ExternalLink size={13} /> Track Full Journey
+                  </a>
+                )}
+              </div>
+            )}
+
+            {shipTracking && !shipTracking.awb && (
+              <div style={{ fontSize: '0.84rem', color: T.textMuted, fontWeight: '500' }}>
+                Shipment is being arranged. Tracking details will appear once dispatched.
+              </div>
+            )}
+
+            <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
         {isCancelled && (
           <div style={{ ...cardStyle, padding: '1.25rem 1.5rem', marginBottom: '1.25rem', backgroundColor: T.dangerBg, border: `1px solid ${T.dangerBorder}` }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem' }}>

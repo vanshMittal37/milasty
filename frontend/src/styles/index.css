@@ -1960,14 +1960,11 @@ a {
 .home-page .ritual-showcase,
 .home-page .glass-card {
   position: relative !important;
-  background: rgba(35, 21, 13, 0.60) !important;
-  /* Translucent Warm Chocolate */
-  backdrop-filter: blur(24px) !important;
-  /* Strong blur like image 2 */
-  -webkit-backdrop-filter: blur(24px) !important;
-  border-radius: 18px !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
+  background: #F4EBDD !important;
+  background-color: #F4EBDD !important;
+  border-radius: 20px !important;
+  border: 1.5px solid #5C3A21 !important;
+  box-shadow: 0 8px 24px rgba(70, 40, 20, 0.07) !important;
   transition: all 250ms ease !important;
 }
 
@@ -3606,10 +3603,10 @@ footer.transparent-blurred-footer {
   margin: 0.5rem 0;
 }
 
-/* Stat Cards — Premium Light Theme */
+/* Stat Cards — Premium Beige Theme */
 .milasty-stat-card {
-  background: #FFFFFF;
-  border: 1px solid #E7DED5;
+  background: #F4EBDD;
+  border: 1.5px solid #5C3A21;
   border-radius: 16px;
   padding: 1.35rem;
   display: flex;

@@ -515,7 +515,7 @@ export default function OurStory() {
               position: 'absolute', 
               bottom: '24px', 
               right: '24px',
-              backgroundColor: '#FFF9F0',
+              backgroundColor: '#F4EBDD',
               padding: '0.6rem 1.2rem',
               borderRadius: '999px',
               border: '1px solid #DCC8AE',
@@ -638,7 +638,7 @@ export default function OurStory() {
                 fontSize: '1.15rem',
                 lineHeight: '1.6',
                 fontStyle: 'italic',
-                backgroundColor: '#FFF9F0',
+                backgroundColor: '#F4EBDD',
                 padding: '1rem 1.35rem',
                 borderRadius: '0 12px 12px 0',
                 border: '1px solid #DCC8AE',
@@ -696,7 +696,7 @@ export default function OurStory() {
       {/* 4. PRESERVED EXISTING SECTION — TRANSPARENCY & NUTRITION */}
       <section style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid #DCC8AE' }}>
         <div style={{ maxWidth: '780px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)' }}>
+          <div style={{ backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)' }}>
             <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid #DCC8AE' }}>
               <Info size={24} />
             </div>
@@ -816,14 +816,14 @@ export default function OurStory() {
           scrollbar-width: none !important;
         }
         .our-story-page .glass-card {
-          background: #FFF9F0 !important;
-          background-color: #FFF9F0 !important;
+          background: #F4EBDD !important;
+          background-color: #F4EBDD !important;
           border: 1px solid #DCC8AE !important;
           box-shadow: 0 4px 16px rgba(75, 45, 25, 0.05) !important;
           transition: all 0.3s ease !important;
         }
         .our-story-page .glass-card:hover {
-          background: #FFF9F0 !important;
+          background: #F4EBDD !important;
           border: 1px solid #2F6B3A !important;
           transform: translateY(-3px) !important;
         }

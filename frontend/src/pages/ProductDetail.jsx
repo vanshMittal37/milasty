@@ -417,7 +417,7 @@ export default function ProductDetail() {
                 paddingTop: '100%', 
                 borderRadius: '20px', 
                 overflow: 'hidden', 
-                backgroundColor: '#FFF9F0', 
+                backgroundColor: '#F4EBDD', 
                 border: '1px solid #DCC8AE',
                 boxShadow: '0 8px 30px rgba(75, 45, 25, 0.08)',
                 cursor: 'zoom-in',
@@ -467,7 +467,7 @@ export default function ProductDetail() {
                   position: 'absolute',
                   bottom: '16px',
                   right: '16px',
-                  backgroundColor: '#FFF9F0',
+                  backgroundColor: '#F4EBDD',
                   backdropFilter: 'blur(6px)',
                   color: '#2F6B3A',
                   border: '1px solid #DCC8AE',
@@ -500,7 +500,7 @@ export default function ProductDetail() {
                       width: '36px',
                       height: '36px',
                       borderRadius: '50%',
-                      backgroundColor: '#FFF9F0',
+                      backgroundColor: '#F4EBDD',
                       border: '1px solid #DCC8AE',
                       color: '#32180D',
                       display: 'flex',
@@ -529,7 +529,7 @@ export default function ProductDetail() {
                       width: '36px',
                       height: '36px',
                       borderRadius: '50%',
-                      backgroundColor: '#FFF9F0',
+                      backgroundColor: '#F4EBDD',
                       border: '1px solid #DCC8AE',
                       color: '#32180D',
                       display: 'flex',
@@ -594,7 +594,7 @@ export default function ProductDetail() {
                         borderRadius: '12px',
                         overflow: 'hidden',
                         padding: 0,
-                        backgroundColor: '#FFF9F0',
+                        backgroundColor: '#F4EBDD',
                         border: isActive ? '2px solid #2F6B3A' : '1px solid #DCC8AE',
                         cursor: 'pointer',
                         transition: 'all 0.2s',
@@ -783,7 +783,7 @@ export default function ProductDetail() {
                           padding: '0.65rem 1.15rem',
                           borderRadius: '12px',
                           border: isSelected ? '2px solid #2F6B3A' : '1px solid #DCC8AE',
-                          backgroundColor: isSelected ? '#E3EEDC' : '#FFF9F0',
+                          backgroundColor: isSelected ? '#E3EEDC' : '#F4EBDD',
                           color: isSelected ? '#2F6B3A' : '#32180D',
                           cursor: 'pointer',
                           display: 'flex',
@@ -875,7 +875,7 @@ export default function ProductDetail() {
                       fontSize: '0.88rem',
                       borderRadius: '10px',
                       border: '1px solid rgba(58, 31, 20, 0.22)',
-                      backgroundColor: '#FFF9F0',
+                      backgroundColor: '#F4EBDD',
                       color: '#3A1F14',
                       resize: 'vertical',
                       fontFamily: 'var(--font-sans)',
@@ -895,7 +895,7 @@ export default function ProductDetail() {
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  backgroundColor: '#FFF9F0', 
+                  backgroundColor: '#F4EBDD', 
                   border: '1px solid #DCC8AE', 
                   borderRadius: '999px',
                   padding: '0.25rem 0.5rem'
@@ -979,7 +979,7 @@ export default function ProductDetail() {
                   width: '48px',
                   height: '48px',
                   borderRadius: '50%',
-                  backgroundColor: '#FFF9F0',
+                  backgroundColor: '#F4EBDD',
                   border: '1px solid #DCC8AE',
                   display: 'flex',
                   alignItems: 'center',
@@ -1071,7 +1071,7 @@ export default function ProductDetail() {
           </div>
 
           {activeTab === 'nutrition' && (
-            <div style={{ backgroundColor: '#FFF9F0', padding: '1.5rem', borderRadius: '16px', border: '1px solid #DCC8AE' }}>
+            <div style={{ backgroundColor: '#F4EBDD', padding: '1.5rem', borderRadius: '16px', border: '1px solid #DCC8AE' }}>
               {safeNutritionFacts.length > 0 ? (
                 <div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: labReportUrl ? '1.5rem' : 0 }}>
@@ -1154,7 +1154,7 @@ export default function ProductDetail() {
           )}
 
           {activeTab === 'ingredients' && (
-            <div style={{ backgroundColor: '#FFF9F0', padding: '1.5rem', borderRadius: '16px', border: '1px solid #DCC8AE' }}>
+            <div style={{ backgroundColor: '#F4EBDD', padding: '1.5rem', borderRadius: '16px', border: '1px solid #DCC8AE' }}>
               {ingredientsList.length > 0 ? (
                 <div>
                   <h4 style={{ fontSize: '0.9rem', color: '#2F6B3A', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.85rem' }}>
@@ -1191,7 +1191,7 @@ export default function ProductDetail() {
           )}
 
           {activeTab === 'labreport' && labReportUrl && (
-            <div style={{ backgroundColor: '#FFF9F0', padding: '2rem', borderRadius: '16px', border: '1px solid #DCC8AE', textAlign: 'center' }}>
+            <div style={{ backgroundColor: '#F4EBDD', padding: '2rem', borderRadius: '16px', border: '1px solid #DCC8AE', textAlign: 'center' }}>
               <ShieldCheck size={40} color="#2F6B3A" style={{ margin: '0 auto 1rem' }} />
               <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#32180D', margin: '0 0 0.5rem 0' }}>Official Quality &amp; Nutrition Lab Report</h3>
               <p style={{ color: '#654B38', fontSize: '0.9rem', maxWidth: '500px', margin: '0 auto 1.5rem auto' }}>
@@ -1222,7 +1222,7 @@ export default function ProductDetail() {
           )}
 
           {activeTab === 'reviews' && (
-            <div style={{ backgroundColor: '#FFF9F0', padding: '2rem', borderRadius: '20px', border: '1px solid #DCC8AE' }}>
+            <div style={{ backgroundColor: '#F4EBDD', padding: '2rem', borderRadius: '20px', border: '1px solid #DCC8AE' }}>
               {/* Reviews Summary Header */}
               <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '2rem', paddingBottom: '1.5rem', borderBottom: '1px solid #DCC8AE' }}>
                 <div style={{ textAlign: 'center', paddingRight: '2rem', borderRight: '1px solid #DCC8AE' }}>

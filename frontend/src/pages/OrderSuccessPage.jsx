@@ -188,7 +188,7 @@ export default function OrderSuccessPage() {
                         const note = item.customization_note || item.customizationNote || null;
 
                         return (
-                          <div key={idx} style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '0.85rem' }}>
+                          <div key={idx} style={{ backgroundColor: '#F4EBDD', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '0.85rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <div>
                                 <strong style={{ fontSize: '0.92rem', color: '#2B140B' }}>{title}</strong>

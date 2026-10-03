@@ -14,21 +14,21 @@ import { useCategories } from '../context/CategoryContext';
 
 const cardThemes = [
   {
-    bgGradient: '#FFF9F0',
+    bgGradient: '#F4EBDD',
     borderColor: '#DCC8AE',
     titleColor: '#32180D',
     badgeBg: '#E3EEDC',
     badgeColor: '#24572E',
   },
   {
-    bgGradient: '#FFF9F0',
+    bgGradient: '#F4EBDD',
     borderColor: '#DCC8AE',
     titleColor: '#32180D',
     badgeBg: '#E3EEDC',
     badgeColor: '#24572E',
   },
   {
-    bgGradient: '#FFF9F0',
+    bgGradient: '#F4EBDD',
     borderColor: '#DCC8AE',
     titleColor: '#32180D',
     badgeBg: '#E3EEDC',
@@ -576,7 +576,7 @@ export default function Shop() {
                   key={item.id || idx}
                   onClick={() => navigate(`/product/${item.productSlug || item.slug || pId}`)}
                   style={{
-                    background: '#FFF9F0',
+                    background: '#F4EBDD',
                     borderRadius: isMobile ? '14px' : '20px',
                     border: '1.5px solid #5C3A21',
                     boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
@@ -753,7 +753,7 @@ export default function Shop() {
                 style={{
                   padding: '0.65rem 1.65rem',
                   borderRadius: '999px',
-                  backgroundColor: '#FFF9F0',
+                  backgroundColor: '#F4EBDD',
                   border: '1.5px solid #DCC8AE',
                   color: '#32180D',
                   fontSize: '0.88rem',
@@ -836,7 +836,7 @@ export default function Shop() {
                       overflow: 'hidden',
                       position: 'relative',
                       border: isSelected ? '3px solid #2F6B3A' : '2px solid #DCC8AE',
-                      backgroundColor: '#FFF9F0',
+                      backgroundColor: '#F4EBDD',
                       boxShadow: isSelected ? '0 8px 20px rgba(47, 107, 58, 0.25)' : '0 4px 12px rgba(43, 20, 11, 0.05)',
                       transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                       marginBottom: '0.85rem',
@@ -1017,7 +1017,7 @@ export default function Shop() {
                 width: '100%',
                 padding: '0.85rem 1.25rem 0.85rem 3.4rem',
                 borderRadius: '999px',
-                backgroundColor: '#FFF9F0',
+                backgroundColor: '#F4EBDD',
                 border: '1.5px solid #DCC8AE',
                 color: '#32180D',
                 fontSize: isMobile ? '0.88rem' : '0.95rem',
@@ -1057,7 +1057,7 @@ export default function Shop() {
               <ProductCard key={product._id || product.slug} product={product} />
             ))
           ) : (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 1.5rem', color: '#654B38', backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', borderRadius: '24px' }}>
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 1.5rem', color: '#654B38', backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', borderRadius: '24px' }}>
               <Sparkles size={32} color="#2F6B3A" style={{ marginBottom: '0.75rem' }} />
               <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#32180D', margin: '0 0 0.4rem 0', fontWeight: '800' }}>No products yet</h3>
               <p style={{ fontSize: '0.95rem', color: '#654B38', margin: '0 auto 1.5rem', maxWidth: '480px', lineHeight: '1.5' }}>
@@ -1088,7 +1088,7 @@ export default function Shop() {
             style={{ 
               padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem', 
               borderRadius: '24px', 
-              backgroundColor: '#FFF9F0',
+              backgroundColor: '#F4EBDD',
               border: '1.5px solid #DCC8AE',
               boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
               textAlign: 'center'
@@ -1229,7 +1229,7 @@ export default function Shop() {
           <div 
             onClick={(e) => e.stopPropagation()}
             style={{ 
-              backgroundColor: '#FFF9F0', 
+              backgroundColor: '#F4EBDD', 
               borderRadius: '24px', 
               border: '1.5px solid #DCC8AE', 
               padding: isMobile ? '1.25rem 1rem' : '2.25rem 2rem', 
@@ -1328,7 +1328,7 @@ export default function Shop() {
           <div 
             onClick={(e) => e.stopPropagation()}
             style={{ 
-              backgroundColor: '#FFF9F0', 
+              backgroundColor: '#F4EBDD', 
               borderRadius: '24px', 
               border: '1.5px solid #DCC8AE', 
               padding: isMobile ? '1.5rem 1.15rem' : '2rem 1.75rem', 
@@ -1511,7 +1511,7 @@ export default function Shop() {
                   style={{
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
                     borderRadius: '24px',
-                    backgroundColor: '#FFF9F0',
+                    backgroundColor: '#F4EBDD',
                     border: '1.5px solid #5C3A21',
                     boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                     textAlign: 'center',
@@ -1674,7 +1674,7 @@ export default function Shop() {
               textAlign: 'center',
               position: 'relative',
               borderRadius: '30px',
-              backgroundColor: '#FFF9F0',
+              backgroundColor: '#F4EBDD',
               border: '2px solid #5C3A21',
               boxShadow: '0 12px 36px rgba(43, 20, 11, 0.08)',
               overflow: 'hidden',

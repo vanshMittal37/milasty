@@ -1,6 +1,7 @@
 import { supabase } from '../config/supabase.js';
 import { syncAuthUsersToProfiles } from './authController.js';
 import { getDeliveryChargeForPincode } from './paymentController.js';
+import { bookShiprathShipment } from './shipratController.js';
 
 // Status Canonical Mappings
 const CANONICAL_STATUS_MAP = {
@@ -454,11 +455,37 @@ export const createOrder = async (req, res) => {
       return res.status(500).json({ message: 'Order could not be persisted to the database. Please contact support.' });
     }
 
-    return res.status(201).json({
+    // Send the response immediately, then auto-book Shiprath in background
+    res.status(201).json({
       success: true,
       message: 'Order created successfully',
       order: formatOrderPayload(order),
     });
+
+    // Auto-book Shiprath B2C shipment (fire-and-forget — does not affect customer response)
+    if (isCod && order?.id) {
+      setImmediate(async () => {
+        try {
+          const { data: freshOrder } = await supabase
+            .from('orders')
+            .select('*, order_items(*)')
+            .eq('id', order.id)
+            .maybeSingle();
+          if (freshOrder) {
+            const result = await bookShiprathShipment(freshOrder);
+            if (result?.awb) {
+              console.log('[SHIPRATH COD] ✅ Shipment booked — AWB:', result.awb, '| Order:', order.order_number);
+            } else {
+              console.warn('[SHIPRATH COD] Booking skipped/failed for order:', order.order_number, result?.error || '');
+            }
+          }
+        } catch (shipErr) {
+          console.warn('[SHIPRATH COD] Auto-book notice:', shipErr.message);
+        }
+      });
+    }
+
+    return; // Prevent fall-through to catch
   } catch (error) {
     console.error('Error in createOrder:', error);
     res.status(500).json({ message: 'Error creating order', error: error.message });

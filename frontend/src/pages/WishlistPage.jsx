@@ -96,7 +96,7 @@ export default function WishlistPage() {
         >
           <div
             style={{
-              backgroundColor: '#FFF9F0',
+              backgroundColor: '#F4EBDD',
               borderRadius: '24px',
               border: '1px solid #DCC8AE',
               boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)',
@@ -157,7 +157,7 @@ export default function WishlistPage() {
                 style={{
                   padding: '3.5rem 2rem',
                   textAlign: 'center',
-                  backgroundColor: '#FFF9F0',
+                  backgroundColor: '#F4EBDD',
                   borderRadius: '24px',
                   border: '1px solid #DCC8AE',
                   maxWidth: '620px',
@@ -219,13 +219,13 @@ export default function WishlistPage() {
                   <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
                     <button
                       onClick={() => scrollLeft(recRef)}
-                      style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      style={{ backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                       <ChevronLeft size={16} />
                     </button>
                     <button
                       onClick={() => scrollRight(recRef)}
-                      style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      style={{ backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                       <ChevronRight size={16} />
                     </button>
@@ -281,7 +281,7 @@ export default function WishlistPage() {
                       fontSize: '0.8rem',
                       color: '#32180D',
                       fontWeight: '700',
-                      backgroundColor: '#FFF9F0',
+                      backgroundColor: '#F4EBDD',
                       outline: 'none',
                       cursor: 'pointer',
                       minHeight: '38px'
@@ -347,14 +347,14 @@ export default function WishlistPage() {
                     <button
                       onClick={() => scrollLeft(recRef)}
                       aria-label="Scroll Left"
-                      style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '38px', height: '38px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      style={{ backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', color: '#32180D', width: '38px', height: '38px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                       <ChevronLeft size={16} />
                     </button>
                     <button
                       onClick={() => scrollRight(recRef)}
                       aria-label="Scroll Right"
-                      style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '38px', height: '38px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      style={{ backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', color: '#32180D', width: '38px', height: '38px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                       <ChevronRight size={16} />
                     </button>
@@ -380,7 +380,7 @@ export default function WishlistPage() {
               {/* STILL EXPLORING CTA */}
               <section style={{ borderTop: '1px solid #DCC8AE', paddingTop: '4rem', textAlign: 'center' }}>
                 <div style={{
-                  backgroundColor: '#FFF9F0',
+                  backgroundColor: '#F4EBDD',
                   borderRadius: '24px',
                   border: '1px solid #DCC8AE',
                   boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)',

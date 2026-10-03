@@ -761,7 +761,7 @@ export default function Home() {
                   style={{
                     borderRadius: '24px',
                     padding: isMobile ? '1.75rem 1.25rem' : '2.25rem',
-                    backgroundColor: '#FFF9EF',
+                    backgroundColor: '#F4EBDD',
                     border: '1.5px solid #1F6B35',
                     boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                   }}
@@ -799,7 +799,7 @@ export default function Home() {
                   style={{
                     borderRadius: '24px',
                     padding: isMobile ? '1.75rem 1.25rem' : '2.25rem',
-                    backgroundColor: '#FFF9EF',
+                    backgroundColor: '#F4EBDD',
                     border: '1.5px solid #E8D2B5',
                     boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                   }}
@@ -886,9 +886,9 @@ export default function Home() {
                           style={{
                             padding: isMobile ? '0.65rem 1.15rem' : '0.85rem 1.65rem',
                             borderRadius: '999px',
-                            backgroundColor: isSelected ? '#1F6B35' : '#FFF9EF',
+                            backgroundColor: isSelected ? '#1F6B35' : '#F4EBDD',
                             border: isSelected ? '1.5px solid #1F6B35' : '1px solid #E8D2B5',
-                            color: isSelected ? '#FFF9EF' : '#3A1F14',
+                            color: isSelected ? '#F4EBDD' : '#3A1F14',
                             cursor: 'pointer',
                             fontSize: isMobile ? '0.82rem' : '0.92rem',
                             fontWeight: '800',
@@ -911,7 +911,7 @@ export default function Home() {
 
                     if (moodProducts.length === 0) {
                       return (
-                        <div style={{ textAlign: 'center', color: '#5C3A21', gridColumn: '1 / -1', padding: '3rem 1rem', backgroundColor: '#FFF9EF', borderRadius: '20px', border: '1px solid #E8D2B5' }}>
+                        <div style={{ textAlign: 'center', color: '#5C3A21', gridColumn: '1 / -1', padding: '3rem 1rem', backgroundColor: '#F4EBDD', borderRadius: '20px', border: '1px solid #E8D2B5' }}>
                           <p style={{ fontSize: '1rem', opacity: 0.85, margin: 0 }}>No snacks added to this collection yet.</p>
                         </div>
                       );
@@ -934,7 +934,7 @@ export default function Home() {
                       gap: '0.5rem',
                       padding: '0.85rem 2rem',
                       backgroundColor: '#1F6B35',
-                      color: '#FFF9EF',
+                      color: '#F4EBDD',
                       border: 'none',
                       borderRadius: '999px',
                       fontWeight: '800',
@@ -943,7 +943,7 @@ export default function Home() {
                     }}
                   >
                     <span>{discoveryConfig.explore_button_text || 'EXPLORE ALL SNACKS →'}</span>
-                    <ArrowRight size={16} color="#FFF9EF" />
+                    <ArrowRight size={16} color="#F4EBDD" />
                   </Link>
                 </div>
 
@@ -986,7 +986,7 @@ export default function Home() {
                       gap: '0.5rem',
                       padding: '0.85rem 1.85rem',
                       backgroundColor: '#1F6B35',
-                      color: '#FFF9EF',
+                      color: '#F4EBDD',
                       border: 'none',
                       borderRadius: '999px',
                       fontWeight: '800',
@@ -1000,13 +1000,13 @@ export default function Home() {
                   <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
                     <button
                       onClick={() => scrollLeft(ingredientsRef)}
-                      style={{ backgroundColor: '#FFF9EF', border: '1px solid #E8D2B5', color: '#3A1F14', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      style={{ backgroundColor: '#F4EBDD', border: '1px solid #E8D2B5', color: '#3A1F14', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                       <ChevronLeft size={16} />
                     </button>
                     <button
                       onClick={() => scrollRight(ingredientsRef)}
-                      style={{ backgroundColor: '#FFF9EF', border: '1px solid #E8D2B5', color: '#3A1F14', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      style={{ backgroundColor: '#F4EBDD', border: '1px solid #E8D2B5', color: '#3A1F14', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                       <ChevronRight size={16} />
                     </button>
@@ -1030,7 +1030,7 @@ export default function Home() {
                   const itemsToDisplay = showAllIngredients ? activeList : activeList.slice(0, 4);
 
                   return itemsToDisplay.map((ingredient, idx) => (
-                    <div key={ingredient.id || ingredient.name || idx} className="glass-card" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px', backgroundColor: '#FFF9EF', border: '1.5px solid #E8D2B5', boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)' }}>
+                    <div key={ingredient.id || ingredient.name || idx} className="glass-card" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px', backgroundColor: '#F4EBDD', border: '1.5px solid #E8D2B5', boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)' }}>
                       <img
                         src={ingredient.image || ingredient.imageUrl || ingredient.image_url || ingredient.img}
                         alt={ingredient.name}
@@ -1057,7 +1057,7 @@ export default function Home() {
                     style={{
                       padding: '0.75rem 1.75rem',
                       borderRadius: '999px',
-                      backgroundColor: '#FFF9EF',
+                      backgroundColor: '#F4EBDD',
                       border: '1.5px solid #E8D2B5',
                       color: '#3A1F14',
                       fontSize: '0.88rem',
@@ -1142,7 +1142,7 @@ export default function Home() {
                       style={{
                         borderRadius: '20px',
                         padding: isMobile ? '1.25rem 1rem' : '2rem 1.5rem',
-                        backgroundColor: '#FFF9EF',
+                        backgroundColor: '#F4EBDD',
                         border: '1.5px solid #E8D2B5',
                         boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)',
                         display: 'flex',
@@ -1217,7 +1217,7 @@ export default function Home() {
                       className="glass-card"
                       style={{
                         borderRadius: '20px',
-                        backgroundColor: '#FFF9EF',
+                        backgroundColor: '#F4EBDD',
                         border: isOpen ? '1.5px solid #1F6B35' : '1.5px solid #E8D2B5',
                         boxShadow: isOpen ? '0 8px 24px rgba(43, 20, 11, 0.08)' : '0 4px 16px rgba(43, 20, 11, 0.04)',
                         overflow: 'hidden',
@@ -1301,7 +1301,7 @@ export default function Home() {
                   style={{
                     borderRadius: '24px',
                     padding: '2.25rem 1.75rem',
-                    backgroundColor: '#FFF9EF',
+                    backgroundColor: '#F4EBDD',
                     border: '1.5px solid #E8D2B5',
                     boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)',
                     display: 'flex',
@@ -1344,7 +1344,7 @@ export default function Home() {
                   style={{
                     borderRadius: '24px',
                     padding: '2.25rem 1.75rem',
-                    backgroundColor: '#FFF9EF',
+                    backgroundColor: '#F4EBDD',
                     border: '1.5px solid #E8D2B5',
                     boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)',
                     display: 'flex',
@@ -1387,7 +1387,7 @@ export default function Home() {
                   style={{
                     borderRadius: '24px',
                     padding: '2.25rem 1.75rem',
-                    backgroundColor: '#FFF9EF',
+                    backgroundColor: '#F4EBDD',
                     border: '1.5px solid #E8D2B5',
                     boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)',
                     display: 'flex',
@@ -1458,7 +1458,7 @@ export default function Home() {
                   style={{
                     borderRadius: '28px',
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
-                    backgroundColor: '#FFF9EF',
+                    backgroundColor: '#F4EBDD',
                     border: '1.5px solid #E8D2B5',
                     boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                     display: 'flex',
@@ -1492,7 +1492,7 @@ export default function Home() {
                         gap: '0.5rem',
                         padding: '0.85rem 2rem',
                         backgroundColor: '#1F6B35',
-                        color: '#FFF9EF',
+                        color: '#F4EBDD',
                         border: 'none',
                         borderRadius: '999px',
                         fontWeight: '800',
@@ -1512,7 +1512,7 @@ export default function Home() {
                   style={{
                     borderRadius: '28px',
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
-                    backgroundColor: '#FFF9EF',
+                    backgroundColor: '#F4EBDD',
                     border: '1.5px solid #E8D2B5',
                     boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
                     display: 'flex',
@@ -1546,7 +1546,7 @@ export default function Home() {
                         gap: '0.5rem',
                         padding: '0.85rem 2rem',
                         backgroundColor: '#1F6B35',
-                        color: '#FFF9EF',
+                        color: '#F4EBDD',
                         border: 'none',
                         borderRadius: '999px',
                         fontWeight: '800',
@@ -1581,7 +1581,7 @@ export default function Home() {
                   position: 'relative',
                   borderRadius: '32px',
                   border: '1.5px solid #E8D2B5',
-                  backgroundColor: '#FFF9EF',
+                  backgroundColor: '#F4EBDD',
                   boxShadow: '0 12px 40px rgba(43, 20, 11, 0.08)',
                   overflow: 'hidden',
                 }}

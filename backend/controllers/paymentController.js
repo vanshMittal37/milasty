@@ -2,6 +2,7 @@ import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { supabase } from '../config/supabase.js';
 import { calculateDeliveryCharge } from './deliveryChargeController.js';
+import { bookShiprathShipment } from './shipratController.js';
 
 // In-memory active payment sessions store (keyed by razorpay_order_id)
 const paymentSessions = new Map();
@@ -554,6 +555,22 @@ export const verifyRazorpayPayment = async (req, res) => {
       razorpay_payment_id,
       razorpay_signature,
     });
+
+    // Auto-book Shiprath B2C shipment (fire-and-forget — does not block response)
+    if (order?.id) {
+      const orderWithItems = order.order_items
+        ? order
+        : (() => {
+            supabase.from('orders').select('*, order_items(*)').eq('id', order.id).maybeSingle()
+              .then(({ data }) => { if (data) bookShiprathShipment(data).catch(console.warn); });
+            return null;
+          })();
+      if (orderWithItems) {
+        bookShiprathShipment(orderWithItems).catch((err) =>
+          console.warn('[SHIPRATH] Auto-book notice after Razorpay verify:', err.message)
+        );
+      }
+    }
 
     return res.json({
       success: true,

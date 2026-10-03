@@ -254,14 +254,14 @@ export default function Nutrition() {
               <button
                 onClick={() => scrollLeft(insideBiteRef)}
                 aria-label="Scroll left"
-                style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronLeft size={16} />
               </button>
               <button
                 onClick={() => scrollRight(insideBiteRef)}
                 aria-label="Scroll right"
-                style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronRight size={16} />
               </button>
@@ -370,7 +370,7 @@ export default function Nutrition() {
           </div>
 
           {/* DESKTOP TABLE VIEW */}
-          <div className="desktop-only-table" style={{ borderRadius: '24px', overflowX: 'auto', border: '1.5px solid #5C3A21', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)', backgroundColor: '#FFF9F0', maxWidth: '100%' }}>
+          <div className="desktop-only-table" style={{ borderRadius: '24px', overflowX: 'auto', border: '1.5px solid #5C3A21', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)', backgroundColor: '#F4EBDD', maxWidth: '100%' }}>
             <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ backgroundColor: '#EFE4D4', borderBottom: '2px solid #5C3A21' }}>
@@ -380,7 +380,7 @@ export default function Nutrition() {
                   {dailyProducts.map((p, idx) => (
                     <th key={idx} style={{ padding: '1.75rem 1.5rem', verticalAlign: 'top', width: '26%' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ width: '100px', height: '100px', borderRadius: '14px', overflow: 'hidden', border: '2px solid #5C3A21', backgroundColor: '#FFF9F0', boxShadow: '0 4px 12px rgba(75, 45, 25, 0.08)' }}>
+                        <div style={{ width: '100px', height: '100px', borderRadius: '14px', overflow: 'hidden', border: '2px solid #5C3A21', backgroundColor: '#F4EBDD', boxShadow: '0 4px 12px rgba(75, 45, 25, 0.08)' }}>
                           <img src={p.image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                         <div>
@@ -407,7 +407,7 @@ export default function Nutrition() {
                   ))}
                 </tr>
 
-                <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FFF9F0' }}>
+                <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#F4EBDD' }}>
                   <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#32180D', fontSize: '0.88rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                       <Activity size={15} color="#2F6B3A" />
@@ -435,7 +435,7 @@ export default function Nutrition() {
                   ))}
                 </tr>
 
-                <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FFF9F0' }}>
+                <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#F4EBDD' }}>
                   <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#32180D', fontSize: '0.88rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                       <CheckCircle2 size={15} color="#2F6B3A" />
@@ -463,7 +463,7 @@ export default function Nutrition() {
                   ))}
                 </tr>
 
-                <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#FFF9F0' }}>
+                <tr style={{ borderBottom: '1px solid #DCC8AE', backgroundColor: '#F4EBDD' }}>
                   <td style={{ padding: '1.25rem 1.5rem', fontWeight: '850', color: '#32180D', fontSize: '0.88rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                       <Sprout size={15} color="#2F6B3A" />
@@ -566,7 +566,7 @@ export default function Nutrition() {
                 <div
                   key={glanceIndex}
                   style={{
-                    backgroundColor: '#FFF9F0',
+                    backgroundColor: '#F4EBDD',
                     border: '1.5px solid #5C3A21',
                     borderRadius: '24px',
                     overflow: 'hidden',
@@ -648,7 +648,7 @@ export default function Nutrition() {
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',
-                  backgroundColor: '#FFF9F0',
+                  backgroundColor: '#F4EBDD',
                   border: '1px solid #DCC8AE',
                   color: '#32180D',
                   cursor: 'pointer',
@@ -687,7 +687,7 @@ export default function Nutrition() {
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',
-                  backgroundColor: '#FFF9F0',
+                  backgroundColor: '#F4EBDD',
                   border: '1px solid #DCC8AE',
                   color: '#32180D',
                   cursor: 'pointer',
@@ -784,14 +784,14 @@ export default function Nutrition() {
               <button
                 onClick={() => scrollLeft(ingredientsRef)}
                 aria-label="Scroll left"
-                style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronLeft size={16} />
               </button>
               <button
                 onClick={() => scrollRight(ingredientsRef)}
                 aria-label="Scroll right"
-                style={{ backgroundColor: '#FFF9F0', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', color: '#32180D', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ChevronRight size={16} />
               </button>
@@ -860,7 +860,7 @@ export default function Nutrition() {
             style={{ touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none' }}
           >
             {whyIngredientsData[whyIngredientsIndex] && (
-              <div style={{ backgroundColor: '#FFF9F0', border: '1.5px solid #5C3A21', padding: '2rem 1.5rem', borderRadius: '24px', boxSizing: 'border-box' }}>
+              <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '2rem 1.5rem', borderRadius: '24px', boxSizing: 'border-box' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                   <span style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>
                     0{whyIngredientsIndex + 1}
@@ -885,7 +885,7 @@ export default function Nutrition() {
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',
-                  backgroundColor: '#FFF9F0',
+                  backgroundColor: '#F4EBDD',
                   border: '1.5px solid #5C3A21',
                   color: '#32180D',
                   cursor: 'pointer',
@@ -924,7 +924,7 @@ export default function Nutrition() {
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',
-                  backgroundColor: '#FFF9F0',
+                  backgroundColor: '#F4EBDD',
                   border: '1.5px solid #5C3A21',
                   color: '#32180D',
                   cursor: 'pointer',
@@ -1009,7 +1009,7 @@ export default function Nutrition() {
                 fontWeight: '850',
                 textDecoration: 'none',
                 cursor: 'pointer',
-                backgroundColor: '#FFF9F0'
+                backgroundColor: '#F4EBDD'
               }}
             >
               Learn About MILASTY

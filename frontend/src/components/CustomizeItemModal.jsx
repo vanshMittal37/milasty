@@ -52,7 +52,7 @@ export default function CustomizeItemModal({ isOpen, onClose, item, onSave, onRe
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              backgroundColor: '#FFF9F0',
+              backgroundColor: '#F4EBDD',
             }}
           >
             <div>
