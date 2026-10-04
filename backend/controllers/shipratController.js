@@ -97,17 +97,27 @@ export async function fetchLiveShiprathRate({ pincode, items = [], weight = null
   }
 
   const rawRates = data.rate_list || data.data || [];
-  // Filter out COD rates (MILASTY is strictly prepaid)
-  const prepaidRates = rawRates.filter(
-    (r) => String(r.payment_mode || '').toLowerCase() !== 'cod'
-  );
 
-  if (!prepaidRates || prepaidRates.length === 0) {
-    throw new Error(`No prepaid courier service available for pincode ${cleanPincode}.`);
+  // DIAGNOSTIC: Log exactly what Shiprath returned before any filtering
+  console.log(`[SHIPRATH RATE DIAGNOSTIC] pincode=${cleanPincode} weight=${calculatedWeight}kg → Shiprath returned ${rawRates.length} carrier(s):`);
+  rawRates.forEach((r, i) => {
+    console.log(`  [${i + 1}] service_name="${r.courier_name || r.carrier_name || r.service_name}" carrier_id="${r.carrier_id}" courier_id="${r.courier_id}" product_id="${r.product_id}" payment_mode="${r.payment_mode}" total_charge="${r.total_charge || r.total_charges || r.rate}" zone="${r.zone}"`);
+  });
+
+  if (!rawRates || rawRates.length === 0) {
+    throw new Error(`No courier services available for pincode ${cleanPincode} from Shiprath.`);
   }
 
+  // NOTE: We do NOT filter by payment_mode here.
+  // Shiprath returns all carriers in rate_list regardless of what payment_mode we sent.
+  // Carriers like Delhivery/Xpressbees may have payment_mode='cod' in their record,
+  // but that indicates they SUPPORT cod — it does not mean they are cod-only.
+  // Filtering by payment_mode='cod' was incorrectly removing all major carriers.
+  // Payment mode is enforced in the booking payload (payment_mode: 'prepaid').
+  const allRates = rawRates;
+
   // Standardize rate fields
-  const formattedRates = prepaidRates.map((r) => {
+  const formattedRates = allRates.map((r) => {
     const totalCharges = Number(r.total_charge || r.total_charges || r.rate || r.freight_charge || 0);
     return {
       carrier_id: r.carrier_id,
@@ -121,12 +131,15 @@ export async function fetchLiveShiprathRate({ pincode, items = [], weight = null
       zone: r.zone || r.courier_zone || 'India Domestic',
       cod_commission: 0,
       estimated_delivery: r.estimated_delivery || r.etd || '3-5 business days',
+      payment_mode_raw: r.payment_mode || null, // preserve raw value for diagnostics
     };
   });
 
-  // Sort by total_charges ascending (cheapest rate first)
+  // Sort by total_charges ascending (cheapest first)
   formattedRates.sort((a, b) => a.total_charges - b.total_charges);
   const selectedRate = formattedRates[0];
+
+  console.log(`[SHIPRATH RATE DIAGNOSTIC] After normalization: ${formattedRates.length} carrier(s) available. Cheapest: "${selectedRate?.service_name}" at ₹${selectedRate?.total_charges}`);
 
   return {
     rateList: formattedRates,
@@ -360,11 +373,6 @@ export const bookShiprathShipment = async (order) => {
     const items = order.order_items || order.items || [];
     const declaredValue = Number(order.grand_total || order.subtotal || 200);
 
-    // Carriers known to have very low weight limits (< 500g) — skip them by name/id
-    const BLACKLISTED_CARRIERS = ['fl', 'flash', 'flash express', 'flashexpress', 'flash_express'];
-    // Dynamic skip set — grows if a carrier rejects with a weight error
-    const weightErrorCarriers = new Set();
-
     // ── Build payload fields ───────────────────────────────────────────────
     const fullAddr = String(order.shipping_address || '');
     const addrParts = fullAddr.split(',').map((s) => s.trim()).filter(Boolean);
@@ -411,61 +419,34 @@ export const bookShiprathShipment = async (order) => {
     const custMobile = String(order.customer_phone || order.customerPhone || order.phone || '').replace(/\D/g, '').slice(-10) || '9876543210';
     const custEmail = String(order.customer_email || order.customerEmail || order.user?.email || 'orders@milasty.com').slice(0, 100);
 
-    // ── Try multiple weight tiers if carriers fail due to weight limits ──────
-    // Use 0.5kg as baseline — all major Indian couriers support up to 5kg parcels
-    // FL carrier has ~250g limit — we skip it via blacklist
-    const weightTiers = [0.5, 1.0, 0.3];
+    const weightKg = 0.5; // Standard 0.5kg parcel
 
     let bookData = null;
     let selectedRate = null;
     let lastErrorMsg = 'Shiprath booking failed';
 
-    for (const weightKg of weightTiers) {
-      if (bookData) break;
-
-      let candidateRates = [];
-      try {
-        const rateResult = await fetchLiveShiprathRate({
-          pincode: destinationPincode,
-          items: [],
-          weight: weightKg,
-          declaredValue,
-        });
-        candidateRates = rateResult.rateList || [];
-        if (!candidateRates.length && rateResult.selectedRate) {
-          candidateRates = [rateResult.selectedRate];
-        }
-      } catch (rateErr) {
-        console.error('[SHIPRATH BOOK] Rate fetch failed for weight', weightKg, ':', rateErr.message);
-        lastErrorMsg = rateErr.message;
-        continue;
-      }
-
-      // Filter out blacklisted low-weight-limit carriers
-      // Note: If only FL is returned (very common for certain pincodes), skip this tier entirely
-      const filteredRates = candidateRates.filter((r) => {
-        const name = String(r.service_name || r.service_provider || r.carrier_name || r.courier_name || '').toLowerCase();
-        const carrierId = String(r.carrier_id || '').toLowerCase();
-        return !BLACKLISTED_CARRIERS.some((bl) => name.includes(bl) || carrierId === bl);
+    let candidateRates = [];
+    try {
+      const rateResult = await fetchLiveShiprathRate({
+        pincode: destinationPincode,
+        items: [],
+        weight: weightKg,
+        declaredValue,
       });
-
-      // If all carriers were blacklisted for this weight tier, skip to the next tier
-      if (filteredRates.length === 0) {
-        console.warn(`[SHIPRATH BOOK] All ${candidateRates.length} carrier(s) for weight ${weightKg}kg are blacklisted (names: ${candidateRates.map(r => r.service_name).join(', ')}). Trying next tier.`);
-        lastErrorMsg = `No suitable courier available for this shipment — carrier "${candidateRates[0]?.service_name || 'Unknown'}" is not supported. Contact support.`;
-        continue;
+      candidateRates = rateResult.rateList || [];
+      if (!candidateRates.length && rateResult.selectedRate) {
+        candidateRates = [rateResult.selectedRate];
       }
+    } catch (rateErr) {
+      console.error('[SHIPRATH BOOK] Rate fetch failed:', rateErr.message);
+      return { error: rateErr.message };
+    }
 
-      console.log(`[SHIPRATH BOOK] Trying ${filteredRates.length} non-blacklisted carrier(s) with weight ${weightKg}kg`);
+    console.log(`[SHIPRATH BOOK] Attempting booking across ${candidateRates.length} carrier(s) returned by Shiprath`);
 
-      for (const candidateRate of filteredRates) {
-        const courierLabel = candidateRate.service_name || candidateRate.service_provider || 'Unknown';
-        // Skip carriers that failed on weight in a previous tier
-        if (weightErrorCarriers.has(courierLabel.toLowerCase())) {
-          console.warn(`[SHIPRATH BOOK] Skipping ${courierLabel} — previously rejected on weight`);
-          continue;
-        }
-        console.log(`[SHIPRATH BOOK] Attempting courier: ${courierLabel}`);
+    for (const candidateRate of candidateRates) {
+      const courierLabel = candidateRate.service_name || candidateRate.service_provider || 'Unknown';
+      console.log(`[SHIPRATH BOOK] Attempting courier: ${courierLabel} (carrier_id: ${candidateRate.carrier_id})`);
 
         const bookingPayload = {
           // Carrier IDs (from rate API)
@@ -581,26 +562,19 @@ export const bookShiprathShipment = async (order) => {
             bookData = resData;
             selectedRate = candidateRate;
             console.log(`[SHIPRATH BOOK] ✅ Success with courier: ${courierLabel} at weight ${weightKg}kg`);
-            break; // Inner loop break
+            break;
           } else {
             lastErrorMsg = resData.message || 'Carrier booking error';
             console.warn(`[SHIPRATH BOOK] ❌ ${courierLabel} rejected: ${lastErrorMsg}`);
-            // If carrier rejected due to weight, remember it so we never retry it
-            const msgLower = String(lastErrorMsg).toLowerCase();
-            if (msgLower.includes('weight') || msgLower.includes('maximum') || msgLower.includes('limit')) {
-              weightErrorCarriers.add(courierLabel.toLowerCase());
-              console.warn(`[SHIPRATH BOOK] Added ${courierLabel} to weight-error skip set`);
-            }
           }
         } catch (cErr) {
           console.error(`[SHIPRATH BOOK] Exception with ${courierLabel}:`, cErr.message);
           lastErrorMsg = cErr.message;
         }
       }
-    }
 
     if (!bookData || !bookData.status) {
-      console.error('[SHIPRATH BOOK] All carriers and weight tiers exhausted. Last error:', lastErrorMsg);
+      console.error('[SHIPRATH BOOK] All available carriers rejected the shipment. Last error:', lastErrorMsg);
       return { error: lastErrorMsg || 'Shiprath booking failed — all available couriers rejected the shipment' };
     }
 
