@@ -7,9 +7,9 @@ export default function ReviewCard({ review }) {
       className="glass-card card-warm-beige"
       style={{
         padding: '1.75rem',
-        backgroundColor: 'var(--card-bg, #F5EEE1)',
-        border: 'var(--card-border, 1px solid #E3D6BF)',
-        boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+        backgroundColor: 'var(--card-bg, #EAD8C3)',
+        border: 'var(--card-border, 1px solid #D6C2A7)',
+        boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
         borderRadius: '20px',
         display: 'flex',
         flexDirection: 'column',

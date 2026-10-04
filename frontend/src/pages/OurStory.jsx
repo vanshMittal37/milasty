@@ -696,8 +696,8 @@ export default function OurStory() {
       {/* 4. PRESERVED EXISTING SECTION — TRANSPARENCY & NUTRITION */}
       <section style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid #DCC8AE' }}>
         <div style={{ maxWidth: '780px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          <div style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
-            <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: '#2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid #E3D6BF' }}>
+          <div style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
+            <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #F5EBE0)', color: '#2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid #D6C2A7' }}>
               <Info size={24} />
             </div>
             <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: 'var(--text-heading, #2B2B2B)', fontWeight: '850', marginBottom: '1rem' }}>
@@ -765,7 +765,7 @@ export default function OurStory() {
               style={{
                 padding: '14px 26px',
                 fontSize: '0.95rem',
-                backgroundColor: 'var(--card-inner-bg, #FBF7EF)',
+                backgroundColor: 'var(--card-inner-bg, #F5EBE0)',
                 color: '#3A1F14',
                 borderRadius: '999px',
                 textDecoration: 'none',
@@ -773,7 +773,7 @@ export default function OurStory() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                border: '1.5px solid #E3D6BF',
+                border: '1.5px solid #D6C2A7',
                 minHeight: '52px',
                 boxSizing: 'border-box',
                 transition: 'all 0.25s ease'
@@ -816,16 +816,16 @@ export default function OurStory() {
           scrollbar-width: none !important;
         }
         .our-story-page .glass-card {
-          background: var(--card-bg, #F5EEE1) !important;
-          background-color: var(--card-bg, #F5EEE1) !important;
-          border: var(--card-border, 1px solid #E3D6BF) !important;
-          box-shadow: var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08)) !important;
+          background: var(--card-bg, #EAD8C3) !important;
+          background-color: var(--card-bg, #EAD8C3) !important;
+          border: var(--card-border, 1px solid #D6C2A7) !important;
+          boxShadow: var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09)) !important;
           transition: all 0.25s ease !important;
         }
         .our-story-page .glass-card:hover {
-          background: var(--card-bg-hover, #EFE5D3) !important;
-          border: 1px solid #E3D6BF !important;
-          box-shadow: var(--card-shadow-hover, 0 8px 28px rgba(90, 70, 40, 0.12)) !important;
+          background: var(--card-bg-hover, #DFCEB7) !important;
+          border: 1px solid #D6C2A7 !important;
+          box-shadow: var(--card-shadow-hover, 0 10px 30px rgba(90, 60, 30, 0.14)) !important;
           transform: translateY(-3px) !important;
         }
         .fitted-cards-container-5 {

@@ -27,9 +27,9 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
               style={{
                 padding: '1.5rem',
                 borderRadius: '16px',
-                backgroundColor: isSelected ? 'var(--card-bg, #F5EEE1)' : 'var(--card-inner-bg, #FBF7EF)',
-                border: isSelected ? '2px solid #2F6B3A' : '1px solid #E3D6BF',
-                boxShadow: isSelected ? 'var(--card-shadow-hover, 0 8px 28px rgba(90, 70, 40, 0.12))' : 'none',
+                backgroundColor: isSelected ? 'var(--card-bg, #EAD8C3)' : 'var(--card-inner-bg, #F5EBE0)',
+                border: isSelected ? '2px solid #2F6B3A' : '1px solid #D6C2A7',
+                boxShadow: isSelected ? 'var(--card-shadow-hover, 0 10px 30px rgba(90, 60, 30, 0.14))' : 'none',
                 cursor: 'pointer',
                 transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                 display: 'flex',
@@ -60,7 +60,7 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',
-                  backgroundColor: isSelected ? '#2F6B3A' : 'var(--card-inner-bg, #FBF7EF)',
+                  backgroundColor: isSelected ? '#2F6B3A' : 'var(--card-inner-bg, #F5EBE0)',
                   color: isSelected ? '#FFFFFF' : '#2B2B2B',
                   display: 'flex',
                   alignItems: 'center',
@@ -81,10 +81,10 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
         className="glass-card animate-fade-in card-warm-beige"
         style={{
           padding: '2rem',
-          backgroundColor: 'var(--card-bg, #F5EEE1)',
+          backgroundColor: 'var(--card-bg, #EAD8C3)',
           borderRadius: '24px',
-          border: 'var(--card-border, 1px solid #E3D6BF)',
-          boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+          border: 'var(--card-border, 1px solid #D6C2A7)',
+          boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
         }}
       >
         <div style={{ position: 'relative', height: '280px', borderRadius: '16px', overflow: 'hidden', marginBottom: '1.5rem', backgroundColor: '#F5EFE6' }}>

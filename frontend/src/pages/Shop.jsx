@@ -14,22 +14,22 @@ import { useCategories } from '../context/CategoryContext';
 
 const cardThemes = [
   {
-    bgGradient: 'var(--card-bg, #F5EEE1)',
-    borderColor: '#E3D6BF',
+    bgGradient: 'var(--card-bg, #EAD8C3)',
+    borderColor: '#D6C2A7',
     titleColor: '#2B2B2B',
     badgeBg: '#E3EEDC',
     badgeColor: '#24572E',
   },
   {
-    bgGradient: 'var(--card-bg, #F5EEE1)',
-    borderColor: '#E3D6BF',
+    bgGradient: 'var(--card-bg, #EAD8C3)',
+    borderColor: '#D6C2A7',
     titleColor: '#2B2B2B',
     badgeBg: '#E3EEDC',
     badgeColor: '#24572E',
   },
   {
-    bgGradient: 'var(--card-bg, #F5EEE1)',
-    borderColor: '#E3D6BF',
+    bgGradient: 'var(--card-bg, #EAD8C3)',
+    borderColor: '#D6C2A7',
     titleColor: '#2B2B2B',
     badgeBg: '#E3EEDC',
     badgeColor: '#24572E',
@@ -576,10 +576,10 @@ export default function Shop() {
                   key={item.id || idx}
                   onClick={() => navigate(`/product/${item.productSlug || item.slug || pId}`)}
                   style={{
-                    background: 'var(--card-bg, #F5EEE1)',
+                    background: 'var(--card-bg, #EAD8C3)',
                     borderRadius: isMobile ? '14px' : '20px',
-                    border: 'var(--card-border, 1px solid #E3D6BF)',
-                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+                    border: 'var(--card-border, 1px solid #D6C2A7)',
+                    boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
                     padding: isMobile ? '0.65rem 0.55rem 0.6rem' : '1.15rem 1rem 1rem',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1017,8 +1017,8 @@ export default function Shop() {
                 width: '100%',
                 padding: '0.85rem 1.25rem 0.85rem 3.4rem',
                 borderRadius: '999px',
-                backgroundColor: 'var(--card-inner-bg, #FBF7EF)',
-                border: '1.5px solid #E3D6BF',
+                backgroundColor: 'var(--card-inner-bg, #F5EBE0)',
+                border: '1.5px solid #D6C2A7',
                 color: 'var(--text-heading, #2B2B2B)',
                 fontSize: isMobile ? '0.88rem' : '0.95rem',
                 outline: 'none',
@@ -1088,9 +1088,9 @@ export default function Shop() {
             style={{ 
               padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem', 
               borderRadius: '24px', 
-              backgroundColor: 'var(--card-bg, #F5EEE1)',
-              border: 'var(--card-border, 1px solid #E3D6BF)',
-              boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+              backgroundColor: 'var(--card-bg, #EAD8C3)',
+              border: 'var(--card-border, 1px solid #D6C2A7)',
+              boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
               textAlign: 'center'
             }}
           >
@@ -1161,10 +1161,10 @@ export default function Shop() {
                         key={prod.id || prod._id}
                         onClick={() => navigate(`/product/${prod.slug || prod.id || prod._id}`)}
                         style={{
-                          backgroundColor: 'var(--card-inner-bg, #FBF7EF)',
+                          backgroundColor: 'var(--card-inner-bg, #F5EBE0)',
                           padding: isMobile ? '0.65rem' : '0.85rem',
                           borderRadius: '16px',
-                          border: '1px solid #E3D6BF',
+                          border: '1px solid #D6C2A7',
                           display: 'flex',
                           gap: '0.65rem',
                           alignItems: 'center',
@@ -1511,9 +1511,9 @@ export default function Shop() {
                   style={{
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
                     borderRadius: '24px',
-                    backgroundColor: 'var(--card-bg, #F5EEE1)',
-                    border: 'var(--card-border, 1px solid #E3D6BF)',
-                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+                    backgroundColor: 'var(--card-bg, #EAD8C3)',
+                    border: 'var(--card-border, 1px solid #D6C2A7)',
+                    boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
                     textAlign: 'center',
                     boxSizing: 'border-box',
                     width: '100%',
@@ -1674,9 +1674,9 @@ export default function Shop() {
               textAlign: 'center',
               position: 'relative',
               borderRadius: '30px',
-              backgroundColor: 'var(--card-bg, #F5EEE1)',
-              border: 'var(--card-border, 1px solid #E3D6BF)',
-              boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+              backgroundColor: 'var(--card-bg, #EAD8C3)',
+              border: 'var(--card-border, 1px solid #D6C2A7)',
+              boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
               overflow: 'hidden',
             }}
           >

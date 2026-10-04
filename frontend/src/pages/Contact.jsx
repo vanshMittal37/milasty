@@ -119,10 +119,10 @@ export default function Contact() {
   ];
 
   const shopCardStyle = {
-    backgroundColor: 'var(--card-bg, #F5EEE1)',
+    backgroundColor: 'var(--card-bg, #EAD8C3)',
     borderRadius: '24px',
-    border: 'var(--card-border, 1px solid #E3D6BF)',
-    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+    border: 'var(--card-border, 1px solid #D6C2A7)',
+    boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
     color: 'var(--text-heading, #2B2B2B)',
   };
 
@@ -219,7 +219,7 @@ export default function Contact() {
               }}
             >
               <div>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: '#2F6B3A', border: '1.5px solid #E3D6BF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #F5EBE0)', color: '#2F6B3A', border: '1.5px solid #D6C2A7', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                   <MessageSquare size={22} />
                 </div>
                 <h3 style={{ fontSize: '1.15rem', color: 'var(--text-heading, #2B2B2B)', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>WhatsApp Support</h3>
@@ -260,7 +260,7 @@ export default function Contact() {
               }}
             >
               <div>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: '#2F6B3A', border: '1.5px solid #E3D6BF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #F5EBE0)', color: '#2F6B3A', border: '1.5px solid #D6C2A7', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                   <Mail size={22} />
                 </div>
                 <h3 style={{ fontSize: '1.15rem', color: 'var(--text-heading, #2B2B2B)', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Us</h3>
@@ -299,7 +299,7 @@ export default function Contact() {
               }}
             >
               <div>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: '#2F6B3A', border: '1.5px solid #E3D6BF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #F5EBE0)', color: '#2F6B3A', border: '1.5px solid #D6C2A7', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                   <Package size={22} />
                 </div>
                 <h3 style={{ fontSize: '1.15rem', color: 'var(--text-heading, #2B2B2B)', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Orders & Support</h3>
@@ -547,7 +547,7 @@ export default function Contact() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="Enter your name"
-                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #E3D6BF', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: 'var(--text-heading, #2B2B2B)', boxSizing: 'border-box' }}
+                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #D6C2A7', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--card-inner-bg, #F5EBE0)', color: 'var(--text-heading, #2B2B2B)', boxSizing: 'border-box' }}
                       />
                     </div>
 
@@ -561,7 +561,7 @@ export default function Contact() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="name@example.com"
-                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #E3D6BF', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: 'var(--text-heading, #2B2B2B)', boxSizing: 'border-box' }}
+                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #D6C2A7', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--card-inner-bg, #F5EBE0)', color: 'var(--text-heading, #2B2B2B)', boxSizing: 'border-box' }}
                       />
                     </div>
 
@@ -574,7 +574,7 @@ export default function Contact() {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="+91 98765 43210"
-                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #E3D6BF', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: 'var(--text-heading, #2B2B2B)', boxSizing: 'border-box' }}
+                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #D6C2A7', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--card-inner-bg, #F5EBE0)', color: 'var(--text-heading, #2B2B2B)', boxSizing: 'border-box' }}
                       />
                     </div>
 
@@ -588,7 +588,7 @@ export default function Contact() {
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder="How can we help you?"
-                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #E3D6BF', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: 'var(--text-heading, #2B2B2B)', lineHeight: '1.5', boxSizing: 'border-box' }}
+                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #D6C2A7', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: 'var(--card-inner-bg, #F5EBE0)', color: 'var(--text-heading, #2B2B2B)', lineHeight: '1.5', boxSizing: 'border-box' }}
                       />
                     </div>
 
@@ -773,12 +773,12 @@ export default function Contact() {
                 style={{
                   padding: '0.95rem 2.25rem',
                   fontSize: '0.92rem',
-                  border: '1.5px solid #E3D6BF',
+                  border: '1.5px solid #D6C2A7',
                   color: '#3A1F14',
                   borderRadius: '999px',
                   fontWeight: '700',
                   textDecoration: 'none',
-                  backgroundColor: 'var(--card-inner-bg, #FBF7EF)'
+                  backgroundColor: 'var(--card-inner-bg, #F5EBE0)'
                 }}
               >
                 Explore Bakes

@@ -15,9 +15,9 @@ export default function FaqAccordion({ faqs }) {
           key={idx}
           className="glass-card card-warm-beige"
           style={{
-            border: 'var(--card-border, 1px solid #E3D6BF)',
+            border: 'var(--card-border, 1px solid #D6C2A7)',
             borderRadius: '12px',
-            backgroundColor: 'var(--card-bg, #F5EEE1)',
+            backgroundColor: 'var(--card-bg, #EAD8C3)',
             overflow: 'hidden',
             transition: 'all 0.2s ease',
           }}
@@ -31,7 +31,7 @@ export default function FaqAccordion({ faqs }) {
               alignItems: 'center',
               justifyContent: 'space-between',
               textAlign: 'left',
-              backgroundColor: openIndex === idx ? 'var(--card-inner-bg, #FBF7EF)' : 'var(--card-bg, #F5EEE1)',
+              backgroundColor: openIndex === idx ? 'var(--card-inner-bg, #F5EBE0)' : 'var(--card-bg, #EAD8C3)',
               color: 'var(--text-heading, #2B2B2B)',
               fontWeight: '600',
               fontSize: '1rem',

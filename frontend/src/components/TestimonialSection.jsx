@@ -131,15 +131,15 @@ export default function TestimonialSection() {
       <div
         className="glass-card card-warm-beige"
         style={{
-          backgroundColor: 'var(--card-bg, #F5EEE1)',
+          backgroundColor: 'var(--card-bg, #EAD8C3)',
           borderRadius: isMobile ? '18px' : '28px',
-          boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+          boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
           overflow: 'hidden',
           display: 'grid',
           gridTemplateColumns: isMobile ? '1fr' : '42% 58%',
           alignItems: 'stretch',
           position: 'relative',
-          border: 'var(--card-border, 1px solid #E3D6BF)',
+          border: 'var(--card-border, 1px solid #D6C2A7)',
         }}
       >
         {/* Left Image Section */}
@@ -177,7 +177,7 @@ export default function TestimonialSection() {
                 bottom: 0,
                 width: '50px',
                 height: '100%',
-                color: 'var(--card-bg, #F5EEE1)',
+                color: 'var(--card-bg, #EAD8C3)',
                 pointerEvents: 'none',
                 zIndex: 2,
               }}
@@ -404,9 +404,9 @@ export default function TestimonialSection() {
                 <div
                   className="glass-card card-warm-beige"
                   style={{
-                    backgroundColor: 'var(--card-bg, #F5EEE1)',
+                    backgroundColor: 'var(--card-bg, #EAD8C3)',
                     borderRadius: '18px',
-                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    border: 'var(--card-border, 1px solid #D6C2A7)',
                     boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     padding: '1.25rem 1.15rem',
                     display: 'flex',
@@ -624,10 +624,10 @@ export default function TestimonialSection() {
               key={review.id}
               className="glass-card card-warm-beige"
               style={{
-                backgroundColor: 'var(--card-bg, #F5EEE1)',
+                backgroundColor: 'var(--card-bg, #EAD8C3)',
                 borderRadius: '20px',
-                border: 'var(--card-border, 1px solid #E3D6BF)',
-                boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+                border: 'var(--card-border, 1px solid #D6C2A7)',
+                boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
                 padding: '1.75rem',
                 display: 'flex',
                 flexDirection: 'column',
@@ -638,14 +638,14 @@ export default function TestimonialSection() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.backgroundColor = 'var(--card-bg-hover, #EFE5D3)';
+                e.currentTarget.style.backgroundColor = 'var(--card-bg-hover, #DFCEB7)';
                 e.currentTarget.style.borderColor = '#2F6B3A';
-                e.currentTarget.style.boxShadow = 'var(--card-shadow-hover, 0 8px 28px rgba(90, 70, 40, 0.12))';
+                e.currentTarget.style.boxShadow = 'var(--card-shadow-hover, 0 10px 30px rgba(90, 60, 30, 0.14))';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.backgroundColor = 'var(--card-bg, #F5EEE1)';
-                e.currentTarget.style.borderColor = '#E3D6BF';
+                e.currentTarget.style.backgroundColor = 'var(--card-bg, #EAD8C3)';
+                e.currentTarget.style.borderColor = '#D6C2A7';
                 e.currentTarget.style.boxShadow = 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))';
               }}
             >

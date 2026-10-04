@@ -761,7 +761,7 @@ export default function Home() {
                   style={{
                     borderRadius: '24px',
                     padding: isMobile ? '1.75rem 1.25rem' : '2.25rem',
-                    backgroundColor: 'var(--card-bg, #F5EEE1)',
+                    backgroundColor: 'var(--card-bg, #EAD8C3)',
                     border: '1.5px solid #1F6B35',
                     boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                   }}
@@ -799,8 +799,8 @@ export default function Home() {
                   style={{
                     borderRadius: '24px',
                     padding: isMobile ? '1.75rem 1.25rem' : '2.25rem',
-                    backgroundColor: 'var(--card-bg, #F5EEE1)',
-                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    backgroundColor: 'var(--card-bg, #EAD8C3)',
+                    border: 'var(--card-border, 1px solid #D6C2A7)',
                     boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                   }}
                 >
@@ -1030,7 +1030,7 @@ export default function Home() {
                   const itemsToDisplay = showAllIngredients ? activeList : activeList.slice(0, 4);
 
                   return itemsToDisplay.map((ingredient, idx) => (
-                    <div key={ingredient.id || ingredient.name || idx} className="glass-card card-warm-beige" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px', backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
+                    <div key={ingredient.id || ingredient.name || idx} className="glass-card card-warm-beige" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px', backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
                       <img
                         src={ingredient.image || ingredient.imageUrl || ingredient.image_url || ingredient.img}
                         alt={ingredient.name}
@@ -1142,8 +1142,8 @@ export default function Home() {
                       style={{
                         borderRadius: '20px',
                         padding: isMobile ? '1.25rem 1rem' : '2rem 1.5rem',
-                        backgroundColor: 'var(--card-bg, #F5EEE1)',
-                        border: 'var(--card-border, 1px solid #E3D6BF)',
+                        backgroundColor: 'var(--card-bg, #EAD8C3)',
+                        border: 'var(--card-border, 1px solid #D6C2A7)',
                         boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                         display: 'flex',
                         flexDirection: 'column',
@@ -1217,8 +1217,8 @@ export default function Home() {
                       className="glass-card card-warm-beige"
                       style={{
                         borderRadius: '20px',
-                        backgroundColor: 'var(--card-bg, #F5EEE1)',
-                        border: isOpen ? '1.5px solid #1F6B35' : 'var(--card-border, 1px solid #E3D6BF)',
+                        backgroundColor: 'var(--card-bg, #EAD8C3)',
+                        border: isOpen ? '1.5px solid #1F6B35' : 'var(--card-border, 1px solid #D6C2A7)',
                         boxShadow: isOpen ? '0 8px 24px rgba(43, 20, 11, 0.08)' : 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                         overflow: 'hidden',
                         boxSizing: 'border-box',
@@ -1301,8 +1301,8 @@ export default function Home() {
                   style={{
                     borderRadius: '24px',
                     padding: '2.25rem 1.75rem',
-                    backgroundColor: 'var(--card-bg, #F5EEE1)',
-                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    backgroundColor: 'var(--card-bg, #EAD8C3)',
+                    border: 'var(--card-border, 1px solid #D6C2A7)',
                     boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1344,8 +1344,8 @@ export default function Home() {
                   style={{
                     borderRadius: '24px',
                     padding: '2.25rem 1.75rem',
-                    backgroundColor: 'var(--card-bg, #F5EEE1)',
-                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    backgroundColor: 'var(--card-bg, #EAD8C3)',
+                    border: 'var(--card-border, 1px solid #D6C2A7)',
                     boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1387,8 +1387,8 @@ export default function Home() {
                   style={{
                     borderRadius: '24px',
                     padding: '2.25rem 1.75rem',
-                    backgroundColor: 'var(--card-bg, #F5EEE1)',
-                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    backgroundColor: 'var(--card-bg, #EAD8C3)',
+                    border: 'var(--card-border, 1px solid #D6C2A7)',
                     boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1458,8 +1458,8 @@ export default function Home() {
                   style={{
                     borderRadius: '28px',
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
-                    backgroundColor: 'var(--card-bg, #F5EEE1)',
-                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    backgroundColor: 'var(--card-bg, #EAD8C3)',
+                    border: 'var(--card-border, 1px solid #D6C2A7)',
                     boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1512,8 +1512,8 @@ export default function Home() {
                   style={{
                     borderRadius: '28px',
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
-                    backgroundColor: 'var(--card-bg, #F5EEE1)',
-                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    backgroundColor: 'var(--card-bg, #EAD8C3)',
+                    border: 'var(--card-border, 1px solid #D6C2A7)',
                     boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1580,8 +1580,8 @@ export default function Home() {
                   color: '#3A1F14',
                   position: 'relative',
                   borderRadius: '32px',
-                  border: 'var(--card-border, 1px solid #E3D6BF)',
-                  backgroundColor: 'var(--card-bg, #F5EEE1)',
+                  border: 'var(--card-border, 1px solid #D6C2A7)',
+                  backgroundColor: 'var(--card-bg, #EAD8C3)',
                   boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                   overflow: 'hidden',
                 }}

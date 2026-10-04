@@ -15,17 +15,17 @@
   --milasty-footer-heading: #F8EBDD;
   --milasty-footer-accent: #9BCB88;
 
-  /* Warm Beige Card System Tokens */
-  --card-bg: #F5EEE1;
-  --card-bg-hover: #EFE5D3;
-  --card-border: 1px solid #E3D6BF;
-  --card-border-color: #E3D6BF;
-  --card-shadow: 0 4px 20px rgba(90, 70, 40, 0.08);
-  --card-shadow-hover: 0 8px 28px rgba(90, 70, 40, 0.12);
-  --card-inner-bg: #FBF7EF;
+  /* Warm Beige Card System Tokens (Rich Warm Beige) */
+  --card-bg: #EAD8C3;
+  --card-bg-hover: #DFCEB7;
+  --card-border: 1px solid #D6C2A7;
+  --card-border-color: #D6C2A7;
+  --card-shadow: 0 6px 22px rgba(90, 60, 30, 0.09);
+  --card-shadow-hover: 0 10px 30px rgba(90, 60, 30, 0.14);
+  --card-inner-bg: #F5EBE0;
   --text-heading: #2B2B2B;
-  --text-body: #5A5248;
-  --text-muted: #8A7F70;
+  --text-body: #4A3E33;
+  --text-muted: #7A6D5E;
 
   /* Legacy & Internal Theme Tokens */
   --milasty-cream-primary: #F7F0E5;
