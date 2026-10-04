@@ -26,76 +26,296 @@ function getShiprathHeaders() {
 }
 
 /**
- * POST /api/shiprat/rates
- * Fetch live courier rates for a destination pincode + order weight/dims
+ * Helper: Calculate package weight from cart/order items
+ */
+export function calculateItemsWeightKg(items = []) {
+  if (!items || !items.length) return 0.5; // minimum default 500g
+
+  let totalWeightKg = 0;
+  for (const item of items) {
+    const qty = Number(item.quantity || 1);
+    const varName = String(item.variantName || item.variant_name || item.weight || '').toLowerCase();
+    
+    // Parse grams from variant name (e.g. "100g", "250 g", "500gm")
+    const match = varName.match(/(\d+)\s*g/i);
+    if (match) {
+      const grams = Number(match[1]) * qty;
+      totalWeightKg += (grams / 1000) * 1.2; // 20% packaging buffer
+    } else {
+      totalWeightKg += 0.3 * qty; // fallback: 300g per item
+    }
+  }
+
+  // Minimum 0.5 kg, rounded to 1 decimal place
+  return Math.max(0.5, Math.round(totalWeightKg * 10) / 10);
+}
+
+/**
+ * Helper function for server-side dynamic shipping rate calculation
+ */
+export async function fetchLiveShiprathRate({ pincode, items = [], weight = null, length = 10, breadth = 10, height = 10, declaredValue = 200 }) {
+  const cleanPincode = String(pincode || '').trim();
+  if (!cleanPincode || !/^\d{6}$/.test(cleanPincode)) {
+    throw new Error('Valid 6-digit destination pincode is required for shipping rate calculation.');
+  }
+
+  const calculatedWeight = weight ? Number(weight) : calculateItemsWeightKg(items);
+
+  const payload = {
+    address_id: WAREHOUSE_ADDRESS_ID,
+    destination_pincode: cleanPincode,
+    weight: calculatedWeight,
+    length: Number(length || 10),
+    breadth: Number(breadth || 10),
+    height: Number(height || 10),
+    declared_value: Number(declaredValue || 200),
+    payment_mode: 'prepaid', // MILASTY is prepaid only
+    cod_amount: 0,
+  };
+
+  const response = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_rate_time`, {
+    method: 'POST',
+    headers: getShiprathHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || !data.status) {
+    console.error('[SHIPRATH API ERROR]', data);
+    throw new Error(data.message || 'Failed to fetch shipping rates from Shiprath.');
+  }
+
+  const rawRates = data.rate_list || data.data || [];
+  // Filter out COD rates (MILASTY is strictly prepaid)
+  const prepaidRates = rawRates.filter(
+    (r) => String(r.payment_mode || '').toLowerCase() !== 'cod'
+  );
+
+  if (!prepaidRates || prepaidRates.length === 0) {
+    throw new Error(`No prepaid courier service available for pincode ${cleanPincode}.`);
+  }
+
+  // Standardize rate fields
+  const formattedRates = prepaidRates.map((r) => {
+    const totalCharges = Number(r.total_charge || r.total_charges || r.rate || r.freight_charge || 0);
+    return {
+      carrier_id: r.carrier_id,
+      courier_id: r.courier_id,
+      product_id: r.product_id,
+      service_name: r.courier_name || r.carrier_name || r.service_name || 'Standard Courier',
+      service_provider: r.carrier_name || r.courier_name || 'Shiprath Partner',
+      product_type_name: r.product_name || r.service_type || r.product_type_name || 'Surface',
+      total_charges: totalCharges,
+      total_charge: totalCharges,
+      zone: r.zone || r.courier_zone || 'India Domestic',
+      cod_commission: 0,
+      estimated_delivery: r.estimated_delivery || r.etd || '3-5 business days',
+    };
+  });
+
+  // Sort by total_charges ascending (cheapest rate first)
+  formattedRates.sort((a, b) => a.total_charges - b.total_charges);
+  const selectedRate = formattedRates[0];
+
+  return {
+    rateList: formattedRates,
+    selectedRate,
+    shippingCharge: selectedRate.total_charges,
+    weight: calculatedWeight,
+    pincode: cleanPincode,
+  };
+}
+
+/**
+ * POST /api/shipping/rates (and /api/shiprat/rates)
+ * Dynamic Shiprath rate endpoint for Checkout & Admin Test
  */
 export const getShiprathRates = async (req, res) => {
   try {
     const {
+      pincode,
       destinationPincode,
-      weightKg = 0.5,
-      length = 20,
-      breadth = 15,
+      destination_pincode,
+      weight,
+      length = 10,
+      width,
+      breadth = 10,
       height = 10,
       declaredValue = 200,
+      items = [],
     } = req.body;
 
-    if (!destinationPincode || !/^\d{6}$/.test(String(destinationPincode).trim())) {
-      return res.status(400).json({ success: false, message: 'Valid 6-digit destination pincode is required.' });
-    }
+    const targetPincode = pincode || destinationPincode || destination_pincode;
 
-    const payload = {
-      address_id: WAREHOUSE_ADDRESS_ID,
-      destination_pincode: String(destinationPincode).trim(),
-      weight: Number(weightKg),
-      length: Number(length),
-      breadth: Number(breadth),
-      height: Number(height),
-      declared_value: Number(declaredValue),
-      payment_mode: 'prepaid', // MILASTY is prepaid only — never COD
-      cod_amount: 0,
-    };
-
-    const response = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_rate_time`, {
-      method: 'POST',
-      headers: getShiprathHeaders(),
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.status) {
-      console.error('[SHIPRATH RATES] API error:', data);
-      return res.status(502).json({
+    if (!targetPincode || !/^\d{6}$/.test(String(targetPincode).trim())) {
+      return res.status(400).json({
         success: false,
-        message: data.message || 'Failed to fetch shipping rates from Shiprath.',
-        raw: data,
+        message: 'Valid 6-digit destination pincode is required.',
       });
     }
 
-    // Sort by cheapest rate, filter out COD-only options (safety guard)
-    const rateList = (data.rate_list || []).filter(
-      (r) => String(r.payment_mode || '').toLowerCase() !== 'cod'
-    );
+    const result = await fetchLiveShiprathRate({
+      pincode: targetPincode,
+      items,
+      weight,
+      length,
+      breadth: width || breadth,
+      height,
+      declaredValue,
+    });
 
-    return res.json({ success: true, rateList });
+    return res.json({
+      success: true,
+      rateList: result.rateList,
+      selectedRate: result.selectedRate,
+      shippingCharge: result.shippingCharge,
+      weight: result.weight,
+      pincode: result.pincode,
+    });
   } catch (error) {
     console.error('[SHIPRATH RATES] Exception:', error.message);
-    return res.status(500).json({ success: false, message: 'Error fetching Shiprath rates.', error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Error fetching dynamic Shiprath rates.',
+    });
   }
 };
 
 /**
- * Core function: Book a Shiprath B2C shipment for a confirmed MILASTY order
- * Called internally by payment & order controllers after order is finalized.
+ * GET /api/shipping/connection-status
+ * Check Shiprath connection & credentials status for Admin Dashboard
+ */
+export const checkShiprathConnection = async (req, res) => {
+  try {
+    const secretKey = process.env.SHIPRATH_SECRET_KEY;
+    const customerId = process.env.SHIPRATH_CUSTOMER_ID;
+
+    if (!secretKey || !customerId) {
+      return res.json({
+        success: true,
+        connected: false,
+        warehouse: 'MILASTY',
+        warehouseId: WAREHOUSE_ADDRESS_ID,
+        pickupPincode: WAREHOUSE_PINCODE,
+        paymentMode: 'prepaid',
+        codStatus: 'disabled',
+        message: 'Shiprath API credentials missing in environment variables (SHIPRATH_SECRET_KEY, SHIPRATH_CUSTOMER_ID).',
+      });
+    }
+
+    // Quick connectivity ping to Shiprath rate API with warehouse pincode
+    try {
+      const pingPayload = {
+        address_id: WAREHOUSE_ADDRESS_ID,
+        destination_pincode: WAREHOUSE_PINCODE,
+        weight: 0.5,
+        length: 10,
+        breadth: 10,
+        height: 10,
+        declared_value: 100,
+        payment_mode: 'prepaid',
+        cod_amount: 0,
+      };
+
+      const pingRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_rate_time`, {
+        method: 'POST',
+        headers: getShiprathHeaders(),
+        body: JSON.stringify(pingPayload),
+      });
+
+      const pingData = await pingRes.json();
+
+      const isConnected = pingRes.ok && pingData.status;
+
+      return res.json({
+        success: true,
+        connected: !!isConnected,
+        warehouse: 'MILASTY',
+        warehouseId: WAREHOUSE_ADDRESS_ID,
+        pickupPincode: WAREHOUSE_PINCODE,
+        paymentMode: 'prepaid',
+        codStatus: 'disabled',
+        message: isConnected ? 'Connected to Shiprath B2C Shipping Network' : (pingData.message || 'Unable to authenticate with Shiprath server'),
+      });
+    } catch (pingErr) {
+      return res.json({
+        success: true,
+        connected: false,
+        warehouse: 'MILASTY',
+        warehouseId: WAREHOUSE_ADDRESS_ID,
+        pickupPincode: WAREHOUSE_PINCODE,
+        paymentMode: 'prepaid',
+        codStatus: 'disabled',
+        message: `Shiprath connection test failed: ${pingErr.message}`,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error checking Shiprath connection.', error: error.message });
+  }
+};
+
+/**
+ * POST /api/shipping/test-rate
+ * Admin-only test endpoint (calculates rates without creating a shipment)
+ */
+export const adminTestRate = async (req, res) => {
+  try {
+    const { pincode, weight = 1, length = 10, width = 10, height = 10 } = req.body;
+
+    if (!pincode || !/^\d{6}$/.test(String(pincode).trim())) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid 6-digit Indian PIN code.' });
+    }
+
+    const result = await fetchLiveShiprathRate({
+      pincode,
+      weight,
+      length,
+      breadth: width,
+      height,
+      declaredValue: 300,
+    });
+
+    return res.json({
+      success: true,
+      serviceName: result.selectedRate.service_name,
+      serviceProvider: result.selectedRate.service_provider,
+      totalCharges: result.selectedRate.total_charges,
+      carrierId: result.selectedRate.carrier_id,
+      courierId: result.selectedRate.courier_id,
+      productId: result.selectedRate.product_id,
+      zone: result.selectedRate.zone,
+      codCommission: 0,
+      rateList: result.rateList,
+    });
+  } catch (error) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * Core Function: Book a Shiprath B2C shipment for a confirmed & payment-verified MILASTY order
+ * Called ONLY AFTER Razorpay payment signature is verified.
  *
- * @param {Object} order  - Supabase order row (must include order_items)
+ * @param {Object} order  - Supabase order row (includes order_items)
  * @returns {Object}      - { awb, shipment_id, courier_name, tracking_url, raw }
  */
 export const bookShiprathShipment = async (order) => {
-  const logs = [];
-
   try {
+    if (!order) return null;
+
+    // Idempotency Check: Don't re-book if AWB already exists for this order
+    if (order.awb_number || order.awb) {
+      console.log('[SHIPRATH BOOK] Shipment already booked for order:', order.order_number || order.id, 'AWB:', order.awb_number || order.awb);
+      return {
+        success: true,
+        alreadyBooked: true,
+        awb: order.awb_number || order.awb,
+        shipment_id: order.shipment_id || null,
+        courier_name: order.courier_name || 'Shiprath',
+      };
+    }
+
     const secretKey = process.env.SHIPRATH_SECRET_KEY;
     const customerId = process.env.SHIPRATH_CUSTOMER_ID;
 
@@ -110,81 +330,44 @@ export const bookShiprathShipment = async (order) => {
       return null;
     }
 
-    // ── Estimate total weight from order items ──────────────────────────────
-    // Rough estimate: each 100g pack ≈ 0.12 kg shipped weight (including packaging)
     const items = order.order_items || order.items || [];
-    let estimatedWeightKg = 0.5; // minimum default
-
-    for (const item of items) {
-      const qty = Number(item.quantity || 1);
-      const varName = String(item.variant_name || item.variantName || '').toLowerCase();
-      // Parse numeric grams from variant name (e.g. "100g", "250 g", "200gm")
-      const match = varName.match(/(\d+)\s*g/i);
-      if (match) {
-        const grams = Number(match[1]) * qty;
-        estimatedWeightKg += grams / 1000 * 1.2; // add 20% packaging buffer
-      } else {
-        estimatedWeightKg += 0.3 * qty; // fallback: 300g per unknown item
-      }
-    }
-    estimatedWeightKg = Math.max(0.5, Math.round(estimatedWeightKg * 10) / 10); // min 0.5 kg
-
+    const estimatedWeightKg = calculateItemsWeightKg(items);
     const declaredValue = Number(order.grand_total || order.subtotal || 200);
 
-    // ── Step 1: Fetch available rates ────────────────────────────────────────
-    logs.push('Fetching Shiprath rates...');
-    const ratePayload = {
-      address_id: WAREHOUSE_ADDRESS_ID,
-      destination_pincode: destinationPincode,
-      weight: estimatedWeightKg,
-      length: 25,
-      breadth: 20,
-      height: 12,
-      declared_value: declaredValue,
-      payment_mode: 'prepaid',
-      cod_amount: 0,
-    };
+    // ── Fetch dynamic rate to pick carrier/courier/product IDs ───────────────
+    let selectedRate = null;
+    try {
+      const rateResult = await fetchLiveShiprathRate({
+        pincode: destinationPincode,
+        items,
+        weight: estimatedWeightKg,
+        declaredValue,
+      });
+      selectedRate = rateResult.selectedRate;
+    } catch (rateErr) {
+      console.error('[SHIPRATH BOOK] Dynamic rate fetch failed:', rateErr.message);
+      return { error: rateErr.message };
+    }
 
-    const rateRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_rate_time`, {
-      method: 'POST',
-      headers: getShiprathHeaders(),
-      body: JSON.stringify(ratePayload),
+    if (!selectedRate) {
+      console.error('[SHIPRATH BOOK] No valid carrier rate found for booking.');
+      return { error: 'No valid carrier rate found for destination pincode' };
+    }
+
+    console.log('[SHIPRATH BOOK] Using dynamic courier IDs:', {
+      carrier_id: selectedRate.carrier_id,
+      courier_id: selectedRate.courier_id,
+      product_id: selectedRate.product_id,
+      courier_name: selectedRate.service_name,
     });
-    const rateData = await rateRes.json();
 
-    if (!rateData.status || !rateData.rate_list || rateData.rate_list.length === 0) {
-      console.error('[SHIPRATH BOOK] No rates returned for pincode:', destinationPincode, rateData);
-      return null;
-    }
-
-    // ── Step 2: Pick the cheapest prepaid courier dynamically ────────────────
-    // IMPORTANT: Never hardcode carrier_id, courier_id, product_id
-    const prepaidRates = rateData.rate_list.filter(
-      (r) => String(r.payment_mode || '').toLowerCase() !== 'cod'
-    );
-
-    if (prepaidRates.length === 0) {
-      console.error('[SHIPRATH BOOK] No prepaid rates available for pincode:', destinationPincode);
-      return null;
-    }
-
-    // Sort by total_charge ascending (cheapest first)
-    prepaidRates.sort((a, b) => Number(a.total_charge || 0) - Number(b.total_charge || 0));
-    const selected = prepaidRates[0];
-
-    logs.push(
-      `Selected courier: ${selected.courier_name || selected.carrier_name} | carrier_id: ${selected.carrier_id} | courier_id: ${selected.courier_id} | product_id: ${selected.product_id}`
-    );
-
-    // ── Step 3: Build booking payload ────────────────────────────────────────
-    // Parse full shipping address for consignee fields
+    // ── Build consignee fields ───────────────────────────────────────────────
     const fullAddr = String(order.shipping_address || '');
     const addrParts = fullAddr.split(',').map((s) => s.trim()).filter(Boolean);
     const consigneeAddress = addrParts.slice(0, 2).join(', ') || fullAddr;
-    const consigneeCity = order.delivery_city || addrParts[2] || '';
-    const consigneeState = order.delivery_state || addrParts[3] || '';
+    const consigneeCity = order.delivery_city || addrParts[2] || 'City';
+    const consigneeState = order.delivery_state || addrParts[3] || 'State';
 
-    // Build item list for booking
     const bookItems = items.length > 0
       ? items.map((item) => ({
           name: String(item.product_title || item.title || 'MILASTY Artisan Bake').slice(0, 100),
@@ -195,15 +378,15 @@ export const bookShiprathShipment = async (order) => {
       : [{ name: 'MILASTY Artisan Bake', qty: 1, price: declaredValue, sku: 'MILASTY-001' }];
 
     const bookingPayload = {
-      // Carrier selection (dynamic from rate calculator — never hardcoded)
-      carrier_id: selected.carrier_id,
-      courier_id: selected.courier_id,
-      product_id: selected.product_id,
+      // Dynamic courier selection from Rate API
+      carrier_id: selectedRate.carrier_id,
+      courier_id: selectedRate.courier_id,
+      product_id: selectedRate.product_id,
 
-      // Pickup warehouse
+      // Warehouse
       address_id: WAREHOUSE_ADDRESS_ID,
 
-      // Consignee (customer)
+      // Consignee (Customer)
       consignee_name: String(order.customer_name || 'Customer').slice(0, 100),
       consignee_mobile: String(order.customer_phone || '').replace(/\D/g, '').slice(-10),
       consignee_email: String(order.customer_email || '').slice(0, 100),
@@ -213,7 +396,7 @@ export const bookShiprathShipment = async (order) => {
       consignee_pincode: destinationPincode,
       consignee_country: 'India',
 
-      // Shipment details
+      // Package specs
       order_number: String(order.order_number || order.id).slice(0, 50),
       weight: estimatedWeightKg,
       length: 25,
@@ -222,83 +405,64 @@ export const bookShiprathShipment = async (order) => {
       declared_value: declaredValue,
       invoice_value: declaredValue,
 
-      // MILASTY is PREPAID ONLY — COD must never be used
+      // MILASTY is PREPAID ONLY
       payment_mode: 'prepaid',
       cod_amount: 0,
 
-      // Items
+      // Item Manifest
       items: bookItems,
     };
 
-    // ── Step 4: Create shipment booking ─────────────────────────────────────
-    logs.push('Booking Shiprath shipment...');
-    const bookRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/create_shipment`, {
+    // ── Call Shiprath Create Shipment API ────────────────────────────────────
+    const bookRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/new_shipment_create`, {
       method: 'POST',
       headers: getShiprathHeaders(),
       body: JSON.stringify(bookingPayload),
     });
-    const bookData = await bookRes.json();
+
+    let bookData = await bookRes.json();
+
+    // Fallback URL endpoint if path differs in vendor API
+    if (!bookData.status && bookData.message?.toLowerCase().includes('not found')) {
+      const fbRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/create_shipment`, {
+        method: 'POST',
+        headers: getShiprathHeaders(),
+        body: JSON.stringify(bookingPayload),
+      });
+      bookData = await fbRes.json();
+    }
 
     if (!bookData.status) {
-      console.error('[SHIPRATH BOOK] Booking failed:', bookData);
+      console.error('[SHIPRATH BOOK] Booking response failed:', bookData);
       return { error: bookData.message || 'Shiprath booking failed', raw: bookData };
     }
 
     const awb = bookData.awb_number || bookData.awb || bookData.data?.awb || null;
     const shipmentId = bookData.shipment_id || bookData.data?.shipment_id || null;
-    const courierName = selected.courier_name || selected.carrier_name || 'Shiprath';
-    const trackingUrl = awb
-      ? `https://backend.shiprath.com/tracking/${awb}`
-      : null;
+    const courierName = selectedRate.service_name || 'Shiprath Partner';
+    const trackingUrl = awb ? `https://backend.shiprath.com/tracking/${awb}` : null;
 
-    logs.push(`Booking success — AWB: ${awb}`);
-
-    // ── Step 5: Persist AWB & tracking info to Supabase order row ───────────
+    // ── Persist shipment details to Supabase Order Row ────────────────────────
     if (order.id && awb) {
-      try {
-        const shipmentMeta = {
-          awb,
-          shipment_id: shipmentId,
-          carrier_id: selected.carrier_id,
-          courier_id: selected.courier_id,
-          product_id: selected.product_id,
-          courier_name: courierName,
-          tracking_url: trackingUrl,
-          booked_at: new Date().toISOString(),
-          estimated_delivery: selected.estimated_delivery || selected.etd || null,
-        };
+      const updateData = {
+        awb_number: awb,
+        shipment_id: shipmentId,
+        courier_name: courierName,
+        tracking_url: trackingUrl,
+        order_status: 'shipped',
+      };
 
-        // Try updating dedicated shipment columns first
-        const { error: updateErr } = await supabase
-          .from('orders')
-          .update({
-            awb_number: awb,
-            shipment_id: shipmentId,
-            courier_name: courierName,
-            tracking_url: trackingUrl,
-            order_status: 'shipped',
-          })
-          .eq('id', order.id);
+      const { error: dbErr } = await supabase
+        .from('orders')
+        .update(updateData)
+        .eq('id', order.id);
 
-        if (updateErr) {
-          // Columns may not exist in schema yet — store in notes/metadata fallback
-          console.warn('[SHIPRATH BOOK] Could not update shipment columns (may not exist):', updateErr.message);
-          // Try storing in a JSON metadata approach via notes column
-          await supabase
-            .from('orders')
-            .update({
-              notes: JSON.stringify({ shipment: shipmentMeta, original_notes: order.notes || null }),
-            })
-            .eq('id', order.id);
-        } else {
-          console.log('[SHIPRATH BOOK] Updated order row with AWB:', awb);
-        }
-      } catch (dbErr) {
-        console.warn('[SHIPRATH BOOK] DB update notice:', dbErr.message);
+      if (dbErr) {
+        console.warn('[SHIPRATH BOOK] DB update column warning:', dbErr.message);
+      } else {
+        console.log('[SHIPRATH BOOK] ✅ Saved AWB to order row:', awb);
       }
     }
-
-    console.log('[SHIPRATH BOOK] ✅ Shipment booked:', { awb, courier: courierName, order: order.order_number });
 
     return {
       success: true,
@@ -306,10 +470,9 @@ export const bookShiprathShipment = async (order) => {
       shipment_id: shipmentId,
       courier_name: courierName,
       tracking_url: trackingUrl,
-      estimated_delivery: selected.estimated_delivery || selected.etd || null,
-      carrier_id: selected.carrier_id,
-      courier_id: selected.courier_id,
-      product_id: selected.product_id,
+      carrier_id: selectedRate.carrier_id,
+      courier_id: selectedRate.courier_id,
+      product_id: selectedRate.product_id,
       raw: bookData,
     };
   } catch (error) {
@@ -319,8 +482,8 @@ export const bookShiprathShipment = async (order) => {
 };
 
 /**
- * POST /api/shiprat/book
- * Admin-triggered manual booking for an existing order (by orderId)
+ * POST /api/shiprat/book (and /api/shipping/book)
+ * Admin manual shipment creation endpoint
  */
 export const bookShipmentForOrder = async (req, res) => {
   try {
@@ -355,8 +518,8 @@ export const bookShipmentForOrder = async (req, res) => {
 };
 
 /**
- * GET /api/shiprat/track/:awb
- * Live shipment tracking by AWB number
+ * GET /api/shipping/track/:awb (and /api/shiprat/track/:awb)
+ * Live shipment tracking by AWB
  */
 export const trackShipment = async (req, res) => {
   try {
@@ -365,39 +528,39 @@ export const trackShipment = async (req, res) => {
       return res.status(400).json({ success: false, message: 'AWB number is required.' });
     }
 
-    const response = await fetch(`${SHIPRATH_BASE_URL}/shipment/track_shipment?awb=${encodeURIComponent(awb)}`, {
-      method: 'GET',
+    const response = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_tracking`, {
+      method: 'POST',
       headers: getShiprathHeaders(),
+      body: JSON.stringify({ awb }),
     });
 
-    const data = await response.json();
+    let data = await response.json();
 
+    // Fallback to GET endpoint if POST signature differs
     if (!response.ok || !data.status) {
-      console.error('[SHIPRATH TRACK] API error:', data);
-      return res.status(502).json({
-        success: false,
-        message: data.message || 'Failed to fetch tracking info.',
-        raw: data,
+      const getRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/track_shipment?awb=${encodeURIComponent(awb)}`, {
+        method: 'GET',
+        headers: getShiprathHeaders(),
       });
+      data = await getRes.json();
     }
 
     return res.json({ success: true, tracking: data });
   } catch (error) {
-    console.error('[SHIPRATH TRACK] Exception:', error.message);
     return res.status(500).json({ success: false, message: 'Error tracking shipment.', error: error.message });
   }
 };
 
 /**
- * GET /api/shiprat/order/:orderId/tracking
- * Fetch AWB from our DB order → then live-track it with Shiprath
+ * GET /api/shipping/order/:orderId/tracking (and /api/shiprat/order/:orderId/tracking)
+ * Customer order tracking with timeline stages
  */
 export const trackOrderShipment = async (req, res) => {
   try {
     const { orderId } = req.params;
 
     const isUuid = /^[0-9a-fA-F-]{36}$/.test(orderId);
-    let query = supabase.from('orders').select('id, order_number, awb_number, courier_name, tracking_url, order_status, pincode, customer_name');
+    let query = supabase.from('orders').select('id, order_number, awb_number, shipment_id, courier_name, tracking_url, order_status, pincode, customer_name, created_at');
     query = isUuid ? query.eq('id', orderId) : query.eq('order_number', orderId);
 
     const { data: order, error } = await query.maybeSingle();
@@ -407,66 +570,144 @@ export const trackOrderShipment = async (req, res) => {
 
     const awb = order.awb_number;
 
+    // Build timeline stages
+    const timeline = [
+      { step: 'Order Confirmed', completed: true, timestamp: order.created_at },
+      { step: 'Shipment Created', completed: Boolean(awb || order.order_status === 'shipped' || order.order_status === 'delivered') },
+      { step: 'Picked Up', completed: Boolean(order.order_status === 'shipped' || order.order_status === 'delivered') },
+      { step: 'In Transit', completed: Boolean(order.order_status === 'shipped' || order.order_status === 'delivered') },
+      { step: 'Dispatched / Out for Delivery', completed: Boolean(order.order_status === 'out_for_delivery' || order.order_status === 'delivered') },
+      { step: 'Delivered', completed: Boolean(order.order_status === 'delivered') },
+    ];
+
     if (!awb) {
-      // Check if AWB is stored in notes JSON fallback
-      const { data: fullOrder } = await supabase
-        .from('orders')
-        .select('notes')
-        .eq('id', order.id)
-        .maybeSingle();
-
-      let awbFromNotes = null;
-      if (fullOrder?.notes) {
-        try {
-          const parsed = JSON.parse(fullOrder.notes);
-          awbFromNotes = parsed?.shipment?.awb || null;
-        } catch (_) { /* not JSON */ }
-      }
-
-      if (!awbFromNotes) {
-        return res.json({
-          success: true,
-          awb: null,
-          status: order.order_status || 'confirmed',
-          message: 'Shipment not yet booked or AWB not available.',
-          tracking: null,
-        });
-      }
-
-      order.awb_number = awbFromNotes;
-    }
-
-    // Live tracking call to Shiprath
-    try {
-      const trackRes = await fetch(
-        `${SHIPRATH_BASE_URL}/shipment/track_shipment?awb=${encodeURIComponent(order.awb_number)}`,
-        { method: 'GET', headers: getShiprathHeaders() }
-      );
-      const trackData = await trackRes.json();
-
       return res.json({
         success: true,
-        awb: order.awb_number,
-        courier_name: order.courier_name || null,
-        tracking_url: order.tracking_url || null,
-        order_status: order.order_status,
-        tracking: trackData.status ? trackData : null,
-        raw: trackData,
-      });
-    } catch (trackErr) {
-      // Return what we have even if live tracking API fails
-      return res.json({
-        success: true,
-        awb: order.awb_number,
-        courier_name: order.courier_name || null,
-        tracking_url: order.tracking_url || null,
-        order_status: order.order_status,
+        awb: null,
+        status: order.order_status || 'confirmed',
+        courier_name: order.courier_name || 'Shiprath Partner',
+        message: 'Order confirmed. AWB will be updated as soon as pickup is dispatched.',
+        timeline,
         tracking: null,
-        error: trackErr.message,
       });
     }
+
+    // Live call to Shiprath tracking
+    let liveTracking = null;
+    try {
+      const trackRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_tracking`, {
+        method: 'POST',
+        headers: getShiprathHeaders(),
+        body: JSON.stringify({ awb }),
+      });
+      const trackData = await trackRes.json();
+      if (trackData.status) {
+        liveTracking = trackData;
+      }
+    } catch (_) {}
+
+    return res.json({
+      success: true,
+      awb,
+      courier_name: order.courier_name || 'Shiprath Partner',
+      tracking_url: order.tracking_url || `https://backend.shiprath.com/tracking/${awb}`,
+      order_status: order.order_status,
+      timeline,
+      tracking: liveTracking,
+    });
   } catch (error) {
-    console.error('[SHIPRATH ORDER TRACK] Exception:', error.message);
     return res.status(500).json({ success: false, message: 'Error fetching order tracking.', error: error.message });
+  }
+};
+
+/**
+ * POST /api/shipping/order/:id/cancel
+ * Cancel order with MILASTY cancellation business rules:
+ * 0–3 hours: 100% refund
+ * >3–6 hours: 50% refund
+ * After 6 hours: Cancellation disabled
+ */
+export const cancelOrderWithShipment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason = 'Customer requested cancellation' } = req.body;
+
+    const isUuid = /^[0-9a-fA-F-]{36}$/.test(id);
+    let query = supabase.from('orders').select('*');
+    query = isUuid ? query.eq('id', id) : query.eq('order_number', id);
+
+    const { data: order, error } = await query.maybeSingle();
+
+    if (error || !order) {
+      return res.status(404).json({ success: false, message: 'Order not found.' });
+    }
+
+    if (order.order_status === 'cancelled') {
+      return res.status(400).json({ success: false, message: 'Order is already cancelled.' });
+    }
+
+    // ── Check Cancellation Window ───────────────────────────────────────────
+    const createdAt = new Date(order.created_at || new Date());
+    const now = new Date();
+    const hoursElapsed = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
+
+    if (hoursElapsed > 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cancellations are disabled after 6 hours from order placement as per MILASTY policy.',
+      });
+    }
+
+    let refundPercentage = 100;
+    if (hoursElapsed > 3) {
+      refundPercentage = 50;
+    }
+
+    const refundAmount = Math.round((Number(order.grand_total || 0) * refundPercentage) / 100);
+
+    // Cancel order in Supabase
+    const cancellationNote = `Cancelled at ${now.toISOString()} (${hoursElapsed.toFixed(1)}h elapsed). Refund Eligible: ${refundPercentage}% (₹${refundAmount}). Reason: ${reason}`;
+
+    const { data: updatedOrder, error: updateErr } = await supabase
+      .from('orders')
+      .update({
+        order_status: 'cancelled',
+        notes: order.notes ? `${order.notes} | ${cancellationNote}` : cancellationNote,
+      })
+      .eq('id', order.id)
+      .select()
+      .single();
+
+    if (updateErr) {
+      return res.status(500).json({ success: false, message: 'Failed to update order status in database.' });
+    }
+
+    // Call Shiprath Cancellation API if shipment created
+    if (order.awb_number || order.shipment_id) {
+      try {
+        await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_cancel`, {
+          method: 'POST',
+          headers: getShiprathHeaders(),
+          body: JSON.stringify({
+            awb: order.awb_number,
+            shipment_id: order.shipment_id,
+          }),
+        });
+        console.log('[SHIPRATH CANCEL] Sent cancellation request for AWB:', order.awb_number);
+      } catch (shipCancelErr) {
+        console.warn('[SHIPRATH CANCEL] API notice:', shipCancelErr.message);
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: `Order cancelled successfully. ${refundPercentage}% refund (₹${refundAmount}) will be processed.`,
+      refundPercentage,
+      refundAmount,
+      hoursElapsed: Math.round(hoursElapsed * 10) / 10,
+      order: updatedOrder,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error cancelling order.', error: error.message });
   }
 };

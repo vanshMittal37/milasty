@@ -13,9 +13,29 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cartItems, subtotal, appliedCoupon, couponDiscountAmount, updateCartItemCustomization, removeCartItemCustomization, clearCart } = useCart();
   const { user, isAuthenticated, addAddress, updateAddress } = useAuth();
-  const { deliveryInfo, calculateDeliveryFee, checkPincode } = useDelivery();
+  const { deliveryInfo, checkPincode } = useDelivery();
 
   const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
+  const [dynamicShippingFee, setDynamicShippingFee] = useState(0);
+  const [fetchingShippingFee, setFetchingShippingFee] = useState(false);
+  const [selectedCourierInfo, setSelectedCourierInfo] = useState(null);
+
+  // Dynamic live rate calculation via Shiprath Rate API
+  useEffect(() => {
+    const pin = String(formData.pincode || '').trim();
+    if (pin && /^\d{6}$/.test(pin)) {
+      setFetchingShippingFee(true);
+      api.post('/shipping/rates', { pincode: pin, items: cartItems })
+        .then((res) => {
+          if (res.data && res.data.success) {
+            setDynamicShippingFee(Number(res.data.shippingCharge || 0));
+            setSelectedCourierInfo(res.data.selectedRate || null);
+          }
+        })
+        .catch((err) => console.warn('Dynamic shipping rate fetch error:', err))
+        .finally(() => setFetchingShippingFee(false));
+    }
+  }, [formData.pincode, cartItems]);
 
   // Authentication & Empty Cart Guard
   useEffect(() => {
@@ -210,11 +230,9 @@ export default function CheckoutPage() {
     }
   };
 
-  // Calculate dynamic delivery fee based on order value rules across India
+  // Dynamic delivery fee calculation via Shiprath
   const eligibleSubtotal = Math.max(0, subtotal - couponDiscountAmount);
-  const deliveryCalc = calculateDeliveryFee(eligibleSubtotal);
-  const effectiveDeliveryFee = deliveryCalc.fee;
-  const isFreeDelivery = deliveryCalc.isFree;
+  const effectiveDeliveryFee = dynamicShippingFee;
 
   const effectiveGrandTotal = eligibleSubtotal + effectiveDeliveryFee;
 
@@ -827,11 +845,16 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#5A3422' }}>
-                  <span>Delivery Charge</span>
-                  <span style={{ fontWeight: '700', color: effectiveDeliveryFee === 0 ? '#2F6B3A' : '#2B140B' }}>
-                    {effectiveDeliveryFee === 0 ? 'FREE' : `₹${effectiveDeliveryFee}`}
+                  <span>Shipping (Shiprath Dynamic)</span>
+                  <span style={{ fontWeight: '700', color: '#2B140B' }}>
+                    {fetchingShippingFee ? 'Calculating...' : `₹${effectiveDeliveryFee}`}
                   </span>
                 </div>
+                {selectedCourierInfo && (
+                  <div style={{ fontSize: '0.75rem', color: '#2F6B3A', textAlign: 'right', marginTop: '-0.3rem', fontWeight: '600' }}>
+                    via {selectedCourierInfo.service_name || selectedCourierInfo.service_provider}
+                  </div>
+                )}
               </div>
 
               {/* Grand Total */}

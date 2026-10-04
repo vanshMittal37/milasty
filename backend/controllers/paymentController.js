@@ -1,8 +1,7 @@
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { supabase } from '../config/supabase.js';
-import { calculateDeliveryCharge } from './deliveryChargeController.js';
-import { bookShiprathShipment } from './shipratController.js';
+import { bookShiprathShipment, fetchLiveShiprathRate } from './shipratController.js';
 
 // In-memory active payment sessions store (keyed by razorpay_order_id)
 const paymentSessions = new Map();
@@ -17,19 +16,28 @@ const getRazorpayInstance = () => {
 };
 
 /**
- * Helper: Calculate delivery charge using Centralized Delivery Calculator
+ * Helper: Calculate dynamic delivery charge using Shiprath Rate API
  */
-export const getDeliveryChargeForPincode = async (pincode, subtotal) => {
-  const res = await calculateDeliveryCharge(subtotal);
-  if (!res.success) {
-    throw new Error(res.error || 'Delivery charge calculation failed');
+export const getDeliveryChargeForPincode = async (pincode, subtotal, items = []) => {
+  try {
+    const rateResult = await fetchLiveShiprathRate({ pincode, items, declaredValue: subtotal });
+    return {
+      deliveryFee: rateResult.shippingCharge,
+      isFreeDelivery: false,
+      selectedRate: rateResult.selectedRate,
+      city: '',
+      state: ''
+    };
+  } catch (err) {
+    console.warn('[SHIPRATH RATE WARNING] Dynamic rate calculation fallback:', err.message);
+    return {
+      deliveryFee: 0,
+      isFreeDelivery: false,
+      selectedRate: null,
+      city: '',
+      state: ''
+    };
   }
-  return {
-    deliveryFee: res.deliveryFee,
-    isFreeDelivery: res.isFreeDelivery,
-    city: '',
-    state: ''
-  };
 };
 
 /**
@@ -128,8 +136,8 @@ export const createPaymentSession = async (req, res) => {
       });
     }
 
-    // Fetch actual delivery charge from database
-    const { deliveryFee, city: deliveryCity, state: deliveryState } = await getDeliveryChargeForPincode(finalPincode, subtotal);
+    // Fetch dynamic delivery charge from Shiprath Rate API
+    const { deliveryFee, city: deliveryCity, state: deliveryState } = await getDeliveryChargeForPincode(finalPincode, subtotal, validatedItems);
 
     // Server-side Coupon discount calculation (Single Source of Truth)
     let discountAmount = 0;

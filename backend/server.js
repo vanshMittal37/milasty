@@ -83,6 +83,7 @@ app.use('/api/quiz', quizRoutes);
 app.use('/api/snack-finder', snackFinderRoutes);
 app.use('/api/product-discovery', productDiscoveryRoutes);
 app.use('/api/ingredients', ingredientRoutes);
+app.use('/api/shipping', shipratRoutes);
 app.use('/api/shiprat', shipratRoutes);
 app.use('/api', reviewRoutes);
 

@@ -1,522 +1,541 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Plus, Edit2, Trash2, CheckCircle2, AlertTriangle, 
-  ToggleLeft, ToggleRight, X, RefreshCw, Truck, ArrowRight, ShieldCheck, Tag
+  Truck, CheckCircle2, XCircle, RefreshCw, ShieldCheck, 
+  Zap, Package, MapPin, CreditCard, Play, Info, AlertCircle, ArrowRight
 } from 'lucide-react';
 import api from '../../api/axios';
-import ConfirmationModal from '../../components/ConfirmationModal';
 import { useToast } from '../../context/ToastContext';
 
-export default function AdminDeliveryCharges() {
-  const [rules, setRules] = useState([]);
-  const [coverage, setCoverage] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+export default function AdminShippingLogistics() {
   const { toast } = useToast();
 
-  // Modal states
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingRule, setEditingRule] = useState(null);
-  const [formData, setFormData] = useState({
-    min_order_value: '0',
-    max_order_value: '',
-    delivery_charge: '40',
-    is_free_delivery: false,
-    is_active: true,
+  // Shiprath Connection State
+  const [connectionStatus, setConnectionStatus] = useState(null);
+  const [testingConnection, setTestingConnection] = useState(false);
+
+  // Admin Rate Test State
+  const [testForm, setTestForm] = useState({
+    pincode: '110001',
+    weight: '1.0',
+    length: '10',
+    width: '10',
+    height: '10',
   });
+  const [testLoading, setTestLoading] = useState(false);
+  const [testResult, setTestResult] = useState(null);
+  const [testError, setTestError] = useState('');
 
-  // Delete modal state
-  const [deletingRule, setDeletingRule] = useState(null);
-
-  const fetchRules = async () => {
-    setLoading(true);
+  // Fetch connection status on mount
+  const fetchConnection = async () => {
+    setTestingConnection(true);
     try {
-      const res = await api.get('/delivery-charges');
-      if (res.data && res.data.rules) {
-        setRules(res.data.rules);
-        setCoverage(res.data.coverage || null);
+      const res = await api.get('/shipping/connection-status');
+      if (res.data) {
+        setConnectionStatus(res.data);
       }
     } catch (err) {
-      console.error('Failed to load delivery rules:', err);
-      toast.error(err.response?.data?.message || 'Failed to load delivery charge rules.');
+      console.error('Connection status check error:', err);
+      setConnectionStatus({
+        connected: false,
+        message: 'Could not reach server to test Shiprath connection.',
+      });
     } finally {
-      setLoading(false);
+      setTestingConnection(false);
     }
   };
 
   useEffect(() => {
-    fetchRules();
+    fetchConnection();
   }, []);
 
-  const handleOpenAdd = () => {
-    setEditingRule(null);
-    setFormData({
-      min_order_value: '0',
-      max_order_value: '',
-      delivery_charge: '40',
-      is_free_delivery: false,
-      is_active: true,
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEdit = (rule) => {
-    setEditingRule(rule);
-    setFormData({
-      min_order_value: String(rule.min_order_value || 0),
-      max_order_value: rule.max_order_value !== null && rule.max_order_value !== undefined ? String(rule.max_order_value) : '',
-      delivery_charge: String(rule.delivery_charge || 0),
-      is_free_delivery: !!rule.is_free_delivery,
-      is_active: !!rule.is_active,
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleSubmit = async (e) => {
+  // Run Shipping Test
+  const handleRunShippingTest = async (e) => {
     e.preventDefault();
+    setTestError('');
+    setTestResult(null);
 
-    const minNum = Number(formData.min_order_value);
-    if (isNaN(minNum) || minNum < 0) {
-      toast.error('Minimum Order Value must be a valid number >= 0.');
+    const cleanPin = testForm.pincode.trim();
+    if (!cleanPin || !/^\d{6}$/.test(cleanPin)) {
+      setTestError('Please enter a valid 6-digit Indian PIN code.');
       return;
     }
 
-    let maxNum = null;
-    if (formData.max_order_value !== '' && formData.max_order_value !== null) {
-      maxNum = Number(formData.max_order_value);
-      if (isNaN(maxNum) || maxNum <= minNum) {
-        toast.error('Maximum Order Value must be greater than Minimum Order Value.');
-        return;
-      }
-    }
-
-    const freeFlag = formData.is_free_delivery || Number(formData.delivery_charge) === 0;
-    const chargeNum = freeFlag ? 0 : Math.max(0, Number(formData.delivery_charge || 0));
-
-    const payload = {
-      min_order_value: minNum,
-      max_order_value: maxNum,
-      delivery_charge: chargeNum,
-      is_free_delivery: freeFlag,
-      is_active: formData.is_active,
-    };
-
-    setSubmitting(true);
+    setTestLoading(true);
     try {
-      if (editingRule) {
-        await api.put(`/delivery-charges/${editingRule.id}`, payload);
-        toast.success('Delivery rule updated successfully.');
-      } else {
-        await api.post('/delivery-charges', payload);
-        toast.success('New delivery rule added successfully.');
-      }
-      setIsModalOpen(false);
-      fetchRules();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to save delivery rule.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleToggleStatus = async (rule) => {
-    try {
-      await api.put(`/delivery-charges/${rule.id}`, {
-        ...rule,
-        is_active: !rule.is_active,
+      const res = await api.post('/shipping/test-rate', {
+        pincode: cleanPin,
+        weight: Number(testForm.weight || 1),
+        length: Number(testForm.length || 10),
+        width: Number(testForm.width || 10),
+        height: Number(testForm.height || 10),
       });
-      toast.success(`Delivery rule marked ${!rule.is_active ? 'Active' : 'Inactive'}.`);
-      fetchRules();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to update rule status.');
-    }
-  };
 
-  const handleDelete = async () => {
-    if (!deletingRule) return;
-    setSubmitting(true);
-    try {
-      await api.delete(`/delivery-charges/${deletingRule.id}`);
-      toast.success('Delivery rule deleted successfully.');
-      setDeletingRule(null);
-      fetchRules();
+      if (res.data && res.data.success) {
+        setTestResult(res.data);
+        toast.success('Dynamic Shiprath rate calculated successfully!');
+      } else {
+        setTestError(res.data?.message || 'Rate calculation test failed.');
+      }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to delete delivery rule.');
+      console.error('Shipping test error:', err);
+      setTestError(err.response?.data?.message || 'Error executing Shiprath rate test.');
     } finally {
-      setSubmitting(false);
+      setTestLoading(false);
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ padding: '0 0 4rem 0', color: '#1E293B', fontFamily: 'Inter, sans-serif' }}>
       
       {/* Header Banner */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '16px',
+        padding: '1.75rem 2rem',
+        border: '1px solid #E2E8F0',
+        marginBottom: '2rem',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '1rem',
+      }}>
         <div>
-          <p style={{ fontSize: '0.68rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665A52', margin: '0 0 0.2rem 0' }}>
-            Shipping &amp; Logistics
-          </p>
-          <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.45rem)', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0, lineHeight: '1.25' }}>
-            Delivery Charge Rules
-          </h2>
-          <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
-            Configure order-value based delivery pricing slabs for customer checkout across India.
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.4rem' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#381423', color: '#D4AF37', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Truck size={20} />
+            </div>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>
+              Shipping &amp; Logistics
+            </h1>
+          </div>
+          <p style={{ color: '#64748B', fontSize: '0.9rem', margin: 0 }}>
+            Powered by Shiprath B2C Dynamic Courier API • Single Source of Truth for MILASTY Deliveries
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="admin-btn-primary"
-        >
-          <Plus size={16} />
-          <span>Add Delivery Rule</span>
-        </button>
-      </div>
-
-      {/* Coverage Status Bar */}
-      {coverage && (
-        <div style={{
-          padding: '1rem 1.25rem',
-          borderRadius: '14px',
-          backgroundColor: coverage.isCovered ? 'rgba(143, 175, 91, 0.12)' : 'rgba(217, 119, 6, 0.12)',
-          border: coverage.isCovered ? '1px solid rgba(143, 175, 91, 0.35)' : '1px solid rgba(217, 119, 6, 0.35)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.85rem',
-        }}>
-          {coverage.isCovered ? (
-            <CheckCircle2 size={20} color="#8FF75B" style={{ flexShrink: 0 }} />
-          ) : (
-            <AlertTriangle size={20} color="#F59E0B" style={{ flexShrink: 0 }} />
-          )}
-          <div>
-            <div style={{
-              fontWeight: '800',
-              fontSize: '0.88rem',
-              color: coverage.isCovered ? '#4D7C2B' : '#B45309',
-              letterSpacing: '0.01em',
-            }}>
-              {coverage.isCovered ? 'Full Order Value Coverage' : 'Order Value Coverage Gap Detected'}
-            </div>
-            <div style={{ fontSize: '0.8rem', color: '#4A3B2E', marginTop: '2px', fontWeight: '500' }}>
-              {coverage.message}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Main Admin Card - Rules Table */}
-      <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{
-          padding: '1.25rem 1.5rem',
-          borderBottom: '1px solid rgba(231, 222, 213, 0.65)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0.4)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Truck size={18} color="#C68A3A" />
-            <h3 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', margin: 0 }}>
-              Active Delivery Slabs ({rules.length})
-            </h3>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <button
-            onClick={fetchRules}
-            disabled={loading}
-            className="admin-icon-btn"
-            style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.75rem', borderRadius: '8px', border: '1px solid rgba(207, 194, 181, 0.5)' }}
+            onClick={fetchConnection}
+            disabled={testingConnection}
+            style={{
+              padding: '0.65rem 1.25rem',
+              borderRadius: '10px',
+              border: '1px solid #CBD5E1',
+              backgroundColor: '#F8FAFC',
+              color: '#334155',
+              fontSize: '0.85rem',
+              fontWeight: '700',
+              cursor: testingConnection ? 'not-allowed' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              transition: 'all 0.2s',
+            }}
           >
-            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
-            <span>Refresh</span>
+            <RefreshCw size={15} className={testingConnection ? 'spin-anim' : ''} />
+            <span>Refresh Status</span>
           </button>
         </div>
+      </div>
 
-        {loading ? (
-          <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#665A52', fontSize: '0.85rem', fontWeight: '600' }}>
-            <RefreshCw size={20} className="animate-spin" color="#C68A3A" style={{ marginBottom: '0.5rem' }} />
-            <div>Fetching delivery rules...</div>
+      {/* Grid Layout: Top Row */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem', marginBottom: '2rem' }}>
+
+        {/* SECTION 1: Shiprath Connection Status */}
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '16px',
+          padding: '1.75rem',
+          border: '1px solid #E2E8F0',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Zap size={18} color="#D4AF37" />
+                <span>1. Shiprath Connection</span>
+              </h2>
+
+              <span style={{
+                fontSize: '0.75rem',
+                fontWeight: '800',
+                padding: '0.35rem 0.85rem',
+                borderRadius: '999px',
+                backgroundColor: connectionStatus?.connected ? '#DCFCE7' : '#FEE2E2',
+                color: connectionStatus?.connected ? '#15803D' : '#B91C1C',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+              }}>
+                {connectionStatus?.connected ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
+                <span>{connectionStatus?.connected ? 'Connected' : 'Not Connected'}</span>
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: '#475569' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid #F1F5F9' }}>
+                <span style={{ color: '#64748B', fontWeight: '600' }}>Warehouse</span>
+                <strong style={{ color: '#0F172A' }}>MILASTY</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid #F1F5F9' }}>
+                <span style={{ color: '#64748B', fontWeight: '600' }}>Warehouse ID</span>
+                <code style={{ color: '#381423', backgroundColor: '#F8FAFC', padding: '0.15rem 0.45rem', borderRadius: '4px', fontWeight: '700' }}>
+                  1777118843112
+                </code>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid #F1F5F9' }}>
+                <span style={{ color: '#64748B', fontWeight: '600' }}>Pickup Pincode</span>
+                <strong style={{ color: '#0F172A', fontFamily: 'monospace' }}>201016</strong>
+              </div>
+            </div>
           </div>
-        ) : rules.length === 0 ? (
-          <div style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
-            <Truck size={42} color="#C68A3A" style={{ marginBottom: '1rem', opacity: 0.5 }} />
-            <h4 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-serif)', fontWeight: '800', margin: '0 0 0.5rem 0', color: '#21150F' }}>
-              No Delivery Rules Configured
-            </h4>
-            <p style={{ fontSize: '0.85rem', color: '#665A52', margin: '0 0 1.25rem 0', fontWeight: '500' }}>
-              Click "+ Add Delivery Rule" to create your first delivery pricing slab.
-            </p>
-            <button onClick={handleOpenAdd} className="admin-btn-primary">
-              + Add Delivery Rule
+
+          <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', gap: '0.75rem' }}>
+            <button
+              onClick={fetchConnection}
+              disabled={testingConnection}
+              style={{
+                flexGrow: 1,
+                padding: '0.65rem 1rem',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: '#381423',
+                color: '#FFFFFF',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                cursor: testingConnection ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+              }}
+            >
+              <Zap size={14} color="#D4AF37" />
+              <span>{testingConnection ? 'Testing Connection...' : 'Test Shiprath Connection'}</span>
             </button>
           </div>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
-              <thead>
-                <tr style={{ backgroundColor: 'rgba(247, 243, 238, 0.7)', borderBottom: '1px solid rgba(231, 222, 213, 0.7)', color: '#665A52', fontSize: '0.74rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                  <th style={{ padding: '1rem 1.5rem', fontWeight: '800' }}>Order Value Slab</th>
-                  <th style={{ padding: '1rem 1.5rem', fontWeight: '800' }}>Delivery Fee</th>
-                  <th style={{ padding: '1rem 1.5rem', fontWeight: '800' }}>Status</th>
-                  <th style={{ padding: '1rem 1.5rem', fontWeight: '800' }}>Last Updated</th>
-                  <th style={{ padding: '1rem 1.5rem', fontWeight: '800', textAlign: 'right' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rules.map((rule, idx) => {
-                  const isFree = rule.is_free_delivery || Number(rule.delivery_charge) === 0;
-                  const rangeText = rule.max_order_value !== null && rule.max_order_value !== undefined 
-                    ? `₹${rule.min_order_value} – ₹${rule.max_order_value}`
-                    : `₹${rule.min_order_value}+`;
+        </div>
 
-                  return (
-                    <tr
-                      key={rule.id || idx}
-                      style={{
-                        borderBottom: '1px solid rgba(231, 222, 213, 0.4)',
-                        backgroundColor: rule.is_active ? 'transparent' : 'rgba(0, 0, 0, 0.02)',
-                        opacity: rule.is_active ? 1 : 0.65,
-                      }}
-                    >
-                      <td style={{ padding: '1.1rem 1.5rem', fontWeight: '800', color: '#21150F', fontSize: '0.92rem' }}>
-                        {rangeText}
-                      </td>
+        {/* SECTION 2: Rate Calculation Status */}
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '16px',
+          padding: '1.75rem',
+          border: '1px solid #E2E8F0',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Package size={18} color="#D4AF37" />
+                <span>2. Rate Calculation</span>
+              </h2>
 
-                      <td style={{ padding: '1.1rem 1.5rem' }}>
-                        {isFree ? (
-                          <span style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            padding: '3px 10px',
-                            borderRadius: '999px',
-                            backgroundColor: 'rgba(143, 175, 91, 0.15)',
-                            color: '#4D7C2B',
-                            fontWeight: '800',
-                            fontSize: '0.78rem',
-                            border: '1px solid rgba(143, 175, 91, 0.4)',
-                          }}>
-                            FREE DELIVERY
-                          </span>
-                        ) : (
-                          <span style={{ fontWeight: '800', color: '#21150F', fontSize: '0.92rem' }}>
-                            ₹{rule.delivery_charge}
-                          </span>
-                        )}
-                      </td>
+              <span style={{
+                fontSize: '0.75rem',
+                fontWeight: '800',
+                padding: '0.35rem 0.85rem',
+                borderRadius: '999px',
+                backgroundColor: '#DCFCE7',
+                color: '#15803D',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+              }}>
+                <CheckCircle2 size={13} />
+                <span>Status: Enabled</span>
+              </span>
+            </div>
 
-                      <td style={{ padding: '1.1rem 1.5rem' }}>
-                        <button
-                          onClick={() => handleToggleStatus(rule)}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            padding: '0.35rem 0.75rem',
-                            borderRadius: '8px',
-                            backgroundColor: rule.is_active ? 'rgba(29, 59, 40, 0.6)' : 'rgba(217, 83, 79, 0.15)',
-                            color: rule.is_active ? '#85B870' : '#D9534F',
-                            border: 'none',
-                            fontWeight: '700',
-                            fontSize: '0.74rem',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {rule.is_active ? <ToggleRight size={15} /> : <ToggleLeft size={15} />}
-                          <span>{rule.is_active ? 'Active' : 'Inactive'}</span>
-                        </button>
-                      </td>
+            <div style={{ backgroundColor: '#F8FAFC', padding: '1rem 1.15rem', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '1rem' }}>
+              <div style={{ fontWeight: '800', color: '#0F172A', fontSize: '0.9rem', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <ShieldCheck size={16} color="#15803D" />
+                <span>Dynamic Shiprath Rates</span>
+              </div>
+              <p style={{ color: '#475569', fontSize: '0.85rem', lineHeight: '1.5', margin: 0 }}>
+                Shipping charges are calculated dynamically using Shiprath based on destination pincode, package weight and dimensions.
+              </p>
+            </div>
 
-                      <td style={{ padding: '1.1rem 1.5rem', color: '#665A52', fontSize: '0.78rem', fontWeight: '500' }}>
-                        {rule.updated_at ? new Date(rule.updated_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
-                      </td>
+            <div style={{ fontSize: '0.8rem', color: '#64748B', backgroundColor: '#FEF3C7', padding: '0.65rem 0.9rem', borderRadius: '8px', color: '#92400E', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Info size={14} flexShrink={0} />
+              <span>Old order-value slabs (₹20, ₹40, ₹1500+ free delivery) have been deprecated completely.</span>
+            </div>
+          </div>
+        </div>
 
-                      <td style={{ padding: '1.1rem 1.5rem', textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
-                          <button
-                            onClick={() => handleOpenEdit(rule)}
-                            className="admin-icon-btn"
-                            style={{ color: '#b9cd94' }}
-                            title="Edit Rule"
-                          >
-                            <Edit2 size={15} />
-                          </button>
+        {/* SECTION 3 & 4: Pricing Rules & Shipment Settings */}
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '16px',
+          padding: '1.75rem',
+          border: '1px solid #E2E8F0',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}>
+          <div>
+            <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0F172A', margin: '0 0 1.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <CreditCard size={18} color="#D4AF37" />
+              <span>3. Customer Shipping Pricing &amp; Rules</span>
+            </h2>
 
-                          <button
-                            onClick={() => setDeletingRule(rule)}
-                            className="admin-icon-btn"
-                            style={{ color: '#C62828' }}
-                            title="Delete Rule"
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid #F1F5F9' }}>
+                <span style={{ color: '#64748B', fontWeight: '600' }}>Pricing Mode</span>
+                <span style={{ fontWeight: '800', color: '#15803D', backgroundColor: '#DCFCE7', padding: '0.15rem 0.5rem', borderRadius: '6px', fontSize: '0.78rem' }}>
+                  Charge actual Shiprath rate
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid #F1F5F9' }}>
+                <span style={{ color: '#64748B', fontWeight: '600' }}>Payment Mode</span>
+                <strong style={{ color: '#0F172A' }}>Prepaid Only</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid #F1F5F9' }}>
+                <span style={{ color: '#64748B', fontWeight: '600' }}>COD (Cash on Delivery)</span>
+                <span style={{ fontWeight: '700', color: '#94A3B8' }}>Disabled</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid #F1F5F9' }}>
+                <span style={{ color: '#64748B', fontWeight: '600' }}>Future Markup Layer</span>
+                <span style={{ color: '#64748B', fontStyle: 'italic', fontSize: '0.8rem' }}>
+                  Backend ready: Cost + Markup = Payable
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* SECTION 5: Admin Shipping Rate Test */}
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '16px',
+        padding: '2rem',
+        border: '1px solid #E2E8F0',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.03)',
+      }}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0F172A', margin: '0 0 0.35rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Play size={18} color="#D4AF37" />
+            <span>5. Shipping Rate Calculation Test (Admin Only)</span>
+          </h2>
+          <p style={{ color: '#64748B', fontSize: '0.88rem', margin: 0 }}>
+            Enter a pincode and package dimensions to calculate live dynamic courier rates via Shiprath. Does NOT create a shipment.
+          </p>
+        </div>
+
+        <form onSubmit={handleRunShippingTest} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem', alignItems: 'end' }}>
+          
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+              Destination Pincode *
+            </label>
+            <input
+              type="text"
+              required
+              maxLength={6}
+              value={testForm.pincode}
+              onChange={(e) => setTestForm(prev => ({ ...prev, pincode: e.target.value }))}
+              placeholder="e.g. 110001"
+              style={{
+                width: '100%',
+                padding: '0.65rem 0.85rem',
+                borderRadius: '8px',
+                border: '1px solid #CBD5E1',
+                fontSize: '0.9rem',
+                fontFamily: 'monospace',
+                fontWeight: '700',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+              Weight (kg)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              min="0.1"
+              value={testForm.weight}
+              onChange={(e) => setTestForm(prev => ({ ...prev, weight: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '0.65rem 0.85rem',
+                borderRadius: '8px',
+                border: '1px solid #CBD5E1',
+                fontSize: '0.9rem',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+              Length (cm)
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={testForm.length}
+              onChange={(e) => setTestForm(prev => ({ ...prev, length: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '0.65rem 0.85rem',
+                borderRadius: '8px',
+                border: '1px solid #CBD5E1',
+                fontSize: '0.9rem',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+              Width (cm)
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={testForm.width}
+              onChange={(e) => setTestForm(prev => ({ ...prev, width: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '0.65rem 0.85rem',
+                borderRadius: '8px',
+                border: '1px solid #CBD5E1',
+                fontSize: '0.9rem',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+              Height (cm)
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={testForm.height}
+              onChange={(e) => setTestForm(prev => ({ ...prev, height: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '0.65rem 0.85rem',
+                borderRadius: '8px',
+                border: '1px solid #CBD5E1',
+                fontSize: '0.9rem',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={testLoading}
+              style={{
+                width: '100%',
+                padding: '0.65rem 1.25rem',
+                borderRadius: '8px',
+                backgroundColor: '#381423',
+                color: '#FFFFFF',
+                border: 'none',
+                fontSize: '0.88rem',
+                fontWeight: '800',
+                cursor: testLoading ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+                boxSizing: 'border-box',
+              }}
+            >
+              {testLoading ? 'Calculating...' : 'Calculate Shiprath Rate'}
+            </button>
+          </div>
+
+        </form>
+
+        {testError && (
+          <div style={{ backgroundColor: '#FEE2E2', border: '1px solid #EF4444', color: '#991B1B', padding: '0.85rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <AlertCircle size={16} />
+            <span>{testError}</span>
+          </div>
+        )}
+
+        {/* Test Result Display Card */}
+        {testResult && (
+          <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '12px', padding: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.85rem' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', backgroundColor: '#DCFCE7', color: '#15803D', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                  Live API Response Success
+                </span>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0F172A', margin: '0.35rem 0 0 0' }}>
+                  {testResult.serviceName} ({testResult.serviceProvider})
+                </h3>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: '0.75rem', color: '#64748B', display: 'block' }}>Calculated Shipping Charge</span>
+                <span style={{ fontSize: '1.4rem', fontWeight: '900', color: '#0F172A' }}>₹{testResult.totalCharges}</span>
+              </div>
+            </div>
+
+            {/* Field breakdown grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', fontSize: '0.85rem' }}>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem', fontWeight: '600' }}>Service Name</span>
+                <strong style={{ color: '#0F172A' }}>{testResult.serviceName}</strong>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem', fontWeight: '600' }}>Service Provider</span>
+                <strong style={{ color: '#0F172A' }}>{testResult.serviceProvider}</strong>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem', fontWeight: '600' }}>Total Charges</span>
+                <strong style={{ color: '#15803D' }}>₹{testResult.totalCharges}</strong>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem', fontWeight: '600' }}>Carrier ID</span>
+                <code style={{ color: '#381423', fontWeight: '700' }}>{testResult.carrierId || 'N/A'}</code>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem', fontWeight: '600' }}>Courier ID</span>
+                <code style={{ color: '#381423', fontWeight: '700' }}>{testResult.courierId || 'N/A'}</code>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem', fontWeight: '600' }}>Product ID</span>
+                <code style={{ color: '#381423', fontWeight: '700' }}>{testResult.productId || 'N/A'}</code>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem', fontWeight: '600' }}>Shipping Zone</span>
+                <strong style={{ color: '#0F172A' }}>{testResult.zone}</strong>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <span style={{ color: '#64748B', display: 'block', fontSize: '0.75rem', fontWeight: '600' }}>COD Commission</span>
+                <strong style={{ color: '#0F172A' }}>₹{testResult.codCommission || 0} (Prepaid Only)</strong>
+              </div>
+            </div>
           </div>
         )}
       </div>
-
-      {/* ADD / EDIT MODAL */}
-      {isModalOpen && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1rem',
-        }}>
-          <div style={{
-            width: '100%',
-            maxWidth: '480px',
-            backgroundColor: 'rgba(255, 255, 255, 0.92)',
-            border: '1px solid rgba(231, 222, 213, 0.8)',
-            borderRadius: '18px',
-            padding: '1.75rem',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3)',
-            color: '#21150F',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', paddingBottom: '0.85rem', borderBottom: '1px solid rgba(231, 222, 213, 0.7)' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, fontFamily: 'var(--font-serif)', color: '#21150F' }}>
-                {editingRule ? 'Edit Delivery Pricing Rule' : 'Add New Delivery Rule'}
-              </h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer' }}>
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-              
-              <div>
-                <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Minimum Order Value (₹) *
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="1"
-                  required
-                  value={formData.min_order_value}
-                  onChange={(e) => setFormData(prev => ({ ...prev, min_order_value: e.target.value }))}
-                  placeholder="0"
-                  className="admin-input"
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Maximum Order Value (₹) <span style={{ textTransform: 'none', opacity: 0.7, fontWeight: '500' }}>(Optional)</span>
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={formData.max_order_value}
-                  onChange={(e) => setFormData(prev => ({ ...prev, max_order_value: e.target.value }))}
-                  placeholder="e.g. 799 (Leave empty for no upper limit)"
-                  className="admin-input"
-                />
-              </div>
-
-              {/* Free Delivery Toggle */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', backgroundColor: 'var(--admin-surface-elevated)', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.7)' }}>
-                <div>
-                  <div style={{ fontWeight: '800', fontSize: '0.86rem', color: '#21150F' }}>Free Delivery Slab</div>
-                  <div style={{ fontSize: '0.74rem', color: '#665A52' }}>Set shipping fee to ₹0 for this order slab</div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={formData.is_free_delivery}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    is_free_delivery: e.target.checked,
-                    delivery_charge: e.target.checked ? '0' : (prev.delivery_charge === '0' ? '40' : prev.delivery_charge)
-                  }))}
-                  style={{ width: '18px', height: '18px', accentColor: '#C68A3A', cursor: 'pointer' }}
-                />
-              </div>
-
-              {!formData.is_free_delivery && (
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    Delivery Fee (₹) *
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    required={!formData.is_free_delivery}
-                    value={formData.delivery_charge}
-                    onChange={(e) => setFormData(prev => ({ ...prev, delivery_charge: e.target.value }))}
-                    placeholder="40"
-                    className="admin-input"
-                  />
-                </div>
-              )}
-
-              {/* Active Toggle */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', backgroundColor: 'var(--admin-surface-elevated)', borderRadius: '12px', border: '1px solid rgba(231, 222, 213, 0.7)' }}>
-                <div>
-                  <div style={{ fontWeight: '800', fontSize: '0.86rem', color: '#21150F' }}>Rule Status</div>
-                  <div style={{ fontSize: '0.74rem', color: '#665A52' }}>Active rules apply immediately to store checkout</div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={formData.is_active}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
-                  style={{ width: '18px', height: '18px', accentColor: '#C68A3A', cursor: 'pointer' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  style={{
-                    flex: 1,
-                    padding: '0.65rem',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(231, 222, 213, 0.65)',
-                    backgroundColor: 'transparent',
-                    color: '#4A3B2E',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="admin-btn-primary"
-                  style={{ flex: 1 }}
-                >
-                  {submitting ? 'Saving...' : 'Save Delivery Rule'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* DELETE CONFIRMATION MODAL */}
-      <ConfirmationModal
-        isOpen={!!deletingRule}
-        title="Delete Delivery Rule?"
-        message={deletingRule ? `Are you sure you want to delete this delivery rule (${deletingRule.max_order_value !== null && deletingRule.max_order_value !== undefined ? `₹${deletingRule.min_order_value}–₹${deletingRule.max_order_value}` : `₹${deletingRule.min_order_value}+`})?` : ''}
-        confirmText="Delete Rule"
-        cancelText="Cancel"
-        isDanger={true}
-        onConfirm={handleDelete}
-        onCancel={() => setDeletingRule(null)}
-      />
 
     </div>
   );

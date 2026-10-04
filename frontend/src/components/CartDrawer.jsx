@@ -559,13 +559,13 @@ export default function CartDrawer() {
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#634B3B' }}>
                 <span>Delivery</span>
-                <span style={{ fontWeight: '700', color: isFreeDelivery ? '#2F6B3A' : '#2A170F' }}>
-                  {isFreeDelivery ? 'FREE' : `₹${deliveryCharge}`}
+                <span style={{ fontWeight: '700', color: '#634B3B', fontSize: '0.82rem' }}>
+                  Calculated at Checkout
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '1.25rem', color: '#2A170F', paddingTop: '0.65rem', marginTop: '0.15rem', borderTop: '1px solid rgba(120, 75, 40, 0.14)' }}>
-                <span>Total</span>
-                <span>₹{totalAmount}</span>
+                <span>Item Total</span>
+                <span>₹{eligibleSubtotal}</span>
               </div>
             </div>
 

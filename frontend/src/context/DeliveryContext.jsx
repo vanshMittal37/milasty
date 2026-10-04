@@ -1,109 +1,104 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import api from '../api/axios';
-import { useAuth } from './AuthContext';
 
 const DeliveryContext = createContext();
 
 export function DeliveryProvider({ children }) {
-  const { user, isAuthenticated } = useAuth();
-  const [deliveryRules, setDeliveryRules] = useState([]);
-  const [loadingRules, setLoadingRules] = useState(false);
+  const [shippingRateInfo, setShippingRateInfo] = useState({
+    loading: false,
+    pincode: '',
+    shippingCharge: 0,
+    selectedRate: null,
+    rateList: [],
+    error: null,
+  });
 
-  // Fetch active delivery charge rules on mount
-  const fetchDeliveryRules = useCallback(async () => {
-    setLoadingRules(true);
+  /**
+   * Fetch dynamic live shipping rates from Shiprath API for a given pincode and items/weight
+   */
+  const fetchShippingRates = useCallback(async ({ pincode, weight = 1, items = [] }) => {
+    const cleanPin = String(pincode || '').trim();
+    if (!cleanPin || !/^\d{6}$/.test(cleanPin)) {
+      return { success: false, shippingCharge: 0, error: 'Valid 6-digit Indian PIN code required.' };
+    }
+
+    setShippingRateInfo(prev => ({ ...prev, loading: true, error: null, pincode: cleanPin }));
+
     try {
-      const res = await api.get('/delivery-charges/public-rules');
-      if (res.data && res.data.rules) {
-        setDeliveryRules(res.data.rules.filter(r => r.is_active));
+      const res = await api.post('/shipping/rates', {
+        pincode: cleanPin,
+        weight,
+        items,
+      });
+
+      if (res.data && res.data.success) {
+        const selected = res.data.selectedRate;
+        const fee = Number(res.data.shippingCharge || selected?.total_charges || 0);
+
+        const infoData = {
+          loading: false,
+          pincode: cleanPin,
+          shippingCharge: fee,
+          selectedRate: selected,
+          rateList: res.data.rateList || [],
+          error: null,
+        };
+
+        setShippingRateInfo(infoData);
+        return { success: true, shippingCharge: fee, selectedRate: selected, rateList: res.data.rateList || [] };
+      } else {
+        const errMsg = res.data?.message || 'Failed to fetch dynamic shipping rates.';
+        setShippingRateInfo(prev => ({ ...prev, loading: false, error: errMsg }));
+        return { success: false, shippingCharge: 0, error: errMsg };
       }
     } catch (err) {
-      console.warn('Unable to load delivery rules:', err);
-    } finally {
-      setLoadingRules(false);
+      const errMsg = err.response?.data?.message || 'Error communicating with shipping service.';
+      setShippingRateInfo(prev => ({ ...prev, loading: false, error: errMsg }));
+      return { success: false, shippingCharge: 0, error: errMsg };
     }
   }, []);
 
-  useEffect(() => {
-    fetchDeliveryRules();
-  }, [fetchDeliveryRules]);
-
-  /**
-   * Synchronous / Asynchronous delivery calculation helper
-   */
-  const calculateDeliveryFee = useCallback((subtotalInput) => {
-    const subtotal = Math.max(0, Number(subtotalInput || 0));
-    const activeRules = deliveryRules.filter(r => r.is_active);
-
-    if (activeRules.length === 0) {
-      // Fallback default rules if rules not loaded yet from backend
-      if (subtotal >= 1500) return { fee: 0, isFree: true };
-      if (subtotal >= 800) return { fee: 20, isFree: false };
-      return { fee: 40, isFree: false };
-    }
-
-    const matchedRule = activeRules.find(r => {
-      const min = Number(r.min_order_value || 0);
-      const max = r.max_order_value !== null && r.max_order_value !== '' && r.max_order_value !== undefined 
-        ? Number(r.max_order_value) 
-        : null;
-
-      if (subtotal < min) return false;
-      if (max !== null && subtotal > max) return false;
-      return true;
-    });
-
-    if (!matchedRule) {
-      return { fee: 0, isFree: false, error: 'No delivery rule matches this order amount.' };
-    }
-
-    const fee = Number(matchedRule.delivery_charge || 0);
-    const isFree = matchedRule.is_free_delivery || fee === 0;
-
-    return {
-      fee: isFree ? 0 : fee,
-      isFree,
-      matchedRule,
-    };
-  }, [deliveryRules]);
-
-  // Backward compatible deliveryInfo state (Always Available)
+  // Backward compatible deliveryInfo state
   const deliveryInfo = {
     checked: true,
     available: true,
-    pincode: '',
+    pincode: shippingRateInfo.pincode || '',
     city: '',
     state: '',
-    deliveryCharge: 0,
-    isFreeDelivery: true,
+    deliveryCharge: shippingRateInfo.shippingCharge || 0,
+    isFreeDelivery: false,
     estimatedDays: '3–5 business days',
-    deliveryNote: 'All India Delivery Available',
-    message: 'All India Delivery Available',
+    deliveryNote: 'Dynamic Shiprath Delivery Available across India',
+    message: 'All India Shiprath Delivery Available',
   };
 
-  const checkPincode = useCallback(async () => {
+  const checkPincode = useCallback(async (pincode) => {
+    if (pincode && /^\d{6}$/.test(String(pincode).trim())) {
+      const res = await fetchShippingRates({ pincode });
+      return {
+        checked: true,
+        available: res.success,
+        deliveryCharge: res.shippingCharge || 0,
+        isFreeDelivery: false,
+        message: res.success ? 'Dynamic Shiprath Delivery Available' : (res.error || 'Pincode not deliverable'),
+      };
+    }
     return {
       checked: true,
       available: true,
       deliveryCharge: 0,
-      isFreeDelivery: true,
+      isFreeDelivery: false,
       message: 'All India Delivery Available',
     };
-  }, []);
-
-  // No-op: backward-compat for components that call clearDeliveryInfo
-  const clearDeliveryInfo = useCallback(() => {}, []);
+  }, [fetchShippingRates]);
 
   return (
     <DeliveryContext.Provider
       value={{
         deliveryInfo,
-        deliveryRules,
-        loadingRules,
-        fetchDeliveryRules,
-        calculateDeliveryFee,
+        shippingRateInfo,
+        fetchShippingRates,
         checkPincode,
-        clearDeliveryInfo,
       }}
     >
       {children}

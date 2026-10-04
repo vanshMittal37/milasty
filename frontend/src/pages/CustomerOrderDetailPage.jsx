@@ -341,7 +341,10 @@ export default function CustomerOrderDetailPage() {
   const isCancelled = normStatus.toLowerCase() === 'cancelled';
   const isDelivered = normStatus.toLowerCase() === 'delivered';
   const isPaid = String(order.paymentStatus).toLowerCase() === 'paid';
-  const canCancel = !isCancelled && !isDelivered;
+
+  const orderTime = order.createdAt ? new Date(order.createdAt).getTime() : Date.now();
+  const hoursPassed = (Date.now() - orderTime) / (1000 * 60 * 60);
+  const canCancel = !isCancelled && !isDelivered && hoursPassed <= 6;
 
   const orderItems = order.order_items || order.items || [];
   const subtotal = orderItems.reduce((s, i) => s + (i.price * i.quantity), 0);

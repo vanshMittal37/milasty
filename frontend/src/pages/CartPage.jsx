@@ -292,15 +292,15 @@ export default function CartPage() {
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Shipping Fee</span>
-                  <span style={{ fontWeight: '700', color: effectiveDeliveryFee === 0 ? '#2F6B3A' : '#2B140B' }}>
-                    {effectiveDeliveryFee === 0 ? 'FREE' : `₹${effectiveDeliveryFee}`}
+                  <span style={{ fontWeight: '700', color: '#6B584C', fontSize: '0.85rem' }}>
+                    Calculated at Checkout
                   </span>
                 </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '1.35rem', color: '#2B140B', marginBottom: '1.5rem' }}>
-                <span>Grand Total</span>
-                <span>₹{effectiveGrandTotal}</span>
+                <span>Item Total</span>
+                <span>₹{eligibleSubtotal}</span>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#EAEFE5', padding: '0.65rem 0.9rem', borderRadius: '10px', marginBottom: '1.25rem', fontSize: '0.82rem', color: '#2F6B3A', fontWeight: '600' }}>

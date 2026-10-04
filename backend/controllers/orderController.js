@@ -1,7 +1,7 @@
 import { supabase } from '../config/supabase.js';
 import { syncAuthUsersToProfiles } from './authController.js';
 import { getDeliveryChargeForPincode } from './paymentController.js';
-import { bookShiprathShipment } from './shipratController.js';
+import { bookShiprathShipment, cancelOrderWithShipment } from './shipratController.js';
 
 // Status Canonical Mappings
 const CANONICAL_STATUS_MAP = {
@@ -684,27 +684,9 @@ export const getOrderById = async (req, res) => {
 /**
  * CANCEL ORDER
  * PUT /api/orders/:id/cancel
+ * Enforces MILASTY cancellation rules (0-3h 100%, 3-6h 50%, >6h disabled) and triggers Shiprath cancel API.
  */
-export const cancelOrder = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
-
-    let query = supabase.from('orders').update({ order_status: 'cancelled' });
-    if (isUuid) {
-      query = query.eq('id', id);
-    } else {
-      query = query.eq('order_number', id);
-    }
-
-    const { data: order, error } = await query.select().single();
-
-    if (error) throw error;
-    res.json({ message: 'Order cancelled successfully', order: formatOrderPayload(order) });
-  } catch (error) {
-    res.status(500).json({ message: 'Error cancelling order', error: error.message });
-  }
-};
+export const cancelOrder = cancelOrderWithShipment;
 
 /**
  * ADMIN: UPDATE ORDER STATUS (FIXES HTTP 500 ROOT CAUSE COMPLETELY)

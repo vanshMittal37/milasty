@@ -138,52 +138,13 @@ export const fetchAllDeliveryRulesFromDb = async () => {
  * Calculate delivery charge based on active order-value rules
  */
 export const calculateDeliveryCharge = async (subtotalInput) => {
-  const subtotal = Math.max(0, Number(subtotalInput || 0));
-  const rules = await fetchAllDeliveryRulesFromDb();
-  const activeRules = rules.filter(r => r.is_active);
-
-  if (activeRules.length === 0) {
-    return {
-      success: false,
-      deliveryFee: 0,
-      isFreeDelivery: false,
-      matchedRuleId: null,
-      error: 'Delivery charge could not be calculated because no active delivery rules are configured. Please contact support.',
-    };
-  }
-
-  // Find matching active rule
-  // Rule matches if subtotal >= min_order_value AND (max_order_value is null OR subtotal <= max_order_value)
-  const matchedRule = activeRules.find(r => {
-    const min = Number(r.min_order_value || 0);
-    const max = r.max_order_value !== null && r.max_order_value !== '' && r.max_order_value !== undefined 
-      ? Number(r.max_order_value) 
-      : null;
-
-    if (subtotal < min) return false;
-    if (max !== null && subtotal > max) return false;
-    return true;
-  });
-
-  if (!matchedRule) {
-    return {
-      success: false,
-      deliveryFee: 0,
-      isFreeDelivery: false,
-      matchedRuleId: null,
-      error: `Delivery charge could not be calculated for order value ₹${subtotal}. No delivery rule matches this order amount.`,
-    };
-  }
-
-  const fee = Number(matchedRule.delivery_charge || 0);
-  const isFree = matchedRule.is_free_delivery || fee === 0;
-
+  // DEPRECATED: Old order-value delivery slabs are disabled in favor of dynamic Shiprath API.
   return {
     success: true,
-    deliveryFee: isFree ? 0 : fee,
-    isFreeDelivery: isFree,
-    matchedRuleId: matchedRule.id,
-    matchedRule,
+    deliveryFee: 0,
+    isFreeDelivery: false,
+    deprecated: true,
+    message: 'Manual delivery slabs are deprecated. Shipping charges are calculated dynamically via Shiprath API.',
   };
 };
 
