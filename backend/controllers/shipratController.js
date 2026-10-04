@@ -396,13 +396,34 @@ export const bookShiprathShipment = async (order) => {
     const consigneeState = order.delivery_state || addrParts[3] || 'State';
 
     const bookItems = items.length > 0
-      ? items.map((item) => ({
-          name: String(item.product_title || item.title || 'MILASTY Artisan Bake').slice(0, 100),
-          qty: Number(item.quantity || 1),
-          price: Number(item.unit_price || item.price || 0),
-          sku: String(item.product_id || 'SKU').slice(0, 50),
-        }))
-      : [{ name: 'MILASTY Artisan Bake', qty: 1, price: declaredValue, sku: 'MILASTY-001' }];
+      ? items.map((item) => {
+          const nameVal = String(item.product_title || item.title || item.product_name || item.name || 'MILASTY Artisan Bake').slice(0, 100);
+          const qtyVal = Math.max(1, Number(item.quantity || item.qty || item.item_quantity || 1));
+          const priceVal = Number(item.unit_price || item.price || item.totalPrice || item.item_value || 0) || Math.max(1, Math.round(declaredValue / (items.length || 1)));
+          const skuVal = String(item.product_id || item.productId || item.sku || 'MILASTY-SKU').slice(0, 50);
+          return {
+            item_name: nameVal,
+            name: nameVal,
+            item_quantity: qtyVal,
+            qty: qtyVal,
+            quantity: qtyVal,
+            item_value: priceVal,
+            price: priceVal,
+            unit_price: priceVal,
+            sku: skuVal,
+          };
+        })
+      : [{
+          item_name: 'MILASTY Artisan Bake',
+          name: 'MILASTY Artisan Bake',
+          item_quantity: 1,
+          qty: 1,
+          quantity: 1,
+          item_value: declaredValue,
+          price: declaredValue,
+          unit_price: declaredValue,
+          sku: 'MILASTY-001',
+        }];
 
     const isCod = String(order.payment_method || order.paymentMethod || order.rawPaymentMethod || '').toLowerCase().includes('cod');
     const typeVal = isCod ? 'COD' : 'PrePaid';
