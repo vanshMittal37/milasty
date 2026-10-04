@@ -404,11 +404,21 @@ export const bookShiprathShipment = async (order) => {
         }))
       : [{ name: 'MILASTY Artisan Bake', qty: 1, price: declaredValue, sku: 'MILASTY-001' }];
 
+    const isCod = String(order.payment_method || order.paymentMethod || order.rawPaymentMethod || '').toLowerCase().includes('cod');
+    const typeVal = isCod ? 'COD' : 'PrePaid';
+    const paymentModeVal = isCod ? 'cod' : 'prepaid';
+    const codAmountVal = isCod ? Number(order.grand_total || order.grandTotal || order.totalAmount || declaredValue) : 0;
+
     const bookingPayload = {
       // Dynamic courier selection from Rate API
       carrier_id: selectedRate.carrier_id,
       courier_id: selectedRate.courier_id,
       product_id: selectedRate.product_id,
+
+      // Order & Shipment Type (Required by Shiprath B2C API)
+      type: typeVal,
+      order_type: typeVal,
+      shipment_type: 'Forward',
 
       // Warehouse
       address_id: WAREHOUSE_ADDRESS_ID,
@@ -416,9 +426,9 @@ export const bookShiprathShipment = async (order) => {
       from_country_code: 'IN',
 
       // Consignee (Customer)
-      consignee_name: String(order.customer_name || 'Customer').slice(0, 100),
-      consignee_mobile: String(order.customer_phone || '').replace(/\D/g, '').slice(-10),
-      consignee_email: String(order.customer_email || '').slice(0, 100),
+      consignee_name: String(order.customer_name || order.customerName || 'Customer').slice(0, 100),
+      consignee_mobile: String(order.customer_phone || order.customerPhone || order.phone || '').replace(/\D/g, '').slice(-10),
+      consignee_email: String(order.customer_email || order.customerEmail || '').slice(0, 100),
       consignee_address: consigneeAddress.slice(0, 200),
       consignee_city: consigneeCity.slice(0, 100),
       consignee_state: consigneeState.slice(0, 100),
@@ -428,20 +438,20 @@ export const bookShiprathShipment = async (order) => {
       to_country_code: 'IN',
 
       // Package specs
-      order_number: String(order.order_number || order.id).slice(0, 50),
+      order_number: String(order.order_number || order.orderNumber || order.id).slice(0, 50),
       weight: estimatedWeightKg,
       length: 25,
       breadth: 20,
       width: 20,
       height: 12,
       parcel_type: 'Parcel',
-      mode: 'Domestic',
+      mode: 'Surface',
       declared_value: declaredValue,
       invoice_value: declaredValue,
 
-      // MILASTY is PREPAID ONLY
-      payment_mode: 'prepaid',
-      cod_amount: 0,
+      // Payment details
+      payment_mode: paymentModeVal,
+      cod_amount: codAmountVal,
 
       // Item Manifest
       items: bookItems,
