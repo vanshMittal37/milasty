@@ -348,13 +348,13 @@ export const bookShiprathShipment = async (order) => {
 
     if (!secretKey || !customerId) {
       console.warn('[SHIPRATH BOOK] Credentials not set — skipping Shiprath booking.');
-      return null;
+      return { error: 'Shiprath API credentials (SHIPRATH_SECRET_KEY / SHIPRATH_CUSTOMER_ID) are missing or invalid in server environment variables.' };
     }
 
     const destinationPincode = String(order.pincode || '').trim();
     if (!destinationPincode || !/^\d{6}$/.test(destinationPincode)) {
       console.warn('[SHIPRATH BOOK] Invalid/missing pincode on order:', order.order_number);
-      return null;
+      return { error: `Invalid or missing 6-digit delivery pincode: "${destinationPincode || 'none'}".` };
     }
 
     const items = order.order_items || order.items || [];
@@ -545,7 +545,7 @@ export const bookShipmentForOrder = async (req, res) => {
 
     const result = await bookShiprathShipment(order);
     if (!result || result.error) {
-      return res.status(502).json({
+      return res.status(400).json({
         success: false,
         message: result?.error || 'Shiprath booking failed.',
         raw: result?.raw || null,

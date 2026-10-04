@@ -65,9 +65,8 @@ export default function OrderSuccessPage() {
             <span style={{ color: '#E4D1B7' }}>•</span>
             <span style={{ color: '#2F6B3A' }}>✓ Delivery & Payment</span>
             <span style={{ color: '#E4D1B7' }}>•</span>
-            <span style={{ color: '#2B140B', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#2F6B3A' }} />
-              Confirmation
+            <span style={{ color: '#2F6B3A', fontWeight: '800' }}>
+              ✓ Confirmation
             </span>
           </div>
         </div>

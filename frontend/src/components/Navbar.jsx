@@ -368,22 +368,21 @@ export default function Navbar() {
                     className="cart-badge"
                     style={{ 
                       position: 'absolute',
-                      top: '-2px',
-                      right: '-2px',
-                      fontSize: '0.65rem',
+                      top: '-4px',
+                      right: '-4px',
+                      fontSize: '0.68rem',
                       lineHeight: 1,
-                      minWidth: '16px',
-                      height: '16px',
-                      padding: '0 4px',
-                      borderRadius: '999px',
-                      backgroundColor: '#244f21',
-                      color: '#FFFDF9',
-                      border: '1.5px solid #b9cd94',
+                      width: '18px',
+                      height: '18px',
+                      borderRadius: '50%',
+                      backgroundColor: '#FFFFFF',
+                      color: '#244f21',
+                      border: '1.5px solid #244f21',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontWeight: '900',
-                      boxShadow: '0 2px 5px rgba(0,0,0,0.4)',
+                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
                       boxSizing: 'border-box'
                     }}
                   >
