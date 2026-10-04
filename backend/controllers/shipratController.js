@@ -490,12 +490,24 @@ export const bookShiprathShipment = async (order) => {
       height: 12,
       parcel_type: 'Parcel',
       mode: 'Surface',
+      // Financial amounts (All aliases for 100% Shiprath B2C API schema compatibility)
+      total_amount: declaredValue,
+      grand_total: declaredValue,
+      order_amount: declaredValue,
+      total: declaredValue,
+      amount: declaredValue,
       declared_value: declaredValue,
       invoice_value: declaredValue,
+      subtotal: Number(order.subtotal || order.sub_total || declaredValue),
+      tax_amount: 0,
+      tax: 0,
+      discount: Number(order.discount_amount || order.discountAmount || 0),
+      discount_amount: Number(order.discount_amount || order.discountAmount || 0),
 
       // Payment details
       payment_mode: paymentModeVal,
       cod_amount: codAmountVal,
+      collectable_amount: codAmountVal,
 
       // Item Manifest
       items: bookItems,
