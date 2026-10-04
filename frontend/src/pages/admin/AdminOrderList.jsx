@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, RefreshCw, Eye, ArrowUpRight, X, Package, CreditCard, MapPin, User, Mail, Phone, Calendar, CheckCircle, Clock, Sparkles, Printer, Zap, ExternalLink, Truck } from 'lucide-react';
-
 import api from '../../api/axios';
 
 const STAGES = ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'];
@@ -24,6 +24,7 @@ export default function AdminOrderList() {
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showPrintView, setShowPrintView] = useState(false);
+  const [bookingShipment, setBookingShipment] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -79,7 +80,8 @@ export default function AdminOrderList() {
     } catch (e) {
       console.error('Error updating order status:', e);
       alert(e.response?.data?.message || 'Unable to update order status on server.');
-  const [bookingShipment, setBookingShipment] = useState(false);
+    }
+  };
 
   const handleBookShipment = async (orderId) => {
     setBookingShipment(true);
@@ -111,18 +113,19 @@ export default function AdminOrderList() {
   };
 
 
-  const parseAddress = (addr) => {
-    if (!addr) return { line: 'N/A', city: '', state: '', pin: '' };
-    if (typeof addr === 'object') {
-      const line = [addr.building, addr.addressLine || addr.address].filter(Boolean).join(', ');
+  const parseAddress = (addr, orderObj) => {
+    const raw = addr || (orderObj ? (orderObj.shipping_address || orderObj.deliveryAddress || orderObj.delivery_address || orderObj.address) : null);
+    if (!raw) return { line: 'N/A', city: '', state: '', pin: '' };
+    if (typeof raw === 'object' && raw !== null) {
+      const line = [raw.building, raw.addressLine || raw.address || raw.street].filter(Boolean).join(', ');
       return {
         line: line || 'Address provided',
-        city: addr.city || '',
-        state: addr.state || '',
-        pin: addr.pincode || addr.pin || '',
+        city: raw.city || '',
+        state: raw.state || '',
+        pin: raw.pincode || raw.pin || raw.zip || '',
       };
     }
-    const str = String(addr);
+    const str = String(raw);
     const pinMatch = str.match(/\b\d{6}\b/);
     return {
       line: str,
@@ -270,7 +273,7 @@ export default function AdminOrderList() {
                 const custName = o.customerName || o.user?.name || 'Customer';
                 const custEmail = o.customerEmail || o.user?.email || '';
                 const custPhone = o.customerPhone || o.user?.phone || '';
-                const addrObj = parseAddress(o.shippingAddress);
+                const addrObj = parseAddress(o.shippingAddress, o);
                 const pin = o.pincode || addrObj.pin;
                 const fee = o.deliveryFee !== undefined ? o.deliveryFee : 0;
                 const total = o.grandTotal || o.totalAmount || 0;

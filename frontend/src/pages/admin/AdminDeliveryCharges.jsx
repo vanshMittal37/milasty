@@ -290,8 +290,8 @@ export default function AdminShippingLogistics() {
               </p>
             </div>
 
-            <div style={{ fontSize: '0.8rem', color: '#64748B', backgroundColor: '#FEF3C7', padding: '0.65rem 0.9rem', borderRadius: '8px', color: '#92400E', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Info size={14} flexShrink={0} />
+            <div style={{ fontSize: '0.8rem', backgroundColor: '#FEF3C7', padding: '0.65rem 0.9rem', borderRadius: '8px', color: '#92400E', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Info size={14} style={{ flexShrink: 0 }} />
               <span>Old order-value slabs (₹20, ₹40, ₹1500+ free delivery) have been deprecated completely.</span>
             </div>
           </div>
