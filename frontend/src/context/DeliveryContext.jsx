@@ -92,6 +92,33 @@ export function DeliveryProvider({ children }) {
     };
   }, [fetchShippingRates]);
 
+  /**
+   * Helper function for calculating delivery fee (uses dynamic Shiprath rate if set, else 0)
+   */
+  const calculateDeliveryFee = useCallback((subtotal = 0) => {
+    const fee = Number(shippingRateInfo.shippingCharge || 0);
+    return {
+      fee,
+      isFree: false,
+      amountNeededForFree: 0,
+      percentageToFree: 100,
+    };
+  }, [shippingRateInfo.shippingCharge]);
+
+  /**
+   * Reset delivery info state
+   */
+  const clearDeliveryInfo = useCallback(() => {
+    setShippingRateInfo({
+      loading: false,
+      pincode: '',
+      shippingCharge: 0,
+      selectedRate: null,
+      rateList: [],
+      error: null,
+    });
+  }, []);
+
   return (
     <DeliveryContext.Provider
       value={{
@@ -99,11 +126,15 @@ export function DeliveryProvider({ children }) {
         shippingRateInfo,
         fetchShippingRates,
         checkPincode,
+        calculateDeliveryFee,
+        clearDeliveryInfo,
       }}
     >
       {children}
     </DeliveryContext.Provider>
   );
+
+
 }
 
 export function useDelivery() {

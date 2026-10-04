@@ -34,7 +34,9 @@ export default function CartDrawer() {
   const {
     deliveryInfo,
     calculateDeliveryFee,
+    checkPincode,
   } = useDelivery();
+
   const [pincodeInput, setPincodeInput] = useState('');
   const [pinError, setPinError] = useState('');
   const [isEditingPin, setIsEditingPin] = useState(false);
