@@ -192,6 +192,22 @@ export default function AdminShippingLogistics() {
                 <span style={{ color: '#64748B', fontWeight: '600' }}>Pickup Pincode</span>
                 <strong style={{ color: '#0F172A', fontFamily: 'monospace' }}>201016</strong>
               </div>
+
+              {connectionStatus?.message && (
+                <div style={{
+                  marginTop: '0.5rem',
+                  padding: '0.65rem 0.85rem',
+                  borderRadius: '8px',
+                  backgroundColor: connectionStatus?.connected ? '#F0FDF4' : '#FEF2F2',
+                  border: connectionStatus?.connected ? '1px solid #BBF7D0' : '1px solid #FECACA',
+                  color: connectionStatus?.connected ? '#166534' : '#991B1B',
+                  fontSize: '0.8rem',
+                  fontWeight: '600',
+                  lineHeight: '1.4',
+                }}>
+                  {connectionStatus.message}
+                </div>
+              )}
             </div>
           </div>
 

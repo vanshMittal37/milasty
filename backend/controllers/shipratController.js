@@ -191,7 +191,11 @@ export const checkShiprathConnection = async (req, res) => {
     const secretKey = process.env.SHIPRATH_SECRET_KEY;
     const customerId = process.env.SHIPRATH_CUSTOMER_ID;
 
-    if (!secretKey || !customerId) {
+    const isPlaceholder = !secretKey || !customerId || 
+      secretKey.includes('REPLACE_WITH') || 
+      customerId.includes('REPLACE_WITH');
+
+    if (isPlaceholder) {
       return res.json({
         success: true,
         connected: false,
@@ -200,15 +204,15 @@ export const checkShiprathConnection = async (req, res) => {
         pickupPincode: WAREHOUSE_PINCODE,
         paymentMode: 'prepaid',
         codStatus: 'disabled',
-        message: 'Shiprath API credentials missing in environment variables (SHIPRATH_SECRET_KEY, SHIPRATH_CUSTOMER_ID).',
+        message: 'Shiprath API credentials not configured (SHIPRATH_SECRET_KEY, SHIPRATH_CUSTOMER_ID are set to placeholder values). Set real keys in Railway / .env file.',
       });
     }
 
-    // Quick connectivity ping to Shiprath rate API with warehouse pincode
+    // Quick connectivity ping to Shiprath rate API
     try {
       const pingPayload = {
         address_id: WAREHOUSE_ADDRESS_ID,
-        destination_pincode: WAREHOUSE_PINCODE,
+        destination_pincode: '110001',
         weight: 0.5,
         length: 10,
         breadth: 10,
@@ -225,8 +229,7 @@ export const checkShiprathConnection = async (req, res) => {
       });
 
       const pingData = await pingRes.json();
-
-      const isConnected = pingRes.ok && pingData.status;
+      const isConnected = pingRes.ok && (pingData.status || (pingData.rate_list && pingData.rate_list.length > 0));
 
       return res.json({
         success: true,
@@ -236,7 +239,7 @@ export const checkShiprathConnection = async (req, res) => {
         pickupPincode: WAREHOUSE_PINCODE,
         paymentMode: 'prepaid',
         codStatus: 'disabled',
-        message: isConnected ? 'Connected to Shiprath B2C Shipping Network' : (pingData.message || 'Unable to authenticate with Shiprath server'),
+        message: isConnected ? 'Connected to Shiprath B2C Shipping Network' : (pingData.message || 'Shiprath API returned authentication error'),
       });
     } catch (pingErr) {
       return res.json({
