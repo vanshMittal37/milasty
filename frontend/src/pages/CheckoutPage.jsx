@@ -15,39 +15,6 @@ export default function CheckoutPage() {
   const { user, isAuthenticated, addAddress, updateAddress } = useAuth();
   const { deliveryInfo, checkPincode } = useDelivery();
 
-  const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
-  const [dynamicShippingFee, setDynamicShippingFee] = useState(0);
-  const [fetchingShippingFee, setFetchingShippingFee] = useState(false);
-  const [selectedCourierInfo, setSelectedCourierInfo] = useState(null);
-
-  // Dynamic live rate calculation via Shiprath Rate API
-  useEffect(() => {
-    const pin = String(formData.pincode || '').trim();
-    if (pin && /^\d{6}$/.test(pin)) {
-      setFetchingShippingFee(true);
-      api.post('/shipping/rates', { pincode: pin, items: cartItems })
-        .then((res) => {
-          if (res.data && res.data.success) {
-            setDynamicShippingFee(Number(res.data.shippingCharge || 0));
-            setSelectedCourierInfo(res.data.selectedRate || null);
-          }
-        })
-        .catch((err) => console.warn('Dynamic shipping rate fetch error:', err))
-        .finally(() => setFetchingShippingFee(false));
-    }
-  }, [formData.pincode, cartItems]);
-
-  // Authentication & Empty Cart Guard
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: '/checkout' }, replace: true });
-      return;
-    }
-    if (!cartItems || cartItems.length === 0) {
-      navigate('/shop', { replace: true });
-    }
-  }, [isAuthenticated, cartItems, navigate]);
-
   const savedAddresses = user?.addresses || [];
 
   // Determine initial selected address ID (default address first, or first row)
@@ -77,6 +44,40 @@ export default function CheckoutPage() {
     state: selectedAddress?.state || deliveryInfo?.state || '',
     pincode: selectedAddress?.pincode || deliveryInfo?.pincode || '',
   });
+
+  const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
+  const [dynamicShippingFee, setDynamicShippingFee] = useState(0);
+  const [fetchingShippingFee, setFetchingShippingFee] = useState(false);
+  const [selectedCourierInfo, setSelectedCourierInfo] = useState(null);
+
+  // Dynamic live rate calculation via Shiprath Rate API
+  useEffect(() => {
+    const pin = String(formData?.pincode || '').trim();
+    if (pin && /^\d{6}$/.test(pin)) {
+      setFetchingShippingFee(true);
+      api.post('/shipping/rates', { pincode: pin, items: cartItems })
+        .then((res) => {
+          if (res.data && res.data.success) {
+            setDynamicShippingFee(Number(res.data.shippingCharge || 0));
+            setSelectedCourierInfo(res.data.selectedRate || null);
+          }
+        })
+        .catch((err) => console.warn('Dynamic shipping rate fetch error:', err))
+        .finally(() => setFetchingShippingFee(false));
+    }
+  }, [formData?.pincode, cartItems]);
+
+  // Authentication & Empty Cart Guard
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/checkout' }, replace: true });
+      return;
+    }
+    if (!cartItems || cartItems.length === 0) {
+      navigate('/shop', { replace: true });
+    }
+  }, [isAuthenticated, cartItems, navigate]);
+
 
   // Inline Add / Edit Address Form State
   const [addressModalForm, setAddressModalForm] = useState({
