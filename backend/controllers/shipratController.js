@@ -412,6 +412,8 @@ export const bookShiprathShipment = async (order) => {
 
       // Warehouse
       address_id: WAREHOUSE_ADDRESS_ID,
+      from_postal_code: WAREHOUSE_PINCODE,
+      from_country_code: 'IN',
 
       // Consignee (Customer)
       consignee_name: String(order.customer_name || 'Customer').slice(0, 100),
@@ -422,13 +424,18 @@ export const bookShiprathShipment = async (order) => {
       consignee_state: consigneeState.slice(0, 100),
       consignee_pincode: destinationPincode,
       consignee_country: 'India',
+      to_postal_code: destinationPincode,
+      to_country_code: 'IN',
 
       // Package specs
       order_number: String(order.order_number || order.id).slice(0, 50),
       weight: estimatedWeightKg,
       length: 25,
       breadth: 20,
+      width: 20,
       height: 12,
+      parcel_type: 'Parcel',
+      mode: 'Domestic',
       declared_value: declaredValue,
       invoice_value: declaredValue,
 
@@ -464,7 +471,7 @@ export const bookShiprathShipment = async (order) => {
       return { error: bookData.message || 'Shiprath booking failed', raw: bookData };
     }
 
-    const awb = bookData.awb_number || bookData.awb || bookData.data?.awb || null;
+    const awb = bookData.awb_number || bookData.awb || bookData.data?.awb_number || bookData.data?.awb || null;
     const shipmentId = bookData.shipment_id || bookData.data?.shipment_id || null;
     const courierName = selectedRate.service_name || 'Shiprath Partner';
     const trackingUrl = awb ? `https://backend.shiprath.com/tracking/${awb}` : null;
@@ -473,10 +480,12 @@ export const bookShiprathShipment = async (order) => {
     if (order.id && awb) {
       const updateData = {
         awb_number: awb,
+        awb: awb,
         shipment_id: shipmentId,
         courier_name: courierName,
         tracking_url: trackingUrl,
         order_status: 'shipped',
+        status: 'shipped',
       };
 
       const { error: dbErr } = await supabase
@@ -486,10 +495,16 @@ export const bookShiprathShipment = async (order) => {
 
       if (dbErr) {
         console.warn('[SHIPRATH BOOK] DB update column warning:', dbErr.message);
+        // Retry with guaranteed core columns if schema differs
+        await supabase
+          .from('orders')
+          .update({ awb_number: awb, order_status: 'shipped' })
+          .eq('id', order.id);
       } else {
         console.log('[SHIPRATH BOOK] ✅ Saved AWB to order row:', awb);
       }
     }
+
 
     return {
       success: true,

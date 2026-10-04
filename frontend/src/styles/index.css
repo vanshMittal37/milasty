@@ -3234,6 +3234,25 @@ footer.transparent-blurred-footer {
   font-size: 0.9rem !important;
 }
 
+/* MILASTY Confirmation Modal Scoped High-Contrast Overrides */
+.milasty-confirm-modal h1,
+.milasty-confirm-modal h2,
+.milasty-confirm-modal h3,
+.milasty-confirm-modal h4,
+.admin-page-wrapper .milasty-confirm-modal h1,
+.admin-page-wrapper .milasty-confirm-modal h2,
+.admin-page-wrapper .milasty-confirm-modal h3,
+.admin-page-wrapper .milasty-confirm-modal h4 {
+  color: #FFFFFF !important;
+  font-family: var(--font-serif) !important;
+  font-weight: 800 !important;
+}
+
+.milasty-confirm-modal p,
+.admin-page-wrapper .milasty-confirm-modal p {
+  color: #D1D5DB !important;
+}
+
 /* Body text */
 .admin-page-wrapper p,
 .admin-page-wrapper label {

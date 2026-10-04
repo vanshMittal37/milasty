@@ -347,7 +347,28 @@ export default function CustomerOrderDetailPage() {
   const canCancel = !isCancelled && !isDelivered && hoursPassed <= 6;
 
   const orderItems = order.order_items || order.items || [];
-  const subtotal = orderItems.reduce((s, i) => s + (i.price * i.quantity), 0);
+  const calculatedSubtotal = orderItems.reduce((s, i) => s + (Number(i.price || 0) * Number(i.quantity || 1)), 0);
+  const subtotal = calculatedSubtotal > 0 ? calculatedSubtotal : Number(order.subtotal || order.sub_total || 0);
+
+  const deliveryFee = Number(
+    order.deliveryFee !== undefined ? order.deliveryFee :
+    (order.delivery_fee !== undefined ? order.delivery_fee :
+    (order.deliveryCharge !== undefined ? order.deliveryCharge :
+    (order.delivery_charge !== undefined ? order.delivery_charge :
+    (order.shippingFee !== undefined ? order.shippingFee :
+    (order.shipping_fee !== undefined ? order.shipping_fee : 0)))))
+  );
+
+  const discountAmount = Number(
+    order.discountAmount || order.discount_amount || order.couponDiscount || order.coupon_discount || order.discount || 0
+  );
+
+  const couponCode = order.couponCode || order.coupon_code || order.appliedCoupon || order.coupon || '';
+
+  const grandTotal = Number(
+    order.totalAmount || order.grandTotal || order.grand_total || order.total || (subtotal - discountAmount + deliveryFee)
+  );
+
   const deliveryAddr = order.deliveryAddress || order.shippingAddress || {};
   const placedDate = order.createdAt
     ? new Date(order.createdAt).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })
@@ -428,7 +449,7 @@ export default function CustomerOrderDetailPage() {
               Live Shipment Tracking
             </h3>
 
-            {trackLoading && !shipTracking && !order.awb_number && !order.awb && (
+            {trackLoading && !shipTracking && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: T.textMuted, fontSize: '0.87rem' }}>
                 <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
                 Fetching live tracking data...
@@ -476,62 +497,60 @@ export default function CustomerOrderDetailPage() {
                 )}
               </div>
 
-
-                {/* Latest tracking event */}
-                {shipTracking.tracking?.shipment_track?.[0] && (
-                  <div style={{
-                    padding: '0.85rem 1rem',
-                    backgroundColor: T.infoBg,
-                    borderRadius: '10px',
-                    border: `1px solid rgba(21,101,192,0.15)`,
-                    display: 'flex', alignItems: 'flex-start', gap: '0.7rem',
-                  }}>
-                    <Truck size={16} color={T.info} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
-                    <div>
-                      <div style={{ fontSize: '0.82rem', fontWeight: '700', color: T.info }}>
-                        {shipTracking.tracking.shipment_track[0].activity || 'In transit'}
-                      </div>
-                      {shipTracking.tracking.shipment_track[0].location && (
-                        <div style={{ fontSize: '0.75rem', color: T.textMuted, marginTop: '0.15rem' }}>
-                          📍 {shipTracking.tracking.shipment_track[0].location}
-                        </div>
-                      )}
-                      {shipTracking.tracking.shipment_track[0].date && (
-                        <div style={{ fontSize: '0.72rem', color: T.textMuted, marginTop: '0.1rem' }}>
-                          {new Date(shipTracking.tracking.shipment_track[0].date).toLocaleString('en-IN')}
-                        </div>
-                      )}
+              {/* Latest tracking event */}
+              {shipTracking?.tracking?.shipment_track?.[0] && (
+                <div style={{
+                  padding: '0.85rem 1rem',
+                  backgroundColor: T.infoBg,
+                  borderRadius: '10px',
+                  border: `1px solid rgba(21,101,192,0.15)`,
+                  display: 'flex', alignItems: 'flex-start', gap: '0.7rem',
+                }}>
+                  <Truck size={16} color={T.info} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+                  <div>
+                    <div style={{ fontSize: '0.82rem', fontWeight: '700', color: T.info }}>
+                      {shipTracking.tracking.shipment_track[0].activity || 'In transit'}
                     </div>
+                    {shipTracking.tracking.shipment_track[0].location && (
+                      <div style={{ fontSize: '0.75rem', color: T.textMuted, marginTop: '0.15rem' }}>
+                        📍 {shipTracking.tracking.shipment_track[0].location}
+                      </div>
+                    )}
+                    {shipTracking.tracking.shipment_track[0].date && (
+                      <div style={{ fontSize: '0.72rem', color: T.textMuted, marginTop: '0.1rem' }}>
+                        {new Date(shipTracking.tracking.shipment_track[0].date).toLocaleString('en-IN')}
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+              )}
 
-                {/* Full tracking link */}
-                {shipTracking.tracking_url && (
-                  <a
-                    href={shipTracking.tracking_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                      padding: '0.6rem 1.2rem',
-                      background: T.brandGrad,
-                      color: '#FFFFFF',
-                      borderRadius: '999px',
-                      textDecoration: 'none',
-                      fontSize: '0.8rem', fontWeight: '700',
-                      alignSelf: 'flex-start',
-                      boxShadow: '0 4px 12px rgba(90,46,22,0.18)',
-                    }}
-                  >
-                    <ExternalLink size={13} /> Track Full Journey
-                  </a>
-                )}
-              </div>
-            )}
+              {/* Full tracking link */}
+              {shipTracking?.tracking_url && (
+                <a
+                  href={shipTracking?.tracking_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                    padding: '0.6rem 1.2rem',
+                    background: T.brandGrad,
+                    color: '#FFFFFF',
+                    borderRadius: '999px',
+                    textDecoration: 'none',
+                    fontSize: '0.8rem', fontWeight: '700',
+                    alignSelf: 'flex-start',
+                    boxShadow: '0 4px 12px rgba(90,46,22,0.18)',
+                  }}
+                >
+                  <ExternalLink size={13} /> Track Full Journey
+                </a>
+              )}
+            </div>
 
-            {shipTracking && !shipTracking.awb && (
-              <div style={{ fontSize: '0.84rem', color: T.textMuted, fontWeight: '500' }}>
-                Shipment is being arranged. Tracking details will appear once dispatched.
+            {!shipTracking && !trackLoading && (order.awb_number || order.awb) && (
+              <div style={{ fontSize: '0.84rem', color: T.textMuted, fontWeight: '500', marginTop: '0.5rem' }}>
+                Shipment is being arranged. Tracking details will update shortly.
               </div>
             )}
 
@@ -664,29 +683,31 @@ export default function CustomerOrderDetailPage() {
                 <span style={{ width: '3px', height: '14px', borderRadius: '2px', backgroundColor: T.accent, display: 'inline-block' }} />
                 Order Summary
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.87rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.87rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: T.textSecondary }}>
                   <span>Subtotal</span>
-                  <span style={{ fontWeight: '700', color: T.textPrimary }}>₹{subtotal}</span>
+                  <span style={{ fontWeight: '700', color: T.textPrimary }}>₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
-                {order.deliveryCharge !== undefined && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: T.textSecondary }}>
-                    <span>Delivery</span>
-                    <span style={{ fontWeight: '700', color: order.deliveryCharge === 0 ? T.success : T.textPrimary }}>
-                      {order.deliveryCharge === 0 ? 'FREE 🎉' : `₹${order.deliveryCharge}`}
-                    </span>
-                  </div>
-                )}
-                {order.discount > 0 && (
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: T.textSecondary }}>
+                  <span>Delivery Fee</span>
+                  <span style={{ fontWeight: '700', color: deliveryFee === 0 ? T.success : T.textPrimary }}>
+                    {deliveryFee === 0 ? 'FREE 🎉' : `₹${deliveryFee.toLocaleString('en-IN')}`}
+                  </span>
+                </div>
+
+                {discountAmount > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', color: T.success }}>
-                    <span>Discount</span>
-                    <span style={{ fontWeight: '700' }}>−₹{order.discount}</span>
+                    <span>Coupon Discount {couponCode ? `(${couponCode})` : ''}</span>
+                    <span style={{ fontWeight: '700' }}>−₹{discountAmount.toLocaleString('en-IN')}</span>
                   </div>
                 )}
-                <div style={{ height: '1px', backgroundColor: T.border, margin: '0.3rem 0' }} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '1rem' }}>
+
+                <div style={{ height: '1px', backgroundColor: T.border, margin: '0.35rem 0' }} />
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '1.05rem' }}>
                   <span style={{ color: T.textPrimary }}>Total Paid</span>
-                  <span style={{ color: T.brand }}>₹{order.totalAmount || order.grandTotal || subtotal}</span>
+                  <span style={{ color: T.brand }}>₹{grandTotal.toLocaleString('en-IN')}</span>
                 </div>
               </div>
             </div>

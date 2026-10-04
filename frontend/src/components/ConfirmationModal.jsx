@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, LogOut, X } from 'lucide-react';
 import ModalPortal from './ModalPortal';
 
 export default function ConfirmationModal({
@@ -12,79 +12,147 @@ export default function ConfirmationModal({
   onConfirm,
   onCancel,
 }) {
+  if (!isOpen) return null;
+
   return (
     <ModalPortal isOpen={isOpen} onClose={onCancel}>
       <div
+        className="milasty-confirm-modal animate-slide-up"
         style={{
-          backgroundColor: '#141A16',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          borderRadius: '20px',
-          padding: '1.75rem',
-          maxWidth: '460px',
-          width: '100%',
-          boxShadow: '0 25px 70px rgba(0, 0, 0, 0.60)',
-          color: '#F5F5F5',
+          backgroundColor: '#181E19',
+          border: '1px solid rgba(255, 255, 255, 0.16)',
+          borderRadius: '24px',
+          padding: '1.85rem',
+          maxWidth: '440px',
+          width: '90vw',
+          boxShadow: '0 25px 70px rgba(0, 0, 0, 0.75)',
+          color: '#F9FAFB',
+          position: 'relative',
+          boxSizing: 'border-box',
+          margin: '0 auto',
         }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div
-              style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '12px',
-                backgroundColor: isDanger ? 'rgba(217, 83, 79, 0.15)' : 'rgba(39, 76, 55, 0.45)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: isDanger ? '#FF8A87' : '#85B870',
-                border: isDanger ? '1px solid rgba(217, 83, 79, 0.30)' : '1px solid rgba(133, 184, 112, 0.30)',
-              }}
-            >
-              <AlertTriangle size={22} />
-            </div>
-            <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#F5F5F5', fontWeight: '800', fontFamily: 'var(--font-serif)' }}>
-              {title}
-            </h3>
-          </div>
-          <button
-            onClick={onCancel}
+        {/* Close Button */}
+        <button
+          type="button"
+          onClick={onCancel}
+          style={{
+            position: 'absolute',
+            top: '18px',
+            right: '18px',
+            background: 'rgba(255, 255, 255, 0.08)',
+            border: 'none',
+            borderRadius: '50%',
+            width: '32px',
+            height: '32px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#9CA3AF',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.color = '#FFFFFF';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.color = '#9CA3AF';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+          }}
+        >
+          <X size={18} />
+        </button>
+
+        {/* Modal Header & Icon */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', marginBottom: '1rem', paddingRight: '2rem' }}>
+          <div
             style={{
-              background: 'none',
-              border: 'none',
-              color: '#A7ADB8',
-              cursor: 'pointer',
-              padding: '4px',
+              width: '48px',
+              height: '48px',
+              borderRadius: '14px',
+              backgroundColor: isDanger ? 'rgba(239, 68, 68, 0.18)' : 'rgba(198, 138, 58, 0.18)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: isDanger ? '#EF4444' : '#EAB308',
+              border: isDanger ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(198, 138, 58, 0.4)',
+              flexShrink: 0,
             }}
           >
-            <X size={20} />
-          </button>
+            {isDanger ? <AlertTriangle size={24} /> : <LogOut size={22} />}
+          </div>
+          <h3
+            style={{
+              margin: 0,
+              fontSize: '1.3rem',
+              color: '#FFFFFF',
+              fontWeight: '800',
+              fontFamily: 'var(--font-serif)',
+              lineHeight: '1.25',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            {title}
+          </h3>
         </div>
 
-        <p style={{ margin: '0 0 1.5rem 0', fontSize: '0.88rem', color: '#A7ADB8', lineHeight: '1.5', fontWeight: '500' }}>
+        {/* Message */}
+        <p
+          style={{
+            margin: '0 0 1.65rem 0',
+            fontSize: '0.92rem',
+            color: '#D1D5DB',
+            lineHeight: '1.55',
+            fontWeight: '400',
+          }}
+        >
           {message}
         </p>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.85rem', width: '100%' }}>
           <button
             type="button"
             onClick={onCancel}
-            className="admin-btn-secondary"
             style={{
-              padding: '0.65rem 1.25rem',
-              fontSize: '0.85rem',
+              flex: 1,
+              padding: '0.7rem 1.25rem',
+              fontSize: '0.88rem',
+              fontWeight: '700',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              color: '#F3F4F6',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              textAlign: 'center',
             }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)')}
           >
             {cancelText}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className={isDanger ? "admin-btn-danger" : "admin-btn-primary"}
             style={{
-              padding: '0.65rem 1.25rem',
-              fontSize: '0.85rem',
+              flex: 1,
+              padding: '0.7rem 1.25rem',
+              fontSize: '0.88rem',
+              fontWeight: '800',
+              borderRadius: '12px',
+              border: 'none',
+              backgroundColor: isDanger ? '#DC2626' : '#C68A3A',
+              color: '#FFFFFF',
+              cursor: 'pointer',
+              boxShadow: isDanger ? '0 4px 16px rgba(220, 38, 38, 0.45)' : '0 4px 16px rgba(198, 138, 58, 0.45)',
+              transition: 'all 0.2s ease',
+              textAlign: 'center',
             }}
+            onMouseOver={(e) => (e.currentTarget.style.opacity = '0.9')}
+            onMouseOut={(e) => (e.currentTarget.style.opacity = '1')}
           >
             {confirmText}
           </button>
@@ -93,4 +161,5 @@ export default function ConfirmationModal({
     </ModalPortal>
   );
 }
+
 

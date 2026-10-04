@@ -13,43 +13,59 @@ export default function ConfirmModal({
   onCancel,
   loading = false,
 }) {
+  if (!isOpen) return null;
   const isDanger = type === 'danger';
 
   return (
     <ModalPortal isOpen={isOpen} onClose={onCancel}>
       <div
-        className="admin-card animate-slide-up"
+        className="milasty-confirm-modal animate-slide-up"
         style={{
-          width: '100%',
-          maxWidth: '420px',
-          padding: '1.75rem',
-          borderRadius: '20px',
-          backgroundColor: 'var(--admin-surface-card, #182019)',
-          border: '1px solid var(--admin-border, rgba(255, 255, 255, 0.15))',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+          width: '90vw',
+          maxWidth: '440px',
+          padding: '1.85rem',
+          borderRadius: '24px',
+          backgroundColor: '#181E19',
+          border: '1px solid rgba(255, 255, 255, 0.16)',
+          boxShadow: '0 25px 70px rgba(0, 0, 0, 0.75)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           textAlign: 'center',
-          gap: '1rem',
+          gap: '1.1rem',
           position: 'relative',
+          boxSizing: 'border-box',
+          margin: '0 auto',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
+          type="button"
           onClick={onCancel}
           style={{
             position: 'absolute',
-            top: '14px',
-            right: '14px',
-            background: 'none',
+            top: '18px',
+            right: '18px',
+            background: 'rgba(255, 255, 255, 0.08)',
             border: 'none',
-            color: 'var(--admin-text-muted, #929B94)',
-            cursor: 'pointer',
-            padding: '0.2rem',
+            borderRadius: '50%',
+            width: '32px',
+            height: '32px',
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'center',
+            color: '#9CA3AF',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.color = '#FFFFFF';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.color = '#9CA3AF';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
           }}
         >
           <X size={18} />
@@ -60,10 +76,10 @@ export default function ConfirmModal({
           style={{
             width: '54px',
             height: '54px',
-            borderRadius: '50%',
-            backgroundColor: isDanger ? 'rgba(239, 68, 68, 0.15)' : 'rgba(185, 205, 148, 0.15)',
-            border: isDanger ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(185, 205, 148, 0.4)',
-            color: isDanger ? '#ef4444' : '#b9cd94',
+            borderRadius: '16px',
+            backgroundColor: isDanger ? 'rgba(239, 68, 68, 0.18)' : 'rgba(198, 138, 58, 0.18)',
+            border: isDanger ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(198, 138, 58, 0.4)',
+            color: isDanger ? '#EF4444' : '#EAB308',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -76,22 +92,23 @@ export default function ConfirmModal({
         <div>
           <h3
             style={{
-              fontSize: '1.25rem',
+              fontSize: '1.3rem',
               fontFamily: 'var(--font-serif)',
-              color: 'var(--admin-text-primary, #F4F5F0)',
+              color: '#FFFFFF',
               fontWeight: '800',
-              margin: '0 0 0.35rem 0',
+              margin: '0 0 0.4rem 0',
+              lineHeight: '1.25',
             }}
           >
             {title}
           </h3>
           <p
             style={{
-              fontSize: '0.85rem',
-              color: 'var(--admin-text-secondary, #C1C7C1)',
-              lineHeight: '1.5',
+              fontSize: '0.92rem',
+              color: '#D1D5DB',
+              lineHeight: '1.55',
               margin: 0,
-              fontWeight: '500',
+              fontWeight: '400',
             }}
           >
             {message}
@@ -101,33 +118,48 @@ export default function ConfirmModal({
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '0.85rem', width: '100%', marginTop: '0.5rem' }}>
           <button
+            type="button"
             onClick={onCancel}
             disabled={loading}
-            className="admin-btn-secondary"
             style={{
               flex: 1,
-              height: '42px',
-              justifyContent: 'center',
-              fontSize: '0.85rem',
+              padding: '0.7rem 1.25rem',
+              fontSize: '0.88rem',
               fontWeight: '700',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              color: '#F3F4F6',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              textAlign: 'center',
             }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)')}
           >
             {cancelText}
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             disabled={loading}
-            className={isDanger ? 'admin-btn-danger' : 'admin-btn-primary'}
             style={{
               flex: 1,
-              height: '42px',
-              justifyContent: 'center',
-              fontSize: '0.85rem',
+              padding: '0.7rem 1.25rem',
+              fontSize: '0.88rem',
               fontWeight: '800',
-              backgroundColor: isDanger ? '#dc2626' : undefined,
-              borderColor: isDanger ? '#dc2626' : undefined,
+              borderRadius: '12px',
+              border: 'none',
+              backgroundColor: isDanger ? '#DC2626' : '#C68A3A',
               color: '#FFFFFF',
+              cursor: 'pointer',
+              boxShadow: isDanger ? '0 4px 16px rgba(220, 38, 38, 0.45)' : '0 4px 16px rgba(198, 138, 58, 0.45)',
+              transition: 'all 0.2s ease',
+              textAlign: 'center',
+              opacity: loading ? 0.7 : 1,
             }}
+            onMouseOver={(e) => (e.currentTarget.style.opacity = loading ? '0.7' : '0.9')}
+            onMouseOut={(e) => (e.currentTarget.style.opacity = loading ? '0.7' : '1')}
           >
             {loading ? 'Processing...' : confirmText}
           </button>
@@ -136,4 +168,5 @@ export default function ConfirmModal({
     </ModalPortal>
   );
 }
+
 
