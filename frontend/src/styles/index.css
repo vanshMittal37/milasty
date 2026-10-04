@@ -1270,7 +1270,10 @@ a {
   input:not(.milasty-auth-input),
   textarea:not(.milasty-auth-input),
   select:not(.milasty-auth-input) {
-    padding: 0.7rem 0.85rem !important;
+    padding-top: 0.7rem !important;
+    padding-bottom: 0.7rem !important;
+    padding-right: 0.85rem !important;
+    padding-left: 0.85rem;
     font-size: 0.88rem !important;
   }
 
@@ -4435,7 +4438,10 @@ body.admin-body select {
   color: #21150F !important;
   border: 1.5px solid rgba(207, 194, 181, 0.75) !important;
   border-radius: 10px !important;
-  padding: 0.6rem 0.9rem !important;
+  padding-top: 0.6rem !important;
+  padding-bottom: 0.6rem !important;
+  padding-right: 0.9rem !important;
+  padding-left: 0.9rem;
   font-size: 0.875rem !important;
   font-family: var(--font-sans) !important;
   font-weight: 500 !important;
@@ -4445,6 +4451,23 @@ body.admin-body select {
   box-sizing: border-box !important;
   -webkit-appearance: none;
   appearance: none;
+}
+
+/* ADMIN SEARCH INPUT OVERRIDES - Generous left padding for search icon */
+body.admin-body .admin-search-input,
+body.admin-body div[style*="position: relative"] > input,
+body.admin-body div[style*="position:relative"] > input,
+body.admin-body div[style*="position: relative"] > .admin-input,
+body.admin-body div[style*="position:relative"] > .admin-input,
+body.admin-body input[placeholder*="Search"],
+body.admin-body input[placeholder*="search"],
+body.admin-body input[placeholder*="Filter"],
+body.admin-body input[placeholder*="filter"],
+body.admin-body .admin-search-wrap input,
+body.admin-body .admin-search-bar input,
+body.admin-body .admin-search-bar {
+  border-radius: 999px !important;
+  padding-left: 2.85rem !important;
 }
 
 body.admin-body select {
