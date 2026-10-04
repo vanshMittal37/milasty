@@ -15,6 +15,18 @@
   --milasty-footer-heading: #F8EBDD;
   --milasty-footer-accent: #9BCB88;
 
+  /* Warm Beige Card System Tokens */
+  --card-bg: #F5EEE1;
+  --card-bg-hover: #EFE5D3;
+  --card-border: 1px solid #E3D6BF;
+  --card-border-color: #E3D6BF;
+  --card-shadow: 0 4px 20px rgba(90, 70, 40, 0.08);
+  --card-shadow-hover: 0 8px 28px rgba(90, 70, 40, 0.12);
+  --card-inner-bg: #FBF7EF;
+  --text-heading: #2B2B2B;
+  --text-body: #5A5248;
+  --text-muted: #8A7F70;
+
   /* Legacy & Internal Theme Tokens */
   --milasty-cream-primary: #F7F0E5;
   --milasty-cream-secondary: #F1E5D4;
@@ -79,6 +91,33 @@
 
   --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ========================================================
+   WARM BEIGE CARD SYSTEM & COMPONENT TOKENS
+   ======================================================== */
+.card-warm-beige,
+.milasty-card,
+.glass-card {
+  background-color: var(--card-bg) !important;
+  border: var(--card-border) !important;
+  box-shadow: var(--card-shadow) !important;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.card-warm-beige:hover,
+.milasty-card:hover {
+  background-color: var(--card-bg-hover) !important;
+  box-shadow: var(--card-shadow-hover) !important;
+}
+
+.card-inner-element,
+.card-chip-unselected {
+  background-color: var(--card-inner-bg) !important;
+  border: 1px solid var(--card-border-color) !important;
+  color: var(--text-heading) !important;
 }
 
 /* ========================================================

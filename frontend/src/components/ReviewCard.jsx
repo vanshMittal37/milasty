@@ -4,9 +4,13 @@ import { Star, CheckCircle, Quote } from 'lucide-react';
 export default function ReviewCard({ review }) {
   return (
     <div
-      className="glass-card"
+      className="glass-card card-warm-beige"
       style={{
         padding: '1.75rem',
+        backgroundColor: 'var(--card-bg, #F5EEE1)',
+        border: 'var(--card-border, 1px solid #E3D6BF)',
+        boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+        borderRadius: '20px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',

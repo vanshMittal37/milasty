@@ -14,23 +14,23 @@ import { useCategories } from '../context/CategoryContext';
 
 const cardThemes = [
   {
-    bgGradient: '#F4EBDD',
-    borderColor: '#DCC8AE',
-    titleColor: '#32180D',
+    bgGradient: 'var(--card-bg, #F5EEE1)',
+    borderColor: '#E3D6BF',
+    titleColor: '#2B2B2B',
     badgeBg: '#E3EEDC',
     badgeColor: '#24572E',
   },
   {
-    bgGradient: '#F4EBDD',
-    borderColor: '#DCC8AE',
-    titleColor: '#32180D',
+    bgGradient: 'var(--card-bg, #F5EEE1)',
+    borderColor: '#E3D6BF',
+    titleColor: '#2B2B2B',
     badgeBg: '#E3EEDC',
     badgeColor: '#24572E',
   },
   {
-    bgGradient: '#F4EBDD',
-    borderColor: '#DCC8AE',
-    titleColor: '#32180D',
+    bgGradient: 'var(--card-bg, #F5EEE1)',
+    borderColor: '#E3D6BF',
+    titleColor: '#2B2B2B',
     badgeBg: '#E3EEDC',
     badgeColor: '#24572E',
   },
@@ -576,10 +576,10 @@ export default function Shop() {
                   key={item.id || idx}
                   onClick={() => navigate(`/product/${item.productSlug || item.slug || pId}`)}
                   style={{
-                    background: '#F4EBDD',
+                    background: 'var(--card-bg, #F5EEE1)',
                     borderRadius: isMobile ? '14px' : '20px',
-                    border: '1.5px solid #5C3A21',
-                    boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
+                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     padding: isMobile ? '0.65rem 0.55rem 0.6rem' : '1.15rem 1rem 1rem',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1017,9 +1017,9 @@ export default function Shop() {
                 width: '100%',
                 padding: '0.85rem 1.25rem 0.85rem 3.4rem',
                 borderRadius: '999px',
-                backgroundColor: '#F4EBDD',
-                border: '1.5px solid #DCC8AE',
-                color: '#32180D',
+                backgroundColor: 'var(--card-inner-bg, #FBF7EF)',
+                border: '1.5px solid #E3D6BF',
+                color: 'var(--text-heading, #2B2B2B)',
                 fontSize: isMobile ? '0.88rem' : '0.95rem',
                 outline: 'none',
                 boxSizing: 'border-box'
@@ -1084,13 +1084,13 @@ export default function Shop() {
           style={{ padding: isMobile ? '2.5rem 1rem' : '4.5rem 1.5rem', maxWidth: '850px', margin: '0 auto', boxSizing: 'border-box' }}
         >
           <div 
-            className="glass-card"
+            className="glass-card card-warm-beige"
             style={{ 
               padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem', 
               borderRadius: '24px', 
-              backgroundColor: '#F4EBDD',
-              border: '1.5px solid #DCC8AE',
-              boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
+              backgroundColor: 'var(--card-bg, #F5EEE1)',
+              border: 'var(--card-border, 1px solid #E3D6BF)',
+              boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
               textAlign: 'center'
             }}
           >
@@ -1161,10 +1161,10 @@ export default function Shop() {
                         key={prod.id || prod._id}
                         onClick={() => navigate(`/product/${prod.slug || prod.id || prod._id}`)}
                         style={{
-                          backgroundColor: '#FCF8F1',
+                          backgroundColor: 'var(--card-inner-bg, #FBF7EF)',
                           padding: isMobile ? '0.65rem' : '0.85rem',
                           borderRadius: '16px',
-                          border: '1px solid #DCC8AE',
+                          border: '1px solid #E3D6BF',
                           display: 'flex',
                           gap: '0.65rem',
                           alignItems: 'center',
@@ -1511,9 +1511,9 @@ export default function Shop() {
                   style={{
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
                     borderRadius: '24px',
-                    backgroundColor: '#F4EBDD',
-                    border: '1.5px solid #5C3A21',
-                    boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
+                    backgroundColor: 'var(--card-bg, #F5EEE1)',
+                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     textAlign: 'center',
                     boxSizing: 'border-box',
                     width: '100%',
@@ -1674,9 +1674,9 @@ export default function Shop() {
               textAlign: 'center',
               position: 'relative',
               borderRadius: '30px',
-              backgroundColor: '#F4EBDD',
-              border: '2px solid #5C3A21',
-              boxShadow: '0 12px 36px rgba(43, 20, 11, 0.08)',
+              backgroundColor: 'var(--card-bg, #F5EEE1)',
+              border: 'var(--card-border, 1px solid #E3D6BF)',
+              boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
               overflow: 'hidden',
             }}
           >

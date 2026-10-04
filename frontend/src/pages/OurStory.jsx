@@ -147,26 +147,26 @@ function OrbitJourneySection() {
                     {/* Main Card Container */}
                     <div
                       style={{
-                        backgroundColor: '#F4EBDD',
+                        backgroundColor: 'var(--card-bg)',
                         borderRadius: '24px',
-                        border: isHighlight ? '2px solid #2F6B3A' : '1.5px solid #5C3A21',
-                        boxShadow: isHighlight ? '0 10px 30px rgba(47, 107, 58, 0.18)' : '0 6px 18px rgba(75, 45, 25, 0.08)',
+                        border: isHighlight ? '2px solid #2F6B3A' : 'var(--card-border)',
+                        boxShadow: isHighlight ? 'var(--card-shadow-hover)' : 'var(--card-shadow)',
                         padding: '1.5rem 1.15rem 1.35rem',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '1rem',
                         boxSizing: 'border-box',
-                        transition: 'all 0.35s ease'
+                        transition: 'all 0.25s ease'
                       }}
                     >
-                      {/* Left Circular Olive-Green Icon Container */}
+                      {/* Left Circular Icon Container */}
                       <div 
                         style={{ 
                           width: '64px', 
                           height: '64px', 
                           borderRadius: '50%', 
-                          backgroundColor: '#E3EEDC', 
-                          border: '1.5px solid #DCC8AE', 
+                          backgroundColor: 'var(--card-inner-bg)', 
+                          border: '1px solid var(--card-border-color)', 
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'center',
@@ -189,11 +189,11 @@ function OrbitJourneySection() {
                           )}
                         </div>
 
-                        <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 0.35rem', lineHeight: '1.2' }}>
+                        <h3 style={{ fontSize: '1.15rem', fontFamily: 'var(--font-serif)', color: 'var(--text-heading)', fontWeight: '850', margin: '0 0 0.35rem', lineHeight: '1.2' }}>
                           {m.title}
                         </h3>
 
-                        <p style={{ fontSize: '0.78rem', color: '#654B38', lineHeight: '1.45', margin: 0, fontWeight: '500' }}>
+                        <p style={{ fontSize: '0.78rem', color: 'var(--text-body)', lineHeight: '1.45', margin: 0, fontWeight: '500' }}>
                           {m.desc}
                         </p>
                       </div>
@@ -265,13 +265,13 @@ function OrbitJourneySection() {
                         style={{
                           padding: '1.75rem 1.6rem',
                           borderRadius: '22px',
-                          backgroundColor: '#F4EBDD',
-                          border: isHighlight ? '2px solid #2F6B3A' : '1.5px solid #5C3A21',
+                          backgroundColor: 'var(--card-bg)',
+                          border: isHighlight ? '2px solid #2F6B3A' : 'var(--card-border)',
                           boxShadow: isHighlight 
-                            ? '0 12px 32px rgba(47, 107, 58, 0.18)' 
-                            : '0 6px 18px rgba(75, 45, 25, 0.08)',
+                            ? 'var(--card-shadow-hover)' 
+                            : 'var(--card-shadow)',
                           transform: isHighlight ? 'scale(1.02)' : 'scale(1)',
-                          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                          transition: 'all 0.25s ease',
                           boxSizing: 'border-box',
                           display: 'flex',
                           alignItems: 'center',
@@ -285,8 +285,8 @@ function OrbitJourneySection() {
                             width: '56px', 
                             height: '56px', 
                             borderRadius: '50%', 
-                            backgroundColor: '#E3EEDC', 
-                            border: '1.5px solid #DCC8AE', 
+                            backgroundColor: 'var(--card-inner-bg)', 
+                            border: '1px solid var(--card-border-color)', 
                             display: 'flex', 
                             alignItems: 'center', 
                             justifyContent: 'center',
@@ -308,11 +308,11 @@ function OrbitJourneySection() {
                             )}
                           </div>
 
-                          <h3 style={{ fontSize: '1.4rem', color: '#32180D', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.45rem', lineHeight: '1.2' }}>
+                          <h3 style={{ fontSize: '1.4rem', color: 'var(--text-heading)', fontFamily: 'var(--font-serif)', fontWeight: '850', margin: '0 0 0.45rem', lineHeight: '1.2' }}>
                             {m.title}
                           </h3>
 
-                          <p style={{ fontSize: '0.94rem', color: '#654B38', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
+                          <p style={{ fontSize: '0.94rem', color: 'var(--text-body)', lineHeight: '1.6', margin: 0, fontWeight: '500' }}>
                             {m.desc}
                           </p>
                         </div>
@@ -696,14 +696,14 @@ export default function OurStory() {
       {/* 4. PRESERVED EXISTING SECTION — TRANSPARENCY & NUTRITION */}
       <section style={{ backgroundColor: 'transparent', padding: '5rem 0', borderBottom: '1px solid #DCC8AE' }}>
         <div style={{ maxWidth: '780px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
-          <div style={{ backgroundColor: '#F4EBDD', border: '1px solid #DCC8AE', padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)' }}>
-            <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid #DCC8AE' }}>
+          <div style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '3.5rem 2.5rem', borderRadius: '24px', textAlign: 'center', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
+            <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: '#2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid #E3D6BF' }}>
               <Info size={24} />
             </div>
-            <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '2.2rem', fontFamily: 'var(--font-serif)', color: 'var(--text-heading, #2B2B2B)', fontWeight: '850', marginBottom: '1rem' }}>
               Know What Goes Into Your Food.
             </h2>
-            <p style={{ fontSize: '1.05rem', color: '#654B38', lineHeight: '1.7', marginBottom: '2.5rem', fontWeight: '550' }}>
+            <p style={{ fontSize: '1.05rem', color: 'var(--text-body, #5A5248)', lineHeight: '1.7', marginBottom: '2.5rem', fontWeight: '550' }}>
               We maintain 100% transparency in recipe designs, nutritional parameters, and batch-test laboratory reports.
             </p>
             <Link
@@ -724,10 +724,10 @@ export default function OurStory() {
           <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.6rem' }}>
             THE MILASTY PROMISE
           </span>
-          <h2 style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: '0 0 1.25rem', lineHeight: '1.2' }}>
+          <h2 style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)', fontFamily: 'var(--font-serif)', color: 'var(--text-heading, #2B2B2B)', fontWeight: '850', margin: '0 0 1.25rem', lineHeight: '1.2' }}>
             Good Food Should Feel Good to Choose.
           </h2>
-          <p style={{ fontSize: '1.15rem', color: '#654B38', lineHeight: '1.8', maxWidth: '720px', margin: '0 auto 3rem', fontWeight: '550' }}>
+          <p style={{ fontSize: '1.15rem', color: 'var(--text-body, #5A5248)', lineHeight: '1.8', maxWidth: '720px', margin: '0 auto 3rem', fontWeight: '550' }}>
             From the ingredients we choose to the way we bake, we believe in making everyday snacking more thoughtful, transparent and genuinely delicious.
           </p>
 
@@ -765,7 +765,7 @@ export default function OurStory() {
               style={{
                 padding: '14px 26px',
                 fontSize: '0.95rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.35)',
+                backgroundColor: 'var(--card-inner-bg, #FBF7EF)',
                 color: '#3A1F14',
                 borderRadius: '999px',
                 textDecoration: 'none',
@@ -773,7 +773,7 @@ export default function OurStory() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                border: '1.5px solid rgba(58,31,20,0.45)',
+                border: '1.5px solid #E3D6BF',
                 minHeight: '52px',
                 boxSizing: 'border-box',
                 transition: 'all 0.25s ease'
@@ -793,7 +793,7 @@ export default function OurStory() {
             style={{ 
               fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', 
               fontFamily: 'var(--font-serif)', 
-              color: '#32180D', 
+              color: 'var(--text-heading, #2B2B2B)', 
               fontWeight: '850', 
               lineHeight: '1.6',
               margin: 0
@@ -816,15 +816,16 @@ export default function OurStory() {
           scrollbar-width: none !important;
         }
         .our-story-page .glass-card {
-          background: #F4EBDD !important;
-          background-color: #F4EBDD !important;
-          border: 1px solid #DCC8AE !important;
-          box-shadow: 0 4px 16px rgba(75, 45, 25, 0.05) !important;
-          transition: all 0.3s ease !important;
+          background: var(--card-bg, #F5EEE1) !important;
+          background-color: var(--card-bg, #F5EEE1) !important;
+          border: var(--card-border, 1px solid #E3D6BF) !important;
+          box-shadow: var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08)) !important;
+          transition: all 0.25s ease !important;
         }
         .our-story-page .glass-card:hover {
-          background: #F4EBDD !important;
-          border: 1px solid #2F6B3A !important;
+          background: var(--card-bg-hover, #EFE5D3) !important;
+          border: 1px solid #E3D6BF !important;
+          box-shadow: var(--card-shadow-hover, 0 8px 28px rgba(90, 70, 40, 0.12)) !important;
           transform: translateY(-3px) !important;
         }
         .fitted-cards-container-5 {

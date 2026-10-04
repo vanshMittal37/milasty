@@ -40,32 +40,34 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="milasty-product-card"
+      className="milasty-product-card card-warm-beige"
       style={{
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
         overflow: 'hidden',
-        backgroundColor: '#F4EBDD',
+        backgroundColor: 'var(--card-bg)',
         borderRadius: '20px',
-        border: '1.5px solid #5C3A21',
-        boxShadow: '0 8px 25px rgba(70, 40, 20, 0.08)',
-        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        border: 'var(--card-border)',
+        boxShadow: 'var(--card-shadow)',
+        transition: 'all 0.25s ease',
         position: 'relative'
       }}
       onMouseOver={(e) => {
         e.currentTarget.style.transform = 'translateY(-3px)';
-        e.currentTarget.style.boxShadow = '0 12px 28px rgba(70, 40, 20, 0.12)';
-        e.currentTarget.style.borderColor = '#2F6B3A';
+        e.currentTarget.style.backgroundColor = 'var(--card-bg-hover)';
+        e.currentTarget.style.boxShadow = 'var(--card-shadow-hover)';
+        e.currentTarget.style.borderColor = 'var(--card-border-color)';
       }}
       onMouseOut={(e) => {
         e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.boxShadow = '0 8px 25px rgba(70, 40, 20, 0.08)';
-        e.currentTarget.style.borderColor = '#5C3A21';
+        e.currentTarget.style.backgroundColor = 'var(--card-bg)';
+        e.currentTarget.style.boxShadow = 'var(--card-shadow)';
+        e.currentTarget.style.borderColor = 'var(--card-border-color)';
       }}
     >
       {/* Image Area with Badge & Wishlist Button */}
-      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: '#EBE0CF' }} className="card-image-wrap">
+      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: 'var(--card-inner-bg)' }} className="card-image-wrap">
         <Link to={`/product/${product.slug || product._id || product.id}`}>
           <img
             src={product.image || product.image_url || product.primary_image || '/images/image1.jpeg'}
@@ -77,7 +79,7 @@ export default function ProductCard({ product }) {
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+              transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
             onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.04)')}
             onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
@@ -100,14 +102,14 @@ export default function ProductCard({ product }) {
             width: '34px',
             height: '34px',
             borderRadius: '50%',
-            backgroundColor: 'rgba(255, 255, 255, 0.75)',
-            border: '1px solid #D9C4A8',
+            backgroundColor: 'var(--card-inner-bg)',
+            border: '1px solid var(--card-border-color)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
             boxShadow: '0 2px 8px rgba(70, 40, 20, 0.08)',
-            color: wishlisted ? '#2F6B3A' : '#32180D',
+            color: wishlisted ? '#2F6B3A' : 'var(--text-heading)',
             transition: 'all 0.2s',
             zIndex: 10
           }}
@@ -117,12 +119,12 @@ export default function ProductCard({ product }) {
             e.currentTarget.style.transform = 'scale(1.08)';
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.75)';
-            e.currentTarget.style.color = wishlisted ? '#2F6B3A' : '#32180D';
+            e.currentTarget.style.backgroundColor = 'var(--card-inner-bg)';
+            e.currentTarget.style.color = wishlisted ? '#2F6B3A' : 'var(--text-heading)';
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          <Heart size={15} fill={wishlisted ? '#2F6B3A' : 'none'} color={wishlisted ? '#2F6B3A' : '#32180D'} />
+          <Heart size={15} fill={wishlisted ? '#2F6B3A' : 'none'} color={wishlisted ? '#2F6B3A' : 'var(--text-heading)'} />
         </button>
 
         {/* Dynamic Badges */}
@@ -197,7 +199,7 @@ export default function ProductCard({ product }) {
           flexDirection: 'column',
           flexGrow: 1,
           justifyContent: 'space-between',
-          backgroundColor: '#F4EBDD',
+          backgroundColor: 'transparent',
         }}
       >
         <div>
@@ -211,12 +213,12 @@ export default function ProductCard({ product }) {
                       <Star key={i} size={11} fill={i < Math.round(product.rating) ? '#2F6B3A' : 'none'} color="#2F6B3A" />
                     ))}
                   </div>
-                  <span style={{ fontSize: '0.75rem', color: '#654B38', fontWeight: '750' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '750' }}>
                     {Number(product.rating).toFixed(1)} ({product.reviewCount || product.reviews_count || product.totalReviews})
                   </span>
                 </>
               ) : (
-                <span style={{ fontSize: '0.75rem', color: '#806A57', fontWeight: '600' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600' }}>
                   No reviews yet
                 </span>
               )}
@@ -232,10 +234,10 @@ export default function ProductCard({ product }) {
               fontWeight: '800',
               lineHeight: '1.3',
               marginBottom: '0.35rem',
-              color: '#3A1F14',
+              color: 'var(--text-heading)',
             }}
           >
-            <Link to={`/product/${product.slug || product._id || product.id}`} style={{ color: '#3A1F14', textDecoration: 'none' }}>
+            <Link to={`/product/${product.slug || product._id || product.id}`} style={{ color: 'var(--text-heading)', textDecoration: 'none' }}>
               {product.title}
             </Link>
           </h3>
@@ -260,9 +262,9 @@ export default function ProductCard({ product }) {
                       fontWeight: '800',
                       padding: '0.2rem 0.55rem',
                       borderRadius: '6px',
-                      border: isSelected ? '1.5px solid #2F6B3A' : '1px solid #C5B095',
-                      backgroundColor: isSelected ? '#2F6B3A' : '#E6D4BC',
-                      color: isSelected ? '#FFFFFF' : '#3A1F14',
+                      border: isSelected ? '1.5px solid #2F6B3A' : '1px solid var(--card-border-color)',
+                      backgroundColor: isSelected ? '#2F6B3A' : 'var(--card-inner-bg)',
+                      color: isSelected ? '#FFFFFF' : 'var(--text-heading)',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
                       lineHeight: '1.2'
@@ -281,9 +283,9 @@ export default function ProductCard({ product }) {
                   style={{
                     fontSize: '0.72rem',
                     fontWeight: '800',
-                    color: '#3A1F14',
-                    backgroundColor: '#E6D4BC',
-                    border: '1px solid #C5B095',
+                    color: 'var(--text-heading)',
+                    backgroundColor: 'var(--card-inner-bg)',
+                    border: '1px solid var(--card-border-color)',
                     padding: '0.18rem 0.6rem',
                     borderRadius: '6px',
                     display: 'inline-block',
@@ -302,7 +304,7 @@ export default function ProductCard({ product }) {
             className="card-subtitle"
             style={{
               fontSize: '0.82rem',
-              color: '#654B38',
+              color: 'var(--text-body)',
               lineHeight: '1.4',
               marginBottom: '0.85rem',
               fontWeight: '500',
@@ -327,7 +329,7 @@ export default function ProductCard({ product }) {
             : Number(product?.originalPrice || product?.original_price || cardPrice);
 
           return (
-            <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid #D9C4A8', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
+            <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid var(--card-border-color)', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
               <PriceDisplay 
                 prefix={product?.variants && product.variants.length > 1 ? 'From ' : ''}
                 price={cardPrice} 

@@ -119,11 +119,11 @@ export default function Contact() {
   ];
 
   const shopCardStyle = {
-    backgroundColor: '#F4EBDD',
+    backgroundColor: 'var(--card-bg, #F5EEE1)',
     borderRadius: '24px',
-    border: '1.5px solid #5C3A21',
-    boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)',
-    color: '#2B170D',
+    border: 'var(--card-border, 1px solid #E3D6BF)',
+    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
+    color: 'var(--text-heading, #2B2B2B)',
   };
 
   return (
@@ -219,11 +219,11 @@ export default function Contact() {
               }}
             >
               <div>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1.5px solid #5C3A21', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: '#2F6B3A', border: '1.5px solid #E3D6BF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                   <MessageSquare size={22} />
                 </div>
-                <h3 style={{ fontSize: '1.15rem', color: '#32180D', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>WhatsApp Support</h3>
-                <p style={{ fontSize: '0.88rem', color: '#654B38', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
+                <h3 style={{ fontSize: '1.15rem', color: 'var(--text-heading, #2B2B2B)', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>WhatsApp Support</h3>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-body, #5A5248)', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
                   Quick questions? Chat with our team for instant assistance.
                 </p>
               </div>
@@ -260,11 +260,11 @@ export default function Contact() {
               }}
             >
               <div>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1.5px solid #5C3A21', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: '#2F6B3A', border: '1.5px solid #E3D6BF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                   <Mail size={22} />
                 </div>
-                <h3 style={{ fontSize: '1.15rem', color: '#32180D', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Us</h3>
-                <p style={{ fontSize: '0.88rem', color: '#654B38', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
+                <h3 style={{ fontSize: '1.15rem', color: 'var(--text-heading, #2B2B2B)', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Email Us</h3>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-body, #5A5248)', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
                   Send us your questions, feedback or bulk enquiries.
                 </p>
               </div>
@@ -299,11 +299,11 @@ export default function Contact() {
               }}
             >
               <div>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#E3EEDC', color: '#2F6B3A', border: '1.5px solid #5C3A21', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: '#2F6B3A', border: '1.5px solid #E3D6BF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                   <Package size={22} />
                 </div>
-                <h3 style={{ fontSize: '1.15rem', color: '#32180D', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Orders & Support</h3>
-                <p style={{ fontSize: '0.88rem', color: '#654B38', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
+                <h3 style={{ fontSize: '1.15rem', color: 'var(--text-heading, #2B2B2B)', fontWeight: '850', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Orders & Support</h3>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-body, #5A5248)', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: '500' }}>
                   Need help with an existing order or want to track shipping?
                 </p>
               </div>
@@ -538,7 +538,7 @@ export default function Contact() {
 
                   <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
                     <div>
-                      <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#32180D', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '850', color: 'var(--text-heading, #2B2B2B)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                         Full Name *
                       </label>
                       <input
@@ -547,12 +547,12 @@ export default function Contact() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="Enter your name"
-                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #DCC8AE', fontSize: '0.9rem', outline: 'none', backgroundColor: '#FCF8F1', color: '#32180D', boxSizing: 'border-box' }}
+                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #E3D6BF', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: 'var(--text-heading, #2B2B2B)', boxSizing: 'border-box' }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#32180D', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '850', color: 'var(--text-heading, #2B2B2B)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                         Email Address *
                       </label>
                       <input
@@ -561,12 +561,12 @@ export default function Contact() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="name@example.com"
-                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #DCC8AE', fontSize: '0.9rem', outline: 'none', backgroundColor: '#FCF8F1', color: '#32180D', boxSizing: 'border-box' }}
+                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #E3D6BF', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: 'var(--text-heading, #2B2B2B)', boxSizing: 'border-box' }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#32180D', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '850', color: 'var(--text-heading, #2B2B2B)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                         WhatsApp / Phone Number (Optional)
                       </label>
                       <input
@@ -574,12 +574,12 @@ export default function Contact() {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="+91 98765 43210"
-                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #DCC8AE', fontSize: '0.9rem', outline: 'none', backgroundColor: '#FCF8F1', color: '#32180D', boxSizing: 'border-box' }}
+                        style={{ width: '100%', height: '52px', padding: '0 1rem', borderRadius: '12px', border: '1px solid #E3D6BF', fontSize: '0.9rem', outline: 'none', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: 'var(--text-heading, #2B2B2B)', boxSizing: 'border-box' }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.78rem', fontWeight: '850', color: '#32180D', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '850', color: 'var(--text-heading, #2B2B2B)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                         Message / Inquiry *
                       </label>
                       <textarea
@@ -588,7 +588,7 @@ export default function Contact() {
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder="How can we help you?"
-                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #DCC8AE', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: '#FCF8F1', color: '#32180D', lineHeight: '1.5', boxSizing: 'border-box' }}
+                        style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #E3D6BF', fontSize: '0.9rem', outline: 'none', resize: 'none', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', color: 'var(--text-heading, #2B2B2B)', lineHeight: '1.5', boxSizing: 'border-box' }}
                       />
                     </div>
 
@@ -773,12 +773,12 @@ export default function Contact() {
                 style={{
                   padding: '0.95rem 2.25rem',
                   fontSize: '0.92rem',
-                  border: '1.5px solid #5C3A21',
+                  border: '1.5px solid #E3D6BF',
                   color: '#3A1F14',
                   borderRadius: '999px',
                   fontWeight: '700',
                   textDecoration: 'none',
-                  backgroundColor: 'rgba(255, 255, 255, 0.6)'
+                  backgroundColor: 'var(--card-inner-bg, #FBF7EF)'
                 }}
               >
                 Explore Bakes

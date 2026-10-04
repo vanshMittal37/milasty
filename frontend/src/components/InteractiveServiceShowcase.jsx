@@ -27,9 +27,9 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
               style={{
                 padding: '1.5rem',
                 borderRadius: '16px',
-                backgroundColor: isSelected ? '#F4EBDD' : '#EBE0CF',
-                border: isSelected ? '2px solid #5C4028' : '1px solid rgba(226, 215, 199, 0.6)',
-                boxShadow: isSelected ? '0 12px 28px rgba(74, 53, 37, 0.12)' : 'none',
+                backgroundColor: isSelected ? 'var(--card-bg, #F5EEE1)' : 'var(--card-inner-bg, #FBF7EF)',
+                border: isSelected ? '2px solid #2F6B3A' : '1px solid #E3D6BF',
+                boxShadow: isSelected ? 'var(--card-shadow-hover, 0 8px 28px rgba(90, 70, 40, 0.12))' : 'none',
                 cursor: 'pointer',
                 transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                 display: 'flex',
@@ -43,15 +43,15 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
                     fontSize: '1.4rem',
                     fontFamily: "'Playfair Display', Georgia, serif",
                     fontWeight: '900',
-                    color: isSelected ? '#C89B3C' : '#99887A',
+                    color: isSelected ? '#2F6B3A' : '#8A7F70',
                     transition: 'color 0.3s ease',
                   }}
                 >
                   0{idx + 1}
                 </span>
                 <div>
-                  <h3 style={{ fontSize: '1.2rem', color: '#4A3525', marginBottom: '0.2rem' }}>{item.title}</h3>
-                  <p style={{ fontSize: '0.85rem', color: '#6B5B52' }}>{item.subtitle}</p>
+                  <h3 style={{ fontSize: '1.2rem', color: 'var(--text-heading, #2B2B2B)', marginBottom: '0.2rem' }}>{item.title}</h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-body, #5A5248)' }}>{item.subtitle}</p>
                 </div>
               </div>
 
@@ -60,8 +60,8 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',
-                  backgroundColor: isSelected ? '#5C4028' : '#F5EFE6',
-                  color: isSelected ? '#FFFFFF' : '#4A3525',
+                  backgroundColor: isSelected ? '#2F6B3A' : 'var(--card-inner-bg, #FBF7EF)',
+                  color: isSelected ? '#FFFFFF' : '#2B2B2B',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -78,13 +78,13 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
 
       {/* Right Column: Dynamic Interactive Card */}
       <div
-        className="glass-card animate-fade-in"
+        className="glass-card animate-fade-in card-warm-beige"
         style={{
           padding: '2rem',
-          backgroundColor: '#F4EBDD',
+          backgroundColor: 'var(--card-bg, #F5EEE1)',
           borderRadius: '24px',
-          border: '1.5px solid #E2D7C7',
-          boxShadow: '0 20px 40px rgba(74, 53, 37, 0.15)',
+          border: 'var(--card-border, 1px solid #E3D6BF)',
+          boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
         }}
       >
         <div style={{ position: 'relative', height: '280px', borderRadius: '16px', overflow: 'hidden', marginBottom: '1.5rem', backgroundColor: '#F5EFE6' }}>

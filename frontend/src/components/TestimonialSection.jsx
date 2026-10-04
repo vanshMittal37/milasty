@@ -129,16 +129,17 @@ export default function TestimonialSection() {
       {/* 1. TOP FEATURED CARD: CELEBRITY PICK                           */}
       {/* ------------------------------------------------------------- */}
       <div
+        className="glass-card card-warm-beige"
         style={{
-          backgroundColor: '#FFF9F0',
+          backgroundColor: 'var(--card-bg, #F5EEE1)',
           borderRadius: isMobile ? '18px' : '28px',
-          boxShadow: '0 8px 28px rgba(43, 20, 11, 0.06)',
+          boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
           overflow: 'hidden',
           display: 'grid',
           gridTemplateColumns: isMobile ? '1fr' : '42% 58%',
           alignItems: 'stretch',
           position: 'relative',
-          border: '1.5px solid #5C3A21',
+          border: 'var(--card-border, 1px solid #E3D6BF)',
         }}
       >
         {/* Left Image Section */}
@@ -176,7 +177,7 @@ export default function TestimonialSection() {
                 bottom: 0,
                 width: '50px',
                 height: '100%',
-                color: '#FFF9F0',
+                color: 'var(--card-bg, #F5EEE1)',
                 pointerEvents: 'none',
                 zIndex: 2,
               }}
@@ -401,11 +402,12 @@ export default function TestimonialSection() {
                 }}
               >
                 <div
+                  className="glass-card card-warm-beige"
                   style={{
-                    backgroundColor: '#F4EBDD',
+                    backgroundColor: 'var(--card-bg, #F5EEE1)',
                     borderRadius: '18px',
-                    border: '1.5px solid #D8C4A9',
-                    boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
+                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     padding: '1.25rem 1.15rem',
                     display: 'flex',
                     flexDirection: 'column',
@@ -620,28 +622,31 @@ export default function TestimonialSection() {
           {customerReviews.map((review) => (
             <div
               key={review.id}
+              className="glass-card card-warm-beige"
               style={{
-                backgroundColor: '#F4EBDD',
+                backgroundColor: 'var(--card-bg, #F5EEE1)',
                 borderRadius: '20px',
-                border: '1.5px solid #5C3A21',
-                boxShadow: '0 4px 16px rgba(43, 20, 11, 0.05)',
+                border: 'var(--card-border, 1px solid #E3D6BF)',
+                boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                 padding: '1.75rem',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 position: 'relative',
                 overflow: 'hidden',
-                transition: 'transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
+                transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.backgroundColor = 'var(--card-bg-hover, #EFE5D3)';
                 e.currentTarget.style.borderColor = '#2F6B3A';
-                e.currentTarget.style.boxShadow = '0 10px 24px rgba(43, 20, 11, 0.1)';
+                e.currentTarget.style.boxShadow = 'var(--card-shadow-hover, 0 8px 28px rgba(90, 70, 40, 0.12))';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = '#5C3A21';
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(43, 20, 11, 0.05)';
+                e.currentTarget.style.backgroundColor = 'var(--card-bg, #F5EEE1)';
+                e.currentTarget.style.borderColor = '#E3D6BF';
+                e.currentTarget.style.boxShadow = 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))';
               }}
             >
               <div>

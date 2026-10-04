@@ -757,13 +757,13 @@ export default function Home() {
               >
                 {/* LEFT COLUMN: WHAT GOES INTO MILASTY */}
                 <div
-                  className="glass-card"
+                  className="glass-card card-warm-beige"
                   style={{
                     borderRadius: '24px',
                     padding: isMobile ? '1.75rem 1.25rem' : '2.25rem',
-                    backgroundColor: '#F4EBDD',
+                    backgroundColor: 'var(--card-bg, #F5EEE1)',
                     border: '1.5px solid #1F6B35',
-                    boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
+                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.75rem', paddingBottom: '1rem', borderBottom: '1px solid #E8D2B5' }}>
@@ -795,13 +795,13 @@ export default function Home() {
 
                 {/* RIGHT COLUMN: WHAT WE CHOOSE TO LEAVE OUT */}
                 <div
-                  className="glass-card"
+                  className="glass-card card-warm-beige"
                   style={{
                     borderRadius: '24px',
                     padding: isMobile ? '1.75rem 1.25rem' : '2.25rem',
-                    backgroundColor: '#F4EBDD',
-                    border: '1.5px solid #E8D2B5',
-                    boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
+                    backgroundColor: 'var(--card-bg, #F5EEE1)',
+                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.75rem', paddingBottom: '1rem', borderBottom: '1px solid #E8D2B5' }}>
@@ -1030,7 +1030,7 @@ export default function Home() {
                   const itemsToDisplay = showAllIngredients ? activeList : activeList.slice(0, 4);
 
                   return itemsToDisplay.map((ingredient, idx) => (
-                    <div key={ingredient.id || ingredient.name || idx} className="glass-card" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px', backgroundColor: '#F4EBDD', border: '1.5px solid #E8D2B5', boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)' }}>
+                    <div key={ingredient.id || ingredient.name || idx} className="glass-card card-warm-beige" style={{ textAlign: 'center', width: '100%', padding: '1.75rem 1.25rem', borderRadius: '20px', backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
                       <img
                         src={ingredient.image || ingredient.imageUrl || ingredient.image_url || ingredient.img}
                         alt={ingredient.name}
@@ -1138,13 +1138,13 @@ export default function Home() {
                   return (
                     <div
                       key={idx}
-                      className="glass-card pillar-card-item"
+                      className="glass-card pillar-card-item card-warm-beige"
                       style={{
                         borderRadius: '20px',
                         padding: isMobile ? '1.25rem 1rem' : '2rem 1.5rem',
-                        backgroundColor: '#F4EBDD',
-                        border: '1.5px solid #E8D2B5',
-                        boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)',
+                        backgroundColor: 'var(--card-bg, #F5EEE1)',
+                        border: 'var(--card-border, 1px solid #E3D6BF)',
+                        boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
@@ -1214,12 +1214,12 @@ export default function Home() {
                   return (
                     <div
                       key={idx}
-                      className="glass-card"
+                      className="glass-card card-warm-beige"
                       style={{
                         borderRadius: '20px',
-                        backgroundColor: '#F4EBDD',
-                        border: isOpen ? '1.5px solid #1F6B35' : '1.5px solid #E8D2B5',
-                        boxShadow: isOpen ? '0 8px 24px rgba(43, 20, 11, 0.08)' : '0 4px 16px rgba(43, 20, 11, 0.04)',
+                        backgroundColor: 'var(--card-bg, #F5EEE1)',
+                        border: isOpen ? '1.5px solid #1F6B35' : 'var(--card-border, 1px solid #E3D6BF)',
+                        boxShadow: isOpen ? '0 8px 24px rgba(43, 20, 11, 0.08)' : 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                         overflow: 'hidden',
                         boxSizing: 'border-box',
                         width: '100%',
@@ -1297,13 +1297,13 @@ export default function Home() {
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem' }}>
                 {/* Card 1: NUTRITION */}
                 <div
-                  className="glass-card"
+                  className="glass-card card-warm-beige"
                   style={{
                     borderRadius: '24px',
                     padding: '2.25rem 1.75rem',
-                    backgroundColor: '#F4EBDD',
-                    border: '1.5px solid #E8D2B5',
-                    boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)',
+                    backgroundColor: 'var(--card-bg, #F5EEE1)',
+                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -1340,13 +1340,13 @@ export default function Home() {
 
                 {/* Card 2: INGREDIENTS */}
                 <div
-                  className="glass-card"
+                  className="glass-card card-warm-beige"
                   style={{
                     borderRadius: '24px',
                     padding: '2.25rem 1.75rem',
-                    backgroundColor: '#F4EBDD',
-                    border: '1.5px solid #E8D2B5',
-                    boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)',
+                    backgroundColor: 'var(--card-bg, #F5EEE1)',
+                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -1383,13 +1383,13 @@ export default function Home() {
 
                 {/* Card 3: LAB REPORTS */}
                 <div
-                  className="glass-card"
+                  className="glass-card card-warm-beige"
                   style={{
                     borderRadius: '24px',
                     padding: '2.25rem 1.75rem',
-                    backgroundColor: '#F4EBDD',
-                    border: '1.5px solid #E8D2B5',
-                    boxShadow: '0 8px 24px rgba(43, 20, 11, 0.05)',
+                    backgroundColor: 'var(--card-bg, #F5EEE1)',
+                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -1454,13 +1454,13 @@ export default function Home() {
                 
                 {/* CARD 1: GIFTING */}
                 <div
-                  className="glass-card"
+                  className="glass-card card-warm-beige"
                   style={{
                     borderRadius: '28px',
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
-                    backgroundColor: '#F4EBDD',
-                    border: '1.5px solid #E8D2B5',
-                    boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
+                    backgroundColor: 'var(--card-bg, #F5EEE1)',
+                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -1508,13 +1508,13 @@ export default function Home() {
 
                 {/* CARD 2: CORPORATE & BULK ORDERS */}
                 <div
-                  className="glass-card"
+                  className="glass-card card-warm-beige"
                   style={{
                     borderRadius: '28px',
                     padding: isMobile ? '2rem 1.5rem' : '3rem 2.5rem',
-                    backgroundColor: '#F4EBDD',
-                    border: '1.5px solid #E8D2B5',
-                    boxShadow: '0 8px 24px rgba(43, 20, 11, 0.06)',
+                    backgroundColor: 'var(--card-bg, #F5EEE1)',
+                    border: 'var(--card-border, 1px solid #E3D6BF)',
+                    boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -1573,16 +1573,16 @@ export default function Home() {
           >
             <div className="container" style={{ maxWidth: '960px', margin: '0 auto', padding: '0 1rem' }}>
               <div
-                className="glass-card cta-card"
+                className="glass-card cta-card card-warm-beige"
                 style={{
                   padding: isMobile ? '3.5rem 1.5rem' : '5rem 2.5rem',
                   textAlign: 'center',
                   color: '#3A1F14',
                   position: 'relative',
                   borderRadius: '32px',
-                  border: '1.5px solid #E8D2B5',
-                  backgroundColor: '#F4EBDD',
-                  boxShadow: '0 12px 40px rgba(43, 20, 11, 0.08)',
+                  border: 'var(--card-border, 1px solid #E3D6BF)',
+                  backgroundColor: 'var(--card-bg, #F5EEE1)',
+                  boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))',
                   overflow: 'hidden',
                 }}
               >

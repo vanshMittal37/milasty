@@ -278,12 +278,12 @@ export default function Nutrition() {
           >
             <div
               style={{
-                backgroundColor: '#F4EBDD',
-                border: '1.5px solid #5C3A21',
+                backgroundColor: 'var(--card-bg, #F5EEE1)',
+                border: 'var(--card-border, 1px solid #E3D6BF)',
                 padding: '2rem 1.75rem',
                 borderRadius: '20px',
                 boxSizing: 'border-box',
-                boxShadow: '0 6px 20px rgba(75, 45, 25, 0.08)'
+                boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
@@ -298,12 +298,12 @@ export default function Nutrition() {
 
             <div
               style={{
-                backgroundColor: '#F4EBDD',
-                border: '1.5px solid #5C3A21',
+                backgroundColor: 'var(--card-bg, #F5EEE1)',
+                border: 'var(--card-border, 1px solid #E3D6BF)',
                 padding: '2rem 1.75rem',
                 borderRadius: '20px',
                 boxSizing: 'border-box',
-                boxShadow: '0 6px 20px rgba(75, 45, 25, 0.08)'
+                boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
@@ -318,12 +318,12 @@ export default function Nutrition() {
 
             <div
               style={{
-                backgroundColor: '#F4EBDD',
-                border: '1.5px solid #5C3A21',
+                backgroundColor: 'var(--card-bg, #F5EEE1)',
+                border: 'var(--card-border, 1px solid #E3D6BF)',
                 padding: '2rem 1.75rem',
                 borderRadius: '20px',
                 boxSizing: 'border-box',
-                boxShadow: '0 6px 20px rgba(75, 45, 25, 0.08)'
+                boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
@@ -338,12 +338,12 @@ export default function Nutrition() {
 
             <div
               style={{
-                backgroundColor: '#F4EBDD',
-                border: '1.5px solid #5C3A21',
+                backgroundColor: 'var(--card-bg, #F5EEE1)',
+                border: 'var(--card-border, 1px solid #E3D6BF)',
                 padding: '2rem 1.75rem',
                 borderRadius: '20px',
                 boxSizing: 'border-box',
-                boxShadow: '0 6px 20px rgba(75, 45, 25, 0.08)'
+                boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
@@ -370,7 +370,7 @@ export default function Nutrition() {
           </div>
 
           {/* DESKTOP TABLE VIEW */}
-          <div className="desktop-only-table" style={{ borderRadius: '24px', overflowX: 'auto', border: '1.5px solid #5C3A21', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.06)', backgroundColor: '#F4EBDD', maxWidth: '100%' }}>
+          <div className="desktop-only-table" style={{ borderRadius: '24px', overflowX: 'auto', border: 'var(--card-border, 1px solid #E3D6BF)', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))', backgroundColor: 'var(--card-bg, #F5EEE1)', maxWidth: '100%' }}>
             <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ backgroundColor: '#EFE4D4', borderBottom: '2px solid #5C3A21' }}>
@@ -380,7 +380,7 @@ export default function Nutrition() {
                   {dailyProducts.map((p, idx) => (
                     <th key={idx} style={{ padding: '1.75rem 1.5rem', verticalAlign: 'top', width: '26%' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <div style={{ width: '100px', height: '100px', borderRadius: '14px', overflow: 'hidden', border: '2px solid #5C3A21', backgroundColor: '#F4EBDD', boxShadow: '0 4px 12px rgba(75, 45, 25, 0.08)' }}>
+                        <div style={{ width: '100px', height: '100px', borderRadius: '14px', overflow: 'hidden', border: '1px solid #E3D6BF', backgroundColor: 'var(--card-inner-bg, #FBF7EF)', boxShadow: '0 4px 12px rgba(75, 45, 25, 0.08)' }}>
                           <img src={p.image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                         <div>
@@ -566,8 +566,8 @@ export default function Nutrition() {
                 <div
                   key={glanceIndex}
                   style={{
-                    backgroundColor: '#F4EBDD',
-                    border: '1.5px solid #5C3A21',
+                    backgroundColor: 'var(--card-bg, #F5EEE1)',
+                    border: 'var(--card-border, 1px solid #E3D6BF)',
                     borderRadius: '24px',
                     overflow: 'hidden',
                     width: '100%',
@@ -733,33 +733,33 @@ export default function Nutrition() {
                 </p>
 
                 <div className="grain-to-bake-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
-                  <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
+                  <div style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
                     <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>01</span>
                       <span>Ancient Grains</span>
                     </h4>
-                    <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Sourced native Bajra, Jowar, and Ragi flour.</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Sourced native Bajra, Jowar, and Ragi flour.</p>
                   </div>
-                  <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
+                  <div style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
                     <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>02</span>
                       <span>Selected Ingredients</span>
                     </h4>
-                    <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Pure cow Desi Ghee & unrefined organic jaggery.</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Pure cow Desi Ghee & unrefined organic jaggery.</p>
                   </div>
-                  <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
+                  <div style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
                     <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>03</span>
                       <span>Slow Baking</span>
                     </h4>
-                    <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Slow-baked in temperature-controlled oven bakes.</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Slow-baked in temperature-controlled oven bakes.</p>
                   </div>
-                  <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.25rem', borderRadius: '16px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
+                  <div style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
                     <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                       <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>04</span>
                       <span>Finished Bake</span>
                     </h4>
-                    <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>A crumbly, delicious, clean millet cookie.</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>A crumbly, delicious, clean millet cookie.</p>
                   </div>
                 </div>
               </div>
@@ -808,13 +808,13 @@ export default function Nutrition() {
             onTouchEnd={() => setIsIngredientsHovered(false)}
           >
             {whyIngredientsData.map((item, idx) => (
-              <div key={idx} style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box', boxShadow: '0 6px 20px rgba(75, 45, 25, 0.08)' }}>
+              <div key={idx} style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                   <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>0{idx + 1}</span>
                   {item.icon}
                 </div>
-                <h3 style={{ fontSize: '1.25rem', color: '#32180D', marginBottom: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>{item.title}</h3>
-                <p style={{ color: '#654B38', fontSize: '0.92rem', lineHeight: '1.7', margin: 0, fontWeight: '500' }}>
+                <h3 style={{ fontSize: '1.25rem', color: 'var(--text-heading, #2B2B2B)', marginBottom: '0.75rem', fontFamily: 'var(--font-serif)', fontWeight: '850' }}>{item.title}</h3>
+                <p style={{ color: 'var(--text-body, #5A5248)', fontSize: '0.92rem', lineHeight: '1.7', margin: 0, fontWeight: '500' }}>
                   {item.desc}
                 </p>
               </div>
@@ -951,21 +951,21 @@ export default function Nutrition() {
             </p>
 
             <div className="know-what-you-eat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '1.25rem', textAlign: 'left' }}>
-              <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
+              <div style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '1.5rem', borderRadius: '18px', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ingredient Transparency</h4>
-                <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Clear ingredient information on every pack.</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Clear ingredient information on every pack.</p>
               </div>
-              <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
+              <div style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '1.5rem', borderRadius: '18px', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Nutritional Info</h4>
-                <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Per 100g nutritional values clearly listed.</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Per 100g nutritional values clearly listed.</p>
               </div>
-              <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
+              <div style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '1.5rem', borderRadius: '18px', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Product Specific Data</h4>
-                <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Specific calculations shown for individual bakes.</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Specific calculations shown for individual bakes.</p>
               </div>
-              <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '1.5rem', borderRadius: '18px', boxShadow: '0 4px 14px rgba(75, 45, 25, 0.06)' }}>
+              <div style={{ backgroundColor: 'var(--card-bg, #F5EEE1)', border: 'var(--card-border, 1px solid #E3D6BF)', padding: '1.5rem', borderRadius: '18px', boxShadow: 'var(--card-shadow, 0 4px 20px rgba(90, 70, 40, 0.08))' }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: '850', color: '#2F6B3A', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Lab Reports</h4>
-                <p style={{ fontSize: '0.8rem', color: '#654B38', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Downloadable certified reports available.</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Downloadable certified reports available.</p>
               </div>
             </div>
           </div>
@@ -1003,13 +1003,13 @@ export default function Nutrition() {
               style={{
                 padding: '0.95rem 2.25rem',
                 fontSize: '0.92rem',
-                border: '1.5px solid #32180D',
+                border: '1.5px solid #E3D6BF',
                 color: '#32180D',
                 borderRadius: '999px',
                 fontWeight: '850',
                 textDecoration: 'none',
                 cursor: 'pointer',
-                backgroundColor: '#F4EBDD'
+                backgroundColor: 'var(--card-inner-bg, #FBF7EF)'
               }}
             >
               Learn About MILASTY
