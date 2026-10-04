@@ -72,8 +72,8 @@ export default function AdminCustomerList() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by customer name, email, or phone..."
-          className="admin-input"
-          style={{ paddingLeft: '2.5rem' }}
+          className="admin-input admin-search-input"
+          style={{ paddingLeft: '2.75rem' }}
         />
       </div>
 

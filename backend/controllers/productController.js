@@ -740,6 +740,11 @@ export const createProduct = async (req, res) => {
       console.warn('Category resolution warning:', err?.message);
     }
 
+    const finalPriceVal = Number(price !== undefined && price !== null ? price : (req.body.basePrice || req.body.base_price || 0));
+    const finalOrigPriceVal = Number(originalPrice !== undefined && originalPrice !== null ? originalPrice : (req.body.original_price || finalPriceVal));
+    const finalDiscType = req.body.discountType || req.body.discount_type || 'none';
+    const finalDiscVal = Number(req.body.discountValue !== undefined ? req.body.discountValue : req.body.discount_value) || 0;
+
     const insertPayload = {
       title: title.trim(),
       slug: finalSlug,
@@ -747,11 +752,21 @@ export const createProduct = async (req, res) => {
       description: description || '',
       category: resolvedCatSlug,
       category_id: resolvedCatId,
+      price: finalPriceVal,
+      original_price: finalOrigPriceVal,
+      base_price: finalPriceVal,
+      discount_type: finalDiscType,
+      discount_value: finalDiscVal,
       image_url: image || '',
       secondary_image_url: secondaryImage || '',
       lab_report_url: req.body.labReportUrl || req.body.lab_report_url || '',
       ingredients: parsedIngredients,
-      nutrition_facts: mergedNutritionFacts,
+      nutrition_facts: {
+        ...mergedNutritionFacts,
+        base_price: finalPriceVal,
+        discount_type: finalDiscType,
+        discount_value: finalDiscVal,
+      },
       badges: finalBadges,
       allergens: allergens || '',
       benefits: parsedBenefits,
@@ -956,11 +971,11 @@ export const updateProduct = async (req, res) => {
       console.warn('Category resolution warning on update:', err?.message);
     }
 
-    const basePriceVal = updates.basePrice !== undefined ? updates.basePrice : (updates.price !== undefined ? updates.price : undefined);
-    const priceVal = updates.price !== undefined ? Number(updates.price) : undefined;
-    const originalPriceVal = updates.originalPrice !== undefined ? Number(updates.originalPrice) : (priceVal !== undefined ? priceVal : undefined);
-    const discountTypeVal = updates.discountType || 'none';
-    const discountVal = updates.discountValue !== undefined ? Number(updates.discountValue) : 0;
+    const priceVal = updates.price !== undefined && updates.price !== null ? Number(updates.price) : undefined;
+    const originalPriceVal = updates.originalPrice !== undefined && updates.originalPrice !== null ? Number(updates.originalPrice) : (priceVal !== undefined ? priceVal : undefined);
+    const basePriceVal = priceVal !== undefined ? priceVal : (updates.basePrice !== undefined ? Number(updates.basePrice) : undefined);
+    const discountTypeVal = updates.discountType || updates.discount_type || 'none';
+    const discountVal = updates.discountValue !== undefined ? Number(updates.discountValue) : (updates.discount_value !== undefined ? Number(updates.discount_value) : 0);
 
     const updatePayload = {
       title: updates.title,
@@ -968,6 +983,11 @@ export const updateProduct = async (req, res) => {
       description: updates.description,
       category: resolvedCatSlug || updates.category,
       category_id: resolvedCatId,
+      price: priceVal,
+      original_price: originalPriceVal,
+      base_price: basePriceVal,
+      discount_type: discountTypeVal,
+      discount_value: discountVal,
       image_url: updates.image !== undefined ? updates.image : undefined,
       secondary_image_url: updates.secondaryImage !== undefined ? updates.secondaryImage : undefined,
       lab_report_url: updates.labReportUrl !== undefined ? updates.labReportUrl : (updates.lab_report_url !== undefined ? updates.lab_report_url : undefined),

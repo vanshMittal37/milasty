@@ -2741,22 +2741,7 @@ a {
   outline: none !important;
 }
 
-.nutrition-page table {
-  background: rgba(50, 26, 18, 0.75) !important;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--border-color) !important;
-}
 
-.nutrition-page th,
-.nutrition-page td {
-  color: var(--text-light) !important;
-  border-bottom: 1px solid var(--border-color) !important;
-}
-
-.nutrition-page th {
-  background-color: rgba(50, 26, 18, 0.90) !important;
-}
 
 select option {
   background-color: var(--bg-subtle) !important;
@@ -4571,7 +4556,10 @@ body.customer-portal-body .admin-search-bar {
   background: rgba(255, 255, 255, 0.92) !important;
   border: 1.5px solid rgba(207, 194, 181, 0.75) !important;
   border-radius: 10px !important;
-  padding: 0.55rem 0.9rem !important;
+  padding-top: 0.55rem !important;
+  padding-bottom: 0.55rem !important;
+  padding-right: 0.9rem !important;
+  padding-left: 0.9rem;
   font-size: 0.875rem !important;
   font-family: var(--font-sans) !important;
   font-weight: 500 !important;
@@ -4601,8 +4589,16 @@ body.customer-portal-body .admin-search-bar {
 div[style*="position: relative"] > .admin-input,
 div[style*="position: relative"] > input,
 div[style*="position:relative"] > input,
+div[style*="position:relative"] > .admin-input,
 .admin-search-wrap > input,
-.admin-search-bar {
+.admin-search-wrap > .admin-input,
+.admin-search-bar,
+.admin-search-input,
+input.admin-search-input,
+input[placeholder*="Search"],
+input[placeholder*="search"],
+input[placeholder*="Filter"],
+input[placeholder*="filter"] {
   border-radius: 999px !important;
   padding-left: 2.75rem !important;
 }

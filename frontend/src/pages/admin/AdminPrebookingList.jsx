@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Calendar, Search, RefreshCw, CheckCircle2, XCircle, Clock, Package, Upload } from 'lucide-react';
 import api from '../../api/axios';
@@ -108,8 +108,8 @@ export default function AdminPrebookingList() {
             placeholder="Search pre-booking products..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="admin-input"
-            style={{ paddingLeft: '2.4rem' }}
+            className="admin-input admin-search-input"
+            style={{ paddingLeft: '2.75rem' }}
           />
         </div>
       </div>

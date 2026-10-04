@@ -334,6 +334,8 @@ export default function ProductCard({ product }) {
                 prefix={product?.variants && product.variants.length > 1 ? 'From ' : ''}
                 price={cardPrice} 
                 originalPrice={cardOriginalPrice} 
+                discountType={product?.discountType || product?.discount_type}
+                discountValue={product?.discountValue !== undefined ? product?.discountValue : product?.discount_value}
                 size="small" 
               />
 

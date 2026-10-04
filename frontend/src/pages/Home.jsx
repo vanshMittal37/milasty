@@ -334,29 +334,7 @@ export default function Home() {
               Delicious cookies, crackers & brownies made with <strong>millets</strong>, <strong>jaggery & desi ghee</strong> — crafted for the way you snack today.
             </p>
 
-            {/* Rating & Social Proof */}
-            <div
-              style={{
-                marginBottom: '2rem',
-                display: 'inline-flex',
-                gap: '0.6rem',
-                alignItems: 'center',
-                fontSize: '0.88rem',
-                color: '#3A1F14',
-                fontWeight: '700',
-                flexWrap: 'wrap',
-                justifyContent: isMobile ? 'center' : 'flex-start',
-              }}
-            >
-              <div style={{ display: 'flex', color: '#1F6B35' }}>
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={16} fill="#1F6B35" color="#1F6B35" />
-                ))}
-              </div>
-              <span style={{ fontWeight: '800', color: '#3A1F14' }}>4.9/5</span>
-              <span style={{ color: '#A08670' }}>|</span>
-              <span style={{ color: '#5C3A21', textDecoration: 'underline' }}>Loved by 10,000+ Conscious Snackers</span>
-            </div>
+
 
             {/* Hero CTAs */}
             <div

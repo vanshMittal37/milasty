@@ -3,10 +3,14 @@ import React from 'react';
 export default function PriceDisplay({
   price,
   originalPrice,
+  discountType,
+  discountValue,
+  discountLabel: customLabel,
   size = 'medium',
   className = '',
   style = {},
   prefix = '',
+  showBadge = true,
 }) {
   const currentPrice = Number(price || 0);
   const origPrice = Number(originalPrice || 0);
@@ -20,13 +24,26 @@ export default function PriceDisplay({
 
   const sizes = fontSizes[size] || fontSizes.medium;
 
+  const discountTag = (() => {
+    if (customLabel) return customLabel;
+    if (discountType === 'percentage' && Number(discountValue) > 0) return `${discountValue}% OFF`;
+    if (discountType === 'fixed' && Number(discountValue) > 0) return `₹${discountValue} OFF`;
+    if (hasDiscount && origPrice > 0) {
+      const diff = origPrice - currentPrice;
+      const pct = Math.round((diff / origPrice) * 100);
+      return pct > 0 ? `${pct}% OFF` : `₹${diff} OFF`;
+    }
+    return null;
+  })();
+
   return (
     <div
       className={className}
       style={{
         display: 'inline-flex',
-        alignItems: 'baseline',
-        gap: '0.5rem',
+        alignItems: 'center',
+        gap: '0.45rem',
+        flexWrap: 'wrap',
         ...style,
       }}
     >
@@ -49,6 +66,23 @@ export default function PriceDisplay({
           }}
         >
           ₹{origPrice}
+        </span>
+      )}
+      {showBadge && hasDiscount && discountTag && (
+        <span
+          style={{
+            fontSize: '0.68rem',
+            color: '#2F6B3A',
+            backgroundColor: '#E3EEDC',
+            border: '1px solid rgba(47, 107, 58, 0.25)',
+            padding: '0.12rem 0.4rem',
+            borderRadius: '4px',
+            fontWeight: '850',
+            whiteSpace: 'nowrap',
+            lineHeight: '1.1',
+          }}
+        >
+          {discountTag}
         </span>
       )}
     </div>

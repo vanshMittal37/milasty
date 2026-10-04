@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Tags, RefreshCw, Upload, Image as ImageIcon, Edit3, ShieldAlert, CheckCircle, Package, Layers, X, Search, Check } from 'lucide-react';
 import api from '../../api/axios';
 import ConfirmationModal from '../../components/ConfirmationModal';
@@ -375,8 +375,8 @@ export default function AdminCategories() {
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
                   placeholder="Search products..."
-                  className="admin-input"
-                  style={{ paddingLeft: '30px', fontSize: '0.78rem', padding: '0.4rem 0.6rem 0.4rem 30px' }}
+                  className="admin-input admin-search-input"
+                  style={{ fontSize: '0.78rem', padding: '0.45rem 0.75rem 0.45rem 2.5rem' }}
                 />
               </div>
 
@@ -652,8 +652,8 @@ export default function AdminCategories() {
                     value={editProductSearch}
                     onChange={(e) => setEditProductSearch(e.target.value)}
                     placeholder="Search products..."
-                    className="admin-input"
-                    style={{ paddingLeft: '30px', fontSize: '0.78rem', padding: '0.4rem 0.6rem 0.4rem 30px' }}
+                    className="admin-input admin-search-input"
+                    style={{ fontSize: '0.78rem', padding: '0.45rem 0.75rem 0.45rem 2.5rem' }}
                   />
                 </div>
 

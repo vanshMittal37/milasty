@@ -261,6 +261,27 @@ export default function ProductDetail() {
   const hasDiscount = currentOriginalPrice > currentPrice;
   const discountPercent = hasDiscount ? Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100) : 0;
 
+  const discountBadgeText = (() => {
+    const discType = product?.discountType || product?.discount_type;
+    const discVal = Number(product?.discountValue !== undefined ? product?.discountValue : product?.discount_value);
+
+    if (discType === 'percentage' && discVal > 0) {
+      return `${discVal}% OFF`;
+    }
+    if (discType === 'fixed' && discVal > 0) {
+      return `₹${discVal} OFF`;
+    }
+
+    if (hasDiscount && currentOriginalPrice > 0) {
+      const diff = currentOriginalPrice - currentPrice;
+      const pct = Math.round((diff / currentOriginalPrice) * 100);
+      if (pct > 0) return `${pct}% OFF`;
+      return `₹${diff} OFF`;
+    }
+
+    return null;
+  })();
+
   const wishlisted = isInWishlist(product._id || product.id || product.slug);
 
   const handleQuantityIncrease = () => {
@@ -748,13 +769,32 @@ export default function ProductDetail() {
             )}
 
             {/* Price Section */}
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.85rem', marginTop: '0.5rem', marginBottom: '0.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginTop: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '2rem', fontWeight: '900', color: '#32180D' }}>
                 ₹{currentPrice}
               </span>
               {hasDiscount && (
                 <span style={{ fontSize: '1.2rem', color: '#806A57', textDecoration: 'line-through', fontWeight: '600' }}>
                   ₹{currentOriginalPrice}
+                </span>
+              )}
+              {discountBadgeText && (
+                <span
+                  style={{
+                    backgroundColor: '#2F6B3A',
+                    color: '#FFFFFF',
+                    padding: '0.3rem 0.75rem',
+                    borderRadius: '999px',
+                    fontSize: '0.82rem',
+                    fontWeight: '850',
+                    letterSpacing: '0.04em',
+                    boxShadow: '0 2px 8px rgba(47, 107, 58, 0.25)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.25rem'
+                  }}
+                >
+                  🏷️ {discountBadgeText}
                 </span>
               )}
             </div>

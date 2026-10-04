@@ -628,26 +628,60 @@ export default function AdminProductForm() {
     setFormData({ ...formData, variants: updated });
   };
 
-  const calculatedFinalPrice = (() => {
-    const base = Number(formData.price) || 0;
-    const val = Number(formData.discountValue) || 0;
-    if (formData.discountType === 'percentage' && val > 0) {
-      return Math.max(0, Math.round(base * (1 - val / 100)));
-    } else if (formData.discountType === 'fixed' && val > 0) {
-      return Math.max(0, base - val);
+  const computeBasePrice = (origPrice, discType, discVal) => {
+    const orig = parseFloat(origPrice);
+    if (isNaN(orig) || orig <= 0) return '';
+
+    const val = parseFloat(discVal) || 0;
+    let finalPrice = orig;
+
+    if (discType === 'percentage' && val > 0) {
+      finalPrice = orig - (orig * val / 100);
+    } else if (discType === 'fixed' && val > 0) {
+      finalPrice = orig - val;
     }
-    return base;
+
+    finalPrice = Math.max(0, Math.round(finalPrice * 100) / 100);
+    return finalPrice.toString();
+  };
+
+  const handleOriginalPriceChange = (val) => {
+    const newPrice = computeBasePrice(val, formData.discountType, formData.discountValue);
+    setFormData((prev) => ({
+      ...prev,
+      originalPrice: val,
+      price: newPrice,
+    }));
+  };
+
+  const handleDiscountTypeChange = (type) => {
+    const newPrice = computeBasePrice(formData.originalPrice, type, formData.discountValue);
+    setFormData((prev) => ({
+      ...prev,
+      discountType: type,
+      price: newPrice,
+    }));
+  };
+
+  const handleDiscountValueChange = (val) => {
+    const newPrice = computeBasePrice(formData.originalPrice, formData.discountType, val);
+    setFormData((prev) => ({
+      ...prev,
+      discountValue: val,
+      price: newPrice,
+    }));
+  };
+
+  const calculatedFinalPrice = (() => {
+    const base = Number(formData.price);
+    if (!isNaN(base) && base >= 0) return base;
+    return Number(formData.originalPrice) || 0;
   })();
 
   const calculatedOriginalPrice = (() => {
     const orig = Number(formData.originalPrice);
     if (!isNaN(orig) && orig > 0) return orig;
-    const base = Number(formData.price) || 0;
-    const val = Number(formData.discountValue) || 0;
-    if ((formData.discountType === 'percentage' || formData.discountType === 'fixed') && val > 0) {
-      return base;
-    }
-    return base;
+    return Number(formData.price) || 0;
   })();
 
   const handleSubmit = async (e) => {
@@ -1559,26 +1593,13 @@ export default function AdminProductForm() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem' }}>
                 <div>
                   <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
-                    Base Price (₹)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    placeholder="e.g. 99"
-                    className="admin-input"
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     Original Price / MRP (₹)
                   </label>
                   <input
                     type="number"
                     value={formData.originalPrice}
-                    onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
-                    placeholder="e.g. 120"
+                    onChange={(e) => handleOriginalPriceChange(e.target.value)}
+                    placeholder="e.g. 290"
                     className="admin-input"
                   />
                 </div>
@@ -1589,7 +1610,7 @@ export default function AdminProductForm() {
                   </label>
                   <select
                     value={formData.discountType}
-                    onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
+                    onChange={(e) => handleDiscountTypeChange(e.target.value)}
                     className="admin-input"
                   >
                     <option value="none">No Discount</option>
@@ -1605,9 +1626,25 @@ export default function AdminProductForm() {
                   <input
                     type="number"
                     value={formData.discountValue}
-                    onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
+                    onChange={(e) => handleDiscountValueChange(e.target.value)}
                     placeholder="0"
                     className="admin-input"
+                    disabled={formData.discountType === 'none'}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#2F6B3A', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                    <span>Base Price / Selling Price (₹)</span>
+                    <span style={{ fontSize: '0.62rem', backgroundColor: '#E3EEDC', color: '#2F6B3A', padding: '0.15rem 0.4rem', borderRadius: '4px', fontWeight: '800' }}>AUTO-CALCULATED</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.price}
+                    readOnly
+                    placeholder="Auto-calculated"
+                    className="admin-input"
+                    style={{ backgroundColor: 'rgba(231, 222, 213, 0.4)', cursor: 'not-allowed', fontWeight: '850', color: '#2F6B3A' }}
                   />
                 </div>
               </div>

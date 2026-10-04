@@ -681,8 +681,8 @@ export default function AdminProductDiscovery() {
                       placeholder="Search products..."
                       value={productSearch}
                       onChange={e => setProductSearch(e.target.value)}
-                      className="admin-input"
-                      style={{ paddingLeft: '2.5rem !important' }}
+                      className="admin-input admin-search-input"
+                      style={{ paddingLeft: '2.5rem' }}
                     />
                   </div>
                 </div>

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Search, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
@@ -77,8 +77,8 @@ export default function AdminProductList() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search products by title, subtitle, or slug..."
-            className="admin-input"
-            style={{ paddingLeft: '2.5rem' }}
+            className="admin-input admin-search-input"
+            style={{ paddingLeft: '2.75rem' }}
           />
         </div>
       </div>
