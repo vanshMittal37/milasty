@@ -736,7 +736,8 @@ export const bookShiprathShipment = async (order) => {
  */
 export const bookShipmentForOrder = async (req, res) => {
   try {
-    const { orderId } = req.body;
+    // Supports both /shipping/book (body.orderId) and /orders/admin/:id/book-shipment (params.id)
+    const orderId = req.params.id || req.body.orderId;
     if (!orderId) {
       return res.status(400).json({ success: false, message: 'orderId is required.' });
     }
@@ -756,6 +757,7 @@ export const bookShipmentForOrder = async (req, res) => {
         success: false,
         message: result?.error || 'Shiprath booking failed.',
         raw: result?.raw || null,
+        courierFailures: result?.courierFailures || [],
       });
     }
 

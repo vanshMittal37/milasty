@@ -1,27 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle2, ArrowRight, Truck, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Truck, ShieldCheck, Navigation } from 'lucide-react';
 import api from '../api/axios';
 
 export default function OrderSuccessPage() {
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const pollRef = useRef(null);
+  const pollCount = useRef(0);
 
   useEffect(() => {
     fetchOrderDetails();
+    return () => { if (pollRef.current) clearTimeout(pollRef.current); };
   }, [orderId]);
 
   const fetchOrderDetails = async () => {
     try {
       const res = await api.get(`/orders/detail/${orderId}`);
-      setOrder(res.data);
+      const fetched = res.data;
+      setOrder(fetched);
+      // If AWB not yet assigned, poll a few more times to catch fast Shiprath bookings
+      if (!fetched?.awb_number && !fetched?.awb && pollCount.current < 3) {
+        pollCount.current += 1;
+        pollRef.current = setTimeout(fetchOrderDetails, 3000);
+      }
     } catch (err) {
       console.error('Error fetching order details:', err);
     } finally {
       setLoading(false);
     }
   };
+
 
   const formattedAddressString = typeof order?.shippingAddress === 'object' && order?.shippingAddress !== null
     ? [order.shippingAddress.building, order.shippingAddress.addressLine, order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.pincode].filter(Boolean).join(', ')
@@ -167,6 +177,25 @@ export default function OrderSuccessPage() {
                     {formattedAddressString}
                   </span>
                 </div>
+
+                {/* Shipment status */}
+                {(order.awb_number || order.awb) ? (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
+                    <span style={{ color: '#6B584C', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Navigation size={14} style={{ color: '#2F6B3A' }} /> Courier AWB:
+                    </span>
+                    <span style={{ fontWeight: '800', color: '#2F6B3A', fontFamily: 'monospace' }}>
+                      {order.awb_number || order.awb}
+                      {order.courier_name && <span style={{ fontFamily: 'sans-serif', fontWeight: '600', color: '#6B584C', fontSize: '0.8rem', marginLeft: '0.4rem' }}>({order.courier_name})</span>}
+                    </span>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.85rem' }}>
+                    <span style={{ color: '#6B584C', fontWeight: '600' }}>Shipment:</span>
+                    <span style={{ fontWeight: '600', color: '#B7791F', fontSize: '0.82rem' }}>Being arranged…</span>
+                  </div>
+                )}
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.4rem', fontSize: '1.1rem', fontWeight: '900', color: '#2B140B' }}>
                   <span>Total Amount:</span>
                   <span>₹{order.totalAmount || order.grandTotal || 0}</span>

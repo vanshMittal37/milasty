@@ -562,6 +562,13 @@ export const formatOrderPayload = (o) => {
     special_instructions: notesFromOrder,
     items: formattedItems,
     order_items: formattedItems,
+    // ── Shiprath shipment fields — explicitly preserved ──
+    awb_number: o.awb_number || o.awb || null,
+    awb: o.awb_number || o.awb || null,
+    shipment_id: o.shipment_id || null,
+    courier_name: o.courier_name || null,
+    tracking_url: o.tracking_url || (o.awb_number ? `https://backend.shiprath.com/tracking/${o.awb_number}` : null),
+    shipmentBooked: Boolean(o.awb_number || o.awb),
   };
 };
 

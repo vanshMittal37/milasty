@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, RefreshCw, Eye, ArrowUpRight, X, Package, CreditCard, MapPin, User, Mail, Phone, Calendar, CheckCircle, Clock, Sparkles, Printer, Zap, ExternalLink, Truck } from 'lucide-react';
+import { Search, Filter, RefreshCw, Eye, X, Package, CreditCard, MapPin, User, Mail, Phone, Sparkles, Printer, Zap, ExternalLink, Truck, CheckCircle2, AlertCircle } from 'lucide-react';
 import api from '../../api/axios';
 
 const STAGES = ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'];
@@ -21,10 +21,12 @@ export default function AdminOrderList() {
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
   const [customizationFilter, setCustomizationFilter] = useState('');
+  const [shipmentFilter, setShipmentFilter] = useState('');
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showPrintView, setShowPrintView] = useState(false);
   const [bookingShipment, setBookingShipment] = useState(false);
+  const [bookingOrderId, setBookingOrderId] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -85,30 +87,42 @@ export default function AdminOrderList() {
 
   const handleBookShipment = async (orderId) => {
     setBookingShipment(true);
+    setBookingOrderId(orderId);
     try {
-      const res = await api.post('/shipping/book', { orderId });
-      if (res.data?.success || res.data?.awb || res.data?.awb_number) {
+      // Use route-param endpoint (auth-protected, also accepts body for legacy)
+      const res = await api.post(`/orders/admin/${orderId}/book-shipment`, {});
+      if (res.data?.success && (res.data?.awb || res.data?.awb_number)) {
         const awbVal = res.data.awb || res.data.awb_number;
-        alert(`Shipment booked successfully with Shiprath!\nAWB Number: ${awbVal}`);
-        fetchOrders();
-        if (selectedOrder) {
+        const courierName = res.data.courier_name || 'Shiprath Partner';
+        // Update list and modal optimistically
+        setOrders(prev => prev.map(o =>
+          (o.id === orderId || o._id === orderId)
+            ? { ...o, awb_number: awbVal, awb: awbVal, courier_name: courierName, orderStatus: 'Shipped', status: 'Shipped' }
+            : o
+        ));
+        if (selectedOrder && (selectedOrder.id === orderId || selectedOrder._id === orderId)) {
           setSelectedOrder(prev => ({
             ...prev,
             awb_number: awbVal,
             awb: awbVal,
-            courier_name: res.data.courier_name || res.data.courierName || 'Shiprath Partner',
+            courier_name: courierName,
             tracking_url: res.data.tracking_url,
             orderStatus: 'Shipped',
             status: 'Shipped',
           }));
         }
+        alert(`✅ Shipment booked!\nAWB: ${awbVal}\nCourier: ${courierName}`);
       } else {
-        alert(res.data?.message || res.data?.error || 'Failed to book shipment with Shiprath.');
+        const failures = res.data?.courierFailures || [];
+        const msg = res.data?.message || 'Shiprath could not book any courier for this order.';
+        alert(`❌ Booking failed:\n${msg}${failures.length ? '\n\nCourier attempts:\n' + failures.join('\n') : ''}`);
       }
     } catch (err) {
-      alert(err.response?.data?.message || err.message || 'Error booking shipment with Shiprath.');
+      const msg = err.response?.data?.message || err.message || 'Error booking shipment.';
+      alert(`❌ ${msg}`);
     } finally {
       setBookingShipment(false);
+      setBookingOrderId(null);
     }
   };
 
@@ -154,6 +168,24 @@ export default function AdminOrderList() {
       const isCustomized = customizedCount > 0 || hasNotesOnOrder;
       if (customizationFilter === 'customized' && !isCustomized) return false;
       if (customizationFilter === 'not_customized' && isCustomized) return false;
+    }
+
+    // Shipment filter
+    if (shipmentFilter) {
+      const hasAwb = Boolean(o.awb_number || o.awb);
+      if (shipmentFilter === 'booked' && !hasAwb) return false;
+      if (shipmentFilter === 'pending' && hasAwb) return false;
+    }
+
+    // Text search (client-side)
+    if (search) {
+      const q = search.toLowerCase();
+      const orderNum = (o.orderNumber || o.orderId || '').toLowerCase();
+      const name = (o.customerName || '').toLowerCase();
+      const email = (o.customerEmail || '').toLowerCase();
+      const phone = (o.customerPhone || '').toLowerCase();
+      const awb = (o.awb_number || o.awb || '').toLowerCase();
+      if (!orderNum.includes(q) && !name.includes(q) && !email.includes(q) && !phone.includes(q) && !awb.includes(q)) return false;
     }
 
     return true;
@@ -243,6 +275,21 @@ export default function AdminOrderList() {
             <option value="not_customized">No Customization</option>
           </select>
         </div>
+
+        {/* Shipment Filter */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <Truck size={15} color="#665A52" />
+          <select
+            value={shipmentFilter}
+            onChange={(e) => setShipmentFilter(e.target.value)}
+            className="admin-input"
+            style={{ width: 'auto', paddingRight: '2rem' }}
+          >
+            <option value="">All Shipments</option>
+            <option value="booked">AWB Booked ✅</option>
+            <option value="pending">Awaiting Shipment ⚠️</option>
+          </select>
+        </div>
       </div>
 
       {/* Main Orders Table */}
@@ -259,11 +306,10 @@ export default function AdminOrderList() {
                 <th>Order #</th>
                 <th>Customer</th>
                 <th>Delivery Location</th>
-                <th>Payment Method</th>
-                <th>Payment Status</th>
+                <th>Payment</th>
                 <th>Amount</th>
-                <th>Customization</th>
-                <th>Lifecycle Status</th>
+                <th>Shipment / AWB</th>
+                <th>Status</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
@@ -312,35 +358,27 @@ export default function AdminOrderList() {
                         • Fee: {Number(fee) === 0 ? <strong style={{ color: '#22c55e' }}>FREE</strong> : `₹${fee}`}
                       </div>
                     </td>
-                    <td style={{ fontSize: '0.82rem', fontWeight: '600', color: '#4A3B2E' }}>
-                      {payMethod}
-                    </td>
                     <td>
-                      <span className={`admin-badge ${payStatus === 'paid' ? 'admin-badge-success' : 'admin-badge-warning'}`}>
-                        {payStatus === 'paid' ? 'Paid' : 'Pending'}
+                      <div style={{ fontSize: '0.82rem', fontWeight: '600', color: '#4A3B2E' }}>{payMethod}</div>
+                      <span className={`admin-badge ${payStatus === 'paid' ? 'admin-badge-success' : 'admin-badge-warning'}`} style={{ fontSize: '0.72rem' }}>
+                        {payStatus === 'paid' ? '✓ Paid' : 'Pending'}
                       </span>
                     </td>
                     <td style={{ fontWeight: '800', color: '#21150F' }}>
                       ₹{total.toLocaleString('en-IN')}
                     </td>
                     <td>
-                      {customizedCount > 0 ? (
-                        <span className="admin-badge" style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          background: 'rgba(217, 119, 6, 0.15)',
-                          color: '#f59e0b',
-                          border: '1px solid rgba(217, 119, 6, 0.3)',
-                          fontSize: '0.75rem',
-                          fontWeight: '700',
-                        }}>
-                          <Sparkles size={11} />
-                          ✦ {customizedCount} Customized Item{customizedCount > 1 ? 's' : ''}
-                        </span>
+                      {(o.awb_number || o.awb) ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', fontWeight: '800', color: '#2F7D32', background: 'rgba(34,197,94,0.1)', padding: '0.15rem 0.45rem', borderRadius: '4px' }}>
+                            <CheckCircle2 size={11} /> AWB Booked
+                          </span>
+                          <code style={{ fontSize: '0.72rem', color: '#381423', fontFamily: 'monospace', letterSpacing: '0.03em' }}>{o.awb_number || o.awb}</code>
+                          {o.courier_name && <span style={{ fontSize: '0.68rem', color: '#665A52' }}>{o.courier_name}</span>}
+                        </div>
                       ) : (
-                        <span style={{ fontSize: '0.75rem', color: '#665A52' }}>
-                          No Customization
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', fontWeight: '700', color: '#B7791F', background: 'rgba(234,179,8,0.1)', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                          <AlertCircle size={11} /> Not Booked
                         </span>
                       )}
                     </td>
@@ -350,7 +388,7 @@ export default function AdminOrderList() {
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap' }}>
                         <button
                           onClick={() => setSelectedOrder(o)}
                           className="admin-btn-secondary"
@@ -360,6 +398,18 @@ export default function AdminOrderList() {
                           <Eye size={13} />
                           <span>View</span>
                         </button>
+                        {!(o.awb_number || o.awb) && (
+                          <button
+                            onClick={() => handleBookShipment(o.id || o._id)}
+                            disabled={bookingShipment && bookingOrderId === (o.id || o._id)}
+                            className="admin-btn-secondary"
+                            style={{ padding: '0.3rem 0.6rem', fontSize: '0.72rem', background: '#381423', color: '#D4AF37', border: 'none', opacity: (bookingShipment && bookingOrderId === (o.id || o._id)) ? 0.6 : 1 }}
+                            title="Book Shiprath courier"
+                          >
+                            <Truck size={12} />
+                            <span>{(bookingShipment && bookingOrderId === (o.id || o._id)) ? 'Booking…' : 'Ship'}</span>
+                          </button>
+                        )}
                         <select
                           value={displayStatus}
                           onChange={(e) => handleStatusChange(o.id || o._id, e.target.value)}

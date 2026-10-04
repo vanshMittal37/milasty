@@ -8,6 +8,7 @@ import {
   updateOrderStatus,
   getAdminAnalytics,
 } from '../controllers/orderController.js';
+import { bookShipmentForOrder } from '../controllers/shipratController.js';
 import { protect, adminOnly, optionalProtect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -22,5 +23,8 @@ router.put('/:id/cancel', protect, cancelOrder);
 router.get('/admin/analytics', protect, adminOnly, getAdminAnalytics);
 router.get('/admin/all', protect, adminOnly, getAllOrders);
 router.put('/admin/:id/status', protect, adminOnly, updateOrderStatus);
+// Admin: manually retrigger Shiprath booking for an unshipped confirmed order
+router.post('/admin/:id/book-shipment', protect, adminOnly, bookShipmentForOrder);
 
 export default router;
+
