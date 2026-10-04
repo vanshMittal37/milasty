@@ -64,14 +64,34 @@ export async function fetchLiveShiprathRate({ pincode, items = [], weight = null
   const calculatedWeight = weight ? Number(weight) : calculateItemsWeightKg(items);
 
   const payload = {
+    // Warehouse / Pickup Address
     address_id: WAREHOUSE_ADDRESS_ID,
+    pickup_address_id: WAREHOUSE_ADDRESS_ID,
+    pickup_pincode: WAREHOUSE_PINCODE,
+    origin_pincode: WAREHOUSE_PINCODE,
+
+    // Destination Pincode
     destination_pincode: cleanPincode,
+    delivery_pincode: cleanPincode,
+    consignee_pincode: cleanPincode,
+    pincode: cleanPincode,
+
+    // Physical Package Specs
     weight: calculatedWeight,
     length: Number(length || 10),
     breadth: Number(breadth || 10),
+    width: Number(breadth || 10),
     height: Number(height || 10),
+
+    // Valuation
     declared_value: Number(declaredValue || 200),
-    payment_mode: 'prepaid', // MILASTY is prepaid only
+    invoice_value: Number(declaredValue || 200),
+    order_amount: Number(declaredValue || 200),
+
+    // Payment Mode (MILASTY is prepaid only)
+    payment_mode: 'prepaid',
+    payment_type: 'prepaid',
+    is_cod: 0,
     cod_amount: 0,
   };
 
@@ -82,6 +102,7 @@ export async function fetchLiveShiprathRate({ pincode, items = [], weight = null
   });
 
   const data = await response.json();
+
 
   if (!response.ok || !data.status) {
     console.error('[SHIPRATH API ERROR]', data);
@@ -215,13 +236,28 @@ export const checkShiprathConnection = async (req, res) => {
     try {
       const pingPayload = {
         address_id: WAREHOUSE_ADDRESS_ID,
+        pickup_address_id: WAREHOUSE_ADDRESS_ID,
+        pickup_pincode: WAREHOUSE_PINCODE,
+        origin_pincode: WAREHOUSE_PINCODE,
+
         destination_pincode: '110001',
+        delivery_pincode: '110001',
+        consignee_pincode: '110001',
+        pincode: '110001',
+
         weight: 0.5,
         length: 10,
         breadth: 10,
+        width: 10,
         height: 10,
-        declared_value: 100,
+
+        declared_value: 200,
+        invoice_value: 200,
+        order_amount: 200,
+
         payment_mode: 'prepaid',
+        payment_type: 'prepaid',
+        is_cod: 0,
         cod_amount: 0,
       };
 
@@ -232,7 +268,10 @@ export const checkShiprathConnection = async (req, res) => {
       });
 
       const pingData = await pingRes.json();
+      console.log('[SHIPRATH PING RESPONSE]', pingRes.status, pingData);
+
       const isConnected = pingRes.ok && (pingData.status === true || (pingData.rate_list && pingData.rate_list.length > 0));
+
 
       let responseMsg = 'Connected to Shiprath B2C Shipping Network';
       if (!isConnected) {
@@ -778,7 +817,7 @@ export const diagnoseCredentials = async (req, res) => {
     });
   }
 
-  // Make the live Shiprath rate API call using TRIMMED values
+  // Make the live Shiprath rate API call using TRIMMED values and full parameter set
   let apiTest = null;
   try {
     const pingRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_rate_time`, {
@@ -790,13 +829,28 @@ export const diagnoseCredentials = async (req, res) => {
       },
       body: JSON.stringify({
         address_id: WAREHOUSE_ADDRESS_ID,
+        pickup_address_id: WAREHOUSE_ADDRESS_ID,
+        pickup_pincode: WAREHOUSE_PINCODE,
+        origin_pincode: WAREHOUSE_PINCODE,
+
         destination_pincode: '110001',
+        delivery_pincode: '110001',
+        consignee_pincode: '110001',
+        pincode: '110001',
+
         weight: 0.5,
         length: 10,
         breadth: 10,
+        width: 10,
         height: 10,
+
         declared_value: 200,
+        invoice_value: 200,
+        order_amount: 200,
+
         payment_mode: 'prepaid',
+        payment_type: 'prepaid',
+        is_cod: 0,
         cod_amount: 0,
       }),
     });
@@ -808,7 +862,8 @@ export const diagnoseCredentials = async (req, res) => {
       httpStatus: pingRes.status,
       shiprathStatus: pingData.status,
       shiprathMessage: pingData.message || null,
-      rateCount: Array.isArray(pingData.rate_list) ? pingData.rate_list.length : 0,
+      rateCount: Array.isArray(pingData.rate_list) ? pingData.rate_list.length : (Array.isArray(pingData.data) ? pingData.data.length : 0),
+      rawResponse: pingData,
       connected: isConnected,
     };
 
@@ -826,5 +881,6 @@ export const diagnoseCredentials = async (req, res) => {
       conclusion: `FAIL — Network error calling Shiprath API: ${err.message}`,
     });
   }
+
 };
 
