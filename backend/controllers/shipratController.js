@@ -360,8 +360,10 @@ export const bookShiprathShipment = async (order) => {
     const items = order.order_items || order.items || [];
     const declaredValue = Number(order.grand_total || order.subtotal || 200);
 
-    // Carriers known to have very low weight limits (< 500g) — skip them
-    const BLACKLISTED_CARRIERS = ['fl', 'flash', 'flash express'];
+    // Carriers known to have very low weight limits (< 500g) — skip them by name/id
+    const BLACKLISTED_CARRIERS = ['fl', 'flash', 'flash express', 'flashexpress', 'flash_express'];
+    // Dynamic skip set — grows if a carrier rejects with a weight error
+    const weightErrorCarriers = new Set();
 
     // ── Build payload fields ───────────────────────────────────────────────
     const fullAddr = String(order.shipping_address || '');
@@ -440,18 +442,29 @@ export const bookShiprathShipment = async (order) => {
       }
 
       // Filter out blacklisted low-weight-limit carriers
+      // Note: If only FL is returned (very common for certain pincodes), skip this tier entirely
       const filteredRates = candidateRates.filter((r) => {
-        const name = String(r.service_name || r.service_provider || '').toLowerCase();
-        return !BLACKLISTED_CARRIERS.some((bl) => name.includes(bl));
+        const name = String(r.service_name || r.service_provider || r.carrier_name || r.courier_name || '').toLowerCase();
+        const carrierId = String(r.carrier_id || '').toLowerCase();
+        return !BLACKLISTED_CARRIERS.some((bl) => name.includes(bl) || carrierId === bl);
       });
 
-      // If all are blacklisted, use original list as fallback
-      const ratesToTry = filteredRates.length > 0 ? filteredRates : candidateRates;
+      // If all carriers were blacklisted for this weight tier, skip to the next tier
+      if (filteredRates.length === 0) {
+        console.warn(`[SHIPRATH BOOK] All ${candidateRates.length} carrier(s) for weight ${weightKg}kg are blacklisted (names: ${candidateRates.map(r => r.service_name).join(', ')}). Trying next tier.`);
+        lastErrorMsg = `No suitable courier available for this shipment — carrier "${candidateRates[0]?.service_name || 'Unknown'}" is not supported. Contact support.`;
+        continue;
+      }
 
-      console.log(`[SHIPRATH BOOK] Trying ${ratesToTry.length} carrier(s) with weight ${weightKg}kg`);
+      console.log(`[SHIPRATH BOOK] Trying ${filteredRates.length} non-blacklisted carrier(s) with weight ${weightKg}kg`);
 
-      for (const candidateRate of ratesToTry) {
+      for (const candidateRate of filteredRates) {
         const courierLabel = candidateRate.service_name || candidateRate.service_provider || 'Unknown';
+        // Skip carriers that failed on weight in a previous tier
+        if (weightErrorCarriers.has(courierLabel.toLowerCase())) {
+          console.warn(`[SHIPRATH BOOK] Skipping ${courierLabel} — previously rejected on weight`);
+          continue;
+        }
         console.log(`[SHIPRATH BOOK] Attempting courier: ${courierLabel}`);
 
         const bookingPayload = {
@@ -572,6 +585,12 @@ export const bookShiprathShipment = async (order) => {
           } else {
             lastErrorMsg = resData.message || 'Carrier booking error';
             console.warn(`[SHIPRATH BOOK] ❌ ${courierLabel} rejected: ${lastErrorMsg}`);
+            // If carrier rejected due to weight, remember it so we never retry it
+            const msgLower = String(lastErrorMsg).toLowerCase();
+            if (msgLower.includes('weight') || msgLower.includes('maximum') || msgLower.includes('limit')) {
+              weightErrorCarriers.add(courierLabel.toLowerCase());
+              console.warn(`[SHIPRATH BOOK] Added ${courierLabel} to weight-error skip set`);
+            }
           }
         } catch (cErr) {
           console.error(`[SHIPRATH BOOK] Exception with ${courierLabel}:`, cErr.message);
