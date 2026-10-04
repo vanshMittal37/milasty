@@ -67,51 +67,26 @@ export async function fetchLiveShiprathRate({ pincode, items = [], weight = null
   const customerId = (process.env.SHIPRATH_CUSTOMER_ID || '').trim();
 
   const payload = {
-    // Credentials in body (some Shiprath gateways validate both headers and body)
-    customer_id: customerId,
-    customerid: customerId,
-    secret_key: secretKey,
-    secretkey: secretKey,
-
-    // Warehouse / Pickup Address
-    address_id: WAREHOUSE_ADDRESS_ID,
-    pickup_address_id: WAREHOUSE_ADDRESS_ID,
-    pickup_pincode: WAREHOUSE_PINCODE,
-    origin_pincode: WAREHOUSE_PINCODE,
-    from_pincode: WAREHOUSE_PINCODE,
-
-    // Destination Pincode
-    destination_pincode: cleanPincode,
-    delivery_pincode: cleanPincode,
-    consignee_pincode: cleanPincode,
-    to_pincode: cleanPincode,
-    pincode: cleanPincode,
-
-    // Physical Package Specs
+    from_postal_code: WAREHOUSE_PINCODE,
+    from_country_code: 'IN',
+    to_postal_code: cleanPincode,
+    to_country_code: 'IN',
     weight: calculatedWeight,
     length: Number(length || 10),
-    breadth: Number(breadth || 10),
-    width: Number(breadth || 10),
     height: Number(height || 10),
-
-    // Valuation
-    declared_value: Number(declaredValue || 200),
-    invoice_value: Number(declaredValue || 200),
-    order_amount: Number(declaredValue || 200),
-
-    // Payment Mode (MILASTY is prepaid only)
+    width: Number(breadth || 10),
+    parcel_type: 'Parcel',
+    mode: 'Domestic',
     payment_mode: 'prepaid',
-    payment_type: 'prepaid',
-    is_cod: 0,
     cod_amount: 0,
   };
-
 
   const response = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_rate_time`, {
     method: 'POST',
     headers: getShiprathHeaders(),
     body: JSON.stringify(payload),
   });
+
 
   const data = await response.json();
 
@@ -247,45 +222,26 @@ export const checkShiprathConnection = async (req, res) => {
     // Quick connectivity ping to Shiprath rate API
     try {
       const pingPayload = {
-        customer_id: customerId,
-        customerid: customerId,
-        secret_key: secretKey,
-        secretkey: secretKey,
-
-        address_id: WAREHOUSE_ADDRESS_ID,
-        pickup_address_id: WAREHOUSE_ADDRESS_ID,
-        pickup_pincode: WAREHOUSE_PINCODE,
-        origin_pincode: WAREHOUSE_PINCODE,
-        from_pincode: WAREHOUSE_PINCODE,
-
-        destination_pincode: '110001',
-        delivery_pincode: '110001',
-        consignee_pincode: '110001',
-        to_pincode: '110001',
-        pincode: '110001',
-
-        weight: 0.5,
+        from_postal_code: WAREHOUSE_PINCODE,
+        from_country_code: 'IN',
+        to_postal_code: '110001',
+        to_country_code: 'IN',
+        weight: 1,
         length: 10,
-        breadth: 10,
-        width: 10,
         height: 10,
-
-        declared_value: 200,
-        invoice_value: 200,
-        order_amount: 200,
-
+        width: 10,
+        parcel_type: 'Parcel',
+        mode: 'Domestic',
         payment_mode: 'prepaid',
-        payment_type: 'prepaid',
-        is_cod: 0,
         cod_amount: 0,
       };
-
 
       const pingRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_rate_time`, {
         method: 'POST',
         headers: getShiprathHeaders(),
         body: JSON.stringify(pingPayload),
       });
+
 
       const pingData = await pingRes.json();
       console.log('[SHIPRATH PING RESPONSE]', pingRes.status, pingData);
@@ -848,31 +804,20 @@ export const diagnoseCredentials = async (req, res) => {
         customerid: trimmedCustomer,
       },
       body: JSON.stringify({
-        address_id: WAREHOUSE_ADDRESS_ID,
-        pickup_address_id: WAREHOUSE_ADDRESS_ID,
-        pickup_pincode: WAREHOUSE_PINCODE,
-        origin_pincode: WAREHOUSE_PINCODE,
-
-        destination_pincode: '110001',
-        delivery_pincode: '110001',
-        consignee_pincode: '110001',
-        pincode: '110001',
-
-        weight: 0.5,
+        from_postal_code: WAREHOUSE_PINCODE,
+        from_country_code: 'IN',
+        to_postal_code: '110001',
+        to_country_code: 'IN',
+        weight: 1,
         length: 10,
-        breadth: 10,
-        width: 10,
         height: 10,
-
-        declared_value: 200,
-        invoice_value: 200,
-        order_amount: 200,
-
+        width: 10,
+        parcel_type: 'Parcel',
+        mode: 'Domestic',
         payment_mode: 'prepaid',
-        payment_type: 'prepaid',
-        is_cod: 0,
         cod_amount: 0,
       }),
+
     });
 
     const pingData = await pingRes.json();
