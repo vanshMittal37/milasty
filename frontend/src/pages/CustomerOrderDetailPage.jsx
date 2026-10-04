@@ -410,7 +410,7 @@ export default function CustomerOrderDetailPage() {
         <OrderProgressTracker currentStatus={currentStatus} />
 
         {/* ── SHIPRATH LIVE TRACKING CARD ── */}
-        {(shipTracking || trackLoading) && (
+        {(order.awb_number || order.awb || shipTracking || trackLoading) && (
           <div style={{
             ...cardStyle,
             padding: '1.5rem',
@@ -428,54 +428,54 @@ export default function CustomerOrderDetailPage() {
               Live Shipment Tracking
             </h3>
 
-            {trackLoading && !shipTracking && (
+            {trackLoading && !shipTracking && !order.awb_number && !order.awb && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: T.textMuted, fontSize: '0.87rem' }}>
                 <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
                 Fetching live tracking data...
               </div>
             )}
 
-            {shipTracking && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {/* AWB & Courier Row */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-                  {shipTracking.awb && (
-                    <div style={{
-                      flex: 1, minWidth: '160px',
-                      padding: '0.85rem 1rem',
-                      backgroundColor: 'rgba(245,237,229,0.6)',
-                      borderRadius: '10px',
-                      border: `1px solid rgba(198,138,58,0.2)`,
-                    }}>
-                      <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.accent, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>AWB Number</div>
-                      <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary, fontFamily: 'monospace', letterSpacing: '0.05em' }}>{shipTracking.awb}</div>
-                    </div>
-                  )}
-                  {shipTracking.courier_name && (
-                    <div style={{
-                      flex: 1, minWidth: '160px',
-                      padding: '0.85rem 1rem',
-                      backgroundColor: 'rgba(245,237,229,0.6)',
-                      borderRadius: '10px',
-                      border: `1px solid rgba(198,138,58,0.2)`,
-                    }}>
-                      <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.accent, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>Courier Partner</div>
-                      <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary }}>{shipTracking.courier_name}</div>
-                    </div>
-                  )}
-                  {shipTracking.tracking?.estimated_delivery && (
-                    <div style={{
-                      flex: 1, minWidth: '160px',
-                      padding: '0.85rem 1rem',
-                      backgroundColor: 'rgba(237,247,238,0.7)',
-                      borderRadius: '10px',
-                      border: `1px solid rgba(46,125,50,0.2)`,
-                    }}>
-                      <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.success, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>Est. Delivery</div>
-                      <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.success }}>{shipTracking.tracking.estimated_delivery}</div>
-                    </div>
-                  )}
-                </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {/* AWB & Courier Row */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                {(order.awb_number || order.awb || shipTracking?.awb) && (
+                  <div style={{
+                    flex: 1, minWidth: '160px',
+                    padding: '0.85rem 1rem',
+                    backgroundColor: 'rgba(245,237,229,0.6)',
+                    borderRadius: '10px',
+                    border: `1px solid rgba(198,138,58,0.2)`,
+                  }}>
+                    <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.accent, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>AWB Number</div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary, fontFamily: 'monospace', letterSpacing: '0.05em' }}>{order.awb_number || order.awb || shipTracking?.awb}</div>
+                  </div>
+                )}
+                {(order.courier_name || shipTracking?.courier_name) && (
+                  <div style={{
+                    flex: 1, minWidth: '160px',
+                    padding: '0.85rem 1rem',
+                    backgroundColor: 'rgba(245,237,229,0.6)',
+                    borderRadius: '10px',
+                    border: `1px solid rgba(198,138,58,0.2)`,
+                  }}>
+                    <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.accent, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>Courier Partner</div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary }}>{order.courier_name || shipTracking?.courier_name}</div>
+                  </div>
+                )}
+                {shipTracking?.tracking?.estimated_delivery && (
+                  <div style={{
+                    flex: 1, minWidth: '160px',
+                    padding: '0.85rem 1rem',
+                    backgroundColor: 'rgba(237,247,238,0.7)',
+                    borderRadius: '10px',
+                    border: `1px solid rgba(46,125,50,0.2)`,
+                  }}>
+                    <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.success, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>Est. Delivery</div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.success }}>{shipTracking.tracking.estimated_delivery}</div>
+                  </div>
+                )}
+              </div>
+
 
                 {/* Latest tracking event */}
                 {shipTracking.tracking?.shipment_track?.[0] && (

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, RefreshCw, Eye, ArrowUpRight, X, Package, CreditCard, MapPin, User, Mail, Phone, Calendar, CheckCircle, Clock, Sparkles, Printer } from 'lucide-react';
+import { Search, Filter, RefreshCw, Eye, ArrowUpRight, X, Package, CreditCard, MapPin, User, Mail, Phone, Calendar, CheckCircle, Clock, Sparkles, Printer, Zap, ExternalLink, Truck } from 'lucide-react';
+
 import api from '../../api/axios';
 
 const STAGES = ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'];
@@ -79,10 +79,37 @@ export default function AdminOrderList() {
     } catch (e) {
       console.error('Error updating order status:', e);
       alert(e.response?.data?.message || 'Unable to update order status on server.');
-      // Revert if API failed
-      fetchOrders();
+  const [bookingShipment, setBookingShipment] = useState(false);
+
+  const handleBookShipment = async (orderId) => {
+    setBookingShipment(true);
+    try {
+      const res = await api.post('/shipping/book', { orderId });
+      if (res.data?.success || res.data?.awb || res.data?.awb_number) {
+        const awbVal = res.data.awb || res.data.awb_number;
+        alert(`Shipment booked successfully with Shiprath!\nAWB Number: ${awbVal}`);
+        fetchOrders();
+        if (selectedOrder) {
+          setSelectedOrder(prev => ({
+            ...prev,
+            awb_number: awbVal,
+            awb: awbVal,
+            courier_name: res.data.courier_name || res.data.courierName || 'Shiprath Partner',
+            tracking_url: res.data.tracking_url,
+            orderStatus: 'Shipped',
+            status: 'Shipped',
+          }));
+        }
+      } else {
+        alert(res.data?.message || res.data?.error || 'Failed to book shipment with Shiprath.');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || err.message || 'Error booking shipment with Shiprath.');
+    } finally {
+      setBookingShipment(false);
     }
   };
+
 
   const parseAddress = (addr) => {
     if (!addr) return { line: 'N/A', city: '', state: '', pin: '' };
@@ -477,7 +504,51 @@ export default function AdminOrderList() {
                   ))}
                 </select>
               </div>
+            {/* Shipment & AWB Details Banner */}
+            <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1rem', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.72rem', color: '#665A52', textTransform: 'uppercase', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Truck size={14} color="#C68A3A" />
+                    <span>Shiprath B2C Courier Booking</span>
+                  </div>
+                  {(selectedOrder.awb_number || selectedOrder.awb) ? (
+                    <div style={{ marginTop: '0.35rem', fontSize: '0.88rem', fontWeight: '700', color: '#21150F' }}>
+                      AWB: <code style={{ backgroundColor: '#F8FAFC', padding: '0.15rem 0.45rem', borderRadius: '4px', color: '#381423' }}>{selectedOrder.awb_number || selectedOrder.awb}</code>
+                      {selectedOrder.courier_name && <span style={{ marginLeft: '0.5rem', color: '#665A52', fontSize: '0.8rem' }}>({selectedOrder.courier_name})</span>}
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: '0.25rem', fontSize: '0.82rem', color: '#B7791F', fontWeight: '600' }}>
+                      Shipment not yet booked with courier
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  {(selectedOrder.awb_number || selectedOrder.awb) ? (
+                    <a
+                      href={selectedOrder.tracking_url || `https://backend.shiprath.com/tracking/${selectedOrder.awb_number || selectedOrder.awb}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', backgroundColor: '#381423', color: '#FFF', fontSize: '0.78rem', fontWeight: '700', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                    >
+                      <span>Track Shipment</span>
+                      <ExternalLink size={13} />
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => handleBookShipment(selectedOrder.id || selectedOrder._id)}
+                      disabled={bookingShipment}
+                      style={{ padding: '0.5rem 1rem', borderRadius: '8px', backgroundColor: '#381423', color: '#D4AF37', border: 'none', fontSize: '0.82rem', fontWeight: '800', cursor: bookingShipment ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                    >
+                      <Zap size={14} color="#D4AF37" />
+                      <span>{bookingShipment ? 'Booking...' : 'Book Shipment with Shiprath'}</span>
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
+
 
             {/* Order Level Customization Summary Banner */}
             {selectedOrder.notes && (

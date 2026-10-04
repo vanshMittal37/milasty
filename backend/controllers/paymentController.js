@@ -286,6 +286,9 @@ export const createPaymentSession = async (req, res) => {
  */
 export const createRazorpayOrder = createPaymentSession;
 
+// In-memory set to prevent race conditions during concurrent webhook & frontend verification
+const activeFinalizations = new Set();
+
 /**
  * 2. IDEMPOTENT FINALIZATION OF MILASTY ORDER UPON VERIFIED PAYMENT
  */
@@ -295,19 +298,46 @@ export const finalizeOrderFromPayment = async ({
   razorpay_signature = null,
   sessionOverride = null,
 }) => {
-  // Idempotency check: check if order already created in Supabase
-  if (razorpay_payment_id) {
-    const { data: existingOrder } = await supabase
-      .from('orders')
-      .select('*, order_items(*)')
-      .eq('payment_id', razorpay_payment_id)
-      .maybeSingle();
+  const lockKey = razorpay_payment_id || razorpay_order_id;
 
-    if (existingOrder) {
-      console.log('[ORDER FINALIZATION] Order already exists (idempotent duplicate prevented):', existingOrder.order_number);
-      return existingOrder;
+  // Prevent concurrent duplicate executions for the same payment/order
+  if (lockKey && activeFinalizations.has(lockKey)) {
+    console.log('[ORDER FINALIZATION] Concurrent finalization already in progress for key:', lockKey);
+    let attempts = 0;
+    while (attempts < 10) {
+      await new Promise((r) => setTimeout(r, 400));
+      if (razorpay_payment_id || razorpay_order_id) {
+        const { data: existing } = await supabase
+          .from('orders')
+          .select('*, order_items(*)')
+          .or(`payment_id.eq.${razorpay_payment_id || 'N/A'},payment_id.eq.${razorpay_order_id || 'N/A'}`)
+          .maybeSingle();
+        if (existing) {
+          console.log('[ORDER FINALIZATION] Returned existing order from concurrent wait:', existing.order_number);
+          return existing;
+        }
+      }
+      attempts++;
     }
   }
+
+  if (lockKey) activeFinalizations.add(lockKey);
+
+  try {
+    // Idempotency check: check if order already created in Supabase
+    if (razorpay_payment_id || razorpay_order_id) {
+      const { data: existingOrder } = await supabase
+        .from('orders')
+        .select('*, order_items(*)')
+        .or(`payment_id.eq.${razorpay_payment_id || 'N/A'},payment_id.eq.${razorpay_order_id || 'N/A'}`)
+        .maybeSingle();
+
+      if (existingOrder) {
+        console.log('[ORDER FINALIZATION] Order already exists (idempotent duplicate prevented):', existingOrder.order_number);
+        return existingOrder;
+      }
+    }
+
 
   // Get session data
   let session = sessionOverride || paymentSessions.get(razorpay_order_id);
@@ -517,6 +547,10 @@ export const finalizeOrderFromPayment = async ({
     }
   }
 
+  } finally {
+    if (lockKey) activeFinalizations.delete(lockKey);
+  }
+
   // Update session status to paid
   if (session) {
     session.status = 'paid';
@@ -527,6 +561,7 @@ export const finalizeOrderFromPayment = async ({
   }
   return newOrder;
 };
+
 
 /**
  * 3. VERIFY RAZORPAY PAYMENT SIGNATURE & AMOUNT
