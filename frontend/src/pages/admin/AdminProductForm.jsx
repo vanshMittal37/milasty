@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus, 
@@ -329,10 +329,10 @@ export default function AdminProductForm() {
           description: p.description || '',
           category: p.category || 'cookies',
           category_id: p.category_id || p.categoryId || '',
-          price: p.price !== undefined && p.price !== null ? p.price : '',
-          originalPrice: p.originalPrice !== undefined && p.originalPrice !== null ? p.originalPrice : '',
-          discountType: p.discountType || 'none',
-          discountValue: p.discountValue || '',
+          price: p.basePrice || p.base_price || p.nutritionFacts?.base_price || p.price || '',
+          originalPrice: p.originalPrice || p.original_price || (p.price && p.price < (p.basePrice || p.price) ? (p.basePrice || p.price) : ''),
+          discountType: p.discountType || p.discount_type || p.nutritionFacts?.discount_type || 'none',
+          discountValue: p.discountValue !== undefined ? p.discountValue : (p.discount_value !== undefined ? p.discount_value : (p.nutritionFacts?.discount_value || '')),
           stock: p.stock !== undefined && p.stock !== null ? p.stock : '',
           pieces: p.pieces || p.nutritionFacts?.pieces || '',
           sku: p.sku || '',
@@ -632,9 +632,20 @@ export default function AdminProductForm() {
     const base = Number(formData.price) || 0;
     const val = Number(formData.discountValue) || 0;
     if (formData.discountType === 'percentage' && val > 0) {
-      return Math.round(base * (1 - val / 100));
+      return Math.max(0, Math.round(base * (1 - val / 100)));
     } else if (formData.discountType === 'fixed' && val > 0) {
       return Math.max(0, base - val);
+    }
+    return base;
+  })();
+
+  const calculatedOriginalPrice = (() => {
+    const orig = Number(formData.originalPrice);
+    if (!isNaN(orig) && orig > 0) return orig;
+    const base = Number(formData.price) || 0;
+    const val = Number(formData.discountValue) || 0;
+    if ((formData.discountType === 'percentage' || formData.discountType === 'fixed') && val > 0) {
+      return base;
     }
     return base;
   })();
@@ -673,8 +684,23 @@ export default function AdminProductForm() {
       finalPayloadBadges = finalPayloadBadges.filter(b => !String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
     }
 
+    let updatedPayloadVariants = Array.isArray(formData.variants) ? [...formData.variants] : [];
+    if (updatedPayloadVariants.length > 0) {
+      updatedPayloadVariants = updatedPayloadVariants.map((v, idx) => {
+        if (updatedPayloadVariants.length === 1 || idx === 0 || v.name === 'Standard Pack') {
+          return {
+            ...v,
+            price: calculatedFinalPrice,
+            originalPrice: calculatedOriginalPrice,
+          };
+        }
+        return v;
+      });
+    }
+
     const payload = {
       ...formData,
+      variants: updatedPayloadVariants,
       isBestseller: isBestsellerActive,
       is_bestseller: isBestsellerActive,
       pieces: formData.pieces ? String(formData.pieces).trim() : '',
@@ -684,9 +710,15 @@ export default function AdminProductForm() {
       nutritionFacts: {
         ...nutritionMap,
         pieces: formData.pieces ? String(formData.pieces).trim() : '',
+        base_price: basePriceNum,
+        discount_type: formData.discountType || 'none',
+        discount_value: Number(formData.discountValue) || 0,
       },
-      price: basePriceNum,
-      originalPrice: formData.originalPrice !== '' && formData.originalPrice !== null ? Number(formData.originalPrice) : null,
+      price: calculatedFinalPrice,
+      originalPrice: calculatedOriginalPrice,
+      basePrice: basePriceNum,
+      discountType: formData.discountType || 'none',
+      discountValue: Number(formData.discountValue) || 0,
       stock: formData.stock !== '' && formData.stock !== null ? Number(formData.stock) : (isVariantProduct ? formData.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) : null),
       // Always include both category_id (UUID) and category (slug) for canonical mapping
       category_id: formData.category_id || '',

@@ -283,8 +283,11 @@ export const getProducts = async (req, res) => {
           description: p.description,
           category: p.category,
           category_id: p.category_id || '',
-          price: Number(variants[0]?.price || 0),
-          originalPrice: Number(variants[0]?.originalPrice || variants[0]?.price || 0),
+          price: Number(variants[0]?.price || p.price || 0),
+          originalPrice: Number(variants[0]?.originalPrice || p.original_price || variants[0]?.price || p.price || 0),
+          basePrice: Number(p.base_price || p.nutrition_facts?.base_price || variants[0]?.originalPrice || variants[0]?.price || p.price || 0),
+          discountType: p.discount_type || p.nutrition_facts?.discount_type || 'none',
+          discountValue: p.discount_value !== undefined ? p.discount_value : (p.nutrition_facts?.discount_value || 0),
           stock: calculatedStock,
           sku: p.sku || 'MLS-PRD',
           status: p.is_active !== false ? 'active' : 'inactive',
@@ -494,8 +497,11 @@ export const getProductBySlugOrId = async (req, res) => {
         description: p.description,
         category: p.category,
         category_id: p.category_id || '',
-        price: Number(variants[0]?.price || 0),
-        originalPrice: Number(variants[0]?.originalPrice || variants[0]?.price || 0),
+        price: Number(variants[0]?.price || p.price || 0),
+        originalPrice: Number(variants[0]?.originalPrice || p.original_price || variants[0]?.price || p.price || 0),
+        basePrice: Number(p.base_price || p.nutrition_facts?.base_price || variants[0]?.originalPrice || variants[0]?.price || p.price || 0),
+        discountType: p.discount_type || p.nutrition_facts?.discount_type || 'none',
+        discountValue: p.discount_value !== undefined ? p.discount_value : (p.nutrition_facts?.discount_value || 0),
         stock: calculatedStock,
         sku: p.sku || 'MLS-PRD',
         status: p.is_active !== false ? 'active' : 'inactive',
@@ -577,62 +583,69 @@ export const resolveCategoryInfo = async (catIdOrSlug) => {
 
 // Helper for safe product insertion handling missing columns in PostgREST schema cache
 const safeInsertProduct = async (payload) => {
-  let { data, error } = await supabase
-    .from('products')
-    .insert([payload])
-    .select()
-    .single();
-
-  if (error && error.message && (
-    error.message.toLowerCase().includes('is_bestseller') || 
-    error.message.toLowerCase().includes('category_id') || 
-    error.message.toLowerCase().includes('schema cache')
-  )) {
-    console.warn('Supabase product insert schema fallback triggered:', error.message);
-    const fallbackPayload = { ...payload };
-    if (error.message.toLowerCase().includes('is_bestseller')) delete fallbackPayload.is_bestseller;
-    if (error.message.toLowerCase().includes('category_id')) delete fallbackPayload.category_id;
-
-    const res = await supabase
+  let currentPayload = { ...payload };
+  for (let attempt = 0; attempt < 5; attempt++) {
+    let { data, error } = await supabase
       .from('products')
-      .insert([fallbackPayload])
+      .insert([currentPayload])
       .select()
       .single();
-    data = res.data;
-    error = res.error;
+
+    if (!error) return { data, error: null };
+
+    const errMsg = error.message || '';
+    const match = errMsg.match(/column ["']?([a-zA-Z0-9_]+)["']? of relation/i) ||
+                  errMsg.match(/could not find the ['"]?([a-zA-Z0-9_]+)['"]? column/i);
+
+    if (match && match[1] && currentPayload[match[1]] !== undefined) {
+      delete currentPayload[match[1]];
+    } else {
+      let stripped = false;
+      const optionals = ['is_bestseller', 'category_id', 'base_price', 'discount_type', 'discount_value', 'original_price', 'price'];
+      for (const col of optionals) {
+        if (errMsg.toLowerCase().includes(col) && currentPayload[col] !== undefined) {
+          delete currentPayload[col];
+          stripped = true;
+        }
+      }
+      if (!stripped) return { data: null, error };
+    }
   }
-  return { data, error };
+  return { data: null, error: new Error('Failed to insert product after column fallbacks') };
 };
 
 // Helper for safe product update handling missing columns in PostgREST schema cache
 const safeUpdateProduct = async (id, payload) => {
-  let { data, error } = await supabase
-    .from('products')
-    .update(payload)
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error && error.message && (
-    error.message.toLowerCase().includes('is_bestseller') || 
-    error.message.toLowerCase().includes('category_id') || 
-    error.message.toLowerCase().includes('schema cache')
-  )) {
-    console.warn('Supabase product update schema fallback triggered:', error.message);
-    const fallbackPayload = { ...payload };
-    if (error.message.toLowerCase().includes('is_bestseller')) delete fallbackPayload.is_bestseller;
-    if (error.message.toLowerCase().includes('category_id')) delete fallbackPayload.category_id;
-
-    const res = await supabase
+  let currentPayload = { ...payload };
+  for (let attempt = 0; attempt < 5; attempt++) {
+    let { data, error } = await supabase
       .from('products')
-      .update(fallbackPayload)
+      .update(currentPayload)
       .eq('id', id)
       .select()
       .single();
-    data = res.data;
-    error = res.error;
+
+    if (!error) return { data, error: null };
+
+    const errMsg = error.message || '';
+    const match = errMsg.match(/column ["']?([a-zA-Z0-9_]+)["']? of relation/i) ||
+                  errMsg.match(/could not find the ['"]?([a-zA-Z0-9_]+)['"]? column/i);
+
+    if (match && match[1] && currentPayload[match[1]] !== undefined) {
+      delete currentPayload[match[1]];
+    } else {
+      let stripped = false;
+      const optionals = ['is_bestseller', 'category_id', 'base_price', 'discount_type', 'discount_value', 'original_price', 'price'];
+      for (const col of optionals) {
+        if (errMsg.toLowerCase().includes(col) && currentPayload[col] !== undefined) {
+          delete currentPayload[col];
+          stripped = true;
+        }
+      }
+      if (!stripped) return { data: null, error };
+    }
   }
-  return { data, error };
+  return { data: null, error: new Error('Failed to update product after column fallbacks') };
 };
 
 export const createProduct = async (req, res) => {
@@ -949,6 +962,12 @@ export const updateProduct = async (req, res) => {
       console.warn('Category resolution warning on update:', err?.message);
     }
 
+    const basePriceVal = updates.basePrice !== undefined ? updates.basePrice : (updates.price !== undefined ? updates.price : undefined);
+    const priceVal = updates.price !== undefined ? Number(updates.price) : undefined;
+    const originalPriceVal = updates.originalPrice !== undefined ? Number(updates.originalPrice) : (priceVal !== undefined ? priceVal : undefined);
+    const discountTypeVal = updates.discountType || 'none';
+    const discountVal = updates.discountValue !== undefined ? Number(updates.discountValue) : 0;
+
     const updatePayload = {
       title: updates.title,
       subtitle: updates.subtitle || '',
@@ -963,6 +982,9 @@ export const updateProduct = async (req, res) => {
         ...(typeof updates.nutritionFacts === 'object' && updates.nutritionFacts !== null ? updates.nutritionFacts : {}),
         pieces: updates.pieces || (typeof updates.nutritionFacts === 'object' ? updates.nutritionFacts?.pieces : '') || '',
         variant_stocks: Object.keys(variantStocksMap).length > 0 ? variantStocksMap : updates.nutritionFacts?.variant_stocks,
+        base_price: basePriceVal,
+        discount_type: discountTypeVal,
+        discount_value: discountVal,
       },
       badges: finalBadges,
       allergens: updates.allergens || '',
@@ -971,6 +993,11 @@ export const updateProduct = async (req, res) => {
       is_featured: updates.isFeatured !== false,
       is_bestseller: isBestsellerRequested,
       is_active: updates.status === 'active',
+      price: priceVal,
+      original_price: originalPriceVal,
+      base_price: basePriceVal,
+      discount_type: discountTypeVal,
+      discount_value: discountVal,
       updated_at: new Date(),
     };
 
@@ -992,18 +1019,31 @@ export const updateProduct = async (req, res) => {
     }
 
     let updatedVariants = [];
+    const targetPrice = priceVal !== undefined ? priceVal : (updates.price ? Number(updates.price) : 0);
+    const targetOriginalPrice = originalPriceVal !== undefined ? originalPriceVal : targetPrice;
+
     if (updates.variants && Array.isArray(updates.variants)) {
       await supabase.from('product_variants').delete().eq('product_id', id);
 
       if (updates.variants.length > 0) {
-        const variantRows = updates.variants.map((v) => {
+        const variantRows = updates.variants.map((v, idx) => {
           const vStock = Number(v.stock !== undefined && v.stock !== null && v.stock !== '' ? v.stock : 50);
+          
+          let vPrice = Number(v.price !== undefined && v.price !== '' ? v.price : targetPrice);
+          let vOrigPrice = Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : vPrice);
+
+          // For single variant products or primary pack, apply target product price/MRP directly
+          if (updates.variants.length === 1 || v.name === 'Standard Pack' || idx === 0) {
+            if (updates.price !== undefined && updates.price !== null) vPrice = targetPrice;
+            if (updates.originalPrice !== undefined && updates.originalPrice !== null) vOrigPrice = targetOriginalPrice;
+          }
+
           return {
             product_id: id,
             name: v.name || 'Standard Pack',
             weight: v.weight || 'Standard',
-            price: Number(v.price !== undefined && v.price !== '' ? v.price : updates.price || 0),
-            original_price: Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : v.price || updates.price || 0),
+            price: vPrice,
+            original_price: vOrigPrice,
             stock: vStock,
             in_stock: v.inStock !== false && vStock > 0,
           };
@@ -1015,8 +1055,8 @@ export const updateProduct = async (req, res) => {
           product_id: id,
           name: 'Standard Pack',
           weight: 'Standard',
-          price: Number(updates.price || 0),
-          original_price: Number(updates.originalPrice || updates.price || 0),
+          price: targetPrice,
+          original_price: targetOriginalPrice,
           stock: defaultStock,
           in_stock: defaultStock > 0,
         };
@@ -1025,15 +1065,29 @@ export const updateProduct = async (req, res) => {
     } else {
       const { data: existingV } = await supabase.from('product_variants').select('*').eq('product_id', id);
       if (existingV && existingV.length > 0) {
-        updatedVariants = existingV;
+        if (updates.price !== undefined || updates.originalPrice !== undefined) {
+          const updatedRows = existingV.map((v, idx) => {
+            let pVal = Number(v.price);
+            let opVal = Number(v.original_price || v.price);
+            if (existingV.length === 1 || idx === 0) {
+              if (updates.price !== undefined && updates.price !== null) pVal = targetPrice;
+              if (updates.originalPrice !== undefined && updates.originalPrice !== null) opVal = targetOriginalPrice;
+            }
+            return { ...v, price: pVal, original_price: opVal };
+          });
+          await supabase.from('product_variants').delete().eq('product_id', id);
+          updatedVariants = await safeInsertVariants(updatedRows);
+        } else {
+          updatedVariants = existingV;
+        }
       } else {
         const defaultStock = Number(updates.stock !== undefined && updates.stock !== null && updates.stock !== '' ? updates.stock : 100);
         const defaultVariantRow = {
           product_id: id,
           name: 'Standard Pack',
           weight: 'Standard',
-          price: Number(updates.price || 0),
-          original_price: Number(updates.originalPrice || updates.price || 0),
+          price: targetPrice,
+          original_price: targetOriginalPrice,
           stock: defaultStock,
           in_stock: defaultStock > 0,
         };

@@ -50,7 +50,7 @@ export default function AdminDashboardMain() {
         <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(143,175,91,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <RefreshCw size={20} className="animate-spin" color="#C68A3A" />
         </div>
-        <span style={{ fontSize: '0.78rem', color: '#665A52', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Loading analyticsâ€¦</span>
+        <span style={{ fontSize: '0.78rem', color: '#665A52', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Loading analytics...</span>
       </div>
     );
   }
@@ -192,7 +192,7 @@ export default function AdminDashboardMain() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
 
-      {/* â”€â”€ HEADER â”€â”€ */}
+      {/* -€-€ HEADER -€-€ */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <p style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#C68A3A', margin: '0 0 0.3rem 0' }}>
@@ -218,7 +218,7 @@ export default function AdminDashboardMain() {
         </div>
       </div>
 
-      {/* â”€â”€ KPI CARDS â”€â”€ */}
+      {/* -€-€ KPI CARDS -€-€ */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1.1rem' }} className="admin-kpi-row">
         <style>{`
           @media (min-width: 1200px) { .admin-kpi-row { grid-template-columns: repeat(4, 1fr) !important; } }
@@ -263,7 +263,7 @@ export default function AdminDashboardMain() {
         })}
       </div>
 
-      {/* â”€â”€ SALES CHART + LOW STOCK â”€â”€ */}
+      {/* -€-€ SALES CHART + LOW STOCK -€-€ */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }} className="admin-dashboard-split">
         <style>{`
           @media (min-width: 1024px) { .admin-dashboard-split { grid-template-columns: 2fr 1fr !important; } }
@@ -431,7 +431,7 @@ export default function AdminDashboardMain() {
       </div>
     </div>
 
-      {/* â”€â”€ RECENT ORDERS TABLE â”€â”€ */}
+      {/* -€-€ RECENT ORDERS TABLE -€-€ */}
       <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.2rem 1.4rem', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
@@ -494,7 +494,7 @@ export default function AdminDashboardMain() {
         </div>
       </div>
 
-      {/* â”€â”€ QUICK ACTIONS â”€â”€ */}
+      {/* -€-€ QUICK ACTIONS -€-€ */}
       <div>
         <p style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.07em', color: '#665A52', margin: '0 0 0.75rem' }}>Quick Actions</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(195px, 1fr))', gap: '1rem' }}>
@@ -537,7 +537,7 @@ export default function AdminDashboardMain() {
         </div>
       </div>
 
-      {/* â”€â”€ ACTIVITY + STORE HEALTH â”€â”€ */}
+      {/* -€-€ ACTIVITY + STORE HEALTH -€-€ */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem', paddingBottom: '1rem' }} className="admin-dashboard-footer">
         <style>{`
           @media (min-width: 1024px) { .admin-dashboard-footer { grid-template-columns: 1fr 1fr !important; } }
@@ -586,7 +586,7 @@ export default function AdminDashboardMain() {
                   <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#21150F' }}>{label}</span>
                 </div>
                 <span className={`admin-badge ${ok ? 'admin-badge-success' : 'admin-badge-danger'}`}>
-                  {ok ? 'â— Active' : 'â—‹ Offline'}
+                  {ok ? '● Active' : '○ Offline'}
                 </span>
               </div>
             ))}
