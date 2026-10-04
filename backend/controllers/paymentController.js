@@ -710,10 +710,26 @@ export const handleRazorpayWebhook = async (req, res) => {
       const razorpay_payment_id = paymentEntity?.id;
 
       if (razorpay_order_id && razorpay_payment_id) {
-        await finalizeOrderFromPayment({
+        const finalizedOrder = await finalizeOrderFromPayment({
           razorpay_order_id,
           razorpay_payment_id,
         });
+
+        // Auto-book Shiprath shipment (fire-and-forget, same as /payments/verify path)
+        if (finalizedOrder?.id) {
+          supabase
+            .from('orders')
+            .select('*, order_items(*)')
+            .eq('id', finalizedOrder.id)
+            .maybeSingle()
+            .then(({ data }) => {
+              if (data) {
+                bookShiprathShipment(data).catch((err) =>
+                  console.warn('[SHIPRATH] Webhook auto-book notice:', err.message)
+                );
+              }
+            });
+        }
       }
     } else if (event === 'payment.failed') {
       const paymentEntity = payload?.payment?.entity;
