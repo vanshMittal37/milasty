@@ -507,6 +507,7 @@ export default function AdminOrderList() {
                   ))}
                 </select>
               </div>
+            </div>
             {/* Shipment & AWB Details Banner */}
             <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1rem', marginBottom: '1.25rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
