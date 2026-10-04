@@ -409,6 +409,10 @@ export const bookShiprathShipment = async (order) => {
     const paymentModeVal = isCod ? 'cod' : 'prepaid';
     const codAmountVal = isCod ? Number(order.grand_total || order.grandTotal || order.totalAmount || declaredValue) : 0;
 
+    const custName = String(order.customer_name || order.customerName || order.user?.name || 'Customer').slice(0, 100);
+    const custMobile = String(order.customer_phone || order.customerPhone || order.phone || '').replace(/\D/g, '').slice(-10) || '9876543210';
+    const custEmail = String(order.customer_email || order.customerEmail || order.user?.email || 'orders@milasty.com').slice(0, 100);
+
     const bookingPayload = {
       // Dynamic courier selection from Rate API
       carrier_id: selectedRate.carrier_id,
@@ -420,20 +424,60 @@ export const bookShiprathShipment = async (order) => {
       order_type: typeVal,
       shipment_type: 'Forward',
 
-      // Warehouse
+      // Warehouse / Shipper / Sender
       address_id: WAREHOUSE_ADDRESS_ID,
       from_postal_code: WAREHOUSE_PINCODE,
       from_country_code: 'IN',
+      shipper_name: 'MILASTY',
+      sender_name: 'MILASTY',
+      shipper_mobile: '8927142056',
+      sender_mobile: '8927142056',
+      shipper_email: 'orders@milasty.com',
+      sender_email: 'orders@milasty.com',
+      shipper_address: 'MILASTY Bakery, Uttarakhand',
+      sender_address: 'MILASTY Bakery, Uttarakhand',
+      shipper_pincode: WAREHOUSE_PINCODE,
+      sender_pincode: WAREHOUSE_PINCODE,
 
-      // Consignee (Customer)
-      consignee_name: String(order.customer_name || order.customerName || 'Customer').slice(0, 100),
-      consignee_mobile: String(order.customer_phone || order.customerPhone || order.phone || '').replace(/\D/g, '').slice(-10),
-      consignee_email: String(order.customer_email || order.customerEmail || '').slice(0, 100),
+      // Consignee & Receiver (Customer) — All aliases for 100% API compatibility
+      consignee_name: custName,
+      receiver_name: custName,
+      name: custName,
+
+      consignee_mobile: custMobile,
+      receiver_mobile: custMobile,
+      receiver_phone: custMobile,
+      mobile: custMobile,
+      phone: custMobile,
+
+      consignee_email: custEmail,
+      receiver_email: custEmail,
+      email: custEmail,
+
       consignee_address: consigneeAddress.slice(0, 200),
+      receiver_address: consigneeAddress.slice(0, 200),
+      address: consigneeAddress.slice(0, 200),
+
       consignee_city: consigneeCity.slice(0, 100),
+      receiver_city: consigneeCity.slice(0, 100),
+      destination_city: consigneeCity.slice(0, 100),
+      city: consigneeCity.slice(0, 100),
+
       consignee_state: consigneeState.slice(0, 100),
+      receiver_state: consigneeState.slice(0, 100),
+      destination_state: consigneeState.slice(0, 100),
+      state: consigneeState.slice(0, 100),
+
       consignee_pincode: destinationPincode,
+      receiver_pincode: destinationPincode,
+      destination_pincode: destinationPincode,
+      pincode: destinationPincode,
+
       consignee_country: 'India',
+      receiver_country: 'India',
+      destination_country: 'India',
+      country: 'India',
+
       to_postal_code: destinationPincode,
       to_country_code: 'IN',
 
