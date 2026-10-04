@@ -362,7 +362,7 @@ export const bookShiprathShipment = async (order) => {
     const declaredValue = Number(order.grand_total || order.subtotal || 200);
 
     // ── Fetch dynamic rate to pick carrier/courier/product IDs ───────────────
-    let selectedRate = null;
+    let candidateRates = [];
     try {
       const rateResult = await fetchLiveShiprathRate({
         pincode: destinationPincode,
@@ -370,23 +370,19 @@ export const bookShiprathShipment = async (order) => {
         weight: estimatedWeightKg,
         declaredValue,
       });
-      selectedRate = rateResult.selectedRate;
+      candidateRates = rateResult.rateList || [];
+      if (!candidateRates.length && rateResult.selectedRate) {
+        candidateRates = [rateResult.selectedRate];
+      }
     } catch (rateErr) {
       console.error('[SHIPRATH BOOK] Dynamic rate fetch failed:', rateErr.message);
       return { error: rateErr.message };
     }
 
-    if (!selectedRate) {
+    if (!candidateRates || candidateRates.length === 0) {
       console.error('[SHIPRATH BOOK] No valid carrier rate found for booking.');
       return { error: 'No valid carrier rate found for destination pincode' };
     }
-
-    console.log('[SHIPRATH BOOK] Using dynamic courier IDs:', {
-      carrier_id: selectedRate.carrier_id,
-      courier_id: selectedRate.courier_id,
-      product_id: selectedRate.product_id,
-      courier_name: selectedRate.service_name,
-    });
 
     // ── Build consignee fields ───────────────────────────────────────────────
     const fullAddr = String(order.shipping_address || '');
@@ -434,134 +430,153 @@ export const bookShiprathShipment = async (order) => {
     const custMobile = String(order.customer_phone || order.customerPhone || order.phone || '').replace(/\D/g, '').slice(-10) || '9876543210';
     const custEmail = String(order.customer_email || order.customerEmail || order.user?.email || 'orders@milasty.com').slice(0, 100);
 
-    const bookingPayload = {
-      // Dynamic courier selection from Rate API
-      carrier_id: selectedRate.carrier_id,
-      courier_id: selectedRate.courier_id,
-      product_id: selectedRate.product_id,
+    let bookData = null;
+    let selectedRate = null;
+    let lastErrorMsg = 'Shiprath booking failed';
 
-      // Order & Shipment Type (Required by Shiprath B2C API)
-      type: 'Parcel',
-      parcel_type: 'Parcel',
-      order_type: typeVal,
-      shipment_type: 'Forward',
-
-      // Warehouse / Shipper / Sender
-      address_id: WAREHOUSE_ADDRESS_ID,
-      from_postal_code: WAREHOUSE_PINCODE,
-      from_country_code: 'IN',
-      shipper_name: 'MILASTY',
-      sender_name: 'MILASTY',
-      shipper_mobile: '8927142056',
-      sender_mobile: '8927142056',
-      shipper_email: 'orders@milasty.com',
-      sender_email: 'orders@milasty.com',
-      shipper_address: 'MILASTY Bakery, Uttarakhand',
-      sender_address: 'MILASTY Bakery, Uttarakhand',
-      shipper_pincode: WAREHOUSE_PINCODE,
-      sender_pincode: WAREHOUSE_PINCODE,
-
-      // Consignee & Receiver (Customer) — All aliases for 100% API compatibility
-      consignee_name: custName,
-      receiver_name: custName,
-      name: custName,
-
-      consignee_mobile: custMobile,
-      receiver_mobile: custMobile,
-      receiver_phone: custMobile,
-      mobile: custMobile,
-      phone: custMobile,
-
-      consignee_email: custEmail,
-      receiver_email: custEmail,
-      email: custEmail,
-
-      consignee_address: consigneeAddress.slice(0, 200),
-      receiver_address: consigneeAddress.slice(0, 200),
-      address: consigneeAddress.slice(0, 200),
-
-      consignee_city: consigneeCity.slice(0, 100),
-      receiver_city: consigneeCity.slice(0, 100),
-      destination_city: consigneeCity.slice(0, 100),
-      city: consigneeCity.slice(0, 100),
-
-      consignee_state: consigneeState.slice(0, 100),
-      receiver_state: consigneeState.slice(0, 100),
-      destination_state: consigneeState.slice(0, 100),
-      state: consigneeState.slice(0, 100),
-
-      consignee_pincode: destinationPincode,
-      receiver_pincode: destinationPincode,
-      destination_pincode: destinationPincode,
-      pincode: destinationPincode,
-
-      consignee_country: 'India',
-      receiver_country: 'India',
-      destination_country: 'India',
-      country: 'India',
-
-      to_postal_code: destinationPincode,
-      to_country_code: 'IN',
-
-      // Package specs
-      order_number: String(order.order_number || order.orderNumber || order.id).slice(0, 50),
-      weight: estimatedWeightKg,
-      length: 25,
-      breadth: 20,
-      width: 20,
-      height: 12,
-      parcel_type: 'Parcel',
-      mode: 'Domestic',
-      // Financial amounts (All aliases for 100% Shiprath B2C API schema compatibility)
-      total_amount: declaredValue,
-      grand_total: declaredValue,
-      order_amount: declaredValue,
-      total: declaredValue,
-      amount: declaredValue,
-      declared_value: declaredValue,
-      invoice_value: declaredValue,
-      subtotal: Number(order.subtotal || order.sub_total || declaredValue),
-      tax_amount: 0,
-      tax: 0,
-      discount: Number(order.discount_amount || order.discountAmount || 0),
-      discount_amount: Number(order.discount_amount || order.discountAmount || 0),
-
-      // Payment details
-      payment_mode: paymentModeVal,
-      cod_amount: codAmountVal,
-      collectable_amount: codAmountVal,
-
-      // Item Manifest
-      items: bookItems,
-    };
-
-    // ── Call Shiprath Create Shipment API ────────────────────────────────────
-    const bookRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/new_shipment_create`, {
-      method: 'POST',
-      headers: getShiprathHeaders(),
-      body: JSON.stringify(bookingPayload),
-    });
-
-    let bookData = await bookRes.json();
-
-    // Fallback URL endpoint if path differs in vendor API
-    if (!bookData.status && bookData.message?.toLowerCase().includes('not found')) {
-      const fbRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/create_shipment`, {
-        method: 'POST',
-        headers: getShiprathHeaders(),
-        body: JSON.stringify(bookingPayload),
+    // ── Loop through available carrier options until booking succeeds ────────
+    for (const candidateRate of candidateRates) {
+      console.log('[SHIPRATH BOOK] Trying courier option:', {
+        carrier_id: candidateRate.carrier_id,
+        courier_id: candidateRate.courier_id,
+        product_id: candidateRate.product_id,
+        courier_name: candidateRate.service_name,
       });
-      bookData = await fbRes.json();
+
+      const bookingPayload = {
+        carrier_id: candidateRate.carrier_id,
+        courier_id: candidateRate.courier_id,
+        product_id: candidateRate.product_id,
+
+        type: 'Parcel',
+        parcel_type: 'Parcel',
+        order_type: typeVal,
+        shipment_type: 'Forward',
+
+        address_id: WAREHOUSE_ADDRESS_ID,
+        from_postal_code: WAREHOUSE_PINCODE,
+        from_country_code: 'IN',
+        shipper_name: 'MILASTY',
+        sender_name: 'MILASTY',
+        shipper_mobile: '8927142056',
+        sender_mobile: '8927142056',
+        shipper_email: 'orders@milasty.com',
+        sender_email: 'orders@milasty.com',
+        shipper_address: 'MILASTY Bakery, Uttarakhand',
+        sender_address: 'MILASTY Bakery, Uttarakhand',
+        shipper_pincode: WAREHOUSE_PINCODE,
+        sender_pincode: WAREHOUSE_PINCODE,
+
+        consignee_name: custName,
+        receiver_name: custName,
+        name: custName,
+
+        consignee_mobile: custMobile,
+        receiver_mobile: custMobile,
+        receiver_phone: custMobile,
+        mobile: custMobile,
+        phone: custMobile,
+
+        consignee_email: custEmail,
+        receiver_email: custEmail,
+        email: custEmail,
+
+        consignee_address: consigneeAddress.slice(0, 200),
+        receiver_address: consigneeAddress.slice(0, 200),
+        address: consigneeAddress.slice(0, 200),
+
+        consignee_city: consigneeCity.slice(0, 100),
+        receiver_city: consigneeCity.slice(0, 100),
+        destination_city: consigneeCity.slice(0, 100),
+        city: consigneeCity.slice(0, 100),
+
+        consignee_state: consigneeState.slice(0, 100),
+        receiver_state: consigneeState.slice(0, 100),
+        destination_state: consigneeState.slice(0, 100),
+        state: consigneeState.slice(0, 100),
+
+        consignee_pincode: destinationPincode,
+        receiver_pincode: destinationPincode,
+        destination_pincode: destinationPincode,
+        pincode: destinationPincode,
+
+        consignee_country: 'India',
+        receiver_country: 'India',
+        destination_country: 'India',
+        country: 'India',
+
+        to_postal_code: destinationPincode,
+        to_country_code: 'IN',
+
+        order_number: String(order.order_number || order.orderNumber || order.id).slice(0, 50),
+        weight: estimatedWeightKg,
+        length: 15,
+        breadth: 15,
+        width: 15,
+        height: 10,
+        mode: 'Domestic',
+
+        total_amount: declaredValue,
+        grand_total: declaredValue,
+        order_amount: declaredValue,
+        total: declaredValue,
+        amount: declaredValue,
+        declared_value: declaredValue,
+        invoice_value: declaredValue,
+        subtotal: Number(order.subtotal || order.sub_total || declaredValue),
+        tax_amount: 0,
+        tax: 0,
+        discount: Number(order.discount_amount || order.discountAmount || 0),
+        discount_amount: Number(order.discount_amount || order.discountAmount || 0),
+
+        payment_mode: paymentModeVal,
+        cod_amount: codAmountVal,
+        collectable_amount: codAmountVal,
+
+        items: bookItems,
+      };
+
+      try {
+        const bookRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/new_shipment_create`, {
+          method: 'POST',
+          headers: getShiprathHeaders(),
+          body: JSON.stringify(bookingPayload),
+        });
+
+        let resData = await bookRes.json();
+
+        if (!resData.status && resData.message?.toLowerCase().includes('not found')) {
+          const fbRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/create_shipment`, {
+            method: 'POST',
+            headers: getShiprathHeaders(),
+            body: JSON.stringify(bookingPayload),
+          });
+          resData = await fbRes.json();
+        }
+
+        if (resData.status) {
+          bookData = resData;
+          selectedRate = candidateRate;
+          console.log('[SHIPRATH BOOK] Booking successful with courier:', candidateRate.service_name);
+          break;
+        } else {
+          lastErrorMsg = resData.message || 'Carrier error';
+          console.warn(`[SHIPRATH BOOK] Carrier ${candidateRate.service_name} returned error:`, lastErrorMsg);
+        }
+      } catch (cErr) {
+        console.error(`[SHIPRATH BOOK] Exception trying carrier ${candidateRate.service_name}:`, cErr.message);
+        lastErrorMsg = cErr.message;
+      }
     }
 
-    if (!bookData.status) {
-      console.error('[SHIPRATH BOOK] Booking response failed:', bookData);
-      return { error: bookData.message || 'Shiprath booking failed', raw: bookData };
+    if (!bookData || !bookData.status) {
+      console.error('[SHIPRATH BOOK] All available carriers failed. Last error:', lastErrorMsg);
+      return { error: lastErrorMsg || 'Shiprath booking failed across all available couriers' };
     }
 
     const awb = bookData.awb_number || bookData.awb || bookData.data?.awb_number || bookData.data?.awb || null;
     const shipmentId = bookData.shipment_id || bookData.data?.shipment_id || null;
-    const courierName = selectedRate.service_name || 'Shiprath Partner';
+    const courierName = selectedRate?.service_name || 'Shiprath Partner';
     const trackingUrl = awb ? `https://backend.shiprath.com/tracking/${awb}` : null;
 
     // ── Persist shipment details to Supabase Order Row ────────────────────────
