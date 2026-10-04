@@ -7,10 +7,11 @@ const WAREHOUSE_PINCODE = '201016';
 
 /**
  * Build Shiprath request headers from env
+ * NOTE: .trim() is critical — Railway sometimes injects trailing whitespace or \n
  */
 function getShiprathHeaders() {
-  const secretKey = process.env.SHIPRATH_SECRET_KEY;
-  const customerId = process.env.SHIPRATH_CUSTOMER_ID;
+  const secretKey = (process.env.SHIPRATH_SECRET_KEY || '').trim();
+  const customerId = (process.env.SHIPRATH_CUSTOMER_ID || '').trim();
 
   if (!secretKey || !customerId) {
     throw new Error(
@@ -21,9 +22,10 @@ function getShiprathHeaders() {
   return {
     'Content-Type': 'application/json',
     secretkey: secretKey,
-    customerid: String(customerId),
+    customerid: customerId,
   };
 }
+
 
 /**
  * Helper: Calculate package weight from cart/order items
@@ -188,8 +190,8 @@ export const getShiprathRates = async (req, res) => {
  */
 export const checkShiprathConnection = async (req, res) => {
   try {
-    const secretKey = process.env.SHIPRATH_SECRET_KEY;
-    const customerId = process.env.SHIPRATH_CUSTOMER_ID;
+    const secretKey = (process.env.SHIPRATH_SECRET_KEY || '').trim();
+    const customerId = (process.env.SHIPRATH_CUSTOMER_ID || '').trim();
 
     const isPlaceholder = !secretKey || !customerId || 
       secretKey.includes('REPLACE_WITH') || 
@@ -207,6 +209,7 @@ export const checkShiprathConnection = async (req, res) => {
         message: 'Shiprath API credentials not configured (SHIPRATH_SECRET_KEY, SHIPRATH_CUSTOMER_ID are set to placeholder values). Set real keys in Railway / .env file.',
       });
     }
+
 
     // Quick connectivity ping to Shiprath rate API
     try {
@@ -229,7 +232,12 @@ export const checkShiprathConnection = async (req, res) => {
       });
 
       const pingData = await pingRes.json();
-      const isConnected = pingRes.ok && (pingData.status || (pingData.rate_list && pingData.rate_list.length > 0));
+      const isConnected = pingRes.ok && (pingData.status === true || (pingData.rate_list && pingData.rate_list.length > 0));
+
+      let responseMsg = 'Connected to Shiprath B2C Shipping Network';
+      if (!isConnected) {
+        responseMsg = pingData.message ? `Shiprath API Error: ${pingData.message.trim()}` : 'Shiprath API returned authentication error';
+      }
 
       return res.json({
         success: true,
@@ -239,7 +247,8 @@ export const checkShiprathConnection = async (req, res) => {
         pickupPincode: WAREHOUSE_PINCODE,
         paymentMode: 'prepaid',
         codStatus: 'disabled',
-        message: isConnected ? 'Connected to Shiprath B2C Shipping Network' : (pingData.message || 'Shiprath API returned authentication error'),
+        message: responseMsg,
+        raw: pingData,
       });
     } catch (pingErr) {
       return res.json({
@@ -714,3 +723,108 @@ export const cancelOrderWithShipment = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Error cancelling order.', error: error.message });
   }
 };
+
+/**
+ * GET /api/shipping/diagnose-credentials  (PUBLIC — NO AUTH)
+ * Safe Shiprath credential diagnostic endpoint.
+ * Does NOT expose secret values. Does NOT create any shipment.
+ * Reports env var presence, character length, whitespace detection, and live API response.
+ */
+export const diagnoseCredentials = async (req, res) => {
+  const rawSecret = process.env.SHIPRATH_SECRET_KEY;
+  const rawCustomer = process.env.SHIPRATH_CUSTOMER_ID;
+
+  const secretPresent = Boolean(rawSecret);
+  const customerPresent = Boolean(rawCustomer);
+
+  // Trim whitespace/newlines
+  const trimmedSecret = (rawSecret || '').trim();
+  const trimmedCustomer = (rawCustomer || '').trim();
+
+  const secretHasWhitespace = secretPresent && (rawSecret !== trimmedSecret);
+  const customerHasWhitespace = customerPresent && (rawCustomer !== trimmedCustomer);
+
+  const report = {
+    environment: process.env.NODE_ENV || 'unknown',
+    envVars: {
+      SHIPRATH_SECRET_KEY: {
+        present: secretPresent,
+        length: trimmedSecret.length,
+        hasWhitespace: secretHasWhitespace,
+        firstChar: trimmedSecret.length > 0 ? trimmedSecret[0] : null,
+        lastChar: trimmedSecret.length > 0 ? trimmedSecret[trimmedSecret.length - 1] : null,
+      },
+      SHIPRATH_CUSTOMER_ID: {
+        present: customerPresent,
+        length: trimmedCustomer.length,
+        hasWhitespace: customerHasWhitespace,
+        value: trimmedCustomer, // customer ID is not a secret — safe to expose for verification
+      },
+    },
+    headers: {
+      willSend: {
+        'Content-Type': 'application/json',
+        secretkey: secretPresent ? `[REDACTED — length ${trimmedSecret.length}]` : '[MISSING]',
+        customerid: customerPresent ? trimmedCustomer : '[MISSING]',
+      },
+    },
+  };
+
+  if (!secretPresent || !customerPresent) {
+    return res.json({
+      ...report,
+      apiTest: null,
+      conclusion: 'FAIL — One or both env vars missing. Set SHIPRATH_SECRET_KEY and SHIPRATH_CUSTOMER_ID in Railway Variables.',
+    });
+  }
+
+  // Make the live Shiprath rate API call using TRIMMED values
+  let apiTest = null;
+  try {
+    const pingRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_rate_time`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        secretkey: trimmedSecret,
+        customerid: trimmedCustomer,
+      },
+      body: JSON.stringify({
+        address_id: WAREHOUSE_ADDRESS_ID,
+        destination_pincode: '110001',
+        weight: 0.5,
+        length: 10,
+        breadth: 10,
+        height: 10,
+        declared_value: 200,
+        payment_mode: 'prepaid',
+        cod_amount: 0,
+      }),
+    });
+
+    const pingData = await pingRes.json();
+    const isConnected = pingRes.ok && (pingData.status === true || (pingData.rate_list && pingData.rate_list.length > 0));
+
+    apiTest = {
+      httpStatus: pingRes.status,
+      shiprathStatus: pingData.status,
+      shiprathMessage: pingData.message || null,
+      rateCount: Array.isArray(pingData.rate_list) ? pingData.rate_list.length : 0,
+      connected: isConnected,
+    };
+
+    const conclusion = isConnected
+      ? 'SUCCESS — Shiprath API connected. Credentials are valid and working correctly.'
+      : `FAIL — Shiprath returned: "${pingData.message || 'unknown error'}". HTTP ${pingRes.status}.`;
+
+    return res.json({ ...report, apiTest, conclusion });
+
+  } catch (err) {
+    apiTest = { error: err.message };
+    return res.json({
+      ...report,
+      apiTest,
+      conclusion: `FAIL — Network error calling Shiprath API: ${err.message}`,
+    });
+  }
+};
+

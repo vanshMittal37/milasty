@@ -7,6 +7,7 @@ import {
   trackShipment,
   trackOrderShipment,
   cancelOrderWithShipment,
+  diagnoseCredentials,
 } from '../controllers/shipratController.js';
 import { protect, adminOnly, optionalProtect } from '../middleware/authMiddleware.js';
 
@@ -37,4 +38,10 @@ router.post('/test-rate', protect, adminOnly, adminTestRate);
 // Manual shipment creation trigger
 router.post('/book', protect, adminOnly, bookShipmentForOrder);
 
+// ─── Diagnostic (PUBLIC — NO AUTH) ───────────────────────────────────────────
+// Safe: does NOT expose secrets, does NOT create shipments
+// Used to diagnose Railway env var issues
+router.get('/diagnose-credentials', diagnoseCredentials);
+
 export default router;
+
