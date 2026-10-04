@@ -206,10 +206,19 @@ export default function AdminShippingLogistics() {
                   lineHeight: '1.4',
                 }}>
                   {connectionStatus.message}
+                  {connectionStatus?.raw && !connectionStatus.connected && (
+                    <details style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#64748B' }}>
+                      <summary style={{ cursor: 'pointer', fontWeight: '700' }}>View Raw Shiprath Response</summary>
+                      <pre style={{ marginTop: '0.35rem', padding: '0.5rem', backgroundColor: '#F8FAFC', borderRadius: '4px', overflowX: 'auto', whiteSpace: 'pre-wrap' }}>
+                        {JSON.stringify(connectionStatus.raw, null, 2)}
+                      </pre>
+                    </details>
+                  )}
                 </div>
               )}
             </div>
           </div>
+
 
           <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', gap: '0.75rem' }}>
             <button

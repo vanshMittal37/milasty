@@ -63,17 +63,28 @@ export async function fetchLiveShiprathRate({ pincode, items = [], weight = null
 
   const calculatedWeight = weight ? Number(weight) : calculateItemsWeightKg(items);
 
+  const secretKey = (process.env.SHIPRATH_SECRET_KEY || '').trim();
+  const customerId = (process.env.SHIPRATH_CUSTOMER_ID || '').trim();
+
   const payload = {
+    // Credentials in body (some Shiprath gateways validate both headers and body)
+    customer_id: customerId,
+    customerid: customerId,
+    secret_key: secretKey,
+    secretkey: secretKey,
+
     // Warehouse / Pickup Address
     address_id: WAREHOUSE_ADDRESS_ID,
     pickup_address_id: WAREHOUSE_ADDRESS_ID,
     pickup_pincode: WAREHOUSE_PINCODE,
     origin_pincode: WAREHOUSE_PINCODE,
+    from_pincode: WAREHOUSE_PINCODE,
 
     // Destination Pincode
     destination_pincode: cleanPincode,
     delivery_pincode: cleanPincode,
     consignee_pincode: cleanPincode,
+    to_pincode: cleanPincode,
     pincode: cleanPincode,
 
     // Physical Package Specs
@@ -94,6 +105,7 @@ export async function fetchLiveShiprathRate({ pincode, items = [], weight = null
     is_cod: 0,
     cod_amount: 0,
   };
+
 
   const response = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_rate_time`, {
     method: 'POST',
@@ -235,14 +247,21 @@ export const checkShiprathConnection = async (req, res) => {
     // Quick connectivity ping to Shiprath rate API
     try {
       const pingPayload = {
+        customer_id: customerId,
+        customerid: customerId,
+        secret_key: secretKey,
+        secretkey: secretKey,
+
         address_id: WAREHOUSE_ADDRESS_ID,
         pickup_address_id: WAREHOUSE_ADDRESS_ID,
         pickup_pincode: WAREHOUSE_PINCODE,
         origin_pincode: WAREHOUSE_PINCODE,
+        from_pincode: WAREHOUSE_PINCODE,
 
         destination_pincode: '110001',
         delivery_pincode: '110001',
         consignee_pincode: '110001',
+        to_pincode: '110001',
         pincode: '110001',
 
         weight: 0.5,
@@ -260,6 +279,7 @@ export const checkShiprathConnection = async (req, res) => {
         is_cod: 0,
         cod_amount: 0,
       };
+
 
       const pingRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_rate_time`, {
         method: 'POST',
