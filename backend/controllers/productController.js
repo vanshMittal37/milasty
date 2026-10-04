@@ -585,30 +585,27 @@ export const resolveCategoryInfo = async (catIdOrSlug) => {
 const safeInsertProduct = async (payload) => {
   let currentPayload = { ...payload };
   for (let attempt = 0; attempt < 5; attempt++) {
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from('products')
       .insert([currentPayload])
       .select()
-      .single();
+      .maybeSingle();
 
     if (!error) return { data, error: null };
 
-    const errMsg = error.message || '';
-    const match = errMsg.match(/column ["']?([a-zA-Z0-9_]+)["']? of relation/i) ||
-                  errMsg.match(/could not find the ['"]?([a-zA-Z0-9_]+)['"]? column/i);
-
-    if (match && match[1] && currentPayload[match[1]] !== undefined) {
-      delete currentPayload[match[1]];
-    } else {
-      let stripped = false;
-      const optionals = ['is_bestseller', 'category_id', 'base_price', 'discount_type', 'discount_value', 'original_price', 'price'];
-      for (const col of optionals) {
-        if (errMsg.toLowerCase().includes(col) && currentPayload[col] !== undefined) {
-          delete currentPayload[col];
-          stripped = true;
-        }
+    const errMsg = (error.message || '').toLowerCase();
+    let stripped = false;
+    ['is_bestseller', 'category_id', 'base_price', 'discount_type', 'discount_value', 'original_price', 'price'].forEach(col => {
+      if (currentPayload[col] !== undefined && (errMsg.includes(col) || errMsg.includes('schema cache') || error.code === 'PGRST204')) {
+        delete currentPayload[col];
+        stripped = true;
       }
-      if (!stripped) return { data: null, error };
+    });
+
+    if (!stripped) {
+      if (currentPayload.is_bestseller !== undefined) { delete currentPayload.is_bestseller; stripped = true; }
+      else if (currentPayload.category_id !== undefined) { delete currentPayload.category_id; stripped = true; }
+      else { return { data: null, error }; }
     }
   }
   return { data: null, error: new Error('Failed to insert product after column fallbacks') };
@@ -618,31 +615,28 @@ const safeInsertProduct = async (payload) => {
 const safeUpdateProduct = async (id, payload) => {
   let currentPayload = { ...payload };
   for (let attempt = 0; attempt < 5; attempt++) {
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from('products')
       .update(currentPayload)
       .eq('id', id)
       .select()
-      .single();
+      .maybeSingle();
 
     if (!error) return { data, error: null };
 
-    const errMsg = error.message || '';
-    const match = errMsg.match(/column ["']?([a-zA-Z0-9_]+)["']? of relation/i) ||
-                  errMsg.match(/could not find the ['"]?([a-zA-Z0-9_]+)['"]? column/i);
-
-    if (match && match[1] && currentPayload[match[1]] !== undefined) {
-      delete currentPayload[match[1]];
-    } else {
-      let stripped = false;
-      const optionals = ['is_bestseller', 'category_id', 'base_price', 'discount_type', 'discount_value', 'original_price', 'price'];
-      for (const col of optionals) {
-        if (errMsg.toLowerCase().includes(col) && currentPayload[col] !== undefined) {
-          delete currentPayload[col];
-          stripped = true;
-        }
+    const errMsg = (error.message || '').toLowerCase();
+    let stripped = false;
+    ['is_bestseller', 'category_id', 'base_price', 'discount_type', 'discount_value', 'original_price', 'price'].forEach(col => {
+      if (currentPayload[col] !== undefined && (errMsg.includes(col) || errMsg.includes('schema cache') || error.code === 'PGRST204')) {
+        delete currentPayload[col];
+        stripped = true;
       }
-      if (!stripped) return { data: null, error };
+    });
+
+    if (!stripped) {
+      if (currentPayload.is_bestseller !== undefined) { delete currentPayload.is_bestseller; stripped = true; }
+      else if (currentPayload.category_id !== undefined) { delete currentPayload.category_id; stripped = true; }
+      else { return { data: null, error }; }
     }
   }
   return { data: null, error: new Error('Failed to update product after column fallbacks') };
@@ -993,11 +987,6 @@ export const updateProduct = async (req, res) => {
       is_featured: updates.isFeatured !== false,
       is_bestseller: isBestsellerRequested,
       is_active: updates.status === 'active',
-      price: priceVal,
-      original_price: originalPriceVal,
-      base_price: basePriceVal,
-      discount_type: discountTypeVal,
-      discount_value: discountVal,
       updated_at: new Date(),
     };
 
