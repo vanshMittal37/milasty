@@ -31,25 +31,25 @@ function getShiprathHeaders() {
  * Helper: Calculate package weight from cart/order items
  */
 export function calculateItemsWeightKg(items = []) {
-  if (!items || !items.length) return 0.5; // minimum default 500g
+  if (!items || !items.length) return 0.2; // minimum default 200g
 
   let totalWeightKg = 0;
   for (const item of items) {
-    const qty = Number(item.quantity || 1);
-    const varName = String(item.variantName || item.variant_name || item.weight || '').toLowerCase();
+    const qty = Number(item.quantity || item.qty || 1);
+    const varName = String(item.variantName || item.variant_name || item.variant || item.weight || item.product_title || item.title || '').toLowerCase();
     
-    // Parse grams from variant name (e.g. "100g", "250 g", "500gm")
+    // Parse grams from variant name (e.g. "70g", "100g", "250 g", "500gm")
     const match = varName.match(/(\d+)\s*g/i);
     if (match) {
       const grams = Number(match[1]) * qty;
-      totalWeightKg += (grams / 1000) * 1.2; // 20% packaging buffer
+      totalWeightKg += (grams / 1000) * 1.25; // 25% packaging buffer
     } else {
-      totalWeightKg += 0.3 * qty; // fallback: 300g per item
+      totalWeightKg += 0.15 * qty; // fallback: 150g per item
     }
   }
 
-  // Minimum 0.5 kg, rounded to 1 decimal place
-  return Math.max(0.5, Math.round(totalWeightKg * 10) / 10);
+  // Minimum 0.2 kg, rounded to 2 decimal places (e.g. 0.2, 0.25, 0.3)
+  return Math.max(0.2, Math.round(totalWeightKg * 100) / 100);
 }
 
 /**
@@ -510,10 +510,10 @@ export const bookShiprathShipment = async (order) => {
 
         order_number: String(order.order_number || order.orderNumber || order.id).slice(0, 50),
         weight: estimatedWeightKg,
-        length: 15,
-        breadth: 15,
-        width: 15,
-        height: 10,
+        length: 10,
+        breadth: 10,
+        width: 10,
+        height: 5,
         mode: 'Domestic',
 
         total_amount: declaredValue,
