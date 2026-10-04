@@ -510,7 +510,7 @@ export const bookShiprathShipment = async (order) => {
       width: 20,
       height: 12,
       parcel_type: 'Parcel',
-      mode: 'Surface',
+      mode: 'Domestic',
       // Financial amounts (All aliases for 100% Shiprath B2C API schema compatibility)
       total_amount: declaredValue,
       grand_total: declaredValue,
