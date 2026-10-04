@@ -127,7 +127,8 @@ export default function Navbar() {
     if (showToast) {
       showToast(`✓ Coupon code ${code} copied!`);
     } else if (toast) {
-      toast(`✓ Coupon code ${code} copied!`, 'success');
+      toast.success(`✓ Coupon code ${code} copied!`);
+
     }
   };
 

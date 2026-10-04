@@ -19,15 +19,15 @@ export function ToastProvider({ children }) {
     }, 4000);
   }, [removeToast]);
 
-  const toast = {
-    success: (msg) => showToast(msg, 'success'),
-    error: (msg) => showToast(msg, 'error'),
-    warning: (msg) => showToast(msg, 'warning'),
-    info: (msg) => showToast(msg, 'info'),
-  };
+  // Create a callable toast function that ALSO has .success, .error, .warning, .info attached
+  const toastFn = (msg, type = 'info') => showToast(msg, type);
+  toastFn.success = (msg) => showToast(msg, 'success');
+  toastFn.error = (msg) => showToast(msg, 'error');
+  toastFn.warning = (msg) => showToast(msg, 'warning');
+  toastFn.info = (msg) => showToast(msg, 'info');
 
   return (
-    <ToastContext.Provider value={{ showToast, toast }}>
+    <ToastContext.Provider value={{ showToast, toast: toastFn }}>
       {children}
       {/* Toast Notification Container */}
       <div 
@@ -115,15 +115,17 @@ export function ToastProvider({ children }) {
 export function useToast() {
   const ctx = useContext(ToastContext);
   if (!ctx) {
+    const fallbackFn = (msg) => console.log('Toast:', msg);
+    fallbackFn.success = (msg) => console.log('Toast Success:', msg);
+    fallbackFn.error = (msg) => console.log('Toast Error:', msg);
+    fallbackFn.warning = (msg) => console.log('Toast Warning:', msg);
+    fallbackFn.info = (msg) => console.log('Toast Info:', msg);
+
     return {
       showToast: (msg) => console.log('Toast:', msg),
-      toast: {
-        success: (msg) => console.log('Toast Success:', msg),
-        error: (msg) => console.log('Toast Error:', msg),
-        warning: (msg) => console.log('Toast Warning:', msg),
-        info: (msg) => console.log('Toast Info:', msg),
-      },
+      toast: fallbackFn,
     };
   }
   return ctx;
 }
+
