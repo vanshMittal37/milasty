@@ -441,7 +441,8 @@ export const bookShiprathShipment = async (order) => {
       product_id: selectedRate.product_id,
 
       // Order & Shipment Type (Required by Shiprath B2C API)
-      type: typeVal,
+      type: 'Parcel',
+      parcel_type: 'Parcel',
       order_type: typeVal,
       shipment_type: 'Forward',
 
