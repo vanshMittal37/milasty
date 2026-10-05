@@ -97,7 +97,7 @@ export default function AdminOrderList() {
         // Update list and modal optimistically
         setOrders(prev => prev.map(o =>
           (o.id === orderId || o._id === orderId)
-            ? { ...o, awb_number: awbVal, awb: awbVal, courier_name: courierName, orderStatus: 'Shipped', status: 'Shipped' }
+            ? { ...o, awb_number: awbVal, awb: awbVal, courier_name: courierName, shipment_status: 'booked', orderStatus: 'Shipped', status: 'Shipped' }
             : o
         ));
         if (selectedOrder && (selectedOrder.id === orderId || selectedOrder._id === orderId)) {
@@ -107,19 +107,29 @@ export default function AdminOrderList() {
             awb: awbVal,
             courier_name: courierName,
             tracking_url: res.data.tracking_url,
+            shipment_status: 'booked',
             orderStatus: 'Shipped',
             status: 'Shipped',
           }));
         }
         alert(`✅ Shipment booked!\nAWB: ${awbVal}\nCourier: ${courierName}`);
       } else {
+        // BUG 3 FIX: Show real Shiprath error, not generic
+        const realMsg = res.data?.rawError || res.data?.message || 'Shiprath could not book any courier for this order.';
         const failures = res.data?.courierFailures || [];
-        const msg = res.data?.message || 'Shiprath could not book any courier for this order.';
-        alert(`❌ Booking failed:\n${msg}${failures.length ? '\n\nCourier attempts:\n' + failures.join('\n') : ''}`);
+        const hint = res.data?.hint || '';
+        let alertMsg = `❌ Booking failed:\n${realMsg}`;
+        if (failures.length) alertMsg += `\n\nPer-courier details:\n${failures.join('\n')}`;
+        if (hint) alertMsg += `\n\nℹ️ ${hint}`;
+        alert(alertMsg);
       }
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Error booking shipment.';
-      alert(`❌ ${msg}`);
+      const errData = err.response?.data;
+      const realMsg = errData?.rawError || errData?.message || err.message || 'Error booking shipment.';
+      const failures = errData?.courierFailures || [];
+      let alertMsg = `❌ ${realMsg}`;
+      if (failures.length) alertMsg += `\n\nPer-courier:\n${failures.join('\n')}`;
+      alert(alertMsg);
     } finally {
       setBookingShipment(false);
       setBookingOrderId(null);
@@ -383,9 +393,20 @@ export default function AdminOrderList() {
                       )}
                     </td>
                     <td>
-                      <span className={`admin-badge ${statusBadgeClass}`}>
-                        {displayStatus}
-                      </span>
+                      {/* Two separate status badges: Payment + Shipment */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                        <span className={`admin-badge ${statusBadgeClass}`} style={{ fontSize: '0.72rem' }}>
+                          {displayStatus}
+                        </span>
+                        {(() => {
+                          const shipSt = (o.shipment_status || '').toLowerCase();
+                          if (shipSt === 'booked') return <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#22c55e', background: 'rgba(34,197,94,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>🚚 Shipped</span>;
+                          if (shipSt === 'creating') return <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#3b82f6', background: 'rgba(59,130,246,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>⏳ Booking...</span>;
+                          if (shipSt === 'failed') return <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#ef4444', background: 'rgba(239,68,68,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px', cursor: 'pointer', title: o.shipment_error || 'See details' }}>❌ Ship Failed</span>;
+                          if (o.awb_number || o.awb) return <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#22c55e', background: 'rgba(34,197,94,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>🚚 Shipped</span>;
+                          return null;
+                        })()}
+                      </div>
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap' }}>

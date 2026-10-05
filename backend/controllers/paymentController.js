@@ -21,10 +21,13 @@ const getRazorpayInstance = () => {
 export const getDeliveryChargeForPincode = async (pincode, subtotal, items = []) => {
   try {
     const rateResult = await fetchLiveShiprathRate({ pincode, items, declaredValue: subtotal });
+    // Log all rates so Railway shows what Shiprath returned
+    console.log(`[RATES] dest=${pincode} weight=${rateResult.weight}kg → ${rateResult.rateList.length} options: ${rateResult.rateList.map(r => `${r.service_name} ₹${r.total_charges}`).join(', ')}`);
     return {
       deliveryFee: rateResult.shippingCharge,
       isFreeDelivery: false,
       selectedRate: rateResult.selectedRate,
+      rateList: rateResult.rateList,
       city: '',
       state: ''
     };
@@ -34,6 +37,7 @@ export const getDeliveryChargeForPincode = async (pincode, subtotal, items = [])
       deliveryFee: 0,
       isFreeDelivery: false,
       selectedRate: null,
+      rateList: [],
       city: '',
       state: ''
     };
@@ -57,6 +61,7 @@ export const createPaymentSession = async (req, res) => {
       items = [],
       couponCode = null,
       userId = null,
+      selectedRate: customerChosenRate = null, // Customer's courier choice from checkout UI
     } = req.body;
 
     const finalEmail = customerEmail || email || '';
@@ -136,8 +141,23 @@ export const createPaymentSession = async (req, res) => {
       });
     }
 
-    // Fetch dynamic delivery charge from Shiprath Rate API
-    const { deliveryFee, city: deliveryCity, state: deliveryState } = await getDeliveryChargeForPincode(finalPincode, subtotal, validatedItems);
+    // Fetch dynamic delivery charge + full rate list from Shiprath Rate API
+    const { deliveryFee: serverDeliveryFee, city: deliveryCity, state: deliveryState, selectedRate: serverBestRate, rateList: allRates } = await getDeliveryChargeForPincode(finalPincode, subtotal, validatedItems);
+
+    // Use the customer's chosen courier if it's in the server's rate list (anti-tampering: verify carrier_id matches)
+    let chosenRate = serverBestRate; // default: server's cheapest
+    if (customerChosenRate && customerChosenRate.carrier_id && allRates && allRates.length > 0) {
+      const matched = allRates.find(
+        r => r.carrier_id === customerChosenRate.carrier_id && r.courier_id === customerChosenRate.courier_id
+      );
+      if (matched) {
+        chosenRate = matched; // Use server's validated rate object, not customer-provided
+        console.log(`[PAYMENT SESSION] Customer chose courier "${matched.service_name}" at ₹${matched.total_charges} (server-verified)`);
+      } else {
+        console.warn(`[PAYMENT SESSION] Customer's chosen carrier_id=${customerChosenRate.carrier_id} not in server rate list. Falling back to cheapest.`);
+      }
+    }
+    const deliveryFee = chosenRate ? Number(chosenRate.total_charges) : serverDeliveryFee;
 
     // Server-side Coupon discount calculation (Single Source of Truth)
     let discountAmount = 0;
@@ -232,7 +252,7 @@ export const createPaymentSession = async (req, res) => {
       .map((i) => `${i.product_title} (${i.variant_name}): "${i.customization_note}"`)
       .join(' | ');
 
-    // Save session in memory store & optional DB table
+    // Save session in memory store — includes the selected rate quote so booking uses the exact same carrier
     const sessionData = {
       id: razorpayOrder.id,
       razorpay_order_id: razorpayOrder.id,
@@ -255,6 +275,9 @@ export const createPaymentSession = async (req, res) => {
       notes: customizationSummary || null,
       status: 'created',
       createdAt: new Date().toISOString(),
+      // ── Stored Shiprath rate quote (the exact carrier/product the customer's shipping fee covers) ──
+      selectedRate: chosenRate || null,
+      rateList: allRates || [],
     };
 
     paymentSessions.set(razorpayOrder.id, sessionData);
@@ -270,6 +293,9 @@ export const createPaymentSession = async (req, res) => {
       subtotal,
       discountAmount,
       couponCode: validatedCouponCode,
+      // Return full rate list and selected rate so checkout can show courier options
+      rateList: allRates || [],
+      selectedRate: chosenRate || null,
     });
   } catch (error) {
     console.error('Error in createPaymentSession:', error);
@@ -363,6 +389,13 @@ export const finalizeOrderFromPayment = async ({
     payment_id: razorpay_payment_id || razorpay_order_id || null,
     payment_status: 'paid',
     order_status: 'confirmed',
+    shipment_status: 'pending',
+    // ── Stored Shiprath rate quote — used for booking, prevents re-fetch/drift ──
+    selected_carrier_id: session?.selectedRate?.carrier_id || null,
+    selected_courier_id: session?.selectedRate?.courier_id || null,
+    selected_product_id: session?.selectedRate?.product_id || null,
+    selected_service_name: session?.selectedRate?.service_name || null,
+    selected_delivery_fee: session?.deliveryFee || 0,
   };
 
   let newOrder = null;
@@ -601,18 +634,38 @@ export const verifyRazorpayPayment = async (req, res) => {
 
     // Auto-book Shiprath B2C shipment (fire-and-forget — does not block response)
     if (order?.id) {
-      const orderWithItems = order.order_items
-        ? order
-        : (() => {
-            supabase.from('orders').select('*, order_items(*)').eq('id', order.id).maybeSingle()
-              .then(({ data }) => { if (data) bookShiprathShipment(data).catch(console.warn); });
-            return null;
-          })();
-      if (orderWithItems) {
-        bookShiprathShipment(orderWithItems).catch((err) =>
-          console.warn('[SHIPRATH] Auto-book notice after Razorpay verify:', err.message)
-        );
-      }
+      // Fetch fresh order with items if not already attached
+      setImmediate(async () => {
+        try {
+          const { data: freshOrder } = await supabase
+            .from('orders')
+            .select('*, order_items(*)')
+            .eq('id', order.id)
+            .maybeSingle();
+          if (freshOrder) {
+            // Mark shipment as CREATING so admin can see it's in progress
+            await supabase.from('orders').update({ shipment_status: 'creating' }).eq('id', order.id).catch(() => {});
+            console.log(`[SHIPRATH] ${freshOrder.order_number} → Starting auto-book after payment verify`);
+            const result = await bookShiprathShipment(freshOrder);
+            if (result?.awb) {
+              await supabase.from('orders').update({ shipment_status: 'booked' }).eq('id', order.id).catch(() => {});
+              console.log(`[SHIPRATH] ${freshOrder.order_number} → ✅ Auto-book SUCCESS AWB: ${result.awb} Courier: ${result.courier_name}`);
+            } else {
+              const errMsg = result?.rawError || result?.error || 'Unknown error';
+              const failures = (result?.courierFailures || []).join(' | ');
+              await supabase.from('orders').update({
+                shipment_status: 'failed',
+                shipment_error: `${errMsg}${failures ? ' | Attempts: ' + failures : ''}`,
+              }).eq('id', order.id).catch(() => {});
+              console.error(`[SHIPRATH] ${freshOrder.order_number} → ❌ Auto-book FAILED: ${errMsg}`);
+              if (failures) console.error(`[SHIPRATH] ${freshOrder.order_number} → Courier failures: ${failures}`);
+            }
+          }
+        } catch (shipErr) {
+          console.error('[SHIPRATH] Auto-book exception after Razorpay verify:', shipErr.message);
+          supabase.from('orders').update({ shipment_status: 'failed', shipment_error: shipErr.message }).eq('id', order.id).catch(() => {});
+        }
+      });
     }
 
     return res.json({
@@ -717,18 +770,33 @@ export const handleRazorpayWebhook = async (req, res) => {
 
         // Auto-book Shiprath shipment (fire-and-forget, same as /payments/verify path)
         if (finalizedOrder?.id) {
-          supabase
-            .from('orders')
-            .select('*, order_items(*)')
-            .eq('id', finalizedOrder.id)
-            .maybeSingle()
-            .then(({ data }) => {
-              if (data) {
-                bookShiprathShipment(data).catch((err) =>
-                  console.warn('[SHIPRATH] Webhook auto-book notice:', err.message)
-                );
+          setImmediate(async () => {
+            try {
+              const { data: freshOrder } = await supabase
+                .from('orders')
+                .select('*, order_items(*)')
+                .eq('id', finalizedOrder.id)
+                .maybeSingle();
+              if (freshOrder && !freshOrder.awb_number) {
+                await supabase.from('orders').update({ shipment_status: 'creating' }).eq('id', finalizedOrder.id).catch(() => {});
+                console.log(`[SHIPRATH WEBHOOK] ${freshOrder.order_number} → Starting auto-book`);
+                const result = await bookShiprathShipment(freshOrder);
+                if (result?.awb) {
+                  await supabase.from('orders').update({ shipment_status: 'booked' }).eq('id', finalizedOrder.id).catch(() => {});
+                  console.log(`[SHIPRATH WEBHOOK] ${freshOrder.order_number} → ✅ SUCCESS AWB: ${result.awb}`);
+                } else {
+                  const errMsg = result?.rawError || result?.error || 'Unknown';
+                  await supabase.from('orders').update({
+                    shipment_status: 'failed',
+                    shipment_error: errMsg,
+                  }).eq('id', finalizedOrder.id).catch(() => {});
+                  console.error(`[SHIPRATH WEBHOOK] ${freshOrder.order_number} → ❌ FAILED: ${errMsg}`);
+                }
               }
-            });
+            } catch (shipErr) {
+              console.error('[SHIPRATH WEBHOOK] Auto-book exception:', shipErr.message);
+            }
+          });
         }
       }
     } else if (event === 'payment.failed') {

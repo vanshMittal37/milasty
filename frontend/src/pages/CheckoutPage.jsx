@@ -46,24 +46,42 @@ export default function CheckoutPage() {
   });
 
   const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
-  const [dynamicShippingFee, setDynamicShippingFee] = useState(0);
+  const [rateList, setRateList] = useState([]);
+  const [selectedCourierRate, setSelectedCourierRate] = useState(null);
   const [fetchingShippingFee, setFetchingShippingFee] = useState(false);
-  const [selectedCourierInfo, setSelectedCourierInfo] = useState(null);
+  const [rateError, setRateError] = useState('');
 
-  // Dynamic live rate calculation via Shiprath Rate API
+  // Derived: shipping fee from the chosen courier (or 0 while loading)
+  const dynamicShippingFee = selectedCourierRate ? Number(selectedCourierRate.total_charges || 0) : 0;
+
+  // Dynamic live rate calculation via Shiprath Rate API — fetch all options
   useEffect(() => {
     const pin = String(formData?.pincode || '').trim();
     if (pin && /^\d{6}$/.test(pin)) {
       setFetchingShippingFee(true);
+      setRateError('');
       api.post('/shipping/rates', { pincode: pin, items: cartItems })
         .then((res) => {
-          if (res.data && res.data.success) {
-            setDynamicShippingFee(Number(res.data.shippingCharge || 0));
-            setSelectedCourierInfo(res.data.selectedRate || null);
+          if (res.data && res.data.success && res.data.rateList && res.data.rateList.length > 0) {
+            const sorted = [...res.data.rateList].sort((a, b) => a.total_charges - b.total_charges);
+            setRateList(sorted);
+            // Pre-select cheapest
+            setSelectedCourierRate(sorted[0]);
+          } else {
+            setRateList([]);
+            setSelectedCourierRate(null);
+            setRateError('No courier available for this pincode yet.');
           }
         })
-        .catch((err) => console.warn('Dynamic shipping rate fetch error:', err))
+        .catch((err) => {
+          console.warn('Dynamic shipping rate fetch error:', err);
+          setRateList([]);
+          setSelectedCourierRate(null);
+        })
         .finally(() => setFetchingShippingFee(false));
+    } else {
+      setRateList([]);
+      setSelectedCourierRate(null);
     }
   }, [formData?.pincode, cartItems]);
 
@@ -319,6 +337,8 @@ export default function CheckoutPage() {
         couponCode: appliedCoupon ? appliedCoupon.code : null,
         paymentMethod: 'Razorpay',
         selectedAddressId: selectedAddressId || null,
+        // Pass the selected courier rate so the backend stores it and uses it for booking
+        selectedRate: selectedCourierRate || null,
       };
 
       // ONLINE RAZORPAY FLOW: Create payment session (No order in DB yet!)
@@ -833,8 +853,80 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
-              {/* Cost Summary calculations */}
+              {/* Courier Options — show all Shiprath options */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1.5rem 0', borderBottom: '1px solid #E4D1B7', fontSize: '0.9rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#5A3422' }}>
+                  <span style={{ fontWeight: '700' }}>Shipping</span>
+                  {fetchingShippingFee ? (
+                    <span style={{ color: '#A38C7A', fontSize: '0.82rem' }}>Calculating...</span>
+                  ) : (
+                    <span style={{ fontWeight: '700', color: '#2B140B' }}>₹{dynamicShippingFee}</span>
+                  )}
+                </div>
+
+                {/* Courier selector */}
+                {fetchingShippingFee && (
+                  <div style={{ fontSize: '0.78rem', color: '#A38C7A', fontStyle: 'italic' }}>Fetching courier options...</div>
+                )}
+                {!fetchingShippingFee && rateList.length > 1 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#5A3422', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Choose Courier</span>
+                    {rateList.map((rate, idx) => {
+                      const isChosen = selectedCourierRate && (
+                        rate.courier_id === selectedCourierRate.courier_id &&
+                        rate.carrier_id === selectedCourierRate.carrier_id
+                      );
+                      return (
+                        <label
+                          key={`${rate.carrier_id}-${rate.courier_id}-${idx}`}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '0.75rem',
+                            padding: '0.6rem 0.85rem',
+                            backgroundColor: isChosen ? '#EAEFE5' : '#F3EDE2',
+                            border: isChosen ? '1.5px solid #2F6B3A' : '1.5px solid #D8CCB8',
+                            borderRadius: '10px',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <input
+                              type="radio"
+                              name="courierOption"
+                              checked={!!isChosen}
+                              onChange={() => setSelectedCourierRate(rate)}
+                              style={{ accentColor: '#2F6B3A' }}
+                            />
+                            <div>
+                              <div style={{ fontWeight: '700', fontSize: '0.85rem', color: '#2B140B' }}>
+                                {rate.service_name || rate.service_provider}
+                              </div>
+                              {rate.estimated_delivery && (
+                                <div style={{ fontSize: '0.72rem', color: '#6B584C' }}>{rate.estimated_delivery}</div>
+                              )}
+                            </div>
+                          </div>
+                          <span style={{ fontWeight: '800', color: '#2B140B', fontSize: '0.92rem', flexShrink: 0 }}>₹{rate.total_charges}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+                {!fetchingShippingFee && rateList.length === 1 && selectedCourierRate && (
+                  <div style={{ fontSize: '0.75rem', color: '#2F6B3A', fontWeight: '600' }}>
+                    via {selectedCourierRate.service_name || selectedCourierRate.service_provider}
+                    {selectedCourierRate.estimated_delivery && ` · ${selectedCourierRate.estimated_delivery}`}
+                  </div>
+                )}
+                {!fetchingShippingFee && rateError && (
+                  <div style={{ fontSize: '0.75rem', color: '#C0392B', fontWeight: '600' }}>{rateError}</div>
+                )}
+              </div>
+              {/* Cost Subtotal & Coupon */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', padding: '1.25rem 0 0.75rem', borderBottom: '1px solid #E4D1B7', fontSize: '0.9rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#5A3422' }}>
                   <span>Subtotal</span>
                   <span style={{ fontWeight: '700', color: '#2B140B' }}>₹{subtotal}</span>
@@ -845,23 +937,12 @@ export default function CheckoutPage() {
                     <span>-₹{couponDiscountAmount}</span>
                   </div>
                 )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#5A3422' }}>
-                  <span>Shipping (Shiprath Dynamic)</span>
-                  <span style={{ fontWeight: '700', color: '#2B140B' }}>
-                    {fetchingShippingFee ? 'Calculating...' : `₹${effectiveDeliveryFee}`}
-                  </span>
-                </div>
-                {selectedCourierInfo && (
-                  <div style={{ fontSize: '0.75rem', color: '#2F6B3A', textAlign: 'right', marginTop: '-0.3rem', fontWeight: '600' }}>
-                    via {selectedCourierInfo.service_name || selectedCourierInfo.service_provider}
-                  </div>
-                )}
               </div>
 
               {/* Grand Total */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 0 1.25rem' }}>
                 <span style={{ fontSize: '1.15rem', fontWeight: '850', color: '#2B140B' }}>Total to Pay</span>
-                <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#2B140B' }}>₹{effectiveGrandTotal}</span>
+                <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#2B140B' }}>₹{Math.max(0, subtotal - couponDiscountAmount + dynamicShippingFee)}</span>
               </div>
 
               {errorMessage && (

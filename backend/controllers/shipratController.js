@@ -493,25 +493,49 @@ export const bookShiprathShipment = async (order) => {
     const custEmail = String(order.customer_email || order.customerEmail || order.user?.email || 'orders@milasty.com').slice(0, 100);
 
     let candidateRates = [];
-    try {
-      // Pass identical calculated package weight to Rate Calculator
-      const rateResult = await fetchLiveShiprathRate({
-        pincode: destinationPincode,
-        items,
-        weight: calculatedWeightKg,
-        declaredValue,
-      });
-      candidateRates = rateResult.rateList || [];
-      if (!candidateRates.length && rateResult.selectedRate) {
-        candidateRates = [rateResult.selectedRate];
+
+    // ── BUG 2 & 3 FIX: Use stored rate IDs from checkout quote if available ──
+    // This avoids re-fetching rates (which may return a different courier),
+    // and ensures admin retry uses the exact carrier the customer paid for.
+    if (order.selected_carrier_id && order.selected_courier_id) {
+      console.log(`[SHIPRATH BOOK] ${order.order_number} → Using STORED rate (carrier_id=${order.selected_carrier_id} courier_id=${order.selected_courier_id} product_id=${order.selected_product_id})`);
+      candidateRates = [{
+        carrier_id: order.selected_carrier_id,
+        courier_id: order.selected_courier_id,
+        product_id: order.selected_product_id || null,
+        service_name: order.selected_service_name || 'Stored Courier',
+        total_charges: order.selected_delivery_fee || order.delivery_fee || 0,
+      }];
+    } else {
+      // Legacy orders without stored rate — re-fetch from Shiprath
+      console.log(`[SHIPRATH BOOK] ${order.order_number} → No stored rate, fetching live rates (legacy order)`);
+      try {
+        const rateResult = await fetchLiveShiprathRate({
+          pincode: destinationPincode,
+          items,
+          weight: calculatedWeightKg,
+          declaredValue,
+        });
+        candidateRates = rateResult.rateList || [];
+        if (!candidateRates.length && rateResult.selectedRate) {
+          candidateRates = [rateResult.selectedRate];
+        }
+      } catch (rateErr) {
+        console.error(`[SHIPRATH BOOK] ${order.order_number} → Rate fetch failed:`, rateErr.message);
+        const errMsg = `Rate fetch failed: ${rateErr.message}`;
+        if (order.id) {
+          await supabase.from('orders').update({ shipment_status: 'failed', shipment_error: errMsg }).eq('id', order.id).catch(() => {});
+        }
+        return { error: errMsg, rawError: rateErr.message };
       }
-    } catch (rateErr) {
-      console.error('[SHIPRATH BOOK] Rate fetch failed:', rateErr.message);
-      return { error: "Sorry, we currently cannot ship this package to this location. Please contact support." };
     }
 
     if (!candidateRates.length) {
-      return { error: "We could not find an available courier for this package. Please try again or contact support." };
+      const errMsg = 'No courier services available for this package destination from Shiprath.';
+      if (order.id) {
+        await supabase.from('orders').update({ shipment_status: 'failed', shipment_error: errMsg }).eq('id', order.id).catch(() => {});
+      }
+      return { error: errMsg };
     }
 
     // SAFE DIAGNOSTIC LOGGING (Excludes secret key and customer ID)
@@ -669,13 +693,21 @@ export const bookShiprathShipment = async (order) => {
     }
 
     if (!bookData || !bookData.status) {
-      console.error('[SHIPRATH BOOK DIAGNOSTIC] All candidate couriers returned by Rate API failed. Failures:', courierFailuresLog);
+      const realError = lastRawError || 'All couriers rejected this shipment';
+      console.error(`[SHIPRATH BOOK] ${order.order_number} → ❌ All ${candidateRates.length} candidate courier(s) failed. Failures:`, courierFailuresLog);
 
-      const userFacingError = "We could not find an available courier for this package. Please try again or contact support.";
+      // Save the real Shiprath error to the order row so admin can see it
+      if (order.id) {
+        const storedError = [realError, ...courierFailuresLog].join(' | ').slice(0, 500);
+        await supabase.from('orders').update({
+          shipment_status: 'failed',
+          shipment_error: storedError,
+        }).eq('id', order.id).catch(() => {});
+      }
 
       return {
-        error: userFacingError,
-        rawError: lastRawError,
+        error: realError,  // Real Shiprath message — not a generic override
+        rawError: realError,
         courierFailures: courierFailuresLog,
       };
     }
@@ -730,6 +762,7 @@ export const bookShiprathShipment = async (order) => {
   }
 };
 
+
 /**
  * POST /api/shiprat/book (and /api/shipping/book)
  * Admin manual shipment creation endpoint
@@ -751,14 +784,38 @@ export const bookShipmentForOrder = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Order not found.' });
     }
 
+    // BUG 3 FIX: Detect legacy orders (no stored rate from checkout)
+    const hasStoredRate = Boolean(order.selected_carrier_id && order.selected_courier_id);
+    if (!hasStoredRate) {
+      console.log(`[ADMIN BOOK] ${order.order_number} -> No stored rate (legacy order). Will re-fetch live rates.`);
+    } else {
+      console.log(`[ADMIN BOOK] ${order.order_number} -> Using stored rate (carrier_id=${order.selected_carrier_id}).`);
+    }
+
+    // Mark as creating before attempting
+    await supabase.from('orders').update({ shipment_status: 'creating' }).eq('id', order.id).catch(() => {});
+
     const result = await bookShiprathShipment(order);
     if (!result || result.error) {
+      const realError = result?.rawError || result?.error || 'Shiprath booking failed.';
+      const failures = result?.courierFailures || [];
+      console.error(`[ADMIN BOOK] ${order.order_number} -> FAILED: ${realError}`);
       return res.status(400).json({
         success: false,
-        message: result?.error || 'Shiprath booking failed.',
-        raw: result?.raw || null,
-        courierFailures: result?.courierFailures || [],
+        // BUG 3 FIX: Real Shiprath error, not the generic override
+        message: realError,
+        rawError: realError,
+        courierFailures: failures,
+        isLegacyOrder: !hasStoredRate,
+        hint: !hasStoredRate
+          ? 'Legacy order: no stored carrier rate from checkout. Shiprath live rates were re-fetched. See courierFailures for the real rejection reason per courier.'
+          : null,
       });
+    }
+
+    // Update shipment_status to booked on success
+    if (order.id && result.awb) {
+      await supabase.from('orders').update({ shipment_status: 'booked', shipment_error: null }).eq('id', order.id).catch(() => {});
     }
 
     return res.json({ success: true, ...result });
@@ -767,6 +824,7 @@ export const bookShipmentForOrder = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Error booking shipment.', error: error.message });
   }
 };
+
 
 /**
  * GET /api/shipping/track/:awb (and /api/shiprat/track/:awb)

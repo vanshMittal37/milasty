@@ -569,6 +569,15 @@ export const formatOrderPayload = (o) => {
     courier_name: o.courier_name || null,
     tracking_url: o.tracking_url || (o.awb_number ? `https://backend.shiprath.com/tracking/${o.awb_number}` : null),
     shipmentBooked: Boolean(o.awb_number || o.awb),
+    // ── Shipment lifecycle status ──
+    shipment_status: o.shipment_status || (o.awb_number ? 'booked' : 'pending'),
+    shipment_error: o.shipment_error || null,
+    // ── Stored rate IDs (for admin to see which carrier was quoted at checkout) ──
+    selected_carrier_id: o.selected_carrier_id || null,
+    selected_courier_id: o.selected_courier_id || null,
+    selected_product_id: o.selected_product_id || null,
+    selected_service_name: o.selected_service_name || null,
+    selected_delivery_fee: o.selected_delivery_fee || null,
   };
 };
 
