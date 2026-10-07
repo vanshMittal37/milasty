@@ -147,21 +147,29 @@ export default function TestimonialSection() {
           style={{
             position: 'relative',
             width: '100%',
-            height: isMobile ? '200px' : 'auto',
-            minHeight: isMobile ? '180px' : '380px',
-            maxHeight: isMobile ? '220px' : 'none',
+            // Square portrait photo: square frame on mobile so the face & shoulders aren't cropped,
+            // full card height on desktop (column is ~42% wide, so the crop stays near-square)
+            aspectRatio: isMobile ? '1 / 1' : 'auto',
+            maxHeight: isMobile ? '420px' : 'none',
+            minHeight: isMobile ? 0 : '420px',
+            height: isMobile ? 'auto' : '100%',
             overflow: 'hidden',
             backgroundColor: '#F1E5D4',
           }}
         >
           <img
-            src="/images/celebrity_pick.jpg"
-            alt="Celebrity Pick - Ananya Sharma"
+            src="/images/founder_image.jpeg"
+            alt="Celebrity Pick - Anwesha Chakraborty"
+            loading="lazy"
+            decoding="async"
             style={{
+              position: isMobile ? 'static' : 'absolute',
+              inset: 0,
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              objectPosition: isMobile ? 'center 20%' : 'center 25%',
+              // Face sits in the upper-middle of the photo — keep it in frame at any crop
+              objectPosition: isMobile ? 'center 22%' : 'center 30%',
               display: 'block',
             }}
           />
@@ -266,7 +274,7 @@ export default function TestimonialSection() {
             <div
               style={{
                 width: '3px',
-                height: isMobile ? '38px' : '44px',
+                height: isMobile ? '24px' : '28px',
                 backgroundColor: '#2F6B3A',
                 borderRadius: '2px',
               }}
@@ -282,17 +290,7 @@ export default function TestimonialSection() {
                   lineHeight: '1.2',
                 }}
               >
-                Ananya Sharma
-              </div>
-              <div
-                style={{
-                  margin: '0.2rem 0 0',
-                  fontSize: isMobile ? '0.82rem' : '0.86rem',
-                  color: '#2F6B3A',
-                  fontWeight: '700',
-                }}
-              >
-                Actress & Wellness Enthusiast
+                Anwesha Chakraborty
               </div>
             </div>
           </div>

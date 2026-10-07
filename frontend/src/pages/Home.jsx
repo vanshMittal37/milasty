@@ -576,19 +576,25 @@ export default function Home() {
               {/* Dynamic Category Products Display Grid */}
               <div className="category-products-grid fitted-cards-container-4" style={{ marginBottom: '2.5rem' }}>
                 {(() => {
-                  const slugLower = (activeCategorySlug || '').toLowerCase();
-                  let filtered = allProductsList.filter(p => {
-                    const pCat = (p.category || '').toLowerCase();
-                    const pTitle = (p.title || '').toLowerCase();
-                    if (slugLower === 'cookies') return pCat === 'cookies' || pCat === 'daily' || pTitle.includes('cookie');
-                    if (slugLower === 'crackers') return pCat === 'crackers' || pTitle.includes('cracker') || pTitle.includes('bajra');
-                    if (slugLower === 'brownies') return pCat === 'brownies' || pTitle.includes('brownie') || pTitle.includes('cocoa');
-                    if (slugLower === 'gifting' || slugLower === 'gift hampers') return pCat === 'gifting' || pCat === 'gifts' || pTitle.includes('hamper') || pTitle.includes('trio');
-                    return pCat === slugLower;
+                  // Products assigned to the category in admin (same source the Shop page uses):
+                  // the category's productIds from /categories, else the product's own category fields.
+                  const activeCat = categories.find(c => c.slug === activeCategorySlug || c.id === activeCategorySlug);
+                  const slugLower = String(activeCat?.slug || activeCategorySlug || '').toLowerCase();
+                  const catId = String(activeCat?.id || '').toLowerCase();
+                  const assignedIds = new Set((activeCat?.productIds || []).map(String));
+                  const filtered = allProductsList.filter(p => {
+                    if (assignedIds.size > 0) return assignedIds.has(String(p.id || p._id));
+                    const pCat = String(p.category || '').toLowerCase();
+                    const pCatId = String(p.category_id || p.categoryId || '').toLowerCase();
+                    return (catId && pCatId === catId) || (slugLower && pCat === slugLower);
                   });
 
                   if (filtered.length === 0) {
-                    filtered = allProductsList.slice(0, 4);
+                    return (
+                      <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#6B584C', fontWeight: '600', margin: '1rem 0' }}>
+                        New bakes for this collection are coming soon.
+                      </p>
+                    );
                   }
 
                   return filtered.slice(0, 4).map((product) => (

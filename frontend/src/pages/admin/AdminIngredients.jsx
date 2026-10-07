@@ -42,7 +42,7 @@ export default function AdminIngredients() {
       setIngredients(list);
     } catch (err) {
       console.error('Error fetching ingredients:', err);
-      toast.error('Failed to load honest ingredients.');
+      toast.error(err.response?.data?.message || 'Failed to load honest ingredients.');
     } finally {
       setLoading(false);
     }
@@ -125,7 +125,7 @@ export default function AdminIngredients() {
       fetchIngredients();
     } catch (err) {
       console.error('Save ingredient error:', err);
-      toast.error('Failed to save ingredient.');
+      toast.error(err.response?.data?.message || 'Failed to save ingredient.');
     } finally {
       setSaving(false);
     }
@@ -142,7 +142,7 @@ export default function AdminIngredients() {
       fetchIngredients();
     } catch (err) {
       console.error('Delete ingredient error:', err);
-      toast.error('Failed to delete ingredient.');
+      toast.error(err.response?.data?.message || 'Failed to delete ingredient.');
     } finally {
       setDeleting(false);
     }
@@ -155,7 +155,7 @@ export default function AdminIngredients() {
       fetchIngredients();
     } catch (err) {
       console.error('Toggle status error:', err);
-      toast.error('Failed to update status.');
+      toast.error(err.response?.data?.message || 'Failed to update status.');
     }
   };
 
