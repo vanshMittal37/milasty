@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Eye, EyeOff, Sparkles, Image as ImageIcon, Check, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
@@ -68,34 +68,31 @@ export default function AdminIngredients() {
     setModalOpen(true);
   };
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setUploadingImage(true);
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
-      const res = await api.post('/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      if (res.data && (res.data.imageUrl || res.data.url)) {
-        const uploadedUrl = res.data.imageUrl || res.data.url;
-        setImage(uploadedUrl);
-        toast.success('Image uploaded successfully.');
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      try {
+        const base64Data = reader.result;
+        const res = await api.post('/upload', { image: base64Data });
+        if (res.data && (res.data.url || res.data.imageUrl)) {
+          const uploadedUrl = res.data.url || res.data.imageUrl;
+          setImage(uploadedUrl);
+          toast.success('Image uploaded successfully to Cloudinary!');
+        } else {
+          toast.error('Upload failed: No URL returned');
+        }
+      } catch (err) {
+        console.error('Cloudinary Image upload error:', err);
+        toast.error('Image upload failed. Please check connection.');
+      } finally {
+        setUploadingImage(false);
       }
-    } catch (err) {
-      console.error('Image upload failed:', err);
-      // Fallback base64 conversion
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result);
-        toast.success('Image loaded successfully.');
-      };
-      reader.readAsDataURL(file);
-    } finally {
-      setUploadingImage(false);
-    }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSave = async (e) => {

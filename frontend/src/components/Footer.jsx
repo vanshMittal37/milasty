@@ -82,11 +82,7 @@ export default function Footer() {
                   Contact Us
                 </Link>
               </li>
-              <li>
-                <Link to="/admin" style={{ color: '#9BCB88', fontWeight: '700', transition: 'color 180ms ease', textDecoration: 'none' }} className="footer-link">
-                  Admin Dashboard
-                </Link>
-              </li>
+
             </ul>
           </div>
 

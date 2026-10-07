@@ -150,7 +150,8 @@ export const createIngredient = async (req, res) => {
     };
 
     try {
-      await supabase.from('honest_ingredients').insert([payload]);
+      const { error: sbErr } = await supabase.from('honest_ingredients').upsert([payload], { onConflict: 'id' });
+      if (sbErr) console.warn('Supabase createIngredient notice:', sbErr.message);
     } catch (e) {
       console.warn('Supabase createIngredient notice:', e.message);
     }
