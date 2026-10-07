@@ -182,19 +182,23 @@ export default function OrderSuccessPage() {
                 {(order.awb_number || order.awb) ? (
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
                     <span style={{ color: '#6B584C', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <Navigation size={14} style={{ color: '#2F6B3A' }} /> Courier AWB:
+                      <Navigation size={14} style={{ color: '#2F6B3A' }} /> Tracking (AWB):
                     </span>
                     <span style={{ fontWeight: '800', color: '#2F6B3A', fontFamily: 'monospace' }}>
                       {order.awb_number || order.awb}
-                      {order.courier_name && <span style={{ fontFamily: 'sans-serif', fontWeight: '600', color: '#6B584C', fontSize: '0.8rem', marginLeft: '0.4rem' }}>({order.courier_name})</span>}
                     </span>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.85rem' }}>
                     <span style={{ color: '#6B584C', fontWeight: '600' }}>Shipment:</span>
-                    <span style={{ fontWeight: '600', color: '#B7791F', fontSize: '0.82rem' }}>Being arranged…</span>
+                    <span style={{ fontWeight: '600', color: '#B7791F', fontSize: '0.82rem' }}>Processing…</span>
                   </div>
                 )}
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
+                  <span style={{ color: '#6B584C', fontWeight: '600' }}>Delivery:</span>
+                  <span style={{ fontWeight: '700', color: '#2B140B' }}>₹{order.deliveryFee || 0}</span>
+                </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.4rem', fontSize: '1.1rem', fontWeight: '900', color: '#2B140B' }}>
                   <span>Total Amount:</span>

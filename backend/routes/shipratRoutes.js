@@ -18,8 +18,8 @@ const router = express.Router();
 // Dynamic live rate calculation (used by Checkout & Cart)
 router.post('/rates', optionalProtect, getShiprathRates);
 
-// Live track by AWB
-router.get('/track/:awb', optionalProtect, trackShipment);
+// Raw live track by AWB (returns unfiltered Shiprath data — admin only)
+router.get('/track/:awb', protect, adminOnly, trackShipment);
 
 // Track by order ID or order number
 router.get('/order/:orderId/tracking', optionalProtect, trackOrderShipment);
@@ -41,7 +41,8 @@ router.post('/book', protect, adminOnly, bookShipmentForOrder);
 // ─── Diagnostic (PUBLIC — NO AUTH) ───────────────────────────────────────────
 // Safe: does NOT expose secrets, does NOT create shipments
 // Used to diagnose Railway env var issues
-router.get('/diagnose-credentials', diagnoseCredentials);
+// Admin only: the report includes the Shiprath customer ID and credential shape details
+router.get('/diagnose-credentials', protect, adminOnly, diagnoseCredentials);
 
 export default router;
 

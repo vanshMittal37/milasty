@@ -26,6 +26,16 @@ function normaliseStatus(raw) {
   return found || raw || 'Pending';
 }
 
+// Customer-facing shipment status labels (the server never sends internal failure states)
+const SHIPMENT_LABELS = {
+  processing: 'Processing',
+  booked: 'Booked',
+  picked_up: 'Picked Up',
+  in_transit: 'In Transit',
+  out_for_delivery: 'Out for Delivery',
+  delivered: 'Delivered',
+};
+
 // ─── Design tokens ──────────────────────────────────────────────────────────
 const T = {
   surface:       'rgba(255, 255, 255, 0.82)',
@@ -260,9 +270,9 @@ export default function CustomerOrderDetailPage() {
       const res = await api.get(`/orders/detail/${id}`);
       const fetchedOrder = res.data;
       setOrder(fetchedOrder);
-      // Auto-fetch tracking if order is shipped or beyond
+      // Auto-fetch tracking once a shipment exists (this also refreshes the shipment status server-side)
       const st = String(fetchedOrder?.orderStatus || fetchedOrder?.status || '').toLowerCase();
-      if (['shipped', 'out_for_delivery', 'out for delivery', 'delivered'].includes(st)) {
+      if (fetchedOrder?.awb_number || fetchedOrder?.awb || ['shipped', 'out_for_delivery', 'out for delivery', 'delivered'].includes(st)) {
         fetchShipTracking(fetchedOrder?.id || fetchedOrder?._id || id);
       }
     } catch (e) { console.error('Error fetching order', e); }
@@ -430,8 +440,8 @@ export default function CustomerOrderDetailPage() {
         {/* ── ORDER PROGRESS TRACKER ── */}
         <OrderProgressTracker currentStatus={currentStatus} />
 
-        {/* ── SHIPRATH LIVE TRACKING CARD ── */}
-        {(order.awb_number || order.awb || shipTracking || trackLoading) && (
+        {/* ── SHIPMENT TRACKING CARD (no courier details shown to customers) ── */}
+        {!isCancelled && (
           <div style={{
             ...cardStyle,
             padding: '1.5rem',
@@ -471,18 +481,18 @@ export default function CustomerOrderDetailPage() {
                     <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary, fontFamily: 'monospace', letterSpacing: '0.05em' }}>{order.awb_number || order.awb || shipTracking?.awb}</div>
                   </div>
                 )}
-                {(order.courier_name || shipTracking?.courier_name) && (
-                  <div style={{
-                    flex: 1, minWidth: '160px',
-                    padding: '0.85rem 1rem',
-                    backgroundColor: 'rgba(245,237,229,0.6)',
-                    borderRadius: '10px',
-                    border: `1px solid rgba(198,138,58,0.2)`,
-                  }}>
-                    <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.accent, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>Courier Partner</div>
-                    <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary }}>{order.courier_name || shipTracking?.courier_name}</div>
+                <div style={{
+                  flex: 1, minWidth: '160px',
+                  padding: '0.85rem 1rem',
+                  backgroundColor: 'rgba(245,237,229,0.6)',
+                  borderRadius: '10px',
+                  border: `1px solid rgba(198,138,58,0.2)`,
+                }}>
+                  <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.accent, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>Shipment</div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary }}>
+                    {SHIPMENT_LABELS[shipTracking?.shipment_status || order.shipment_status] || 'Processing'}
                   </div>
-                )}
+                </div>
                 {shipTracking?.tracking?.estimated_delivery && (
                   <div style={{
                     flex: 1, minWidth: '160px',
@@ -525,32 +535,26 @@ export default function CustomerOrderDetailPage() {
                 </div>
               )}
 
-              {/* Full tracking link */}
-              {shipTracking?.tracking_url && (
-                <a
-                  href={shipTracking?.tracking_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                    padding: '0.6rem 1.2rem',
-                    background: T.brandGrad,
-                    color: '#FFFFFF',
-                    borderRadius: '999px',
-                    textDecoration: 'none',
-                    fontSize: '0.8rem', fontWeight: '700',
-                    alignSelf: 'flex-start',
-                    boxShadow: '0 4px 12px rgba(90,46,22,0.18)',
-                  }}
-                >
-                  <ExternalLink size={13} /> Track Full Journey
-                </a>
+              {/* Earlier tracking events */}
+              {shipTracking?.tracking?.shipment_track?.length > 1 && (
+                <details style={{ fontSize: '0.8rem', color: T.textSecondary }}>
+                  <summary style={{ cursor: 'pointer', fontWeight: '700', color: T.brand }}>View full journey</summary>
+                  <ul style={{ margin: '0.6rem 0 0', paddingLeft: '1.1rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                    {shipTracking.tracking.shipment_track.slice(1).map((ev, i) => (
+                      <li key={i}>
+                        <span style={{ fontWeight: '700' }}>{ev.activity || 'Update'}</span>
+                        {ev.location && <span> · {ev.location}</span>}
+                        {ev.date && <span style={{ color: T.textMuted }}> · {new Date(ev.date).toLocaleString('en-IN')}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
               )}
             </div>
 
-            {!shipTracking && !trackLoading && (order.awb_number || order.awb) && (
+            {!trackLoading && !(order.awb_number || order.awb || shipTracking?.awb) && (
               <div style={{ fontSize: '0.84rem', color: T.textMuted, fontWeight: '500', marginTop: '0.5rem' }}>
-                Shipment is being arranged. Tracking details will update shortly.
+                Your shipment is being prepared. Tracking details will appear here once it is dispatched.
               </div>
             )}
 

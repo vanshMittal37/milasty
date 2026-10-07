@@ -8,12 +8,13 @@ import {
   handleRazorpayWebhook,
 } from '../controllers/paymentController.js';
 
-import { optionalProtect } from '../middleware/authMiddleware.js';
+import { protect, optionalProtect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/create-session', optionalProtect, createPaymentSession);
-router.post('/create', optionalProtect, createRazorpayOrder);
+// Checkout requires a logged-in customer: the server-side cart is the source of truth
+router.post('/create-session', protect, createPaymentSession);
+router.post('/create', protect, createRazorpayOrder);
 router.post('/verify', optionalProtect, verifyRazorpayPayment);
 router.post('/cancel', cancelPaymentSession);
 router.post('/fail', failPaymentSession);

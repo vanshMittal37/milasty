@@ -8,13 +8,11 @@ export function DeliveryProvider({ children }) {
     loading: false,
     pincode: '',
     shippingCharge: 0,
-    selectedRate: null,
-    rateList: [],
     error: null,
   });
 
   /**
-   * Fetch dynamic live shipping rates from Shiprath API for a given pincode and items/weight
+   * Fetch the delivery charge for a pincode. The courier is chosen server-side; only the amount is returned.
    */
   const fetchShippingRates = useCallback(async ({ pincode, weight = 1, items = [] }) => {
     const cleanPin = String(pincode || '').trim();
@@ -32,22 +30,19 @@ export function DeliveryProvider({ children }) {
       });
 
       if (res.data && res.data.success) {
-        const selected = res.data.selectedRate;
-        const fee = Number(res.data.shippingCharge || selected?.total_charges || 0);
+        const fee = Number(res.data.deliveryFee ?? res.data.shippingCharge ?? 0);
 
         const infoData = {
           loading: false,
           pincode: cleanPin,
           shippingCharge: fee,
-          selectedRate: selected,
-          rateList: res.data.rateList || [],
           error: null,
         };
 
         setShippingRateInfo(infoData);
-        return { success: true, shippingCharge: fee, selectedRate: selected, rateList: res.data.rateList || [] };
+        return { success: true, shippingCharge: fee };
       } else {
-        const errMsg = res.data?.message || 'Failed to fetch dynamic shipping rates.';
+        const errMsg = res.data?.message || 'Failed to fetch the delivery charge.';
         setShippingRateInfo(prev => ({ ...prev, loading: false, error: errMsg }));
         return { success: false, shippingCharge: 0, error: errMsg };
       }
@@ -68,8 +63,8 @@ export function DeliveryProvider({ children }) {
     deliveryCharge: shippingRateInfo.shippingCharge || 0,
     isFreeDelivery: false,
     estimatedDays: '3–5 business days',
-    deliveryNote: 'Dynamic Shiprath Delivery Available across India',
-    message: 'All India Shiprath Delivery Available',
+    deliveryNote: 'Delivery available across India',
+    message: 'All India Delivery Available',
   };
 
   const checkPincode = useCallback(async (pincode) => {
@@ -80,7 +75,7 @@ export function DeliveryProvider({ children }) {
         available: res.success,
         deliveryCharge: res.shippingCharge || 0,
         isFreeDelivery: false,
-        message: res.success ? 'Dynamic Shiprath Delivery Available' : (res.error || 'Pincode not deliverable'),
+        message: res.success ? 'Delivery available' : (res.error || 'Pincode not deliverable'),
       };
     }
     return {
@@ -93,7 +88,7 @@ export function DeliveryProvider({ children }) {
   }, [fetchShippingRates]);
 
   /**
-   * Helper function for calculating delivery fee (uses dynamic Shiprath rate if set, else 0)
+   * Helper function for calculating delivery fee (uses the quoted delivery charge if set, else 0)
    */
   const calculateDeliveryFee = useCallback((subtotal = 0) => {
     const fee = Number(shippingRateInfo.shippingCharge || 0);
@@ -113,8 +108,6 @@ export function DeliveryProvider({ children }) {
       loading: false,
       pincode: '',
       shippingCharge: 0,
-      selectedRate: null,
-      rateList: [],
       error: null,
     });
   }, []);

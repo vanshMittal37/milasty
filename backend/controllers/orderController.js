@@ -1,7 +1,7 @@
 import { supabase } from '../config/supabase.js';
 import { syncAuthUsersToProfiles } from './authController.js';
 import { getDeliveryChargeForPincode } from './paymentController.js';
-import { bookShiprathShipment, cancelOrderWithShipment } from './shipratController.js';
+import { bookShiprathShipment, cancelOrderWithShipment, canAccessOrder, customerShipmentStatus } from './shipratController.js';
 
 // Status Canonical Mappings
 const CANONICAL_STATUS_MAP = {
@@ -263,7 +263,9 @@ export const createOrder = async (req, res) => {
       grand_total: grandTotal,
       payment_method: cleanPaymentMethod,
       payment_id: paymentId || null,
-      payment_status: paymentId ? 'paid' : 'pending',
+      // A client-supplied paymentId is NOT proof of payment. Paid prepaid orders are created only by
+      // /api/payments (Razorpay signature verified), so orders from this endpoint are never 'paid'.
+      payment_status: 'pending',
       order_status: isCod ? 'confirmed' : 'pending',
     };
 
@@ -459,7 +461,7 @@ export const createOrder = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Order created successfully',
-      order: formatOrderPayload(order),
+      order: formatCustomerOrderPayload(order),
     });
 
     // Auto-book Shiprath B2C shipment (fire-and-forget — does not affect customer response)
@@ -573,12 +575,30 @@ export const formatOrderPayload = (o) => {
     shipment_status: o.shipment_status || (o.awb_number ? 'booked' : 'pending'),
     shipment_error: o.shipment_error || null,
     // ── Stored rate IDs (for admin to see which carrier was quoted at checkout) ──
-    selected_carrier_id: o.selected_carrier_id || null,
-    selected_courier_id: o.selected_courier_id || null,
-    selected_product_id: o.selected_product_id || null,
+    selected_carrier_id: o.selected_carrier_id ?? null,
+    selected_courier_id: o.selected_courier_id ?? null,
+    selected_product_id: o.selected_product_id ?? null,
     selected_service_name: o.selected_service_name || null,
     selected_delivery_fee: o.selected_delivery_fee || null,
   };
+};
+
+// Internal shipping data the customer must never see (courier choice, Shiprath IDs/links, errors)
+const INTERNAL_ORDER_FIELDS = [
+  'selected_carrier_id', 'selected_courier_id', 'selected_product_id', 'selected_service_name', 'selected_delivery_fee',
+  'selected_rate_snapshot', 'shipping_rate_options', 'quoted_weight_kg',
+  'booked_carrier_id', 'booked_courier_id', 'booked_product_id', 'booked_service_name', 'booked_shipping_charge',
+  'shipment_booking_response', 'shipment_attempts', 'shipment_error', 'shipment_last_attempt_at',
+  'courier_name', 'tracking_url', 'shipment_id', 'razorpay_signature',
+];
+
+/** Customer-facing order payload: same shape as formatOrderPayload minus internal shipping data. */
+export const formatCustomerOrderPayload = (o) => {
+  const full = formatOrderPayload(o);
+  if (!full) return null;
+  for (const key of INTERNAL_ORDER_FIELDS) delete full[key];
+  full.shipment_status = customerShipmentStatus(full.shipment_status);
+  return full;
 };
 
 /**
@@ -620,7 +640,7 @@ export const getMyOrders = async (req, res) => {
       return true;
     });
 
-    const formatted = filteredOrders.map(formatOrderPayload);
+    const formatted = filteredOrders.map(formatCustomerOrderPayload);
     res.json(formatted);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching orders', error: error.message });
@@ -678,16 +698,20 @@ export const getOrderById = async (req, res) => {
 
     const { data: order, error } = await query.maybeSingle();
 
+    // Only the order's owner (or an admin) may read it — order numbers are guessable
+    const respond = (o) => (req.user?.role === 'admin' ? formatOrderPayload(o) : formatCustomerOrderPayload(o));
+
     if (!error && order) {
-      return res.json(formatOrderPayload(order));
+      if (!canAccessOrder(req.user, order)) return res.status(404).json({ message: 'Order details not found' });
+      return res.json(respond(order));
     }
 
     // Search fallback
     const { data: allOrders } = await supabase.from('orders').select('*, order_items(*)').limit(50);
     if (allOrders && allOrders.length > 0) {
       const match = allOrders.find((o) => o.id === identifier || o.order_number === identifier || identifier.includes(o.order_number));
-      if (match) {
-        return res.json(formatOrderPayload(match));
+      if (match && canAccessOrder(req.user, match)) {
+        return res.json(respond(match));
       }
     }
 

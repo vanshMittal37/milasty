@@ -1,9 +1,72 @@
 import { supabase } from '../config/supabase.js';
+import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
 
 // ─── Shiprath B2C Constants ──────────────────────────────────────────────────
 const SHIPRATH_BASE_URL = 'https://backend.shiprath.com/vendor/v1';
 const WAREHOUSE_ADDRESS_ID = '1777118843112';
 const WAREHOUSE_PINCODE = '201016';
+
+// ─── Package configuration (single source of truth) ─────────────────────────
+// Internally ALL weights are kilograms and ALL dimensions are centimetres.
+
+// Extra weight of the box/wrapping. MILASTY has no packaging-weight business rule yet, so this
+// defaults to 0 — set SHIPRATH_PACKAGING_WEIGHT_KG on Railway once the real box weight is known.
+const PACKAGING_WEIGHT_KG = Number(process.env.SHIPRATH_PACKAGING_WEIGHT_KG || 0);
+
+// Unit the Create Shipment API expects for `weight`. Shiprath's API docs are not available to this
+// project; their public rate calculator and the Rate API both use kg, so 'kg' is the default.
+// Set SHIPRATH_BOOKING_WEIGHT_UNIT=g only if Shiprath confirms Create Shipment wants grams.
+const SHIPRATH_BOOKING_WEIGHT_UNIT = String(process.env.SHIPRATH_BOOKING_WEIGHT_UNIT || 'kg').toLowerCase() === 'g' ? 'g' : 'kg';
+
+// Log the outbound Create Shipment payload (contact details masked, no credentials).
+// Temporary diagnostics — set SHIPRATH_LOG_PAYLOAD=false to turn off.
+const SHIPRATH_LOG_PAYLOAD = String(process.env.SHIPRATH_LOG_PAYLOAD || 'true').toLowerCase() !== 'false';
+
+// Upper sanity limit — anything above this is a calculation bug, not a real MILASTY parcel.
+const MAX_PACKAGE_WEIGHT_KG = 30;
+
+/**
+ * MILASTY standard box sizes (MILASTY's own packaging defaults, not Shiprath-prescribed).
+ * The ONLY place box selection happens — rate quotes and bookings both call this.
+ * @param {number} totalWeightKg  total shipment weight in kg
+ * @returns {{ length: number, width: number, height: number }} centimetres
+ */
+export function getPackageDimensions(totalWeightKg) {
+  if (totalWeightKg <= 0.5) return { length: 20, width: 15, height: 10 };
+  if (totalWeightKg <= 1) return { length: 25, width: 20, height: 12 };
+  if (totalWeightKg <= 2) return { length: 30, width: 20, height: 15 };
+  if (totalWeightKg <= 3) return { length: 35, width: 25, height: 18 };
+  return { length: 40, width: 30, height: 20 };
+}
+
+/** Convert the internal kg weight to the unit the Create Shipment API expects. */
+export function toShiprathBookingWeight(weightKg) {
+  return SHIPRATH_BOOKING_WEIGHT_UNIT === 'g'
+    ? Math.round(weightKg * 1000)
+    : Math.round(weightKg * 1000) / 1000;
+}
+
+/** Copy of a Create Shipment payload that is safe to log: phone/email/street masked. */
+export function sanitizeBookingPayload(payload) {
+  const maskPhone = (v) => (v ? String(v).replace(/\d(?=\d{2})/g, '•') : v);
+  const maskEmail = (v) => (v ? String(v).replace(/^(.).*(@.*)$/, '$1•••$2') : v);
+  const out = { ...payload };
+  for (const k of ['consignee_mobile', 'receiver_mobile', 'receiver_phone', 'mobile', 'phone']) out[k] = maskPhone(out[k]);
+  for (const k of ['consignee_email', 'receiver_email', 'email']) out[k] = maskEmail(out[k]);
+  for (const k of ['consignee_address', 'receiver_address', 'address']) out[k] = out[k] ? '[street masked]' : out[k];
+  return out;
+}
+
+/** Throw before any Shiprath call if the package is not physically sensible. */
+export function assertValidPackage(pkg) {
+  const w = pkg?.totalWeightKg;
+  if (!Number.isFinite(w) || w <= 0) throw new Error(`Invalid shipment weight: ${w}`);
+  if (w > MAX_PACKAGE_WEIGHT_KG) throw new Error(`Shipment weight ${w} kg exceeds the ${MAX_PACKAGE_WEIGHT_KG} kg sanity limit — check product weights`);
+  for (const k of ['length', 'width', 'height']) {
+    const v = pkg?.dimensions?.[k];
+    if (!Number.isFinite(v) || v <= 0 || v > 200) throw new Error(`Invalid package ${k}: ${v}`);
+  }
+}
 
 /**
  * Build Shiprath request headers from env
@@ -28,131 +91,161 @@ function getShiprathHeaders() {
 
 
 /**
- * Helper: Parse net weight in grams from any weight string, number, or variant name
- * Examples: "70g" -> 70, "100g" -> 100, "3 x 100g (300g Total)" -> 300, "0.5kg" -> 500, 45 -> 45
+ * Parse a weight string to grams. Product/variant weights are stored as text in grams
+ * (e.g. "45g", "130g"); "0.5kg", "12.5 g", "3 x 100g", "(300g Total)" are also understood.
+ * Returns null when no weight can be read — callers must NOT guess a default.
  */
-export function parseGramsFromWeightString(weightStr, fallbackGrams = 100) {
-  if (weightStr === null || weightStr === undefined) return fallbackGrams;
-  if (typeof weightStr === 'number') {
-    if (weightStr <= 10) return Math.round(weightStr * 1000); // Assume kg if <= 10
-    return Math.round(weightStr); // Assume grams if > 10
-  }
+export function parseGramsFromWeightString(weightStr) {
+  if (weightStr === null || weightStr === undefined) return null;
+  // Bare numbers are ambiguous (grams or kg?) — refuse rather than guess
+  if (typeof weightStr === 'number') return null;
 
   const s = String(weightStr).trim().toLowerCase();
+  const num = '(\\d+(?:\\.\\d+)?)';
 
-  // Match "(300g Total)" or "300g total"
-  const totalMatch = s.match(/(\d+)\s*g\s*total/i) || s.match(/\((\d+)\s*g/i);
+  const totalMatch = s.match(new RegExp(`${num}\\s*g(?:m|ms|rams?)?\\s*total`)) || s.match(new RegExp(`\\(${num}\\s*g`));
   if (totalMatch) return Number(totalMatch[1]);
 
-  // Match "0.5kg" or "1kg"
-  const kgMatch = s.match(/([\d.]+)\s*kg/i);
+  const kgMatch = s.match(new RegExp(`${num}\\s*kg`));
   if (kgMatch) return Number(kgMatch[1]) * 1000;
 
-  // Match multiplier e.g. "3 x 100g"
-  const multMatch = s.match(/(\d+)\s*x\s*(\d+)\s*g/i);
+  const multMatch = s.match(new RegExp(`(\\d+)\\s*[x×]\\s*${num}\\s*g`));
   if (multMatch) return Number(multMatch[1]) * Number(multMatch[2]);
 
-  // Match simple grams e.g. "70g", "100 g", "250gm", "45g"
-  const gMatch = s.match(/(\d+)\s*g/i);
+  const gMatch = s.match(new RegExp(`${num}\\s*g(?:m|ms|rams?)?\\b`));
   if (gMatch) return Number(gMatch[1]);
 
-  return fallbackGrams;
+  return null;
 }
 
 /**
- * Helper: Calculate total package weight in kg from order/cart items asynchronously
- * Performs DB variant weight lookup if item weight string is non-numeric (e.g. "Trial Pack")
- * Includes net item weights + 50g packaging buffer (outer box/wrap)
+ * Calculate the shipment package for a set of order/cart items.
+ *  1. weight of each item (variant weight from the item, else from product_variants in Supabase)
+ *  2. × quantity, summed over ALL items
+ *  3. + PACKAGING_WEIGHT_KG
+ *  4. box chosen from the TOTAL weight via getPackageDimensions()
+ *
+ * Throws if any item's weight cannot be determined — never ships with a guessed weight.
+ * @returns {{ productWeightKg, packagingWeightKg, totalWeightKg, dimensions, items }}
  */
-export async function calculateItemsWeightKgAsync(items = []) {
-  if (!items || !items.length) return 0.20; // default min 200g (0.20 kg)
+export async function calculatePackage(items = []) {
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error('Cannot calculate shipment weight: order has no items');
+  }
 
-  let totalNetGrams = 0;
+  // Accept both DB/order rows (snake_case) and raw cart items (camelCase)
+  const norm = items.map((i) => ({
+    title: i.product_title || i.title || i.name || 'Item',
+    variant_id: i.variant_id || i.variantId || null,
+    variant_name: i.variant_name || i.variantName || i.variantWeight || i.variant_weight || null,
+    weight: typeof i.weight === 'string' ? i.weight : null,
+    quantity: Number(i.quantity ?? i.qty ?? 1),
+  }));
 
-  // Batch fetch variant weights from Supabase product_variants if variant_ids exist
-  const variantIdsToFetch = items
-    .filter(i => i.variant_id && parseGramsFromWeightString(i.variant_name || i.weight, 0) === 0)
-    .map(i => i.variant_id);
-
-  let variantDbMap = new Map();
-  if (variantIdsToFetch.length > 0) {
-    try {
-      const { data: dbVariants } = await supabase
-        .from('product_variants')
-        .select('id, weight, name')
-        .in('id', variantIdsToFetch);
-      if (dbVariants) {
-        dbVariants.forEach(v => variantDbMap.set(String(v.id), v.weight));
-      }
-    } catch (err) {
-      console.warn('[SHIPRATH WEIGHT] Warning fetching product_variants from DB:', err.message);
+  // Variant weights from the database for items whose own fields don't carry a weight
+  const needDb = norm.filter((i) => i.variant_id && parseGramsFromWeightString(i.weight ?? i.variant_name) === null);
+  const dbWeights = new Map();
+  if (needDb.length) {
+    const uuids = needDb.map((i) => String(i.variant_id)).filter((id) => /^[0-9a-f-]{36}$/i.test(id));
+    if (uuids.length) {
+      const { data: rows, error } = await supabase.from('product_variants').select('id, weight').in('id', uuids);
+      if (error) throw new Error(`Could not load variant weights: ${error.message}`);
+      (rows || []).forEach((r) => dbWeights.set(String(r.id), r.weight));
     }
   }
 
-  for (const item of items) {
-    const qty = Math.max(1, Number(item.quantity || item.qty || 1));
-    const dbWeightStr = item.variant_id ? variantDbMap.get(String(item.variant_id)) : null;
-    const strToParse = item.weight || dbWeightStr || item.variant_name || item.product_title || item.title || '';
-    
-    const itemGrams = parseGramsFromWeightString(strToParse, 100); // fallback 100g per item if unspecified
-    const subtotalGrams = itemGrams * qty;
-    totalNetGrams += subtotalGrams;
+  let productGrams = 0;
+  const breakdown = [];
+  const unknown = [];
 
-    console.log(`[SHIPRATH WEIGHT AUDIT] Item: "${item.product_title || item.name || 'Artisan Bake'}" | Variant: "${item.variant_name || 'N/A'}" | Raw String: "${strToParse}" | Parsed Net Weight: ${itemGrams}g | Qty: ${qty} | Total Net: ${subtotalGrams}g`);
+  for (const i of norm) {
+    if (!Number.isInteger(i.quantity) || i.quantity < 1) {
+      throw new Error(`Invalid quantity ${i.quantity} for "${i.title}"`);
+    }
+    const sources = [i.weight, i.variant_name, i.variant_id ? dbWeights.get(String(i.variant_id)) : null];
+    let grams = null;
+    let source = null;
+    for (const src of sources) {
+      grams = parseGramsFromWeightString(src);
+      if (grams !== null && grams > 0) { source = src; break; }
+      grams = null;
+    }
+    if (grams === null) {
+      unknown.push(`"${i.title}" (${i.variant_name || 'no variant'})`);
+      continue;
+    }
+    productGrams += grams * i.quantity;
+    breakdown.push({ title: i.title, variant: i.variant_name, unit_grams: grams, quantity: i.quantity, source });
   }
 
-  // Packaging buffer: 50g box/packaging minimum or 20% of net weight
-  const packagingBufferGrams = Math.max(50, Math.round(totalNetGrams * 0.20));
-  const totalPackageGrams = totalNetGrams + packagingBufferGrams;
-  
-  // Convert to kg, minimum 0.20 kg, rounded to 2 decimal places
-  const packageWeightKg = Math.max(0.20, Math.round((totalPackageGrams / 1000) * 100) / 100);
+  if (unknown.length) {
+    throw new Error(`Weight unknown for ${unknown.join(', ')} — set a gram weight (e.g. "100g") on the product variant`);
+  }
 
-  console.log(`[SHIPRATH WEIGHT AUDIT] Total Net Item Weight: ${totalNetGrams}g (${(totalNetGrams/1000).toFixed(3)}kg) | Packaging Buffer: ${packagingBufferGrams}g | Final Package Weight: ${packageWeightKg}kg (${totalPackageGrams}g)`);
+  const productWeightKg = Math.round(productGrams) / 1000;
+  const totalWeightKg = Math.round((productWeightKg + PACKAGING_WEIGHT_KG) * 1000) / 1000;
+  const pkg = {
+    productWeightKg,
+    packagingWeightKg: PACKAGING_WEIGHT_KG,
+    totalWeightKg,
+    dimensions: getPackageDimensions(totalWeightKg),
+    items: breakdown,
+  };
+  assertValidPackage(pkg);
 
-  return packageWeightKg;
+  console.log(`[SHIPRATH PACKAGE] ${breakdown.map((b) => `${b.title} ${b.unit_grams}g×${b.quantity}`).join(' + ')} = ${productWeightKg}kg + packaging ${PACKAGING_WEIGHT_KG}kg = ${totalWeightKg}kg → box ${pkg.dimensions.length}×${pkg.dimensions.width}×${pkg.dimensions.height} cm`);
+  return pkg;
 }
 
-/**
- * Synchronous fallback wrapper for calculateItemsWeightKg
- */
-export function calculateItemsWeightKg(items = []) {
-  if (!items || !items.length) return 0.20;
-  let totalNetGrams = 0;
-  for (const item of items) {
-    const qty = Math.max(1, Number(item.quantity || item.qty || 1));
-    const strToParse = item.weight || item.variant_name || item.product_title || item.title || '';
-    const itemGrams = parseGramsFromWeightString(strToParse, 100);
-    totalNetGrams += itemGrams * qty;
-  }
-  const packagingBufferGrams = Math.max(50, Math.round(totalNetGrams * 0.20));
-  const totalPackageGrams = totalNetGrams + packagingBufferGrams;
-  return Math.max(0.20, Math.round((totalPackageGrams / 1000) * 100) / 100);
+/** Backward-compatible helper: total shipment weight in kg. */
+export async function calculateItemsWeightKgAsync(items = []) {
+  return (await calculatePackage(items)).totalWeightKg;
 }
 
 /**
  * Helper function for server-side dynamic shipping rate calculation
  */
-export async function fetchLiveShiprathRate({ pincode, items = [], weight = null, length = 10, breadth = 10, height = 10, declaredValue = 200 }) {
+export async function fetchLiveShiprathRate({
+  pincode,
+  items = [],
+  weight = null,        // kg — used only when no items are given (e.g. pincode check, admin test)
+  pkg = null,           // a package from calculatePackage(), when the caller already has one
+  dimensions = null,    // admin test override { length, width, height } in cm
+  declaredValue = 200,
+}) {
   const cleanPincode = String(pincode || '').trim();
   if (!cleanPincode || !/^\d{6}$/.test(cleanPincode)) {
     throw new Error('Valid 6-digit destination pincode is required for shipping rate calculation.');
   }
 
-  const calculatedWeight = weight ? Number(weight) : await calculateItemsWeightKgAsync(items);
+  let shipPkg = pkg;
+  if (!shipPkg) {
+    if (Array.isArray(items) && items.length > 0) {
+      shipPkg = await calculatePackage(items);
+    } else {
+      const w = Number(weight);
+      shipPkg = { totalWeightKg: w, dimensions: getPackageDimensions(w) };
+    }
+  }
+  if (dimensions) {
+    shipPkg = {
+      ...shipPkg,
+      dimensions: { length: Number(dimensions.length), width: Number(dimensions.width), height: Number(dimensions.height) },
+    };
+  }
+  assertValidPackage(shipPkg);
+  const calculatedWeight = shipPkg.totalWeightKg;
 
-  const secretKey = (process.env.SHIPRATH_SECRET_KEY || '').trim();
-  const customerId = (process.env.SHIPRATH_CUSTOMER_ID || '').trim();
-
+  // Rate API: weight in kg, dimensions in cm (matches Shiprath's public rate calculator)
   const payload = {
     from_postal_code: WAREHOUSE_PINCODE,
     from_country_code: 'IN',
     to_postal_code: cleanPincode,
     to_country_code: 'IN',
     weight: calculatedWeight,
-    length: Number(length || 15),
-    height: Number(height || 8),
-    width: Number(breadth || 12),
+    length: shipPkg.dimensions.length,
+    height: shipPkg.dimensions.height,
+    width: shipPkg.dimensions.width,
     parcel_type: 'Parcel',
     mode: 'Domestic',
     payment_mode: 'prepaid',
@@ -184,40 +277,105 @@ export async function fetchLiveShiprathRate({ pincode, items = [], weight = null
     throw new Error(`No courier services available for pincode ${cleanPincode} from Shiprath.`);
   }
 
-  const allRates = rawRates;
+  const quotedAt = new Date().toISOString();
+  const normalized = rawRates.map((r) => normalizeShiprathRate(r, quotedAt));
 
-  // Standardize rate fields
-  const formattedRates = allRates.map((r) => {
-    const totalCharges = Number(r.total_charge || r.total_charges || r.rate || r.freight_charge || 0);
-    return {
-      carrier_id: r.carrier_id,
-      courier_id: r.courier_id,
-      product_id: r.product_id,
-      service_name: r.courier_name || r.carrier_name || r.service_name || 'Standard Courier',
-      service_provider: r.carrier_name || r.courier_name || 'Shiprath Partner',
-      product_type_name: r.product_name || r.service_type || r.product_type_name || 'Surface',
-      total_charges: totalCharges,
-      total_charge: totalCharges,
-      zone: r.zone || r.courier_zone || 'India Domestic',
-      cod_commission: 0,
-      estimated_delivery: r.estimated_delivery || r.etd || '3-5 business days',
-      payment_mode_raw: r.payment_mode || null,
-    };
+  const formattedRates = normalized.filter((r) => {
+    const reason = rateInvalidReason(r);
+    if (reason) console.warn(`[SHIPRATH RATE DIAGNOSTIC] Skipping rate "${r.service_name}" — ${reason}`);
+    return !reason;
   });
 
-  // Sort by total_charges ascending (cheapest first)
+  if (!formattedRates.length) {
+    throw new Error(`Shiprath returned ${rawRates.length} rate(s) for pincode ${cleanPincode}, but none had the data needed to book a shipment.`);
+  }
+
+  // Cheapest valid rate first — this order is also the automatic fallback order at booking time
   formattedRates.sort((a, b) => a.total_charges - b.total_charges);
   const selectedRate = formattedRates[0];
 
-  console.log(`[SHIPRATH RATE DIAGNOSTIC] After normalization: ${formattedRates.length} carrier(s) available. Cheapest: "${selectedRate?.service_name}" at ₹${selectedRate?.total_charges}`);
+  console.log(`[SHIPRATH RATE DIAGNOSTIC] After validation: ${formattedRates.length} valid carrier(s). Cheapest: "${selectedRate.service_name}" at ₹${selectedRate.total_charges}`);
 
   return {
     rateList: formattedRates,
     selectedRate,
     shippingCharge: selectedRate.total_charges,
     weight: calculatedWeight,
+    dimensions: { ...shipPkg.dimensions },
     pincode: cleanPincode,
   };
+}
+
+/**
+ * Normalize one Shiprath rate row. Booking identifiers are copied through EXACTLY as Shiprath
+ * returned them (as strings) — an empty courier_id stays "" and is never guessed or replaced.
+ */
+export function normalizeShiprathRate(r, quotedAt = new Date().toISOString()) {
+  const totalCharges = Number(r.total_charge ?? r.total_charges ?? r.rate ?? r.freight_charge ?? NaN);
+  const asId = (v) => (v === null || v === undefined ? '' : String(v));
+  return {
+    carrier_id: asId(r.carrier_id),
+    courier_id: asId(r.courier_id),
+    product_id: asId(r.product_id),
+    service_name: r.courier_name || r.carrier_name || r.service_name || 'Standard Courier',
+    service_provider: r.service_provider || r.carrier_name || r.courier_name || null,
+    product_type_name: r.product_type_name || r.product_name || r.service_type || null,
+    total_charges: totalCharges,
+    total_charge: totalCharges,
+    zone: r.zone_name || r.zone || r.courier_zone || null,
+    cod_commission: 0,
+    estimated_delivery: r.estimated_delivery || r.etd || null,
+    payment_mode_raw: r.payment_mode || null,
+    quoted_at: quotedAt,
+    raw: r, // full original Shiprath rate object, preserved for booking/audit
+  };
+}
+
+/**
+ * A rate is bookable when it has a real positive price and the identifiers the Create Shipment
+ * API needs. courier_id is deliberately NOT required: some carriers (e.g. Amazon) return "".
+ */
+export function rateInvalidReason(rate) {
+  if (!rate) return 'missing rate';
+  if (!Number.isFinite(rate.total_charges) || rate.total_charges <= 0) return `invalid total_charges (${rate.total_charges})`;
+  if (!rate.carrier_id) return 'missing carrier_id';
+  if (!rate.product_id) return 'missing product_id';
+  return null;
+}
+
+/** Same carrier + courier + product = same shipping option. */
+export function isSameRate(a, b) {
+  return Boolean(a && b) &&
+    String(a.carrier_id ?? '') === String(b.carrier_id ?? '') &&
+    String(a.courier_id ?? '') === String(b.courier_id ?? '') &&
+    String(a.product_id ?? '') === String(b.product_id ?? '');
+}
+
+// ─── Customer shipping quotes ────────────────────────────────────────────────
+// The checkout shows a delivery charge before payment. The full rate list behind it never leaves
+// the server: it is kept here under a quoteId, and create-session reuses that exact quote so the
+// amount the customer saw is the amount Razorpay charges and the rate the shipment is booked with.
+const QUOTE_TTL_MS = 30 * 60 * 1000;
+const shippingQuotes = new Map();
+
+export function saveShippingQuote(quote) {
+  const now = Date.now();
+  for (const [id, q] of shippingQuotes) {
+    if (now - q.createdAt > QUOTE_TTL_MS) shippingQuotes.delete(id);
+  }
+  const quoteId = `q_${now.toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+  shippingQuotes.set(quoteId, { ...quote, createdAt: now });
+  return quoteId;
+}
+
+export function getShippingQuote(quoteId) {
+  const q = quoteId ? shippingQuotes.get(quoteId) : null;
+  if (!q) return null;
+  if (Date.now() - q.createdAt > QUOTE_TTL_MS) {
+    shippingQuotes.delete(quoteId);
+    return null;
+  }
+  return q;
 }
 
 /**
@@ -231,10 +389,6 @@ export const getShiprathRates = async (req, res) => {
       destinationPincode,
       destination_pincode,
       weight,
-      length = 10,
-      width,
-      breadth = 10,
-      height = 10,
       declaredValue = 200,
       items = [],
     } = req.body;
@@ -248,29 +402,45 @@ export const getShiprathRates = async (req, res) => {
       });
     }
 
+    const hasItems = Array.isArray(items) && items.length > 0;
+
+    // Weight comes from the items and the box from getPackageDimensions(), exactly as at booking
+    // time, so the quote matches the shipment. Client-sent dimensions are ignored.
     const result = await fetchLiveShiprathRate({
       pincode: targetPincode,
       items,
-      weight,
-      length,
-      breadth: width || breadth,
-      height,
+      weight: hasItems ? null : weight,
       declaredValue,
     });
 
+    // Only a cart-based quote can be reused at payment time
+    const quoteId = hasItems
+      ? saveShippingQuote({
+          pincode: result.pincode,
+          weightKg: result.weight,
+          dimensions: result.dimensions,
+          selectedRate: result.selectedRate,
+          rateList: result.rateList,
+        })
+      : null;
+
+    // CUSTOMER-SAFE RESPONSE: only the delivery charge. Courier names, IDs and the rate list
+    // stay on the server.
     return res.json({
       success: true,
-      rateList: result.rateList,
-      selectedRate: result.selectedRate,
       shippingCharge: result.shippingCharge,
-      weight: result.weight,
+      deliveryFee: result.shippingCharge,
+      quoteId,
       pincode: result.pincode,
     });
   } catch (error) {
     console.error('[SHIPRATH RATES] Exception:', error.message);
-    return res.status(500).json({
+    const isPackageProblem = /weight unknown|invalid shipment weight|sanity limit|invalid quantity/i.test(error.message);
+    return res.status(isPackageProblem ? 422 : 500).json({
       success: false,
-      message: error.message || 'Error fetching dynamic Shiprath rates.',
+      message: isPackageProblem
+        ? 'We could not calculate delivery for an item in your cart. Please contact MILASTY support.'
+        : 'Delivery is not available for this pincode right now. Please check the pincode or try again shortly.',
     });
   }
 };
@@ -371,18 +541,18 @@ export const checkShiprathConnection = async (req, res) => {
  */
 export const adminTestRate = async (req, res) => {
   try {
-    const { pincode, weight = 1, length = 10, width = 10, height = 10 } = req.body;
+    const { pincode, weight = 1, length, width, height } = req.body;
 
     if (!pincode || !/^\d{6}$/.test(String(pincode).trim())) {
       return res.status(400).json({ success: false, message: 'Please enter a valid 6-digit Indian PIN code.' });
     }
 
+    // Admin may test a custom box; otherwise the standard box for this weight is used
+    const hasCustomBox = [length, width, height].every((v) => Number(v) > 0);
     const result = await fetchLiveShiprathRate({
       pincode,
-      weight,
-      length,
-      breadth: width,
-      height,
+      weight: Number(weight),
+      dimensions: hasCustomBox ? { length, width, height } : null,
       declaredValue: 300,
     });
 
@@ -397,6 +567,8 @@ export const adminTestRate = async (req, res) => {
       zone: result.selectedRate.zone,
       codCommission: 0,
       rateList: result.rateList,
+      weightKg: result.weight,
+      dimensions: result.dimensions,
     });
   } catch (error) {
     return res.status(400).json({ success: false, message: error.message });
@@ -408,15 +580,18 @@ export const adminTestRate = async (req, res) => {
  * Called ONLY AFTER Razorpay payment signature is verified.
  *
  * @param {Object} order  - Supabase order row (includes order_items)
+ * @param {Object} [options]
+ * @param {Object} [options.packageOverride] - admin manual box { weightKg, length, width, height }
  * @returns {Object}      - { awb, shipment_id, courier_name, tracking_url, raw }
  */
-export const bookShiprathShipment = async (order) => {
+export const bookShiprathShipment = async (order, { packageOverride = null } = {}) => {
   try {
     if (!order) return null;
 
     // Idempotency Check: Don't re-book if AWB already exists for this order
     if (order.awb_number || order.awb) {
       console.log('[SHIPRATH BOOK] Shipment already booked for order:', order.order_number || order.id, 'AWB:', order.awb_number || order.awb);
+      if (order.id) await safeUpdateOrder(order.id, { shipment_status: 'booked' });
       return {
         success: true,
         alreadyBooked: true,
@@ -431,27 +606,73 @@ export const bookShiprathShipment = async (order) => {
 
     if (!secretKey || !customerId) {
       console.warn('[SHIPRATH BOOK] Credentials not set — skipping Shiprath booking.');
-      return { error: 'Shiprath API credentials are missing or invalid in server environment variables.' };
+      const errMsg = 'Shiprath API credentials are missing or invalid in server environment variables.';
+      if (order.id) await safeUpdateOrder(order.id, { shipment_status: 'failed', shipment_error: errMsg });
+      return { error: errMsg };
     }
 
     const destinationPincode = String(order.pincode || '').trim();
     if (!destinationPincode || !/^\d{6}$/.test(destinationPincode)) {
       console.warn('[SHIPRATH BOOK] Invalid/missing pincode on order:', order.order_number);
-      return { error: `Invalid or missing 6-digit delivery pincode: "${destinationPincode || 'none'}".` };
+      const errMsg = `Invalid or missing 6-digit delivery pincode: "${destinationPincode || 'none'}".`;
+      if (order.id) await safeUpdateOrder(order.id, { shipment_status: 'failed', shipment_error: errMsg });
+      return { error: errMsg };
+    }
+
+    // MILASTY ships prepaid only. A COD order must never be booked as prepaid (the courier would
+    // not collect payment), and Shiprath's COD booking fields are not verified for this project.
+    if (String(order.payment_method || '').toLowerCase() === 'cod') {
+      const errMsg = 'COD orders cannot be auto-booked: MILASTY is configured prepaid-only and the Shiprath COD booking fields are not verified. Book this order manually in the Shiprath panel.';
+      if (order.id) await safeUpdateOrder(order.id, { shipment_status: 'failed', shipment_error: errMsg });
+      return { error: errMsg };
     }
 
     const items = order.order_items || order.items || [];
     const declaredValue = Number(order.grand_total || order.subtotal || 200);
 
-    // AUDIT 1-10: Calculate actual package weight dynamically from order items & DB variants
-    const calculatedWeightKg = await calculateItemsWeightKgAsync(items);
+    // ── Package: real total weight of ALL items (kg) + standard box for that weight (cm) ──
+    let pkg;
+    try {
+      if (packageOverride) {
+        const w = Number(packageOverride.weightKg);
+        pkg = {
+          totalWeightKg: w,
+          dimensions: {
+            length: Number(packageOverride.length),
+            width: Number(packageOverride.width),
+            height: Number(packageOverride.height),
+          },
+          manual: true,
+        };
+        assertValidPackage(pkg);
+        console.log(`[SHIPRATH PACKAGE] ${order.order_number} → MANUAL override ${w}kg, ${pkg.dimensions.length}×${pkg.dimensions.width}×${pkg.dimensions.height} cm`);
+      } else {
+        pkg = await calculatePackage(items);
+      }
+    } catch (pkgErr) {
+      const errMsg = `Package calculation failed: ${pkgErr.message}`;
+      console.error(`[SHIPRATH BOOK] ${order.order_number} → ${errMsg}`);
+      if (order.id) await safeUpdateOrder(order.id, { shipment_status: 'failed', shipment_error: errMsg });
+      return { error: errMsg };
+    }
+    const calculatedWeightKg = pkg.totalWeightKg;
+    const box = pkg.dimensions;
+
+    if (order.quoted_weight_kg != null && Number(order.quoted_weight_kg) !== calculatedWeightKg) {
+      console.warn(`[SHIPRATH BOOK] ${order.order_number} → booking weight ${calculatedWeightKg}kg differs from checkout quote ${order.quoted_weight_kg}kg`);
+    }
 
     // ── Build payload fields ───────────────────────────────────────────────
     const fullAddr = String(order.shipping_address || '');
+    // Stored format: "<building>, <street...>, <city>, <state>, India" (building optional, street may contain commas)
     const addrParts = fullAddr.split(',').map((s) => s.trim()).filter(Boolean);
-    const consigneeAddress = addrParts.slice(0, 2).join(', ') || fullAddr;
-    const consigneeCity = order.delivery_city || addrParts[2] || 'City';
-    const consigneeState = order.delivery_state || addrParts[3] || 'State';
+    if (addrParts.length && /^india$/i.test(addrParts[addrParts.length - 1])) addrParts.pop();
+    const parsedState = addrParts.length >= 3 ? addrParts[addrParts.length - 1] : '';
+    const parsedCity = addrParts.length >= 3 ? addrParts[addrParts.length - 2] : '';
+    const streetParts = addrParts.length >= 3 ? addrParts.slice(0, -2) : addrParts;
+    const consigneeAddress = streetParts.join(', ') || fullAddr;
+    const consigneeCity = order.delivery_city || parsedCity || 'City';
+    const consigneeState = order.delivery_state || parsedState || 'State';
 
     const bookItems = items.length > 0
       ? items.map((item) => {
@@ -492,265 +713,322 @@ export const bookShiprathShipment = async (order) => {
     const custMobile = String(order.customer_phone || order.customerPhone || order.phone || '').replace(/\D/g, '').slice(-10) || '9876543210';
     const custEmail = String(order.customer_email || order.customerEmail || order.user?.email || 'orders@milasty.com').slice(0, 100);
 
-    let candidateRates = [];
+    // Package details stored on the order for admin visibility
+    const packageFields = {
+      package_weight_kg: calculatedWeightKg,
+      package_length_cm: box.length,
+      package_width_cm: box.width,
+      package_height_cm: box.height,
+      package_is_manual: Boolean(pkg.manual),
+    };
 
-    // ── BUG 2 & 3 FIX: Use stored rate IDs from checkout quote if available ──
-    // This avoids re-fetching rates (which may return a different courier),
-    // and ensures admin retry uses the exact carrier the customer paid for.
-    if (order.selected_carrier_id && order.selected_courier_id) {
-      console.log(`[SHIPRATH BOOK] ${order.order_number} → Using STORED rate (carrier_id=${order.selected_carrier_id} courier_id=${order.selected_courier_id} product_id=${order.selected_product_id})`);
-      candidateRates = [{
-        carrier_id: order.selected_carrier_id,
-        courier_id: order.selected_courier_id,
-        product_id: order.selected_product_id || null,
-        service_name: order.selected_service_name || 'Stored Courier',
-        total_charges: order.selected_delivery_fee || order.delivery_fee || 0,
-      }];
+    // Persist a booking failure. The order stays PAID and is NOT marked shipped.
+    const markFailed = async (errMsg, extra = {}) => {
+      if (!order.id) return;
+      const { error: upErr } = await safeUpdateOrder(order.id, {
+        shipment_status: 'failed',
+        shipment_error: String(errMsg).slice(0, 1000),
+        shipment_last_attempt_at: new Date().toISOString(),
+        ...packageFields,
+        ...extra,
+      });
+      if (upErr) console.error(`[SHIPRATH BOOK] ${order.order_number} → could not save failure state:`, upErr.message);
+    };
+
+    // ── Candidate rates, in the exact order they will be tried ──────────────
+    // 1. The rate selected at checkout (the one the customer's delivery charge came from).
+    // 2. Automatic fallback: the other valid rates from the SAME rate response, cheapest first.
+    // IDs are used exactly as Shiprath returned them; an empty courier_id stays "".
+    const storedRate = order.selected_carrier_id
+      ? {
+          carrier_id: String(order.selected_carrier_id),
+          courier_id: order.selected_courier_id == null ? '' : String(order.selected_courier_id),
+          product_id: order.selected_product_id == null ? '' : String(order.selected_product_id),
+          service_name: order.selected_service_name || 'Selected courier',
+          total_charges: Number(order.selected_delivery_fee || order.delivery_fee || 0),
+        }
+      : null;
+
+    const storedOptions = (Array.isArray(order.shipping_rate_options) ? order.shipping_rate_options : [])
+      .map((r) => ({
+        ...r,
+        carrier_id: r.carrier_id == null ? '' : String(r.carrier_id),
+        courier_id: r.courier_id == null ? '' : String(r.courier_id),
+        product_id: r.product_id == null ? '' : String(r.product_id),
+        total_charges: Number(r.total_charges),
+      }))
+      .filter((r) => !rateInvalidReason(r))
+      .sort((a, b) => a.total_charges - b.total_charges);
+
+    let candidateRates = [];
+    let rateSource;
+
+    if (storedRate) {
+      const selected = storedOptions.find((r) => isSameRate(r, storedRate)) || storedRate;
+      candidateRates = [selected, ...storedOptions.filter((r) => !isSameRate(r, storedRate))];
+      rateSource = storedOptions.length > 0
+        ? 'stored checkout quote (selected rate + same-response fallbacks)'
+        : 'stored selected rate (no saved fallback list)';
     } else {
-      // Legacy orders without stored rate — re-fetch from Shiprath
-      console.log(`[SHIPRATH BOOK] ${order.order_number} → No stored rate, fetching live rates (legacy order)`);
+      // Legacy order placed before quotes were stored — fetch live rates once
+      rateSource = 'live rates (legacy order without a stored quote)';
       try {
         const rateResult = await fetchLiveShiprathRate({
           pincode: destinationPincode,
-          items,
-          weight: calculatedWeightKg,
+          pkg,
           declaredValue,
         });
         candidateRates = rateResult.rateList || [];
-        if (!candidateRates.length && rateResult.selectedRate) {
-          candidateRates = [rateResult.selectedRate];
-        }
       } catch (rateErr) {
         console.error(`[SHIPRATH BOOK] ${order.order_number} → Rate fetch failed:`, rateErr.message);
         const errMsg = `Rate fetch failed: ${rateErr.message}`;
-        if (order.id) {
-          await supabase.from('orders').update({ shipment_status: 'failed', shipment_error: errMsg }).eq('id', order.id).then(null, () => {});
-        }
+        await markFailed(errMsg);
         return { error: errMsg, rawError: rateErr.message };
       }
     }
 
     if (!candidateRates.length) {
       const errMsg = 'No courier services available for this package destination from Shiprath.';
-      if (order.id) {
-        await supabase.from('orders').update({ shipment_status: 'failed', shipment_error: errMsg }).eq('id', order.id).then(null, () => {});
-      }
+      await markFailed(errMsg);
       return { error: errMsg };
     }
 
-    // SAFE DIAGNOSTIC LOGGING (Excludes secret key and customer ID)
-    console.log(`\n[SHIPRATH BOOK DIAGNOSTIC] === ORDER DETAILS ===`);
-    console.log(`  Order Number: "${order.order_number || order.id}"`);
-    console.log(`  Package Weight: ${calculatedWeightKg} kg`);
-    console.log(`  Destination Pincode: "${destinationPincode}"`);
-
-    console.log(`[SHIPRATH BOOK DIAGNOSTIC] === RATE OPTIONS (${candidateRates.length} candidate couriers returned by Rate API) ===`);
+    console.log(`\n[SHIPRATH BOOK] ${order.order_number} → ${candidateRates.length} candidate(s) from ${rateSource}`);
+    console.log(`  Destination: ${destinationPincode} | Weight: ${calculatedWeightKg} kg (sent as ${toShiprathBookingWeight(calculatedWeightKg)} ${SHIPRATH_BOOKING_WEIGHT_UNIT}) | Box: ${box.length}×${box.width}×${box.height} cm`);
     candidateRates.forEach((c, idx) => {
-      console.log(`  Option [${idx + 1}]: courier_name="${c.service_name}" | courier_id="${c.courier_id}" | carrier_id="${c.carrier_id}" | product_id="${c.product_id}" | quoted_price="₹${c.total_charges}"`);
+      console.log(`  [${idx + 1}] "${c.service_name}" carrier_id="${c.carrier_id}" courier_id="${c.courier_id}" product_id="${c.product_id}" ₹${c.total_charges}`);
     });
 
-    let bookData = null;
-    let selectedRate = null;
-    let lastRawError = null;
-    let courierFailuresLog = [];
+    const buildBookingPayload = (rate) => ({
+      // Carrier IDs — exactly as returned by the Rate API
+      carrier_id: rate.carrier_id,
+      courier_id: rate.courier_id ?? '',
+      product_id: rate.product_id,
 
-    // Iterate across couriers returned by Rate API (cheapest first)
+      // Parcel type and shipment type
+      type: 'Parcel',
+      parcel_type: 'Parcel',
+      order_type: typeVal,
+      shipment_type: 'Forward',
+
+      // Warehouse/Sender
+      address_id: WAREHOUSE_ADDRESS_ID,
+      from_postal_code: WAREHOUSE_PINCODE,
+      from_country_code: 'IN',
+      shipper_name: 'MILASTY',
+      sender_name: 'MILASTY',
+      shipper_mobile: '8927142056',
+      sender_mobile: '8927142056',
+      shipper_email: 'orders@milasty.com',
+      sender_email: 'orders@milasty.com',
+      shipper_address: 'MILASTY Bakery, Uttarakhand',
+      sender_address: 'MILASTY Bakery, Uttarakhand',
+      shipper_pincode: WAREHOUSE_PINCODE,
+      sender_pincode: WAREHOUSE_PINCODE,
+
+      // Customer/Consignee
+      consignee_name: custName,
+      receiver_name: custName,
+      name: custName,
+      consignee_mobile: custMobile,
+      receiver_mobile: custMobile,
+      receiver_phone: custMobile,
+      mobile: custMobile,
+      phone: custMobile,
+      consignee_email: custEmail,
+      receiver_email: custEmail,
+      email: custEmail,
+      consignee_address: consigneeAddress.slice(0, 200),
+      receiver_address: consigneeAddress.slice(0, 200),
+      address: consigneeAddress.slice(0, 200),
+      consignee_city: consigneeCity.slice(0, 100),
+      receiver_city: consigneeCity.slice(0, 100),
+      destination_city: consigneeCity.slice(0, 100),
+      city: consigneeCity.slice(0, 100),
+      consignee_state: consigneeState.slice(0, 100),
+      receiver_state: consigneeState.slice(0, 100),
+      destination_state: consigneeState.slice(0, 100),
+      state: consigneeState.slice(0, 100),
+      consignee_pincode: destinationPincode,
+      receiver_pincode: destinationPincode,
+      destination_pincode: destinationPincode,
+      pincode: destinationPincode,
+      consignee_country: 'India',
+      receiver_country: 'India',
+      destination_country: 'India',
+      country: 'India',
+      to_postal_code: destinationPincode,
+      to_country_code: 'IN',
+
+      // Package — same weight calculation and same box selection as the rate quote.
+      // weight unit: see toShiprathBookingWeight(); dimensions in cm.
+      order_number: String(order.order_number || order.orderNumber || order.id).slice(0, 50),
+      weight: toShiprathBookingWeight(calculatedWeightKg),
+      length: box.length,
+      breadth: box.width,
+      width: box.width,
+      height: box.height,
+      mode: 'Domestic',
+
+      // Financial (PREPAID ONLY)
+      total_amount: declaredValue,
+      grand_total: declaredValue,
+      order_amount: declaredValue,
+      total: declaredValue,
+      amount: declaredValue,
+      declared_value: declaredValue,
+      invoice_value: declaredValue,
+      subtotal: Number(order.subtotal || order.sub_total || declaredValue),
+      tax_amount: 0,
+      tax: 0,
+      discount: Number(order.discount_amount || order.discountAmount || 0),
+      discount_amount: Number(order.discount_amount || order.discountAmount || 0),
+      payment_mode: paymentModeVal,
+      cod_amount: codAmountVal,
+      collectable_amount: codAmountVal,
+
+      items: bookItems,
+    });
+
+    const postBooking = async (endpoint, payload) => {
+      const res = await fetch(`${SHIPRATH_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: getShiprathHeaders(),
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(45000),
+      });
+      const text = await res.text();
+      try {
+        return JSON.parse(text);
+      } catch {
+        const err = new Error(`Non-JSON response from Shiprath (HTTP ${res.status}): ${text.slice(0, 200)}`);
+        err.uncertain = true;
+        throw err;
+      }
+    };
+
+    let bookData = null;
+    let bookedRate = null;
+    let lastRawError = null;
+    let uncertain = false;
+    const courierFailuresLog = [];
+    const attempts = Array.isArray(order.shipment_attempts) ? [...order.shipment_attempts] : [];
+
     for (const candidateRate of candidateRates) {
       const courierLabel = candidateRate.service_name || candidateRate.service_provider || 'Unknown';
-      console.log(`\n[SHIPRATH BOOK DIAGNOSTIC] === BOOKING ATTEMPT ===`);
-      console.log(`  Courier Attempted: "${courierLabel}"`);
-      console.log(`  carrier_id: "${candidateRate.carrier_id}" | courier_id: "${candidateRate.courier_id}" | product_id: "${candidateRate.product_id}"`);
-      console.log(`  Package Weight: ${calculatedWeightKg} kg`);
-
-      const bookingPayload = {
-        // Carrier IDs (from rate API)
+      const attempt = {
+        at: new Date().toISOString(),
+        service_name: courierLabel,
         carrier_id: candidateRate.carrier_id,
-        courier_id: candidateRate.courier_id,
+        courier_id: candidateRate.courier_id ?? '',
         product_id: candidateRate.product_id,
-
-        // Parcel type and shipment type
-        type: 'Parcel',
-        parcel_type: 'Parcel',
-        order_type: typeVal,
-        shipment_type: 'Forward',
-
-        // Warehouse/Sender
-        address_id: WAREHOUSE_ADDRESS_ID,
-        from_postal_code: WAREHOUSE_PINCODE,
-        from_country_code: 'IN',
-        shipper_name: 'MILASTY',
-        sender_name: 'MILASTY',
-        shipper_mobile: '8927142056',
-        sender_mobile: '8927142056',
-        shipper_email: 'orders@milasty.com',
-        sender_email: 'orders@milasty.com',
-        shipper_address: 'MILASTY Bakery, Uttarakhand',
-        sender_address: 'MILASTY Bakery, Uttarakhand',
-        shipper_pincode: WAREHOUSE_PINCODE,
-        sender_pincode: WAREHOUSE_PINCODE,
-
-        // Customer/Consignee
-        consignee_name: custName,
-        receiver_name: custName,
-        name: custName,
-        consignee_mobile: custMobile,
-        receiver_mobile: custMobile,
-        receiver_phone: custMobile,
-        mobile: custMobile,
-        phone: custMobile,
-        consignee_email: custEmail,
-        receiver_email: custEmail,
-        email: custEmail,
-        consignee_address: consigneeAddress.slice(0, 200),
-        receiver_address: consigneeAddress.slice(0, 200),
-        address: consigneeAddress.slice(0, 200),
-        consignee_city: consigneeCity.slice(0, 100),
-        receiver_city: consigneeCity.slice(0, 100),
-        destination_city: consigneeCity.slice(0, 100),
-        city: consigneeCity.slice(0, 100),
-        consignee_state: consigneeState.slice(0, 100),
-        receiver_state: consigneeState.slice(0, 100),
-        destination_state: consigneeState.slice(0, 100),
-        state: consigneeState.slice(0, 100),
-        consignee_pincode: destinationPincode,
-        receiver_pincode: destinationPincode,
-        destination_pincode: destinationPincode,
-        pincode: destinationPincode,
-        consignee_country: 'India',
-        receiver_country: 'India',
-        destination_country: 'India',
-        country: 'India',
-        to_postal_code: destinationPincode,
-        to_country_code: 'IN',
-
-        // Package dimensions & weight (identical to rate calculation)
-        order_number: String(order.order_number || order.orderNumber || order.id).slice(0, 50),
-        weight: calculatedWeightKg,
-        length: 15,
-        breadth: 12,
-        width: 12,
-        height: 8,
-        mode: 'Domestic',
-
-        // Financial (PREPAID ONLY)
-        total_amount: declaredValue,
-        grand_total: declaredValue,
-        order_amount: declaredValue,
-        total: declaredValue,
-        amount: declaredValue,
-        declared_value: declaredValue,
-        invoice_value: declaredValue,
-        subtotal: Number(order.subtotal || order.sub_total || declaredValue),
-        tax_amount: 0,
-        tax: 0,
-        discount: Number(order.discount_amount || order.discountAmount || 0),
-        discount_amount: Number(order.discount_amount || order.discountAmount || 0),
-        payment_mode: paymentModeVal,
-        cod_amount: codAmountVal,
-        collectable_amount: codAmountVal,
-
-        items: bookItems,
+        quoted_charges: candidateRate.total_charges,
+        weight_kg: calculatedWeightKg,
+        weight_sent: toShiprathBookingWeight(calculatedWeightKg),
+        weight_unit_sent: SHIPRATH_BOOKING_WEIGHT_UNIT,
+        dimensions_cm: box,
+        manual_package: Boolean(pkg.manual),
       };
+      console.log(`[SHIPRATH BOOK] ${order.order_number} → Attempting "${courierLabel}"`);
 
       try {
-        const bookRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/new_shipment_create`, {
-          method: 'POST',
-          headers: getShiprathHeaders(),
-          body: JSON.stringify(bookingPayload),
-        });
-
-        let resData = await bookRes.json();
-        console.log(`[SHIPRATH BOOK DIAGNOSTIC] === BOOKING RESPONSE ===`);
-        console.log(`  Courier: "${courierLabel}"`);
-        console.log(`  Status: ${resData?.status}`);
-        console.log(`  Sanitized Message: "${resData?.message || 'No message returned'}"`);
+        const bookingPayload = buildBookingPayload(candidateRate);
+        if (SHIPRATH_LOG_PAYLOAD) {
+          // Credentials travel only in headers, never in the payload. Contact details are masked.
+          console.log(`[SHIPRATH PAYLOAD] ${order.order_number} → POST /shipment/new_shipment_create`, JSON.stringify(sanitizeBookingPayload(bookingPayload)));
+        }
+        let resData = await postBooking('/shipment/new_shipment_create', bookingPayload);
 
         // Fallback URL if endpoint differs
-        if (!resData.status && resData.message?.toLowerCase().includes('not found')) {
-          const fbRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/create_shipment`, {
-            method: 'POST',
-            headers: getShiprathHeaders(),
-            body: JSON.stringify(bookingPayload),
-          });
-          resData = await fbRes.json();
+        if (!resData.status && String(resData.message || '').toLowerCase().includes('not found')) {
+          resData = await postBooking('/shipment/create_shipment', bookingPayload);
         }
+
+        attempt.ok = Boolean(resData.status);
+        attempt.message = resData.message || null;
+        attempts.push(attempt);
+        console.log(`[SHIPRATH BOOK] ${order.order_number} → "${courierLabel}" status=${resData.status} message="${resData.message || ''}"`);
 
         if (resData.status) {
           bookData = resData;
-          selectedRate = candidateRate;
-          console.log(`[SHIPRATH BOOK DIAGNOSTIC] ✅ BOOKING SUCCESS! Courier: "${courierLabel}" | AWB: "${resData.awb_number || resData.awb || resData.data?.awb_number}"`);
-          break; // Stop loop on first successful carrier
-        } else {
-          lastRawError = resData.message || 'Carrier booking error';
-          courierFailuresLog.push(`${courierLabel}: ${lastRawError}`);
-          console.warn(`[SHIPRATH BOOK DIAGNOSTIC] ❌ Courier "${courierLabel}" rejected shipment. Sanitized error: "${lastRawError}". Skipping courier and trying next candidate...`);
+          bookedRate = candidateRate;
+          break; // Stop immediately on first successful booking — never create a second shipment
         }
+
+        lastRawError = resData.message || 'Carrier booking error';
+        courierFailuresLog.push(`${courierLabel}: ${lastRawError}`);
       } catch (cErr) {
-        console.error(`[SHIPRATH BOOK DIAGNOSTIC] Exception with courier "${courierLabel}":`, cErr.message);
-        lastRawError = cErr.message;
-        courierFailuresLog.push(`${courierLabel}: ${cErr.message}`);
+        // Network error / timeout / unreadable response: Shiprath MAY have created the shipment.
+        // Trying another courier now could create a duplicate, so stop and flag for manual check.
+        uncertain = true;
+        lastRawError = `Booking response uncertain for "${courierLabel}": ${cErr.message}`;
+        attempt.ok = false;
+        attempt.uncertain = true;
+        attempt.message = cErr.message;
+        attempts.push(attempt);
+        courierFailuresLog.push(`${courierLabel}: ${cErr.message} (uncertain — fallback stopped)`);
+        console.error(`[SHIPRATH BOOK] ${order.order_number} → ${lastRawError}`);
+        break;
       }
     }
 
-    if (!bookData || !bookData.status) {
-      const realError = lastRawError || 'All couriers rejected this shipment';
-      console.error(`[SHIPRATH BOOK] ${order.order_number} → ❌ All ${candidateRates.length} candidate courier(s) failed. Failures:`, courierFailuresLog);
+    if (!bookData) {
+      const realError = uncertain
+        ? `UNCERTAIN — check the Shiprath panel for order ${order.order_number} before retrying. ${lastRawError}`
+        : (lastRawError || 'All couriers rejected this shipment');
+      console.error(`[SHIPRATH BOOK] ${order.order_number} → ❌ Booking failed after ${attempts.length} total attempt(s):`, courierFailuresLog);
 
-      // Save the real Shiprath error to the order row so admin can see it
-      if (order.id) {
-        const storedError = [realError, ...courierFailuresLog].join(' | ').slice(0, 500);
-        await supabase.from('orders').update({
-          shipment_status: 'failed',
-          shipment_error: storedError,
-        }).eq('id', order.id).then(null, () => {});
-      }
+      await markFailed([realError, ...courierFailuresLog].join(' | ').slice(0, 1000), { shipment_attempts: attempts });
 
       return {
-        error: realError,  // Real Shiprath message — not a generic override
+        error: realError,
         rawError: realError,
         courierFailures: courierFailuresLog,
+        uncertain,
       };
     }
 
     const awb = bookData.awb_number || bookData.awb || bookData.data?.awb_number || bookData.data?.awb || null;
     const shipmentId = bookData.shipment_id || bookData.data?.shipment_id || null;
-    const courierName = selectedRate?.service_name || 'Shiprath Partner';
+    const courierName = bookedRate?.service_name || 'Shiprath Partner';
     const trackingUrl = awb ? `https://backend.shiprath.com/tracking/${awb}` : null;
+    const isFallback = storedRate ? !isSameRate(bookedRate, storedRate) : false;
 
-    // ── Persist shipment details to Supabase Order Row ONLY upon successful booking ───────
-    if (order.id && awb) {
-      const updateData = {
+    if (isFallback) {
+      console.warn(`[SHIPRATH BOOK] ${order.order_number} → Booked with FALLBACK "${courierName}" ₹${bookedRate.total_charges} (customer paid ₹${order.delivery_fee}; MILASTY absorbs the difference)`);
+    }
+    if (!awb) {
+      console.warn(`[SHIPRATH BOOK] ${order.order_number} → Shiprath reported success but returned no AWB. Shipment ID: ${shipmentId}`);
+    }
+
+    // ── Persist shipment details — only after a successful booking ───────────
+    if (order.id) {
+      const { error: dbErr, skipped } = await safeUpdateOrder(order.id, {
         awb_number: awb,
-        awb: awb,
+        awb,
         shipment_id: shipmentId,
         courier_name: courierName,
         tracking_url: trackingUrl,
-        order_status: 'shipped',
-        status: 'shipped',
-      };
-
-      // Not every deployment has all shipment columns — try progressively smaller payloads
-      const attempts = [
-        updateData,
-        { awb_number: awb, shipment_id: shipmentId, courier_name: courierName, tracking_url: trackingUrl, order_status: 'shipped' },
-        { awb, shipment_id: shipmentId, courier_name: courierName, tracking_url: trackingUrl, order_status: 'shipped' },
-        { awb_number: awb, order_status: 'shipped' },
-        { awb, order_status: 'shipped' },
-        { order_status: 'shipped', shipment_error: `AWB: ${awb} | Courier: ${courierName}` },
-      ];
-
-      let saved = false;
-      for (const payload of attempts) {
-        const { error: dbErr } = await supabase.from('orders').update(payload).eq('id', order.id);
-        if (!dbErr) {
-          saved = true;
-          console.log('[SHIPRATH BOOK] ✅ Saved AWB to order row:', awb, '| columns:', Object.keys(payload).join(','));
-          break;
-        }
-        console.warn('[SHIPRATH BOOK] DB update column warning:', dbErr.message);
-      }
-      if (!saved) {
-        console.error(`[SHIPRATH BOOK] ⚠️ Booked AWB ${awb} but could not save it to order ${order.id}`);
+        // Booking ≠ physically shipped: order_status is left as-is (confirmed). It moves to
+        // shipped / out_for_delivery / delivered only from Shiprath tracking (trackOrderShipment).
+        shipment_status: 'booked',
+        ...packageFields,
+        shipment_error: null,
+        shipment_booked_at: new Date().toISOString(),
+        shipment_last_attempt_at: new Date().toISOString(),
+        booked_carrier_id: bookedRate.carrier_id,
+        booked_courier_id: bookedRate.courier_id ?? '',
+        booked_product_id: bookedRate.product_id,
+        booked_service_name: courierName,
+        booked_shipping_charge: bookedRate.total_charges,
+        shipment_booking_response: bookData,
+        shipment_attempts: attempts,
+      });
+      if (dbErr) {
+        // The shipment EXISTS at Shiprath — make this impossible to miss so it is not re-booked
+        console.error(`[SHIPRATH BOOK] ⚠️ ${order.order_number} BOOKED (AWB ${awb}, shipment ${shipmentId}) but saving to DB failed:`, dbErr.message);
+      } else {
+        console.log(`[SHIPRATH BOOK] ✅ ${order.order_number} saved AWB ${awb}${skipped.length ? ` (columns not in schema: ${skipped.join(', ')})` : ''}`);
       }
     }
 
@@ -760,28 +1038,71 @@ export const bookShiprathShipment = async (order) => {
       shipment_id: shipmentId,
       courier_name: courierName,
       tracking_url: trackingUrl,
-      carrier_id: selectedRate.carrier_id,
-      courier_id: selectedRate.courier_id,
-      product_id: selectedRate.product_id,
+      carrier_id: bookedRate.carrier_id,
+      courier_id: bookedRate.courier_id ?? '',
+      product_id: bookedRate.product_id,
+      fallbackUsed: isFallback,
       raw: bookData,
     };
   } catch (error) {
     console.error('[SHIPRATH BOOK] Critical Exception:', error.message);
+    if (order?.id) {
+      await safeUpdateOrder(order.id, { shipment_status: 'failed', shipment_error: `Booking exception: ${error.message}` });
+    }
     return { error: error.message };
   }
 };
 
+/**
+ * Atomically move an order into shipment_status = 'creating'.
+ * Only one caller can win the claim, so concurrent triggers (payment verify, every Razorpay
+ * webhook event, admin retry) can never book the same order twice.
+ *
+ * @param {string} orderId
+ * @param {Array<string|null>} fromStatuses  statuses the claim is allowed from (null = no status)
+ */
+export async function claimOrderForBooking(orderId, fromStatuses) {
+  const filter = fromStatuses
+    .map((s) => (s === null ? 'shipment_status.is.null' : `shipment_status.eq.${s}`))
+    .join(',');
+
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ shipment_status: 'creating' })
+    .eq('id', orderId)
+    .or(filter)
+    .select('id');
+
+  if (error) return { claimed: false, error };
+  if (data && data.length > 0) {
+    await safeUpdateOrder(orderId, { shipment_last_attempt_at: new Date().toISOString() });
+  }
+  return { claimed: Boolean(data && data.length > 0), error: null };
+}
 
 /**
- * POST /api/shiprat/book (and /api/shipping/book)
- * Admin manual shipment creation endpoint
+ * POST /api/orders/admin/:id/book-shipment (and /api/shipping/book)
+ * Admin RETRY of a failed automatic booking. Normal orders are booked automatically after payment.
+ * Body: { force?: boolean } — force is only needed to retry an order stuck in 'creating'.
  */
 export const bookShipmentForOrder = async (req, res) => {
   try {
-    // Supports both /shipping/book (body.orderId) and /orders/admin/:id/book-shipment (params.id)
     const orderId = req.params.id || req.body.orderId;
+    const force = Boolean(req.body?.force);
     if (!orderId) {
       return res.status(400).json({ success: false, message: 'orderId is required.' });
+    }
+
+    // Optional manual package (admin used a different physical box): { weightKg, length, width, height }
+    let packageOverride = null;
+    if (req.body?.package) {
+      const p = req.body.package;
+      packageOverride = { weightKg: Number(p.weightKg), length: Number(p.length), width: Number(p.width), height: Number(p.height) };
+      try {
+        assertValidPackage({ totalWeightKg: packageOverride.weightKg, dimensions: packageOverride });
+      } catch (e) {
+        return res.status(400).json({ success: false, message: `Invalid manual package: ${e.message}` });
+      }
     }
 
     const isUuid = /^[0-9a-fA-F-]{36}$/.test(orderId);
@@ -793,43 +1114,60 @@ export const bookShipmentForOrder = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Order not found.' });
     }
 
-    // BUG 3 FIX: Detect legacy orders (no stored rate from checkout)
-    const hasStoredRate = Boolean(order.selected_carrier_id && order.selected_courier_id);
-    if (!hasStoredRate) {
-      console.log(`[ADMIN BOOK] ${order.order_number} -> No stored rate (legacy order). Will re-fetch live rates.`);
-    } else {
-      console.log(`[ADMIN BOOK] ${order.order_number} -> Using stored rate (carrier_id=${order.selected_carrier_id}).`);
+    if (String(order.payment_status || '').toLowerCase() !== 'paid') {
+      return res.status(400).json({ success: false, message: 'Shipments can only be created for paid orders.' });
+    }
+    if (String(order.order_status || '').toLowerCase() === 'cancelled') {
+      return res.status(400).json({ success: false, message: 'This order is cancelled.' });
     }
 
-    // Mark as creating before attempting
-    await supabase.from('orders').update({ shipment_status: 'creating' }).eq('id', order.id).then(null, () => {});
+    const shipStatus = String(order.shipment_status || '').toLowerCase();
 
-    const result = await bookShiprathShipment(order);
-    if (!result || result.error) {
-      const realError = result?.rawError || result?.error || 'Shiprath booking failed.';
-      const failures = result?.courierFailures || [];
-      console.error(`[ADMIN BOOK] ${order.order_number} -> FAILED: ${realError}`);
-      return res.status(400).json({
+    if (order.awb_number || order.awb || shipStatus === 'booked') {
+      return res.status(409).json({
         success: false,
-        // BUG 3 FIX: Real Shiprath error, not the generic override
-        message: realError,
-        rawError: realError,
-        courierFailures: failures,
-        isLegacyOrder: !hasStoredRate,
-        hint: !hasStoredRate
-          ? 'Legacy order: no stored carrier rate from checkout. Shiprath live rates were re-fetched. See courierFailures for the real rejection reason per courier.'
-          : null,
+        code: 'ALREADY_BOOKED',
+        message: `Shipment already booked${order.awb_number ? ` (AWB ${order.awb_number})` : ''}. Not creating another one.`,
       });
     }
 
-    // Update shipment_status to booked on success
-    if (order.id && result.awb) {
-      await supabase.from('orders').update({ shipment_status: 'booked', shipment_error: null }).eq('id', order.id).then(null, () => {});
+    if (shipStatus === 'creating' && !force) {
+      return res.status(409).json({
+        success: false,
+        code: 'IN_PROGRESS',
+        message: 'A booking for this order is in progress (or got stuck). Check the Shiprath panel first; retry with force only if no shipment exists there.',
+      });
     }
 
-    return res.json({ success: true, ...result });
+    const fromStatuses = force
+      ? ['creating', 'failed', 'pending', 'not_created', null]
+      : ['failed', 'pending', 'not_created', null];
+    const { claimed, error: claimErr } = await claimOrderForBooking(order.id, fromStatuses);
+    if (claimErr) {
+      return res.status(500).json({ success: false, message: `Could not lock order for booking: ${claimErr.message}` });
+    }
+    if (!claimed) {
+      return res.status(409).json({ success: false, code: 'STATE_CHANGED', message: 'Shipment state changed while retrying. Refresh and check again.' });
+    }
+
+    console.log(`[ADMIN RETRY] ${order.order_number} → retrying shipment (previous status: ${shipStatus || 'none'}${force ? ', forced' : ''})`);
+    const result = await bookShiprathShipment(order, { packageOverride });
+
+    if (!result || result.error) {
+      const realError = result?.rawError || result?.error || 'Shiprath booking failed.';
+      console.error(`[ADMIN RETRY] ${order.order_number} -> FAILED: ${realError}`);
+      return res.status(400).json({
+        success: false,
+        message: realError,
+        rawError: realError,
+        courierFailures: result?.courierFailures || [],
+        uncertain: Boolean(result?.uncertain),
+      });
+    }
+
+    return res.json({ success: true, ...result, raw: undefined });
   } catch (error) {
-    console.error('[SHIPRATH BOOK ROUTE] Exception:', error.message);
+    console.error('[SHIPRATH RETRY ROUTE] Exception:', error.message);
     return res.status(500).json({ success: false, message: 'Error booking shipment.', error: error.message });
   }
 };
@@ -849,7 +1187,7 @@ export const trackShipment = async (req, res) => {
     const response = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_tracking`, {
       method: 'POST',
       headers: getShiprathHeaders(),
-      body: JSON.stringify({ awb }),
+      body: JSON.stringify({ awb_number: awb, awb }),
     });
 
     let data = await response.json();
@@ -869,74 +1207,151 @@ export const trackShipment = async (req, res) => {
   }
 };
 
+/** Can this request's user see this order? (owner by id/email/phone, or admin) */
+export function canAccessOrder(user, order) {
+  if (!user || !order) return false;
+  if (user.role === 'admin') return true;
+  const uid = user.id || user._id;
+  if (uid && order.user_id && String(order.user_id) === String(uid)) return true;
+  if (user.email && order.customer_email &&
+      String(user.email).toLowerCase().trim() === String(order.customer_email).toLowerCase().trim()) return true;
+  const digits = (v) => String(v || '').replace(/\D/g, '').slice(-10);
+  if (user.phone && order.customer_phone && digits(user.phone).length === 10 &&
+      digits(user.phone) === digits(order.customer_phone)) return true;
+  return false;
+}
+
+// Shipment progress, in order. Tracking may only move an order forward along this list.
+const SHIPMENT_PROGRESS = ['pending', 'creating', 'failed', 'booked', 'picked_up', 'in_transit', 'out_for_delivery', 'delivered'];
+
+/** Pull the current status text out of a Shiprath tracking response (shape varies by carrier). */
+function extractTrackingStatus(trackData) {
+  const d = trackData?.data && typeof trackData.data === 'object' && !Array.isArray(trackData.data) ? trackData.data : trackData;
+  const events = extractTrackingEvents(trackData);
+  const candidates = [
+    d?.current_status, d?.current_status_name, d?.shipment_status, d?.status_name, d?.status_text,
+    typeof d?.status === 'string' ? d.status : null,
+    events[0]?.status, events[0]?.activity,
+  ];
+  return candidates.find((s) => typeof s === 'string' && s.trim()) || null;
+}
+
+function extractTrackingEvents(trackData) {
+  const d = trackData?.data && typeof trackData.data === 'object' && !Array.isArray(trackData.data) ? trackData.data : trackData;
+  const list = d?.shipment_track || d?.scans || d?.tracking_data || trackData?.shipment_track || [];
+  return Array.isArray(list) ? list : [];
+}
+
+/** Map carrier status text to MILASTY shipment_status. Returns null when unrecognised. */
+export function mapTrackingStatus(text) {
+  const s = String(text || '').toLowerCase();
+  if (!s) return null;
+  if (/\brto\b|return(ed)?\s*to\s*origin/.test(s)) return null; // RTO is handled manually by admin
+  if (/out\s*for\s*delivery|\bofd\b/.test(s)) return 'out_for_delivery';
+  if (/\bdelivered\b/.test(s) && !/undelivered|not\s*delivered/.test(s)) return 'delivered';
+  if (/in[\s-]*transit|dispatched|shipped|reached|arrived|connected|bagged|\bhub\b/.test(s)) return 'in_transit';
+  if (/picked\s*up|pickup\s*(done|complete)/.test(s)) return 'picked_up';
+  return null;
+}
+
 /**
  * GET /api/shipping/order/:orderId/tracking (and /api/shiprat/order/:orderId/tracking)
- * Customer order tracking with timeline stages
+ * Customer order tracking. Updates shipment_status from live Shiprath tracking.
+ * The response is customer-safe: no courier names, carrier IDs or Shiprath links.
  */
 export const trackOrderShipment = async (req, res) => {
   try {
     const { orderId } = req.params;
 
     const isUuid = /^[0-9a-fA-F-]{36}$/.test(orderId);
-    let query = supabase.from('orders').select('id, order_number, awb_number, shipment_id, courier_name, tracking_url, order_status, pincode, customer_name, created_at');
+    let query = supabase.from('orders').select('*');
     query = isUuid ? query.eq('id', orderId) : query.eq('order_number', orderId);
 
     const { data: order, error } = await query.maybeSingle();
-    if (error || !order) {
+    if (error || !order || !canAccessOrder(req.user, order)) {
       return res.status(404).json({ success: false, message: 'Order not found.' });
     }
 
-    const awb = order.awb_number;
+    const awb = order.awb_number || order.awb || null;
+    let shipmentStatus = String(order.shipment_status || (awb ? 'booked' : 'pending')).toLowerCase();
+    let orderStatus = order.order_status;
 
-    // Build timeline stages
-    const timeline = [
-      { step: 'Order Confirmed', completed: true, timestamp: order.created_at },
-      { step: 'Shipment Created', completed: Boolean(awb || order.order_status === 'shipped' || order.order_status === 'delivered') },
-      { step: 'Picked Up', completed: Boolean(order.order_status === 'shipped' || order.order_status === 'delivered') },
-      { step: 'In Transit', completed: Boolean(order.order_status === 'shipped' || order.order_status === 'delivered') },
-      { step: 'Dispatched / Out for Delivery', completed: Boolean(order.order_status === 'out_for_delivery' || order.order_status === 'delivered') },
-      { step: 'Delivered', completed: Boolean(order.order_status === 'delivered') },
-    ];
+    let events = [];
+    let estimatedDelivery = null;
 
-    if (!awb) {
-      return res.json({
-        success: true,
-        awb: null,
-        status: order.order_status || 'confirmed',
-        courier_name: order.courier_name || 'Shiprath Partner',
-        message: 'Order confirmed. AWB will be updated as soon as pickup is dispatched.',
-        timeline,
-        tracking: null,
-      });
+    if (awb) {
+      try {
+        const trackRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_tracking`, {
+          method: 'POST',
+          headers: getShiprathHeaders(),
+          body: JSON.stringify({ awb_number: awb, awb }),
+          signal: AbortSignal.timeout(20000),
+        });
+        const trackData = await trackRes.json();
+
+        if (trackData?.status) {
+          const d = trackData.data && typeof trackData.data === 'object' && !Array.isArray(trackData.data) ? trackData.data : trackData;
+          estimatedDelivery = d.estimated_delivery || d.edd || null;
+          events = extractTrackingEvents(trackData).slice(0, 20).map((e) => ({
+            activity: e.activity || e.status || e.remark || e.scan_type || null,
+            location: e.location || e.city || null,
+            date: e.date || e.datetime || e.scan_date || e.updated_at || null,
+          }));
+
+          const mapped = mapTrackingStatus(extractTrackingStatus(trackData));
+          const isForward = mapped && SHIPMENT_PROGRESS.indexOf(mapped) > SHIPMENT_PROGRESS.indexOf(shipmentStatus);
+
+          if (isForward && String(order.order_status || '').toLowerCase() !== 'cancelled') {
+            const newOrderStatus = mapped === 'delivered' ? 'delivered'
+              : mapped === 'out_for_delivery' ? 'out_for_delivery'
+              : 'shipped';
+            const { error: upErr } = await safeUpdateOrder(order.id, {
+              shipment_status: mapped,
+              order_status: newOrderStatus,
+              shipment_tracking_updated_at: new Date().toISOString(),
+            });
+            if (!upErr) {
+              console.log(`[SHIPRATH TRACK] ${order.order_number} → ${shipmentStatus} → ${mapped}`);
+              shipmentStatus = mapped;
+              orderStatus = newOrderStatus;
+            }
+          }
+        }
+      } catch (trackErr) {
+        console.warn(`[SHIPRATH TRACK] ${order.order_number} → tracking fetch failed:`, trackErr.message);
+      }
     }
 
-    // Live call to Shiprath tracking
-    let liveTracking = null;
-    try {
-      const trackRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_tracking`, {
-        method: 'POST',
-        headers: getShiprathHeaders(),
-        body: JSON.stringify({ awb }),
-      });
-      const trackData = await trackRes.json();
-      if (trackData.status) {
-        liveTracking = trackData;
-      }
-    } catch (_) {}
+    const done = (step) => SHIPMENT_PROGRESS.indexOf(shipmentStatus) >= SHIPMENT_PROGRESS.indexOf(step);
+    const timeline = [
+      { step: 'Order Confirmed', completed: true, timestamp: order.created_at },
+      { step: 'Shipment Created', completed: Boolean(awb) || done('booked') },
+      { step: 'Picked Up', completed: done('picked_up') },
+      { step: 'In Transit', completed: done('in_transit') },
+      { step: 'Out for Delivery', completed: done('out_for_delivery') },
+      { step: 'Delivered', completed: done('delivered') },
+    ];
 
     return res.json({
       success: true,
       awb,
-      courier_name: order.courier_name || 'Shiprath Partner',
-      tracking_url: order.tracking_url || `https://backend.shiprath.com/tracking/${awb}`,
-      order_status: order.order_status,
+      shipment_status: customerShipmentStatus(shipmentStatus),
+      order_status: orderStatus,
+      message: awb ? null : 'Order confirmed. Your shipment is being prepared.',
       timeline,
-      tracking: liveTracking,
+      tracking: awb ? { estimated_delivery: estimatedDelivery, shipment_track: events } : null,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Error fetching order tracking.', error: error.message });
+    return res.status(500).json({ success: false, message: 'Error fetching order tracking.' });
   }
 };
+
+/** What a customer sees for shipment_status — internal failures read as "processing". */
+export function customerShipmentStatus(status) {
+  const s = String(status || '').toLowerCase();
+  if (['pending', 'not_created', 'creating', 'failed', ''].includes(s)) return 'processing';
+  return s;
+}
 
 /**
  * POST /api/shipping/order/:id/cancel
@@ -956,7 +1371,7 @@ export const cancelOrderWithShipment = async (req, res) => {
 
     const { data: order, error } = await query.maybeSingle();
 
-    if (error || !order) {
+    if (error || !order || !canAccessOrder(req.user, order)) {
       return res.status(404).json({ success: false, message: 'Order not found.' });
     }
 
@@ -1023,7 +1438,7 @@ export const cancelOrderWithShipment = async (req, res) => {
       refundPercentage,
       refundAmount,
       hoursElapsed: Math.round(hoursElapsed * 10) / 10,
-      order: updatedOrder,
+      order: { id: updatedOrder.id, order_number: updatedOrder.order_number, order_status: updatedOrder.order_status },
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Error cancelling order.', error: error.message });
