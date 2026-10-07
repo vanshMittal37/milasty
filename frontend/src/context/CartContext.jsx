@@ -157,11 +157,13 @@ export const CartProvider = ({ children }) => {
 
   // Save changes to server/localStorage helper
   const persistCartChanges = async (newCart) => {
-    if (currentUserId) {
+    const activeUserId = user ? (user.id || user._id) : null;
+    if (activeUserId) {
       try {
-        await api.put('/cart', { items: newCart });
-        localStorage.setItem(`milasty_cart_${currentUserId}`, JSON.stringify(newCart));
-        localStorage.setItem('milasty_cart_items', JSON.stringify(newCart));
+        const res = await api.put('/cart', { items: newCart });
+        const serverSaved = Array.isArray(res.data?.items) ? res.data.items : newCart;
+        localStorage.setItem(`milasty_cart_${activeUserId}`, JSON.stringify(serverSaved));
+        localStorage.setItem('milasty_cart_items', JSON.stringify(serverSaved));
       } catch (error) {
         console.error('Failed to persist cart changes to server:', error);
         showToast('Cart saved locally. Reconnecting to server...');
@@ -191,29 +193,24 @@ export const CartProvider = ({ children }) => {
     const placeholder = product.customization_placeholder || product.customizationPlaceholder || null;
 
     let updatedList = [];
+    const existingIdx = cartItems.findIndex((item) => {
+      const itemPId = item.productId || item.product_id;
+      const itemVId = item.variantId || item.variant_id || item.variantName;
+      const itemNote = String(item.customization_note || item.customizationNote || '').trim();
+      return itemPId === pId && (itemVId === variantId || item.variantName === variantName) && itemNote === cleanNote;
+    });
 
-    setCartItems((prevItems) => {
-      const existingIdx = prevItems.findIndex((item) => {
-        const itemPId = item.productId || item.product_id;
-        const itemVId = item.variantId || item.variant_id || item.variantName;
-        const itemNote = String(item.customization_note || item.customizationNote || '').trim();
-        return itemPId === pId && (itemVId === variantId || item.variantName === variantName) && itemNote === cleanNote;
-      });
-
-      if (existingIdx > -1) {
-        const updated = [...prevItems];
-        const newQty = updated[existingIdx].quantity + qty;
-        updated[existingIdx] = {
-          ...updated[existingIdx],
-          quantity: newQty,
-          totalPrice: updated[existingIdx].unitPrice * newQty,
-        };
-        updatedList = updated;
-        return updated;
-      }
-
+    if (existingIdx > -1) {
+      updatedList = [...cartItems];
+      const newQty = updatedList[existingIdx].quantity + qty;
+      updatedList[existingIdx] = {
+        ...updatedList[existingIdx],
+        quantity: newQty,
+        totalPrice: updatedList[existingIdx].unitPrice * newQty,
+      };
+    } else {
       updatedList = [
-        ...prevItems,
+        ...cartItems,
         {
           cartItemId,
           productId: pId,
@@ -230,9 +227,9 @@ export const CartProvider = ({ children }) => {
           customization_placeholder: placeholder,
         },
       ];
-      return updatedList;
-    });
+    }
 
+    setCartItems(updatedList);
     await persistCartChanges(updatedList);
     showToast(`✓ Added ${title} (${variantName}) to cart`);
   };
@@ -240,44 +237,38 @@ export const CartProvider = ({ children }) => {
   const updateCartItemCustomization = async (targetId, newNote) => {
     if (!targetId) return;
     const cleanNote = String(newNote || '').trim().slice(0, 300);
-    let updatedList = [];
 
-    setCartItems((prev) => {
-      updatedList = prev.map((item) => {
-        const matches = item.cartItemId === targetId || item.id === targetId || item._id === targetId;
-        if (matches) {
-          return {
-            ...item,
-            customization_note: cleanNote || null,
-          };
-        }
-        return item;
-      });
-      return updatedList;
+    const updatedList = cartItems.map((item) => {
+      const matches = item.cartItemId === targetId || item.id === targetId || item._id === targetId;
+      if (matches) {
+        return {
+          ...item,
+          customization_note: cleanNote || null,
+        };
+      }
+      return item;
     });
 
+    setCartItems(updatedList);
     await persistCartChanges(updatedList);
     showToast('✓ Special instruction updated');
   };
 
   const removeCartItemCustomization = async (targetId) => {
     if (!targetId) return;
-    let updatedList = [];
 
-    setCartItems((prev) => {
-      updatedList = prev.map((item) => {
-        const matches = item.cartItemId === targetId || item.id === targetId || item._id === targetId;
-        if (matches) {
-          return {
-            ...item,
-            customization_note: null,
-          };
-        }
-        return item;
-      });
-      return updatedList;
+    const updatedList = cartItems.map((item) => {
+      const matches = item.cartItemId === targetId || item.id === targetId || item._id === targetId;
+      if (matches) {
+        return {
+          ...item,
+          customization_note: null,
+        };
+      }
+      return item;
     });
 
+    setCartItems(updatedList);
     await persistCartChanges(updatedList);
     showToast('Special instruction removed');
   };
@@ -289,49 +280,42 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
-    let updatedList = [];
+    const updatedList = cartItems.map((item) => {
+      const matches =
+        (item.cartItemId && item.cartItemId === targetId) ||
+        (item.productId && item.productId === targetId) ||
+        (item._id && item._id === targetId) ||
+        (item.id && item.id === targetId) ||
+        (item.key && item.key === targetId);
 
-    setCartItems((prev) => {
-      updatedList = prev.map((item) => {
-        const matches =
-          (item.cartItemId && item.cartItemId === targetId) ||
-          (item.productId && item.productId === targetId) ||
-          (item._id && item._id === targetId) ||
-          (item.id && item.id === targetId) ||
-          (item.key && item.key === targetId);
-
-        if (matches) {
-          return {
-            ...item,
-            quantity: newQty,
-            totalPrice: item.unitPrice * newQty,
-          };
-        }
-        return item;
-      });
-      return updatedList;
+      if (matches) {
+        return {
+          ...item,
+          quantity: newQty,
+          totalPrice: item.unitPrice * newQty,
+        };
+      }
+      return item;
     });
 
+    setCartItems(updatedList);
     await persistCartChanges(updatedList);
   };
 
   const removeFromCart = async (targetId) => {
     if (!targetId) return;
-    let updatedList = [];
 
-    setCartItems((prev) => {
-      updatedList = prev.filter((item) => {
-        const idMatches =
-          (item.cartItemId && item.cartItemId === targetId) ||
-          (item.productId && item.productId === targetId) ||
-          (item._id && item._id === targetId) ||
-          (item.id && item.id === targetId) ||
-          (item.key && item.key === targetId);
-        return !idMatches;
-      });
-      return updatedList;
+    const updatedList = cartItems.filter((item) => {
+      const idMatches =
+        (item.cartItemId && item.cartItemId === targetId) ||
+        (item.productId && item.productId === targetId) ||
+        (item._id && item._id === targetId) ||
+        (item.id && item.id === targetId) ||
+        (item.key && item.key === targetId);
+      return !idMatches;
     });
 
+    setCartItems(updatedList);
     await persistCartChanges(updatedList);
   };
 
