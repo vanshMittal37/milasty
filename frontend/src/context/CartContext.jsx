@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import api from '../api/axios';
 import { useAuth } from './AuthContext';
 
@@ -8,6 +8,7 @@ export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const currentUserId = user ? (user.id || user._id) : null;
   const prevUserIdRef = useRef(currentUserId);
+  const isSyncingRef = useRef(false);
 
   // Load cart initially based on whether user is logged in or guest
   const [cartItems, setCartItems] = useState(() => {
@@ -38,7 +39,6 @@ export const CartProvider = ({ children }) => {
   });
 
   const [couponDiscountAmount, setCouponDiscountAmount] = useState(0);
-  // mobileNavOpen MUST be at top — hooks cannot come after useEffect
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // Helper to generate unique item key based on product_id + variant + customization_note
@@ -50,16 +50,16 @@ export const CartProvider = ({ children }) => {
     return `${pId}_${vId}_${note}`;
   };
 
-  // Helper to merge guest cart items with user cart items
+  // Helper to merge guest cart items with user server cart items
   const mergeCartLists = (userCart = [], guestCart = []) => {
     const map = new Map();
 
-    userCart.forEach((item) => {
+    (userCart || []).forEach((item) => {
       const key = getItemKey(item);
       map.set(key, { ...item });
     });
 
-    guestCart.forEach((guestItem) => {
+    (guestCart || []).forEach((guestItem) => {
       const key = getItemKey(guestItem);
       if (map.has(key)) {
         const existing = map.get(key);
@@ -78,97 +78,100 @@ export const CartProvider = ({ children }) => {
     return Array.from(map.values());
   };
 
-  // Sync cart state with localStorage and backend on changes & handles Auth transitions (login / logout)
-  useEffect(() => {
-    const prevUserId = prevUserIdRef.current;
-    const activeUserId = user ? (user.id || user._id) : null;
-
-    if (prevUserId !== activeUserId) {
-      // User identity changed
-      if (prevUserId && !activeUserId) {
-        // --- LOGOUT TRANSITION ---
-        // Save logged-out user's cart safely under their user key before clearing
-        try {
-          if (cartItems.length > 0) {
-            localStorage.setItem(`milasty_cart_${prevUserId}`, JSON.stringify(cartItems));
-          }
-        } catch (e) {}
-
-        // Reset active state for new guest session
-        setCartItems([]);
-        setAppliedCoupon(null);
-        setCouponDiscountAmount(0);
-        try {
-          localStorage.removeItem('milasty_cart_items');
-          localStorage.removeItem('milasty_guest_cart');
-          sessionStorage.removeItem('milasty_applied_coupon');
-        } catch (e) {}
-      } else if (activeUserId) {
-        // --- LOGIN TRANSITION ---
-        // User logged in: load user cart & merge guest items if present
-        const handleAuthLoginSync = async () => {
-          const userCartKey = `milasty_cart_${activeUserId}`;
-          let savedUserCart = [];
-          try {
-            const localUserCart = localStorage.getItem(userCartKey);
-            if (localUserCart) {
-              savedUserCart = JSON.parse(localUserCart);
-            }
-          } catch (e) {}
-
-          let guestCart = [];
-          try {
-            const guestSaved = localStorage.getItem('milasty_guest_cart');
-            if (guestSaved) {
-              guestCart = JSON.parse(guestSaved);
-            } else if (!prevUserId) {
-              guestCart = cartItems;
-            }
-          } catch (e) {}
-
-          const merged = mergeCartLists(savedUserCart, guestCart);
-          setCartItems(merged);
-
-          try {
-            localStorage.setItem(userCartKey, JSON.stringify(merged));
-            localStorage.setItem('milasty_cart_items', JSON.stringify(merged));
-            localStorage.removeItem('milasty_guest_cart');
-          } catch (e) {}
-        };
-
-        handleAuthLoginSync();
-      }
-
-      prevUserIdRef.current = activeUserId;
-    } else {
-      // --- REGULAR CART MODIFICATION IN CURRENT SESSION ---
-      try {
-        localStorage.setItem('milasty_cart_items', JSON.stringify(cartItems));
-        if (activeUserId) {
-          localStorage.setItem(`milasty_cart_${activeUserId}`, JSON.stringify(cartItems));
-        } else {
-          localStorage.setItem('milasty_guest_cart', JSON.stringify(cartItems));
-        }
-      } catch (e) {}
-    }
-  }, [cartItems, user]);
-
-  // Sync appliedCoupon with Session Storage
-  useEffect(() => {
-    try {
-      if (appliedCoupon) {
-        sessionStorage.setItem('milasty_applied_coupon', JSON.stringify(appliedCoupon));
-      } else {
-        sessionStorage.removeItem('milasty_applied_coupon');
-      }
-    } catch (e) {}
-  }, [appliedCoupon]);
-
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage(null);
     }, 3000);
+  };
+
+  // Load and sync server cart for authenticated users
+  const syncServerCart = useCallback(async (activeUserId) => {
+    if (!activeUserId || isSyncingRef.current) return;
+    isSyncingRef.current = true;
+
+    try {
+      // 1. Fetch authenticated user's cart from Supabase backend
+      const res = await api.get('/cart');
+      const serverCart = Array.isArray(res.data?.items) ? res.data.items : [];
+
+      // 2. Check for guest cart items in localStorage to merge
+      let guestCart = [];
+      try {
+        const guestSaved = localStorage.getItem('milasty_guest_cart');
+        if (guestSaved) {
+          guestCart = JSON.parse(guestSaved);
+        }
+      } catch (e) {}
+
+      let finalCart = serverCart;
+
+      if (guestCart && guestCart.length > 0) {
+        // Merge guest cart into server cart
+        finalCart = mergeCartLists(serverCart, guestCart);
+        // Persist merged cart back to server
+        await api.put('/cart', { items: finalCart });
+        // Clear guest cart from localStorage
+        try {
+          localStorage.removeItem('milasty_guest_cart');
+        } catch (e) {}
+      }
+
+      setCartItems(finalCart);
+
+      // Cache locally for instant UX
+      try {
+        localStorage.setItem(`milasty_cart_${activeUserId}`, JSON.stringify(finalCart));
+        localStorage.setItem('milasty_cart_items', JSON.stringify(finalCart));
+      } catch (e) {}
+    } catch (error) {
+      console.error('Failed to sync server cart:', error);
+      showToast('Unable to synchronize cart with server. Retrying...');
+    } finally {
+      isSyncingRef.current = false;
+    }
+  }, []);
+
+  // Handle Auth transitions (login / logout) & initial load
+  useEffect(() => {
+    const prevUserId = prevUserIdRef.current;
+    const activeUserId = currentUserId;
+
+    if (activeUserId) {
+      // User is logged in — fetch server cart
+      syncServerCart(activeUserId);
+    } else if (prevUserId && !activeUserId) {
+      // Logout transition — reset UI cart, do NOT erase server cart
+      setCartItems([]);
+      setAppliedCoupon(null);
+      setCouponDiscountAmount(0);
+      try {
+        localStorage.removeItem('milasty_cart_items');
+        localStorage.removeItem('milasty_guest_cart');
+        sessionStorage.removeItem('milasty_applied_coupon');
+      } catch (e) {}
+    }
+
+    prevUserIdRef.current = activeUserId;
+  }, [currentUserId, syncServerCart]);
+
+  // Save changes to server/localStorage helper
+  const persistCartChanges = async (newCart) => {
+    if (currentUserId) {
+      try {
+        await api.put('/cart', { items: newCart });
+        localStorage.setItem(`milasty_cart_${currentUserId}`, JSON.stringify(newCart));
+        localStorage.setItem('milasty_cart_items', JSON.stringify(newCart));
+      } catch (error) {
+        console.error('Failed to persist cart changes to server:', error);
+        showToast('Cart saved locally. Reconnecting to server...');
+      }
+    } else {
+      try {
+        localStorage.setItem('milasty_guest_cart', JSON.stringify(newCart));
+        localStorage.setItem('milasty_cart_items', JSON.stringify(newCart));
+      } catch (e) {}
+    }
   };
 
   const addToCart = async (product, variant, qty = 1, customizationNote = '') => {
@@ -181,15 +184,15 @@ export const CartProvider = ({ children }) => {
     const pId = product._id || product.id || product.slug || 'item';
     const cleanNote = String(customizationNote || '').trim().slice(0, 300);
     
-    // Unique cartItemId considering product + variant + customization note
     const cartItemId = `${pId}_${variantId}_${cleanNote ? encodeURIComponent(cleanNote.slice(0, 15)) + '_' + Date.now() : 'std'}`;
     const image = product.image || product.image_url || product.primary_image || '/images/image1.jpeg';
     const title = product.title || product.name || 'MILASTY Bake';
     const allowCustomization = Boolean(product.allow_customization || product.allowCustomization);
     const placeholder = product.customization_placeholder || product.customizationPlaceholder || null;
 
+    let updatedList = [];
+
     setCartItems((prevItems) => {
-      // Match item with same productId, variantId, AND exact customization_note
       const existingIdx = prevItems.findIndex((item) => {
         const itemPId = item.productId || item.product_id;
         const itemVId = item.variantId || item.variant_id || item.variantName;
@@ -205,10 +208,11 @@ export const CartProvider = ({ children }) => {
           quantity: newQty,
           totalPrice: updated[existingIdx].unitPrice * newQty,
         };
+        updatedList = updated;
         return updated;
       }
 
-      return [
+      updatedList = [
         ...prevItems,
         {
           cartItemId,
@@ -226,16 +230,20 @@ export const CartProvider = ({ children }) => {
           customization_placeholder: placeholder,
         },
       ];
+      return updatedList;
     });
 
+    await persistCartChanges(updatedList);
     showToast(`✓ Added ${title} (${variantName}) to cart`);
   };
 
-  const updateCartItemCustomization = (targetId, newNote) => {
+  const updateCartItemCustomization = async (targetId, newNote) => {
     if (!targetId) return;
     const cleanNote = String(newNote || '').trim().slice(0, 300);
-    setCartItems((prev) =>
-      prev.map((item) => {
+    let updatedList = [];
+
+    setCartItems((prev) => {
+      updatedList = prev.map((item) => {
         const matches = item.cartItemId === targetId || item.id === targetId || item._id === targetId;
         if (matches) {
           return {
@@ -244,15 +252,20 @@ export const CartProvider = ({ children }) => {
           };
         }
         return item;
-      })
-    );
+      });
+      return updatedList;
+    });
+
+    await persistCartChanges(updatedList);
     showToast('✓ Special instruction updated');
   };
 
-  const removeCartItemCustomization = (targetId) => {
+  const removeCartItemCustomization = async (targetId) => {
     if (!targetId) return;
-    setCartItems((prev) =>
-      prev.map((item) => {
+    let updatedList = [];
+
+    setCartItems((prev) => {
+      updatedList = prev.map((item) => {
         const matches = item.cartItemId === targetId || item.id === targetId || item._id === targetId;
         if (matches) {
           return {
@@ -261,19 +274,25 @@ export const CartProvider = ({ children }) => {
           };
         }
         return item;
-      })
-    );
+      });
+      return updatedList;
+    });
+
+    await persistCartChanges(updatedList);
     showToast('Special instruction removed');
   };
 
-  const updateQuantity = (targetId, newQty) => {
+  const updateQuantity = async (targetId, newQty) => {
     if (!targetId) return;
     if (newQty <= 0) {
-      removeFromCart(targetId);
+      await removeFromCart(targetId);
       return;
     }
-    setCartItems((prev) =>
-      prev.map((item) => {
+
+    let updatedList = [];
+
+    setCartItems((prev) => {
+      updatedList = prev.map((item) => {
         const matches =
           (item.cartItemId && item.cartItemId === targetId) ||
           (item.productId && item.productId === targetId) ||
@@ -289,14 +308,19 @@ export const CartProvider = ({ children }) => {
           };
         }
         return item;
-      })
-    );
+      });
+      return updatedList;
+    });
+
+    await persistCartChanges(updatedList);
   };
 
-  const removeFromCart = (targetId) => {
+  const removeFromCart = async (targetId) => {
     if (!targetId) return;
-    setCartItems((prev) =>
-      prev.filter((item) => {
+    let updatedList = [];
+
+    setCartItems((prev) => {
+      updatedList = prev.filter((item) => {
         const idMatches =
           (item.cartItemId && item.cartItemId === targetId) ||
           (item.productId && item.productId === targetId) ||
@@ -304,16 +328,34 @@ export const CartProvider = ({ children }) => {
           (item.id && item.id === targetId) ||
           (item.key && item.key === targetId);
         return !idMatches;
-      })
-    );
+      });
+      return updatedList;
+    });
+
+    await persistCartChanges(updatedList);
   };
 
-  const clearCart = () => {
+  const clearCart = async () => {
     setCartItems([]);
     setAppliedCoupon(null);
     setCouponDiscountAmount(0);
+
+    if (currentUserId) {
+      try {
+        await api.delete('/cart');
+        localStorage.removeItem(`milasty_cart_${currentUserId}`);
+        localStorage.removeItem('milasty_cart_items');
+      } catch (error) {
+        console.error('Failed to clear cart on server:', error);
+      }
+    } else {
+      try {
+        localStorage.removeItem('milasty_guest_cart');
+        localStorage.removeItem('milasty_cart_items');
+      } catch (e) {}
+    }
+
     try {
-      localStorage.removeItem('milasty_cart_items');
       sessionStorage.removeItem('milasty_applied_coupon');
     } catch (e) {}
   };
@@ -343,7 +385,6 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
-    // Dynamic recalculation for quantity changes
     let newDiscount = 0;
     const valNum = Number(appliedCoupon.discountValue || 0);
     const maxCap = Number(appliedCoupon.maxDiscount || 0);
@@ -443,6 +484,7 @@ export const CartProvider = ({ children }) => {
         couponDiscountAmount,
         applyCoupon,
         removeCoupon,
+        syncServerCart,
       }}
     >
       {children}
@@ -451,3 +493,4 @@ export const CartProvider = ({ children }) => {
 };
 
 export const useCart = () => useContext(CartContext);
+

@@ -7,12 +7,12 @@ export const getCart = async (req, res) => {
       .from('users')
       .select('cart')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
     if (error || !user) {
       return res.json({ items: [] });
     }
-    res.json({ items: user.cart || [] });
+    res.json({ items: Array.isArray(user.cart) ? user.cart : [] });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching cart', error: error.message });
   }
@@ -22,16 +22,17 @@ export const updateCart = async (req, res) => {
   try {
     const userId = req.user.id || req.user._id;
     const { items } = req.body;
+    const itemsToSave = Array.isArray(items) ? items : [];
 
     const { data, error } = await supabase
       .from('users')
-      .update({ cart: items || [], updated_at: new Date() })
+      .update({ cart: itemsToSave, updated_at: new Date() })
       .eq('id', userId)
       .select('cart')
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
-    res.json({ items: data?.cart || [] });
+    res.json({ items: Array.isArray(data?.cart) ? data.cart : [] });
   } catch (error) {
     res.status(500).json({ message: 'Error updating cart', error: error.message });
   }
@@ -50,3 +51,4 @@ export const clearCart = async (req, res) => {
     res.status(500).json({ message: 'Error clearing cart', error: error.message });
   }
 };
+
