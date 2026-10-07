@@ -26,17 +26,67 @@ const SHIPRATH_LOG_PAYLOAD = String(process.env.SHIPRATH_LOG_PAYLOAD || 'true').
 const MAX_PACKAGE_WEIGHT_KG = 30;
 
 /**
- * MILASTY standard box sizes (MILASTY's own packaging defaults, not Shiprath-prescribed).
+ * MILASTY standard box sizes — MILASTY's own packaging defaults (not Shiprath-prescribed).
+ * Each tier: the box used when total weight ≤ maxKg. The last tier (maxKg: null) covers anything heavier.
+ *
+ * Sized so volumetric weight (L×W×H ÷ 5000) stays at or below the actual weight of a typical order:
+ * the old 20×15×10 box turned a 0.2 kg parcel into 0.6 kg applicable weight, exceeding the
+ * 0.25 kg courier slabs ("TOTAL WEIGHT IS MAXIMUM THAN THE CARRIER WEIGHT LIMIT").
+ *
+ * The physical boxes MUST actually fit the products. Override without a code change by setting
+ * SHIPRATH_BOX_SIZES on Railway to a JSON array in this same shape.
+ */
+const DEFAULT_BOX_SIZES = [
+  { maxKg: 0.5, length: 20, width: 10, height: 5 },
+  { maxKg: 1, length: 25, width: 15, height: 8 },
+  { maxKg: 2, length: 30, width: 20, height: 10 },
+  { maxKg: 3, length: 35, width: 25, height: 12 },
+  // No size was specified above 3 kg — previous default kept until MILASTY confirms one
+  { maxKg: null, length: 40, width: 30, height: 20 },
+];
+
+function loadBoxSizes() {
+  const raw = process.env.SHIPRATH_BOX_SIZES;
+  if (!raw) return DEFAULT_BOX_SIZES;
+  try {
+    const tiers = JSON.parse(raw);
+    const valid = Array.isArray(tiers) && tiers.length > 0 && tiers.every((t) =>
+      [t.length, t.width, t.height].every((v) => Number.isFinite(v) && v > 0) &&
+      (t.maxKg === null || (Number.isFinite(t.maxKg) && t.maxKg > 0)));
+    if (!valid) throw new Error('each tier needs positive length/width/height and maxKg (number or null)');
+    return [...tiers].sort((a, b) => (a.maxKg ?? Infinity) - (b.maxKg ?? Infinity));
+  } catch (e) {
+    console.error(`[SHIPRATH CONFIG] Ignoring invalid SHIPRATH_BOX_SIZES (${e.message}) — using defaults`);
+    return DEFAULT_BOX_SIZES;
+  }
+}
+const BOX_SIZES = loadBoxSizes();
+
+// Volumetric divisor confirmed with the Shiprath Rate Calculator:
+// 20×15×10 cm → 0.60 kg volumetric  ⇒  L×W×H ÷ 5000.
+const VOLUMETRIC_DIVISOR = Number(process.env.SHIPRATH_VOLUMETRIC_DIVISOR || 5000);
+
+/**
  * The ONLY place box selection happens — rate quotes and bookings both call this.
  * @param {number} totalWeightKg  total shipment weight in kg
  * @returns {{ length: number, width: number, height: number }} centimetres
  */
 export function getPackageDimensions(totalWeightKg) {
-  if (totalWeightKg <= 0.5) return { length: 20, width: 15, height: 10 };
-  if (totalWeightKg <= 1) return { length: 25, width: 20, height: 12 };
-  if (totalWeightKg <= 2) return { length: 30, width: 20, height: 15 };
-  if (totalWeightKg <= 3) return { length: 35, width: 25, height: 18 };
-  return { length: 40, width: 30, height: 20 };
+  const tier = BOX_SIZES.find((t) => t.maxKg === null || totalWeightKg <= t.maxKg) || BOX_SIZES[BOX_SIZES.length - 1];
+  return { length: tier.length, width: tier.width, height: tier.height };
+}
+
+/** Volumetric and applicable (chargeable) weight, as Shiprath calculates them. */
+export function getChargeableWeight(actualWeightKg, { length, width, height }) {
+  const volumetricWeightKg = Math.round(((length * width * height) / VOLUMETRIC_DIVISOR) * 1000) / 1000;
+  return { volumetricWeightKg, applicableWeightKg: Math.max(actualWeightKg, volumetricWeightKg) };
+}
+
+/** One log line with everything that determines the courier's weight check. */
+export function logPackageWeights(label, actualWeightKg, dimensions) {
+  const { volumetricWeightKg, applicableWeightKg } = getChargeableWeight(actualWeightKg, dimensions);
+  console.log(`[SHIPRATH WEIGHT] ${label} | Actual: ${actualWeightKg} kg | Box: ${dimensions.length}×${dimensions.width}×${dimensions.height} cm | Volumetric (÷${VOLUMETRIC_DIVISOR}): ${volumetricWeightKg} kg | Applicable: ${applicableWeightKg} kg${volumetricWeightKg > actualWeightKg ? ' ⚠️ box is driving the charged weight' : ''}`);
+  return { volumetricWeightKg, applicableWeightKg };
 }
 
 /** Convert the internal kg weight to the unit the Create Shipment API expects. */
@@ -235,6 +285,7 @@ export async function fetchLiveShiprathRate({
   }
   assertValidPackage(shipPkg);
   const calculatedWeight = shipPkg.totalWeightKg;
+  logPackageWeights(`Rate quote → ${cleanPincode}`, calculatedWeight, shipPkg.dimensions);
 
   // Rate API: weight in kg, dimensions in cm (matches Shiprath's public rate calculator)
   const payload = {
@@ -794,7 +845,8 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
     }
 
     console.log(`\n[SHIPRATH BOOK] ${order.order_number} → ${candidateRates.length} candidate(s) from ${rateSource}`);
-    console.log(`  Destination: ${destinationPincode} | Weight: ${calculatedWeightKg} kg (sent as ${toShiprathBookingWeight(calculatedWeightKg)} ${SHIPRATH_BOOKING_WEIGHT_UNIT}) | Box: ${box.length}×${box.width}×${box.height} cm`);
+    console.log(`  Destination: ${destinationPincode} | Weight sent: ${toShiprathBookingWeight(calculatedWeightKg)} ${SHIPRATH_BOOKING_WEIGHT_UNIT}`);
+    const { volumetricWeightKg, applicableWeightKg } = logPackageWeights(`Create Shipment ${order.order_number}`, calculatedWeightKg, box);
     candidateRates.forEach((c, idx) => {
       console.log(`  [${idx + 1}] "${c.service_name}" carrier_id="${c.carrier_id}" courier_id="${c.courier_id}" product_id="${c.product_id}" ₹${c.total_charges}`);
     });
@@ -927,6 +979,8 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
         weight_sent: toShiprathBookingWeight(calculatedWeightKg),
         weight_unit_sent: SHIPRATH_BOOKING_WEIGHT_UNIT,
         dimensions_cm: box,
+        volumetric_weight_kg: volumetricWeightKg,
+        applicable_weight_kg: applicableWeightKg,
         manual_package: Boolean(pkg.manual),
       };
       console.log(`[SHIPRATH BOOK] ${order.order_number} → Attempting "${courierLabel}"`);
