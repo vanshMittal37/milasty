@@ -524,7 +524,7 @@ export const bookShiprathShipment = async (order) => {
         console.error(`[SHIPRATH BOOK] ${order.order_number} → Rate fetch failed:`, rateErr.message);
         const errMsg = `Rate fetch failed: ${rateErr.message}`;
         if (order.id) {
-          await supabase.from('orders').update({ shipment_status: 'failed', shipment_error: errMsg }).eq('id', order.id).catch(() => {});
+          await supabase.from('orders').update({ shipment_status: 'failed', shipment_error: errMsg }).eq('id', order.id).then(null, () => {});
         }
         return { error: errMsg, rawError: rateErr.message };
       }
@@ -533,7 +533,7 @@ export const bookShiprathShipment = async (order) => {
     if (!candidateRates.length) {
       const errMsg = 'No courier services available for this package destination from Shiprath.';
       if (order.id) {
-        await supabase.from('orders').update({ shipment_status: 'failed', shipment_error: errMsg }).eq('id', order.id).catch(() => {});
+        await supabase.from('orders').update({ shipment_status: 'failed', shipment_error: errMsg }).eq('id', order.id).then(null, () => {});
       }
       return { error: errMsg };
     }
@@ -702,7 +702,7 @@ export const bookShiprathShipment = async (order) => {
         await supabase.from('orders').update({
           shipment_status: 'failed',
           shipment_error: storedError,
-        }).eq('id', order.id).catch(() => {});
+        }).eq('id', order.id).then(null, () => {});
       }
 
       return {
@@ -793,7 +793,7 @@ export const bookShipmentForOrder = async (req, res) => {
     }
 
     // Mark as creating before attempting
-    await supabase.from('orders').update({ shipment_status: 'creating' }).eq('id', order.id).catch(() => {});
+    await supabase.from('orders').update({ shipment_status: 'creating' }).eq('id', order.id).then(null, () => {});
 
     const result = await bookShiprathShipment(order);
     if (!result || result.error) {
@@ -815,7 +815,7 @@ export const bookShipmentForOrder = async (req, res) => {
 
     // Update shipment_status to booked on success
     if (order.id && result.awb) {
-      await supabase.from('orders').update({ shipment_status: 'booked', shipment_error: null }).eq('id', order.id).catch(() => {});
+      await supabase.from('orders').update({ shipment_status: 'booked', shipment_error: null }).eq('id', order.id).then(null, () => {});
     }
 
     return res.json({ success: true, ...result });

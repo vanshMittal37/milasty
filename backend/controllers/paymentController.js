@@ -580,10 +580,6 @@ export const finalizeOrderFromPayment = async ({
     }
   }
 
-  } finally {
-    if (lockKey) activeFinalizations.delete(lockKey);
-  }
-
   // Update session status to paid
   if (session) {
     session.status = 'paid';
@@ -593,6 +589,66 @@ export const finalizeOrderFromPayment = async ({
     throw new Error('Order could not be persisted to the database after payment verification');
   }
   return newOrder;
+
+  } finally {
+    if (lockKey) activeFinalizations.delete(lockKey);
+  }
+};
+
+/**
+ * Auto-book a Shiprath shipment for a paid order, at most once.
+ * Atomically claims the order (pending → creating) so concurrent callers
+ * (frontend verify + multiple Razorpay webhook events) cannot double-book.
+ */
+const autoBookShipment = async (orderId, tag = '[SHIPRATH]') => {
+  try {
+    const { data: claimed, error: claimErr } = await supabase
+      .from('orders')
+      .update({ shipment_status: 'creating' })
+      .eq('id', orderId)
+      .is('awb_number', null)
+      .or('shipment_status.is.null,shipment_status.eq.pending')
+      .select('id');
+
+    if (claimErr) {
+      console.error(`${tag} Could not claim order for auto-book:`, claimErr.message);
+      return;
+    }
+    if (!claimed || claimed.length === 0) {
+      console.log(`${tag} Order ${orderId} already booked or booking in progress — skipping`);
+      return;
+    }
+
+    const { data: freshOrder } = await supabase
+      .from('orders')
+      .select('*, order_items(*)')
+      .eq('id', orderId)
+      .maybeSingle();
+    if (!freshOrder) return;
+
+    console.log(`${tag} ${freshOrder.order_number} → Starting auto-book`);
+    const result = await bookShiprathShipment(freshOrder);
+    if (result?.awb) {
+      await supabase.from('orders').update({ shipment_status: 'booked', shipment_error: null }).eq('id', orderId);
+      console.log(`${tag} ${freshOrder.order_number} → ✅ Auto-book SUCCESS AWB: ${result.awb} Courier: ${result.courier_name}`);
+    } else {
+      const errMsg = result?.rawError || result?.error || 'Unknown error';
+      const failures = (result?.courierFailures || []).join(' | ');
+      await supabase.from('orders').update({
+        shipment_status: 'failed',
+        shipment_error: `${errMsg}${failures ? ' | Attempts: ' + failures : ''}`.slice(0, 500),
+      }).eq('id', orderId);
+      console.error(`${tag} ${freshOrder.order_number} → ❌ Auto-book FAILED: ${errMsg}`);
+      if (failures) console.error(`${tag} ${freshOrder.order_number} → Courier failures: ${failures}`);
+    }
+  } catch (shipErr) {
+    console.error(`${tag} Auto-book exception:`, shipErr.message);
+    await supabase
+      .from('orders')
+      .update({ shipment_status: 'failed', shipment_error: shipErr.message })
+      .eq('id', orderId)
+      .then(null, () => {});
+  }
 };
 
 
@@ -634,38 +690,7 @@ export const verifyRazorpayPayment = async (req, res) => {
 
     // Auto-book Shiprath B2C shipment (fire-and-forget — does not block response)
     if (order?.id) {
-      // Fetch fresh order with items if not already attached
-      setImmediate(async () => {
-        try {
-          const { data: freshOrder } = await supabase
-            .from('orders')
-            .select('*, order_items(*)')
-            .eq('id', order.id)
-            .maybeSingle();
-          if (freshOrder) {
-            // Mark shipment as CREATING so admin can see it's in progress
-            await supabase.from('orders').update({ shipment_status: 'creating' }).eq('id', order.id).catch(() => {});
-            console.log(`[SHIPRATH] ${freshOrder.order_number} → Starting auto-book after payment verify`);
-            const result = await bookShiprathShipment(freshOrder);
-            if (result?.awb) {
-              await supabase.from('orders').update({ shipment_status: 'booked' }).eq('id', order.id).catch(() => {});
-              console.log(`[SHIPRATH] ${freshOrder.order_number} → ✅ Auto-book SUCCESS AWB: ${result.awb} Courier: ${result.courier_name}`);
-            } else {
-              const errMsg = result?.rawError || result?.error || 'Unknown error';
-              const failures = (result?.courierFailures || []).join(' | ');
-              await supabase.from('orders').update({
-                shipment_status: 'failed',
-                shipment_error: `${errMsg}${failures ? ' | Attempts: ' + failures : ''}`,
-              }).eq('id', order.id).catch(() => {});
-              console.error(`[SHIPRATH] ${freshOrder.order_number} → ❌ Auto-book FAILED: ${errMsg}`);
-              if (failures) console.error(`[SHIPRATH] ${freshOrder.order_number} → Courier failures: ${failures}`);
-            }
-          }
-        } catch (shipErr) {
-          console.error('[SHIPRATH] Auto-book exception after Razorpay verify:', shipErr.message);
-          supabase.from('orders').update({ shipment_status: 'failed', shipment_error: shipErr.message }).eq('id', order.id).catch(() => {});
-        }
-      });
+      setImmediate(() => autoBookShipment(order.id, '[SHIPRATH]'));
     }
 
     return res.json({
@@ -770,33 +795,7 @@ export const handleRazorpayWebhook = async (req, res) => {
 
         // Auto-book Shiprath shipment (fire-and-forget, same as /payments/verify path)
         if (finalizedOrder?.id) {
-          setImmediate(async () => {
-            try {
-              const { data: freshOrder } = await supabase
-                .from('orders')
-                .select('*, order_items(*)')
-                .eq('id', finalizedOrder.id)
-                .maybeSingle();
-              if (freshOrder && !freshOrder.awb_number) {
-                await supabase.from('orders').update({ shipment_status: 'creating' }).eq('id', finalizedOrder.id).catch(() => {});
-                console.log(`[SHIPRATH WEBHOOK] ${freshOrder.order_number} → Starting auto-book`);
-                const result = await bookShiprathShipment(freshOrder);
-                if (result?.awb) {
-                  await supabase.from('orders').update({ shipment_status: 'booked' }).eq('id', finalizedOrder.id).catch(() => {});
-                  console.log(`[SHIPRATH WEBHOOK] ${freshOrder.order_number} → ✅ SUCCESS AWB: ${result.awb}`);
-                } else {
-                  const errMsg = result?.rawError || result?.error || 'Unknown';
-                  await supabase.from('orders').update({
-                    shipment_status: 'failed',
-                    shipment_error: errMsg,
-                  }).eq('id', finalizedOrder.id).catch(() => {});
-                  console.error(`[SHIPRATH WEBHOOK] ${freshOrder.order_number} → ❌ FAILED: ${errMsg}`);
-                }
-              }
-            } catch (shipErr) {
-              console.error('[SHIPRATH WEBHOOK] Auto-book exception:', shipErr.message);
-            }
-          });
+          setImmediate(() => autoBookShipment(finalizedOrder.id, '[SHIPRATH WEBHOOK]'));
         }
       }
     } else if (event === 'payment.failed') {
