@@ -7,12 +7,19 @@ const JWT_SECRET = process.env.JWT_SECRET || 'milasty_super_secret_jwt_key_2026'
 // Register User with Supabase Auth & PostgreSQL users table
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, phone } = req.body;
+    const { name, email, password, phone: rawPhone } = req.body;
 
     // 1. Input Validation
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Please enter your full name' });
     }
+
+    // Mobile number is mandatory: 10-digit Indian mobile, optional +91 / 0 prefix, spaces/dashes allowed
+    const phoneDigits = String(rawPhone || '').replace(/[\s\-()]/g, '').replace(/^(\+?91|0)(?=\d{10}$)/, '');
+    if (!/^[6-9]\d{9}$/.test(phoneDigits)) {
+      return res.status(400).json({ message: 'Please enter a valid 10-digit mobile number' });
+    }
+    const phone = phoneDigits;
     if (!email || !email.trim()) {
       return res.status(400).json({ message: 'Please enter your email address' });
     }

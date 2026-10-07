@@ -37,6 +37,11 @@ export default function RegisterPage() {
       setError('Please enter a valid email address.');
       return;
     }
+    const phoneDigits = phone.replace(/[\s\-()]/g, '').replace(/^(\+?91|0)(?=\d{10}$)/, '');
+    if (!/^[6-9]\d{9}$/.test(phoneDigits)) {
+      setError('Please enter a valid 10-digit mobile number.');
+      return;
+    }
     if (password.length < 6) {
       setError('Password must be at least 6 characters long.');
       return;
@@ -105,7 +110,7 @@ export default function RegisterPage() {
 
         {/* Mobile Number */}
         <AuthInput
-          label="MOBILE NUMBER (OPTIONAL)"
+          label="MOBILE NUMBER *"
           type="tel"
           icon={Phone}
           value={phone}
@@ -113,7 +118,9 @@ export default function RegisterPage() {
             setPhone(e.target.value);
             if (error) setError('');
           }}
-          placeholder="+91 98765 43210"
+          placeholder="98765 43210"
+          required
+          inputMode="numeric"
           autoComplete="tel"
           id="register-phone"
         />

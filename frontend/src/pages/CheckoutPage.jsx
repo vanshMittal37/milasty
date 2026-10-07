@@ -916,9 +916,25 @@ export default function CheckoutPage() {
               )}
 
               {/* All India Delivery Badge in Summary */}
-              <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ marginBottom: '0.85rem' }}>
                 <AllIndiaDeliveryBadge compact style={{ width: '100%', justifyContent: 'center' }} />
               </div>
+
+              {/* Freshness / prepaid-only note */}
+              <p style={{
+                margin: '0 0 1.25rem',
+                padding: '0.75rem 0.95rem',
+                backgroundColor: '#F4EBDD',
+                border: '1px solid #E4D1B7',
+                borderRadius: '12px',
+                color: '#5A3422',
+                fontSize: '0.8rem',
+                fontWeight: '600',
+                lineHeight: '1.5',
+                textAlign: 'center',
+              }}>
+                Freshly prepared in small batches for every order. MILASTY accepts prepaid orders only to ensure freshness and minimise food wastage.
+              </p>
 
               {/* Submit Checkout Button */}
               <button

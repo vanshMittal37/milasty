@@ -497,14 +497,16 @@ export default function OurStory() {
             }}
           >
             <img
-              src="/images/image2.jpeg"
-              alt="MILASTY millet baking ingredients and process"
+              src="/images/founder_image.jpeg"
+              alt="The founder of MILASTY"
               style={{
                 width: '100%',
                 display: 'block',
                 transition: 'transform 0.6s ease',
                 objectFit: 'cover',
-                height: '420px'
+                // Square portrait: keep the face (upper-middle of the photo) in frame at any width
+                objectPosition: 'center 22%',
+                height: 'clamp(340px, 42vw, 480px)'
               }}
               onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
