@@ -23,8 +23,36 @@ import snackFinderRoutes from './routes/snackFinderRoutes.js';
 import ingredientRoutes from './routes/ingredientRoutes.js';
 import productDiscoveryRoutes from './routes/productDiscoveryRoutes.js';
 import shipratRoutes from './routes/shipratRoutes.js';
+import { supabase } from './config/supabase.js';
 
 dotenv.config();
+
+// ─── Startup: Ensure users.cart column exists ─────────────────────────────
+async function ensureCartColumn() {
+  try {
+    // Try selecting cart from one row to verify column exists
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, cart')
+      .limit(1);
+
+    if (error) {
+      const msg = error.message || '';
+      if (msg.includes('cart') || msg.includes('column') || msg.includes('does not exist')) {
+        console.error('[STARTUP] ❌ users.cart column is MISSING in Supabase!');
+        console.error('[STARTUP] Please run this SQL in Supabase SQL Editor:');
+        console.error('  ALTER TABLE public.users ADD COLUMN IF NOT EXISTS cart JSONB DEFAULT \'[]\';');
+      } else {
+        console.error('[STARTUP] Supabase users table check error:', msg);
+      }
+    } else {
+      const sampleCart = data?.[0]?.cart;
+      console.log(`[STARTUP] ✅ users.cart column exists. Sample value type: ${typeof sampleCart} (value: ${JSON.stringify(sampleCart)})`);
+    }
+  } catch (e) {
+    console.error('[STARTUP] Exception checking cart column:', e.message);
+  }
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -122,6 +150,8 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 MILASTY API Server running on port ${PORT}`);
+  // Check cart column on startup
+  await ensureCartColumn();
 });
