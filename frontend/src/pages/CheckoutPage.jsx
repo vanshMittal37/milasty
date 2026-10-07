@@ -887,7 +887,9 @@ export default function CheckoutPage() {
                   ) : shippingQuote ? (
                     <span style={{ fontWeight: '700', color: '#2B140B' }}>₹{dynamicShippingFee}</span>
                   ) : (
-                    <span style={{ color: '#A38C7A', fontSize: '0.82rem' }}>Enter pincode</span>
+                    <span style={{ color: '#A38C7A', fontSize: '0.82rem' }}>
+                      {/^\d{6}$/.test(String(formData.pincode || '').trim()) ? 'Unavailable' : 'Enter pincode'}
+                    </span>
                   )}
                 </div>
                 {couponDiscountAmount > 0 && (

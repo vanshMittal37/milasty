@@ -72,7 +72,7 @@ export const getDeliveryChargeForPincode = async (pincode, subtotal, items = [])
   try {
     const rateResult = await fetchLiveShiprathRate({ pincode, items, declaredValue: subtotal });
     // Log all rates so Railway shows what Shiprath returned
-    console.log(`[RATES] dest=${pincode} weight=${rateResult.weight}kg â†’ ${rateResult.rateList.length} options: ${rateResult.rateList.map(r => `${r.service_name} â‚¹${r.total_charges}`).join(', ')}`);
+    console.log(`[RATES] dest=${pincode} weight=${rateResult.weight}kg → ${rateResult.rateList.length} options: ${rateResult.rateList.map(r => `${r.service_name} ₹${r.total_charges}`).join(', ')}`);
     return {
       deliveryFee: rateResult.shippingCharge,
       isFreeDelivery: false,
@@ -112,7 +112,7 @@ export const createPaymentSession = async (req, res) => {
       couponCode = null,
       userId = null,
       quoteId = null,              // shipping quote the checkout displayed (opaque id, no courier data)
-      expectedDeliveryFee = null,  // delivery charge the customer saw â€” must match what we charge
+      expectedDeliveryFee = null,  // delivery charge the customer saw — must match what we charge
       expectedGrandTotal = null,   // total the customer saw
     } = req.body;
 
@@ -204,7 +204,7 @@ export const createPaymentSession = async (req, res) => {
       });
     }
 
-    // â”€â”€ Shipping: automatic cheapest-valid-rate selection (server only) â”€â”€â”€â”€â”€â”€
+    // ── Shipping: automatic cheapest-valid-rate selection (server only) ──────
     if (!/^\d{6}$/.test(String(finalPincode).trim())) {
       return res.status(400).json({ success: false, message: 'A valid 6-digit delivery pincode is required.' });
     }
@@ -228,7 +228,7 @@ export const createPaymentSession = async (req, res) => {
     // Reuse the exact quote the checkout displayed when it still matches this package; else re-quote.
     let shippingQuote = getShippingQuote(quoteId);
     if (shippingQuote && (shippingQuote.pincode !== finalPincode || Number(shippingQuote.weightKg) !== Number(packageWeightKg))) {
-      console.log(`[PAYMENT SESSION] Quote ${quoteId} no longer matches (pincode/weight changed) â€” re-quoting`);
+      console.log(`[PAYMENT SESSION] Quote ${quoteId} no longer matches (pincode/weight changed) — re-quoting`);
       shippingQuote = null;
     }
     if (!shippingQuote) {
@@ -251,10 +251,10 @@ export const createPaymentSession = async (req, res) => {
       }
     }
 
-    const chosenRate = shippingQuote.selectedRate; // cheapest valid rate â€” never chosen by the client
+    const chosenRate = shippingQuote.selectedRate; // cheapest valid rate — never chosen by the client
     const allRates = shippingQuote.rateList;
     const deliveryFee = Number(chosenRate.total_charges);
-    console.log(`[PAYMENT SESSION] Auto-selected "${chosenRate.service_name}" â‚¹${deliveryFee} (carrier_id="${chosenRate.carrier_id}" courier_id="${chosenRate.courier_id}" product_id="${chosenRate.product_id}") for ${finalPincode} @ ${packageWeightKg}kg`);
+    console.log(`[PAYMENT SESSION] Auto-selected "${chosenRate.service_name}" ₹${deliveryFee} (carrier_id="${chosenRate.carrier_id}" courier_id="${chosenRate.courier_id}" product_id="${chosenRate.product_id}") for ${finalPincode} @ ${packageWeightKg}kg`);
 
     // The customer must pay exactly what they were shown. If the rate moved, show the new amount first.
     if (expectedDeliveryFee !== null && expectedDeliveryFee !== undefined && Number(expectedDeliveryFee) !== deliveryFee) {
@@ -262,7 +262,7 @@ export const createPaymentSession = async (req, res) => {
       return res.status(409).json({
         success: false,
         code: 'SHIPPING_CHANGED',
-        message: `The delivery charge for your pincode has been updated to â‚¹${deliveryFee}. Please review your total and pay again.`,
+        message: `The delivery charge for your pincode has been updated to ₹${deliveryFee}. Please review your total and pay again.`,
         deliveryFee,
         quoteId: newQuoteId,
       });
@@ -320,7 +320,7 @@ export const createPaymentSession = async (req, res) => {
       return res.status(409).json({
         success: false,
         code: 'TOTAL_CHANGED',
-        message: `Your order total has been updated to â‚¹${grandTotal}. Please review and pay again.`,
+        message: `Your order total has been updated to ₹${grandTotal}. Please review and pay again.`,
         subtotal,
         discountAmount,
         deliveryFee,
@@ -376,7 +376,7 @@ export const createPaymentSession = async (req, res) => {
       .map((i) => `${i.product_title} (${i.variant_name}): "${i.customization_note}"`)
       .join(' | ');
 
-    // Save session in memory store â€” includes the selected rate quote so booking uses the exact same carrier
+    // Save session in memory store — includes the selected rate quote so booking uses the exact same carrier
     const sessionData = {
       id: razorpayOrder.id,
       razorpay_order_id: razorpayOrder.id,
@@ -399,8 +399,8 @@ export const createPaymentSession = async (req, res) => {
       notes: customizationSummary || null,
       status: 'created',
       createdAt: new Date().toISOString(),
-      // â”€â”€ Shiprath quote: the exact selected rate (IDs unchanged) + the other valid options from the
-      //    SAME rate response, used as the automatic booking fallback order â”€â”€
+      // ── Shiprath quote: the exact selected rate (IDs unchanged) + the other valid options from the
+      //    SAME rate response, used as the automatic booking fallback order ──
       selectedRate: chosenRate,
       rateList: allRates,
       packageWeightKg,
@@ -414,7 +414,7 @@ export const createPaymentSession = async (req, res) => {
     }
     await saveSession(razorpayOrder.id, sessionData);
 
-    // Customer-safe response: amounts only â€” no courier names, IDs or rate list
+    // Customer-safe response: amounts only — no courier names, IDs or rate list
     return res.json({
       success: true,
       keyId: process.env.RAZORPAY_KEY_ID,
@@ -511,7 +511,7 @@ export const finalizeOrderFromPayment = async ({
 
   const orderNumber = `MIL-${Date.now().toString().slice(-6)}`;
 
-  // Base order payload â€” only columns guaranteed to exist in the schema
+  // Base order payload — only columns guaranteed to exist in the schema
   const baseOrderPayload = {
     order_number: orderNumber,
     user_id: session?.user_id || null,
@@ -531,7 +531,7 @@ export const finalizeOrderFromPayment = async ({
     payment_status: 'paid',
     order_status: 'confirmed',
     shipment_status: 'pending',
-    // â”€â”€ Stored Shiprath rate quote â€” used for booking, prevents re-fetch/drift â”€â”€
+    // ── Stored Shiprath rate quote — used for booking, prevents re-fetch/drift ──
     // IDs are stored exactly as the Rate API returned them: an empty courier_id stays "".
     selected_carrier_id: session?.selectedRate ? String(session.selectedRate.carrier_id ?? '') : null,
     selected_courier_id: session?.selectedRate ? String(session.selectedRate.courier_id ?? '') : null,
@@ -541,7 +541,7 @@ export const finalizeOrderFromPayment = async ({
   };
 
   if (!session) {
-    console.error(`[ORDER FINALIZATION] âš ï¸ No payment session in memory for ${razorpay_order_id} (server restarted between checkout and payment?). Order will be created from payment data only â€” admin must review items/address.`);
+    console.error(`[ORDER FINALIZATION] ⚠️ No payment session in memory for ${razorpay_order_id} (server restarted between checkout and payment?). Order will be created from payment data only — admin must review items/address.`);
   }
 
   let newOrder = null;
@@ -573,7 +573,7 @@ export const finalizeOrderFromPayment = async ({
 
     newOrder = orderRow;
 
-    // Optional columns (added by migration 15) â€” written separately so a missing column never
+    // Optional columns (added by migration 15) — written separately so a missing column never
     // blocks order creation after a successful payment.
     const { skipped: skippedCols } = await safeUpdateOrder(newOrder.id, {
       razorpay_order_id: razorpay_order_id || null,
@@ -767,7 +767,7 @@ export const finalizeOrderFromPayment = async ({
 
 /**
  * Auto-book a Shiprath shipment for a paid order, at most once.
- * Atomically claims the order (pending â†’ creating) so concurrent callers
+ * Atomically claims the order (pending → creating) so concurrent callers
  * (frontend verify + multiple Razorpay webhook events) cannot double-book.
  */
 const autoBookShipment = async (orderId, tag = '[SHIPRATH]') => {
@@ -781,7 +781,7 @@ const autoBookShipment = async (orderId, tag = '[SHIPRATH]') => {
       return;
     }
     if (!claimed) {
-      console.log(`${tag} Order ${orderId} already booked, failed, or booking in progress â€” skipping`);
+      console.log(`${tag} Order ${orderId} already booked, failed, or booking in progress — skipping`);
       return;
     }
 
@@ -792,13 +792,13 @@ const autoBookShipment = async (orderId, tag = '[SHIPRATH]') => {
       .maybeSingle();
     if (!freshOrder) return;
 
-    console.log(`${tag} ${freshOrder.order_number} â†’ Starting auto-book`);
+    console.log(`${tag} ${freshOrder.order_number} → Starting auto-book`);
     // bookShiprathShipment persists the outcome itself (booked + AWB, or failed + exact error)
     const result = await bookShiprathShipment(freshOrder);
     if (result?.success) {
-      console.log(`${tag} ${freshOrder.order_number} â†’ âœ… Auto-book SUCCESS AWB: ${result.awb} Courier: ${result.courier_name}${result.fallbackUsed ? ' (fallback)' : ''}`);
+      console.log(`${tag} ${freshOrder.order_number} → ✅ Auto-book SUCCESS AWB: ${result.awb} Courier: ${result.courier_name}${result.fallbackUsed ? ' (fallback)' : ''}`);
     } else {
-      console.error(`${tag} ${freshOrder.order_number} â†’ âŒ Auto-book FAILED: ${result?.rawError || result?.error || 'Unknown error'}`);
+      console.error(`${tag} ${freshOrder.order_number} → ❌ Auto-book FAILED: ${result?.rawError || result?.error || 'Unknown error'}`);
     }
   } catch (shipErr) {
     console.error(`${tag} Auto-book exception:`, shipErr.message);
@@ -843,7 +843,7 @@ export const verifyRazorpayPayment = async (req, res) => {
       razorpay_signature,
     });
 
-    // Auto-book Shiprath B2C shipment (fire-and-forget â€” does not block response)
+    // Auto-book Shiprath B2C shipment (fire-and-forget — does not block response)
     if (order?.id) {
       setImmediate(() => autoBookShipment(order.id, '[SHIPRATH]'));
     }
@@ -907,9 +907,9 @@ export const handleRazorpayWebhook = async (req, res) => {
     const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.from(JSON.stringify(req.body));
 
     if (!webhookSecret) {
-      console.warn('[WEBHOOK] RAZORPAY_WEBHOOK_SECRET not set â€” skipping signature verification (not recommended for production)');
+      console.warn('[WEBHOOK] RAZORPAY_WEBHOOK_SECRET not set — skipping signature verification (not recommended for production)');
     } else if (!receivedSignature) {
-      console.warn('[WEBHOOK] No x-razorpay-signature header received â€” rejecting');
+      console.warn('[WEBHOOK] No x-razorpay-signature header received — rejecting');
       return res.status(400).json({ status: 'missing_signature' });
     } else {
       const hmac = crypto.createHmac('sha256', webhookSecret);
