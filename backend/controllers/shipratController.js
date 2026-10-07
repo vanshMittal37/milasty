@@ -729,19 +729,28 @@ export const bookShiprathShipment = async (order) => {
         status: 'shipped',
       };
 
-      const { error: dbErr } = await supabase
-        .from('orders')
-        .update(updateData)
-        .eq('id', order.id);
+      // Not every deployment has all shipment columns — try progressively smaller payloads
+      const attempts = [
+        updateData,
+        { awb_number: awb, shipment_id: shipmentId, courier_name: courierName, tracking_url: trackingUrl, order_status: 'shipped' },
+        { awb, shipment_id: shipmentId, courier_name: courierName, tracking_url: trackingUrl, order_status: 'shipped' },
+        { awb_number: awb, order_status: 'shipped' },
+        { awb, order_status: 'shipped' },
+        { order_status: 'shipped', shipment_error: `AWB: ${awb} | Courier: ${courierName}` },
+      ];
 
-      if (dbErr) {
+      let saved = false;
+      for (const payload of attempts) {
+        const { error: dbErr } = await supabase.from('orders').update(payload).eq('id', order.id);
+        if (!dbErr) {
+          saved = true;
+          console.log('[SHIPRATH BOOK] ✅ Saved AWB to order row:', awb, '| columns:', Object.keys(payload).join(','));
+          break;
+        }
         console.warn('[SHIPRATH BOOK] DB update column warning:', dbErr.message);
-        await supabase
-          .from('orders')
-          .update({ awb_number: awb, order_status: 'shipped' })
-          .eq('id', order.id);
-      } else {
-        console.log('[SHIPRATH BOOK] ✅ Saved AWB to order row:', awb);
+      }
+      if (!saved) {
+        console.error(`[SHIPRATH BOOK] ⚠️ Booked AWB ${awb} but could not save it to order ${order.id}`);
       }
     }
 

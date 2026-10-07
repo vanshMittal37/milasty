@@ -606,7 +606,6 @@ const autoBookShipment = async (orderId, tag = '[SHIPRATH]') => {
       .from('orders')
       .update({ shipment_status: 'creating' })
       .eq('id', orderId)
-      .is('awb_number', null)
       .or('shipment_status.is.null,shipment_status.eq.pending')
       .select('id');
 
