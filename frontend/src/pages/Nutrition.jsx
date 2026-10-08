@@ -712,9 +712,11 @@ export default function Nutrition() {
               {/* Left Column: Image */}
               <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1.5px solid #5C3A21', boxShadow: '0 8px 30px rgba(75, 45, 25, 0.08)' }}>
                 <img
-                  src="/images/image1.jpeg"
-                  alt="Slow baked millet cookies pile"
-                  style={{ width: '100%', height: 'auto', minHeight: '280px', maxHeight: '420px', objectFit: 'cover', display: 'block', transition: 'transform 0.4s' }}
+                  src="/images/ingredient_philosophy.jpeg"
+                  alt="MILASTY ingredient philosophy — millets, jaggery, ghee and millet flour in wooden bowls beside baked cookies and crackers"
+                  loading="lazy"
+                  decoding="async"
+                  style={{ width: '100%', height: 'auto', aspectRatio: '3 / 2', objectFit: 'cover', display: 'block', backgroundColor: '#EAD8C3', transition: 'transform 0.4s' }}
                   onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
                   onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                 />

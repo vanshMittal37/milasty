@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ShoppingBag, Star, Heart, ChevronRight, ChevronLeft, CheckCircle2, XCircle, ShieldCheck, Truck, Sparkles, AlertTriangle, Plus, Minus, Info, MapPin, Save, FileText, ExternalLink, X } from 'lucide-react';
+import { ShoppingBag, Star, Heart, ChevronRight, ChevronLeft, CheckCircle2, XCircle, ShieldCheck, Truck, AlertTriangle, Plus, Minus, Info, MapPin, Save, FileText, ExternalLink, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useDelivery } from '../context/DeliveryContext';
@@ -11,7 +11,6 @@ import ProductCard from '../components/ProductCard';
 import PriceDisplay from '../components/PriceDisplay';
 import AuthPromptModal from '../components/AuthPromptModal';
 import AllIndiaDeliveryBadge from '../components/common/AllIndiaDeliveryBadge';
-import { LOW_STOCK_THRESHOLD } from '../config/constants';
 
 export default function ProductDetail() {
   const { slug, id } = useParams();
@@ -286,7 +285,7 @@ export default function ProductDetail() {
 
   const handleQuantityIncrease = () => {
     if (quantity >= currentStock) {
-      if (showToast) showToast(`Only ${currentStock} packs are available.`);
+      if (showToast) showToast("You've reached the maximum available quantity for this pack.");
       return;
     }
     setQuantity((prev) => prev + 1);
@@ -321,40 +320,40 @@ export default function ProductDetail() {
   };
 
   // Safe nutrition facts normalized list
+  // Pricing / inventory keys can live in the same JSON blob — never show them to customers
+  const HIDDEN_NUTRITION_KEYS = new Set(['baseprice', 'discounttype', 'discountvalue', 'variantstocks', 'pieces', 'stock', 'stockquantity']);
+  const normalizeKey = (str) => String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  // null / undefined / '' / whitespace-only count as "not entered"; a genuinely stored 0 is kept
+  const hasMeaningfulValue = (val) => val !== null && val !== undefined && String(val).trim() !== '';
+  const toLabel = (key) => key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/^./, (str) => str.toUpperCase());
+
   const getNormalizedNutritionList = () => {
     const raw = product.nutritionFacts || product.nutrition_facts;
     if (!raw) return [];
-    
+
+    let list = [];
     if (Array.isArray(raw)) {
-      return raw.map((item) => {
-        if (typeof item === 'object' && item !== null) {
-          return {
-            label: item.label || item.key || 'Nutrition',
-            value: item.value ?? '',
-            unit: item.unit ?? ''
-          };
-        }
-        return { label: String(item), value: '', unit: '' };
-      }).filter((item) => Boolean(item.label && (item.value !== '' || item.unit !== '')));
-    }
-    
-    if (typeof raw === 'object' && raw !== null) {
-      return Object.entries(raw).map(([key, val]) => {
-        if (key === 'variant_stocks' || key === 'pieces') return null;
-        if (val === null || val === undefined || val === '') return null;
+      list = raw
+        .filter((item) => typeof item === 'object' && item !== null)
+        .map((item) => ({
+          key: item.key || item.label,
+          label: item.label || item.key,
+          value: item.value,
+          unit: item.unit ?? ''
+        }));
+    } else if (typeof raw === 'object') {
+      list = Object.entries(raw).map(([key, val]) => {
         if (typeof val === 'object' && val !== null) {
-          const label = val.label || key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/^./, (str) => str.toUpperCase());
-          return {
-            label: label,
-            value: val.value ?? '',
-            unit: val.unit ?? ''
-          };
+          return { key, label: val.label || toLabel(key), value: val.value, unit: val.unit ?? '' };
         }
-        const label = key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/^./, (str) => str.toUpperCase());
-        return { label, value: String(val), unit: '' };
-      }).filter(Boolean);
+        return { key, label: toLabel(key), value: val, unit: '' };
+      });
     }
-    return [];
+
+    return list
+      .filter((item) => item.label && hasMeaningfulValue(item.value))
+      .filter((item) => !HIDDEN_NUTRITION_KEYS.has(normalizeKey(item.key)) && !HIDDEN_NUTRITION_KEYS.has(normalizeKey(item.label)))
+      .map(({ label, value, unit }) => ({ label, value: String(value).trim(), unit: String(unit).trim() }));
   };
 
   const safeNutritionFacts = getNormalizedNutritionList();
@@ -847,30 +846,16 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Independent Stock Alert Badge */}
-            <div style={{ marginTop: '0.25rem' }}>
-              {currentStock <= 0 ? (
+            {/* Stock counts are not shown to customers — only a no-quantity notice when unavailable.
+                Inventory checks on Add to Cart are unchanged. */}
+            {currentStock <= 0 && (
+              <div style={{ marginTop: '0.25rem' }}>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '800' }}>
                   <AlertTriangle size={15} />
                   <span>Out of Stock</span>
                 </div>
-              ) : currentStock <= 5 ? (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: '#fef3c7', color: '#d97706', border: '1px solid #fde68a', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '800' }}>
-                  <Sparkles size={15} />
-                  <span>⚡ Only {currentStock} packs left — order soon!</span>
-                </div>
-              ) : currentStock <= LOW_STOCK_THRESHOLD ? (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', backgroundColor: '#fef3c7', color: '#d97706', border: '1px solid #fde68a', padding: '0.45rem 0.85rem', borderRadius: '8px', fontSize: '0.75rem' }}>
-                  <Sparkles size={15} />
-                  <span>⚡ Only {currentStock} packs left</span>
-                </div>
-              ) : (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', color: '#2F6B3A', fontSize: '0.85rem', fontWeight: '700' }}>
-                  <CheckCircle2 size={16} />
-                  <span>In Stock ({currentStock} available)</span>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* PERSONALIZE YOUR BAKE - Product Level Customization Card */}
             {Boolean(product?.allow_customization || product?.allowCustomization) && (
