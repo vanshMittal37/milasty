@@ -720,46 +720,46 @@ export default function Nutrition() {
                 />
               </div>
 
-              {/* Right Column: Steps */}
+              {/* Right Column: Ingredient Philosophy */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div>
                   <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', display: 'block', marginBottom: '0.35rem' }}>Ingredient Philosophy</span>
-                  <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0 }}>
-                    From Grain To Bake
+                  <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0, lineHeight: '1.2' }}>
+                    What Goes Into Your Snack Matters
                   </h2>
                 </div>
-                <p style={{ fontSize: '0.98rem', color: '#654B38', lineHeight: '1.7', margin: 0, fontWeight: '550' }}>
-                  We work directly with domestic farming sources to identify wholesome ancient millets. We never refine, strip, or dilute our baking ingredients.
+                <p style={{ fontSize: '0.98rem', color: '#654B38', lineHeight: '1.75', margin: 0, fontWeight: '550' }}>
+                  We don't believe in calling a snack "healthy" just because it contains a millet. At MILASTY, we look at the whole ingredient story — what we use, what we leave out, and most importantly, how it tastes.
                 </p>
 
-                <div className="grain-to-bake-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
-                  <div style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
-                    <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                      <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>01</span>
-                      <span>Ancient Grains</span>
+                <div className="grain-to-bake-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
+                  <div style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '1.35rem 1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
+                    <h4 style={{ fontSize: '0.86rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.45rem', margin: '0 0 0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '1.35' }}>
+                      <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>01 —</span>
+                      <span>Traditional Grains</span>
                     </h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Sourced native Bajra, Jowar, and Ragi flour.</p>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>Ragi, Bajra &amp; Jowar bring traditional Indian millets into the snacks we love today.</p>
                   </div>
-                  <div style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
-                    <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                      <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>02</span>
-                      <span>Selected Ingredients</span>
+                  <div style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '1.35rem 1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
+                    <h4 style={{ fontSize: '0.86rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.45rem', margin: '0 0 0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '1.35' }}>
+                      <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>02 —</span>
+                      <span>Simple Sweetness</span>
                     </h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Pure cow Desi Ghee & unrefined organic jaggery.</p>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>Where we use a sweetener, we choose jaggery instead of refined sugar in our core products.</p>
                   </div>
-                  <div style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
-                    <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                      <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>03</span>
-                      <span>Slow Baking</span>
+                  <div style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '1.35rem 1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
+                    <h4 style={{ fontSize: '0.86rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.45rem', margin: '0 0 0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '1.35' }}>
+                      <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>03 —</span>
+                      <span>Better Baking</span>
                     </h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>Slow-baked in temperature-controlled oven bakes.</p>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>Our bakes are made with desi ghee and thoughtfully selected ingredients, without relying on palm oil or unnecessary additives.</p>
                   </div>
-                  <div style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
-                    <h4 style={{ fontSize: '0.88rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginBottom: '0.35rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                      <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>04</span>
-                      <span>Finished Bake</span>
+                  <div style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '1.35rem 1.25rem', borderRadius: '16px', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
+                    <h4 style={{ fontSize: '0.86rem', fontWeight: '850', color: '#2F6B3A', display: 'flex', alignItems: 'flex-start', gap: '0.45rem', margin: '0 0 0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '1.35' }}>
+                      <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>04 —</span>
+                      <span>Taste Still Matters</span>
                     </h4>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.5', fontWeight: '500' }}>A crumbly, delicious, clean millet cookie.</p>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--text-body, #5A5248)', margin: 0, lineHeight: '1.6', fontWeight: '500' }}>Because better ingredients mean little if you don't enjoy eating them. We bake to make wholesome snacking something you genuinely crave.</p>
                   </div>
                 </div>
               </div>

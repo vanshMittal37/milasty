@@ -2209,25 +2209,25 @@ a {
     word-break: break-word !important;
   }
 
-  /* 3. From Grain to Bake (2x2 Grid on Mobile with nowrap numbers) */
+  /* 3. From Grain to Bake / Ingredient Philosophy (single column on mobile for longer copy) */
   .nutrition-page .grain-to-bake-grid {
     display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 12px !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
 
-  .nutrition-page .grain-to-bake-grid>.glass-card {
-    padding: 0.85rem 0.65rem !important;
+  .nutrition-page .grain-to-bake-grid>div {
+    padding: 1.1rem 1rem !important;
   }
 
   .nutrition-page .grain-to-bake-grid h4 {
-    font-size: 0.78rem !important;
-    margin-bottom: 0.25rem !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 0.4rem !important;
     display: flex !important;
     align-items: flex-start !important;
-    gap: 0.35rem !important;
+    gap: 0.4rem !important;
   }
 
   .nutrition-page .grain-to-bake-grid h4 span:first-child {
@@ -2236,8 +2236,9 @@ a {
   }
 
   .nutrition-page .grain-to-bake-grid p {
-    font-size: 0.72rem !important;
-    line-height: 1.35 !important;
+    font-size: 0.86rem !important;
+    line-height: 1.6 !important;
+    word-break: normal !important;
   }
 
   /* 5. Know What You Eat (2x2 Grid on Mobile) */

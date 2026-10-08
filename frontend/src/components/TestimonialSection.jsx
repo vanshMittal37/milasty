@@ -147,19 +147,19 @@ export default function TestimonialSection() {
           style={{
             position: 'relative',
             width: '100%',
-            // Square portrait photo: square frame on mobile so the face & shoulders aren't cropped,
-            // full card height on desktop (column is ~42% wide, so the crop stays near-square)
-            aspectRatio: isMobile ? '1 / 1' : 'auto',
-            maxHeight: isMobile ? '420px' : 'none',
-            minHeight: isMobile ? 0 : '420px',
+            // Tall portrait photo: 4:5 frame on mobile, full card height on desktop.
+            // Subject (face, cookie, jar) sits in the upper-middle, so the crop is anchored there.
+            aspectRatio: isMobile ? '4 / 5' : 'auto',
+            maxHeight: isMobile ? '520px' : 'none',
+            minHeight: isMobile ? 0 : '520px',
             height: isMobile ? 'auto' : '100%',
             overflow: 'hidden',
             backgroundColor: '#F1E5D4',
           }}
         >
           <img
-            src="/images/founder_image.jpeg"
-            alt="Celebrity Pick - Anwesha Chakraborty"
+            src="/images/celebrity.jpeg"
+            alt="Anwesha, founder of MILASTY, smiling while holding a MILASTY millet cookie and a jar of MILASTY cookies"
             loading="lazy"
             decoding="async"
             style={{
@@ -168,8 +168,8 @@ export default function TestimonialSection() {
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              // Face sits in the upper-middle of the photo — keep it in frame at any crop
-              objectPosition: isMobile ? 'center 22%' : 'center 30%',
+              // Face, cookie and jar sit in the upper-middle of the photo — keep them in frame at any crop
+              objectPosition: isMobile ? 'center 35%' : 'center 32%',
               display: 'block',
             }}
           />
@@ -210,15 +210,15 @@ export default function TestimonialSection() {
             boxSizing: 'border-box',
           }}
         >
-          {/* Top Pill Badge */}
-          <div style={{ marginBottom: isMobile ? '0.75rem' : '1rem' }}>
+          {/* Eyebrow Pill Badge */}
+          <div style={{ marginBottom: isMobile ? '0.85rem' : '1.1rem' }}>
             <span
               style={{
                 backgroundColor: '#E3EEDC',
                 color: '#24572E',
                 padding: isMobile ? '0.35rem 0.85rem' : '0.4rem 1rem',
                 borderRadius: '20px',
-                fontSize: isMobile ? '0.72rem' : '0.74rem',
+                fontSize: isMobile ? '0.7rem' : '0.74rem',
                 fontWeight: '800',
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
@@ -228,48 +228,68 @@ export default function TestimonialSection() {
                 border: '1px solid rgba(47, 107, 58, 0.25)',
               }}
             >
-              <span style={{ color: '#2F6B3A' }}>★</span> CELEBRITY PICK
+              <span style={{ color: '#2F6B3A' }}>✦</span> THE STORY BEHIND MILASTY
             </span>
           </div>
 
-          {/* Green Star Ratings */}
+          {/* Heading */}
+          <h2
+            style={{
+              fontSize: isMobile ? 'clamp(1.4rem, 6vw, 1.75rem)' : 'clamp(1.75rem, 2.6vw, 2.2rem)',
+              fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
+              color: '#32180D',
+              fontWeight: '800',
+              lineHeight: '1.25',
+              margin: isMobile ? '0 0 1rem' : '0 0 1.35rem',
+            }}
+          >
+            It Started With a Simple Belief: Healthy Should Taste Good.
+          </h2>
+
+          {/* Story Body */}
           <div
             style={{
               display: 'flex',
-              gap: '4px',
-              color: '#2F6B3A',
-              marginBottom: isMobile ? '0.65rem' : '1rem',
+              flexDirection: 'column',
+              gap: isMobile ? '0.85rem' : '1rem',
+              color: '#654B38',
+              fontSize: isMobile ? '0.92rem' : '1rem',
+              lineHeight: '1.75',
+              fontWeight: '500',
+              marginBottom: isMobile ? '1.25rem' : '1.5rem',
             }}
           >
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} size={isMobile ? 16 : 18} fill="#2F6B3A" color="#2F6B3A" />
-            ))}
+            <p style={{ margin: 0 }}>
+              MILASTY began with Anwesha, an engineer who wanted to create the kind of snacks
+              she herself wanted to reach for — made with better ingredients, rooted in
+              traditional grains, but delicious enough to reach for again.
+            </p>
+            <p style={{ margin: 0 }}>
+              What started as experiments in a home kitchen slowly became MILASTY — a homegrown
+              brand creating millet cookies, crackers, brownies and bakes with ingredients like
+              millets, jaggery and desi ghee.
+            </p>
           </div>
 
-          {/* Large Quote Mark */}
-          <div style={{ marginBottom: isMobile ? '0.4rem' : '0.5rem', color: '#2F6B3A' }}>
-            <Quote size={isMobile ? 28 : 42} style={{ transform: 'rotate(180deg)' }} />
-          </div>
-
-          {/* Main Quote Text */}
+          {/* Emphasised Belief */}
           <p
             style={{
-              fontSize: isMobile ? '0.95rem' : '1.18rem',
+              fontSize: isMobile ? '1rem' : '1.15rem',
               fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
               fontStyle: 'italic',
               color: '#32180D',
-              lineHeight: isMobile ? '1.6' : '1.65',
-              marginBottom: isMobile ? '1.25rem' : '1.75rem',
-              fontWeight: '500',
-              margin: isMobile ? '0 0 1.25rem' : '0 0 1.75rem',
+              lineHeight: '1.6',
+              fontWeight: '600',
+              margin: isMobile ? '0 0 1.35rem' : '0 0 1.75rem',
+              paddingLeft: isMobile ? '0.9rem' : '1.15rem',
+              borderLeft: '3px solid #2F6B3A',
             }}
           >
-            "I genuinely loved how light these cookies are. The texture was
-            perfect while my cravings low, and I still feel full. I'm now eating
-            a guiltless indulgence!"
+            Today, every batch still carries the same belief we started with: you shouldn't
+            have to choose between what feels good and what tastes good.
           </p>
 
-          {/* Author Details with Vertical Bar */}
+          {/* Signature */}
           <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.85rem' : '1.1rem' }}>
             <div
               style={{
@@ -290,7 +310,7 @@ export default function TestimonialSection() {
                   lineHeight: '1.2',
                 }}
               >
-                Anwesha Chakraborty
+                — Anwesha, Founder, MILASTY
               </div>
             </div>
           </div>

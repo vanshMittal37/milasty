@@ -506,7 +506,7 @@ export default function Home() {
             }}
           >
             <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
-              
+
               <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3rem' }}>
                 <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1F6B35', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                   EXPLORE MILASTY COLLECTION
@@ -622,7 +622,7 @@ export default function Home() {
                     boxShadow: '0 6px 20px rgba(31, 107, 53, 0.2)',
                   }}
                 >
-                  <span>Browse Full {categories.find(c => c.slug === activeCategorySlug)?.name || 'Category'} Shop →</span>
+                  <span>Explore All Shop →</span>
                 </Link>
               </div>
 
@@ -640,7 +640,7 @@ export default function Home() {
             }}
           >
             <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
-              
+
               <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3rem' }}>
                 <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1F6B35', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                   THE ONES PEOPLE COME BACK FOR
@@ -698,7 +698,7 @@ export default function Home() {
                     boxShadow: '0 8px 24px rgba(31, 107, 53, 0.25)',
                   }}
                 >
-                  <span>EXPLORE ALL BESTSELLERS</span>
+                  <span>Explore All Products</span>
                   <ArrowRight size={18} color="#FFF9EF" />
                 </Link>
               </div>
@@ -718,7 +718,7 @@ export default function Home() {
             }}
           >
             <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 1rem' }}>
-              
+
               <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
                 <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1F6B35', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                   WHY MILASTY?
@@ -832,7 +832,7 @@ export default function Home() {
               }}
             >
               <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem', position: 'relative', zIndex: 2 }}>
-                
+
                 <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3rem' }}>
                   {discoveryConfig.eyebrow && (
                     <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1F6B35', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
@@ -946,7 +946,7 @@ export default function Home() {
             }}
           >
             <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
-              
+
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'flex-end', marginBottom: '3.5rem', gap: '1.5rem' }}>
                 <div>
                   <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#1F6B35', fontWeight: '850', display: 'block', marginBottom: '0.5rem' }}>
@@ -1034,7 +1034,7 @@ export default function Home() {
                 })()}
               </div>
 
-              {((dbIngredients.length > 0 ? dbIngredients : [1,2,3,4,5]).length > 4) && (
+              {((dbIngredients.length > 0 ? dbIngredients : [1, 2, 3, 4, 5]).length > 4) && (
                 <div style={{ textAlign: 'center' }}>
                   <button
                     onClick={() => setShowAllIngredients(!showAllIngredients)}
@@ -1069,7 +1069,7 @@ export default function Home() {
             }}
           >
             <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
-              
+
               <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3.5rem' }}>
                 <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1F6B35', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                   OUR PROMISE
@@ -1181,7 +1181,7 @@ export default function Home() {
             }}
           >
             <div className="container" style={{ maxWidth: '850px', margin: '0 auto', padding: '0 1rem' }}>
-              
+
               <div style={{ textAlign: 'center', marginBottom: isMobile ? '2.25rem' : '3.5rem' }}>
                 <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#1F6B35', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                   HELP CENTER
@@ -1239,7 +1239,7 @@ export default function Home() {
                           }}
                         />
                       </button>
-                      
+
                       {isOpen && (
                         <div style={{ padding: isMobile ? '0 1.25rem 1.25rem 1.25rem' : '0 1.75rem 1.5rem 1.75rem', fontSize: isMobile ? '0.88rem' : '0.95rem', color: '#5C3A21', lineHeight: '1.65', fontWeight: '500', borderTop: '1px solid #E8D2B5', paddingTop: '1rem' }}>
                           {faq.a}
@@ -1264,7 +1264,7 @@ export default function Home() {
             }}
           >
             <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
-              
+
               <div style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 3.5rem' }}>
                 <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1F6B35', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                   TESTED. DOCUMENTED. TRANSPARENT.
@@ -1423,7 +1423,7 @@ export default function Home() {
             }}
           >
             <div className="container" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1rem' }}>
-              
+
               <div style={{ textAlign: 'center', maxWidth: '660px', margin: '0 auto 3.5rem' }}>
                 <span style={{ fontSize: '0.85rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1F6B35', fontWeight: '800', display: 'block', marginBottom: '0.5rem' }}>
                   MADE TO SHARE
@@ -1435,7 +1435,7 @@ export default function Home() {
 
               {/* 2 Content Cards */}
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '2rem' }}>
-                
+
                 {/* CARD 1: GIFTING */}
                 <div
                   className="glass-card card-warm-beige"
@@ -1573,11 +1573,11 @@ export default function Home() {
                 <h2 style={{ fontSize: isMobile ? '2.1rem' : '3.2rem', color: '#3A1F14', marginBottom: '1.25rem', fontFamily: 'var(--font-serif, Georgia, serif)', fontWeight: '800', lineHeight: '1.18' }}>
                   Ready to Upgrade Your <span style={{ color: '#1F6B35' }}>Everyday Snack?</span>
                 </h2>
-                
+
                 <p style={{ color: '#5C3A21', fontSize: isMobile ? '0.95rem' : '1.15rem', maxWidth: '620px', margin: '0 auto 2.5rem', lineHeight: '1.7', fontWeight: '500' }}>
                   Discover freshly baked millet snacks & desserts made with pure Desi Ghee and Organic Jaggery. Delivered fresh all across India.
                 </p>
-                
+
                 <Link
                   to="/shop"
                   className="btn-primary"

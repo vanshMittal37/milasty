@@ -567,10 +567,12 @@ export default function OurStory() {
                 boxShadow: '0 12px 32px rgba(75, 45, 25, 0.1)'
               }}
             >
-              <img 
-                src="/images/image3.jpeg" 
-                alt="Baking with authentic ingredients in home kitchen" 
-                style={{ width: '100%', height: '500px', objectFit: 'cover', display: 'block' }} 
+              <img
+                src="/images/from_it_began.jpeg"
+                alt="MILASTY founder Anwesha standing beside her oven and a MILASTY gift box, where the brand began"
+                loading="lazy"
+                decoding="async"
+                style={{ width: '100%', height: 'auto', aspectRatio: '4 / 5', maxHeight: '640px', objectFit: 'cover', objectPosition: 'center 20%', display: 'block', backgroundColor: '#F1E5D4' }}
               />
             </div>
             {/* Overlay Quote label */}
