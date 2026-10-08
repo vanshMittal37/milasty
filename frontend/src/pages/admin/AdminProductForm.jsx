@@ -71,6 +71,7 @@ export default function AdminProductForm() {
     image: '',
     secondaryImage: '',
     labReportUrl: '',
+    labReports: [], // [{ title, url }] — every lab report for this product
     allergens: '',
     targetAudience: '',
     variants: [],
@@ -342,6 +343,9 @@ export default function AdminProductForm() {
           image: p.image || p.image_url || '',
           secondaryImage: p.secondaryImage || p.secondary_image_url || '',
           labReportUrl: p.labReportUrl || p.lab_report_url || '',
+          labReports: Array.isArray(p.labReports) && p.labReports.length > 0
+            ? p.labReports.map((r) => ({ title: r.title || '', url: r.url || '' }))
+            : ((p.labReportUrl || p.lab_report_url) ? [{ title: '', url: p.labReportUrl || p.lab_report_url }] : []),
           allergens: p.allergens || '',
           targetAudience: p.targetAudience || p.target_audience || '',
           allow_customization: Boolean(p.allow_customization || p.allowCustomization),
@@ -428,7 +432,7 @@ export default function AdminProductForm() {
     }
   };
 
-  const handleFileUpload = async (e, fieldName = 'image') => {
+  const handleFileUpload = async (e, fieldName = 'image', reportIdx = null) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -460,7 +464,14 @@ export default function AdminProductForm() {
         const base64Data = reader.result;
         const res = await api.post('/upload', { image: base64Data });
         if (res.data && res.data.url) {
-          setFormData((prev) => ({ ...prev, [fieldName]: res.data.url }));
+          if (fieldName === 'labReportUrl' && reportIdx !== null) {
+            setFormData((prev) => ({
+              ...prev,
+              labReports: prev.labReports.map((r, i) => (i === reportIdx ? { ...r, url: res.data.url } : r)),
+            }));
+          } else {
+            setFormData((prev) => ({ ...prev, [fieldName]: res.data.url }));
+          }
           toast.success(fieldName === 'labReportUrl' ? 'Lab report uploaded successfully!' : 'Image uploaded successfully!');
         } else {
           toast.error('File upload failed');
@@ -732,6 +743,10 @@ export default function AdminProductForm() {
       });
     }
 
+    const cleanLabReports = (formData.labReports || [])
+      .map((r) => ({ title: String(r.title || '').trim(), url: String(r.url || '').trim() }))
+      .filter((r) => r.url);
+
     const payload = {
       ...formData,
       variants: updatedPayloadVariants,
@@ -759,6 +774,9 @@ export default function AdminProductForm() {
       category: formData.category || '',
       // Send full gallery so backend saves ALL images, not just primary + secondary
       images: galleryImages.length > 0 ? galleryImages : undefined,
+      // All lab reports; the legacy single-report column mirrors the first one
+      labReports: cleanLabReports,
+      labReportUrl: cleanLabReports[0]?.url || '',
     };
 
     try {
@@ -1505,79 +1523,107 @@ export default function AdminProductForm() {
               6. Lab Report
             </h3>
             <p style={{ margin: 0, fontSize: '0.74rem', color: '#665A52' }}>
-              Upload official NABL laboratory analysis report (PDF or image). Only products with an active lab report will show the "Download Lab Report" button.
+              Upload official laboratory analysis reports (PDF or image). Every report added here is shown on this product's page, in this order.
             </p>
 
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-              <input
-                type="text"
-                value={formData.labReportUrl || ''}
-                onChange={(e) => setFormData({ ...formData, labReportUrl: e.target.value })}
-                placeholder="Enter lab report URL or upload file..."
-                className="admin-input"
-                style={{ flex: 1, minWidth: '220px' }}
-              />
+            {(formData.labReports || []).map((report, idx) => {
+              const updateReport = (patch) => setFormData((prev) => ({
+                ...prev,
+                labReports: prev.labReports.map((r, i) => (i === idx ? { ...r, ...patch } : r)),
+              }));
+              return (
+                <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0.85rem', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '10px' }}>
+                  <div style={{ fontSize: '0.74rem', fontWeight: '800', color: '#665A52', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Report {idx + 1}
+                  </div>
+                  <input
+                    type="text"
+                    value={report.title || ''}
+                    onChange={(e) => updateReport({ title: e.target.value })}
+                    placeholder="Report title (optional), e.g. Nutrition Analysis — Batch 12"
+                    className="admin-input"
+                  />
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <input
+                      type="text"
+                      value={report.url || ''}
+                      onChange={(e) => updateReport({ url: e.target.value })}
+                      placeholder="Enter lab report URL or upload file..."
+                      className="admin-input"
+                      style={{ flex: 1, minWidth: '220px' }}
+                    />
 
-              <label 
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.35rem',
-                  padding: '0.6rem 1rem',
-                  backgroundColor: '#C68A3A',
-                  color: '#ffffff',
-                  borderRadius: '8px',
-                  fontSize: '0.78rem',
-                  fontWeight: '700',
-                  cursor: uploadingReport ? 'not-allowed' : 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <Upload size={14} />
-                <span>{uploadingReport ? 'Uploading...' : (formData.labReportUrl ? 'Replace Report' : 'Upload Lab Report')}</span>
-                <input
-                  type="file"
-                  accept="application/pdf,image/*"
-                  onChange={(e) => handleFileUpload(e, 'labReportUrl')}
-                  style={{ display: 'none' }}
-                  disabled={uploadingReport}
-                />
-              </label>
+                    <label
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        padding: '0.6rem 1rem',
+                        backgroundColor: '#C68A3A',
+                        color: '#ffffff',
+                        borderRadius: '8px',
+                        fontSize: '0.78rem',
+                        fontWeight: '700',
+                        cursor: uploadingReport ? 'not-allowed' : 'pointer',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <Upload size={14} />
+                      <span>{uploadingReport ? 'Uploading...' : (report.url ? 'Replace Report' : 'Upload Lab Report')}</span>
+                      <input
+                        type="file"
+                        accept="application/pdf,image/*"
+                        onChange={(e) => handleFileUpload(e, 'labReportUrl', idx)}
+                        style={{ display: 'none' }}
+                        disabled={uploadingReport}
+                      />
+                    </label>
 
-              {formData.labReportUrl && (
-                <>
-                  <a
-                    href={formData.labReportUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="admin-btn-secondary"
-                    style={{ padding: '0.6rem 0.95rem', fontSize: '0.78rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
-                  >
-                    <FileText size={13} /> View
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, labReportUrl: '' })}
-                    style={{
-                      padding: '0.6rem 0.85rem',
-                      backgroundColor: '#FEECEC',
-                      color: '#C62828',
-                      border: '1px solid #C62828',
-                      borderRadius: '8px',
-                      fontSize: '0.78rem',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.35rem'
-                    }}
-                  >
-                    <Trash2 size={13} />
-                    <span>Remove</span>
-                  </button>
-                </>
-              )}
-            </div>
+                    {report.url && (
+                      <a
+                        href={report.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="admin-btn-secondary"
+                        style={{ padding: '0.6rem 0.95rem', fontSize: '0.78rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                      >
+                        <FileText size={13} /> View
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, labReports: prev.labReports.filter((_, i) => i !== idx) }))}
+                      style={{
+                        padding: '0.6rem 0.85rem',
+                        backgroundColor: '#FEECEC',
+                        color: '#C62828',
+                        border: '1px solid #C62828',
+                        borderRadius: '8px',
+                        fontSize: '0.78rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem'
+                      }}
+                    >
+                      <Trash2 size={13} />
+                      <span>Remove</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+
+            <button
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, labReports: [...(prev.labReports || []), { title: '', url: '' }] }))}
+              className="admin-btn-secondary"
+              style={{ alignSelf: 'flex-start', padding: '0.6rem 1rem', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+            >
+              <Plus size={14} />
+              <span>{(formData.labReports || []).length > 0 ? 'Add Another Lab Report' : 'Add Lab Report'}</span>
+            </button>
           </div>
 
           {/* ================================================================== */}

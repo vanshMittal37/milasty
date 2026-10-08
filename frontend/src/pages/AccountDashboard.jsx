@@ -163,8 +163,16 @@ export default function AccountDashboard() {
     }
   }, [isAuthenticated, user]);
 
-  const fetchOrders = async () => {
-    setLoadingOrders(true);
+  // Re-fetch when the customer returns to the tab so admin/Shiprath status changes show up
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const onVisible = () => { if (document.visibilityState === 'visible') fetchOrders(true); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [isAuthenticated]);
+
+  const fetchOrders = async (silent = false) => {
+    if (!silent) setLoadingOrders(true);
     try {
       const res = await api.get('/orders/my-orders');
       setOrders(Array.isArray(res.data) ? res.data : []);

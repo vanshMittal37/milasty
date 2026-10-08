@@ -4858,3 +4858,17 @@ body.admin-body .admin-badge-danger {
     gap: 0.35rem !important;
   }
 }
+/* Product page lab reports: horizontal strip with a slim on-brand scrollbar */
+.lab-report-strip {
+  scrollbar-width: thin;
+  scrollbar-color: #DCC8AE transparent;
+}
+
+.lab-report-strip::-webkit-scrollbar {
+  height: 6px;
+}
+
+.lab-report-strip::-webkit-scrollbar-thumb {
+  background-color: #DCC8AE;
+  border-radius: 999px;
+}

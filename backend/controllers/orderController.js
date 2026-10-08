@@ -555,6 +555,7 @@ export const formatOrderPayload = (o) => {
     grandTotal: Number(o.grand_total || 0),
     totalAmount: Number(o.grand_total || 0),
     orderStatus: canonicalOrderStatus,
+    status: canonicalOrderStatus, // shadow the stale legacy `orders.status` column from the spread row
     paymentStatus: o.payment_status || 'pending',
     paymentMethod: displayPaymentMethod,
     rawPaymentMethod: o.payment_method || 'razorpay',
@@ -592,11 +593,29 @@ const INTERNAL_ORDER_FIELDS = [
   'courier_name', 'tracking_url', 'shipment_id', 'razorpay_signature',
 ];
 
+// Display labels the customer pages match against (badges, filters, progress tracker)
+const CUSTOMER_STATUS_LABELS = {
+  pending: 'Pending',
+  confirmed: 'Confirmed',
+  processing: 'Processing',
+  packed: 'Packed',
+  shipped: 'Shipped',
+  out_for_delivery: 'Out for Delivery',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
+};
+
 /** Customer-facing order payload: same shape as formatOrderPayload minus internal shipping data. */
 export const formatCustomerOrderPayload = (o) => {
   const full = formatOrderPayload(o);
   if (!full) return null;
   for (const key of INTERNAL_ORDER_FIELDS) delete full[key];
+  // order_status is the single source of truth. The spread row also carries a legacy `orders.status`
+  // column (never updated by admin/Shiprath) that customer pages read first — overwrite it so the
+  // customer always sees the same status the admin set.
+  const label = CUSTOMER_STATUS_LABELS[String(full.orderStatus).toLowerCase()] || full.orderStatus;
+  full.orderStatus = label;
+  full.status = label;
   full.shipment_status = customerShipmentStatus(full.shipment_status);
   return full;
 };

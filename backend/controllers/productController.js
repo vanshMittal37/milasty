@@ -304,6 +304,8 @@ export const getProducts = async (req, res) => {
           nutritionFacts: normalizedNutrition,
           pieces: p.nutrition_facts?.pieces || p.pieces || '',
           labReportUrl: p.lab_report_url || '',
+        labReports: normalizeLabReports(p),
+          labReports: normalizeLabReports(p),
           isFeatured: p.is_featured !== false,
           isBestseller: p.is_bestseller === true || (Array.isArray(parsedBadges) && parsedBadges.some((b) => b.toLowerCase().includes('bestseller'))),
           rating: realRating,
@@ -518,6 +520,7 @@ export const getProductBySlugOrId = async (req, res) => {
         nutritionFacts: normalizedNutrition,
         pieces: p.nutrition_facts?.pieces || p.pieces || '',
         labReportUrl: p.lab_report_url || '',
+        labReports: normalizeLabReports(p),
         isFeatured: p.is_featured !== false,
         rating: realRating,
         reviewCount: realReviewCount,
@@ -581,6 +584,35 @@ export const resolveCategoryInfo = async (catIdOrSlug) => {
   return null;
 };
 
+/**
+ * Lab reports: `lab_reports` (JSONB array of { title, url }) holds every report for a product.
+ * The legacy single `lab_report_url` column is kept in sync with the first report and is still
+ * honoured for products saved before multi-report support existed.
+ */
+const normalizeLabReports = (p) => {
+  const list = (Array.isArray(p?.lab_reports) ? p.lab_reports : [])
+    .filter((r) => r && typeof r.url === 'string' && r.url.trim() !== '')
+    .map((r) => ({ title: String(r.title || '').trim(), url: r.url.trim() }));
+  const legacyUrl = typeof p?.lab_report_url === 'string' ? p.lab_report_url.trim() : '';
+  if (legacyUrl && !list.some((r) => r.url === legacyUrl)) list.unshift({ title: '', url: legacyUrl });
+  return list;
+};
+
+// Clean an incoming admin list → { lab_reports, lab_report_url } columns (undefined when not sent)
+const labReportColumnsFromBody = (body) => {
+  const incoming = body.labReports !== undefined ? body.labReports : body.lab_reports;
+  if (!Array.isArray(incoming)) return {};
+  const lab_reports = incoming
+    .filter((r) => r && typeof r.url === 'string' && r.url.trim() !== '')
+    .map((r) => ({ title: String(r.title || '').trim(), url: r.url.trim() }));
+  return { lab_reports, lab_report_url: lab_reports[0]?.url || '' };
+};
+
+// If the lab_reports migration hasn't been run yet, drop only that column and retry —
+// never let it trigger the generic fallback below (which can strip price columns).
+const isMissingLabReportsColumn = (error, payload) =>
+  payload.lab_reports !== undefined && (error.message || '').toLowerCase().includes('lab_reports');
+
 // Helper for safe product insertion handling missing columns in PostgREST schema cache
 const safeInsertProduct = async (payload) => {
   let currentPayload = { ...payload };
@@ -592,6 +624,12 @@ const safeInsertProduct = async (payload) => {
       .maybeSingle();
 
     if (!error) return { data, error: null };
+
+    if (isMissingLabReportsColumn(error, currentPayload)) {
+      console.warn('[PRODUCTS] lab_reports column missing — run scripts/18_add_lab_reports_to_products.sql');
+      delete currentPayload.lab_reports;
+      continue;
+    }
 
     const errMsg = (error.message || '').toLowerCase();
     let stripped = false;
@@ -623,6 +661,12 @@ const safeUpdateProduct = async (id, payload) => {
       .maybeSingle();
 
     if (!error) return { data, error: null };
+
+    if (isMissingLabReportsColumn(error, currentPayload)) {
+      console.warn('[PRODUCTS] lab_reports column missing — run scripts/18_add_lab_reports_to_products.sql');
+      delete currentPayload.lab_reports;
+      continue;
+    }
 
     const errMsg = (error.message || '').toLowerCase();
     let stripped = false;
@@ -760,6 +804,7 @@ export const createProduct = async (req, res) => {
       image_url: image || '',
       secondary_image_url: secondaryImage || '',
       lab_report_url: req.body.labReportUrl || req.body.lab_report_url || '',
+      ...labReportColumnsFromBody(req.body),
       ingredients: parsedIngredients,
       nutrition_facts: {
         ...mergedNutritionFacts,
@@ -991,6 +1036,7 @@ export const updateProduct = async (req, res) => {
       image_url: updates.image !== undefined ? updates.image : undefined,
       secondary_image_url: updates.secondaryImage !== undefined ? updates.secondaryImage : undefined,
       lab_report_url: updates.labReportUrl !== undefined ? updates.labReportUrl : (updates.lab_report_url !== undefined ? updates.lab_report_url : undefined),
+      ...labReportColumnsFromBody(updates),
       ingredients: parsedIngredients,
       nutrition_facts: {
         ...(typeof updates.nutritionFacts === 'object' && updates.nutritionFacts !== null ? updates.nutritionFacts : {}),

@@ -327,6 +327,14 @@ export default function ProductDetail() {
   const hasMeaningfulValue = (val) => val !== null && val !== undefined && String(val).trim() !== '';
   const toLabel = (key) => key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/^./, (str) => str.toUpperCase());
 
+  // Admins often type the unit into the value itself ("6.8g", "35mg", "495 kcal / 100g") while the
+  // form also stores a default unit — only append the stored unit when the value is a bare number.
+  const formatNutritionValue = (value, unit) => {
+    const v = String(value).trim();
+    const u = String(unit ?? '').trim();
+    return u && /^-?\d+(\.\d+)?$/.test(v) ? `${v} ${u}` : v;
+  };
+
   const getNormalizedNutritionList = () => {
     const raw = product.nutritionFacts || product.nutrition_facts;
     if (!raw) return [];
@@ -353,7 +361,7 @@ export default function ProductDetail() {
     return list
       .filter((item) => item.label && hasMeaningfulValue(item.value))
       .filter((item) => !HIDDEN_NUTRITION_KEYS.has(normalizeKey(item.key)) && !HIDDEN_NUTRITION_KEYS.has(normalizeKey(item.label)))
-      .map(({ label, value, unit }) => ({ label, value: String(value).trim(), unit: String(unit).trim() }));
+      .map(({ label, value, unit }) => ({ label, display: formatNutritionValue(value, unit) }));
   };
 
   const safeNutritionFacts = getNormalizedNutritionList();
@@ -371,7 +379,88 @@ export default function ProductDetail() {
   };
 
   const ingredientsList = getIngredientsList();
-  const labReportUrl = product.labReportUrl || product.lab_report_url || product.lab_report || product.labReport;
+  const legacyLabReportUrl = product.labReportUrl || product.lab_report_url || product.lab_report || product.labReport;
+  // Every lab report the admin added for this product (falls back to the legacy single-report field)
+  const labReports = (Array.isArray(product.labReports) && product.labReports.length > 0
+    ? product.labReports
+    : (legacyLabReportUrl ? [{ title: '', url: legacyLabReportUrl }] : [])
+  ).filter((r) => r && typeof r.url === 'string' && r.url.trim() !== '');
+  const hasLabReports = labReports.length > 0;
+
+  // Horizontally scrollable strip of report cards — only the strip scrolls, never the page
+  const renderLabReportStrip = () => (
+    <div
+      className="lab-report-strip"
+      role="list"
+      aria-label={`${product.title} lab reports`}
+      style={{
+        display: 'flex',
+        gap: '0.85rem',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        scrollSnapType: 'x mandatory',
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehaviorX: 'contain',
+        maxWidth: '100%',
+        minWidth: 0,
+        paddingBottom: '0.35rem',
+      }}
+    >
+      {labReports.map((report, idx) => (
+        <div
+          key={`${report.url}-${idx}`}
+          role="listitem"
+          style={{
+            flex: '0 0 auto',
+            width: 'min(280px, 78%)',
+            scrollSnapAlign: 'start',
+            backgroundColor: '#FCF8F1',
+            border: '1px solid #DCC8AE',
+            borderRadius: '14px',
+            padding: '1rem 1.1rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
+            boxSizing: 'border-box',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
+            <ShieldCheck size={20} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Verified Laboratory Analysis
+              </div>
+              <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#32180D', lineHeight: '1.35', overflowWrap: 'anywhere' }}>
+                {report.title || `Lab Report ${idx + 1}`}
+              </div>
+            </div>
+          </div>
+          <a
+            href={report.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              marginTop: 'auto',
+              alignSelf: 'flex-start',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              backgroundColor: '#2F6B3A',
+              color: '#FFFFFF',
+              border: '1px solid #2F6B3A',
+              padding: '0.45rem 0.95rem',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: '800',
+              textDecoration: 'none'
+            }}
+          >
+            <FileText size={15} /> View Lab Report <ExternalLink size={13} />
+          </a>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div style={{ backgroundColor: '#F7F0E5', color: '#2B170D', minHeight: '100vh', paddingTop: '1rem', paddingBottom: '5rem' }}>
@@ -1059,7 +1148,7 @@ export default function ProductDetail() {
             >
               Ingredients &amp; Craft
             </button>
-            {labReportUrl && (
+            {hasLabReports && (
               <button
                 onClick={() => setActiveTab('labreport')}
                 style={{
@@ -1099,80 +1188,27 @@ export default function ProductDetail() {
             <div style={{ backgroundColor: '#F4EBDD', padding: '1.5rem', borderRadius: '16px', border: '1px solid #DCC8AE' }}>
               {safeNutritionFacts.length > 0 ? (
                 <div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: labReportUrl ? '1.5rem' : 0 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: hasLabReports ? '1.5rem' : 0 }}>
                     {safeNutritionFacts.map((item, idx) => (
                       <div key={idx} style={{ borderBottom: '1px solid #DCC8AE', paddingBottom: '0.5rem' }}>
                         <span style={{ fontSize: '0.78rem', color: '#2F6B3A', textTransform: 'uppercase', fontWeight: '700', display: 'block' }}>
                           {item.label}
                         </span>
                         <span style={{ fontSize: '1rem', fontWeight: '800', color: '#32180D' }}>
-                          {item.value} {item.unit}
+                          {item.display}
                         </span>
                       </div>
                     ))}
                   </div>
 
-                  {labReportUrl && (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#E3EEDC', border: '1px solid #DCC8AE', padding: '0.85rem 1.25rem', borderRadius: '12px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                        <ShieldCheck size={20} color="#2F6B3A" />
-                        <div>
-                          <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#32180D' }}>Verified Laboratory Analysis Available</div>
-                          <div style={{ fontSize: '0.78rem', color: '#654B38' }}>Independently tested for purity, nutrition levels &amp; heavy metals.</div>
-                        </div>
-                      </div>
-                      <a
-                        href={labReportUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.4rem',
-                          backgroundColor: '#2F6B3A',
-                          color: '#FFFFFF',
-                          border: '1px solid #2F6B3A',
-                          padding: '0.45rem 0.95rem',
-                          borderRadius: '8px',
-                          fontSize: '0.82rem',
-                          fontWeight: '800',
-                          textDecoration: 'none'
-                        }}
-                      >
-                        <FileText size={15} /> View Lab Report <ExternalLink size={13} />
-                      </a>
-                    </div>
-                  )}
+                  {hasLabReports && renderLabReportStrip()}
                 </div>
               ) : (
                 <div>
                   <p style={{ color: '#654B38', margin: 0, lineHeight: '1.6' }}>
                     Rich in fiber, vitamins, deshi ghee goodness, and essential minerals. No added artificial additives.
                   </p>
-                  {labReportUrl && (
-                    <div style={{ marginTop: '1rem' }}>
-                      <a
-                        href={labReportUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.4rem',
-                          backgroundColor: '#2F6B3A',
-                          color: '#FFFFFF',
-                          border: '1px solid #2F6B3A',
-                          padding: '0.45rem 0.95rem',
-                          borderRadius: '8px',
-                          fontSize: '0.82rem',
-                          fontWeight: '800',
-                          textDecoration: 'none'
-                        }}
-                      >
-                        <FileText size={15} /> Download Verified Lab Report <ExternalLink size={13} />
-                      </a>
-                    </div>
-                  )}
+                  {hasLabReports && <div style={{ marginTop: '1rem' }}>{renderLabReportStrip()}</div>}
                 </div>
               )}
             </div>
@@ -1215,34 +1251,14 @@ export default function ProductDetail() {
             </div>
           )}
 
-          {activeTab === 'labreport' && labReportUrl && (
+          {activeTab === 'labreport' && hasLabReports && (
             <div style={{ backgroundColor: '#F4EBDD', padding: '2rem', borderRadius: '16px', border: '1px solid #DCC8AE', textAlign: 'center' }}>
               <ShieldCheck size={40} color="#2F6B3A" style={{ margin: '0 auto 1rem' }} />
               <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#32180D', margin: '0 0 0.5rem 0' }}>Official Quality &amp; Nutrition Lab Report</h3>
               <p style={{ color: '#654B38', fontSize: '0.9rem', maxWidth: '500px', margin: '0 auto 1.5rem auto' }}>
                 Every batch of {product.title} is certified by NABL-accredited food safety testing laboratories. Click below to inspect the complete lab report document.
               </p>
-              <a
-                href={labReportUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  backgroundColor: '#2F6B3A',
-                  color: '#FFFFFF',
-                  border: '1px solid #2F6B3A',
-                  padding: '0.75rem 1.75rem',
-                  borderRadius: '999px',
-                  fontSize: '0.95rem',
-                  fontWeight: '850',
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 16px rgba(47, 107, 58, 0.3)'
-                }}
-              >
-                <FileText size={18} /> View / Download Full Lab Certificate <ExternalLink size={15} />
-              </a>
+              <div style={{ textAlign: 'left' }}>{renderLabReportStrip()}</div>
             </div>
           )}
 

@@ -61,6 +61,8 @@ export default function Nutrition() {
     dailyProducts = displayProducts.slice(0, 5);
   }
 
+  const isBareNumber = (str) => /^-?\d+(\.\d+)?$/.test(str);
+
   const getNutrVal = (product, keys, defaultUnit = '') => {
     if (!product) return '—';
     const nf = product.nutritionFacts || product.nutrition_facts || {};
@@ -72,14 +74,15 @@ export default function Nutrition() {
           const vStr = val.value !== undefined && val.value !== null ? String(val.value).trim() : '';
           const uStr = val.unit ? String(val.unit).trim() : defaultUnit;
           if (!vStr) return '—';
-          if (uStr && !vStr.toLowerCase().includes(uStr.toLowerCase())) {
+          // Only append a unit to bare numbers — "6.8g" / "495 kcal / 100g" already carry their unit
+          if (uStr && isBareNumber(vStr)) {
             return `${vStr}${uStr.startsWith('/') ? '' : ' '}${uStr}`.trim();
           }
           return vStr;
         }
         const vStr = String(val).trim();
         if (!vStr) return '—';
-        if (defaultUnit && !vStr.toLowerCase().includes(defaultUnit.toLowerCase())) {
+        if (defaultUnit && isBareNumber(vStr)) {
           return `${vStr}${defaultUnit.startsWith('/') ? '' : ' '}${defaultUnit}`.trim();
         }
         return vStr;

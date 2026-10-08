@@ -26,8 +26,16 @@ export default function OrderHistoryPage() {
     }
   }, [isAuthenticated]);
 
-  const fetchMyOrders = async () => {
-    setLoading(true);
+  // Re-fetch when the customer returns to the tab so admin/Shiprath status changes show up
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const onVisible = () => { if (document.visibilityState === 'visible') fetchMyOrders(true); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [isAuthenticated]);
+
+  const fetchMyOrders = async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(false);
     try {
       const res = await api.get('/orders/my-orders');
@@ -290,7 +298,7 @@ export default function OrderHistoryPage() {
             <AlertCircle size={44} color={T.danger} style={{ margin: '0 auto 1.25rem' }} />
             <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: T.textPrimary, margin: '0 0 0.45rem 0' }}>Unable to Load Orders</h3>
             <p style={{ color: T.textMuted, fontSize: '0.88rem', margin: '0 0 1.5rem' }}>We encountered an error. Please try again.</p>
-            <button onClick={fetchMyOrders} style={{ padding: '0.7rem 1.75rem', backgroundColor: T.brand, color: '#FFFFFF', border: 'none', borderRadius: '999px', fontWeight: '700', cursor: 'pointer' }}>
+            <button onClick={() => fetchMyOrders()} style={{ padding: '0.7rem 1.75rem', backgroundColor: T.brand, color: '#FFFFFF', border: 'none', borderRadius: '999px', fontWeight: '700', cursor: 'pointer' }}>
               Try Again
             </button>
           </div>
