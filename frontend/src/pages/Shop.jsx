@@ -554,12 +554,13 @@ export default function Shop() {
           </div>
 
           {/* Dynamic Product Cards Grid */}
-          <div 
-            style={{ 
-              display: 'grid', 
-              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${Math.min(prebookingProducts.length, 4)}, 1fr)`, 
-              gap: isMobile ? '0.65rem' : '1.15rem', 
-              alignItems: 'stretch' 
+          <div
+            className="prebook-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : `repeat(${Math.min(prebookingProducts.length, 4)}, minmax(0, 1fr))`,
+              gap: isMobile ? '12px' : '1.15rem',
+              alignItems: 'stretch'
             }}
           >
             {(showAllPrebookings ? prebookingProducts : prebookingProducts.slice(0, 4)).map((item, idx) => {
@@ -574,16 +575,18 @@ export default function Shop() {
               return (
                 <div
                   key={item.id || idx}
+                  className="prebook-card"
                   onClick={() => navigate(`/product/${item.productSlug || item.slug || pId}`)}
                   style={{
                     background: 'var(--card-bg, #EAD8C3)',
                     borderRadius: isMobile ? '14px' : '20px',
                     border: 'var(--card-border, 1px solid #D6C2A7)',
                     boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
-                    padding: isMobile ? '0.65rem 0.55rem 0.6rem' : '1.15rem 1rem 1rem',
+                    padding: isMobile ? '0.75rem 0.7rem 0.7rem' : '1.15rem 1rem 1rem',
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'space-between',
+                    minWidth: 0,
+                    height: '100%',
                     position: 'relative',
                     overflow: 'hidden',
                     boxSizing: 'border-box',
@@ -591,9 +594,9 @@ export default function Shop() {
                     transition: 'transform 0.3s ease, border-color 0.3s ease',
                   }}
                 >
-                  <div>
-                    {/* Top Badge */}
-                    <div style={{ marginBottom: isMobile ? '0.35rem' : '0.75rem' }}>
+                  <div style={{ minWidth: 0 }}>
+                    {/* Top row: badge left, thumbnail right — the title below gets the full card width */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.4rem', marginBottom: isMobile ? '0.5rem' : '0.75rem' }}>
                       <span
                         style={{
                           background: '#E3EEDC',
@@ -608,45 +611,21 @@ export default function Shop() {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '0.2rem',
+                          whiteSpace: 'nowrap',
+                          minWidth: 0,
                         }}
                       >
                         🔥 PRE-ORDER
                       </span>
-                    </div>
-
-                    {/* Card Title & Side Thumbnail Image Layout */}
-                    <div 
-                      style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: isMobile ? '1fr 55px' : '1fr 85px', 
-                        gap: isMobile ? '0.35rem' : '0.65rem', 
-                        alignItems: 'center', 
-                        marginBottom: isMobile ? '0.35rem' : '0.75rem' 
-                      }}
-                    >
-                      <div>
-                        <h3
-                          style={{
-                            margin: 0,
-                            fontSize: isMobile ? '0.85rem' : '1.1rem',
-                            fontWeight: '800',
-                            color: '#32180D',
-                            fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
-                            lineHeight: '1.2',
-                          }}
-                        >
-                          {title}
-                        </h3>
-                      </div>
-                      <div 
-                        style={{ 
-                          width: isMobile ? '55px' : '85px', 
-                          height: isMobile ? '55px' : '85px', 
-                          borderRadius: isMobile ? '8px' : '12px', 
-                          overflow: 'hidden', 
-                          boxShadow: '0 2px 8px rgba(43,20,11,0.08)', 
-                          border: '1px solid #DCC8AE', 
-                          flexShrink: 0 
+                      <div
+                        style={{
+                          width: isMobile ? '52px' : '85px',
+                          height: isMobile ? '52px' : '85px',
+                          borderRadius: isMobile ? '8px' : '12px',
+                          overflow: 'hidden',
+                          boxShadow: '0 2px 8px rgba(43,20,11,0.08)',
+                          border: '1px solid #DCC8AE',
+                          flexShrink: 0
                         }}
                       >
                         <img
@@ -657,31 +636,52 @@ export default function Shop() {
                       </div>
                     </div>
 
-                    {/* Description */}
+                    {/* Title — max 2 lines */}
+                    <h3
+                      style={{
+                        margin: isMobile ? '0 0 0.3rem' : '0 0 0.5rem',
+                        fontSize: isMobile ? '0.95rem' : '1.1rem',
+                        fontWeight: '800',
+                        color: '#32180D',
+                        fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
+                        lineHeight: '1.2',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        overflowWrap: 'anywhere',
+                      }}
+                    >
+                      {title}
+                    </h3>
+
+                    {/* Description — max 2 lines */}
                     <p
                       style={{
-                        fontSize: isMobile ? '0.68rem' : '0.82rem',
+                        fontSize: isMobile ? '0.72rem' : '0.82rem',
                         color: '#654B38',
-                        lineHeight: '1.3',
-                        marginBottom: isMobile ? '0.35rem' : '0.85rem',
+                        lineHeight: '1.35',
                         fontWeight: '400',
-                        margin: isMobile ? '0 0 0.35rem 0' : '0 0 0.85rem 0',
+                        margin: isMobile ? '0 0 0.6rem 0' : '0 0 0.85rem 0',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
                       }}
                     >
                       {description}
                     </p>
                   </div>
 
-                  <div>
+                  {/* Bottom block pinned to the card bottom so price/CTA/date align across a row */}
+                  <div style={{ marginTop: 'auto', minWidth: 0 }}>
                     {/* Collection Card Action Row: Price & Pre-book Button */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: isMobile ? '0.2rem' : '0.5rem', marginBottom: isMobile ? '0.45rem' : '0.85rem', paddingTop: '0.25rem', width: '100%', boxSizing: 'border-box' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', flexShrink: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: isMobile ? '0.2rem' : '0.4rem', flexWrap: 'nowrap' }}>
-                          <span style={{ fontSize: isMobile ? '0.92rem' : '1.35rem', fontWeight: '950', color: '#2B170D', whiteSpace: 'nowrap' }}>
-                            ₹{price}
-                          </span>
-                        </div>
-                      </div>
+                    {/* Mobile: price above a full-width CTA (a 150px card can't fit both on one row).
+                        Desktop: price left, CTA right. */}
+                    <div className="prebook-action-row" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: isMobile ? '0.4rem' : '0.6rem', marginBottom: isMobile ? '0.55rem' : '0.85rem', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+                      <span className="prebook-price" style={{ fontSize: isMobile ? '1.05rem' : '1.35rem', fontWeight: '900', color: '#2B170D', whiteSpace: 'nowrap', lineHeight: 1.1, minWidth: 0 }}>
+                        ₹{price}
+                      </span>
 
                       <button
                         onClick={(e) => {
@@ -698,25 +698,23 @@ export default function Shop() {
                             expected_ship_date: formattedDate
                           });
                         }}
-                        className="btn-primary"
+                        className="btn-primary prebook-btn"
                         style={{
                           backgroundColor: '#2F6B3A',
                           color: '#FFFFFF',
                           border: 'none',
-                          padding: isMobile ? '0.35rem 0.5rem' : '0.8rem 1.4rem',
                           borderRadius: '999px',
-                          fontSize: isMobile ? '0.68rem' : '0.92rem',
-                          fontWeight: '850',
+                          fontWeight: '800',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: isMobile ? '0.15rem' : '0.45rem',
+                          justifyContent: 'center',
                           boxShadow: '0 4px 12px rgba(47, 107, 58, 0.25)',
                           transition: 'all 0.25s ease',
                           flexShrink: 0
                         }}
                       >
-                        <ShoppingBag size={isMobile ? 11 : 17} color="#FFFFFF" />
+                        <ShoppingBag size={isMobile ? 14 : 17} color="#FFFFFF" />
                         <span>Pre-book</span>
                       </button>
                     </div>
@@ -726,7 +724,8 @@ export default function Shop() {
                       <div style={{ textAlign: 'center' }}>
                         <span
                           style={{
-                            fontSize: isMobile ? '0.52rem' : '0.66rem',
+                            fontSize: isMobile ? '0.56rem' : '0.66rem',
+                            lineHeight: 1.3,
                             color: '#806A57',
                             fontWeight: '700',
                             letterSpacing: '0.03em',

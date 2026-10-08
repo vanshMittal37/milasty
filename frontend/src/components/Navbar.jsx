@@ -386,7 +386,7 @@ export default function Navbar() {
                       boxSizing: 'border-box'
                     }}
                   >
-                    {cartCount}
+                    {cartCount > 99 ? '99+' : cartCount}
                   </span>
                 </button>
 

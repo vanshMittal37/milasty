@@ -52,6 +52,7 @@ export default function PriceDisplay({
           fontSize: sizes.current,
           fontWeight: '800',
           color: '#32180D',
+          whiteSpace: 'nowrap',
         }}
       >
         {prefix}₹{currentPrice}

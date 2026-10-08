@@ -67,7 +67,8 @@ export default function ProductCard({ product }) {
       }}
     >
       {/* Image Area with Badge & Wishlist Button */}
-      <div style={{ position: 'relative', overflow: 'hidden', paddingTop: '75%', backgroundColor: 'var(--card-inner-bg)' }} className="card-image-wrap">
+      {/* Size comes from .card-image-wrap aspect-ratio in index.css (4:3 desktop, 1:0.9 mobile) */}
+      <div style={{ position: 'relative', overflow: 'hidden', backgroundColor: 'var(--card-inner-bg)' }} className="card-image-wrap">
         <Link to={`/product/${product.slug || product._id || product.id}`}>
           <img
             src={product.image || product.image_url || product.primary_image || '/images/image1.jpeg'}
@@ -198,11 +199,12 @@ export default function ProductCard({ product }) {
           display: 'flex',
           flexDirection: 'column',
           flexGrow: 1,
-          justifyContent: 'space-between',
+          minWidth: 0,
           backgroundColor: 'transparent',
         }}
       >
-        <div>
+        {/* Info grows to fill the card so every footer in a row sits at the same height */}
+        <div className="card-info" style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
           {/* Rating stars */}
           {(product.show_rating !== false && product.showRating !== false) && (
             <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.35rem' }}>
@@ -244,7 +246,7 @@ export default function ProductCard({ product }) {
 
           {/* Metric / Weight / Variant Label Badge & Selectors */}
           {product?.variants && product.variants.length > 1 ? (
-            <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '0.55rem', alignItems: 'center' }}>
+            <div className="card-variants" style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '0.55rem', alignItems: 'center' }}>
               {product.variants.map((v, vIdx) => {
                 const metricText = v.label || v.weight || v.name || `${v.unit || ''}`;
                 const isSelected = selectedVariantIndex === vIdx;
@@ -329,8 +331,10 @@ export default function ProductCard({ product }) {
             : Number(product?.originalPrice || product?.original_price || cardPrice);
 
           return (
-            <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid var(--card-border-color)', gap: '0.35rem', flexWrap: 'nowrap', width: '100%', marginTop: 'auto' }}>
-              <PriceDisplay 
+            <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid var(--card-border-color)', gap: '0.5rem', width: '100%', minWidth: 0, boxSizing: 'border-box', marginTop: 'auto' }}>
+              <PriceDisplay
+                className="card-price-block"
+                style={{ minWidth: 0 }}
                 prefix={product?.variants && product.variants.length > 1 ? 'From ' : ''}
                 price={cardPrice} 
                 originalPrice={cardOriginalPrice} 
@@ -339,7 +343,7 @@ export default function ProductCard({ product }) {
                 size="small" 
               />
 
-              <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
+              <div className="card-cta-wrap" style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

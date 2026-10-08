@@ -1801,92 +1801,8 @@ a {
     min-width: 0 !important;
   }
 
-  .products-main-grid .card-image-wrap {
-    padding-top: 100% !important;
-    /* Consistent 1:1 Aspect Ratio */
-  }
-
-  .products-main-grid .card-wishlist-btn {
-    top: 8px !important;
-    right: 8px !important;
-    width: 30px !important;
-    height: 30px !important;
-  }
-
-  .products-main-grid .card-wishlist-btn svg {
-    width: 13px !important;
-    height: 13px !important;
-  }
-
-  .products-main-grid .card-badge-wrap {
-    top: 8px !important;
-    left: 8px !important;
-  }
-
-  .products-main-grid .card-badge-wrap span {
-    font-size: 0.55rem !important;
-    padding: 0.2rem 0.45rem !important;
-  }
-
-  .products-main-grid .card-body {
-    padding: 0.85rem 0.7rem !important;
-  }
-
-  .products-main-grid .card-title {
-    font-size: 0.9rem !important;
-    line-height: 1.3 !important;
-    margin-bottom: 0.3rem !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    min-height: auto !important;
-  }
-
-  .products-main-grid .card-subtitle {
-    font-size: 0.75rem !important;
-    line-height: 1.4 !important;
-    margin-bottom: 0.85rem !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    min-height: auto !important;
-  }
-
-  .products-main-grid .card-rating-row {
-    margin-bottom: 0.35rem !important;
-  }
-
-  .products-main-grid .card-rating-row span {
-    font-size: 0.7rem !important;
-  }
-
-  .products-main-grid .card-footer {
-    padding-top: 0.6rem !important;
-    gap: 0.25rem !important;
-  }
-
-  .products-main-grid .card-price {
-    font-size: 0.95rem !important;
-  }
-
-  .products-main-grid .original-price {
-    font-size: 0.7rem !important;
-  }
-
-  .products-main-grid .view-details-btn {
-    display: none !important;
-  }
-
-  .products-main-grid .add-cart-btn {
-    padding: 0.4rem 0.65rem !important;
-    font-size: 0.72rem !important;
-    border-radius: 999px !important;
-  }
-
-  .products-main-grid .add-cart-btn svg {
-    width: 12px !important;
-    height: 12px !important;
-  }
+  /* Product card internals (image, badge, wishlist, body, footer, Add button) live in the
+     PRODUCT CARD LAYOUT block at the end of this file. */
 }
 
 /* Extra small mobile screen refinements (< 360px) */
@@ -2474,20 +2390,6 @@ a {
     display: inline !important;
   }
 
-  .add-cart-btn {
-    padding: 0.4rem 0.65rem !important;
-    font-size: 0.72rem !important;
-    border-radius: 999px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0.25rem !important;
-    background-color: #244f21 !important;
-    color: #FFFFFF !important;
-    border: none !important;
-    font-weight: 850 !important;
-  }
-
   .view-details-btn {
     display: none !important;
   }
@@ -2514,9 +2416,6 @@ a {
     justify-content: space-between !important;
   }
 
-  .products-main-grid .card-title,
-  .shop-featured-grid .card-title,
-  .shop-main-grid .card-title,
   .wishlist-page h3 {
     display: -webkit-box !important;
     -webkit-line-clamp: 2 !important;
@@ -2525,9 +2424,6 @@ a {
     min-height: 2.5em !important;
   }
 
-  .products-main-grid .card-subtitle,
-  .shop-featured-grid .card-subtitle,
-  .shop-main-grid .card-subtitle,
   .wishlist-page p {
     display: -webkit-box !important;
     -webkit-line-clamp: 2 !important;
@@ -2698,24 +2594,29 @@ a {
     color: #FFFFFF !important;
   }
 
+  /* Notification badge sits on the button's top-right corner, outside the bag icon.
+     Cream on the dark navbar / green button for contrast; pill grows for 10, 99, 99+. */
   .cart-badge {
     position: absolute !important;
-    top: 2px !important;
-    right: 2px !important;
-    font-size: 0.65rem !important;
+    top: -6px !important;
+    right: -6px !important;
+    font-size: 11px !important;
     line-height: 1 !important;
-    min-width: 16px !important;
-    height: 16px !important;
-    padding: 0 4px !important;
+    min-width: 20px !important;
+    width: auto !important;
+    height: 20px !important;
+    padding: 0 5px !important;
     border-radius: 999px !important;
-    background-color: #244f21 !important;
-    color: #FFFDF9 !important;
-    border: 1.5px solid #b9cd94 !important;
+    background-color: #FFFDF9 !important;
+    color: #244f21 !important;
+    border: 2px solid #244f21 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-weight: 900 !important;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4) !important;
+    font-weight: 700 !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35) !important;
+    pointer-events: none !important;
   }
 }
 
@@ -2983,7 +2884,7 @@ a.btn-secondary:hover,
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     align-items: stretch !important;
-    gap: 0.5rem !important;
+    gap: 12px !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
@@ -4786,3 +4687,173 @@ body.admin-body .admin-badge-danger {
   .customer-main-area { margin-left: 240px !important; }
 }
 
+
+/* ==========================================================================
+   PRODUCT CARD LAYOUT — ProductCard.jsx (Home, Shop, Catalogue, Products, Wishlist)
+   Single source for card internals. Card = flex column; .card-info grows, so
+   the footer (price + Add) lines up across a row without fixed heights.
+   !important is used only where ProductCard sets the same property inline or a
+   global rule (.btn-primary: 52px min-height, 14px 26px padding) must be undone.
+   ========================================================================== */
+.milasty-product-card {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.milasty-product-card .card-image-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  flex-shrink: 0;
+}
+
+/* Badge (top-left) and wishlist (top-right) own separate corners — the badge
+   is capped so it always ends before the heart. */
+.milasty-product-card .card-wishlist-btn {
+  top: 12px !important;
+  right: 12px !important;
+  width: 40px !important;
+  height: 40px !important;
+  z-index: 3 !important;
+}
+
+.milasty-product-card .card-badge-wrap {
+  top: 12px !important;
+  left: 12px !important;
+  height: 40px;
+  max-width: calc(100% - 12px - 40px - 8px - 12px);
+  z-index: 2 !important;
+}
+
+.milasty-product-card .card-badge-span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.milasty-product-card .card-title {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.25 !important;
+  min-height: 2.5em; /* 2 lines reserved so one-line titles don't shift the row */
+}
+
+.milasty-product-card .card-subtitle {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Variant chips start at the left edge like the rest of the card text (the page-level
+   ".shop-page [style*=flex-wrap] { justify-content: center }" rule would centre them). */
+.milasty-product-card .card-body .card-variants {
+  justify-content: flex-start !important;
+}
+
+.milasty-product-card .card-price-block {
+  flex: 1 1 auto;
+  row-gap: 0.15rem !important;
+}
+
+.milasty-product-card .card-footer .add-cart-btn {
+  min-height: 40px !important;
+  padding: 0 1rem !important;
+  font-size: 0.8rem !important;
+  gap: 0.35rem !important;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .milasty-product-card {
+    border-radius: 16px !important;
+  }
+
+  .milasty-product-card .card-image-wrap {
+    aspect-ratio: 1 / 0.9;
+  }
+
+  .milasty-product-card .card-wishlist-btn {
+    top: 8px !important;
+    right: 8px !important;
+  }
+
+  .milasty-product-card .card-badge-wrap {
+    top: 8px !important;
+    left: 8px !important;
+    max-width: calc(100% - 8px - 40px - 6px - 8px);
+  }
+
+  .milasty-product-card .card-badge-span {
+    font-size: clamp(0.5rem, 2.5vw, 0.6rem) !important;
+    padding: 0.22rem 0.45rem !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  .milasty-product-card .card-body {
+    padding: 12px !important;
+  }
+
+  .milasty-product-card .card-rating-row span {
+    font-size: 0.7rem !important;
+  }
+
+  .milasty-product-card .card-title {
+    font-size: 0.92rem !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  .milasty-product-card .card-subtitle {
+    font-size: 0.74rem !important;
+    margin-bottom: 0.65rem !important;
+  }
+
+  .milasty-product-card .card-variants {
+    gap: 0.3rem !important;
+  }
+
+  .milasty-product-card .card-variants button {
+    font-size: 0.68rem !important;
+    padding: 0.22rem 0.45rem !important;
+  }
+
+  /* A ~150px card can't fit price + CTA side by side without clipping: stack them. */
+  .milasty-product-card .card-footer {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+    padding-top: 0.6rem !important;
+  }
+
+  .milasty-product-card .card-cta-wrap {
+    margin-left: 0 !important;
+    width: 100%;
+  }
+
+  .milasty-product-card .card-footer .add-cart-btn {
+    width: 100%;
+    font-size: 0.78rem !important;
+  }
+}
+
+/* ==========================================================================
+   PRE-BOOKING CARDS — Shop.jsx (.prebook-grid). Layout is inline in Shop.jsx;
+   this only resets the global .btn-primary size for the compact Pre-book CTA.
+   ========================================================================== */
+.prebook-grid .prebook-card .prebook-btn {
+  min-height: 44px !important;
+  padding: 0 1.25rem !important;
+  font-size: 0.9rem !important;
+  gap: 0.45rem !important;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .prebook-grid .prebook-card .prebook-btn {
+    width: 100%;
+    padding: 0 0.75rem !important;
+    font-size: 0.82rem !important;
+    gap: 0.35rem !important;
+  }
+}
