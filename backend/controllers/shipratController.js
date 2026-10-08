@@ -13,10 +13,14 @@ const WAREHOUSE_PINCODE = '201016';
 // defaults to 0 — set SHIPRATH_PACKAGING_WEIGHT_KG on Railway once the real box weight is known.
 const PACKAGING_WEIGHT_KG = Number(process.env.SHIPRATH_PACKAGING_WEIGHT_KG || 0);
 
-// Unit the Create Shipment API expects for `weight`. Shiprath's API docs are not available to this
-// project; their public rate calculator and the Rate API both use kg, so 'kg' is the default.
-// Set SHIPRATH_BOOKING_WEIGHT_UNIT=g only if Shiprath confirms Create Shipment wants grams.
-const SHIPRATH_BOOKING_WEIGHT_UNIT = String(process.env.SHIPRATH_BOOKING_WEIGHT_UNIT || 'kg').toLowerCase() === 'g' ? 'g' : 'kg';
+// Create Shipment weights are kilograms: the captured Shiprath dashboard request (order 750252,
+// 0.20 kg) sent weight/total_weight/volumetric_weight = 0.2. The old grams option was removed so a
+// leftover SHIPRATH_BOOKING_WEIGHT_UNIT=g on Railway can no longer turn 0.2 kg into 200.
+const SHIPRATH_BOOKING_WEIGHT_UNIT = 'kg';
+
+// carrier_type sent when the Rate API row does not include one. The captured dashboard request for
+// Amazon Surface used carrier_type = 1.
+const DEFAULT_CARRIER_TYPE = Number(process.env.SHIPRATH_DEFAULT_CARRIER_TYPE || 1);
 
 // Log the outbound Create Shipment payload (contact details masked, no credentials).
 // Temporary diagnostics — set SHIPRATH_LOG_PAYLOAD=false to turn off.
@@ -91,9 +95,7 @@ export function logPackageWeights(label, actualWeightKg, dimensions) {
 
 /** Convert the internal kg weight to the unit the Create Shipment API expects. */
 export function toShiprathBookingWeight(weightKg) {
-  return SHIPRATH_BOOKING_WEIGHT_UNIT === 'g'
-    ? Math.round(weightKg * 1000)
-    : Math.round(weightKg * 1000) / 1000;
+  return Math.round(weightKg * 1000) / 1000;
 }
 
 /** Copy of a Create Shipment payload that is safe to log: phone/email/street masked. */
@@ -321,7 +323,7 @@ export async function fetchLiveShiprathRate({
   // DIAGNOSTIC: Log exactly what Shiprath returned before any filtering
   console.log(`[SHIPRATH RATE DIAGNOSTIC] pincode=${cleanPincode} weight=${calculatedWeight}kg → Shiprath returned ${rawRates.length} carrier(s):`);
   rawRates.forEach((r, i) => {
-    console.log(`  [${i + 1}] service_name="${r.courier_name || r.carrier_name || r.service_name}" carrier_id="${r.carrier_id}" courier_id="${r.courier_id}" product_id="${r.product_id}" payment_mode="${r.payment_mode}" total_charge="${r.total_charge || r.total_charges || r.rate}" zone="${r.zone}"`);
+    console.log(`  [${i + 1}] service_name="${r.courier_name || r.carrier_name || r.service_name}" carrier_id="${r.carrier_id}" courier_id="${r.courier_id}" product_id="${r.product_id}" carrier_type="${r.carrier_type}" rate_price="${r.rate_price}" payment_mode="${r.payment_mode}" total_charge="${r.total_charge || r.total_charges || r.rate}" zone="${r.zone}"`);
   });
 
   if (!rawRates || rawRates.length === 0) {
@@ -377,6 +379,10 @@ export function normalizeShiprathRate(r, quotedAt = new Date().toISOString()) {
     cod_commission: 0,
     estimated_delivery: r.estimated_delivery || r.etd || null,
     payment_mode_raw: r.payment_mode || null,
+    // Booking fields seen in the dashboard Create Shipment request. Kept outside `raw` so they
+    // survive in orders.shipping_rate_options; null when the Rate API row does not have them.
+    carrier_type: r.carrier_type ?? null,
+    rate_price: r.rate_price ?? null,
     quoted_at: quotedAt,
     raw: r, // full original Shiprath rate object, preserved for booking/audit
   };
@@ -790,6 +796,7 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
     // 1. The rate selected at checkout (the one the customer's delivery charge came from).
     // 2. Automatic fallback: the other valid rates from the SAME rate response, cheapest first.
     // IDs are used exactly as Shiprath returned them; an empty courier_id stays "".
+    const snapshot = order.selected_rate_snapshot || null;
     const storedRate = order.selected_carrier_id
       ? {
           carrier_id: String(order.selected_carrier_id),
@@ -799,6 +806,11 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
           total_charges: Number(order.selected_delivery_fee || order.delivery_fee || 0),
         }
       : null;
+    if (storedRate && snapshot && isSameRate(snapshot, storedRate)) {
+      storedRate.carrier_type = snapshot.carrier_type ?? snapshot.raw?.carrier_type ?? null;
+      storedRate.rate_price = snapshot.rate_price ?? snapshot.raw?.rate_price ?? null;
+      storedRate.service_provider = snapshot.service_provider || null;
+    }
 
     const storedOptions = (Array.isArray(order.shipping_rate_options) ? order.shipping_rate_options : [])
       .map((r) => ({
@@ -851,17 +863,21 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
       console.log(`  [${idx + 1}] "${c.service_name}" carrier_id="${c.carrier_id}" courier_id="${c.courier_id}" product_id="${c.product_id}" ₹${c.total_charges}`);
     });
 
+    // Field values follow the captured Shiprath dashboard Create Shipment request (order 750252).
     const buildBookingPayload = (rate) => ({
-      // Carrier IDs — exactly as returned by the Rate API
+      // Carrier IDs — exactly as returned by the Rate API; an empty courier_id stays ""
       carrier_id: rate.carrier_id,
       courier_id: rate.courier_id ?? '',
       product_id: rate.product_id,
+      carrier_type: rate.carrier_type != null && rate.carrier_type !== '' ? Number(rate.carrier_type) : DEFAULT_CARRIER_TYPE,
+      service_name: rate.service_name,
+      ...(rate.service_provider ? { company_name: rate.service_provider } : {}),
 
-      // Parcel type and shipment type
+      // Parcel type and shipment type (dashboard: type = shipment_type = "Parcel")
       type: 'Parcel',
       parcel_type: 'Parcel',
       order_type: typeVal,
-      shipment_type: 'Forward',
+      shipment_type: 'Parcel',
 
       // Warehouse/Sender
       address_id: WAREHOUSE_ADDRESS_ID,
@@ -913,17 +929,22 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
       to_country_code: 'IN',
 
       // Package — same weight calculation and same box selection as the rate quote.
-      // weight unit: see toShiprathBookingWeight(); dimensions in cm.
+      // Weights in kg, dimensions in cm: length / width / height only (the dashboard sends no breadth).
       order_number: String(order.order_number || order.orderNumber || order.id).slice(0, 50),
       weight: toShiprathBookingWeight(calculatedWeightKg),
+      total_weight: toShiprathBookingWeight(calculatedWeightKg),
+      volumetric_weight: toShiprathBookingWeight(volumetricWeightKg),
       length: box.length,
-      breadth: box.width,
       width: box.width,
       height: box.height,
       mode: 'Domestic',
 
+      // Shipping charge — the dashboard sends rate_price (base rate, e.g. "33.00") and
+      // total_amount (the rate's total charge, e.g. 39.6). Order value goes in the fields below.
+      ...(rate.rate_price != null && rate.rate_price !== '' ? { rate_price: String(rate.rate_price) } : {}),
+      total_amount: rate.total_charges,
+
       // Financial (PREPAID ONLY)
-      total_amount: declaredValue,
       grand_total: declaredValue,
       order_amount: declaredValue,
       total: declaredValue,
@@ -987,6 +1008,19 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
 
       try {
         const bookingPayload = buildBookingPayload(candidateRate);
+        console.log([
+          '[SHIPRATH BOOK]',
+          `Order ID: ${order.order_number}`,
+          `Selected Service: ${courierLabel}`,
+          `Carrier ID: ${bookingPayload.carrier_id}`,
+          `Carrier Type: ${bookingPayload.carrier_type}`,
+          `Courier ID: "${bookingPayload.courier_id}"`,
+          `Weight: ${bookingPayload.weight} kg (total ${bookingPayload.total_weight}, volumetric ${bookingPayload.volumetric_weight})`,
+          `Length: ${bookingPayload.length}`,
+          `Width: ${bookingPayload.width}`,
+          `Height: ${bookingPayload.height}`,
+          `Payment Mode: ${bookingPayload.payment_mode}`,
+        ].join('\n  '));
         if (SHIPRATH_LOG_PAYLOAD) {
           // Credentials travel only in headers, never in the payload. Contact details are masked.
           console.log(`[SHIPRATH PAYLOAD] ${order.order_number} → POST /shipment/new_shipment_create`, JSON.stringify(sanitizeBookingPayload(bookingPayload)));
@@ -998,12 +1032,19 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
           resData = await postBooking('/shipment/create_shipment', bookingPayload);
         }
 
-        attempt.ok = Boolean(resData.status);
+        // Shiprath answers status: "unsuccess" (a truthy string), so truthiness alone is not success
+        attempt.ok = resData.status === true || /^(true|success|1)$/i.test(String(resData.status));
         attempt.message = resData.message || null;
         attempts.push(attempt);
-        console.log(`[SHIPRATH BOOK] ${order.order_number} → "${courierLabel}" status=${resData.status} message="${resData.message || ''}"`);
+        console.log([
+          '[SHIPRATH BOOK RESPONSE]',
+          `Order ID: ${order.order_number}`,
+          `Status: ${resData.status}`,
+          `Message: ${resData.message || ''}`,
+          `Shipment ID: ${resData.shipment_id || resData.data?.shipment_id || ''}`,
+        ].join('\n  '));
 
-        if (resData.status) {
+        if (attempt.ok) {
           bookData = resData;
           bookedRate = candidateRate;
           break; // Stop immediately on first successful booking — never create a second shipment
@@ -1011,6 +1052,12 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
 
         lastRawError = resData.message || 'Carrier booking error';
         courierFailuresLog.push(`${courierLabel}: ${lastRawError}`);
+
+        // Merchant's Shiprath wallet is short — every other courier would fail the same way
+        if (/wallet/i.test(lastRawError)) {
+          console.warn(`[SHIPRATH BOOK] ${order.order_number} → Shiprath wallet balance too low; fallback stopped. Recharge the Shiprath wallet, then use Retry Shipment.`);
+          break;
+        }
       } catch (cErr) {
         // Network error / timeout / unreadable response: Shiprath MAY have created the shipment.
         // Trying another courier now could create a duplicate, so stop and flag for manual check.

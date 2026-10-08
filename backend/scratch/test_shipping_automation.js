@@ -66,12 +66,13 @@ check('Unknown weight -> refuses with item name', unk && unk.includes('Bajra Mas
 check('Invalid quantity -> refuses', !!(await throwsMsg(() => calculatePackage([item(100, 0)]))));
 check('Huge weight -> refuses', !!(await throwsMsg(() => assertValidPackage({ totalWeightKg: 500, dimensions: getPackageDimensions(500) }))));
 check('NaN weight -> refuses', !!(await throwsMsg(() => assertValidPackage({ totalWeightKg: NaN, dimensions: getPackageDimensions(1) }))));
-check('Booking weight sent in kg by default', toShiprathBookingWeight(0.23) === 0.23);
+check('Booking weight always kg (0.2 never becomes 200)', toShiprathBookingWeight(0.2) === 0.2 && toShiprathBookingWeight(0.23) === 0.23);
 
 // -- E. Rates & booking (fake Shiprath) --
 const RATE_LIST = [
   { service_name: 'Delhivery 0.250 KG', carrier_id: '1345673056', courier_id: '1456787971', product_id: '1750322472274', total_charges: 40 },
-  { service_name: 'Amazon', carrier_id: '1733448522', courier_id: '', product_id: '1744974856252', total_charges: 33 },
+  // Amazon Surface row shaped after the captured dashboard request (order 750252)
+  { service_name: 'Amazon Surface', service_provider: 'Amazon', carrier_id: '1734348522', carrier_type: 1, courier_id: '', product_id: '1744974856252', rate_price: '33.00', total_charges: 39.6 },
   { service_name: 'Xpressbees billing', carrier_id: '1658300056', courier_id: '7167', product_id: '1746101030534', total_charges: 68 },
   { service_name: 'Broken (no product)', carrier_id: '999', courier_id: '1', product_id: '', total_charges: 10 },
 ];
@@ -95,17 +96,17 @@ stubFetch(() => ({ status: false }));
 const orderItems = [item(100, 1, 'Choco Ragi Brownie'), item(100, 1, 'Choco Ragi Cracker')];
 const quote = await fetchLiveShiprathRate({ pincode: '203205', items: orderItems });
 const rb = calls[0].body;
-check('Amazon (empty courier_id) valid & auto-selected Rs33', quote.selectedRate.courier_id === '' && quote.shippingCharge === 33 && rateInvalidReason(normalizeShiprathRate(RATE_LIST[1])) === null);
+check('Amazon (empty courier_id) valid & auto-selected Rs39.6', quote.selectedRate.courier_id === '' && quote.shippingCharge === 39.6&& rateInvalidReason(normalizeShiprathRate(RATE_LIST[1])) === null);
 check('Rate API got 0.2kg and the 20x10x5 box', rb.weight === 0.2 && rb.length === 20 && rb.width === 10 && rb.height === 5, JSON.stringify({ w: rb.weight, l: rb.length, wd: rb.width, h: rb.height }));
 
 const baseOrder = {
   order_number: 'MIL-TEST01', pincode: '203205', payment_method: 'razorpay',
   customer_name: 'Test Customer', customer_phone: '9999999999', customer_email: 't@example.com',
   shipping_address: 'Flat 1, Some Street, Aligarh, Uttar Pradesh, India',
-  grand_total: 233, subtotal: 200, delivery_fee: 33,
+  grand_total: 239.6, subtotal: 200, delivery_fee: 39.6,
   order_items: orderItems,
-  selected_carrier_id: '1733448522', selected_courier_id: '', selected_product_id: '1744974856252',
-  selected_service_name: 'Amazon', selected_delivery_fee: 33,
+  selected_carrier_id: '1734348522', selected_courier_id: '', selected_product_id: '1744974856252',
+  selected_service_name: 'Amazon Surface', selected_delivery_fee: 39.6,
   shipping_rate_options: quote.rateList.map(({ raw, ...r }) => r),
 };
 
@@ -114,15 +115,19 @@ stubFetch(() => ({ status: true, awb_number: 'AWB111', shipment_id: 'S1' }));
 let r = await bookShiprathShipment({ ...baseOrder });
 let sent = bookCalls()[0]?.body || {};
 check('Prepaid order booked with selected Amazon rate', r.success && r.awb === 'AWB111' && bookCalls().length === 1);
-check('courier_id "" and exact carrier/product IDs sent', sent.courier_id === '' && sent.carrier_id === '1733448522' && sent.product_id === '1744974856252');
+check('courier_id "" and exact carrier/product IDs sent', sent.courier_id === '' && sent.carrier_id === '1734348522' && sent.product_id === '1744974856252');
 check('Create Shipment weight 0.2 (real weight, not altered)', sent.weight === 0.2, `got ${sent.weight}`);
-check('Create Shipment box = quote box (20x10x5)', sent.length === 20 && sent.width === 10 && sent.breadth === 10 && sent.height === 5);
+check('Create Shipment box = quote box (20x10x5), no breadth field', sent.length === 20 && sent.width === 10 && sent.height === 5 && !('breadth' in sent));
+check('Dashboard match: carrier_type 1, type/shipment_type Parcel, Domestic', sent.carrier_type === 1 && sent.type === 'Parcel' && sent.shipment_type === 'Parcel' && sent.mode === 'Domestic');
+check('Dashboard match: total_weight 0.2, volumetric_weight 0.2', sent.total_weight === 0.2 && sent.volumetric_weight === 0.2, JSON.stringify({ t: sent.total_weight, v: sent.volumetric_weight }));
+check('Dashboard match: rate_price "33.00", total_amount 39.6', sent.rate_price === '33.00' && sent.total_amount === 39.6, JSON.stringify({ rp: sent.rate_price, ta: sent.total_amount }));
+check('Service and company name from the rate row', sent.service_name === 'Amazon Surface' && sent.company_name === 'Amazon', JSON.stringify({ s: sent.service_name, c: sent.company_name }));
 check('Prepaid, COD 0', sent.payment_mode === 'prepaid' && sent.cod_amount === 0);
 const masked = JSON.stringify(sanitizeBookingPayload(sent));
 check('Logged payload masks phone/email/street', !masked.includes('9999999999') && !masked.includes('t@example.com') && masked.includes('[street masked]'));
 
 calls.length = 0;
-stubFetch((b) => (b.carrier_id === '1733448522' ? { status: false, message: 'FL- TOTAL WEIGHT IS MAXIMUM THAN THE CARRIER WEIGHT LIMIT' } : { status: true, awb_number: 'AWB222' }));
+stubFetch((b) => (b.carrier_id === '1734348522' ?{ status: false, message: 'FL- TOTAL WEIGHT IS MAXIMUM THAN THE CARRIER WEIGHT LIMIT' } : { status: true, awb_number: 'AWB222' }));
 r = await bookShiprathShipment({ ...baseOrder });
 check('Amazon rejected -> fallback Delhivery Rs40 booked', r.success && r.fallbackUsed && r.carrier_id === '1345673056' && bookCalls().length === 2);
 
@@ -130,6 +135,12 @@ calls.length = 0;
 stubFetch((b) => ({ status: false, message: `rejected ${b.carrier_id}` }));
 r = await bookShiprathShipment({ ...baseOrder });
 check('All rejected -> error with exact Shiprath messages', !r.success && r.courierFailures.length === 3);
+
+calls.length = 0;
+stubFetch(() => ({ status: 'unsuccess', message: 'Insufficient Wallet Balance', shipment_id: '' }));
+r = await bookShiprathShipment({ ...baseOrder });
+check('status "unsuccess" is a failure, not a booking', !r.success && /Insufficient Wallet Balance/.test(r.error));
+check('Wallet error stops fallback after 1 call', bookCalls().length === 1, `calls=${bookCalls().length}`);
 
 calls.length = 0;
 r = await bookShiprathShipment({ ...baseOrder, awb_number: 'EXISTING' });
