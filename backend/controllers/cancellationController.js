@@ -184,11 +184,22 @@ export async function cancelShipmentForCancellation(cancellationId, actor = null
     return finish('failed', { shipment_cancel_error: 'Shiprath credentials are not configured on the server.' }, { awb });
   }
 
+  const shiprathReason = `Order cancelled by ${c.requested_by_role || 'customer'}: ${c.reason || 'Customer requested cancellation'}`.slice(0, 200);
+
   try {
     const res = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_cancel`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', secretkey: secretKey, customerid: customerId },
-      body: JSON.stringify({ awb_number: awb, awb, shipment_id: order.shipment_id || undefined }),
+      // Shiprath rejects a cancel without a reason (HTTP 400 "Fill Cancel Reason"). The exact field name
+      // isn't documented, so the customer's reason is sent under the common names.
+      body: JSON.stringify({
+        awb_number: awb,
+        awb,
+        shipment_id: order.shipment_id || undefined,
+        cancel_reason: shiprathReason,
+        reason: shiprathReason,
+        remark: shiprathReason,
+      }),
       signal: AbortSignal.timeout(20000),
     });
     const text = await res.text();
