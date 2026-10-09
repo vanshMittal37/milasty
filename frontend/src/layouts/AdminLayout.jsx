@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { 
   LayoutDashboard, Package, Tags, ShoppingCart, Users, Ticket, Star, 
-  LogOut, Menu, Bell, ChevronDown, Globe, KeyRound, UserCheck, X, Truck, MessageSquare, Clock, HelpCircle, Sparkles, Compass
+  LogOut, Menu, Bell, ChevronDown, Globe, KeyRound, UserCheck, X, Truck, MessageSquare, Clock, HelpCircle, Sparkles, Compass, ReceiptIndianRupee
 } from 'lucide-react';
+import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -17,6 +18,11 @@ export default function AdminLayout() {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dropdownRef = useRef(null);
+  const bellRef = useRef(null);
+  const [bellOpen, setBellOpen] = useState(false);
+  // Cancellations needing action (sidebar badge) + unseen new cancellations (bell)
+  const [cancelSummary, setCancelSummary] = useState({ actionableCount: 0, unseen: [] });
+  const seenCancelIds = useRef(null);
 
   // Close profile dropdown on click outside or Escape key
   useEffect(() => {
@@ -38,6 +44,37 @@ export default function AdminLayout() {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
+  }, []);
+
+  // Poll cancellation summary: refreshes every minute, on navigation, and when the refunds page changes something
+  useEffect(() => {
+    if (!isAuthenticated || !isAdmin) return undefined;
+    let alive = true;
+    const load = async () => {
+      try {
+        const res = await api.get('/admin/cancellations/summary');
+        if (!alive || !res.data?.success) return;
+        const unseen = res.data.unseen || [];
+        // Toast for cancellations that arrived since the last poll (not on first load)
+        if (seenCancelIds.current) {
+          unseen.filter((c) => !seenCancelIds.current.has(c.id)).forEach((c) => {
+            toast.warning(`New cancellation ${c.order_number}: ${c.refund_percentage}% refund ₹${Number(c.refund_amount).toFixed(2)} · shipment ${String(c.shipment_cancel_status).replace(/_/g, ' ')}`);
+          });
+        }
+        seenCancelIds.current = new Set(unseen.map((c) => c.id));
+        setCancelSummary({ actionableCount: res.data.actionableCount || 0, unseen });
+      } catch { /* migration not run yet or offline — keep the badge hidden */ }
+    };
+    load();
+    const timer = setInterval(load, 60000);
+    window.addEventListener('milasty:cancellations-changed', load);
+    return () => { alive = false; clearInterval(timer); window.removeEventListener('milasty:cancellations-changed', load); };
+  }, [isAuthenticated, isAdmin, location.pathname]);
+
+  useEffect(() => {
+    const close = (e) => { if (bellRef.current && !bellRef.current.contains(e.target)) setBellOpen(false); };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
   }, []);
 
   // Handle body class for background override
@@ -73,6 +110,7 @@ export default function AdminLayout() {
       title: 'Sales & Fulfillment',
       items: [
         { label: 'Orders Log', path: '/admin/orders', icon: ShoppingCart },
+        { label: 'Cancellations & Refunds', path: '/admin/cancellations', icon: ReceiptIndianRupee, badge: cancelSummary.actionableCount },
         { label: 'Coupons', path: '/admin/coupons', icon: Ticket },
         { label: 'Shipping & Logistics', path: '/admin/delivery-charges', icon: Truck },
       ]
@@ -107,6 +145,7 @@ export default function AdminLayout() {
     if (path.includes('/admin/prebookings')) return { title: 'Pre-Booking Products', breadcrumb: 'Catalog / Pre-Bookings' };
     if (path.includes('/admin/delivery-charges') || path.includes('/admin/delivery-areas') || path.includes('/admin/shipping')) return { title: 'Shipping & Logistics', breadcrumb: 'Fulfillment / Shipping & Logistics' };
     if (path.includes('/admin/orders')) return { title: 'Orders Log', breadcrumb: 'Sales / Orders Log' };
+    if (path.includes('/admin/cancellations')) return { title: 'Cancellations & Refunds', breadcrumb: 'Sales / Cancellations & Refunds' };
     if (path.includes('/admin/customers')) return { title: 'Customers', breadcrumb: 'Users / Customer List' };
     if (path.includes('/admin/inquiries')) return { title: 'Customer Inquiries', breadcrumb: 'Support / Customer Inquiries' };
     if (path.includes('/admin/coupons')) return { title: 'Coupons', breadcrumb: 'Promotions / Coupons' };
@@ -212,6 +251,14 @@ export default function AdminLayout() {
                     >
                       <Icon size={16} color={active ? '#FFFFFF' : '#5A2E16'} style={{ flexShrink: 0, opacity: active ? 1 : 0.75 }} />
                       <span>{item.label}</span>
+                      {item.badge > 0 && (
+                        <span
+                          aria-label={`${item.badge} need action`}
+                          style={{ marginLeft: 'auto', minWidth: '20px', height: '20px', padding: '0 6px', borderRadius: '999px', backgroundColor: active ? '#FFFFFF' : '#C62828', color: active ? '#C62828' : '#FFFFFF', fontSize: '0.68rem', fontWeight: '900', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}
+                        >
+                          {item.badge > 99 ? '99+' : item.badge}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}
@@ -425,9 +472,13 @@ export default function AdminLayout() {
               <span>View Store</span>
             </Link>
 
-            {/* Notification bell button */}
+            {/* Notification bell — new cancellation requests */}
+            <div style={{ position: 'relative' }} ref={bellRef}>
             <button
+              onClick={() => setBellOpen((v) => !v)}
+              aria-label={`Notifications${cancelSummary.unseen.length ? ` (${cancelSummary.unseen.length} new)` : ''}`}
               style={{
+                position: 'relative',
                 background: '#FFFFFF',
                 border: '1px solid #E7DED5',
                 color: '#5A2E16',
@@ -442,7 +493,36 @@ export default function AdminLayout() {
               title="Notifications"
             >
               <Bell size={16} />
+              {cancelSummary.unseen.length > 0 && (
+                <span style={{ position: 'absolute', top: '-4px', right: '-4px', minWidth: '17px', height: '17px', borderRadius: '999px', backgroundColor: '#C62828', color: '#FFF', fontSize: '0.6rem', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', boxSizing: 'border-box' }}>
+                  {cancelSummary.unseen.length > 9 ? '9+' : cancelSummary.unseen.length}
+                </span>
+              )}
             </button>
+            {bellOpen && (
+              <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, width: 'min(340px, calc(100vw - 2rem))', backgroundColor: '#FFFFFF', border: '1px solid #E7DED5', borderRadius: '16px', boxShadow: '0 12px 40px rgba(90, 46, 22, 0.15)', zIndex: 210, padding: '0.6rem' }}>
+                <div style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#665A52', padding: '0.3rem 0.4rem 0.5rem' }}>New cancellations</div>
+                {cancelSummary.unseen.length === 0 ? (
+                  <div style={{ fontSize: '0.8rem', color: '#665A52', padding: '0.4rem' }}>No new cancellation requests.</div>
+                ) : cancelSummary.unseen.map((c) => (
+                  <Link key={c.id} to="/admin/cancellations" onClick={() => setBellOpen(false)} style={{ display: 'block', padding: '0.55rem 0.5rem', borderRadius: '10px', textDecoration: 'none', color: '#21150F', fontSize: '0.78rem', borderBottom: '1px solid #F3ECE5' }}>
+                    <div style={{ fontWeight: '800' }}>{c.order_number} · {c.orders?.customer_name || 'Customer'}</div>
+                    <div style={{ color: '#665A52' }}>
+                      {new Date(c.requested_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })} · {c.refund_percentage}% · ₹{Number(c.refund_amount).toFixed(2)} · shipment {String(c.shipment_cancel_status).replace(/_/g, ' ')}
+                    </div>
+                  </Link>
+                ))}
+                {cancelSummary.unseen.length > 0 && (
+                  <button
+                    onClick={async () => { try { await api.post('/admin/cancellations/mark-seen', {}); } catch { /* ignore */ } window.dispatchEvent(new Event('milasty:cancellations-changed')); setBellOpen(false); }}
+                    style={{ width: '100%', marginTop: '0.4rem', padding: '0.45rem', border: 'none', background: '#F5EDE5', color: '#5A2E16', borderRadius: '10px', fontWeight: '700', fontSize: '0.76rem', cursor: 'pointer' }}
+                  >
+                    Mark all as seen
+                  </button>
+                )}
+              </div>
+            )}
+            </div>
             
             {/* Interactive Admin Profile Avatar & Dropdown */}
             <div style={{ position: 'relative' }} ref={dropdownRef}>

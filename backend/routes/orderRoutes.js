@@ -9,6 +9,7 @@ import {
   getAdminAnalytics,
 } from '../controllers/orderController.js';
 import { bookShipmentForOrder } from '../controllers/shipratController.js';
+import { getCancellationQuote } from '../controllers/cancellationController.js';
 import { protect, adminOnly, optionalProtect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -17,6 +18,7 @@ const router = express.Router();
 router.post('/', optionalProtect, createOrder);
 router.get('/my-orders', protect, getMyOrders);
 router.get('/detail/:identifier', protect, getOrderById);
+router.get('/:id/cancellation-quote', protect, getCancellationQuote);
 router.put('/:id/cancel', protect, cancelOrder);
 
 // Admin Protected Routes

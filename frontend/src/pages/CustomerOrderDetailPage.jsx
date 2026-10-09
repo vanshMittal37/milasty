@@ -255,6 +255,9 @@ export default function CustomerOrderDetailPage() {
   const [cancelReason, setCancelReason] = useState('');
   const [cancelLoading, setCancelLoading] = useState(false);
   const [cancelError, setCancelError] = useState('');
+  const [cancelOther, setCancelOther] = useState('');
+  const [cancelQuote, setCancelQuote] = useState(null);   // server-calculated eligibility + refund preview
+  const [cancelStep, setCancelStep] = useState('form');   // 'form' → 'confirm'
   const [copyToast, setCopyToast] = useState(false);
   const [shipTracking, setShipTracking] = useState(null);
   const [trackLoading, setTrackLoading] = useState(false);
@@ -270,6 +273,8 @@ export default function CustomerOrderDetailPage() {
       const res = await api.get(`/orders/detail/${id}`);
       const fetchedOrder = res.data;
       setOrder(fetchedOrder);
+      const st0 = String(fetchedOrder?.orderStatus || fetchedOrder?.status || '').toLowerCase();
+      if (st0 !== 'cancelled' && st0 !== 'delivered') fetchCancelQuote();
       // Auto-fetch tracking once a shipment exists (this also refreshes the shipment status server-side)
       const st = String(fetchedOrder?.orderStatus || fetchedOrder?.status || '').toLowerCase();
       if (fetchedOrder?.awb_number || fetchedOrder?.awb || ['shipped', 'out_for_delivery', 'out for delivery', 'delivered'].includes(st)) {
@@ -291,15 +296,41 @@ export default function CustomerOrderDetailPage() {
     }
   };
 
-  const handleCancelOrder = async (e) => {
+  // Eligibility and refund amount always come from the server (server clock, server prices)
+  const fetchCancelQuote = async () => {
+    try {
+      const res = await api.get(`/orders/${id}/cancellation-quote`);
+      setCancelQuote(res.data);
+      return res.data;
+    } catch {
+      setCancelQuote(null);
+      return null;
+    }
+  };
+
+  const finalCancelReason = cancelReason === 'Other' ? cancelOther.trim() : cancelReason;
+
+  const handleReviewCancellation = async (e) => {
     e.preventDefault();
+    setCancelError('');
+    if (finalCancelReason.length < 3) { setCancelError('Please tell us why you are cancelling.'); return; }
+    const fresh = await fetchCancelQuote(); // refresh — the refund tier depends on the exact time
+    if (fresh?.eligible) setCancelStep('confirm');
+    else setCancelError(fresh?.message || 'This order can no longer be cancelled.');
+  };
+
+  const handleCancelOrder = async () => {
+    if (cancelLoading) return; // guard against double clicks; the server is idempotent as well
     setCancelLoading(true);
     setCancelError('');
     try {
-      await api.put(`/orders/${id}/cancel`, { reason: cancelReason });
-      fetchOrderDetail();
+      await api.put(`/orders/${id}/cancel`, { reason: finalCancelReason });
+      setCancelStep('form');
+      await fetchOrderDetail();
     } catch (err) {
       setCancelError(err.response?.data?.message || 'Error cancelling order');
+      setCancelStep('form');
+      fetchCancelQuote();
     } finally { setCancelLoading(false); }
   };
 
@@ -352,9 +383,18 @@ export default function CustomerOrderDetailPage() {
   const isDelivered = normStatus.toLowerCase() === 'delivered';
   const isPaid = String(order.paymentStatus).toLowerCase() === 'paid';
 
-  const orderTime = order.createdAt ? new Date(order.createdAt).getTime() : Date.now();
-  const hoursPassed = (Date.now() - orderTime) / (1000 * 60 * 60);
-  const canCancel = !isCancelled && !isDelivered && hoursPassed <= 6;
+  const canCancel = !isCancelled && !isDelivered && Boolean(cancelQuote?.eligible);
+  const cancelWindowClosed = !isCancelled && !isDelivered && cancelQuote?.code === 'WINDOW_CLOSED';
+  const cancellation = order.cancellation || null;
+  const inr = (v) => `₹${Number(v || 0).toLocaleString('en-IN', { minimumFractionDigits: Number(v) % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
+  const REFUND_STATUS_TEXT = {
+    pending: 'Refund pending — it will be sent to your original payment method.',
+    processing: 'Refund in progress with our payment partner.',
+    successful: 'Refund completed.',
+    failed: 'There was a problem with your refund. Our team will contact you.',
+    needs_review: 'Your refund is being reviewed by our team.',
+    not_applicable: 'No payment was collected for this order, so no refund is needed.',
+  };
 
   const orderItems = order.order_items || order.items || [];
   const calculatedSubtotal = orderItems.reduce((s, i) => s + (Number(i.price || 0) * Number(i.quantity || 1)), 0);
@@ -567,9 +607,26 @@ export default function CustomerOrderDetailPage() {
               <XCircle size={20} color={T.danger} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
               <div>
                 <div style={{ fontSize: '0.92rem', fontWeight: '800', color: T.danger }}>Order Cancelled</div>
-                {order.cancelReason && (
+                {(cancellation?.reason || order.cancelReason) && (
                   <div style={{ fontSize: '0.82rem', color: T.danger, marginTop: '0.2rem', opacity: 0.85 }}>
-                    Reason: {order.cancelReason}
+                    Reason: {cancellation?.reason || order.cancelReason}
+                  </div>
+                )}
+                {cancellation && (
+                  <div style={{ marginTop: '0.75rem', fontSize: '0.84rem', color: T.textPrimary, lineHeight: '1.6' }}>
+                    {cancellation.refundStatus !== 'not_applicable' && (
+                      <div>
+                        Refund: <strong>{inr(cancellation.refundAmount)}</strong> ({cancellation.refundPercentage}% of {inr(cancellation.amountPaid)} paid)
+                        {cancellation.nonRefundable > 0 && <span style={{ color: T.textMuted }}> · {inr(cancellation.nonRefundable)} non-refundable</span>}
+                      </div>
+                    )}
+                    <div style={{ fontWeight: '700', marginTop: '0.2rem' }}>{REFUND_STATUS_TEXT[cancellation.refundStatus] || 'Refund status is being updated.'}</div>
+                    {cancellation.refundStatus === 'successful' && (
+                      <div style={{ color: T.textMuted, fontSize: '0.78rem' }}>
+                        {cancellation.refundProcessedAt && <>Processed {new Date(cancellation.refundProcessedAt).toLocaleString('en-IN')} · </>}
+                        Ref: {cancellation.refundReference}. Banks may take 5–7 working days to show it.
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -647,33 +704,104 @@ export default function CustomerOrderDetailPage() {
               </div>
             )}
 
-            {/* Cancel */}
+            {/* Cancel — eligibility, refund % and amount are calculated by the server */}
+            {cancelWindowClosed && (
+              <div style={{ ...cardStyle, padding: '1.25rem 1.5rem', fontSize: '0.84rem', color: T.textSecondary }}>
+                <strong style={{ color: T.textPrimary }}>Cancellation window closed.</strong> Orders can be cancelled within 5 hours of placing them. For help with this order, please contact MILASTY support.
+              </div>
+            )}
             {canCancel && (
               <div style={{ ...cardStyle, padding: '1.5rem', border: `1px solid ${T.dangerBorder}`, backgroundColor: 'rgba(254,236,236,0.4)' }}>
                 <h3 style={{ fontSize: '0.78rem', fontWeight: '900', color: T.danger, margin: '0 0 0.85rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  <AlertCircle size={14} /> Request Cancellation
+                  <AlertCircle size={14} /> Cancel Order
                 </h3>
-                <form onSubmit={handleCancelOrder} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                  <select
-                    value={cancelReason}
-                    onChange={(e) => setCancelReason(e.target.value)}
-                    required
-                    style={{ width: '100%', height: '44px', padding: '0 1rem', borderRadius: '10px', border: `1px solid rgba(231,222,213,0.8)`, fontSize: '0.88rem', color: T.textPrimary, backgroundColor: 'rgba(255,255,255,0.9)', outline: 'none', boxSizing: 'border-box' }}
-                  >
-                    <option value="">Select a reason...</option>
-                    {['Changed my mind', 'Ordered by mistake', 'Found a better price', 'Delivery time too long', 'Other'].map((r) => (
-                      <option key={r} value={r}>{r}</option>
-                    ))}
-                  </select>
-                  {cancelError && <p style={{ fontSize: '0.8rem', color: T.danger, margin: 0 }}>{cancelError}</p>}
-                  <button
-                    type="submit"
-                    disabled={cancelLoading || !cancelReason}
-                    style={{ padding: '0.65rem 1.5rem', backgroundColor: T.danger, color: '#FFFFFF', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', opacity: (cancelLoading || !cancelReason) ? 0.65 : 1, alignSelf: 'flex-end', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-                  >
-                    {cancelLoading ? <><RefreshCw size={14} /> Processing...</> : 'Cancel Order'}
-                  </button>
-                </form>
+
+                {/* Policy */}
+                <div style={{ fontSize: '0.8rem', color: T.textSecondary, lineHeight: '1.6', marginBottom: '0.85rem' }}>
+                  <div style={{ fontWeight: '800', color: T.textPrimary, marginBottom: '0.2rem' }}>Cancellation &amp; refund policy</div>
+                  <div>• Within 3 hours of ordering: 100% refund of the amount paid</div>
+                  <div>• After 3 hours, up to 5 hours: 50% refund of the amount paid</div>
+                  <div>• After 5 hours: cancellation is not available</div>
+                </div>
+
+                {/* What applies right now */}
+                <div style={{ padding: '0.75rem 0.9rem', borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.85)', border: `1px solid ${T.border}`, fontSize: '0.84rem', color: T.textPrimary, marginBottom: '0.85rem', lineHeight: '1.6' }}>
+                  {cancelQuote.prepaid ? (
+                    <>
+                      If you cancel now: <strong>{cancelQuote.refundPercentage}% refund = {inr(cancelQuote.refundAmount)}</strong> of {inr(cancelQuote.amountPaid)} paid.
+                      {cancelQuote.nonRefundable > 0 && <> {inr(cancelQuote.nonRefundable)} is non-refundable.</>}
+                    </>
+                  ) : (
+                    <>This is a Cash on Delivery order — nothing has been charged, so no refund is needed.</>
+                  )}
+                  {cancelQuote.currentTierEndsAt && cancelQuote.prepaid && (
+                    <div style={{ fontSize: '0.76rem', color: T.textMuted }}>
+                      This applies until {new Date(cancelQuote.currentTierEndsAt).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}. The final amount is confirmed when you cancel.
+                    </div>
+                  )}
+                  {cancelQuote.shipmentInTransit && (
+                    <div style={{ fontSize: '0.76rem', color: T.danger, marginTop: '0.2rem' }}>Your parcel is already with the courier; we will arrange its return.</div>
+                  )}
+                </div>
+
+                {cancelStep === 'form' ? (
+                  <form onSubmit={handleReviewCancellation} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                    <select
+                      value={cancelReason}
+                      onChange={(e) => setCancelReason(e.target.value)}
+                      required
+                      style={{ width: '100%', height: '44px', padding: '0 1rem', borderRadius: '10px', border: `1px solid rgba(231,222,213,0.8)`, fontSize: '0.88rem', color: T.textPrimary, backgroundColor: 'rgba(255,255,255,0.9)', outline: 'none', boxSizing: 'border-box' }}
+                    >
+                      <option value="">Select a reason...</option>
+                      {['Changed my mind', 'Ordered by mistake', 'Found a better price', 'Delivery time too long', 'Other'].map((r) => (
+                        <option key={r} value={r}>{r}</option>
+                      ))}
+                    </select>
+                    {cancelReason === 'Other' && (
+                      <textarea
+                        value={cancelOther}
+                        onChange={(e) => setCancelOther(e.target.value)}
+                        maxLength={500}
+                        rows={3}
+                        placeholder="Tell us why you are cancelling"
+                        style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '10px', border: `1px solid rgba(231,222,213,0.8)`, fontSize: '0.88rem', color: T.textPrimary, backgroundColor: 'rgba(255,255,255,0.9)', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical' }}
+                      />
+                    )}
+                    {cancelError && <p style={{ fontSize: '0.8rem', color: T.danger, margin: 0 }}>{cancelError}</p>}
+                    <button
+                      type="submit"
+                      disabled={!cancelReason || (cancelReason === 'Other' && cancelOther.trim().length < 3)}
+                      style={{ padding: '0.65rem 1.5rem', backgroundColor: T.danger, color: '#FFFFFF', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', opacity: !cancelReason ? 0.65 : 1, alignSelf: 'flex-end' }}
+                    >
+                      Continue
+                    </button>
+                  </form>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <p style={{ margin: 0, fontSize: '0.86rem', fontWeight: '700', color: T.textPrimary }}>
+                      Cancel this order{cancelQuote.prepaid ? ` and receive a ${inr(cancelQuote.refundAmount)} refund` : ''}? This cannot be undone.
+                    </p>
+                    {cancelError && <p style={{ fontSize: '0.8rem', color: T.danger, margin: 0 }}>{cancelError}</p>}
+                    <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => setCancelStep('form')}
+                        disabled={cancelLoading}
+                        style={{ padding: '0.65rem 1.25rem', backgroundColor: 'transparent', color: T.textPrimary, border: `1px solid ${T.border}`, borderRadius: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer' }}
+                      >
+                        Keep Order
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCancelOrder}
+                        disabled={cancelLoading}
+                        style={{ padding: '0.65rem 1.5rem', backgroundColor: T.danger, color: '#FFFFFF', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: cancelLoading ? 'wait' : 'pointer', opacity: cancelLoading ? 0.65 : 1, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                      >
+                        {cancelLoading ? <><RefreshCw size={14} /> Cancelling...</> : 'Yes, Cancel Order'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

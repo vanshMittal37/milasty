@@ -1,7 +1,8 @@
 import { supabase } from '../config/supabase.js';
 import { syncAuthUsersToProfiles } from './authController.js';
 import { getDeliveryChargeForPincode } from './paymentController.js';
-import { bookShiprathShipment, cancelOrderWithShipment, canAccessOrder, customerShipmentStatus } from './shipratController.js';
+import { bookShiprathShipment, canAccessOrder, customerShipmentStatus } from './shipratController.js';
+import { requestCancellation, getCustomerCancellation } from './cancellationController.js';
 
 // Status Canonical Mappings
 const CANONICAL_STATUS_MAP = {
@@ -693,7 +694,19 @@ export const getAllOrders = async (req, res) => {
       return true;
     });
 
-    const formatted = filteredOrders.map(formatOrderPayload);
+    // Attach cancellation / refund / shipment-cancel state (table may not exist before migration 19)
+    const { data: cancellations } = await supabase
+      .from('order_cancellations')
+      .select('id, order_id, refund_status, refund_percentage, refund_amount_paise, shipment_cancel_status, shipment_cancel_error')
+      .limit(5000);
+    const byOrder = new Map((cancellations || []).map((c) => [c.order_id, c]));
+
+    const formatted = filteredOrders.map((o) => {
+      const payload = formatOrderPayload(o);
+      const c = byOrder.get(o.id);
+      payload.cancellation = c ? { ...c, refund_amount: Number(c.refund_amount_paise) / 100 } : null;
+      return payload;
+    });
     res.json(formatted);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching all orders', error: error.message });
@@ -720,11 +733,15 @@ export const getOrderById = async (req, res) => {
     const { data: order, error } = await query.maybeSingle();
 
     // Only the order's owner (or an admin) may read it — order numbers are guessable
-    const respond = (o) => (req.user?.role === 'admin' ? formatOrderPayload(o) : formatCustomerOrderPayload(o));
+    const respond = async (o) => {
+      const payload = req.user?.role === 'admin' ? formatOrderPayload(o) : formatCustomerOrderPayload(o);
+      payload.cancellation = await getCustomerCancellation(o.id); // refund % / amount / status, if cancelled
+      return payload;
+    };
 
     if (!error && order) {
       if (!canAccessOrder(req.user, order)) return res.status(404).json({ message: 'Order details not found' });
-      return res.json(respond(order));
+      return res.json(await respond(order));
     }
 
     // Search fallback
@@ -732,7 +749,7 @@ export const getOrderById = async (req, res) => {
     if (allOrders && allOrders.length > 0) {
       const match = allOrders.find((o) => o.id === identifier || o.order_number === identifier || identifier.includes(o.order_number));
       if (match && canAccessOrder(req.user, match)) {
-        return res.json(respond(match));
+        return res.json(await respond(match));
       }
     }
 
@@ -747,7 +764,7 @@ export const getOrderById = async (req, res) => {
  * PUT /api/orders/:id/cancel
  * Enforces MILASTY cancellation rules (0-3h 100%, 3-6h 50%, >6h disabled) and triggers Shiprath cancel API.
  */
-export const cancelOrder = cancelOrderWithShipment;
+export const cancelOrder = requestCancellation;
 
 /**
  * ADMIN: UPDATE ORDER STATUS (FIXES HTTP 500 ROOT CAUSE COMPLETELY)

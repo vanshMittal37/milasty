@@ -23,6 +23,7 @@ import snackFinderRoutes from './routes/snackFinderRoutes.js';
 import ingredientRoutes from './routes/ingredientRoutes.js';
 import productDiscoveryRoutes from './routes/productDiscoveryRoutes.js';
 import shipratRoutes from './routes/shipratRoutes.js';
+import cancellationRoutes from './routes/cancellationRoutes.js';
 import { supabase } from './config/supabase.js';
 
 dotenv.config();
@@ -101,6 +102,7 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/admin/cancellations', cancellationRoutes); // before /api/admin so userRoutes can't shadow it
 app.use('/api/admin', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/delivery-charges', deliveryChargeRoutes);

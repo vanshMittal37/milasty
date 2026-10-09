@@ -6,10 +6,10 @@ import {
   bookShipmentForOrder,
   trackShipment,
   trackOrderShipment,
-  cancelOrderWithShipment,
   diagnoseCredentials,
 } from '../controllers/shipratController.js';
 import { protect, adminOnly, optionalProtect } from '../middleware/authMiddleware.js';
+import { requestCancellation } from '../controllers/cancellationController.js';
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ router.get('/track/:awb', protect, adminOnly, trackShipment);
 router.get('/order/:orderId/tracking', optionalProtect, trackOrderShipment);
 
 // Order cancellation with MILASTY business rules (0-3h 100%, 3-6h 50%, >6h disabled)
-router.post('/order/:id/cancel', protect, cancelOrderWithShipment);
+router.post('/order/:id/cancel', protect, requestCancellation);
 
 // ─── Admin Endpoints ─────────────────────────────────────────────────────────
 

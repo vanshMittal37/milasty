@@ -621,6 +621,18 @@ export default function AdminOrderList() {
                 </select>
               </div>
             </div>
+            {/* Cancellation / refund / shipment-cancel state (managed on the Cancellations & Refunds page) */}
+            {selectedOrder.cancellation && (
+              <div style={{ background: '#FFF6EE', border: '1px solid #F0C9A8', borderRadius: '12px', padding: '0.85rem 1rem', marginBottom: '1rem', fontSize: '0.8rem', color: '#7A3E12', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <div>
+                  <strong>Cancelled by customer.</strong> Refund {selectedOrder.cancellation.refund_percentage}% (₹{Number(selectedOrder.cancellation.refund_amount).toFixed(2)}) — {String(selectedOrder.cancellation.refund_status).replace(/_/g, ' ')}.
+                  {' '}Shipment cancellation: {String(selectedOrder.cancellation.shipment_cancel_status).replace(/_/g, ' ')}.
+                  {selectedOrder.cancellation.shipment_cancel_error && <div style={{ color: '#C62828', marginTop: '0.2rem' }}>{selectedOrder.cancellation.shipment_cancel_error}</div>}
+                </div>
+                <a href="/admin/cancellations" style={{ fontWeight: '800', color: '#5A2E16', whiteSpace: 'nowrap' }}>Open in Cancellations &amp; Refunds →</a>
+              </div>
+            )}
+
             {/* Shipment & AWB Details Banner */}
             <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1rem', marginBottom: '1.25rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
