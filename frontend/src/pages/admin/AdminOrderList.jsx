@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Search, Filter, RefreshCw, Eye, X, Package, CreditCard, MapPin, User, Mail, Phone, Sparkles, Printer, Zap, ExternalLink, Truck, CheckCircle2, AlertCircle } from 'lucide-react';
 import api from '../../api/axios';
 
@@ -28,6 +29,11 @@ const STATUS_DISPLAY_MAP = {
   'delivered': 'Delivered',
   'cancelled': 'Cancelled',
 };
+
+// Shipment cancelled with Shiprath (or resolved manually from Cancellations & Refunds)
+const isShipmentCancelled = (o) =>
+  String(o.shipment_status || '').toLowerCase() === 'cancelled' ||
+  ['cancelled', 'manually_resolved'].includes(o.cancellation?.shipment_cancel_status);
 
 export default function AdminOrderList() {
   const [orders, setOrders] = useState([]);
@@ -421,9 +427,15 @@ export default function AdminOrderList() {
                     <td>
                       {(o.awb_number || o.awb) ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', fontWeight: '800', color: '#2F7D32', background: 'rgba(34,197,94,0.1)', padding: '0.15rem 0.45rem', borderRadius: '4px' }}>
-                            <CheckCircle2 size={11} /> AWB Booked
-                          </span>
+                          {isShipmentCancelled(o) ? (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', fontWeight: '800', color: '#B91C1C', background: 'rgba(239,68,68,0.1)', padding: '0.15rem 0.45rem', borderRadius: '4px' }}>
+                              <X size={11} /> AWB Cancelled
+                            </span>
+                          ) : (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', fontWeight: '800', color: '#2F7D32', background: 'rgba(34,197,94,0.1)', padding: '0.15rem 0.45rem', borderRadius: '4px' }}>
+                              <CheckCircle2 size={11} /> AWB Booked
+                            </span>
+                          )}
                           <code style={{ fontSize: '0.72rem', color: '#381423', fontFamily: 'monospace', letterSpacing: '0.03em' }}>{o.awb_number || o.awb}</code>
                           {o.courier_name && <span style={{ fontSize: '0.68rem', color: '#665A52' }}>{o.courier_name}</span>}
                         </div>
@@ -441,6 +453,8 @@ export default function AdminOrderList() {
                         </span>
                         {(() => {
                           const shipSt = (o.shipment_status || '').toLowerCase();
+                          if (isShipmentCancelled(o)) return <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#B91C1C', background: 'rgba(239,68,68,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>🚫 Shipment Cancelled</span>;
+                          if (o.cancellation && ['pending', 'in_progress', 'failed', 'manual_required'].includes(o.cancellation.shipment_cancel_status)) return <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#B45309', background: 'rgba(234,179,8,0.12)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>⚠️ Cancel {o.cancellation.shipment_cancel_status === 'manual_required' ? 'needs RTO' : o.cancellation.shipment_cancel_status.replace(/_/g, ' ')}</span>;
                           if (shipSt === 'booked') return <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#22c55e', background: 'rgba(34,197,94,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>📦 Booked</span>;
                           if (['picked_up', 'in_transit', 'out_for_delivery', 'delivered'].includes(shipSt)) return <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#22c55e', background: 'rgba(34,197,94,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>🚚 {shipSt.replace(/_/g, ' ')}</span>;
                           if (shipSt === 'creating') return <span style={{ fontSize: '0.68rem', fontWeight: '700', color: '#3b82f6', background: 'rgba(59,130,246,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>⏳ Booking...</span>;
@@ -917,8 +931,8 @@ export default function AdminOrderList() {
       )}
 
       {/* PRINT / PREPARATION SLIP MODAL */}
-      {selectedOrder && showPrintView && (
-        <div style={{
+      {selectedOrder && showPrintView && createPortal(
+        <div className="print-slip-portal" style={{
           position: 'fixed',
           top: 0,
           left: 0,
@@ -932,7 +946,19 @@ export default function AdminOrderList() {
           justifyContent: 'center',
           padding: '1rem',
         }}>
-          <div style={{
+          {/* Print only the slip, on a single page (the admin page behind it is hidden when printing) */}
+          <style>{`
+            @media print {
+              @page { size: A4; margin: 10mm; }
+              body > *:not(.print-slip-portal) { display: none !important; }
+              html, body { height: auto !important; overflow: visible !important; background: #FFFFFF !important; }
+              .print-slip-portal { position: static !important; inset: auto !important; padding: 0 !important; background: none !important; backdrop-filter: none !important; display: block !important; }
+              .print-slip-sheet { max-width: none !important; max-height: none !important; overflow: visible !important; box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; }
+              .print-slip-sheet * { break-inside: avoid; }
+              .print-slip-actions { display: none !important; }
+            }
+          `}</style>
+          <div className="print-slip-sheet" style={{
             background: '#FFFFFF',
             color: '#3A1F14',
             width: '100%',
@@ -951,7 +977,7 @@ export default function AdminOrderList() {
                   {selectedOrder.orderNumber || selectedOrder.orderId || `MIL-${String(selectedOrder.id).slice(-6)}`}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div className="print-slip-actions" style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
                   onClick={() => window.print()}
                   style={{ background: '#2F7D32', color: '#FFF', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '6px', fontWeight: '700', cursor: 'pointer', fontSize: '0.8rem' }}
@@ -1010,7 +1036,8 @@ export default function AdminOrderList() {
               Please verify all special baking & packaging instructions before dispatch.
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>
