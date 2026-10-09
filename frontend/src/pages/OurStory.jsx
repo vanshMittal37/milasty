@@ -497,44 +497,20 @@ export default function OurStory() {
             }}
           >
             <img
-              src="/images/founder_image.jpeg"
-              alt="The founder of MILASTY"
+              src="/images/from_it_began.jpeg"
+              alt="MILASTY founder Anwesha standing beside her oven and a MILASTY gift box, where the brand began"
               style={{
                 width: '100%',
                 display: 'block',
                 transition: 'transform 0.6s ease',
                 objectFit: 'cover',
-                // Square portrait: keep the face (upper-middle of the photo) in frame at any width
-                objectPosition: 'center 22%',
+                // Tall portrait: anchor near the top so the face stays in frame at any width
+                objectPosition: 'center 18%',
                 height: 'clamp(340px, 42vw, 480px)'
               }}
               onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             />
-          </div>
-          <div 
-            style={{ 
-              position: 'absolute', 
-              bottom: '24px', 
-              right: '24px',
-              backgroundColor: '#F4EBDD',
-              padding: '0.6rem 1.2rem',
-              borderRadius: '999px',
-              border: '1px solid #DCC8AE',
-              fontSize: '0.78rem',
-              fontWeight: '850',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              color: '#32180D',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              pointerEvents: 'none',
-              boxShadow: '0 6px 16px rgba(75, 45, 25, 0.1)'
-            }}
-          >
-            <Sparkles size={14} color="#2F6B3A" />
-            <span>Handcrafted with intention</span>
           </div>
         </div>
       </section>
@@ -568,11 +544,11 @@ export default function OurStory() {
               }}
             >
               <img
-                src="/images/from_it_began.jpeg"
-                alt="MILASTY founder Anwesha standing beside her oven and a MILASTY gift box, where the brand began"
+                src="/images/founder_image.jpeg"
+                alt="Anwesha, founder of MILASTY"
                 loading="lazy"
                 decoding="async"
-                style={{ width: '100%', height: 'auto', aspectRatio: '4 / 5', maxHeight: '640px', objectFit: 'cover', objectPosition: 'center 20%', display: 'block', backgroundColor: '#F1E5D4' }}
+                style={{ width: '100%', height: 'auto', aspectRatio: '4 / 5', maxHeight: '640px', objectFit: 'cover', objectPosition: 'center 30%', display: 'block', backgroundColor: '#F1E5D4' }}
               />
             </div>
             {/* Overlay Quote label */}

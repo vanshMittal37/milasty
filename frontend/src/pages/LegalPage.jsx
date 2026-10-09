@@ -102,17 +102,17 @@ export default function LegalPage() {
             gap: '0.4rem',
             padding: '0.4rem 1rem',
             borderRadius: '999px',
-            backgroundColor: 'rgba(185, 205, 148, 0.15)',
-            border: '1px solid rgba(185, 205, 148, 0.35)',
+            backgroundColor: 'rgba(47, 107, 58, 0.10)',
+            border: '1px solid rgba(47, 107, 58, 0.28)',
             marginBottom: '1.25rem'
           }}>
-            <Truck size={14} color="#b9cd94" />
+            <Truck size={14} color="#2F6B3A" />
             <span style={{
               fontSize: '0.75rem',
               fontWeight: '800',
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: '#b9cd94'
+              color: '#2F6B3A'
             }}>
               POLICY • MILASTY
             </span>
@@ -122,7 +122,7 @@ export default function LegalPage() {
             className="font-serif"
             style={{ 
               fontSize: 'clamp(2.2rem, 5vw, 3.6rem)',
-              color: '#F5EBDD',
+              color: '#32180D',
               lineHeight: '1.15',
               marginBottom: '1rem',
               letterSpacing: '-0.01em'
@@ -133,7 +133,7 @@ export default function LegalPage() {
 
           <p style={{
             fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-            color: '#E8DCCB',
+            color: '#654B38',
             opacity: 0.9,
             maxWidth: '620px',
             margin: '0 auto 1.5rem',
@@ -147,13 +147,13 @@ export default function LegalPage() {
             alignItems: 'center',
             gap: '0.5rem',
             fontSize: '0.85rem',
-            color: 'rgba(232, 220, 203, 0.75)',
-            backgroundColor: 'rgba(50, 26, 18, 0.5)',
+            color: '#654B38',
+            backgroundColor: '#FFF9F0',
             padding: '0.35rem 0.9rem',
             borderRadius: '999px',
-            border: '1px solid rgba(245, 235, 221, 0.15)'
+            border: '1px solid #E4D1B7'
           }}>
-            <Clock size={14} color="#b9cd94" />
+            <Clock size={14} color="#2F6B3A" />
             <span>Last Updated: January 2026</span>
           </div>
         </section>
@@ -182,13 +182,13 @@ export default function LegalPage() {
               style={{
                 position: 'sticky',
                 top: '100px',
-                backgroundColor: 'rgba(35, 21, 13, 0.65)',
+                backgroundColor: '#FFF9F0',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
                 borderRadius: '20px',
-                border: '1px solid rgba(245, 220, 180, 0.22)',
+                border: '1px solid #E4D1B7',
                 padding: '1.25rem 1rem',
-                boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+                boxShadow: '0 12px 32px rgba(75, 45, 25, 0.08)',
                 display: 'none'
               }}
               className="tc-sticky-nav"
@@ -198,14 +198,14 @@ export default function LegalPage() {
                 fontWeight: '800',
                 textTransform: 'uppercase',
                 letterSpacing: '0.12em',
-                color: '#b9cd94',
+                color: '#2F6B3A',
                 marginBottom: '1rem',
                 paddingLeft: '0.75rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem'
               }}>
-                <Sparkles size={14} color="#b9cd94" />
+                <Sparkles size={14} color="#2F6B3A" />
                 <span>On This Page</span>
               </div>
               
@@ -225,8 +225,8 @@ export default function LegalPage() {
                         borderRadius: '10px',
                         fontSize: '0.85rem',
                         fontWeight: isActive ? '700' : '500',
-                        color: isActive ? '#FFFFFF' : 'rgba(232, 220, 203, 0.8)',
-                        backgroundColor: isActive ? '#244f21' : 'transparent',
+                        color: isActive ? '#2F6B3A' : '#654B38',
+                        backgroundColor: isActive ? 'rgba(47, 107, 58, 0.12)' : 'transparent',
                         textAlign: 'left',
                         width: '100%',
                         border: 'none',
@@ -234,7 +234,7 @@ export default function LegalPage() {
                         cursor: 'pointer'
                       }}
                     >
-                      <IconComp size={15} color={isActive ? '#b9cd94' : 'rgba(185, 205, 148, 0.7)'} />
+                      <IconComp size={15} color={isActive ? '#2F6B3A' : 'rgba(47, 107, 58, 0.75)'} />
                       <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {sec.label}
                       </span>
@@ -257,13 +257,13 @@ export default function LegalPage() {
                   fontWeight: '800',
                   textTransform: 'uppercase',
                   letterSpacing: '0.12em',
-                  color: '#b9cd94',
+                  color: '#2F6B3A',
                   marginBottom: '1rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem'
                 }}>
-                  <Truck size={14} color="#b9cd94" />
+                  <Truck size={14} color="#2F6B3A" />
                   <span>MILASTY Fresh Delivery Journey</span>
                 </div>
 
@@ -277,14 +277,14 @@ export default function LegalPage() {
                   ].map((st, i, arr) => (
                     <React.Fragment key={st.step}>
                       <div className="shipping-step-card">
-                        <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#b9cd94', backgroundColor: 'rgba(185,205,148,0.15)', padding: '0.15rem 0.5rem', borderRadius: '999px' }}>
+                        <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#2F6B3A', backgroundColor: 'rgba(47, 107, 58, 0.10)', padding: '0.15rem 0.5rem', borderRadius: '999px' }}>
                           STEP {st.step}
                         </span>
-                        <strong style={{ fontSize: '0.9rem', color: '#F5EBDD', lineHeight: '1.2' }}>{st.title}</strong>
-                        <span style={{ fontSize: '0.78rem', color: '#E8DCCB', opacity: 0.85 }}>{st.desc}</span>
+                        <strong style={{ fontSize: '0.9rem', color: '#32180D', lineHeight: '1.2' }}>{st.title}</strong>
+                        <span style={{ fontSize: '0.78rem', color: '#654B38', opacity: 0.85 }}>{st.desc}</span>
                       </div>
                       {i < arr.length - 1 && (
-                        <ArrowRight size={16} color="rgba(185, 205, 148, 0.6)" className="shipping-step-arrow" style={{ flexShrink: 0 }} />
+                        <ArrowRight size={16} color="rgba(47, 107, 58, 0.75)" className="shipping-step-arrow" style={{ flexShrink: 0 }} />
                       )}
                     </React.Fragment>
                   ))}
@@ -302,39 +302,39 @@ export default function LegalPage() {
                     width: '42px',
                     height: '42px',
                     borderRadius: '12px',
-                    backgroundColor: 'rgba(185, 205, 148, 0.15)',
-                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    backgroundColor: 'rgba(47, 107, 58, 0.10)',
+                    border: '1px solid rgba(47, 107, 58, 0.28)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <Package size={22} color="#b9cd94" />
+                    <Package size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 01</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 01</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>
                       Shipping Coverage
                     </h2>
                   </div>
                 </div>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
                   At MILASTY, we believe in serving you the freshest millet bakes. All products are baked in small, artisanal batches upon order confirmation and shipped through verified courier partners.
                 </p>
 
                 {/* Highlight Card */}
                 <div style={{
-                  backgroundColor: 'rgba(185, 205, 148, 0.12)',
-                  borderLeft: '4px solid #b9cd94',
+                  backgroundColor: 'rgba(47, 107, 58, 0.07)',
+                  borderLeft: '4px solid #2F6B3A',
                   borderRadius: '14px',
                   padding: '1.1rem 1.35rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.85rem'
                 }}>
-                  <CheckCircle2 size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                  <CheckCircle2 size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>
                     Pan-India delivery available (subject to courier serviceability).
                   </span>
                 </div>
@@ -351,28 +351,28 @@ export default function LegalPage() {
                     width: '42px',
                     height: '42px',
                     borderRadius: '12px',
-                    backgroundColor: 'rgba(185, 205, 148, 0.15)',
-                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    backgroundColor: 'rgba(47, 107, 58, 0.10)',
+                    border: '1px solid rgba(47, 107, 58, 0.28)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <Clock size={22} color="#b9cd94" />
+                    <Clock size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 02</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 02</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>
                       Dispatch Timeline
                     </h2>
                   </div>
                 </div>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
-                  Orders are freshly prepared and dispatched within <strong style={{ color: '#b9cd94', fontSize: '1.08rem', backgroundColor: 'rgba(185, 205, 148, 0.15)', padding: '0.1rem 0.5rem', borderRadius: '6px' }}>1–2 business days</strong> after successful payment confirmation over WhatsApp.
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
+                  Orders are freshly prepared and dispatched within <strong style={{ color: '#2F6B3A', fontSize: '1.08rem', backgroundColor: 'rgba(47, 107, 58, 0.10)', padding: '0.1rem 0.5rem', borderRadius: '6px' }}>1–2 business days</strong> after successful payment confirmation over WhatsApp.
                 </p>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>
                   High-demand festive periods, national holidays, or special batch baking runs may occasionally extend dispatch times slightly to ensure freshness standards.
                 </p>
               </div>
@@ -388,18 +388,18 @@ export default function LegalPage() {
                     width: '42px',
                     height: '42px',
                     borderRadius: '12px',
-                    backgroundColor: 'rgba(185, 205, 148, 0.15)',
-                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    backgroundColor: 'rgba(47, 107, 58, 0.10)',
+                    border: '1px solid rgba(47, 107, 58, 0.28)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <Truck size={22} color="#b9cd94" />
+                    <Truck size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 03</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 03</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>
                       Estimated Delivery Time
                     </h2>
                   </div>
@@ -412,44 +412,44 @@ export default function LegalPage() {
                   marginBottom: '1.25rem'
                 }}>
                   <div style={{
-                    backgroundColor: 'rgba(50, 26, 18, 0.5)',
-                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    backgroundColor: '#FFF9F0',
+                    border: '1px solid rgba(47, 107, 58, 0.28)',
                     borderRadius: '14px',
                     padding: '1.25rem'
                   }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Most Indian Cities</span>
-                    <h3 style={{ color: '#F5EBDD', fontSize: '1.5rem', margin: '0.35rem 0 0.2rem', fontWeight: '800' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Most Indian Cities</span>
+                    <h3 style={{ color: '#32180D', fontSize: '1.5rem', margin: '0.35rem 0 0.2rem', fontWeight: '800' }}>
                       3–7 business days
                     </h3>
-                    <p style={{ color: '#E8DCCB', fontSize: '0.88rem', margin: 0 }}>Standard pan-India courier delivery window</p>
+                    <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Standard pan-India courier delivery window</p>
                   </div>
 
                   <div style={{
-                    backgroundColor: 'rgba(50, 26, 18, 0.5)',
-                    border: '1px solid rgba(245, 235, 221, 0.15)',
+                    backgroundColor: '#FFF9F0',
+                    border: '1px solid #E4D1B7',
                     borderRadius: '14px',
                     padding: '1.25rem'
                   }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#E8DCCB', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Remote Locations</span>
-                    <h3 style={{ color: '#F5EBDD', fontSize: '1.25rem', margin: '0.35rem 0 0.2rem', fontWeight: '700' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#654B38', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Remote Locations</span>
+                    <h3 style={{ color: '#32180D', fontSize: '1.25rem', margin: '0.35rem 0 0.2rem', fontWeight: '700' }}>
                       May take slightly longer
                     </h3>
-                    <p style={{ color: '#E8DCCB', fontSize: '0.88rem', margin: 0 }}>Depending on regional courier access</p>
+                    <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Depending on regional courier access</p>
                   </div>
                 </div>
 
                 {/* Notice Box */}
                 <div style={{
-                  backgroundColor: 'rgba(50, 26, 18, 0.6)',
-                  border: '1px solid rgba(245, 235, 221, 0.18)',
+                  backgroundColor: '#FFF9F0',
+                  border: '1px solid #E4D1B7',
                   borderRadius: '14px',
                   padding: '1.1rem 1.35rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.85rem'
                 }}>
-                  <AlertCircle size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#E8DCCB', fontSize: '0.92rem', lineHeight: '1.5' }}>
+                  <AlertCircle size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#654B38', fontSize: '0.92rem', lineHeight: '1.5' }}>
                     Courier delays may occasionally happen due to operational, regional, or extreme weather reasons beyond our direct control.
                   </span>
                 </div>
@@ -466,28 +466,28 @@ export default function LegalPage() {
                     width: '42px',
                     height: '42px',
                     borderRadius: '12px',
-                    backgroundColor: 'rgba(185, 205, 148, 0.15)',
-                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    backgroundColor: 'rgba(47, 107, 58, 0.10)',
+                    border: '1px solid rgba(47, 107, 58, 0.28)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <MapPin size={22} color="#b9cd94" />
+                    <MapPin size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 04</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 04</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>
                       Address & Contact Details
                     </h2>
                   </div>
                 </div>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
                   Please ensure that your complete shipping address, 6-digit postal pincode, landmark, and reachable contact phone number are provided accurately during ordering.
                 </p>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>
                   Incorrect or incomplete delivery addresses leading to non-delivery, parcel returns (RTO), or re-routing will incur additional courier re-shipping fees.
                 </p>
               </div>
@@ -503,39 +503,39 @@ export default function LegalPage() {
                     width: '42px',
                     height: '42px',
                     borderRadius: '12px',
-                    backgroundColor: 'rgba(185, 205, 148, 0.15)',
-                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    backgroundColor: 'rgba(47, 107, 58, 0.10)',
+                    border: '1px solid rgba(47, 107, 58, 0.28)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <Smartphone size={22} color="#b9cd94" />
+                    <Smartphone size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 05</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 05</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>
                       Tracking Information
                     </h2>
                   </div>
                 </div>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
                   Once your shipment is dispatched, courier tracking details and waybill links will be shared directly with you over WhatsApp.
                 </p>
 
                 {/* Highlight Notice Card */}
                 <div style={{
-                  backgroundColor: 'rgba(185, 205, 148, 0.12)',
-                  borderLeft: '4px solid #b9cd94',
+                  backgroundColor: 'rgba(47, 107, 58, 0.07)',
+                  borderLeft: '4px solid #2F6B3A',
                   borderRadius: '14px',
                   padding: '1.1rem 1.35rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.85rem'
                 }}>
-                  <MessageSquare size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                  <MessageSquare size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>
                     "WhatsApp is our primary communication channel for shipping updates."
                   </span>
                 </div>
@@ -552,24 +552,24 @@ export default function LegalPage() {
                     width: '42px',
                     height: '42px',
                     borderRadius: '12px',
-                    backgroundColor: 'rgba(185, 205, 148, 0.15)',
-                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    backgroundColor: 'rgba(47, 107, 58, 0.10)',
+                    border: '1px solid rgba(47, 107, 58, 0.28)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <Shield size={22} color="#b9cd94" />
+                    <Shield size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 06</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 06</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>
                       Packaging & Safety
                     </h2>
                   </div>
                 </div>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>
                   Every MILASTY cookie pack is sealed in food-grade protective packaging and dispatched inside sturdy corrugated outer shipping boxes to cushion against transit vibration and prevent moisture entry.
                 </p>
               </div>
@@ -585,31 +585,31 @@ export default function LegalPage() {
                     width: '42px',
                     height: '42px',
                     borderRadius: '12px',
-                    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    backgroundColor: 'rgba(185, 28, 28, 0.08)',
+                    border: '1px solid rgba(185, 28, 28, 0.30)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <AlertTriangle size={22} color="#F87171" />
+                    <AlertTriangle size={22} color="#B91C1C" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#F87171', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 07</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 07</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>
                       Damaged Packages
                     </h2>
                   </div>
                 </div>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
-                  If your package arrives physically damaged, tampered with, or open, please notify us within <strong style={{ color: '#b9cd94', fontSize: '1.05rem' }}>24 hours</strong> of delivery along with clear photo or video proof.
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
+                  If your package arrives physically damaged, tampered with, or open, please notify us within <strong style={{ color: '#2F6B3A', fontSize: '1.05rem' }}>24 hours</strong> of delivery along with clear photo or video proof.
                 </p>
 
                 {/* Warm Unboxing Recommendation Notice Box */}
                 <div style={{
-                  backgroundColor: 'rgba(185, 205, 148, 0.12)',
-                  borderLeft: '4px solid #b9cd94',
+                  backgroundColor: 'rgba(47, 107, 58, 0.07)',
+                  borderLeft: '4px solid #2F6B3A',
                   borderRadius: '14px',
                   padding: '1.1rem 1.35rem',
                   display: 'flex',
@@ -617,12 +617,12 @@ export default function LegalPage() {
                   gap: '0.5rem'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Camera size={18} color="#b9cd94" />
-                    <span style={{ color: '#F5EBDD', fontWeight: '700', fontSize: '0.95rem' }}>
+                    <Camera size={18} color="#2F6B3A" />
+                    <span style={{ color: '#32180D', fontWeight: '700', fontSize: '0.95rem' }}>
                       🎥 Unboxing Video Recommendation
                     </span>
                   </div>
-                  <p style={{ color: '#E8DCCB', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>
+                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>
                     We highly recommend recording an unboxing video while opening the outer courier seal. Please note: without an unboxing video, verifying courier-related damage claims may not be possible.
                   </p>
                 </div>
@@ -639,24 +639,24 @@ export default function LegalPage() {
                     width: '42px',
                     height: '42px',
                     borderRadius: '12px',
-                    backgroundColor: 'rgba(185, 205, 148, 0.15)',
-                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    backgroundColor: 'rgba(47, 107, 58, 0.10)',
+                    border: '1px solid rgba(47, 107, 58, 0.28)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <Archive size={22} color="#b9cd94" />
+                    <Archive size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 08</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 08</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>
                       Storage Instructions
                     </h2>
                   </div>
                 </div>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>
                   To maintain original crunchiness and flavor after opening:
                 </p>
 
@@ -673,8 +673,8 @@ export default function LegalPage() {
                     "Keep the pack tightly sealed or transfer cookies into a clean airtight container",
                     "Consume within the freshness period specified on the package label"
                   ].map((tip, idx) => (
-                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', color: '#E8DCCB', fontSize: '0.95rem' }}>
-                      <CheckCircle2 size={16} color="#b9cd94" style={{ flexShrink: 0, marginTop: '3px' }} />
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', color: '#654B38', fontSize: '0.95rem' }}>
+                      <CheckCircle2 size={16} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '3px' }} />
                       <span>{tip}</span>
                     </li>
                   ))}
@@ -682,16 +682,16 @@ export default function LegalPage() {
 
                 {/* Highlight Box */}
                 <div style={{
-                  backgroundColor: 'rgba(185, 205, 148, 0.12)',
-                  borderLeft: '4px solid #b9cd94',
+                  backgroundColor: 'rgba(47, 107, 58, 0.07)',
+                  borderLeft: '4px solid #2F6B3A',
                   borderRadius: '14px',
                   padding: '1.1rem 1.35rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.85rem'
                 }}>
-                  <Cookie size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                  <Cookie size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>
                     "Proper storage keeps the cookies crunchy and fresh for longer."
                   </span>
                 </div>
@@ -708,28 +708,28 @@ export default function LegalPage() {
                     width: '42px',
                     height: '42px',
                     borderRadius: '12px',
-                    backgroundColor: 'rgba(185, 205, 148, 0.15)',
-                    border: '1px solid rgba(185, 205, 148, 0.3)',
+                    backgroundColor: 'rgba(47, 107, 58, 0.10)',
+                    border: '1px solid rgba(47, 107, 58, 0.28)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <PackageX size={22} color="#b9cd94" />
+                    <PackageX size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 09</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 09</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>
                       Delivery Attempts & Return to Origin (RTO)
                     </h2>
                   </div>
                 </div>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>
                   Courier partners make 2–3 delivery attempts before marking a shipment as RTO. Please ensure your phone is reachable and someone is available to receive the parcel.
                 </p>
 
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>
                   If a package returns due to customer unavailability, incorrect address, unreachable contact number, or refusal to accept delivery:
                 </p>
 
@@ -745,8 +745,8 @@ export default function LegalPage() {
                     "Re-shipping charges will apply for sending the parcel again",
                     "If a refund is requested, shipping costs will be deducted"
                   ].map((item, i) => (
-                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', color: '#E8DCCB', fontSize: '0.92rem' }}>
-                      <AlertCircle size={16} color="#b9cd94" style={{ flexShrink: 0, marginTop: '3px' }} />
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', color: '#654B38', fontSize: '0.92rem' }}>
+                      <AlertCircle size={16} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '3px' }} />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -754,16 +754,16 @@ export default function LegalPage() {
 
                 {/* Final Important Verification Notice */}
                 <div style={{
-                  backgroundColor: 'rgba(50, 26, 18, 0.6)',
-                  border: '1px solid rgba(185, 205, 148, 0.3)',
+                  backgroundColor: '#FFF9F0',
+                  border: '1px solid rgba(47, 107, 58, 0.28)',
                   borderRadius: '14px',
                   padding: '1.1rem 1.35rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.85rem'
                 }}>
-                  <MapPin size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.92rem', lineHeight: '1.5' }}>
+                  <MapPin size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.92rem', lineHeight: '1.5' }}>
                     "Please verify your address and contact details carefully at checkout to avoid RTO charges and delivery delays."
                   </span>
                 </div>
@@ -774,14 +774,14 @@ export default function LegalPage() {
                 id="shipping-support" 
                 className="reveal-fade-up"
                 style={{
-                  backgroundColor: 'rgba(36, 79, 33, 0.35)',
+                  backgroundColor: 'rgba(47, 107, 58, 0.08)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
-                  border: '1.5px solid rgba(185, 205, 148, 0.4)',
+                  border: '1.5px solid rgba(47, 107, 58, 0.35)',
                   borderRadius: '24px',
                   padding: 'clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem)',
                   textAlign: 'center',
-                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)'
+                  boxShadow: '0 16px 40px rgba(75, 45, 25, 0.10)'
                 }}
               >
                 <div style={{
@@ -789,21 +789,21 @@ export default function LegalPage() {
                   height: '56px',
                   borderRadius: '50%',
                   backgroundColor: '#244f21',
-                  border: '1.5px solid #b9cd94',
+                  border: '1.5px solid #2F6B3A',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 1.25rem',
-                  boxShadow: '0 8px 20px rgba(0,0,0,0.3)'
+                  boxShadow: '0 8px 20px rgba(47, 107, 58, 0.25)'
                 }}>
                   <MessageSquare size={26} color="#FFFFFF" />
                 </div>
 
-                <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#F5EBDD', marginBottom: '0.75rem' }}>
+                <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#32180D', marginBottom: '0.75rem' }}>
                   Questions about delivery?
                 </h3>
 
-                <p style={{ fontSize: '1.05rem', color: '#E8DCCB', marginBottom: '1.75rem' }}>
+                <p style={{ fontSize: '1.05rem', color: '#654B38', marginBottom: '1.75rem' }}>
                   Message us anytime ❤️
                 </p>
 
@@ -852,25 +852,25 @@ export default function LegalPage() {
     return (
       <div style={{ position: 'relative' }}>
         <section className="reveal-fade-up" style={{ padding: '4.5rem 1.25rem 3rem', textAlign: 'center', maxWidth: '850px', margin: '0 auto', position: 'relative' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 1rem', borderRadius: '999px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.35)', marginBottom: '1.25rem' }}>
-            <RotateCcw size={14} color="#b9cd94" />
-            <span style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#b9cd94' }}>POLICY • MILASTY</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 1rem', borderRadius: '999px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', marginBottom: '1.25rem' }}>
+            <RotateCcw size={14} color="#2F6B3A" />
+            <span style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#2F6B3A' }}>POLICY • MILASTY</span>
           </div>
-          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', color: '#F5EBDD', lineHeight: '1.15', marginBottom: '1rem', letterSpacing: '-0.01em' }}>Refund & Replacement Policy</h1>
-          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#E8DCCB', opacity: 0.9, maxWidth: '620px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
+          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', color: '#32180D', lineHeight: '1.15', marginBottom: '1rem', letterSpacing: '-0.01em' }}>Refund & Replacement Policy</h1>
+          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#654B38', opacity: 0.9, maxWidth: '620px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
             Simple, fair, and transparent — because MILASTY values trust 🍪
           </p>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'rgba(232, 220, 203, 0.75)', backgroundColor: 'rgba(50, 26, 18, 0.5)', padding: '0.35rem 0.9rem', borderRadius: '999px', border: '1px solid rgba(245, 235, 221, 0.15)' }}>
-            <Clock size={14} color="#b9cd94" />
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#654B38', backgroundColor: '#FFF9F0', padding: '0.35rem 0.9rem', borderRadius: '999px', border: '1px solid #E4D1B7' }}>
+            <Clock size={14} color="#2F6B3A" />
             <span>Last Updated: January 2026</span>
           </div>
         </section>
 
         <div className="container" style={{ maxWidth: '1180px', margin: '0 auto', padding: '0 1.25rem 6rem', position: 'relative' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '2.5rem', alignItems: 'start' }} className="tc-layout-grid">
-            <aside style={{ position: 'sticky', top: '100px', backgroundColor: 'rgba(35, 21, 13, 0.65)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius: '20px', border: '1px solid rgba(245, 220, 180, 0.22)', padding: '1.25rem 1rem', boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)', display: 'none' }} className="tc-sticky-nav">
-              <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', marginBottom: '1rem', paddingLeft: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Sparkles size={14} color="#b9cd94" />
+            <aside style={{ position: 'sticky', top: '100px', backgroundColor: '#FFF9F0', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius: '20px', border: '1px solid #E4D1B7', padding: '1.25rem 1rem', boxShadow: '0 12px 32px rgba(75, 45, 25, 0.08)', display: 'none' }} className="tc-sticky-nav">
+              <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#2F6B3A', marginBottom: '1rem', paddingLeft: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Sparkles size={14} color="#2F6B3A" />
                 <span>On This Page</span>
               </div>
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -878,8 +878,8 @@ export default function LegalPage() {
                   const IconComp = sec.icon;
                   const isActive = activeSection === sec.id;
                   return (
-                    <button key={sec.id} onClick={() => scrollToSection(sec.id)} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.6rem 0.75rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: isActive ? '700' : '500', color: isActive ? '#FFFFFF' : 'rgba(232, 220, 203, 0.8)', backgroundColor: isActive ? '#244f21' : 'transparent', textAlign: 'left', width: '100%', border: 'none', transition: 'all 0.2s ease', cursor: 'pointer' }}>
-                      <IconComp size={15} color={isActive ? '#b9cd94' : 'rgba(185, 205, 148, 0.7)'} />
+                    <button key={sec.id} onClick={() => scrollToSection(sec.id)} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.6rem 0.75rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: isActive ? '700' : '500', color: isActive ? '#2F6B3A' : '#654B38', backgroundColor: isActive ? 'rgba(47, 107, 58, 0.12)' : 'transparent', textAlign: 'left', width: '100%', border: 'none', transition: 'all 0.2s ease', cursor: 'pointer' }}>
+                      <IconComp size={15} color={isActive ? '#2F6B3A' : 'rgba(47, 107, 58, 0.75)'} />
                       <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sec.label}</span>
                     </button>
                   );
@@ -890,37 +890,37 @@ export default function LegalPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <div id="no-returns" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Cookie size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Cookie size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 01</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Food Products Cannot Be Returned</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 01</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Food Products Cannot Be Returned</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY sells handcrafted edible food products baked fresh in small batches without artificial preservatives. For strict hygiene and food safety reasons, we do not accept returns once an order has been delivered.</p>
-                <div style={{ backgroundColor: 'rgba(185, 205, 148, 0.12)', borderLeft: '4px solid #b9cd94', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <CheckCircle2 size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"No return policy helps ensure food safety for all customers."</span>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY sells handcrafted edible food products baked fresh in small batches without artificial preservatives. For strict hygiene and food safety reasons, we do not accept returns once an order has been delivered.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <CheckCircle2 size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"No return policy helps ensure food safety for all customers."</span>
                 </div>
               </div>
 
               <div id="eligible-cases" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Package size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Package size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 02</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>When Replacement or Refund is Possible</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 02</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>When Replacement or Refund is Possible</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We will happily provide an immediate replacement or full refund in genuine issue cases such as:</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We will happily provide an immediate replacement or full refund in genuine issue cases such as:</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {["Product received in physically damaged condition during transit", "Wrong product or item variant delivered", "Package arrived tampered with or outer seal opened prior to delivery"].map((text, i) => (
-                    <div key={i} style={{ backgroundColor: 'rgba(50, 26, 18, 0.5)', border: '1px solid rgba(245, 235, 221, 0.15)', borderRadius: '12px', padding: '0.9rem 1.1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <Sparkles size={18} color="#b9cd94" style={{ flexShrink: 0 }} />
-                      <span style={{ color: '#E8DCCB', fontSize: '0.95rem', fontWeight: '500' }}>{text}</span>
+                    <div key={i} style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '0.9rem 1.1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <Sparkles size={18} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                      <span style={{ color: '#654B38', fontSize: '0.95rem', fontWeight: '500' }}>{text}</span>
                     </div>
                   ))}
                 </div>
@@ -928,100 +928,100 @@ export default function LegalPage() {
 
               <div id="time-limit" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Clock size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Clock size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 03</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Reporting Time Limit</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 03</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Reporting Time Limit</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>If there is any issue with your delivered shipment, please inform our WhatsApp support team within <strong style={{ color: '#b9cd94', fontSize: '1.05rem' }}>24 hours of delivery</strong>.</p>
-                <div style={{ backgroundColor: 'rgba(185, 205, 148, 0.12)', borderLeft: '4px solid #b9cd94', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <Camera size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"Photo or video proof is required for faster resolution."</span>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>If there is any issue with your delivered shipment, please inform our WhatsApp support team within <strong style={{ color: '#2F6B3A', fontSize: '1.05rem' }}>24 hours of delivery</strong>.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <Camera size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"Photo or video proof is required for faster resolution."</span>
                 </div>
               </div>
 
               <div id="courier-issues" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Truck size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Truck size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 04</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Courier Damages & Delays</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 04</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Courier Damages & Delays</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>All MILASTY products are securely packed in protective corrugated boxes before dispatch. However, transit delays or severe package handling damage caused by third-party courier services may occasionally occur.</p>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>In case of transit damage, we coordinate directly with courier management to file claims and re-dispatch fresh bakery boxes to you at the earliest possible window.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>All MILASTY products are securely packed in protective corrugated boxes before dispatch. However, transit delays or severe package handling damage caused by third-party courier services may occasionally occur.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>In case of transit damage, we coordinate directly with courier management to file claims and re-dispatch fresh bakery boxes to you at the earliest possible window.</p>
               </div>
 
               <div id="unboxing-video" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Camera size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Camera size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 05</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Unboxing Video Requirement (Mandatory)</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 05</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Unboxing Video Requirement (Mandatory)</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>To claim a replacement for transit damage or missing items, an unedited 360° unboxing video recorded while opening the outer shipping seal is mandatory. Please WhatsApp the video to +91 89271 42056 within 24 hours of delivery.</p>
-                <div style={{ backgroundColor: 'rgba(185, 205, 148, 0.12)', borderLeft: '4px solid #b9cd94', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1rem' }}>
-                  <CheckCircle2 size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"An unboxing video helps us verify courier-related damage quickly and process replacements or refunds faster."</span>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>To claim a replacement for transit damage or missing items, an unedited 360° unboxing video recorded while opening the outer shipping seal is mandatory. Please WhatsApp the video to +91 89271 42056 within 24 hours of delivery.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1rem' }}>
+                  <CheckCircle2 size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"An unboxing video helps us verify courier-related damage quickly and process replacements or refunds faster."</span>
                 </div>
-                <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)', borderLeft: '4px solid #F87171', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <AlertCircle size={20} color="#F87171" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.92rem', lineHeight: '1.5' }}>Orders marked as “Delivered” by the courier partner will not be eligible for refund unless a valid damage claim with unboxing video proof is submitted within 24 hours.</span>
+                <div style={{ backgroundColor: 'rgba(185, 28, 28, 0.06)', borderLeft: '4px solid #B91C1C', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <AlertCircle size={20} color="#B91C1C" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.92rem', lineHeight: '1.5' }}>Orders marked as “Delivered” by the courier partner will not be eligible for refund unless a valid damage claim with unboxing video proof is submitted within 24 hours.</span>
                 </div>
               </div>
 
               <div id="refund-timeline" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <CreditCard size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <CreditCard size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 06</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Refund Timeline</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 06</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Refund Timeline</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>Once your refund claim is inspected and approved by our team, the amount will be processed within <strong style={{ color: '#b9cd94', fontSize: '1.1rem', backgroundColor: 'rgba(185, 205, 148, 0.15)', padding: '0.1rem 0.5rem', borderRadius: '6px' }}>5–7 business days</strong> back to your original payment method (UPI / Bank Transfer).</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>Once your refund claim is inspected and approved by our team, the amount will be processed within <strong style={{ color: '#2F6B3A', fontSize: '1.1rem', backgroundColor: 'rgba(47, 107, 58, 0.10)', padding: '0.1rem 0.5rem', borderRadius: '6px' }}>5–7 business days</strong> back to your original payment method (UPI / Bank Transfer).</p>
               </div>
 
               <div id="cancellation-policy" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <XCircle size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <XCircle size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 07</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Order Cancellation Policy</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 07</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Order Cancellation Policy</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '2rem' }}>Since our millet cookies are prepared and packed soon after payment confirmation, cancellations are accepted only within strict time windows:</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '2rem' }}>Since our millet cookies are prepared and packed soon after payment confirmation, cancellations are accepted only within strict time windows:</p>
                 <div className="tc-cancellation-timeline" style={{ marginBottom: '1.5rem' }}>
                   <div className="tc-timeline-item">
                     <div className="tc-timeline-badge"><span>0–3 HOURS</span></div>
                     <div className="tc-timeline-content">
-                      <h4 style={{ color: '#F5EBDD', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Full Refund (100%) ✓</h4>
-                      <p style={{ color: '#E8DCCB', fontSize: '0.88rem', margin: 0 }}>Cancellations requested within 3 hours of payment.</p>
+                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Full Refund (100%) ✓</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellations requested within 3 hours of payment.</p>
                     </div>
                   </div>
                   <div className="tc-timeline-item">
-                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(185, 205, 148, 0.2)', borderColor: 'rgba(185, 205, 148, 0.4)' }}><span>3–6 HOURS</span></div>
+                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(47, 107, 58, 0.15)', borderColor: 'rgba(47, 107, 58, 0.35)' }}><span>3–6 HOURS</span></div>
                     <div className="tc-timeline-content">
-                      <h4 style={{ color: '#F5EBDD', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>50% Refund ✓</h4>
-                      <p style={{ color: '#E8DCCB', fontSize: '0.88rem', margin: 0 }}>Cancellations requested between 3 to 6 hours after payment.</p>
+                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>50% Refund ✓</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellations requested between 3 to 6 hours after payment.</p>
                     </div>
                   </div>
                   <div className="tc-timeline-item">
-                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', borderColor: 'rgba(239, 68, 68, 0.35)', color: '#F87171' }}><span>AFTER 6 HOURS</span></div>
+                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(185, 28, 28, 0.08)', borderColor: 'rgba(185, 28, 28, 0.30)', color: '#B91C1C' }}><span>AFTER 6 HOURS</span></div>
                     <div className="tc-timeline-content">
-                      <h4 style={{ color: '#F87171', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Cancellation Not Possible ✕</h4>
-                      <p style={{ color: '#E8DCCB', fontSize: '0.88rem', margin: 0 }}>Small-batch baking and dispatch preparation has commenced.</p>
+                      <h4 style={{ color: '#B91C1C', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Cancellation Not Possible ✕</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Small-batch baking and dispatch preparation has commenced.</p>
                     </div>
                   </div>
                 </div>
@@ -1029,36 +1029,36 @@ export default function LegalPage() {
 
               <div id="rto-refusal" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <PackageX size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <PackageX size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 08</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Return to Origin (RTO) & Delivery Refusal</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 08</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Return to Origin (RTO) & Delivery Refusal</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>If a package is returned to our bakery facility due to:</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>If a package is returned to our bakery facility due to:</p>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                   {["Customer being unavailable at the specified address after multiple attempts", "Incorrect or incomplete shipping address provided during ordering", "Unreachable contact phone number provided", "Refusal to accept the delivery parcel upon courier arrival"].map((bullet, idx) => (
-                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', fontSize: '0.92rem', color: '#E8DCCB' }}>
-                      <CheckCircle2 size={16} color="#b9cd94" style={{ flexShrink: 0, marginTop: '3px' }} />
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', fontSize: '0.92rem', color: '#654B38' }}>
+                      <CheckCircle2 size={16} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '3px' }} />
                       <span>{bullet}</span>
                     </li>
                   ))}
                 </ul>
-                <div style={{ backgroundColor: 'rgba(50, 26, 18, 0.6)', border: '1px solid rgba(245, 235, 221, 0.2)', borderRadius: '14px', padding: '1.1rem 1.35rem' }}>
-                  <p style={{ color: '#E8DCCB', fontSize: '0.9rem', lineHeight: '1.6', margin: '0 0 0.5rem' }}>• Deductions will be made for two-way courier shipping costs incurred during RTO shipments.</p>
-                  <p style={{ color: '#E8DCCB', fontSize: '0.9rem', lineHeight: '1.6', margin: '0 0 0.5rem' }}>• Returned edible parcels undergo mandatory quality inspection before any partial refund or re-dispatch is considered.</p>
-                  <p style={{ color: '#E8DCCB', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>• Additional shipping charges will apply for re-dispatching RTO parcels to corrected addresses.</p>
+                <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '14px', padding: '1.1rem 1.35rem' }}>
+                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: '0 0 0.5rem' }}>• Deductions will be made for two-way courier shipping costs incurred during RTO shipments.</p>
+                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: '0 0 0.5rem' }}>• Returned edible parcels undergo mandatory quality inspection before any partial refund or re-dispatch is considered.</p>
+                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>• Additional shipping charges will apply for re-dispatching RTO parcels to corrected addresses.</p>
                 </div>
               </div>
 
-              <div id="refund-support" className="reveal-fade-up" style={{ backgroundColor: 'rgba(36, 79, 33, 0.35)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1.5px solid rgba(185, 205, 148, 0.4)', borderRadius: '24px', padding: 'clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem)', textAlign: 'center', boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#244f21', border: '1.5px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', boxShadow: '0 8px 20px rgba(0,0,0,0.3)' }}>
+              <div id="refund-support" className="reveal-fade-up" style={{ backgroundColor: 'rgba(47, 107, 58, 0.08)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1.5px solid rgba(47, 107, 58, 0.35)', borderRadius: '24px', padding: 'clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem)', textAlign: 'center', boxShadow: '0 16px 40px rgba(75, 45, 25, 0.10)' }}>
+                <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#244f21', border: '1.5px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', boxShadow: '0 8px 20px rgba(47, 107, 58, 0.25)' }}>
                   <MessageSquare size={26} color="#FFFFFF" />
                 </div>
-                <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#F5EBDD', marginBottom: '0.75rem' }}>Facing an issue with your order?</h3>
-                <p style={{ fontSize: '1.05rem', color: '#E8DCCB', marginBottom: '1.75rem' }}>We'll make it right ❤️</p>
+                <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#32180D', marginBottom: '0.75rem' }}>Facing an issue with your order?</h3>
+                <p style={{ fontSize: '1.05rem', color: '#654B38', marginBottom: '1.75rem' }}>We'll make it right ❤️</p>
                 <a href={getWhatsappUrl("Refund & Replacement Claim")} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: '0.9rem 2.25rem', fontSize: '1rem', fontWeight: '750', display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
                   <MessageSquare size={18} />
                   <span>Contact MILASTY Support</span>
@@ -1091,25 +1091,25 @@ export default function LegalPage() {
     return (
       <div style={{ position: 'relative' }}>
         <section className="reveal-fade-up" style={{ padding: '4.5rem 1.25rem 3rem', textAlign: 'center', maxWidth: '850px', margin: '0 auto', position: 'relative' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 1rem', borderRadius: '999px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.35)', marginBottom: '1.25rem' }}>
-            <ShieldCheck size={14} color="#b9cd94" />
-            <span style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#b9cd94' }}>LEGAL • MILASTY</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 1rem', borderRadius: '999px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', marginBottom: '1.25rem' }}>
+            <ShieldCheck size={14} color="#2F6B3A" />
+            <span style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#2F6B3A' }}>LEGAL • MILASTY</span>
           </div>
-          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', color: '#F5EBDD', lineHeight: '1.15', marginBottom: '1rem', letterSpacing: '-0.01em' }}>Privacy Policy</h1>
-          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#E8DCCB', opacity: 0.9, maxWidth: '620px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
+          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', color: '#32180D', lineHeight: '1.15', marginBottom: '1rem', letterSpacing: '-0.01em' }}>Privacy Policy</h1>
+          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#654B38', opacity: 0.9, maxWidth: '620px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
             Your trust matters. Here's exactly how MILASTY handles your data.
           </p>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'rgba(232, 220, 203, 0.75)', backgroundColor: 'rgba(50, 26, 18, 0.5)', padding: '0.35rem 0.9rem', borderRadius: '999px', border: '1px solid rgba(245, 235, 221, 0.15)' }}>
-            <Clock size={14} color="#b9cd94" />
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#654B38', backgroundColor: '#FFF9F0', padding: '0.35rem 0.9rem', borderRadius: '999px', border: '1px solid #E4D1B7' }}>
+            <Clock size={14} color="#2F6B3A" />
             <span>Last Updated: January 2026</span>
           </div>
         </section>
 
         <div className="container" style={{ maxWidth: '1180px', margin: '0 auto', padding: '0 1.25rem 6rem', position: 'relative' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '2.5rem', alignItems: 'start' }} className="tc-layout-grid">
-            <aside style={{ position: 'sticky', top: '100px', backgroundColor: 'rgba(35, 21, 13, 0.65)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius: '20px', border: '1px solid rgba(245, 220, 180, 0.22)', padding: '1.25rem 1rem', boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)', display: 'none' }} className="tc-sticky-nav">
-              <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', marginBottom: '1rem', paddingLeft: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Sparkles size={14} color="#b9cd94" />
+            <aside style={{ position: 'sticky', top: '100px', backgroundColor: '#FFF9F0', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius: '20px', border: '1px solid #E4D1B7', padding: '1.25rem 1rem', boxShadow: '0 12px 32px rgba(75, 45, 25, 0.08)', display: 'none' }} className="tc-sticky-nav">
+              <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#2F6B3A', marginBottom: '1rem', paddingLeft: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Sparkles size={14} color="#2F6B3A" />
                 <span>On This Page</span>
               </div>
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -1117,8 +1117,8 @@ export default function LegalPage() {
                   const IconComp = sec.icon;
                   const isActive = activeSection === sec.id;
                   return (
-                    <button key={sec.id} onClick={() => scrollToSection(sec.id)} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.6rem 0.75rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: isActive ? '700' : '500', color: isActive ? '#FFFFFF' : 'rgba(232, 220, 203, 0.8)', backgroundColor: isActive ? '#244f21' : 'transparent', textAlign: 'left', width: '100%', border: 'none', transition: 'all 0.2s ease', cursor: 'pointer' }}>
-                      <IconComp size={15} color={isActive ? '#b9cd94' : 'rgba(185, 205, 148, 0.7)'} />
+                    <button key={sec.id} onClick={() => scrollToSection(sec.id)} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.6rem 0.75rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: isActive ? '700' : '500', color: isActive ? '#2F6B3A' : '#654B38', backgroundColor: isActive ? 'rgba(47, 107, 58, 0.12)' : 'transparent', textAlign: 'left', width: '100%', border: 'none', transition: 'all 0.2s ease', cursor: 'pointer' }}>
+                      <IconComp size={15} color={isActive ? '#2F6B3A' : 'rgba(47, 107, 58, 0.75)'} />
                       <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sec.label}</span>
                     </button>
                   );
@@ -1129,37 +1129,37 @@ export default function LegalPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <div id="promise" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Leaf size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Leaf size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 01</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Our Promise</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 01</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Our Promise</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY deeply respects your privacy. We collect only the minimum personal information required to deliver your fresh artisan cookies safely to your doorstep and provide you with seamless customer support.</p>
-                <div style={{ backgroundColor: 'rgba(185, 205, 148, 0.12)', borderLeft: '4px solid #b9cd94', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <CheckCircle2 size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"We do not sell or misuse your personal data — ever."</span>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY deeply respects your privacy. We collect only the minimum personal information required to deliver your fresh artisan cookies safely to your doorstep and provide you with seamless customer support.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <CheckCircle2 size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"We do not sell or misuse your personal data — ever."</span>
                 </div>
               </div>
 
               <div id="data-collected" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <FileSpreadsheet size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <FileSpreadsheet size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 02</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>What Information We Collect</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 02</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>What Information We Collect</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>When you place an order through WhatsApp or reach out to our team for inquiries, we may collect:</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>When you place an order through WhatsApp or reach out to our team for inquiries, we may collect:</p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem' }}>
                   {["Your name", "Your phone number", "Your delivery address & pincode", "Order details (products & quantity)", "Payment confirmation (transaction reference only)"].map((item, idx) => (
-                    <div key={idx} style={{ backgroundColor: 'rgba(50, 26, 18, 0.5)', border: '1px solid rgba(245, 235, 221, 0.15)', borderRadius: '12px', padding: '0.85rem 1rem', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <Sparkles size={16} color="#b9cd94" style={{ flexShrink: 0 }} />
-                      <span style={{ fontSize: '0.9rem', color: '#E8DCCB', fontWeight: '500' }}>{item}</span>
+                    <div key={idx} style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '0.85rem 1rem', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                      <Sparkles size={16} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                      <span style={{ fontSize: '0.9rem', color: '#654B38', fontWeight: '500' }}>{item}</span>
                     </div>
                   ))}
                 </div>
@@ -1167,19 +1167,19 @@ export default function LegalPage() {
 
               <div id="purpose" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Cookie size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Cookie size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 03</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Why We Collect This Data</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 03</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Why We Collect This Data</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We collect this information strictly for genuine business purposes such as:</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We collect this information strictly for genuine business purposes such as:</p>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {["Confirming your small-batch bakery order", "Shipping cookies to your exact delivery address", "Providing real-time order updates via WhatsApp", "Assisting with customer support and resolving delivery queries"].map((text, i) => (
-                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', fontSize: '0.95rem', color: '#E8DCCB' }}>
-                      <CheckCircle2 size={18} color="#b9cd94" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', fontSize: '0.95rem', color: '#654B38' }}>
+                      <CheckCircle2 size={18} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '2px' }} />
                       <span>{text}</span>
                     </li>
                   ))}
@@ -1188,37 +1188,37 @@ export default function LegalPage() {
 
               <div id="courier-sharing" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Truck size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Truck size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 04</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Sharing Information With Courier Partners</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 04</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Sharing Information With Courier Partners</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>To deliver your fresh bakery order safely across India, we share limited necessary information — such as your recipient name, phone number, and delivery shipping address — with our trusted courier logistics partners.</p>
-                <div style={{ backgroundColor: 'rgba(185, 205, 148, 0.12)', borderLeft: '4px solid #b9cd94', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <PackageCheck size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"Courier partners receive only what is necessary for delivery."</span>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>To deliver your fresh bakery order safely across India, we share limited necessary information — such as your recipient name, phone number, and delivery shipping address — with our trusted courier logistics partners.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <PackageCheck size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"Courier partners receive only what is necessary for delivery."</span>
                 </div>
               </div>
 
               <div id="data-protection" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Lock size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Lock size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 05</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>How We Protect Your Information</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 05</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>How We Protect Your Information</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY takes customer privacy and data security seriously. We strictly enforce that:</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY takes customer privacy and data security seriously. We strictly enforce that:</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {["Your information is accessed only by authorized MILASTY operations personnel", "Order details are used solely for fulfilling your shipment and providing customer care", "We NEVER record, store, or handle sensitive card details, CVVs, or banking credentials"].map((rule, idx) => (
-                    <div key={idx} style={{ backgroundColor: 'rgba(50, 26, 18, 0.5)', border: '1px solid rgba(245, 235, 221, 0.15)', borderRadius: '12px', padding: '1rem 1.15rem', display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-                      <Lock size={18} color="#b9cd94" style={{ flexShrink: 0, marginTop: '2px' }} />
-                      <span style={{ color: '#E8DCCB', fontSize: '0.92rem', lineHeight: '1.5' }}>{rule}</span>
+                    <div key={idx} style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '1rem 1.15rem', display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                      <Lock size={18} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '2px' }} />
+                      <span style={{ color: '#654B38', fontSize: '0.92rem', lineHeight: '1.5' }}>{rule}</span>
                     </div>
                   ))}
                 </div>
@@ -1226,37 +1226,37 @@ export default function LegalPage() {
 
               <div id="marketing" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Megaphone size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Megaphone size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 06</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Marketing Communication</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 06</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Marketing Communication</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We may occasionally send updates regarding new seasonal MILASTY bakes, special artisan offers, or health tips. You can opt out at any time by simply messaging us "STOP" on WhatsApp.</p>
-                <div style={{ backgroundColor: 'rgba(185, 205, 148, 0.12)', borderLeft: '4px solid #b9cd94', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <Megaphone size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"No spam. Only meaningful updates, and only if you're comfortable."</span>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We may occasionally send updates regarding new seasonal MILASTY bakes, special artisan offers, or health tips. You can opt out at any time by simply messaging us "STOP" on WhatsApp.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <Megaphone size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"No spam. Only meaningful updates, and only if you're comfortable."</span>
                 </div>
               </div>
 
               <div id="your-rights" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <UserCheck size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <UserCheck size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 07</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Your Rights</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 07</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Your Rights</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>You retain full control over your personal data at all times. You have the right to request:</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>You retain full control over your personal data at all times. You have the right to request:</p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
                   {[{ title: "Right to Inspect", desc: "To see what contact and order data we hold about you" }, { title: "Right to Correct", desc: "Correction of any incomplete or inaccurate delivery details" }, { title: "Right to Deletion", desc: "Deletion of your personal details after your order fulfillment" }].map((right, index) => (
-                    <div key={index} style={{ backgroundColor: 'rgba(50, 26, 18, 0.5)', border: '1px solid rgba(245, 235, 221, 0.15)', borderRadius: '14px', padding: '1.15rem' }}>
-                      <h4 style={{ color: '#b9cd94', fontSize: '1rem', marginBottom: '0.35rem', fontWeight: '700' }}>{right.title}</h4>
-                      <p style={{ color: '#E8DCCB', fontSize: '0.88rem', margin: 0, lineHeight: '1.5' }}>{right.desc}</p>
+                    <div key={index} style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '14px', padding: '1.15rem' }}>
+                      <h4 style={{ color: '#2F6B3A', fontSize: '1rem', marginBottom: '0.35rem', fontWeight: '700' }}>{right.title}</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0, lineHeight: '1.5' }}>{right.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -1264,36 +1264,36 @@ export default function LegalPage() {
 
               <div id="cookies-tracking" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Globe2 size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Globe2 size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 08</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Website Cookies & Tracking</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 08</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Website Cookies & Tracking</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>The MILASTY website is designed as an informational brand platform and does not use invasive third-party tracking cookies or collect unnecessary browser history data.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>The MILASTY website is designed as an informational brand platform and does not use invasive third-party tracking cookies or collect unnecessary browser history data.</p>
               </div>
 
               <div id="policy-updates" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Scale size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Scale size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 09</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Policy Updates</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 09</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Policy Updates</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>This Privacy Policy may be updated occasionally to reflect operational or regulatory improvements. Any revisions will be posted directly on this page with an updated effective date.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>This Privacy Policy may be updated occasionally to reflect operational or regulatory improvements. Any revisions will be posted directly on this page with an updated effective date.</p>
               </div>
 
-              <div id="privacy-support" className="reveal-fade-up" style={{ backgroundColor: 'rgba(36, 79, 33, 0.35)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1.5px solid rgba(185, 205, 148, 0.4)', borderRadius: '24px', padding: 'clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem)', textAlign: 'center', boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#244f21', border: '1.5px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', boxShadow: '0 8px 20px rgba(0,0,0,0.3)' }}>
+              <div id="privacy-support" className="reveal-fade-up" style={{ backgroundColor: 'rgba(47, 107, 58, 0.08)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1.5px solid rgba(47, 107, 58, 0.35)', borderRadius: '24px', padding: 'clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem)', textAlign: 'center', boxShadow: '0 16px 40px rgba(75, 45, 25, 0.10)' }}>
+                <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#244f21', border: '1.5px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', boxShadow: '0 8px 20px rgba(47, 107, 58, 0.25)' }}>
                   <MessageSquare size={26} color="#FFFFFF" />
                 </div>
-                <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#F5EBDD', marginBottom: '0.75rem' }}>Questions about your privacy or data?</h3>
-                <p style={{ fontSize: '1.05rem', color: '#E8DCCB', marginBottom: '1.75rem' }}>Message us anytime ❤️</p>
+                <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#32180D', marginBottom: '0.75rem' }}>Questions about your privacy or data?</h3>
+                <p style={{ fontSize: '1.05rem', color: '#654B38', marginBottom: '1.75rem' }}>Message us anytime ❤️</p>
                 <a href={getWhatsappUrl("Privacy Policy & Personal Data")} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: '0.9rem 2.25rem', fontSize: '1rem', fontWeight: '750', display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
                   <MessageSquare size={18} />
                   <span>Contact MILASTY Support</span>
@@ -1327,25 +1327,25 @@ export default function LegalPage() {
     return (
       <div style={{ position: 'relative' }}>
         <section className="reveal-fade-up" style={{ padding: '4.5rem 1.25rem 3rem', textAlign: 'center', maxWidth: '850px', margin: '0 auto', position: 'relative' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 1rem', borderRadius: '999px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.35)', marginBottom: '1.25rem' }}>
-            <FileText size={14} color="#b9cd94" />
-            <span style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#b9cd94' }}>LEGAL • MILASTY</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 1rem', borderRadius: '999px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', marginBottom: '1.25rem' }}>
+            <FileText size={14} color="#2F6B3A" />
+            <span style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#2F6B3A' }}>LEGAL • MILASTY</span>
           </div>
-          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', color: '#F5EBDD', lineHeight: '1.15', marginBottom: '1rem', letterSpacing: '-0.01em' }}>Terms & Conditions</h1>
-          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#E8DCCB', opacity: 0.9, maxWidth: '600px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
+          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', color: '#32180D', lineHeight: '1.15', marginBottom: '1rem', letterSpacing: '-0.01em' }}>Terms & Conditions</h1>
+          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#654B38', opacity: 0.9, maxWidth: '600px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
             Clear, honest and transparent — just like MILASTY.
           </p>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'rgba(232, 220, 203, 0.75)', backgroundColor: 'rgba(50, 26, 18, 0.5)', padding: '0.35rem 0.9rem', borderRadius: '999px', border: '1px solid rgba(245, 235, 221, 0.15)' }}>
-            <Clock size={14} color="#b9cd94" />
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#654B38', backgroundColor: '#FFF9F0', padding: '0.35rem 0.9rem', borderRadius: '999px', border: '1px solid #E4D1B7' }}>
+            <Clock size={14} color="#2F6B3A" />
             <span>Last Updated: January 2026</span>
           </div>
         </section>
 
         <div className="container" style={{ maxWidth: '1180px', margin: '0 auto', padding: '0 1.25rem 6rem', position: 'relative' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '2.5rem', alignItems: 'start' }} className="tc-layout-grid">
-            <aside style={{ position: 'sticky', top: '100px', backgroundColor: 'rgba(35, 21, 13, 0.65)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius: '20px', border: '1px solid rgba(245, 220, 180, 0.22)', padding: '1.25rem 1rem', boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)', display: 'none' }} className="tc-sticky-nav">
-              <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#b9cd94', marginBottom: '1rem', paddingLeft: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Sparkles size={14} color="#b9cd94" />
+            <aside style={{ position: 'sticky', top: '100px', backgroundColor: '#FFF9F0', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius: '20px', border: '1px solid #E4D1B7', padding: '1.25rem 1rem', boxShadow: '0 12px 32px rgba(75, 45, 25, 0.08)', display: 'none' }} className="tc-sticky-nav">
+              <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#2F6B3A', marginBottom: '1rem', paddingLeft: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Sparkles size={14} color="#2F6B3A" />
                 <span>On This Page</span>
               </div>
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -1353,8 +1353,8 @@ export default function LegalPage() {
                   const IconComp = sec.icon;
                   const isActive = activeSection === sec.id;
                   return (
-                    <button key={sec.id} onClick={() => scrollToSection(sec.id)} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.6rem 0.75rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: isActive ? '700' : '500', color: isActive ? '#FFFFFF' : 'rgba(232, 220, 203, 0.8)', backgroundColor: isActive ? '#244f21' : 'transparent', textAlign: 'left', width: '100%', border: 'none', transition: 'all 0.2s ease', cursor: 'pointer' }}>
-                      <IconComp size={15} color={isActive ? '#b9cd94' : 'rgba(185, 205, 148, 0.7)'} />
+                    <button key={sec.id} onClick={() => scrollToSection(sec.id)} style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.6rem 0.75rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: isActive ? '700' : '500', color: isActive ? '#2F6B3A' : '#654B38', backgroundColor: isActive ? 'rgba(47, 107, 58, 0.12)' : 'transparent', textAlign: 'left', width: '100%', border: 'none', transition: 'all 0.2s ease', cursor: 'pointer' }}>
+                      <IconComp size={15} color={isActive ? '#2F6B3A' : 'rgba(47, 107, 58, 0.75)'} />
                       <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sec.label}</span>
                     </button>
                   );
@@ -1365,202 +1365,202 @@ export default function LegalPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <div id="about" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Leaf size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Leaf size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 01</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>About MILASTY</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 01</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>About MILASTY</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>MILASTY is a premium Indian brand offering millet-based cookies baked with organic jaggery and pure Desi Ghee. Our website is informational, designed to educate you about our pure ingredients and artisanal small-batch bakery products, and orders are placed directly through WhatsApp.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>MILASTY is a premium Indian brand offering millet-based cookies baked with organic jaggery and pure Desi Ghee. Our website is informational, designed to educate you about our pure ingredients and artisanal small-batch bakery products, and orders are placed directly through WhatsApp.</p>
               </div>
 
               <div id="whatsapp-ordering" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <MessageSquare size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <MessageSquare size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 02</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Ordering Through WhatsApp</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 02</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Ordering Through WhatsApp</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We accept orders only via WhatsApp or direct messages. All orders placed on MILASTY generate a pre-formatted WhatsApp order receipt. Orders are confirmed and scheduled for small-batch baking after payment is successfully completed and final approval is provided over WhatsApp chat.</p>
-                <div style={{ backgroundColor: 'rgba(185, 205, 148, 0.12)', borderLeft: '4px solid #b9cd94', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <Sparkles size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"No confusing checkout system — only simple, personal ordering."</span>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We accept orders only via WhatsApp or direct messages. All orders placed on MILASTY generate a pre-formatted WhatsApp order receipt. Orders are confirmed and scheduled for small-batch baking after payment is successfully completed and final approval is provided over WhatsApp chat.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <Sparkles size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"No confusing checkout system — only simple, personal ordering."</span>
                 </div>
               </div>
 
               <div id="freshness" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Cookie size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Cookie size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 03</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Product Freshness & Variations</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 03</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Product Freshness & Variations</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>Our cookies are batch-made using natural, unrefined ingredients. Because every batch is handcrafted in small artisanal quantities without artificial colorings or chemical preservatives, minor differences in texture, shape, or shade of golden color are completely normal and a hallmark of authentic handcrafted baking.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>Our cookies are batch-made using natural, unrefined ingredients. Because every batch is handcrafted in small artisanal quantities without artificial colorings or chemical preservatives, minor differences in texture, shape, or shade of golden color are completely normal and a hallmark of authentic handcrafted baking.</p>
               </div>
 
               <div id="allergies" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <AlertTriangle size={22} color="#F87171" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 28, 28, 0.08)', border: '1px solid rgba(185, 28, 28, 0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <AlertTriangle size={22} color="#B91C1C" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#F87171', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 04</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Allergies & Ingredients</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 04</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Allergies & Ingredients</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>While all our products are 100% free of Maida (refined wheat flour), Palm Oil, and artificial additives, they are prepared in a bakery facility that handles tree nuts, seeds, wheat, and dairy (Pure Desi Ghee).</p>
-                <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)', borderLeft: '4px solid #F87171', borderRadius: '14px', padding: '1.1rem 1.35rem' }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>While all our products are 100% free of Maida (refined wheat flour), Palm Oil, and artificial additives, they are prepared in a bakery facility that handles tree nuts, seeds, wheat, and dairy (Pure Desi Ghee).</p>
+                <div style={{ backgroundColor: 'rgba(185, 28, 28, 0.06)', borderLeft: '4px solid #B91C1C', borderRadius: '14px', padding: '1.1rem 1.35rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                    <AlertTriangle size={18} color="#F87171" />
-                    <span style={{ color: '#F5EBDD', fontWeight: '700', fontSize: '0.95rem' }}>Allergen Warning Notice</span>
+                    <AlertTriangle size={18} color="#B91C1C" />
+                    <span style={{ color: '#32180D', fontWeight: '700', fontSize: '0.95rem' }}>Allergen Warning Notice</span>
                   </div>
-                  <p style={{ color: '#E8DCCB', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>If you have severe allergic reactions to nuts, gluten, or dairy, please review the exact ingredient labels carefully or consult with our team on WhatsApp before placing your order.</p>
+                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>If you have severe allergic reactions to nuts, gluten, or dairy, please review the exact ingredient labels carefully or consult with our team on WhatsApp before placing your order.</p>
                 </div>
               </div>
 
               <div id="health-disclaimer" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Heart size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Heart size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 05</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Health Disclaimer</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 05</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Health Disclaimer</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY cookies are made with wholesome, clean ingredients like millets, organic jaggery, and pure Desi Ghee. However, they are bakery food products and are not intended to diagnose, treat, cure, or prevent any disease or medical condition.</p>
-                <div style={{ backgroundColor: 'rgba(185, 205, 148, 0.12)', borderLeft: '4px solid #b9cd94', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <Heart size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"Please consult a medical professional if you have specific dietary concerns."</span>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY cookies are made with wholesome, clean ingredients like millets, organic jaggery, and pure Desi Ghee. However, they are bakery food products and are not intended to diagnose, treat, cure, or prevent any disease or medical condition.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <Heart size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"Please consult a medical professional if you have specific dietary concerns."</span>
                 </div>
               </div>
 
               <div id="children-advisory" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Baby size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Baby size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 06</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Children Advisory</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 06</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Children Advisory</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>MILASTY cookies are dense and crunchy due to the high fiber content of authentic ancient millets. Children below 6 years of age should consume these cookies only under adult supervision to prevent choking hazards.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>MILASTY cookies are dense and crunchy due to the high fiber content of authentic ancient millets. Children below 6 years of age should consume these cookies only under adult supervision to prevent choking hazards.</p>
               </div>
 
               <div id="shipping" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Truck size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Truck size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 07</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Pan-India Shipping</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 07</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Pan-India Shipping</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We ship across India through premium, reliable courier partners. All products are baked fresh upon order confirmation and dispatched within 24–48 hours. Delivery usually takes 3–7 business days depending on your pincode location.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We ship across India through premium, reliable courier partners. All products are baked fresh upon order confirmation and dispatched within 24–48 hours. Delivery usually takes 3–7 business days depending on your pincode location.</p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                  <div style={{ backgroundColor: 'rgba(50, 26, 18, 0.5)', border: '1px solid rgba(245, 235, 221, 0.15)', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
-                    <CheckCircle2 size={18} color="#b9cd94" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <span style={{ fontSize: '0.9rem', color: '#E8DCCB', lineHeight: '1.5' }}>Courier delays may occasionally happen due to operational or weather reasons.</span>
+                  <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
+                    <CheckCircle2 size={18} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span style={{ fontSize: '0.9rem', color: '#654B38', lineHeight: '1.5' }}>Courier delays may occasionally happen due to operational or weather reasons.</span>
                   </div>
-                  <div style={{ backgroundColor: 'rgba(50, 26, 18, 0.5)', border: '1px solid rgba(245, 235, 221, 0.15)', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
-                    <CheckCircle2 size={18} color="#b9cd94" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <span style={{ fontSize: '0.9rem', color: '#E8DCCB', lineHeight: '1.5' }}>Please ensure your shipping address, pincode, and phone number are correct.</span>
+                  <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
+                    <CheckCircle2 size={18} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span style={{ fontSize: '0.9rem', color: '#654B38', lineHeight: '1.5' }}>Please ensure your shipping address, pincode, and phone number are correct.</span>
                   </div>
                 </div>
               </div>
 
               <div id="returns-refunds" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <RotateCcw size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <RotateCcw size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 08</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Returns & Refunds Policy</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 08</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Returns & Refunds Policy</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.5rem' }}>Since MILASTY cookies are edible food products prepared fresh without preservatives, returns are not accepted once the order has been delivered. Refunds or replacements are possible only in genuine cases such as damaged outer packaging or incorrect items delivered.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.5rem' }}>Since MILASTY cookies are edible food products prepared fresh without preservatives, returns are not accepted once the order has been delivered. Refunds or replacements are possible only in genuine cases such as damaged outer packaging or incorrect items delivered.</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div style={{ backgroundColor: 'rgba(185, 205, 148, 0.12)', borderLeft: '4px solid #b9cd94', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                    <Clock size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                    <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"Please report any issue within 24 hours of delivery with photo/video proof."</span>
+                  <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <Clock size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                    <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"Please report any issue within 24 hours of delivery with photo/video proof."</span>
                   </div>
-                  <div style={{ backgroundColor: 'rgba(185, 205, 148, 0.12)', borderLeft: '4px solid #b9cd94', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                    <ShieldCheck size={20} color="#b9cd94" style={{ flexShrink: 0 }} />
-                    <span style={{ color: '#F5EBDD', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"A proper unboxing (parcel opening) video is mandatory to process any concern."</span>
+                  <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <ShieldCheck size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                    <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"A proper unboxing (parcel opening) video is mandatory to process any concern."</span>
                   </div>
                 </div>
               </div>
 
               <div id="cancellation" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Clock size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Clock size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 09</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Order Cancellation Policy</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 09</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Order Cancellation Policy</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', marginBottom: '2rem' }}>Since cookies are prepared and packed soon after payment confirmation, cancellations are accepted only within a limited time window:</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '2rem' }}>Since cookies are prepared and packed soon after payment confirmation, cancellations are accepted only within a limited time window:</p>
                 <div className="tc-cancellation-timeline" style={{ marginBottom: '2rem' }}>
                   <div className="tc-timeline-item">
                     <div className="tc-timeline-badge"><span>03 HOURS</span></div>
                     <div className="tc-timeline-content">
-                      <h4 style={{ color: '#F5EBDD', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Full Refund (100%)</h4>
-                      <p style={{ color: '#E8DCCB', fontSize: '0.88rem', margin: 0 }}>Cancellations requested within 3 hours of payment.</p>
+                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Full Refund (100%)</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellations requested within 3 hours of payment.</p>
                     </div>
                   </div>
                   <div className="tc-timeline-item">
-                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(185, 205, 148, 0.2)', borderColor: 'rgba(185, 205, 148, 0.4)' }}><span>03–06 HRS</span></div>
+                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(47, 107, 58, 0.15)', borderColor: 'rgba(47, 107, 58, 0.35)' }}><span>03–06 HRS</span></div>
                     <div className="tc-timeline-content">
-                      <h4 style={{ color: '#F5EBDD', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>50% Refund</h4>
-                      <p style={{ color: '#E8DCCB', fontSize: '0.88rem', margin: 0 }}>Cancellations requested between 3 to 6 hours after payment.</p>
+                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>50% Refund</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellations requested between 3 to 6 hours after payment.</p>
                     </div>
                   </div>
                   <div className="tc-timeline-item">
-                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', borderColor: 'rgba(239, 68, 68, 0.35)', color: '#F87171' }}><span>&gt; 06 HOURS</span></div>
+                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(185, 28, 28, 0.08)', borderColor: 'rgba(185, 28, 28, 0.30)', color: '#B91C1C' }}><span>&gt; 06 HOURS</span></div>
                     <div className="tc-timeline-content">
-                      <h4 style={{ color: '#F87171', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Cancellation Not Possible</h4>
-                      <p style={{ color: '#E8DCCB', fontSize: '0.88rem', margin: 0 }}>Baking & packing has already commenced.</p>
+                      <h4 style={{ color: '#B91C1C', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Cancellation Not Possible</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Baking & packing has already commenced.</p>
                     </div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <p style={{ color: 'rgba(232, 220, 203, 0.85)', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>• The cancellation window is calculated from the exact time the payment is successfully completed.</p>
-                  <p style={{ color: 'rgba(232, 220, 203, 0.85)', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>• Approved refunds are processed within 5–7 business days via the original payment method.</p>
+                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>• The cancellation window is calculated from the exact time the payment is successfully completed.</p>
+                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>• Approved refunds are processed within 5–7 business days via the original payment method.</p>
                 </div>
               </div>
 
               <div id="legal-jurisdiction" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 205, 148, 0.15)', border: '1px solid rgba(185, 205, 148, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Scale size={22} color="#b9cd94" />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Scale size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b9cd94', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 10</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#F5EBDD', margin: 0 }}>Legal & Jurisdiction</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 10</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Legal & Jurisdiction</h2>
                   </div>
                 </div>
-                <p style={{ color: '#E8DCCB', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>These Terms & Conditions are governed under the laws of India. Any disputes or claims arising out of or related to our services fall exclusively under the jurisdiction of the competent courts of Noida, Uttar Pradesh, India.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>These Terms & Conditions are governed under the laws of India. Any disputes or claims arising out of or related to our services fall exclusively under the jurisdiction of the competent courts of Noida, Uttar Pradesh, India.</p>
               </div>
 
-              <div id="support-cta" className="reveal-fade-up" style={{ backgroundColor: 'rgba(36, 79, 33, 0.35)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1.5px solid rgba(185, 205, 148, 0.4)', borderRadius: '24px', padding: 'clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem)', textAlign: 'center', boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#244f21', border: '1.5px solid #b9cd94', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', boxShadow: '0 8px 20px rgba(0,0,0,0.3)' }}>
+              <div id="support-cta" className="reveal-fade-up" style={{ backgroundColor: 'rgba(47, 107, 58, 0.08)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1.5px solid rgba(47, 107, 58, 0.35)', borderRadius: '24px', padding: 'clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem)', textAlign: 'center', boxShadow: '0 16px 40px rgba(75, 45, 25, 0.10)' }}>
+                <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#244f21', border: '1.5px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', boxShadow: '0 8px 20px rgba(47, 107, 58, 0.25)' }}>
                   <MessageSquare size={26} color="#FFFFFF" />
                 </div>
-                <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#F5EBDD', marginBottom: '0.75rem' }}>Questions about our Terms & Conditions?</h3>
-                <p style={{ fontSize: '1.05rem', color: '#E8DCCB', marginBottom: '1.75rem' }}>Reach us anytime on WhatsApp ❤️</p>
+                <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#32180D', marginBottom: '0.75rem' }}>Questions about our Terms & Conditions?</h3>
+                <p style={{ fontSize: '1.05rem', color: '#654B38', marginBottom: '1.75rem' }}>Reach us anytime on WhatsApp ❤️</p>
                 <a href={getWhatsappUrl("Terms & Conditions")} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: '0.9rem 2.25rem', fontSize: '1rem', fontWeight: '750', display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
                   <MessageSquare size={18} />
                   <span>Contact MILASTY Support</span>
