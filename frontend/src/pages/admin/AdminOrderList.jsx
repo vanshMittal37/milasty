@@ -105,6 +105,18 @@ export default function AdminOrderList() {
     }
   };
 
+  // Live shipment tracking through the MILASTY backend (Shiprath credentials stay server-side)
+  const [shipTracking, setShipTracking] = useState({ orderId: null, loading: false, data: null, error: null });
+  const handleTrackShipment = async (orderId) => {
+    setShipTracking({ orderId, loading: true, data: null, error: null });
+    try {
+      const res = await api.get(`/shiprat/order/${orderId}/tracking`);
+      setShipTracking({ orderId, loading: false, data: res.data, error: null });
+    } catch (e) {
+      setShipTracking({ orderId, loading: false, data: null, error: e.response?.data?.message || 'Could not reach the tracking service.' });
+    }
+  };
+
   // Retry a failed automatic booking. Normal orders are booked automatically after payment.
   // pkg (optional): manual box { weightKg, length, width, height } when a different physical box is used
   const handleBookShipment = async (orderId, force = false, pkg = null) => {
@@ -631,15 +643,17 @@ export default function AdminOrderList() {
 
                 <div>
                   {(selectedOrder.awb_number || selectedOrder.awb) ? (
-                    <a
-                      href={selectedOrder.tracking_url || `https://backend.shiprath.com/tracking/${selectedOrder.awb_number || selectedOrder.awb}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', backgroundColor: '#381423', color: '#FFF', fontSize: '0.78rem', fontWeight: '700', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                    // backend.shiprath.com/tracking/{awb} is not a real Shiprath page (it 404s with
+                    // "Cannot find module 'html'"), so track through the MILASTY backend instead.
+                    <button
+                      type="button"
+                      onClick={() => handleTrackShipment(selectedOrder.id || selectedOrder._id)}
+                      disabled={shipTracking.loading}
+                      style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', backgroundColor: '#381423', color: '#FFF', border: 'none', fontSize: '0.78rem', fontWeight: '700', cursor: shipTracking.loading ? 'wait' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
                     >
-                      <span>Track Shipment</span>
-                      <ExternalLink size={13} />
-                    </a>
+                      <Truck size={13} />
+                      <span>{shipTracking.loading ? 'Tracking...' : 'Track Shipment'}</span>
+                    </button>
                   ) : needsShipmentRetry(selectedOrder) ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.45rem' }}>
                       <button
@@ -684,6 +698,45 @@ export default function AdminOrderList() {
                   )}
                 </div>
               </div>
+
+              {/* Live tracking result (fetched via MILASTY backend → Shiprath shipment_tracking API) */}
+              {(selectedOrder.awb_number || selectedOrder.awb) && shipTracking.orderId === (selectedOrder.id || selectedOrder._id) && !shipTracking.loading && (
+                <div style={{ marginTop: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(231, 222, 213, 0.65)', fontSize: '0.8rem', color: '#21150F' }}>
+                  {shipTracking.data?.tracking_live ? (
+                    <>
+                      <div style={{ fontWeight: '700', marginBottom: '0.4rem' }}>
+                        Shipment status: <span style={{ color: '#2F6B3A' }}>{String(shipTracking.data.shipment_status || '—').replace(/_/g, ' ').toUpperCase()}</span>
+                        {shipTracking.data.tracking?.estimated_delivery && (
+                          <span style={{ marginLeft: '0.6rem', color: '#665A52', fontWeight: '600' }}>EDD: {shipTracking.data.tracking.estimated_delivery}</span>
+                        )}
+                      </div>
+                      {(shipTracking.data.tracking?.shipment_track || []).length > 0 ? (
+                        <ul style={{ margin: 0, paddingLeft: '1.1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                          {shipTracking.data.tracking.shipment_track.map((ev, i) => (
+                            <li key={i}>
+                              <strong>{ev.activity || 'Update'}</strong>
+                              {ev.location && <span style={{ color: '#665A52' }}> — {ev.location}</span>}
+                              {ev.date && <span style={{ color: '#8A7B70' }}> · {ev.date}</span>}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div style={{ color: '#665A52' }}>No scan events from the courier yet.</div>
+                      )}
+                    </>
+                  ) : (
+                    <div style={{ color: '#B7791F', fontWeight: '600' }}>
+                      {shipTracking.error || 'Live tracking is not available from Shiprath right now.'}
+                    </div>
+                  )}
+                  <div style={{ marginTop: '0.6rem', color: '#665A52' }}>
+                    You can also track AWB <code>{selectedOrder.awb_number || selectedOrder.awb}</code> on{' '}
+                    <a href="https://shiprath.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#381423', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                      shiprath.com <ExternalLink size={12} />
+                    </a>
+                  </div>
+                </div>
+              )}
 
               {/* Internal shipping details (admin only — never shown to customers) */}
               {(() => {

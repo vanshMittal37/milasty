@@ -570,7 +570,9 @@ export const formatOrderPayload = (o) => {
     awb: o.awb_number || o.awb || null,
     shipment_id: o.shipment_id || null,
     courier_name: o.courier_name || null,
-    tracking_url: o.tracking_url || (o.awb_number ? `https://backend.shiprath.com/tracking/${o.awb_number}` : null),
+    // backend.shiprath.com/tracking/{awb} is not a real Shiprath page — never hand it out (tracking goes via
+    // GET /api/shiprat/order/:id/tracking). Older orders may still have it stored, so filter it here.
+    tracking_url: o.tracking_url && !/backend\.shiprath\.com\/tracking\//i.test(o.tracking_url) ? o.tracking_url : null,
     shipmentBooked: Boolean(o.awb_number || o.awb),
     // ── Shipment lifecycle status ──
     shipment_status: o.shipment_status || (o.awb_number ? 'booked' : 'pending'),

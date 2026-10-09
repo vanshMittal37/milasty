@@ -1291,15 +1291,9 @@ export const trackShipment = async (req, res) => {
       body: JSON.stringify({ awb_number: awb, awb }),
     });
 
-    let data = await response.json();
-
-    // Fallback to GET endpoint if POST signature differs
-    if (!response.ok || !data.status) {
-      const getRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/track_shipment?awb=${encodeURIComponent(awb)}`, {
-        method: 'GET',
-        headers: getShiprathHeaders(),
-      });
-      data = await getRes.json();
+    const data = await response.json();
+    if (!response.ok || !data?.status) {
+      return res.status(502).json({ success: false, message: data?.message || 'Shiprath returned no tracking data.', tracking: data });
     }
 
     return res.json({ success: true, tracking: data });
@@ -1379,6 +1373,7 @@ export const trackOrderShipment = async (req, res) => {
 
     let events = [];
     let estimatedDelivery = null;
+    let trackingLive = false; // true only when Shiprath actually answered with tracking data
 
     if (awb) {
       try {
@@ -1389,8 +1384,12 @@ export const trackOrderShipment = async (req, res) => {
           signal: AbortSignal.timeout(20000),
         });
         const trackData = await trackRes.json();
+        if (!trackData?.status) {
+          console.warn(`[SHIPRATH TRACK] ${order.order_number} → HTTP ${trackRes.status}: ${trackData?.message || 'no tracking data'}`);
+        }
 
         if (trackData?.status) {
+          trackingLive = true;
           const d = trackData.data && typeof trackData.data === 'object' && !Array.isArray(trackData.data) ? trackData.data : trackData;
           estimatedDelivery = d.estimated_delivery || d.edd || null;
           events = extractTrackingEvents(trackData).slice(0, 20).map((e) => ({
@@ -1439,6 +1438,7 @@ export const trackOrderShipment = async (req, res) => {
       shipment_status: customerShipmentStatus(shipmentStatus),
       order_status: orderStatus,
       message: awb ? null : 'Order confirmed. Your shipment is being prepared.',
+      tracking_live: trackingLive,
       timeline,
       tracking: awb ? { estimated_delivery: estimatedDelivery, shipment_track: events } : null,
     });
