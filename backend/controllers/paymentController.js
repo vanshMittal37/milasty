@@ -56,6 +56,14 @@ async function setSessionStatus(id, status) {
   if (error) warnSessionTable(error);
 }
 
+// Constant-time comparison of hex HMAC signatures (avoids timing leaks; false for missing/malformed input)
+export const signaturesMatch = (expectedHex, receivedHex) => {
+  if (typeof expectedHex !== 'string' || typeof receivedHex !== 'string') return false;
+  const a = Buffer.from(expectedHex, 'utf8');
+  const b = Buffer.from(receivedHex, 'utf8');
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+};
+
 const getRazorpayInstance = () => {
   const key_id = process.env.RAZORPAY_KEY_ID;
   const key_secret = process.env.RAZORPAY_KEY_SECRET;
@@ -827,12 +835,14 @@ export const verifyRazorpayPayment = async (req, res) => {
       return res.status(500).json({ success: false, message: 'Payment verification not configured on server.' });
     }
 
-    const hmac = crypto.createHmac('sha256', key_secret);
-    hmac.update((rzpOrderId || '') + '|' + (razorpay_payment_id || ''));
-    const generated_signature = hmac.digest('hex');
+    const generated_signature = crypto
+      .createHmac('sha256', key_secret)
+      .update(`${rzpOrderId}|${razorpay_payment_id}`)
+      .digest('hex');
 
-    if (!razorpay_signature || generated_signature !== razorpay_signature) {
-      console.warn('[VERIFY] Invalid Razorpay signature. Expected:', generated_signature, 'Got:', razorpay_signature);
+    if (!signaturesMatch(generated_signature, razorpay_signature)) {
+      // Never log the expected signature — it is a valid credential for this order/payment pair
+      console.warn('[VERIFY] Invalid Razorpay signature for order', rzpOrderId, 'payment', razorpay_payment_id);
       return res.status(400).json({ success: false, message: 'Invalid payment signature. Payment not verified.' });
     }
 
@@ -916,7 +926,7 @@ export const handleRazorpayWebhook = async (req, res) => {
       hmac.update(rawBody);
       const expectedSignature = hmac.digest('hex');
 
-      if (expectedSignature !== receivedSignature) {
+      if (!signaturesMatch(expectedSignature, receivedSignature)) {
         console.warn('[WEBHOOK] Invalid Razorpay webhook signature');
         return res.status(400).json({ status: 'invalid_signature' });
       }
