@@ -833,11 +833,78 @@ export const getAdminAnalytics = async (req, res) => {
 
     const customers = customersRes.data || null;
 
+    // Revenue = money actually collected: paid (Razorpay) orders, plus COD orders once delivered.
+    // Cancelled orders are excluded.
+    const isRevenueOrder = (o) => {
+      const status = String(o.order_status || '').toLowerCase();
+      if (status === 'cancelled') return false;
+      if (String(o.payment_status || '').toLowerCase() === 'paid') return true;
+      return String(o.payment_method || '').toLowerCase() === 'cod' && status === 'delivered';
+    };
+    const revenueOrders = orders.filter(isRevenueOrder);
+
     const totalOrders = orders.length;
-    const totalRevenue = orders.reduce((sum, o) => sum + Number(o.grand_total || 0), 0);
+    const totalRevenue = Math.round(revenueOrders.reduce((sum, o) => sum + Number(o.grand_total || 0), 0) * 100) / 100;
     const pendingOrders = orders.filter((o) => (o.order_status || '').toLowerCase() === 'pending').length;
     const deliveredOrders = orders.filter((o) => (o.order_status || '').toLowerCase() === 'delivered').length;
     const totalCustomers = customers !== null ? customers.length : null;
+
+    // ── Sales series (Indian calendar days) ──
+    const IST = 'Asia/Kolkata';
+    const dayKey = (d) => new Date(d).toLocaleDateString('en-CA', { timeZone: IST }); // YYYY-MM-DD
+    const revenueByDay = new Map();
+    for (const o of revenueOrders) {
+      const k = dayKey(o.created_at);
+      const cur = revenueByDay.get(k) || { revenue: 0, orders: 0 };
+      cur.revenue += Number(o.grand_total || 0);
+      cur.orders += 1;
+      revenueByDay.set(k, cur);
+    }
+    const todayKey = dayKey(Date.now());
+    const shiftDay = (key, delta) => {
+      const d = new Date(`${key}T12:00:00Z`);
+      d.setUTCDate(d.getUTCDate() + delta);
+      return d.toISOString().slice(0, 10);
+    };
+    const labelFor = (key, opts) => new Date(`${key}T12:00:00Z`).toLocaleDateString('en-IN', { timeZone: 'UTC', ...opts });
+    const round2 = (n) => Math.round(n * 100) / 100;
+
+    const dailySeries = (days) => Array.from({ length: days }, (_, i) => {
+      const key = shiftDay(todayKey, i - (days - 1));
+      const v = revenueByDay.get(key) || { revenue: 0, orders: 0 };
+      return { key, label: labelFor(key, { day: 'numeric', month: 'short' }), revenue: round2(v.revenue), orders: v.orders };
+    });
+    // 3 months: 13 weekly buckets ending today
+    const weeklySeries = Array.from({ length: 13 }, (_, w) => {
+      const end = shiftDay(todayKey, -7 * (12 - w));
+      let revenue = 0;
+      let count = 0;
+      for (let d = 0; d < 7; d++) {
+        const v = revenueByDay.get(shiftDay(end, -d));
+        if (v) { revenue += v.revenue; count += v.orders; }
+      }
+      return { key: end, label: `w/e ${labelFor(end, { day: 'numeric', month: 'short' })}`, revenue: round2(revenue), orders: count };
+    });
+
+    // ── Latest orders (real, finalized) ──
+    const PAY_LABELS = { paid: 'Paid', pending: 'Pending', failed: 'Failed', refunded: 'Refunded' };
+    const recentOrders = [...orders]
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 6)
+      .map((o) => {
+        const p = formatOrderPayload(o);
+        const isCod = String(o.payment_method || '').toLowerCase() === 'cod';
+        return {
+          id: o.id,
+          orderId: o.order_number || p.orderNumber,
+          customerName: p.customerName,
+          phone: p.customerPhone,
+          totalAmount: Number(o.grand_total || 0),
+          paymentStatus: isCod && o.payment_status !== 'paid' ? 'COD' : (PAY_LABELS[String(o.payment_status || '').toLowerCase()] || o.payment_status || 'Pending'),
+          orderStatus: String(p.orderStatus || 'confirmed').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+          createdAt: o.created_at,
+        };
+      });
 
     res.json({
       totalOrders,
@@ -845,6 +912,12 @@ export const getAdminAnalytics = async (req, res) => {
       pendingOrders,
       deliveredOrders,
       totalCustomers,
+      recentOrders,
+      salesSeries: {
+        '7 Days': dailySeries(7),
+        '30 Days': dailySeries(30),
+        '3 Months': weeklySeries,
+      },
     });
   } catch (error) {
     console.error('[ANALYTICS] Server error:', error.message);

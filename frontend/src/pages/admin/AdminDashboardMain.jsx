@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, Package, ShoppingBag, Users, AlertTriangle, ArrowUpRight, 
-  Plus, RefreshCw, CheckCircle, TrendingUp, ChevronRight, Activity, MessageSquare, Ticket, AlertCircle, XCircle
+  Plus, RefreshCw, CheckCircle, TrendingUp, ChevronRight, MessageSquare, Ticket, AlertCircle, XCircle
 } from 'lucide-react';
 import api from '../../api/axios';
 import { LOW_STOCK_THRESHOLD } from '../../config/constants';
@@ -119,39 +119,26 @@ export default function AdminDashboardMain() {
   lowStockItems.sort((a, b) => a.stock - b.stock);
   outOfStockItems.sort((a, b) => a.stock - b.stock);
 
-  const activityEvents = [
-    ...(stats?.recentOrders || []).slice(0, 3).map((o) => ({
-      title: `Order #${String(o.orderId || o.id || o._id || '0000').slice(-6).toUpperCase()}`,
-      desc: `${o.shippingAddress?.fullName || o.customerName || 'Customer'} — Rs.${(o.totalAmount || 0).toLocaleString('en-IN')}`,
-      time: 'Recent Order',
-    })),
-    ...outOfStockItems.slice(0, 2).map((item) => ({
-      title: 'Out of Stock Alert',
-      desc: `${item.title} ${item.variantName ? `(${item.variantName})` : ''}`,
-      time: 'Inventory Alert',
-    })),
-    ...lowStockItems.slice(0, 2).map((item) => ({
-      title: 'Low Stock Warning',
-      desc: `${item.title} ${item.variantName ? `(${item.variantName})` : ''} - ${item.stock} left`,
-      time: 'Inventory Warning',
-    })),
-  ].slice(0, 5);
-
   const isCatalogConnected = !error && Array.isArray(products);
   const isCustomersConnected = !error && stats !== null;
   const isOrdersConnected = !error && stats !== null;
   const isReviewsConnected = !error && Array.isArray(reviews);
 
-  const recentOrdersForChart = stats?.recentOrders ? [...stats.recentOrders].reverse() : [];
-  const chartPoints = recentOrdersForChart.map((o, idx) => ({ x: idx, y: o.totalAmount || 0 }));
-  const maxVal = chartPoints.length > 0 ? Math.max(...chartPoints.map(p => p.y), 1) : 1;
+  // Real revenue per day (7 / 30 days) or per week (3 months), from /orders/admin/analytics
+  const series = stats?.salesSeries?.[activeRange] || [];
+  const periodRevenue = series.reduce((sum, b) => sum + b.revenue, 0);
+  const periodOrders = series.reduce((sum, b) => sum + b.orders, 0);
+  const hasSales = periodOrders > 0;
+  const maxVal = Math.max(...series.map((b) => b.revenue), 1);
+  const labelEvery = series.length > 14 ? 5 : series.length > 8 ? 2 : 1;
+  const inr = (v) => `Rs.${Number(v || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 
   const kpiData = [
     {
       label: 'Total Revenue',
       value: `Rs.${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`,
-      sub: 'Captured sales',
-      sub2: 'Current period',
+      sub: 'Collected sales',
+      sub2: 'Paid + delivered COD',
       icon: DollarSign,
       color: '#C68A3A',
       bg: 'rgba(245, 237, 229, 0.7)',
@@ -297,51 +284,57 @@ export default function AdminDashboardMain() {
             </div>
           </div>
 
-          {chartPoints.length > 0 ? (
-            <div style={{ position: 'relative', width: '100%', height: '200px' }}>
-                          <svg viewBox="0 0 500 180" width="100%" height="100%" style={{ overflow: 'visible' }}>
-                <defs>
-                  <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#5A2E16" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="#5A2E16" stopOpacity="0.02" />
-                  </linearGradient>
-                </defs>
-                {[0, 45, 90, 135].map(y => (
-                  <line key={y} x1="0" y1={y} x2="500" y2={y} stroke="rgba(90,46,22,0.08)" strokeWidth="1" />
+          {/* Period summary */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
+            {[
+              ['Revenue', inr(periodRevenue)],
+              ['Orders', periodOrders],
+              ['Avg. order', periodOrders ? inr(periodRevenue / periodOrders) : '—'],
+            ].map(([label, value]) => (
+              <div key={label} style={{ background: 'rgba(245,237,229,0.55)', border: '1px solid rgba(231,222,213,0.7)', borderRadius: '10px', padding: '0.6rem 0.8rem' }}>
+                <div style={{ fontSize: '0.66rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#665A52' }}>{label}</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: '900', color: '#21150F', fontFamily: 'var(--font-serif)' }}>{value}</div>
+              </div>
+            ))}
+          </div>
+
+          {hasSales ? (
+            <div style={{ width: '100%' }}>
+              <svg viewBox="0 0 600 210" width="100%" height="220" preserveAspectRatio="none" role="img" aria-label={`Revenue for the last ${activeRange}`}>
+                {[0, 0.25, 0.5, 0.75, 1].map((f) => (
+                  <line key={f} x1="0" x2="600" y1={180 - f * 165} y2={180 - f * 165} stroke="rgba(90,46,22,0.08)" strokeWidth="1" />
                 ))}
-                <path
-                  d={chartPoints.reduce((acc, p, i) => {
-                    const x = (i / (chartPoints.length - 1 || 1)) * 500;
-                    const y = 160 - (p.y / maxVal) * 140;
-                    return acc + `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-                  }, '')}
-                  fill="none" stroke="#C68A3A" strokeWidth="2.5"
-                  strokeLinecap="round" strokeLinejoin="round"
-                />
-                <path
-                  d={chartPoints.reduce((acc, p, i) => {
-                    const x = (i / (chartPoints.length - 1 || 1)) * 500;
-                    const y = 160 - (p.y / maxVal) * 140;
-                    return acc + `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-                  }, '') + ` L 500 160 L 0 160 Z`}
-                  fill="url(#chartGrad)"
-                />
-                {chartPoints.map((p, i) => {
-                  const x = (i / (chartPoints.length - 1 || 1)) * 500;
-                  const y = 160 - (p.y / maxVal) * 140;
+                {series.map((b, i) => {
+                  const slot = 600 / series.length;
+                  const w = Math.max(2, slot * 0.62);
+                  const h = (b.revenue / maxVal) * 165;
                   return (
-                    <circle key={i} cx={x} cy={y} r="5" fill="#FFFFFF" stroke="#C68A3A" strokeWidth="2.5">
-                      <title>Rs.{p.y}</title>
-                    </circle>
+                    <g key={b.key}>
+                      <rect x={i * slot + (slot - w) / 2} y={180 - h} width={w} height={Math.max(h, b.revenue > 0 ? 2 : 0)} rx="3"
+                        fill={b.revenue > 0 ? '#C68A3A' : 'transparent'}>
+                        <title>{`${b.label}: ${inr(b.revenue)} · ${b.orders} order${b.orders === 1 ? '' : 's'}`}</title>
+                      </rect>
+                      {/* invisible full-height hit area so empty days still show a tooltip */}
+                      <rect x={i * slot} y="0" width={slot} height="180" fill="transparent">
+                        <title>{`${b.label}: ${inr(b.revenue)} · ${b.orders} order${b.orders === 1 ? '' : 's'}`}</title>
+                      </rect>
+                    </g>
                   );
                 })}
               </svg>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.25rem', marginTop: '0.25rem' }}>
+                {series.map((b, i) => (
+                  <span key={b.key} style={{ flex: 1, textAlign: 'center', fontSize: '0.62rem', color: '#888888', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', visibility: (i % labelEvery === 0 || i === series.length - 1) ? 'visible' : 'hidden' }}>
+                    {b.label}
+                  </span>
+                ))}
+              </div>
             </div>
           ) : (
-                        <div style={{ height: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', border: '1.5px dashed rgba(90,46,22,0.15)', borderRadius: '12px', backgroundColor: 'rgba(245,237,229,0.4)' }}>
+            <div style={{ height: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', border: '1.5px dashed rgba(90,46,22,0.15)', borderRadius: '12px', backgroundColor: 'rgba(245,237,229,0.4)' }}>
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C68A3A" strokeWidth="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-              <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#21150F' }}>No sales data yet</span>
-              <span style={{ fontSize: '0.76rem', color: '#888888', fontWeight: '500', textAlign: 'center', maxWidth: '280px' }}>Sales performance will appear here once orders are completed.</span>
+              <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#21150F' }}>No sales in the last {activeRange.toLowerCase()}</span>
+              <span style={{ fontSize: '0.76rem', color: '#888888', fontWeight: '500', textAlign: 'center', maxWidth: '280px' }}>Paid orders (and delivered COD orders) will appear here.</span>
             </div>
           )}
         </div>
@@ -458,24 +451,24 @@ export default function AdminDashboardMain() {
                 </tr>
               </thead>
               <tbody>
-                {stats.recentOrders.slice(0, 5).map(o => (
-                  <tr key={o.orderId}>
+                {stats.recentOrders.slice(0, 6).map(o => (
+                  <tr key={o.id || o.orderId}>
                     <td style={{ fontFamily: 'monospace', fontWeight: '700', fontSize: '0.8rem', color: '#4A3B2E' }}>{o.orderId}</td>
                     <td>
                       <div style={{ fontWeight: '700', color: '#21150F', fontSize: '0.84rem' }}>{o.customerName}</div>
                       <div style={{ fontSize: '0.7rem', color: '#665A52' }}>{o.phone}</div>
                     </td>
-                    <td style={{ fontWeight: '800', color: '#21150F' }}>Rs.{o.totalAmount}</td>
+                    <td style={{ fontWeight: '800', color: '#21150F' }}>{inr(o.totalAmount)}</td>
                     <td>
-                      <span className={`admin-badge ${o.paymentStatus === 'Paid' ? 'admin-badge-success' : 'admin-badge-danger'}`}>
+                      <span className={`admin-badge ${o.paymentStatus === 'Paid' ? 'admin-badge-success' : o.paymentStatus === 'COD' ? 'admin-badge-warning' : 'admin-badge-danger'}`}>
                         {o.paymentStatus}
                       </span>
                     </td>
                     <td>
-                      <span className="admin-badge admin-badge-warning">{o.orderStatus}</span>
+                      <span className={`admin-badge ${o.orderStatus === 'Delivered' ? 'admin-badge-success' : o.orderStatus === 'Cancelled' ? 'admin-badge-danger' : 'admin-badge-warning'}`}>{o.orderStatus}</span>
                     </td>
                     <td style={{ color: '#665A52', fontSize: '0.76rem', fontWeight: '600' }}>
-                      {new Date(o.createdAt).toLocaleDateString('en-IN')}
+                      {new Date(o.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <Link to="/admin/orders" style={{ fontSize: '0.78rem', fontWeight: '700', color: '#C68A3A', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.15rem' }}>
@@ -537,36 +530,11 @@ export default function AdminDashboardMain() {
         </div>
       </div>
 
-      {/* -€-€ ACTIVITY + STORE HEALTH -€-€ */}
+      {/* -€-€ STORE HEALTH -€-€ */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem', paddingBottom: '1rem' }} className="admin-dashboard-footer">
         <style>{`
-          @media (min-width: 1024px) { .admin-dashboard-footer { grid-template-columns: 1fr 1fr !important; } }
+          @media (min-width: 1024px) { .admin-dashboard-footer { grid-template-columns: 1fr !important; } }
         `}</style>
-
-        {/* Recent Activity */}
-        <div className="admin-card">
-          <h3 style={{ fontSize: '1rem', fontFamily: 'var(--font-serif)', color: '#21150F', fontWeight: '800', marginBottom: '0.2rem', marginTop: 0 }}>Recent Activity</h3>
-          <p style={{ fontSize: '0.72rem', color: '#665A52', margin: '0 0 1.25rem', fontWeight: '500' }}>Live store event history</p>
-
-          {activityEvents.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              {activityEvents.map((act, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '0.75rem', borderBottom: idx !== activityEvents.length - 1 ? '1px solid rgba(231, 222, 213, 0.65)' : 'none', paddingBottom: '0.75rem' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(245, 237, 229, 0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#C68A3A', flexShrink: 0 }}>
-                    <Activity size={12} />
-                  </div>
-                  <div style={{ flexGrow: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#21150F' }}>{act.title}</div>
-                    <div style={{ fontSize: '0.72rem', color: '#4A3B2E', marginTop: '0.12rem', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{act.desc}</div>
-                  </div>
-                  <span style={{ fontSize: '0.68rem', color: '#665A52', fontWeight: '600', flexShrink: 0 }}>{act.time}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#665A52', fontSize: '0.82rem', fontWeight: '600' }}>No recent activity.</div>
-          )}
-        </div>
 
         {/* Store Health */}
         <div className="admin-card">
