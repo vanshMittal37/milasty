@@ -7,6 +7,69 @@ import {
 import api from '../../api/axios';
 import { LOW_STOCK_THRESHOLD } from '../../config/constants';
 
+// Same rules as GET /orders/admin/analytics: revenue = paid & not cancelled, or COD once delivered.
+// Days are Indian calendar days.
+function buildDashboardFromOrders(orders) {
+  const lower = (v) => String(v || '').toLowerCase();
+  const created = (o) => o.created_at || o.createdAt;
+  const total = (o) => Number(o.grand_total ?? o.grandTotal ?? o.totalAmount ?? 0);
+  const method = (o) => lower(o.payment_method || o.rawPaymentMethod);
+  const payStatus = (o) => lower(o.payment_status || o.paymentStatus);
+  const orderStatus = (o) => lower(o.order_status || o.orderStatus).replace(/\s+/g, '_');
+
+  const isRevenue = (o) => {
+    if (orderStatus(o) === 'cancelled') return false;
+    if (payStatus(o) === 'paid') return true;
+    return method(o) === 'cod' && orderStatus(o) === 'delivered';
+  };
+  const dayKey = (d) => new Date(d).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+  const byDay = new Map();
+  orders.filter((o) => created(o) && isRevenue(o)).forEach((o) => {
+    const k = dayKey(created(o));
+    const cur = byDay.get(k) || { revenue: 0, orders: 0 };
+    cur.revenue += total(o);
+    cur.orders += 1;
+    byDay.set(k, cur);
+  });
+  const today = dayKey(Date.now());
+  const shift = (key, delta) => { const d = new Date(`${key}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + delta); return d.toISOString().slice(0, 10); };
+  const label = (key) => new Date(`${key}T12:00:00Z`).toLocaleDateString('en-IN', { timeZone: 'UTC', day: 'numeric', month: 'short' });
+  const r2 = (n) => Math.round(n * 100) / 100;
+  const daily = (n) => Array.from({ length: n }, (_, i) => {
+    const key = shift(today, i - (n - 1));
+    const v = byDay.get(key) || { revenue: 0, orders: 0 };
+    return { key, label: label(key), revenue: r2(v.revenue), orders: v.orders };
+  });
+  const weekly = Array.from({ length: 13 }, (_, w) => {
+    const end = shift(today, -7 * (12 - w));
+    let revenue = 0; let count = 0;
+    for (let d = 0; d < 7; d++) { const v = byDay.get(shift(end, -d)); if (v) { revenue += v.revenue; count += v.orders; } }
+    return { key: end, label: `w/e ${label(end)}`, revenue: r2(revenue), orders: count };
+  });
+
+  const title = (s) => String(s || '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const recentOrders = [...orders]
+    .filter((o) => created(o))
+    .sort((a, b) => new Date(created(b)) - new Date(created(a)))
+    .slice(0, 6)
+    .map((o) => ({
+      id: o.id,
+      orderId: o.order_number || o.orderNumber || o.orderId,
+      customerName: o.customerName || o.customer_name || 'Customer',
+      phone: o.customerPhone || o.customer_phone || '',
+      totalAmount: total(o),
+      paymentStatus: method(o) === 'cod' && payStatus(o) !== 'paid' ? 'COD' : title(payStatus(o) || 'pending'),
+      orderStatus: title(orderStatus(o) || 'confirmed'),
+      createdAt: created(o),
+    }));
+
+  return {
+    totalRevenue: r2(orders.filter(isRevenue).reduce((s, o) => s + total(o), 0)),
+    recentOrders,
+    salesSeries: { '7 Days': daily(7), '30 Days': daily(30), '3 Months': weekly },
+  };
+}
+
 export default function AdminDashboardMain() {
   const [stats, setStats] = useState(null);
   const [products, setProducts] = useState([]);
@@ -33,7 +96,17 @@ export default function AdminDashboardMain() {
         api.get('/products?limit=100'),
         api.get('/reviews')
       ]);
-      setStats(statsRes.data);
+      let statsData = statsRes.data || {};
+      // Older backends don't send the sales series / recent orders — build them from the Orders Log data
+      if (!statsData.salesSeries || !Array.isArray(statsData.recentOrders)) {
+        try {
+          const ordersRes = await api.get('/orders/admin/all');
+          statsData = { ...statsData, ...buildDashboardFromOrders(Array.isArray(ordersRes.data) ? ordersRes.data : []) };
+        } catch (fallbackErr) {
+          console.warn('Dashboard fallback (orders list) failed:', fallbackErr.message);
+        }
+      }
+      setStats(statsData);
       setProducts(productsRes.data.products || []);
       setReviews(reviewsRes.data || []);
     } catch (e) {
