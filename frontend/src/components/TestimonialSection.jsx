@@ -12,6 +12,7 @@ export default function TestimonialSection() {
   const [isHovered, setIsHovered] = useState(false);
   const [dbTestimonials, setDbTestimonials] = useState([]);
   const touchStartX = useRef(0);
+  const desktopRowRef = useRef(null);
   const touchEndX = useRef(0);
 
   useEffect(() => {
@@ -46,8 +47,6 @@ export default function TestimonialSection() {
       quote:
         'I tried bajra cookies and taste was awesome. The aroma of cardamom and homely feel in biscuits was worth appreciating. 🥰❤️',
       rating: 5,
-      avatar:
-        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80',
       verified: true,
     },
     {
@@ -56,8 +55,6 @@ export default function TestimonialSection() {
       quote:
         'These cookies are absolutely delicious and perfectly baked. They are soft, Every bite tastes fresh and amazing! 🤩🔥😋',
       rating: 5,
-      avatar:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
       verified: true,
     },
     {
@@ -66,8 +63,6 @@ export default function TestimonialSection() {
       quote:
         'Its one of the best healthy snacks I have eaten. Its very crunchy and tasty. 😍✨',
       rating: 5,
-      avatar:
-        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80',
       verified: true,
     },
   ];
@@ -78,7 +73,6 @@ export default function TestimonialSection() {
         name: t.name,
         quote: t.content,
         rating: Number(t.rating || 5),
-        avatar: t.imageUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
         verified: true,
       }))
     : defaultReviews;
@@ -488,17 +482,6 @@ export default function TestimonialSection() {
                         gap: '0.75rem',
                       }}
                     >
-                      <img
-                        src={review.avatar}
-                        alt={review.name}
-                        style={{
-                          width: '38px',
-                          height: '38px',
-                          borderRadius: '50%',
-                          objectFit: 'cover',
-                          border: '1.5px solid #DCC8AE',
-                        }}
-                      />
                       <div>
                         <h4
                           style={{
@@ -628,20 +611,48 @@ export default function TestimonialSection() {
           </div>
         </div>
       ) : (
-        /* DESKTOP 3-COLUMN GRID */
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '1.5rem',
-            alignItems: 'stretch',
-          }}
-        >
+        /* DESKTOP: single horizontally scrolling row (3 cards visible, never wraps to a second line) */
+        <div style={{ position: 'relative' }}>
+          {customerReviews.length > 3 && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              {[[-1, ChevronLeft, 'Previous reviews'], [1, ChevronRight, 'Next reviews']].map(([dir, Icon, label]) => (
+                <button
+                  key={label}
+                  onClick={() => {
+                    const row = desktopRowRef.current;
+                    if (row) row.scrollBy({ left: dir * (row.clientWidth / 3 + 8), behavior: 'smooth' });
+                  }}
+                  aria-label={label}
+                  style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid #DCC8AE', backgroundColor: '#F4EBDD', color: '#32180D', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                >
+                  <Icon size={18} />
+                </button>
+              ))}
+            </div>
+          )}
+          <div
+            ref={desktopRowRef}
+            className="testimonial-scroll-row"
+            style={{
+              display: 'flex',
+              gap: '1.5rem',
+              overflowX: 'auto',
+              overflowY: 'hidden',
+              scrollSnapType: 'x mandatory',
+              scrollBehavior: 'smooth',
+              padding: '0.5rem 0.25rem 1rem', // room for the hover lift
+              alignItems: 'stretch',
+            }}
+          >
           {customerReviews.map((review) => (
             <div
               key={review.id}
               className="glass-card card-warm-beige"
               style={{
+                flex: '0 0 calc((100% - 3rem) / 3)',
+                minWidth: '280px',
+                scrollSnapAlign: 'start',
+                boxSizing: 'border-box',
                 backgroundColor: 'var(--card-bg, #EAD8C3)',
                 borderRadius: '20px',
                 border: 'var(--card-border, 1px solid #D6C2A7)',
@@ -721,17 +732,6 @@ export default function TestimonialSection() {
                     gap: '0.85rem',
                   }}
                 >
-                  <img
-                    src={review.avatar}
-                    alt={review.name}
-                    style={{
-                      width: '42px',
-                      height: '42px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      border: '1.5px solid #DCC8AE',
-                    }}
-                  />
                   <div>
                     <h4
                       style={{
@@ -780,6 +780,7 @@ export default function TestimonialSection() {
               </div>
             </div>
           ))}
+          </div>
         </div>
       )}
     </section>

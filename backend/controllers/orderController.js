@@ -1,7 +1,7 @@
 import { supabase } from '../config/supabase.js';
 import { syncAuthUsersToProfiles } from './authController.js';
 import { getDeliveryChargeForPincode } from './paymentController.js';
-import { bookShiprathShipment, canAccessOrder, customerShipmentStatus } from './shipratController.js';
+import { canAccessOrder, customerShipmentStatus } from './shipratController.js';
 import { requestCancellation, getCustomerCancellation } from './cancellationController.js';
 
 // Status Canonical Mappings
@@ -268,6 +268,8 @@ export const createOrder = async (req, res) => {
       // /api/payments (Razorpay signature verified), so orders from this endpoint are never 'paid'.
       payment_status: 'pending',
       order_status: isCod ? 'confirmed' : 'pending',
+      // Shipments are created manually by admin (Orders Log → Create Shipment), never at checkout
+      shipment_status: 'not_created',
     };
 
     try {
@@ -458,35 +460,12 @@ export const createOrder = async (req, res) => {
       return res.status(500).json({ message: 'Order could not be persisted to the database. Please contact support.' });
     }
 
-    // Send the response immediately, then auto-book Shiprath in background
+    // No shipment is created here — admin creates it from the Orders Log once the order is packed
     res.status(201).json({
       success: true,
       message: 'Order created successfully',
       order: formatCustomerOrderPayload(order),
     });
-
-    // Auto-book Shiprath B2C shipment (fire-and-forget — does not affect customer response)
-    if (isCod && order?.id) {
-      setImmediate(async () => {
-        try {
-          const { data: freshOrder } = await supabase
-            .from('orders')
-            .select('*, order_items(*)')
-            .eq('id', order.id)
-            .maybeSingle();
-          if (freshOrder) {
-            const result = await bookShiprathShipment(freshOrder);
-            if (result?.awb) {
-              console.log('[SHIPRATH COD] ✅ Shipment booked — AWB:', result.awb, '| Order:', order.order_number);
-            } else {
-              console.warn('[SHIPRATH COD] Booking skipped/failed for order:', order.order_number, result?.error || '');
-            }
-          }
-        } catch (shipErr) {
-          console.warn('[SHIPRATH COD] Auto-book notice:', shipErr.message);
-        }
-      });
-    }
 
     return; // Prevent fall-through to catch
   } catch (error) {

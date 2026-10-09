@@ -2,12 +2,10 @@ import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { supabase } from '../config/supabase.js';
 import {
-  bookShiprathShipment,
   fetchLiveShiprathRate,
   calculatePackage,
   getShippingQuote,
   saveShippingQuote,
-  claimOrderForBooking,
 } from './shipratController.js';
 import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
 
@@ -538,7 +536,8 @@ export const finalizeOrderFromPayment = async ({
     payment_id: razorpay_payment_id || razorpay_order_id || null,
     payment_status: 'paid',
     order_status: 'confirmed',
-    shipment_status: 'pending',
+    // Shipments are created manually by admin (Orders Log → Create Shipment), never on payment
+    shipment_status: 'not_created',
     // ── Stored Shiprath rate quote — used for booking, prevents re-fetch/drift ──
     // IDs are stored exactly as the Rate API returned them: an empty courier_id stays "".
     selected_carrier_id: session?.selectedRate ? String(session.selectedRate.carrier_id ?? '') : null,
@@ -774,48 +773,6 @@ export const finalizeOrderFromPayment = async ({
 };
 
 /**
- * Auto-book a Shiprath shipment for a paid order, at most once.
- * Atomically claims the order (pending → creating) so concurrent callers
- * (frontend verify + multiple Razorpay webhook events) cannot double-book.
- */
-const autoBookShipment = async (orderId, tag = '[SHIPRATH]') => {
-  try {
-    // Only a never-attempted order can be auto-booked. 'creating', 'booked' and 'failed' are skipped;
-    // a failed booking is retried by admin, never silently by a repeated webhook.
-    const { claimed, error: claimErr } = await claimOrderForBooking(orderId, ['pending', 'not_created', null]);
-
-    if (claimErr) {
-      console.error(`${tag} Could not claim order for auto-book:`, claimErr.message);
-      return;
-    }
-    if (!claimed) {
-      console.log(`${tag} Order ${orderId} already booked, failed, or booking in progress — skipping`);
-      return;
-    }
-
-    const { data: freshOrder } = await supabase
-      .from('orders')
-      .select('*, order_items(*)')
-      .eq('id', orderId)
-      .maybeSingle();
-    if (!freshOrder) return;
-
-    console.log(`${tag} ${freshOrder.order_number} → Starting auto-book`);
-    // bookShiprathShipment persists the outcome itself (booked + AWB, or failed + exact error)
-    const result = await bookShiprathShipment(freshOrder);
-    if (result?.success) {
-      console.log(`${tag} ${freshOrder.order_number} → ✅ Auto-book SUCCESS AWB: ${result.awb} Courier: ${result.courier_name}${result.fallbackUsed ? ' (fallback)' : ''}`);
-    } else {
-      console.error(`${tag} ${freshOrder.order_number} → ❌ Auto-book FAILED: ${result?.rawError || result?.error || 'Unknown error'}`);
-    }
-  } catch (shipErr) {
-    console.error(`${tag} Auto-book exception:`, shipErr.message);
-    await safeUpdateOrder(orderId, { shipment_status: 'failed', shipment_error: shipErr.message });
-  }
-};
-
-
-/**
  * 3. VERIFY RAZORPAY PAYMENT SIGNATURE & AMOUNT
  * POST /api/payments/verify
  */
@@ -852,11 +809,6 @@ export const verifyRazorpayPayment = async (req, res) => {
       razorpay_payment_id,
       razorpay_signature,
     });
-
-    // Auto-book Shiprath B2C shipment (fire-and-forget — does not block response)
-    if (order?.id) {
-      setImmediate(() => autoBookShipment(order.id, '[SHIPRATH]'));
-    }
 
     return res.json({
       success: true,
@@ -947,15 +899,11 @@ export const handleRazorpayWebhook = async (req, res) => {
       const razorpay_payment_id = paymentEntity?.id;
 
       if (razorpay_order_id && razorpay_payment_id) {
-        const finalizedOrder = await finalizeOrderFromPayment({
+        await finalizeOrderFromPayment({
           razorpay_order_id,
           razorpay_payment_id,
         });
 
-        // Auto-book Shiprath shipment (fire-and-forget, same as /payments/verify path)
-        if (finalizedOrder?.id) {
-          setImmediate(() => autoBookShipment(finalizedOrder.id, '[SHIPRATH WEBHOOK]'));
-        }
       }
     } else if (event === 'payment.failed') {
       const paymentEntity = payload?.payment?.entity;

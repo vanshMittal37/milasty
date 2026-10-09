@@ -1181,10 +1181,80 @@ export async function claimOrderForBooking(orderId, fromStatuses) {
   return { claimed: Boolean(data && data.length > 0), error: null };
 }
 
+const SHIPMENT_CREATABLE = ['not_created', 'pending', 'failed', null, ''];
+
+/** Why this order can't have a shipment created right now, or null if it can. */
+export function shipmentBlockReason(order) {
+  if (String(order.order_status || '').toLowerCase() === 'cancelled') return 'This order is cancelled — no shipment can be created.';
+  if (String(order.order_status || '').toLowerCase() === 'delivered') return 'This order is already delivered.';
+  if (String(order.payment_method || '').toLowerCase() === 'cod') {
+    return 'COD orders cannot be booked through the API (MILASTY ships prepaid-only and the Shiprath COD fields are not verified). Book it manually in the Shiprath panel.';
+  }
+  if (String(order.payment_status || '').toLowerCase() !== 'paid') return 'Shipments can only be created for paid orders.';
+  return null;
+}
+
 /**
- * POST /api/orders/admin/:id/book-shipment (and /api/shipping/book)
- * Admin RETRY of a failed automatic booking. Normal orders are booked automatically after payment.
- * Body: { force?: boolean } — force is only needed to retry an order stuck in 'creating'.
+ * GET /api/orders/admin/:id/shipment-preview
+ * Everything the admin confirms before creating a shipment: address, items, the delivery charge the
+ * customer paid, the courier quoted at checkout and the calculated package. Read-only — calls nothing at Shiprath.
+ */
+export const getShipmentPreview = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const isUuid = /^[0-9a-fA-F-]{36}$/.test(orderId);
+    let query = supabase.from('orders').select('*, order_items(*)');
+    query = isUuid ? query.eq('id', orderId) : query.eq('order_number', orderId);
+    const { data: order, error } = await query.maybeSingle();
+    if (error || !order) return res.status(404).json({ success: false, message: 'Order not found.' });
+
+    const items = order.order_items || [];
+    let pkg = null;
+    let packageError = null;
+    try {
+      pkg = await calculatePackage(items);
+    } catch (e) {
+      packageError = e.message;
+    }
+
+    const shipStatus = String(order.shipment_status || '').toLowerCase();
+    return res.json({
+      success: true,
+      order: {
+        id: order.id,
+        order_number: order.order_number,
+        customer_name: order.customer_name,
+        customer_phone: order.customer_phone,
+        shipping_address: order.shipping_address,
+        pincode: order.pincode,
+        delivery_fee: Number(order.delivery_fee || 0),
+        grand_total: Number(order.grand_total || 0),
+        payment_method: order.payment_method,
+        payment_status: order.payment_status,
+        selected_service_name: order.selected_service_name || null,
+        shipment_status: order.shipment_status || 'not_created',
+        shipment_error: order.shipment_error || null,
+        awb_number: order.awb_number || order.awb || null,
+        items: items.map((i) => ({ title: i.product_title || i.title, variant: i.variant_name, quantity: i.quantity })),
+      },
+      package: pkg ? { weightKg: pkg.totalWeightKg, ...pkg.dimensions } : null,
+      packageError,
+      blockedReason: shipmentBlockReason(order)
+        || (order.awb_number || order.awb || shipStatus === 'booked' ? 'A shipment already exists for this order.' : null),
+      inProgress: shipStatus === 'creating',
+      uncertainPreviousAttempt: shipStatus === 'failed' && /^UNCERTAIN/i.test(order.shipment_error || ''),
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Could not load shipment preview.' });
+  }
+};
+
+/**
+ * POST /api/orders/admin/:id/book-shipment (also /retry-shipment and /api/shipping/book)
+ * Admin "Create Shipment" — the ONLY way a Shiprath shipment is created (nothing books at checkout).
+ * Body: { package?: { weightKg, length, width, height }, force?: boolean, confirmNoExistingShipment?: boolean }
+ *   force                      — only to retry an order stuck in 'creating'
+ *   confirmNoExistingShipment  — required after an UNCERTAIN attempt (response lost; Shiprath may have booked it)
  */
 export const bookShipmentForOrder = async (req, res) => {
   try {
@@ -1215,14 +1285,21 @@ export const bookShipmentForOrder = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Order not found.' });
     }
 
-    if (String(order.payment_status || '').toLowerCase() !== 'paid') {
-      return res.status(400).json({ success: false, message: 'Shipments can only be created for paid orders.' });
-    }
-    if (String(order.order_status || '').toLowerCase() === 'cancelled') {
-      return res.status(400).json({ success: false, message: 'This order is cancelled.' });
+    const blocked = shipmentBlockReason(order);
+    if (blocked) {
+      return res.status(400).json({ success: false, code: 'NOT_ELIGIBLE', message: blocked });
     }
 
     const shipStatus = String(order.shipment_status || '').toLowerCase();
+
+    // A previous attempt lost Shiprath's response — the shipment may exist. Never re-book blindly.
+    if (shipStatus === 'failed' && /^UNCERTAIN/i.test(order.shipment_error || '') && !req.body?.confirmNoExistingShipment) {
+      return res.status(409).json({
+        success: false,
+        code: 'UNCERTAIN_PREVIOUS_ATTEMPT',
+        message: `The last attempt for ${order.order_number} lost Shiprath's response, so a shipment may already exist. Check the Shiprath panel for this order first; only retry if no shipment is there.`,
+      });
+    }
 
     if (order.awb_number || order.awb || shipStatus === 'booked') {
       return res.status(409).json({
@@ -1241,8 +1318,8 @@ export const bookShipmentForOrder = async (req, res) => {
     }
 
     const fromStatuses = force
-      ? ['creating', 'failed', 'pending', 'not_created', null]
-      : ['failed', 'pending', 'not_created', null];
+      ? ['creating', ...SHIPMENT_CREATABLE.filter((s) => s !== '')]
+      : SHIPMENT_CREATABLE.filter((s) => s !== '');
     const { claimed, error: claimErr } = await claimOrderForBooking(order.id, fromStatuses);
     if (claimErr) {
       return res.status(500).json({ success: false, message: `Could not lock order for booking: ${claimErr.message}` });
@@ -1251,12 +1328,19 @@ export const bookShipmentForOrder = async (req, res) => {
       return res.status(409).json({ success: false, code: 'STATE_CHANGED', message: 'Shipment state changed while retrying. Refresh and check again.' });
     }
 
-    console.log(`[ADMIN RETRY] ${order.order_number} → retrying shipment (previous status: ${shipStatus || 'none'}${force ? ', forced' : ''})`);
+    // Re-read after taking the lock: the customer may have cancelled between our first read and the claim
+    const { data: lockedOrder } = await supabase.from('orders').select('order_status').eq('id', order.id).maybeSingle();
+    if (String(lockedOrder?.order_status || '').toLowerCase() === 'cancelled') {
+      await safeUpdateOrder(order.id, { shipment_status: 'cancelled' });
+      return res.status(400).json({ success: false, code: 'NOT_ELIGIBLE', message: 'This order was cancelled — no shipment was created.' });
+    }
+
+    console.log(`[ADMIN CREATE SHIPMENT] ${order.order_number} by ${req.user?.email || req.user?.id || 'admin'} (previous status: ${shipStatus || 'none'}${force ? ', forced' : ''}${packageOverride ? ', manual package' : ''})`);
     const result = await bookShiprathShipment(order, { packageOverride });
 
     if (!result || result.error) {
       const realError = result?.rawError || result?.error || 'Shiprath booking failed.';
-      console.error(`[ADMIN RETRY] ${order.order_number} -> FAILED: ${realError}`);
+      console.error(`[ADMIN CREATE SHIPMENT] ${order.order_number} -> FAILED: ${realError}`);
       return res.status(400).json({
         success: false,
         message: realError,

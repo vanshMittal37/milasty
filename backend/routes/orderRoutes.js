@@ -8,7 +8,7 @@ import {
   updateOrderStatus,
   getAdminAnalytics,
 } from '../controllers/orderController.js';
-import { bookShipmentForOrder } from '../controllers/shipratController.js';
+import { bookShipmentForOrder, getShipmentPreview } from '../controllers/shipratController.js';
 import { getCancellationQuote } from '../controllers/cancellationController.js';
 import { protect, adminOnly, optionalProtect } from '../middleware/authMiddleware.js';
 
@@ -25,7 +25,8 @@ router.put('/:id/cancel', protect, cancelOrder);
 router.get('/admin/analytics', protect, adminOnly, getAdminAnalytics);
 router.get('/admin/all', protect, adminOnly, getAllOrders);
 router.put('/admin/:id/status', protect, adminOnly, updateOrderStatus);
-// Admin: retry a FAILED automatic Shiprath booking (normal orders are booked automatically after payment)
+// Admin: Create Shipment (shipments are never created automatically at checkout)
+router.get('/admin/:id/shipment-preview', protect, adminOnly, getShipmentPreview);
 router.post('/admin/:id/book-shipment', protect, adminOnly, bookShipmentForOrder);
 router.post('/admin/:id/retry-shipment', protect, adminOnly, bookShipmentForOrder);
 

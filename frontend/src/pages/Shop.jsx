@@ -478,297 +478,6 @@ export default function Shop() {
       <div style={{ position: 'relative', zIndex: 1 }}>
 
       {/* ================================================================== */}
-      {/* 2. FUTURE FAVOURITES / WHAT'S NEXT FROM MILASTY                     */}
-      {/* ================================================================== */}
-      {prebookingProducts.length > 0 && (
-        <section 
-          id="future-favourites-section" 
-          style={{ 
-            padding: isMobile ? '2.5rem 1rem 3.5rem' : '4.5rem 1.5rem 5rem', 
-            maxWidth: '1280px', 
-            margin: '0 auto', 
-            boxSizing: 'border-box' 
-          }}
-        >
-          {/* Header */}
-          <div style={{ textAlign: 'center', maxWidth: '780px', margin: isMobile ? '0 auto 2rem' : '0 auto 3rem' }}>
-            <span 
-              style={{ 
-                fontSize: '0.8rem', 
-                textTransform: 'uppercase', 
-                letterSpacing: '0.18em', 
-                color: '#2F6B3A', 
-                fontWeight: '800', 
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                marginBottom: '0.65rem'
-              }}
-            >
-              <Leaf size={14} color="#2F6B3A" /> FUTURE FAVOURITES <Leaf size={14} color="#2F6B3A" />
-            </span>
-            <h2 
-              style={{ 
-                fontSize: isMobile ? '2.2rem' : '3.4rem', 
-                fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif', 
-                color: '#32180D', 
-                fontWeight: '800', 
-                margin: '0 0 0.85rem 0', 
-                lineHeight: '1.2' 
-              }}
-            >
-              What's Next from <span style={{ color: '#2F6B3A' }}>MILASTY</span>
-            </h2>
-            <p 
-              style={{ 
-                fontSize: isMobile ? '0.92rem' : '1.08rem', 
-                color: '#654B38', 
-                margin: '0 auto 1.5rem', 
-                fontWeight: '500',
-                lineHeight: '1.6',
-                maxWidth: '620px'
-              }}
-            >
-              Exciting new bakes, handcrafted with the goodness you love.<br />
-              Pre-book your favourites now and be the first to enjoy!
-            </p>
-
-            <span
-              style={{
-                backgroundColor: '#E3EEDC',
-                color: '#24572E',
-                border: '1.5px solid rgba(47, 107, 58, 0.3)',
-                padding: '0.45rem 1.25rem',
-                borderRadius: '25px',
-                fontSize: '0.78rem',
-                fontWeight: '700',
-                letterSpacing: '0.08em',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                boxShadow: '0 4px 14px rgba(43, 20, 11, 0.05)'
-              }}
-            >
-              <Calendar size={14} color="#2F6B3A" /> NOW OPEN FOR PRE-BOOKING
-            </span>
-          </div>
-
-          {/* Dynamic Product Cards Grid */}
-          <div
-            className="prebook-grid"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : `repeat(${Math.min(prebookingProducts.length, 4)}, minmax(0, 1fr))`,
-              gap: isMobile ? '12px' : '1.15rem',
-              alignItems: 'stretch'
-            }}
-          >
-            {(showAllPrebookings ? prebookingProducts : prebookingProducts.slice(0, 4)).map((item, idx) => {
-              const theme = cardThemes[idx % cardThemes.length];
-              const pId = item.productId || item.product_id || item.id;
-              const title = item.productTitle || item.title || 'Upcoming Bake';
-              const price = item.productPrice || item.price || 0;
-              const image = item.productImage || item.image || '/images/image1.jpeg';
-              const description = item.productDescription || item.description || 'Pre-book your package today.';
-              const formattedDate = formatLaunchDate(item.launchDate || item.launch_date);
-
-              return (
-                <div
-                  key={item.id || idx}
-                  className="prebook-card"
-                  onClick={() => navigate(`/product/${item.productSlug || item.slug || pId}`)}
-                  style={{
-                    background: 'var(--card-bg, #EAD8C3)',
-                    borderRadius: isMobile ? '14px' : '20px',
-                    border: 'var(--card-border, 1px solid #D6C2A7)',
-                    boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
-                    padding: isMobile ? '0.75rem 0.7rem 0.7rem' : '1.15rem 1rem 1rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minWidth: 0,
-                    height: '100%',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    boxSizing: 'border-box',
-                    cursor: 'pointer',
-                    transition: 'transform 0.3s ease, border-color 0.3s ease',
-                  }}
-                >
-                  <div style={{ minWidth: 0 }}>
-                    {/* Top row: badge left, thumbnail right — the title below gets the full card width */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.4rem', marginBottom: isMobile ? '0.5rem' : '0.75rem' }}>
-                      <span
-                        style={{
-                          background: '#E3EEDC',
-                          color: '#24572E',
-                          border: '1px solid rgba(47, 107, 58, 0.25)',
-                          padding: isMobile ? '0.18rem 0.45rem' : '0.3rem 0.8rem',
-                          borderRadius: '20px',
-                          fontSize: isMobile ? '0.54rem' : '0.7rem',
-                          fontWeight: '800',
-                          letterSpacing: '0.03em',
-                          textTransform: 'uppercase',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.2rem',
-                          whiteSpace: 'nowrap',
-                          minWidth: 0,
-                        }}
-                      >
-                        🔥 PRE-ORDER
-                      </span>
-                      <div
-                        style={{
-                          width: isMobile ? '52px' : '85px',
-                          height: isMobile ? '52px' : '85px',
-                          borderRadius: isMobile ? '8px' : '12px',
-                          overflow: 'hidden',
-                          boxShadow: '0 2px 8px rgba(43,20,11,0.08)',
-                          border: '1px solid #DCC8AE',
-                          flexShrink: 0
-                        }}
-                      >
-                        <img
-                          src={image}
-                          alt={title}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Title — max 2 lines */}
-                    <h3
-                      style={{
-                        margin: isMobile ? '0 0 0.3rem' : '0 0 0.5rem',
-                        fontSize: isMobile ? '0.95rem' : '1.1rem',
-                        fontWeight: '800',
-                        color: '#32180D',
-                        fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
-                        lineHeight: '1.2',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        overflowWrap: 'anywhere',
-                      }}
-                    >
-                      {title}
-                    </h3>
-
-                    {/* Description — max 2 lines */}
-                    <p
-                      style={{
-                        fontSize: isMobile ? '0.72rem' : '0.82rem',
-                        color: '#654B38',
-                        lineHeight: '1.35',
-                        fontWeight: '400',
-                        margin: isMobile ? '0 0 0.6rem 0' : '0 0 0.85rem 0',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      {description}
-                    </p>
-                  </div>
-
-                  {/* Bottom block pinned to the card bottom so price/CTA/date align across a row */}
-                  <div style={{ marginTop: 'auto', minWidth: 0 }}>
-                    {/* Collection Card Action Row: Price & Pre-book Button */}
-                    {/* Mobile: price above a full-width CTA (a 150px card can't fit both on one row).
-                        Desktop: price left, CTA right. */}
-                    <div className="prebook-action-row" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: isMobile ? '0.4rem' : '0.6rem', marginBottom: isMobile ? '0.55rem' : '0.85rem', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-                      <span className="prebook-price" style={{ fontSize: isMobile ? '1.05rem' : '1.35rem', fontWeight: '900', color: '#2B170D', whiteSpace: 'nowrap', lineHeight: 1.1, minWidth: 0 }}>
-                        ₹{price}
-                      </span>
-
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addToCart({
-                            _id: pId,
-                            id: pId,
-                            title: title,
-                            price: Number(price),
-                            image: image,
-                            category: 'cookies',
-                            quantity: 1,
-                            is_preorder: true,
-                            expected_ship_date: formattedDate
-                          });
-                        }}
-                        className="btn-primary prebook-btn"
-                        style={{
-                          backgroundColor: '#2F6B3A',
-                          color: '#FFFFFF',
-                          border: 'none',
-                          borderRadius: '999px',
-                          fontWeight: '800',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 4px 12px rgba(47, 107, 58, 0.25)',
-                          transition: 'all 0.25s ease',
-                          flexShrink: 0
-                        }}
-                      >
-                        <ShoppingBag size={isMobile ? 14 : 17} color="#FFFFFF" />
-                        <span>Pre-book</span>
-                      </button>
-                    </div>
-
-                    {/* Shipping Starts Date Pill */}
-                    {formattedDate && (
-                      <div style={{ textAlign: 'center' }}>
-                        <span
-                          style={{
-                            fontSize: isMobile ? '0.56rem' : '0.66rem',
-                            lineHeight: 1.3,
-                            color: '#806A57',
-                            fontWeight: '700',
-                            letterSpacing: '0.03em',
-                            textTransform: 'uppercase',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.2rem',
-                          }}
-                        >
-                          <Calendar size={isMobile ? 9 : 12} color="#806A57" /> SHIPPING STARTS {formattedDate}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {prebookingProducts.length > 4 && (
-            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-              <button
-                onClick={() => setShowAllPrebookings(!showAllPrebookings)}
-                style={{
-                  padding: '0.65rem 1.65rem',
-                  borderRadius: '999px',
-                  backgroundColor: '#F4EBDD',
-                  border: '1.5px solid #DCC8AE',
-                  color: '#32180D',
-                  fontSize: '0.88rem',
-                  fontWeight: '800',
-                  cursor: 'pointer',
-                  transition: 'all 0.25s ease'
-                }}
-              >
-                {showAllPrebookings ? 'Show Less' : 'Show More'}
-              </button>
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* ================================================================== */}
       {/* 3. EXPLORE BY CATEGORY (Circular Category Design) */}
       {/* ================================================================== */}
       <section 
@@ -1655,6 +1364,297 @@ export default function Shop() {
           <span style={{ fontSize: '1.1rem', fontWeight: '900', color: 'var(--accent-gold)', lineHeight: 1 }}>↑</span>
         </button>
       </div>
+
+      {/* ================================================================== */}
+      {/* 2. FUTURE FAVOURITES / WHAT'S NEXT FROM MILASTY                     */}
+      {/* ================================================================== */}
+      {prebookingProducts.length > 0 && (
+        <section 
+          id="future-favourites-section" 
+          style={{ 
+            padding: isMobile ? '2.5rem 1rem 3.5rem' : '4.5rem 1.5rem 5rem', 
+            maxWidth: '1280px', 
+            margin: '0 auto', 
+            boxSizing: 'border-box' 
+          }}
+        >
+          {/* Header */}
+          <div style={{ textAlign: 'center', maxWidth: '780px', margin: isMobile ? '0 auto 2rem' : '0 auto 3rem' }}>
+            <span 
+              style={{ 
+                fontSize: '0.8rem', 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.18em', 
+                color: '#2F6B3A', 
+                fontWeight: '800', 
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '0.65rem'
+              }}
+            >
+              <Leaf size={14} color="#2F6B3A" /> FUTURE FAVOURITES <Leaf size={14} color="#2F6B3A" />
+            </span>
+            <h2 
+              style={{ 
+                fontSize: isMobile ? '2.2rem' : '3.4rem', 
+                fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif', 
+                color: '#32180D', 
+                fontWeight: '800', 
+                margin: '0 0 0.85rem 0', 
+                lineHeight: '1.2' 
+              }}
+            >
+              What's Next from <span style={{ color: '#2F6B3A' }}>MILASTY</span>
+            </h2>
+            <p 
+              style={{ 
+                fontSize: isMobile ? '0.92rem' : '1.08rem', 
+                color: '#654B38', 
+                margin: '0 auto 1.5rem', 
+                fontWeight: '500',
+                lineHeight: '1.6',
+                maxWidth: '620px'
+              }}
+            >
+              Exciting new bakes, handcrafted with the goodness you love.<br />
+              Pre-book your favourites now and be the first to enjoy!
+            </p>
+
+            <span
+              style={{
+                backgroundColor: '#E3EEDC',
+                color: '#24572E',
+                border: '1.5px solid rgba(47, 107, 58, 0.3)',
+                padding: '0.45rem 1.25rem',
+                borderRadius: '25px',
+                fontSize: '0.78rem',
+                fontWeight: '700',
+                letterSpacing: '0.08em',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 4px 14px rgba(43, 20, 11, 0.05)'
+              }}
+            >
+              <Calendar size={14} color="#2F6B3A" /> NOW OPEN FOR PRE-BOOKING
+            </span>
+          </div>
+
+          {/* Dynamic Product Cards Grid */}
+          <div
+            className="prebook-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : `repeat(${Math.min(prebookingProducts.length, 4)}, minmax(0, 1fr))`,
+              gap: isMobile ? '12px' : '1.15rem',
+              alignItems: 'stretch'
+            }}
+          >
+            {(showAllPrebookings ? prebookingProducts : prebookingProducts.slice(0, 4)).map((item, idx) => {
+              const theme = cardThemes[idx % cardThemes.length];
+              const pId = item.productId || item.product_id || item.id;
+              const title = item.productTitle || item.title || 'Upcoming Bake';
+              const price = item.productPrice || item.price || 0;
+              const image = item.productImage || item.image || '/images/image1.jpeg';
+              const description = item.productDescription || item.description || 'Pre-book your package today.';
+              const formattedDate = formatLaunchDate(item.launchDate || item.launch_date);
+
+              return (
+                <div
+                  key={item.id || idx}
+                  className="prebook-card"
+                  onClick={() => navigate(`/product/${item.productSlug || item.slug || pId}`)}
+                  style={{
+                    background: 'var(--card-bg, #EAD8C3)',
+                    borderRadius: isMobile ? '14px' : '20px',
+                    border: 'var(--card-border, 1px solid #D6C2A7)',
+                    boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
+                    padding: isMobile ? '0.75rem 0.7rem 0.7rem' : '1.15rem 1rem 1rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minWidth: 0,
+                    height: '100%',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    boxSizing: 'border-box',
+                    cursor: 'pointer',
+                    transition: 'transform 0.3s ease, border-color 0.3s ease',
+                  }}
+                >
+                  <div style={{ minWidth: 0 }}>
+                    {/* Top row: badge left, thumbnail right — the title below gets the full card width */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.4rem', marginBottom: isMobile ? '0.5rem' : '0.75rem' }}>
+                      <span
+                        style={{
+                          background: '#E3EEDC',
+                          color: '#24572E',
+                          border: '1px solid rgba(47, 107, 58, 0.25)',
+                          padding: isMobile ? '0.18rem 0.45rem' : '0.3rem 0.8rem',
+                          borderRadius: '20px',
+                          fontSize: isMobile ? '0.54rem' : '0.7rem',
+                          fontWeight: '800',
+                          letterSpacing: '0.03em',
+                          textTransform: 'uppercase',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.2rem',
+                          whiteSpace: 'nowrap',
+                          minWidth: 0,
+                        }}
+                      >
+                        🔥 PRE-ORDER
+                      </span>
+                      <div
+                        style={{
+                          width: isMobile ? '52px' : '85px',
+                          height: isMobile ? '52px' : '85px',
+                          borderRadius: isMobile ? '8px' : '12px',
+                          overflow: 'hidden',
+                          boxShadow: '0 2px 8px rgba(43,20,11,0.08)',
+                          border: '1px solid #DCC8AE',
+                          flexShrink: 0
+                        }}
+                      >
+                        <img
+                          src={image}
+                          alt={title}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Title — max 2 lines */}
+                    <h3
+                      style={{
+                        margin: isMobile ? '0 0 0.3rem' : '0 0 0.5rem',
+                        fontSize: isMobile ? '0.95rem' : '1.1rem',
+                        fontWeight: '800',
+                        color: '#32180D',
+                        fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
+                        lineHeight: '1.2',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        overflowWrap: 'anywhere',
+                      }}
+                    >
+                      {title}
+                    </h3>
+
+                    {/* Description — max 2 lines */}
+                    <p
+                      style={{
+                        fontSize: isMobile ? '0.72rem' : '0.82rem',
+                        color: '#654B38',
+                        lineHeight: '1.35',
+                        fontWeight: '400',
+                        margin: isMobile ? '0 0 0.6rem 0' : '0 0 0.85rem 0',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {description}
+                    </p>
+                  </div>
+
+                  {/* Bottom block pinned to the card bottom so price/CTA/date align across a row */}
+                  <div style={{ marginTop: 'auto', minWidth: 0 }}>
+                    {/* Collection Card Action Row: Price & Pre-book Button */}
+                    {/* Mobile: price above a full-width CTA (a 150px card can't fit both on one row).
+                        Desktop: price left, CTA right. */}
+                    <div className="prebook-action-row" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: isMobile ? '0.4rem' : '0.6rem', marginBottom: isMobile ? '0.55rem' : '0.85rem', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+                      <span className="prebook-price" style={{ fontSize: isMobile ? '1.05rem' : '1.35rem', fontWeight: '900', color: '#2B170D', whiteSpace: 'nowrap', lineHeight: 1.1, minWidth: 0 }}>
+                        ₹{price}
+                      </span>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart({
+                            _id: pId,
+                            id: pId,
+                            title: title,
+                            price: Number(price),
+                            image: image,
+                            category: 'cookies',
+                            quantity: 1,
+                            is_preorder: true,
+                            expected_ship_date: formattedDate
+                          });
+                        }}
+                        className="btn-primary prebook-btn"
+                        style={{
+                          backgroundColor: '#2F6B3A',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          borderRadius: '999px',
+                          fontWeight: '800',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 4px 12px rgba(47, 107, 58, 0.25)',
+                          transition: 'all 0.25s ease',
+                          flexShrink: 0
+                        }}
+                      >
+                        <ShoppingBag size={isMobile ? 14 : 17} color="#FFFFFF" />
+                        <span>Pre-book</span>
+                      </button>
+                    </div>
+
+                    {/* Shipping Starts Date Pill */}
+                    {formattedDate && (
+                      <div style={{ textAlign: 'center' }}>
+                        <span
+                          style={{
+                            fontSize: isMobile ? '0.56rem' : '0.66rem',
+                            lineHeight: 1.3,
+                            color: '#806A57',
+                            fontWeight: '700',
+                            letterSpacing: '0.03em',
+                            textTransform: 'uppercase',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.2rem',
+                          }}
+                        >
+                          <Calendar size={isMobile ? 9 : 12} color="#806A57" /> SHIPPING STARTS {formattedDate}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {prebookingProducts.length > 4 && (
+            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+              <button
+                onClick={() => setShowAllPrebookings(!showAllPrebookings)}
+                style={{
+                  padding: '0.65rem 1.65rem',
+                  borderRadius: '999px',
+                  backgroundColor: '#F4EBDD',
+                  border: '1.5px solid #DCC8AE',
+                  color: '#32180D',
+                  fontSize: '0.88rem',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s ease'
+                }}
+              >
+                {showAllPrebookings ? 'Show Less' : 'Show More'}
+              </button>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* ================================================================== */}
       {/* 9. FINAL CONVERSION */}

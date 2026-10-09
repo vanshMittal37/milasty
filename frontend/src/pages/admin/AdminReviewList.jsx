@@ -55,21 +55,17 @@ export default function AdminReviewList() {
   // Add Testimonial Form State
   const [tName, setTName] = useState('');
   const [tRole, setTRole] = useState('Valued Customer');
-  const [tRating, setTRating] = useState(5);
   const [tContent, setTContent] = useState('');
-  const [tImage, setTImage] = useState('');
   const [tIsPublished, setTIsPublished] = useState(true);
   const [tShowOnHome, setTShowOnHome] = useState(true);
   const [tShowOnShop, setTShowOnShop] = useState(true);
   const [tProductId, setTProductId] = useState('');
-  const [uploadingTImage, setUploadingTImage] = useState(false);
 
   // Edit Testimonial Form State
   const [editTName, setEditTName] = useState('');
   const [editTRole, setEditTRole] = useState('');
   const [editTRating, setEditTRating] = useState(5);
   const [editTContent, setEditTContent] = useState('');
-  const [editTImage, setEditTImage] = useState('');
   const [editTIsPublished, setEditTIsPublished] = useState(true);
   const [editTShowOnHome, setEditTShowOnHome] = useState(true);
   const [editTShowOnShop, setEditTShowOnShop] = useState(true);
@@ -246,9 +242,8 @@ export default function AdminReviewList() {
       await api.post('/testimonials', {
         name: tName,
         role: tRole,
-        rating: Number(tRating),
+        rating: 5,
         content: tContent,
-        imageUrl: tImage,
         isPublished: tIsPublished,
         showOnHome: tShowOnHome,
         showOnShop: tShowOnShop,
@@ -259,8 +254,6 @@ export default function AdminReviewList() {
       setTName('');
       setTRole('Valued Customer');
       setTContent('');
-      setTImage('');
-      setTRating(5);
       setTProductId('');
       fetchTestimonials();
     } catch (e) {
@@ -292,7 +285,6 @@ export default function AdminReviewList() {
         role: editTRole,
         rating: Number(editTRating),
         content: editTContent,
-        imageUrl: editTImage,
         isPublished: editTIsPublished,
         showOnHome: editTShowOnHome,
         showOnShop: editTShowOnShop,
@@ -683,11 +675,6 @@ export default function AdminReviewList() {
                   <div>
                     {/* Top Info */}
                     <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center', marginBottom: '0.75rem' }}>
-                      <img
-                        src={testim.imageUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80'}
-                        alt={testim.name}
-                        style={{ width: '44px', height: '44px', objectFit: 'cover', borderRadius: '50%', border: '1.5px solid var(--admin-border-subtle)' }}
-                      />
                       <div>
                         <strong style={{ fontSize: '0.92rem', color: '#21150F', display: 'block' }}>{testim.name}</strong>
                         <span style={{ fontSize: '0.76rem', color: 'var(--admin-accent-gold)', fontWeight: '600' }}>{testim.role}</span>
@@ -737,7 +724,6 @@ export default function AdminReviewList() {
                           setEditTRole(testim.role || '');
                           setEditTRating(testim.rating || 5);
                           setEditTContent(testim.content || '');
-                          setEditTImage(testim.imageUrl || '');
                           setEditTIsPublished(testim.isPublished !== false);
                           setEditTShowOnHome(testim.showOnHome !== false);
                           setEditTShowOnShop(testim.showOnShop !== false);
@@ -972,30 +958,6 @@ export default function AdminReviewList() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Role / Description</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Nutritionist & Wellness Coach"
-                  value={tRole}
-                  onChange={(e) => setTRole(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Rating</label>
-                <select
-                  value={tRating}
-                  onChange={(e) => setTRating(Number(e.target.value))}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
-                >
-                  <option value={5}>★★★★★ 5 Stars</option>
-                  <option value={4}>★★★★☆ 4 Stars</option>
-                  <option value={3}>★★★☆☆ 3 Stars</option>
-                </select>
-              </div>
-
-              <div>
                 <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Testimonial Text *</label>
                 <textarea
                   rows={3}
@@ -1020,17 +982,6 @@ export default function AdminReviewList() {
                     return <option key={pVal} value={pVal}>{p.title}</option>;
                   })}
                 </select>
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Photo (Optional)</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleUploadPhoto(e, setTImage, setUploadingTImage)}
-                  style={{ fontSize: '0.8rem', color: '#4A3B2E' }}
-                />
-                {uploadingTImage && <span style={{ fontSize: '0.75rem', color: 'var(--admin-accent-gold)' }}>Uploading photo...</span>}
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '0.75rem', borderRadius: '8px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
@@ -1075,16 +1026,6 @@ export default function AdminReviewList() {
                   value={editTName}
                   onChange={(e) => setEditTName(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#4A3B2E', display: 'block', marginBottom: '0.3rem' }}>Role</label>
-                <input
-                  type="text"
-                  value={editTRole}
-                  onChange={(e) => setEditTRole(e.target.value)}
                   style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', backgroundColor: 'var(--admin-bg-surface)', border: '1px solid var(--admin-border-subtle)', color: '#21150F' }}
                 />
               </div>
