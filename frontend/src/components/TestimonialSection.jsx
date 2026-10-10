@@ -29,7 +29,7 @@ export default function TestimonialSection() {
 
   const fetchTestimonials = async () => {
     try {
-      const res = await api.get('/testimonials');
+      const res = await api.get('/testimonials?placement=home');
       const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.testimonials) ? res.data.testimonials : []);
       if (list.length > 0) {
         setDbTestimonials(list);
@@ -39,47 +39,18 @@ export default function TestimonialSection() {
     }
   };
 
-  // Bottom Customer Reviews Data (Dynamic from API if available)
-  const defaultReviews = [
-    {
-      id: 1,
-      name: 'Harshita Mishra',
-      quote:
-        'I tried bajra cookies and taste was awesome. The aroma of cardamom and homely feel in biscuits was worth appreciating. 🥰❤️',
-      rating: 5,
-      verified: true,
-    },
-    {
-      id: 2,
-      name: 'Sounik Ghosh',
-      quote:
-        'These cookies are absolutely delicious and perfectly baked. They are soft, Every bite tastes fresh and amazing! 🤩🔥😋',
-      rating: 5,
-      verified: true,
-    },
-    {
-      id: 3,
-      name: 'Harshit Kumar',
-      quote:
-        'Its one of the best healthy snacks I have eaten. Its very crunchy and tasty. 😍✨',
-      rating: 5,
-      verified: true,
-    },
-  ];
-
-  const customerReviews = dbTestimonials.length > 0
-    ? dbTestimonials.map((t) => ({
+  // Customer reviews come only from the admin-managed testimonials (no built-in placeholder reviews)
+  const customerReviews = dbTestimonials.map((t) => ({
         id: t.id,
         name: t.name,
         quote: t.content,
         rating: Number(t.rating || 5),
         verified: true,
-      }))
-    : defaultReviews;
+      }));
 
   // Automatic scrolling for mobile view (every 3.5s)
   useEffect(() => {
-    if (!isMobile || isHovered) return;
+    if (!isMobile || isHovered || customerReviews.length < 2) return;
     const interval = setInterval(() => {
       setActiveMobileIdx((prev) => (prev + 1) % customerReviews.length);
     }, 3500);
@@ -336,6 +307,7 @@ export default function TestimonialSection() {
         </div>
       </div>
 
+      {customerReviews.length > 0 && (<>
       {/* ------------------------------------------------------------- */}
       {/* 2. SECTION HEADER: LOVED BY MILASTY SNACKERS                   */}
       {/* ------------------------------------------------------------- */}
@@ -783,6 +755,7 @@ export default function TestimonialSection() {
           </div>
         </div>
       )}
+      </>)}
     </section>
   );
 }

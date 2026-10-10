@@ -512,6 +512,25 @@ export default function OurStory() {
               onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             />
           </div>
+          {/* Overlay Quote label */}
+          <div 
+            style={{ 
+              position: 'absolute', 
+              top: '24px', 
+              left: '24px', 
+              backgroundColor: '#2F6B3A', 
+              color: '#FFFFFF', 
+              padding: '0.65rem 1.25rem', 
+              borderRadius: '12px',
+              fontSize: '0.78rem',
+              fontWeight: '850',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              boxShadow: '0 4px 12px rgba(47, 107, 58, 0.2)'
+            }}
+          >
+            Where It All Began
+          </div>
         </div>
       </section>
 
@@ -550,25 +569,6 @@ export default function OurStory() {
                 decoding="async"
                 style={{ width: '100%', height: 'auto', aspectRatio: '4 / 5', maxHeight: '640px', objectFit: 'cover', objectPosition: 'center 30%', display: 'block', backgroundColor: '#F1E5D4' }}
               />
-            </div>
-            {/* Overlay Quote label */}
-            <div 
-              style={{ 
-                position: 'absolute', 
-                top: '24px', 
-                left: '24px', 
-                backgroundColor: '#2F6B3A', 
-                color: '#FFFFFF', 
-                padding: '0.65rem 1.25rem', 
-                borderRadius: '12px',
-                fontSize: '0.78rem',
-                fontWeight: '850',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                boxShadow: '0 4px 12px rgba(47, 107, 58, 0.2)'
-              }}
-            >
-              Where It All Began
             </div>
           </div>
 

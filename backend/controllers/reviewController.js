@@ -1,95 +1,18 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { supabase } from '../config/supabase.js';
-import { initialProducts, initialReviews, initialFaqs } from '../data/seedData.js';
+import { initialProducts, initialFaqs } from '../data/seedData.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const REVIEWS_FILE = path.join(__dirname, '../data/reviews_store.json');
-const TESTIMONIALS_FILE = path.join(__dirname, '../data/testimonials_store.json');
-
-// Helper to load JSON files safely from disk
-const loadJsonFile = (filePath, defaultData = []) => {
-  try {
-    if (fs.existsSync(filePath)) {
-      const content = fs.readFileSync(filePath, 'utf8');
-      if (content.trim()) return JSON.parse(content);
-    }
-  } catch (err) {
-    console.warn(`Notice loading ${path.basename(filePath)}:`, err.message);
-  }
-  return defaultData;
-};
-
-// Helper to save JSON files safely to disk
-const saveJsonFile = (filePath, data) => {
-  try {
-    const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
-  } catch (err) {
-    console.warn(`Notice saving ${path.basename(filePath)}:`, err.message);
-  }
-};
-
-// In-memory & file-backed store for rock-solid persistence across deployments
-const memoryReviews = new Map();
-const memoryTestimonials = new Map();
-
-// Helper to seed initial testimonials into memory store
-const getInitialTestimonialsSeed = () => [
-  {
-    id: 't-seed-1',
-    name: 'Dr. Sunita Rao',
-    role: 'Holistic Nutritionist & Wellness Coach',
-    rating: 5,
-    content: 'As a nutritionist advocating for gut health and low-GI foods, Milasty\'s 100% millet artisan bakes are a game changer! Zero refined flour, zero artificial preservatives, and absolutely divine taste.',
-    image_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80',
-    is_published: true,
-    sort_order: 1,
-    created_at: new Date(Date.now() - 86400000 * 10).toISOString(),
-  },
-  {
-    id: 't-seed-2',
-    name: 'Kavita & Rajesh Sharma',
-    role: 'Health-Conscious Parents',
-    rating: 5,
-    content: 'Finding clean, wholesome snacks for our kids used to be a challenge. The Cocoa Ragi Cookies are now our children\'s favorite lunchbox treat! Healthy, crunchy, and packed with calcium.',
-    image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&auto=format&fit=crop&q=80',
-    is_published: true,
-    sort_order: 2,
-    created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-  },
-  {
-    id: 't-seed-3',
-    name: 'Ananya Deshmukh',
-    role: 'Fitness Enthusiast & Yoga Instructor',
-    rating: 5,
-    content: 'Milasty\'s Almond Foxtail bakes are my go-to post-workout fuel. Clean ingredients, authentic jaggery sweetness, and incredible crunch. Highly recommend to everyone pursuing a clean diet!',
-    image_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80',
-    is_published: true,
-    sort_order: 3,
-    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-  },
-];
-
-// Hydrate memory stores from disk on startup
-const storedReviewsList = loadJsonFile(REVIEWS_FILE, []);
-storedReviewsList.forEach((r) => { if (r && r.id) memoryReviews.set(String(r.id), r); });
-
-const storedTestimonialsList = loadJsonFile(TESTIMONIALS_FILE, getInitialTestimonialsSeed());
-storedTestimonialsList.forEach((t) => { if (t && t.id) memoryTestimonials.set(String(t.id), t); });
-
-// Helper functions to persist memory states to disk
-const syncReviewsToDisk = () => {
-  saveJsonFile(REVIEWS_FILE, Array.from(memoryReviews.values()));
-};
-
-const syncTestimonialsToDisk = () => {
-  saveJsonFile(TESTIMONIALS_FILE, Array.from(memoryTestimonials.values()));
+/*
+ * Reviews and testimonials live ONLY in Supabase (product_reviews / testimonials).
+ * There is deliberately no in-memory, JSON-file or seed fallback: Railway's disk is wiped on every
+ * deploy, which made admin-added items vanish and deleted seed items reappear.
+ * If a write fails, the admin gets the real error instead of a fake success.
+ * Schema: scripts/06_create_reviews_and_testimonials_schema.sql + scripts/20_reviews_testimonials_columns.sql
+ */
+const dbError = (res, action, error) => {
+  console.error(`[REVIEWS] ${action} failed:`, error?.message || error);
+  return res.status(500).json({
+    message: `Could not ${action}: ${error?.message || 'database error'}. If a column is missing, run scripts/20_reviews_testimonials_columns.sql in Supabase.`,
+  });
 };
 
 // Helper to build comprehensive product lookup map across seed data and DB
@@ -219,28 +142,17 @@ export const createCustomerReview = async (req, res) => {
     }
 
     // SERVER-SIDE UNIQUE REVIEW CHECK (1 Customer Review per Product per User)
-    try {
-      const { data: existingReviews } = await supabase
-        .from('product_reviews')
-        .select('id')
-        .eq('user_id', String(userId))
-        .eq('product_id', String(productId))
-        .eq('review_source', 'customer');
-
-      if (existingReviews && existingReviews.length > 0) {
-        return res.status(400).json({
-          message: 'You have already submitted a review for this product.',
-        });
-      }
-    } catch (checkErr) {
-      const hasReviewedInMemory = Array.from(memoryReviews.values()).some(
-        (r) => String(r.user_id) === String(userId) && String(r.product_id) === String(productId) && r.review_source === 'customer'
-      );
-      if (hasReviewedInMemory) {
-        return res.status(400).json({
-          message: 'You have already submitted a review for this product.',
-        });
-      }
+    const { data: existingReviews, error: existingErr } = await supabase
+      .from('product_reviews')
+      .select('id')
+      .eq('user_id', String(userId))
+      .eq('product_id', String(productId))
+      .eq('review_source', 'customer');
+    if (existingErr) return dbError(res, 'check existing reviews', existingErr);
+    if (existingReviews && existingReviews.length > 0) {
+      return res.status(400).json({
+        message: 'You have already submitted a review for this product.',
+      });
     }
 
     const productsMap = await getProductsLookupMap();
@@ -277,30 +189,12 @@ export const createCustomerReview = async (req, res) => {
       updated_at: new Date().toISOString(),
     };
 
-    let insertedReview = null;
-
-    try {
-      const { data, error } = await supabase
-        .from('product_reviews')
-        .insert([newReviewRecord])
-        .select()
-        .single();
-
-      if (!error && data) {
-        insertedReview = data;
-      }
-    } catch (err) {
-      console.warn('Supabase product_reviews insert notice:', err.message);
-    }
-
-    if (!insertedReview) {
-      const fallbackId = `rev_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-      insertedReview = { id: fallbackId, ...newReviewRecord };
-    }
-
-    // Synchronize to memory & disk store
-    memoryReviews.set(String(insertedReview.id), insertedReview);
-    syncReviewsToDisk();
+    const { data: insertedReview, error: insertErr } = await supabase
+      .from('product_reviews')
+      .insert([newReviewRecord])
+      .select()
+      .single();
+    if (insertErr || !insertedReview) return dbError(res, 'save your review', insertErr);
 
     return res.status(201).json({
       success: true,
@@ -339,13 +233,8 @@ export const getMyCustomerReviews = async (req, res) => {
       console.warn('Supabase getMyCustomerReviews notice:', e.message);
     }
 
-    const memReviews = Array.from(memoryReviews.values()).filter(
-      (r) => String(r.user_id) === String(userId) || (userEmail && r.email?.toLowerCase() === userEmail)
-    );
-
     const reviewMap = new Map();
     dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
-    memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
 
     const productsMap = await getProductsLookupMap();
 
@@ -425,16 +314,8 @@ export const getProductReviews = async (req, res) => {
       console.warn('Supabase getProductReviews notice:', e.message);
     }
 
-    const memReviews = Array.from(memoryReviews.values()).filter(
-      (r) =>
-        r.status === 'approved' &&
-        r.is_published !== false &&
-        r.show_on_product !== false
-    );
-
     const reviewMap = new Map();
     dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
-    memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
 
     const allApprovedReviews = Array.from(reviewMap.values());
 
@@ -508,32 +389,7 @@ export const getAllAdminReviews = async (req, res) => {
       console.warn('Supabase product_reviews fetch notice:', e.message);
     }
 
-    const memReviews = Array.from(memoryReviews.values());
-
-    const reviewMap = new Map();
-    dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
-    memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
-
-    let reviews = Array.from(reviewMap.values());
-
-    // Fallback seed reviews if no reviews exist at all
-    if (reviews.length === 0) {
-      reviews = initialReviews.map((r, idx) => ({
-        id: `seed_rev_${idx}`,
-        product_id: r.productId || null,
-        product_title: r.productTitle || r.productName || '',
-        reviewer_name: r.name || 'Customer',
-        email: r.email || '',
-        rating: r.rating || 5,
-        comment: r.comment || r.text || '',
-        status: r.status || 'approved',
-        review_source: r.source || 'customer',
-        is_verified_purchase: r.isVerified ?? true,
-        is_published: true,
-        show_on_product: true,
-        created_at: r.createdAt || new Date().toISOString(),
-      }));
-    }
+    let reviews = dbReviews;
 
     // Sort by created_at descending
     reviews.sort((a, b) => new Date(b.created_at || b.createdAt || 0) - new Date(a.created_at || a.createdAt || 0));
@@ -671,29 +527,12 @@ export const createAdminProductReview = async (req, res) => {
       updated_at: new Date().toISOString(),
     };
 
-    let inserted = null;
-
-    try {
-      const { data, error } = await supabase
-        .from('product_reviews')
-        .insert([newRecord])
-        .select()
-        .single();
-
-      if (!error && data) {
-        inserted = data;
-      }
-    } catch (e) {
-      console.warn('Admin review creation notice:', e.message);
-    }
-
-    if (!inserted) {
-      const id = `adm_rev_${Date.now()}`;
-      inserted = { id, ...newRecord };
-    }
-
-    memoryReviews.set(String(inserted.id), inserted);
-    syncReviewsToDisk();
+    const { data: inserted, error: insertErr } = await supabase
+      .from('product_reviews')
+      .insert([newRecord])
+      .select()
+      .single();
+    if (insertErr || !inserted) return dbError(res, 'create the review', insertErr);
 
     return res.status(201).json({
       success: true,
@@ -718,33 +557,16 @@ export const updateReviewStatus = async (req, res) => {
       return res.status(400).json({ message: 'Invalid status. Must be pending, approved, or rejected.' });
     }
 
-    let updated = null;
+    const { data: updated, error } = await supabase
+      .from('product_reviews')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+    if (error) return dbError(res, 'update the review status', error);
+    if (!updated) return res.status(404).json({ message: 'Review not found.' });
 
-    try {
-      const { data, error } = await supabase
-        .from('product_reviews')
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (!error && data) updated = data;
-    } catch (e) {
-      console.warn('Supabase updateReviewStatus notice:', e.message);
-    }
-
-    if (memoryReviews.has(String(id))) {
-      const item = memoryReviews.get(String(id));
-      item.status = status;
-      item.updated_at = new Date().toISOString();
-      if (!updated) updated = item;
-    } else if (updated) {
-      memoryReviews.set(String(id), updated);
-    }
-
-    syncReviewsToDisk();
-
-    return res.json({ success: true, message: `Review status set to ${status}`, review: updated || { id, status } });
+    return res.json({ success: true, message: `Review status set to ${status}`, review: updated });
   } catch (error) {
     res.status(500).json({ message: 'Error updating review status', error: error.message });
   }
@@ -805,32 +627,16 @@ export const updateReview = async (req, res) => {
       updates.review_image_url = reviewImageUrl || image_url;
     }
 
-    let updated = null;
+    const { data: updated, error } = await supabase
+      .from('product_reviews')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+    if (error) return dbError(res, 'update the review', error);
+    if (!updated) return res.status(404).json({ message: 'Review not found.' });
 
-    try {
-      const { data, error } = await supabase
-        .from('product_reviews')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (!error && data) updated = data;
-    } catch (e) {
-      console.warn('Supabase updateReview notice:', e.message);
-    }
-
-    if (memoryReviews.has(String(id))) {
-      const item = memoryReviews.get(String(id));
-      Object.assign(item, updates);
-      if (!updated) updated = item;
-    } else if (updated) {
-      memoryReviews.set(String(id), updated);
-    }
-
-    syncReviewsToDisk();
-
-    return res.json({ success: true, message: 'Review updated successfully', review: updated || { id, ...updates } });
+    return res.json({ success: true, message: 'Review updated successfully', review: updated });
   } catch (error) {
     res.status(500).json({ message: 'Error updating review', error: error.message });
   }
@@ -844,14 +650,8 @@ export const deleteReview = async (req, res) => {
   try {
     const { id } = req.params;
 
-    try {
-      await supabase.from('product_reviews').delete().eq('id', id);
-    } catch (e) {
-      console.warn('Supabase deleteReview notice:', e.message);
-    }
-
-    memoryReviews.delete(String(id));
-    syncReviewsToDisk();
+    const { error } = await supabase.from('product_reviews').delete().eq('id', id);
+    if (error) return dbError(res, 'delete the review', error);
 
     return res.json({ success: true, message: 'Review deleted successfully' });
   } catch (error) {
@@ -889,22 +689,7 @@ export const getPublicTestimonials = async (req, res) => {
       console.warn('Supabase getPublicTestimonials notice:', e.message);
     }
 
-    const memTestimonials = Array.from(memoryTestimonials.values()).filter((t) => {
-      if (t.is_published === false) return false;
-      if (placement === 'shop' && t.show_on_shop === false) return false;
-      if (placement === 'home' && t.show_on_home === false) return false;
-      return true;
-    });
-
-    const tMap = new Map();
-    dbTestimonials.forEach((t) => { if (t && t.id) tMap.set(String(t.id), t); });
-    memTestimonials.forEach((t) => { if (t && t.id) tMap.set(String(t.id), t); });
-
-    let testimonials = Array.from(tMap.values());
-
-    if (testimonials.length === 0 && !placement) {
-      testimonials = getInitialTestimonialsSeed();
-    }
+    const testimonials = dbTestimonials;
 
     const productsMap = await getProductsLookupMap();
 
@@ -954,17 +739,7 @@ export const getAllAdminTestimonials = async (req, res) => {
       console.warn('Supabase getAllAdminTestimonials notice:', e.message);
     }
 
-    const memTestimonials = Array.from(memoryTestimonials.values());
-
-    const tMap = new Map();
-    dbTestimonials.forEach((t) => { if (t && t.id) tMap.set(String(t.id), t); });
-    memTestimonials.forEach((t) => { if (t && t.id) tMap.set(String(t.id), t); });
-
-    let testimonials = Array.from(tMap.values());
-
-    if (testimonials.length === 0) {
-      testimonials = getInitialTestimonialsSeed();
-    }
+    const testimonials = dbTestimonials;
 
     const productsMap = await getProductsLookupMap();
 
@@ -1041,27 +816,12 @@ export const createTestimonial = async (req, res) => {
       updated_at: new Date().toISOString(),
     };
 
-    let inserted = null;
-
-    try {
-      const { data, error } = await supabase
-        .from('testimonials')
-        .insert([newRecord])
-        .select()
-        .single();
-
-      if (!error && data) inserted = data;
-    } catch (e) {
-      console.warn('Testimonial creation fallback notice:', e.message);
-    }
-
-    if (!inserted) {
-      const id = `testim_${Date.now()}`;
-      inserted = { id, ...newRecord };
-    }
-
-    memoryTestimonials.set(String(inserted.id), inserted);
-    syncTestimonialsToDisk();
+    const { data: inserted, error: insertErr } = await supabase
+      .from('testimonials')
+      .insert([newRecord])
+      .select()
+      .single();
+    if (insertErr || !inserted) return dbError(res, 'save the testimonial', insertErr);
 
     return res.status(201).json({
       success: true,
@@ -1112,32 +872,16 @@ export const updateTestimonial = async (req, res) => {
     if (verified !== undefined) updates.verified = Boolean(verified);
     if (sortOrder !== undefined) updates.sort_order = Number(sortOrder);
 
-    let updated = null;
+    const { data: updated, error } = await supabase
+      .from('testimonials')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+    if (error) return dbError(res, 'update the testimonial', error);
+    if (!updated) return res.status(404).json({ message: 'Testimonial not found.' });
 
-    try {
-      const { data, error } = await supabase
-        .from('testimonials')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (!error && data) updated = data;
-    } catch (e) {
-      console.warn('Supabase updateTestimonial notice:', e.message);
-    }
-
-    if (memoryTestimonials.has(String(id))) {
-      const item = memoryTestimonials.get(String(id));
-      Object.assign(item, updates);
-      if (!updated) updated = item;
-    } else if (updated) {
-      memoryTestimonials.set(String(id), updated);
-    }
-
-    syncTestimonialsToDisk();
-
-    return res.json({ success: true, message: 'Testimonial updated successfully', testimonial: updated || { id, ...updates } });
+    return res.json({ success: true, message: 'Testimonial updated successfully', testimonial: updated });
   } catch (error) {
     res.status(500).json({ message: 'Error updating testimonial', error: error.message });
   }
@@ -1151,14 +895,8 @@ export const deleteTestimonial = async (req, res) => {
   try {
     const { id } = req.params;
 
-    try {
-      await supabase.from('testimonials').delete().eq('id', id);
-    } catch (e) {
-      console.warn('Supabase deleteTestimonial notice:', e.message);
-    }
-
-    memoryTestimonials.delete(String(id));
-    syncTestimonialsToDisk();
+    const { error } = await supabase.from('testimonials').delete().eq('id', id);
+    if (error) return dbError(res, 'delete the testimonial', error);
 
     return res.json({ success: true, message: 'Testimonial deleted successfully' });
   } catch (error) {
@@ -1216,16 +954,8 @@ export const getApprovedProductReviewStats = async () => {
     console.warn('Supabase getApprovedProductReviewStats notice:', e.message);
   }
 
-  const memReviews = Array.from(memoryReviews.values()).filter(
-    (r) =>
-      r.status === 'approved' &&
-      r.is_published !== false &&
-      r.show_on_product !== false
-  );
-
   const reviewMap = new Map();
   dbReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
-  memReviews.forEach((r) => { if (r && r.id) reviewMap.set(String(r.id), r); });
 
   const allApproved = Array.from(reviewMap.values());
   const productsMap = await getProductsLookupMap();

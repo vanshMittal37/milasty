@@ -1320,52 +1320,6 @@ export default function Shop() {
       )}
 
       {/* ================================================================== */}
-      {/* 8. BACK TO TOP BUTTON */}
-      {/* ================================================================== */}
-      <div 
-        style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          padding: isMobile ? '1.5rem 0 3rem' : '2.5rem 0 4rem' 
-        }}
-      >
-        <button
-          onClick={() => handleScrollToSection('shop-hero-section')}
-          style={{
-            padding: isMobile ? '0.75rem 1.6rem' : '0.9rem 2.25rem',
-            borderRadius: '999px',
-            backgroundColor: 'rgba(36, 79, 33, 0.75)',
-            border: '1.5px solid #b9cd94',
-            color: '#FFFDF9',
-            fontWeight: '850',
-            fontSize: isMobile ? '0.82rem' : '0.9rem',
-            letterSpacing: '0.08em',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            boxShadow: '0 6px 20px rgba(36, 79, 33, 0.4), inset 0 1px 1px rgba(255,255,255,0.2)',
-            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)'
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#244f21';
-            e.currentTarget.style.transform = 'translateY(-3px)';
-            e.currentTarget.style.boxShadow = '0 10px 25px rgba(36, 79, 33, 0.6)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(36, 79, 33, 0.75)';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(36, 79, 33, 0.4)';
-          }}
-        >
-          <span>BACK TO TOP</span>
-          <span style={{ fontSize: '1.1rem', fontWeight: '900', color: 'var(--accent-gold)', lineHeight: 1 }}>↑</span>
-        </button>
-      </div>
-
-      {/* ================================================================== */}
       {/* 2. FUTURE FAVOURITES / WHAT'S NEXT FROM MILASTY                     */}
       {/* ================================================================== */}
       {prebookingProducts.length > 0 && (
