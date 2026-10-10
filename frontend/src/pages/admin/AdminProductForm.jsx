@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
-import { 
-  ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus, 
+import {
+  ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus,
   Check, X, FileText, AlertCircle, Calendar, Sparkles, CheckSquare, Square,
   ArrowUp, ArrowDown, Star
 } from 'lucide-react';
@@ -68,6 +68,7 @@ export default function AdminProductForm() {
     status: 'active',
     isFeatured: true,
     isBestseller: false,
+    displayOrder: '',
     image: '',
     secondaryImage: '',
     labReportUrl: '',
@@ -249,7 +250,7 @@ export default function AdminProductForm() {
       setFormData(prev => {
         if (!prev.category_id) {
           // Find matching category by current category slug
-          const matchedCat = ctxCategories.find(c => 
+          const matchedCat = ctxCategories.find(c =>
             c.slug === prev.category || c.id === prev.category_id
           ) || ctxCategories[0];
           if (matchedCat) {
@@ -315,13 +316,9 @@ export default function AdminProductForm() {
           ? rawBadges
           : (typeof rawBadges === 'string' ? rawBadges.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
-        const isBs = !!(p.isBestseller || p.is_bestseller || parsedB.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller')));
-
-        let finalBadgesList = [...parsedB];
-        if (isBs && !finalBadgesList.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
-          finalBadgesList.push('Bestseller');
-        }
-        setBadgesList(finalBadgesList);
+        // Bestseller section membership = the product's flag only; badges load exactly as saved
+        const isBs = p.isBestseller === true || p.is_bestseller === true;
+        setBadgesList([...new Set(parsedB)]);
 
         setFormData({
           title: p.title || '',
@@ -340,6 +337,7 @@ export default function AdminProductForm() {
           status: p.status || (p.is_active !== false ? 'active' : 'inactive'),
           isFeatured: p.isFeatured !== false,
           isBestseller: isBs,
+          displayOrder: p.displayOrder ?? p.display_order ?? '',
           image: p.image || p.image_url || '',
           secondaryImage: p.secondaryImage || p.secondary_image_url || '',
           labReportUrl: p.labReportUrl || p.lab_report_url || '',
@@ -489,21 +487,9 @@ export default function AdminProductForm() {
   };
 
   // Badge helpers
+  // Badges are display-only — they never change Bestseller section membership
   const togglePresetBadge = (badgeName) => {
-    const isBsBadge = badgeName.toLowerCase().replace(/\s+/g, '').includes('bestseller');
-    if (badgesList.includes(badgeName)) {
-      const nextBadges = badgesList.filter((b) => b !== badgeName);
-      setBadgesList(nextBadges);
-      if (isBsBadge) {
-        setFormData((prev) => ({ ...prev, isBestseller: false }));
-      }
-    } else {
-      const nextBadges = [...badgesList, badgeName];
-      setBadgesList(nextBadges);
-      if (isBsBadge) {
-        setFormData((prev) => ({ ...prev, isBestseller: true }));
-      }
-    }
+    setBadgesList((prev) => (prev.includes(badgeName) ? prev.filter((b) => b !== badgeName) : [...prev, badgeName]));
   };
 
   const addCustomBadge = () => {
@@ -511,19 +497,12 @@ export default function AdminProductForm() {
     if (!clean) return;
     if (!badgesList.includes(clean)) {
       setBadgesList([...badgesList, clean]);
-      if (clean.toLowerCase().replace(/\s+/g, '').includes('bestseller')) {
-        setFormData((prev) => ({ ...prev, isBestseller: true }));
-      }
     }
     setCustomBadgeInput('');
   };
 
   const removeBadge = (badgeName) => {
-    const isBsBadge = badgeName.toLowerCase().replace(/\s+/g, '').includes('bestseller');
     setBadgesList(badgesList.filter((b) => b !== badgeName));
-    if (isBsBadge) {
-      setFormData((prev) => ({ ...prev, isBestseller: false }));
-    }
   };
 
   // Ingredient helpers
@@ -716,18 +695,18 @@ export default function AdminProductForm() {
       }
     }
 
+    const rawOrder = String(formData.displayOrder ?? '').trim();
+    const displayOrderNum = rawOrder === '' ? null : Number(rawOrder);
+    if (displayOrderNum !== null && (!Number.isInteger(displayOrderNum) || displayOrderNum < 1)) {
+      toast.error('Display Order must be a whole number of 1 or more (lower numbers show first), or left empty.');
+      return;
+    }
+
     setLoading(true);
 
-    const isBestsellerActive = formData.isBestseller || badgesList.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
-    
-    let finalPayloadBadges = [...badgesList];
-    if (isBestsellerActive) {
-      if (!finalPayloadBadges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
-        finalPayloadBadges.push('Bestseller');
-      }
-    } else {
-      finalPayloadBadges = finalPayloadBadges.filter(b => !String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
-    }
+    // The Bestseller dropdown alone decides the homepage Bestseller section; badges are saved as selected
+    const isBestsellerActive = formData.isBestseller === true;
+    const finalPayloadBadges = [...new Set(badgesList)];
 
     let updatedPayloadVariants = Array.isArray(formData.variants) ? [...formData.variants] : [];
     if (updatedPayloadVariants.length > 0) {
@@ -752,6 +731,7 @@ export default function AdminProductForm() {
       variants: updatedPayloadVariants,
       isBestseller: isBestsellerActive,
       is_bestseller: isBestsellerActive,
+      displayOrder: displayOrderNum,
       pieces: formData.pieces ? String(formData.pieces).trim() : '',
       badges: finalPayloadBadges,
       ingredients: ingredientsList,
@@ -842,16 +822,16 @@ export default function AdminProductForm() {
 
   return (
     <div style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      
+
       {/* Back Link */}
-      <Link 
-        to={isPrebookQuery ? "/admin/prebookings" : "/admin/products"} 
-        style={{ 
-          display: 'inline-flex', 
-          alignItems: 'center', 
-          gap: '0.45rem', 
-          color: '#C68A3A', 
-          fontWeight: '800', 
+      <Link
+        to={isPrebookQuery ? "/admin/prebookings" : "/admin/products"}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.45rem',
+          color: '#C68A3A',
+          fontWeight: '800',
           fontSize: '0.85rem',
           textDecoration: 'none',
         }}
@@ -871,7 +851,7 @@ export default function AdminProductForm() {
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          
+
           {/* ================================================================== */}
           {/* SECTION 1: BASIC INFORMATION */}
           {/* ================================================================== */}
@@ -1013,9 +993,28 @@ export default function AdminProductForm() {
                   onChange={(e) => setFormData({ ...formData, isBestseller: e.target.value === 'true' })}
                   className="admin-input"
                 >
-                  <option value="true">🔥 YES (Bestseller Badge & Section)</option>
+                  <option value="true">🔥 YES (Show in Homepage Bestseller Section)</option>
                   <option value="false">NO (Standard Item)</option>
                 </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  Display Order
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  inputMode="numeric"
+                  placeholder="e.g. 1 (shows first)"
+                  value={formData.displayOrder ?? ''}
+                  onChange={(e) => setFormData({ ...formData, displayOrder: e.target.value })}
+                  className="admin-input"
+                />
+                <span style={{ fontSize: '0.7rem', color: '#665A52', display: 'block', marginTop: '0.3rem' }}>
+                  Lower numbers appear first on the Home & Shop pages. Leave empty to list after ordered products.
+                </span>
               </div>
             </div>
           </div>
@@ -1034,7 +1033,7 @@ export default function AdminProductForm() {
                 </p>
               </div>
 
-              <label 
+              <label
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -1121,16 +1120,16 @@ export default function AdminProductForm() {
                         />
                         {/* Primary Badge */}
                         {isPrimary ? (
-                          <span 
-                            style={{ 
-                              position: 'absolute', 
-                              top: '6px', 
-                              left: '6px', 
-                              backgroundColor: '#C68A3A', 
-                              color: '#FFF', 
-                              fontSize: '0.62rem', 
-                              fontWeight: '900', 
-                              padding: '0.2rem 0.5rem', 
+                          <span
+                            style={{
+                              position: 'absolute',
+                              top: '6px',
+                              left: '6px',
+                              backgroundColor: '#C68A3A',
+                              color: '#FFF',
+                              fontSize: '0.62rem',
+                              fontWeight: '900',
+                              padding: '0.2rem 0.5rem',
                               borderRadius: '999px',
                               letterSpacing: '0.04em',
                               boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
@@ -1929,14 +1928,14 @@ export default function AdminProductForm() {
           </div>
 
           {/* Submit Button */}
-          <button 
-            type="submit" 
-            disabled={loading || uploadingMain || uploadingSec || uploadingReport} 
-            className="admin-btn-primary" 
-            style={{ 
-              width: '100%', 
-              height: '52px', 
-              justifyContent: 'center', 
+          <button
+            type="submit"
+            disabled={loading || uploadingMain || uploadingSec || uploadingReport}
+            className="admin-btn-primary"
+            style={{
+              width: '100%',
+              height: '52px',
+              justifyContent: 'center',
               marginTop: '1rem',
               fontSize: '0.95rem',
               textTransform: 'uppercase',
@@ -1945,8 +1944,8 @@ export default function AdminProductForm() {
           >
             <Save size={18} />
             <span>
-              {loading 
-                ? (isEdit ? 'Updating Product Architecture...' : 'Creating Product...') 
+              {loading
+                ? (isEdit ? 'Updating Product Architecture...' : 'Creating Product...')
                 : (isEdit ? 'Save Product Details' : 'Save & Publish Product')}
             </span>
           </button>

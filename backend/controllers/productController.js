@@ -95,6 +95,31 @@ export const saveProductImages = async (productId, imagesInput = [], defaultMain
   return [];
 };
 
+/**
+ * Display Order: positive integer, lower first. Empty/null = unordered (placed after ordered products).
+ * Returns { value } (number or null) or { error }.
+ */
+export function parseDisplayOrder(raw) {
+  if (raw === undefined || raw === null || String(raw).trim() === '') return { value: null };
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 1 || n > 100000) return { error: 'Display Order must be a whole number of 1 or more (lower numbers show first).' };
+  return { value: n };
+}
+
+/** Stable product order: Display Order asc (unset last) → newest first → id. */
+export function compareByDisplayOrder(a, b) {
+  const ao = a.displayOrder ?? Number.POSITIVE_INFINITY;
+  const bo = b.displayOrder ?? Number.POSITIVE_INFINITY;
+  if (ao !== bo) return ao - bo;
+  const at = new Date(a.createdAt || 0).getTime();
+  const bt = new Date(b.createdAt || 0).getTime();
+  if (at !== bt) return bt - at;
+  return String(a.id || '').localeCompare(String(b.id || ''));
+}
+
+// Explicit boolean from the admin dropdown ("true"/true → true). undefined = not provided.
+const parseBool = (v) => (v === undefined || v === null || v === '' ? undefined : v === true || String(v).toLowerCase() === 'true');
+
 export const getProducts = async (req, res) => {
   try {
     const {
@@ -155,7 +180,7 @@ export const getProducts = async (req, res) => {
       }
       // Fallback: match raw category param as text
       if (!resolvedCatSlug && !resolvedCatId) orParts.push(`category.eq.${category}`);
-      
+
       if (orParts.length > 0) {
         query = query.or(orParts.join(','));
       } else {
@@ -266,12 +291,12 @@ export const getProducts = async (req, res) => {
           normalizedNutrition.sodium = { label: 'Sodium', value: Number(rawFacts.sodiumMg), unit: 'mg' };
         }
 
-        const parsedIngredients = Array.isArray(p.ingredients) 
-          ? p.ingredients 
+        const parsedIngredients = Array.isArray(p.ingredients)
+          ? p.ingredients
           : (typeof p.ingredients === 'string' ? p.ingredients.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
-        const parsedBadges = Array.isArray(p.badges) 
-          ? p.badges 
+        const parsedBadges = Array.isArray(p.badges)
+          ? p.badges
           : (typeof p.badges === 'string' ? p.badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
         return {
@@ -304,10 +329,12 @@ export const getProducts = async (req, res) => {
           nutritionFacts: normalizedNutrition,
           pieces: p.nutrition_facts?.pieces || p.pieces || '',
           labReportUrl: p.lab_report_url || '',
-        labReports: normalizeLabReports(p),
           labReports: normalizeLabReports(p),
           isFeatured: p.is_featured !== false,
-          isBestseller: p.is_bestseller === true || (Array.isArray(parsedBadges) && parsedBadges.some((b) => b.toLowerCase().includes('bestseller'))),
+          // The admin "Bestseller Product" dropdown is the only source of truth — badges are display-only
+          isBestseller: p.is_bestseller === true,
+          displayOrder: parseDisplayOrder(p.display_order).value,
+          createdAt: p.created_at || null,
           rating: realRating,
           reviewCount: realReviewCount,
           variants,
@@ -329,8 +356,14 @@ export const getProducts = async (req, res) => {
         });
       }
 
-      if (sort === 'price_low_high') filtered.sort((a, b) => (a.variants[0]?.price || a.price || 0) - (b.variants[0]?.price || b.price || 0));
-      if (sort === 'price_high_low') filtered.sort((a, b) => (b.variants[0]?.price || b.price || 0) - (a.variants[0]?.price || a.price || 0));
+      // Admin Display Order is the default; customer-chosen sorts use it as the tie-breaker.
+      const priceOf = (x) => x.variants[0]?.price || x.price || 0;
+      if (sort === 'price_low_high') filtered.sort((a, b) => (priceOf(a) - priceOf(b)) || compareByDisplayOrder(a, b));
+      else if (sort === 'price_high_low') filtered.sort((a, b) => (priceOf(b) - priceOf(a)) || compareByDisplayOrder(a, b));
+      else if (sort === 'newest') filtered.sort((a, b) => (new Date(b.createdAt || 0) - new Date(a.createdAt || 0)) || compareByDisplayOrder(a, b));
+      else filtered.sort(compareByDisplayOrder);
+
+      if (req.query.bestseller === 'true') filtered = filtered.filter((x) => x.isBestseller);
 
       const skip = (Number(page) - 1) * Number(limit);
       const paginated = filtered.slice(skip, skip + Number(limit));
@@ -460,12 +493,12 @@ export const getProductBySlugOrId = async (req, res) => {
         normalizedNutrition.sodium = { label: 'Sodium', value: Number(rawFacts.sodiumMg), unit: 'mg' };
       }
 
-      const parsedIngredients = Array.isArray(p.ingredients) 
-        ? p.ingredients 
+      const parsedIngredients = Array.isArray(p.ingredients)
+        ? p.ingredients
         : (typeof p.ingredients === 'string' ? p.ingredients.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
-      const parsedBadges = Array.isArray(p.badges) 
-        ? p.badges 
+      const parsedBadges = Array.isArray(p.badges)
+        ? p.badges
         : (typeof p.badges === 'string' ? p.badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
       const imagesMap = await fetchProductImagesMap([p.id]);
@@ -522,6 +555,9 @@ export const getProductBySlugOrId = async (req, res) => {
         labReportUrl: p.lab_report_url || '',
         labReports: normalizeLabReports(p),
         isFeatured: p.is_featured !== false,
+        isBestseller: p.is_bestseller === true,
+        displayOrder: parseDisplayOrder(p.display_order).value,
+        createdAt: p.created_at || null,
         rating: realRating,
         reviewCount: realReviewCount,
         variants,
@@ -572,7 +608,7 @@ export const resolveCategoryInfo = async (catIdOrSlug) => {
     const clean = String(catIdOrSlug).trim().toLowerCase();
     const { data: catRows } = await supabase.from('categories').select('id, slug, name');
     if (catRows && catRows.length > 0) {
-      return catRows.find(c => 
+      return catRows.find(c =>
         String(c.id).toLowerCase() === clean ||
         String(c.slug).toLowerCase() === clean ||
         String(c.name).toLowerCase() === clean
@@ -612,6 +648,8 @@ const labReportColumnsFromBody = (body) => {
 // never let it trigger the generic fallback below (which can strip price columns).
 const isMissingLabReportsColumn = (error, payload) =>
   payload.lab_reports !== undefined && (error.message || '').toLowerCase().includes('lab_reports');
+const isMissingDisplayOrderColumn = (error, payload) =>
+  payload.display_order !== undefined && (error.message || '').toLowerCase().includes('display_order');
 
 // Helper for safe product insertion handling missing columns in PostgREST schema cache
 const safeInsertProduct = async (payload) => {
@@ -628,6 +666,11 @@ const safeInsertProduct = async (payload) => {
     if (isMissingLabReportsColumn(error, currentPayload)) {
       console.warn('[PRODUCTS] lab_reports column missing — run scripts/18_add_lab_reports_to_products.sql');
       delete currentPayload.lab_reports;
+      continue;
+    }
+    if (isMissingDisplayOrderColumn(error, currentPayload)) {
+      console.warn('[PRODUCTS] display_order column missing — run scripts/21_product_display_order_and_bestseller.sql');
+      delete currentPayload.display_order;
       continue;
     }
 
@@ -665,6 +708,11 @@ const safeUpdateProduct = async (id, payload) => {
     if (isMissingLabReportsColumn(error, currentPayload)) {
       console.warn('[PRODUCTS] lab_reports column missing — run scripts/18_add_lab_reports_to_products.sql');
       delete currentPayload.lab_reports;
+      continue;
+    }
+    if (isMissingDisplayOrderColumn(error, currentPayload)) {
+      console.warn('[PRODUCTS] display_order column missing — run scripts/21_product_display_order_and_bestseller.sql');
+      delete currentPayload.display_order;
       continue;
     }
 
@@ -729,29 +777,23 @@ export const createProduct = async (req, res) => {
       finalSlug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
     }
 
-    const parsedBadges = Array.isArray(badges) 
-      ? badges 
+    const parsedBadges = Array.isArray(badges)
+      ? badges
       : (typeof badges === 'string' ? badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
-    const isBestsellerRequested = req.body.isBestseller === true || 
-                                  req.body.is_bestseller === true || 
-                                  parsedBadges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
+    // Bestseller membership comes ONLY from the admin dropdown; badges are display metadata.
+    const isBestsellerRequested = parseBool(req.body.isBestseller ?? req.body.is_bestseller) === true;
+    const finalBadges = [...new Set(parsedBadges.map((b) => String(b).trim()).filter(Boolean))];
 
-    let finalBadges = [...parsedBadges];
-    if (isBestsellerRequested) {
-      if (!finalBadges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
-        finalBadges.push('Best Seller');
-      }
-    } else {
-      finalBadges = finalBadges.filter(b => !String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
-    }
-    
-    const parsedIngredients = Array.isArray(ingredients) 
-      ? ingredients 
+    const displayOrderParsed = parseDisplayOrder(req.body.displayOrder ?? req.body.display_order);
+    if (displayOrderParsed.error) return res.status(400).json({ message: displayOrderParsed.error });
+
+    const parsedIngredients = Array.isArray(ingredients)
+      ? ingredients
       : (typeof ingredients === 'string' ? ingredients.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
-    const parsedBenefits = Array.isArray(benefits) 
-      ? benefits 
+    const parsedBenefits = Array.isArray(benefits)
+      ? benefits
       : (typeof benefits === 'string' ? benefits.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
     const variantStocksMap = {};
@@ -818,6 +860,7 @@ export const createProduct = async (req, res) => {
       target_audience: targetAudience || '',
       is_featured: isFeatured !== false,
       is_bestseller: isBestsellerRequested,
+      display_order: displayOrderParsed.value,
       is_active: status === 'active',
     };
 
@@ -893,7 +936,7 @@ export const createProduct = async (req, res) => {
       };
     });
 
-    const totalStock = formattedVariants.length > 0 
+    const totalStock = formattedVariants.length > 0
       ? formattedVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
       : (stock !== undefined && stock !== null && stock !== '' ? Number(stock) : 100);
 
@@ -965,29 +1008,24 @@ export const updateProduct = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const parsedBadges = Array.isArray(updates.badges) 
-      ? updates.badges 
+    const parsedBadges = Array.isArray(updates.badges)
+      ? updates.badges
       : (typeof updates.badges === 'string' ? updates.badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
-    const isBestsellerRequested = updates.isBestseller === true || 
-                                  updates.is_bestseller === true || 
-                                  parsedBadges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
+    // Bestseller membership comes ONLY from the admin dropdown (unchanged if not sent); badges are display-only.
+    const isBestsellerRequested = parseBool(updates.isBestseller ?? updates.is_bestseller);
+    const finalBadges = [...new Set(parsedBadges.map((b) => String(b).trim()).filter(Boolean))];
 
-    let finalBadges = [...parsedBadges];
-    if (isBestsellerRequested) {
-      if (!finalBadges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'))) {
-        finalBadges.push('Best Seller');
-      }
-    } else {
-      finalBadges = finalBadges.filter(b => !String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
-    }
+    const hasDisplayOrder = updates.displayOrder !== undefined || updates.display_order !== undefined;
+    const displayOrderParsed = parseDisplayOrder(updates.displayOrder ?? updates.display_order);
+    if (hasDisplayOrder && displayOrderParsed.error) return res.status(400).json({ message: displayOrderParsed.error });
 
-    const parsedIngredients = Array.isArray(updates.ingredients) 
-      ? updates.ingredients 
+    const parsedIngredients = Array.isArray(updates.ingredients)
+      ? updates.ingredients
       : (typeof updates.ingredients === 'string' ? updates.ingredients.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
-    const parsedBenefits = Array.isArray(updates.benefits) 
-      ? updates.benefits 
+    const parsedBenefits = Array.isArray(updates.benefits)
+      ? updates.benefits
       : (typeof updates.benefits === 'string' ? updates.benefits.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
     const variantStocksMap = {};
@@ -1051,7 +1089,8 @@ export const updateProduct = async (req, res) => {
       benefits: parsedBenefits,
       target_audience: updates.targetAudience || '',
       is_featured: updates.isFeatured !== false,
-      is_bestseller: isBestsellerRequested,
+      is_bestseller: isBestsellerRequested, // undefined → left unchanged (undefined keys are removed below)
+      display_order: hasDisplayOrder ? displayOrderParsed.value : undefined,
       is_active: updates.status === 'active',
       updated_at: new Date(),
     };
@@ -1083,7 +1122,7 @@ export const updateProduct = async (req, res) => {
       if (updates.variants.length > 0) {
         const variantRows = updates.variants.map((v, idx) => {
           const vStock = Number(v.stock !== undefined && v.stock !== null && v.stock !== '' ? v.stock : 50);
-          
+
           let vPrice = Number(v.price !== undefined && v.price !== '' ? v.price : targetPrice);
           let vOrigPrice = Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : vPrice);
 
@@ -1187,7 +1226,7 @@ export const updateProduct = async (req, res) => {
       };
     });
 
-    const totalStock = formattedVariants.length > 0 
+    const totalStock = formattedVariants.length > 0
       ? formattedVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
       : (updates.stock !== undefined && updates.stock !== null && updates.stock !== '' ? Number(updates.stock) : 100);
 

@@ -570,6 +570,30 @@ export default function OurStory() {
                 style={{ width: '100%', height: 'auto', aspectRatio: '4 / 5', maxHeight: '640px', objectFit: 'cover', objectPosition: 'center 30%', display: 'block', backgroundColor: '#F1E5D4' }}
               />
             </div>
+            {/* Founder tag — bottom-left, clear of the face (upper-middle of the photo) */}
+            <div
+              style={{
+                position: 'absolute',
+                left: 'clamp(12px, 3vw, 20px)',
+                bottom: 'clamp(12px, 3vw, 20px)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                backgroundColor: 'rgba(252, 248, 241, 0.94)',
+                color: '#32180D',
+                border: '1px solid #DCC8AE',
+                borderLeft: '3px solid #5A2E16',
+                padding: '0.5rem 0.95rem',
+                borderRadius: '10px',
+                boxShadow: '0 6px 18px rgba(50, 24, 13, 0.14)',
+                pointerEvents: 'none',
+                maxWidth: 'calc(100% - 24px)',
+              }}
+            >
+              <span style={{ fontFamily: 'var(--font-serif)', fontWeight: '800', fontSize: 'clamp(0.85rem, 2vw, 1rem)', letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
+                Milasty’s Founder
+              </span>
+            </div>
           </div>
 
           {/* Right Text Block */}

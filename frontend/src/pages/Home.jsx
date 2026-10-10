@@ -80,7 +80,7 @@ export default function Home() {
 
   // Fetch Products & Categories & CMS
   useEffect(() => {
-    api.get('/products?limit=12')
+    api.get('/products?limit=200')
       .then(res => {
         if (res.data && res.data.products && res.data.products.length > 0) {
           setDbProducts(res.data.products);
@@ -656,13 +656,11 @@ export default function Home() {
               {/* Bestseller Product Cards Grid */}
               <div className="bestsellers-grid fitted-cards-container-4" style={{ marginBottom: '3rem' }}>
                 {(() => {
-                  const bestsellers = allProductsList.filter(p => {
-                    if (p.isBestseller === true || p.is_bestseller === true) return true;
-                    if (Array.isArray(p.badges)) {
-                      return p.badges.some(b => String(b).toLowerCase().replace(/\s+/g, '').includes('bestseller'));
-                    }
-                    return false;
-                  });
+                  // Bestseller section = products flagged YES in admin, in admin Display Order
+                  const orderOf = (p) => (p.displayOrder ?? p.display_order ?? Number.POSITIVE_INFINITY);
+                  const bestsellers = allProductsList
+                    .filter((p) => p.isBestseller === true || p.is_bestseller === true)
+                    .sort((a, b) => (orderOf(a) - orderOf(b)) || (new Date(b.createdAt || 0) - new Date(a.createdAt || 0)) || String(a.id || '').localeCompare(String(b.id || '')));
 
                   if (bestsellers.length === 0) {
                     return (

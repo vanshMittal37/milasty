@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Search, ChevronRight, ShoppingBag, Leaf, Sparkles, 
+import {
+  Search, ChevronRight, ShoppingBag, Leaf, Sparkles,
   Shield, Award, ArrowRight, Star, ChevronLeft, Check, Filter,
   Calendar, Truck, Gift
 } from 'lucide-react';
@@ -108,8 +108,8 @@ export default function Shop() {
     setPrebookingLoading(true);
     try {
       const res = await api.get('/prebookings/active');
-      const list = Array.isArray(res.data) 
-        ? res.data 
+      const list = Array.isArray(res.data)
+        ? res.data
         : (Array.isArray(res.data?.prebookings) ? res.data.prebookings : (Array.isArray(res.data?.data) ? res.data.data : []));
       setPrebookingProducts(list);
     } catch (err) {
@@ -123,8 +123,8 @@ export default function Shop() {
     setTestimonialsLoading(true);
     try {
       const res = await api.get('/testimonials?placement=shop');
-      const list = Array.isArray(res.data) 
-        ? res.data 
+      const list = Array.isArray(res.data)
+        ? res.data
         : (Array.isArray(res.data?.testimonials) ? res.data.testimonials : (Array.isArray(res.data?.data) ? res.data.data : []));
       setTestimonials(list);
     } catch (err) {
@@ -138,8 +138,8 @@ export default function Shop() {
     setQuizLoading(true);
     try {
       const res = await api.get('/quiz/active');
-      const list = Array.isArray(res.data) 
-        ? res.data 
+      const list = Array.isArray(res.data)
+        ? res.data
         : (Array.isArray(res.data?.questions) ? res.data.questions : (Array.isArray(res.data?.data) ? res.data.data : []));
       setQuizQuestions(list);
     } catch (err) {
@@ -173,7 +173,7 @@ export default function Shop() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/products?limit=50');
+      const res = await api.get('/products?limit=200'); // server returns admin Display Order
       if (res.data && res.data.products && res.data.products.length > 0) {
         setProducts(res.data.products);
       } else {
@@ -193,18 +193,18 @@ export default function Shop() {
   // Helper function to check product category match against live database categories
   const matchesCategoryFilter = (p, catIdOrSlug) => {
     if (!catIdOrSlug || catIdOrSlug === 'all') return true;
-    
+
     const pId = p.id || p._id;
     const cleanFilter = String(catIdOrSlug).toLowerCase().trim();
-    
+
     // Find the category object for this filter value (match by id, slug, _id, or name)
-    const catObj = safeCategories.find(c => 
-      String(c.id || '').toLowerCase() === cleanFilter || 
-      String(c.slug || '').toLowerCase() === cleanFilter || 
+    const catObj = safeCategories.find(c =>
+      String(c.id || '').toLowerCase() === cleanFilter ||
+      String(c.slug || '').toLowerCase() === cleanFilter ||
       String(c._id || '').toLowerCase() === cleanFilter ||
       String(c.name || '').toLowerCase() === cleanFilter
     );
-    
+
     // 1. Check Many-to-Many category_products relation productIds array
     if (catObj && Array.isArray(catObj.productIds) && pId && catObj.productIds.includes(pId)) {
       return true;
@@ -222,12 +222,12 @@ export default function Shop() {
     if (pCatId && targetId && pCatId === String(targetId).toLowerCase()) return true;
     // Check by slug
     if (pCat && targetSlug && pCat === String(targetSlug).toLowerCase()) return true;
-    // Check by name  
+    // Check by name
     if (pCat && targetName && pCat === String(targetName).toLowerCase()) return true;
     // Fallback: raw param match
     if (pCat && pCat === cleanFilter) return true;
     if (pCatId && pCatId === cleanFilter) return true;
-    
+
     return false;
   };
 
@@ -480,13 +480,13 @@ export default function Shop() {
       {/* ================================================================== */}
       {/* 3. EXPLORE BY CATEGORY (Circular Category Design) */}
       {/* ================================================================== */}
-      <section 
+      <section
         id="explore-by-category-section"
-        style={{ 
-          padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', 
-          backgroundColor: '#F1E5D4', 
+        style={{
+          padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem',
+          backgroundColor: '#F1E5D4',
           borderTop: '1px solid #DCC8AE',
-          borderBottom: '1px solid #DCC8AE' 
+          borderBottom: '1px solid #DCC8AE'
         }}
       >
         <div style={{ maxWidth: '1240px', margin: '0 auto', boxSizing: 'border-box' }}>
@@ -503,10 +503,10 @@ export default function Shop() {
           </div>
 
           {/* Circular Category Grid: First 4 Active Categories */}
-          <div 
-            style={{ 
-              display: 'grid', 
-              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${Math.min(firstFourCategories.length || 1, 4)}, 1fr)`, 
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${Math.min(firstFourCategories.length || 1, 4)}, 1fr)`,
               gap: isMobile ? '1.75rem 1rem' : '2.5rem 2rem',
               alignItems: 'start',
               justifyItems: 'center',
@@ -564,7 +564,7 @@ export default function Shop() {
                     />
                     {/* Active check badge */}
                     {isSelected && (
-                      <div 
+                      <div
                         style={{
                           position: 'absolute',
                           bottom: '6px',
@@ -586,11 +586,11 @@ export default function Shop() {
                   </div>
 
                   {/* Category Number & Name */}
-                  <span 
-                    style={{ 
-                      fontSize: '0.68rem', 
-                      letterSpacing: '0.08em', 
-                      fontWeight: '850', 
+                  <span
+                    style={{
+                      fontSize: '0.68rem',
+                      letterSpacing: '0.08em',
+                      fontWeight: '850',
                       color: isSelected ? '#2F6B3A' : '#806A57',
                       marginBottom: '0.15rem',
                       display: 'block'
@@ -653,13 +653,13 @@ export default function Shop() {
       {/* ================================================================== */}
       {/* 4. BROWSE MILASTY COLLECTION (Search + Filter + Product Catalogue) */}
       {/* ================================================================== */}
-      <section 
+      <section
         id="browse-milasty-collection"
-        style={{ 
-          padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', 
-          maxWidth: '1240px', 
-          margin: '0 auto', 
-          boxSizing: 'border-box' 
+        style={{
+          padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem',
+          maxWidth: '1240px',
+          margin: '0 auto',
+          boxSizing: 'border-box'
         }}
       >
         <div style={{ textAlign: 'center', maxWidth: '750px', margin: isMobile ? '0 auto 1.75rem' : '0 auto 3rem' }}>
@@ -677,24 +677,24 @@ export default function Shop() {
         {/* Selected Active Category Indicator Pill */}
         {selectedCategory !== 'all' && (
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-            <div 
-              style={{ 
-                display: 'inline-flex', 
-                alignItems: 'center', 
-                gap: '0.5rem', 
-                padding: '0.4rem 1rem', 
-                borderRadius: '999px', 
-                backgroundColor: '#2F6B3A', 
-                border: '1.5px solid #2F6B3A', 
-                color: '#FFFFFF', 
-                fontSize: '0.82rem', 
-                fontWeight: '800' 
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.4rem 1rem',
+                borderRadius: '999px',
+                backgroundColor: '#2F6B3A',
+                border: '1.5px solid #2F6B3A',
+                color: '#FFFFFF',
+                fontSize: '0.82rem',
+                fontWeight: '800'
               }}
             >
               <Check size={14} color="#FFFFFF" />
               <span>ACTIVE FILTER: {modalCategoryList.find(c => c.id === selectedCategory)?.label?.toUpperCase()}</span>
-              <button 
-                onClick={() => setSelectedCategory('all')} 
+              <button
+                onClick={() => setSelectedCategory('all')}
                 style={{ backgroundColor: 'transparent', border: 'none', color: '#FFFFFF', cursor: 'pointer', marginLeft: '0.25rem', fontWeight: '900', padding: 0 }}
                 title="Clear Category Filter"
               >
@@ -705,18 +705,18 @@ export default function Shop() {
         )}
 
         {/* Search Bar & Category Filter Trigger */}
-        <div 
-          style={{ 
-            display: 'flex', 
-            gap: '0.75rem', 
-            maxWidth: '620px', 
-            margin: '0 auto 2.5rem', 
-            alignItems: 'center' 
+        <div
+          style={{
+            display: 'flex',
+            gap: '0.75rem',
+            maxWidth: '620px',
+            margin: '0 auto 2.5rem',
+            alignItems: 'center'
           }}
         >
           <div style={{ position: 'relative', flexGrow: 1 }}>
             <Search size={20} color="#2F6B3A" style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 2 }} />
-            <input 
+            <input
               type="text"
               placeholder="Search cookies, ingredients, hampers..."
               value={search}
@@ -734,7 +734,7 @@ export default function Shop() {
               }}
             />
           </div>
-          
+
           <button
             onClick={() => setFilterModalOpen(true)}
             style={{
@@ -771,9 +771,9 @@ export default function Shop() {
               <p style={{ fontSize: '0.95rem', color: '#654B38', margin: '0 auto 1.5rem', maxWidth: '480px', lineHeight: '1.5' }}>
                 We're preparing something delicious for this collection. Check back soon.
               </p>
-              <button 
-                onClick={() => { setSearch(''); setSelectedCategory('all'); }} 
-                className="btn-primary" 
+              <button
+                onClick={() => { setSearch(''); setSelectedCategory('all'); }}
+                className="btn-primary"
                 style={{ padding: '0.75rem 1.75rem', backgroundColor: '#2F6B3A', color: '#FFF', borderRadius: '999px', border: 'none', fontWeight: '800', cursor: 'pointer' }}
               >
                 Reset All Filters
@@ -787,15 +787,15 @@ export default function Shop() {
       {/* 5. FIND YOUR PERFECT MILASTY BAKE (Database-backed Quiz) */}
       {/* ================================================================== */}
       {quizQuestions.length > 0 && (
-        <section 
+        <section
           id="recommendation-section"
           style={{ padding: isMobile ? '2.5rem 1rem' : '4.5rem 1.5rem', maxWidth: '850px', margin: '0 auto', boxSizing: 'border-box' }}
         >
-          <div 
+          <div
             className="glass-card card-warm-beige"
-            style={{ 
-              padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem', 
-              borderRadius: '24px', 
+            style={{
+              padding: isMobile ? '1.75rem 1.15rem' : '3rem 2.5rem',
+              borderRadius: '24px',
               backgroundColor: 'var(--card-bg, #EAD8C3)',
               border: 'var(--card-border, 1px solid #D6C2A7)',
               boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))',
@@ -919,30 +919,30 @@ export default function Shop() {
 
       {/* EXPLORE MORE CATEGORIES POPUP MODAL */}
       {exploreModalOpen && createPortal(
-        <div 
-          style={{ 
-            position: 'fixed', 
-            inset: 0, 
-            backgroundColor: 'rgba(30, 16, 9, 0.65)', 
-            backdropFilter: 'blur(8px)', 
-            WebkitBackdropFilter: 'blur(8px)', 
-            zIndex: 10000, 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            padding: '1rem' 
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(30, 16, 9, 0.65)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
           }}
           onClick={() => setExploreModalOpen(false)}
         >
-          <div 
+          <div
             onClick={(e) => e.stopPropagation()}
-            style={{ 
-              backgroundColor: '#F4EBDD', 
-              borderRadius: '24px', 
-              border: '1.5px solid #DCC8AE', 
-              padding: isMobile ? '1.25rem 1rem' : '2.25rem 2rem', 
-              maxWidth: '720px', 
-              width: '100%', 
+            style={{
+              backgroundColor: '#F4EBDD',
+              borderRadius: '24px',
+              border: '1.5px solid #DCC8AE',
+              padding: isMobile ? '1.25rem 1rem' : '2.25rem 2rem',
+              maxWidth: '720px',
+              width: '100%',
               maxHeight: '85vh',
               display: 'flex',
               flexDirection: 'column',
@@ -956,7 +956,7 @@ export default function Shop() {
                 <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-serif)', margin: 0, fontWeight: '850', color: '#32180D' }}>Explore All Collections</h3>
                 <span style={{ fontSize: '0.78rem', color: '#2F6B3A', fontWeight: '700', marginTop: '0.2rem', display: 'block' }}>Showing {categories.length} dynamic store collections</span>
               </div>
-              <button 
+              <button
                 onClick={() => setExploreModalOpen(false)}
                 style={{ backgroundColor: '#F1E5D4', border: 'none', borderRadius: '50%', color: '#32180D', cursor: 'pointer', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: '900' }}
               >
@@ -1018,30 +1018,30 @@ export default function Shop() {
 
       {/* FILTER POPUP MODAL (Synchronized with single category source) */}
       {filterModalOpen && createPortal(
-        <div 
-          style={{ 
-            position: 'fixed', 
-            inset: 0, 
-            backgroundColor: 'rgba(30, 16, 9, 0.65)', 
-            backdropFilter: 'blur(8px)', 
-            WebkitBackdropFilter: 'blur(8px)', 
-            zIndex: 10000, 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            padding: '1rem' 
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(30, 16, 9, 0.65)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
           }}
           onClick={() => setFilterModalOpen(false)}
         >
-          <div 
+          <div
             onClick={(e) => e.stopPropagation()}
-            style={{ 
-              backgroundColor: '#F4EBDD', 
-              borderRadius: '24px', 
-              border: '1.5px solid #DCC8AE', 
-              padding: isMobile ? '1.5rem 1.15rem' : '2rem 1.75rem', 
-              maxWidth: '450px', 
-              width: '100%', 
+            style={{
+              backgroundColor: '#F4EBDD',
+              borderRadius: '24px',
+              border: '1.5px solid #DCC8AE',
+              padding: isMobile ? '1.5rem 1.15rem' : '2rem 1.75rem',
+              maxWidth: '450px',
+              width: '100%',
               maxHeight: '85vh',
               display: 'flex',
               flexDirection: 'column',
@@ -1052,7 +1052,7 @@ export default function Shop() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #DCC8AE', paddingBottom: '0.85rem' }}>
               <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', margin: 0, fontWeight: '800', color: '#32180D' }}>Filter Categories</h3>
-              <button 
+              <button
                 onClick={() => setFilterModalOpen(false)}
                 style={{ backgroundColor: '#F1E5D4', border: 'none', borderRadius: '50%', color: '#32180D', cursor: 'pointer', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: '900' }}
               >
@@ -1131,13 +1131,13 @@ export default function Shop() {
       {/* ================================================================== */}
       {/* 6. TRUST STRIP */}
       {/* ================================================================== */}
-      <section 
-        className="products-trust-strip" 
-        style={{ 
-          backgroundColor: '#EFE1CF', 
-          padding: '2rem 0', 
-          borderTop: '1px solid rgba(74, 48, 35, 0.20)', 
-          borderBottom: '1px solid rgba(74, 48, 35, 0.20)' 
+      <section
+        className="products-trust-strip"
+        style={{
+          backgroundColor: '#EFE1CF',
+          padding: '2rem 0',
+          borderTop: '1px solid rgba(74, 48, 35, 0.20)',
+          borderBottom: '1px solid rgba(74, 48, 35, 0.20)'
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '1.5rem', paddingRight: '1.5rem', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.5rem' }}>
@@ -1164,7 +1164,7 @@ export default function Shop() {
       {/* 7. REVIEWS (Database-backed Testimonials) */}
       {/* ================================================================== */}
       {testimonials.length > 0 && (
-        <section 
+        <section
           style={{ padding: isMobile ? '3.5rem 1rem' : '5.5rem 1.5rem', maxWidth: '900px', margin: '0 auto', boxSizing: 'border-box' }}
         >
           <div style={{ textAlign: 'center', marginBottom: isMobile ? '2rem' : '3.5rem' }}>
@@ -1323,24 +1323,24 @@ export default function Shop() {
       {/* 2. FUTURE FAVOURITES / WHAT'S NEXT FROM MILASTY                     */}
       {/* ================================================================== */}
       {prebookingProducts.length > 0 && (
-        <section 
-          id="future-favourites-section" 
-          style={{ 
-            padding: isMobile ? '2.5rem 1rem 3.5rem' : '4.5rem 1.5rem 5rem', 
-            maxWidth: '1280px', 
-            margin: '0 auto', 
-            boxSizing: 'border-box' 
+        <section
+          id="future-favourites-section"
+          style={{
+            padding: isMobile ? '2.5rem 1rem 3.5rem' : '4.5rem 1.5rem 5rem',
+            maxWidth: '1280px',
+            margin: '0 auto',
+            boxSizing: 'border-box'
           }}
         >
           {/* Header */}
           <div style={{ textAlign: 'center', maxWidth: '780px', margin: isMobile ? '0 auto 2rem' : '0 auto 3rem' }}>
-            <span 
-              style={{ 
-                fontSize: '0.8rem', 
-                textTransform: 'uppercase', 
-                letterSpacing: '0.18em', 
-                color: '#2F6B3A', 
-                fontWeight: '800', 
+            <span
+              style={{
+                fontSize: '0.8rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.18em',
+                color: '#2F6B3A',
+                fontWeight: '800',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.5rem',
@@ -1349,23 +1349,23 @@ export default function Shop() {
             >
               <Leaf size={14} color="#2F6B3A" /> FUTURE FAVOURITES <Leaf size={14} color="#2F6B3A" />
             </span>
-            <h2 
-              style={{ 
-                fontSize: isMobile ? '2.2rem' : '3.4rem', 
-                fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif', 
-                color: '#32180D', 
-                fontWeight: '800', 
-                margin: '0 0 0.85rem 0', 
-                lineHeight: '1.2' 
+            <h2
+              style={{
+                fontSize: isMobile ? '2.2rem' : '3.4rem',
+                fontFamily: 'var(--font-serif), "Playfair Display", Georgia, serif',
+                color: '#32180D',
+                fontWeight: '800',
+                margin: '0 0 0.85rem 0',
+                lineHeight: '1.2'
               }}
             >
               What's Next from <span style={{ color: '#2F6B3A' }}>MILASTY</span>
             </h2>
-            <p 
-              style={{ 
-                fontSize: isMobile ? '0.92rem' : '1.08rem', 
-                color: '#654B38', 
-                margin: '0 auto 1.5rem', 
+            <p
+              style={{
+                fontSize: isMobile ? '0.92rem' : '1.08rem',
+                color: '#654B38',
+                margin: '0 auto 1.5rem',
                 fontWeight: '500',
                 lineHeight: '1.6',
                 maxWidth: '620px'
@@ -1613,11 +1613,11 @@ export default function Shop() {
       {/* ================================================================== */}
       {/* 9. FINAL CONVERSION */}
       {/* ================================================================== */}
-      <section 
+      <section
         className="reveal-fade-up cta-section"
-        style={{ 
-          padding: isMobile ? '4rem 0 6rem' : '5rem 0 7rem', 
-          backgroundColor: 'transparent' 
+        style={{
+          padding: isMobile ? '4rem 0 6rem' : '5rem 0 7rem',
+          backgroundColor: 'transparent'
         }}
       >
         <div className="container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 1rem' }}>
@@ -1641,7 +1641,7 @@ export default function Shop() {
             </p>
             <button
               onClick={() => handleScrollToSection('browse-milasty-collection')}
-              className="btn-primary" 
+              className="btn-primary"
               style={{ padding: '1.1rem 2.75rem', fontSize: '1.05rem', backgroundColor: '#2F6B3A', color: '#FFFFFF', border: '1.5px solid #2F6B3A', fontWeight: '850', textDecoration: 'none', borderRadius: '999px', cursor: 'pointer', boxShadow: '0 8px 24px rgba(47, 107, 58, 0.25)', transition: 'all 0.25s ease' }}
             >
               <span>Shop All Fresh Bakes →</span>

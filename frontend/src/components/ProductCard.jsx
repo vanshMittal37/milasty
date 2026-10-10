@@ -128,22 +128,25 @@ export default function ProductCard({ product }) {
           <Heart size={15} fill={wishlisted ? '#2F6B3A' : 'none'} color={wishlisted ? '#2F6B3A' : 'var(--text-heading)'} />
         </button>
 
-        {/* Dynamic Badges */}
-        {(product.isBestseller || product.is_bestseller || (product.badges && product.badges.length > 0)) && (
-          <div
-            className="card-badge-wrap"
-            style={{
-              position: 'absolute',
-              top: '10px',
-              left: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              zIndex: 10,
-              pointerEvents: 'none'
-            }}
-          >
-            {(product.isBestseller || product.is_bestseller) ? (
-              <span 
+        {/* Dynamic Badges — only badges the admin selected (a selected Bestseller badge takes the spot) */}
+        {(() => {
+          const badges = Array.isArray(product.badges) ? product.badges.filter(Boolean) : [];
+          const shown = badges.find((b) => /best\s*seller/i.test(String(b))) || badges[0];
+          if (!shown) return null;
+          return (
+            <div
+              className="card-badge-wrap"
+              style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                zIndex: 10,
+                pointerEvents: 'none'
+              }}
+            >
+              <span
                 className="card-badge-span"
                 style={{
                   fontSize: '0.62rem',
@@ -161,34 +164,11 @@ export default function ProductCard({ product }) {
                   display: 'inline-block'
                 }}
               >
-                🔥 BESTSELLER
+                {formatMinimalBadge(shown)}
               </span>
-            ) : (
-              product.badges.slice(0, 1).map((badge, idx) => (
-                <span 
-                  key={idx} 
-                  className="card-badge-span"
-                  style={{
-                    fontSize: '0.62rem',
-                    fontWeight: '800',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em',
-                    color: '#2F6B3A',
-                    backgroundColor: '#E3EEDC',
-                    border: '1px solid rgba(47, 107, 58, 0.3)',
-                    padding: '0.25rem 0.6rem',
-                    borderRadius: '999px',
-                    lineHeight: '1.1',
-                    whiteSpace: 'nowrap',
-                    display: 'inline-block'
-                  }}
-                >
-                  {formatMinimalBadge(badge)}
-                </span>
-              ))
-            )}
-          </div>
-        )}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Card Details */}
@@ -336,11 +316,11 @@ export default function ProductCard({ product }) {
                 className="card-price-block"
                 style={{ minWidth: 0 }}
                 prefix={product?.variants && product.variants.length > 1 ? 'From ' : ''}
-                price={cardPrice} 
-                originalPrice={cardOriginalPrice} 
+                price={cardPrice}
+                originalPrice={cardOriginalPrice}
                 discountType={product?.discountType || product?.discount_type}
                 discountValue={product?.discountValue !== undefined ? product?.discountValue : product?.discount_value}
-                size="small" 
+                size="small"
               />
 
               <div className="card-cta-wrap" style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>

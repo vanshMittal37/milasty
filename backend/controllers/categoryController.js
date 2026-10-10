@@ -40,6 +40,26 @@ const INITIAL_CATEGORIES = [
   },
 ];
 
+// category_products.category_id / product_id are UUID columns: never send a slug like "cookies" there.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const isUuid = (v) => UUID_RE.test(String(v || ''));
+
+/** Find a category by its UUID or by its slug (each against its own column). */
+async function findCategory(idOrSlug) {
+  const key = String(idOrSlug || '').trim();
+  if (!key) return { category: null, error: null };
+  const query = supabase.from('categories').select('*');
+  const { data, error } = isUuid(key) ? await query.eq('id', key).maybeSingle() : await query.eq('slug', key).maybeSingle();
+  return { category: data || null, error };
+}
+
+/** Validate a productIds payload: unique UUIDs only. Returns { ids } or { invalid }. */
+function parseProductIds(productIds) {
+  const ids = [...new Set((productIds || []).filter(Boolean).map((v) => String(v).trim()))];
+  const invalid = ids.filter((v) => !isUuid(v));
+  return invalid.length ? { invalid } : { ids };
+}
+
 /**
  * Point each product's legacy products.category / category_id at a category it still belongs to
  * in the category_products junction table, or clear them when it belongs to none.
@@ -230,6 +250,11 @@ export const createCategory = async (req, res) => {
     const { name, description, image, image_url, label, subtitle, status, productIds } = req.body;
     const finalImage = image_url || image;
 
+    const parsedProducts = parseProductIds(productIds);
+    if (parsedProducts.invalid) {
+      return res.status(400).json({ message: `Invalid product id(s): ${parsedProducts.invalid.join(', ')}. Reload the page and select the products again.` });
+    }
+
     if (!name || !name.trim()) {
       return res.status(400).json({ message: 'Category name is required' });
     }
@@ -267,18 +292,19 @@ export const createCategory = async (req, res) => {
 
     // Save Category Products Relationship
     let savedProductIds = [];
-    if (Array.isArray(productIds) && productIds.length > 0) {
-      savedProductIds = productIds;
+    if (parsedProducts.ids.length > 0) {
+      const productIdsToLink = parsedProducts.ids;
+      savedProductIds = productIdsToLink;
 
       const { error: relErr } = await supabase
         .from('category_products')
-        .insert(productIds.map((pId) => ({ category_id: targetCatId, product_id: pId })));
+        .insert(productIdsToLink.map((pId) => ({ category_id: targetCatId, product_id: pId })));
       if (relErr) {
         console.error('category_products insert error:', relErr.message);
         return res.status(500).json({ message: `Category created, but its products could not be saved: ${relErr.message}` });
       }
 
-      const { error: syncErr } = await supabase.from('products').update({ category: targetSlug, category_id: targetCatId }).in('id', productIds);
+      const { error: syncErr } = await supabase.from('products').update({ category: targetSlug, category_id: targetCatId }).in('id', productIdsToLink);
       if (syncErr) console.warn('products legacy category sync notice:', syncErr.message);
     }
 
@@ -301,69 +327,78 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, image, image_url, status, is_active, productIds } = req.body;
+    const { name, description, image, image_url, productIds } = req.body;
     const finalImage = image_url || image;
 
-    // 1. Find target category in database by id or slug
-    let { data: category } = await supabase
-      .from('categories')
-      .select('*')
-      .or(`id.eq.${id},slug.eq.${id}`)
-      .maybeSingle();
+    // 1. Resolve the real category row (by UUID or slug — never a slug against the UUID column)
+    const { category: existing, error: findErr } = await findCategory(id);
+    if (findErr) return res.status(500).json({ message: `Could not load category: ${findErr.message}` });
+    if (!existing) return res.status(404).json({ message: `Category "${id}" not found. Reload the page and try again.` });
+    const targetCatId = existing.id; // UUID — the only value used for category_products
 
+    let parsedProducts = null;
+    if (Array.isArray(productIds)) {
+      parsedProducts = parseProductIds(productIds);
+      if (parsedProducts.invalid) {
+        return res.status(400).json({ message: `Invalid product id(s): ${parsedProducts.invalid.join(', ')}. Reload the page and select the products again.` });
+      }
+    }
+
+    // 2. Category fields
     const updatePayload = {};
     if (name) {
       updatePayload.name = name.trim();
       updatePayload.label = name.trim();
       updatePayload.slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
+    if (description !== undefined) updatePayload.subtitle = description;
+    if (finalImage) updatePayload.image_url = finalImage;
 
-    if (description !== undefined) {
-      updatePayload.subtitle = description;
-    }
-
-    if (finalImage) {
-      updatePayload.image_url = finalImage;
-    }
-
+    let category = existing;
     if (Object.keys(updatePayload).length > 0) {
-      const { data: updatedCat } = await supabase
+      const { data: updatedCat, error: updErr } = await supabase
         .from('categories')
         .update(updatePayload)
-        .or(`id.eq.${id},slug.eq.${id}`)
+        .eq('id', targetCatId)
         .select()
         .maybeSingle();
+      if (updErr) return res.status(500).json({ message: `Could not update category: ${updErr.message}` });
       if (updatedCat) category = updatedCat;
     }
+    const targetSlug = category.slug;
+    const oldSlug = existing.slug && existing.slug !== targetSlug ? existing.slug : null;
 
-    const targetCatId = category?.id || id;
-    const targetSlug = category?.slug || updatePayload.slug || id;
+    // 3. Category products: apply only the difference (keep unchanged links as they are)
+    const { data: currentRels, error: relErr } = await supabase
+      .from('category_products')
+      .select('product_id')
+      .eq('category_id', targetCatId);
+    if (relErr) return res.status(500).json({ message: `Could not load category products: ${relErr.message}` });
+    const currentIds = (currentRels || []).map((r) => String(r.product_id));
 
-    // 2. Synchronize Category Products Relationship
-    let savedProductIds = [];
-    if (Array.isArray(productIds)) {
-      const newIds = [...new Set(productIds.filter(Boolean).map(String))];
-      savedProductIds = newIds;
-      const oldSlug = category?.slug && category.slug !== targetSlug ? category.slug : null;
-      const catKeys = [targetCatId, targetSlug, oldSlug].filter(Boolean);
+    let savedProductIds = currentIds;
+    if (parsedProducts) {
+      const newIds = parsedProducts.ids;
+      const toAdd = newIds.filter((pid) => !currentIds.includes(pid));
+      const toRemove = currentIds.filter((pid) => !newIds.includes(pid));
 
-      // Replace the junction rows for this category (keyed by its id; legacy slug-keyed rows removed too)
-      const { error: delErr } = await supabase.from('category_products').delete().in('category_id', catKeys);
-      if (delErr) {
-        console.error('category_products delete error:', delErr.message);
-        return res.status(500).json({ message: `Could not update category products: ${delErr.message}` });
+      if (toRemove.length > 0) {
+        const { error: delErr } = await supabase
+          .from('category_products')
+          .delete()
+          .eq('category_id', targetCatId)
+          .in('product_id', toRemove);
+        if (delErr) return res.status(500).json({ message: `Could not remove products from category: ${delErr.message}` });
       }
-
-      if (newIds.length > 0) {
+      if (toAdd.length > 0) {
         const { error: insErr } = await supabase
           .from('category_products')
-          .insert(newIds.map((pId) => ({ category_id: targetCatId, product_id: pId })));
-        if (insErr) {
-          console.error('category_products insert error:', insErr.message);
-          return res.status(500).json({ message: `Could not save category products: ${insErr.message}` });
-        }
+          .upsert(toAdd.map((pId) => ({ category_id: targetCatId, product_id: pId })), { onConflict: 'category_id,product_id', ignoreDuplicates: true });
+        if (insErr) return res.status(500).json({ message: `Could not add products to category: ${insErr.message}` });
+      }
 
-        // Keep the legacy products.category / category_id columns in sync
+      // Keep the legacy products.category / category_id columns in sync
+      if (newIds.length > 0) {
         const { error: syncErr } = await supabase
           .from('products')
           .update({ category: targetSlug, category_id: targetCatId })
@@ -371,33 +406,23 @@ export const updateCategory = async (req, res) => {
         if (syncErr) console.warn('products legacy category sync notice:', syncErr.message);
       }
 
-      // Products REMOVED from this category: their legacy columns still point here, which made
-      // removed products keep showing up (and blocked deleting the category). Re-point them to
-      // another category they still belong to, or clear them.
-      const { data: pointingHere } = await supabase
-        .from('products')
-        .select('id')
-        .or([`category_id.eq.${targetCatId}`, ...catKeys.map((k) => `category.eq.${k}`)].join(','));
+      // Products no longer in this category but whose legacy columns still point here
+      const legacyFilter = [`category_id.eq.${targetCatId}`, `category.eq.${targetSlug}`, ...(oldSlug ? [`category.eq.${oldSlug}`] : [])].join(',');
+      const { data: pointingHere } = await supabase.from('products').select('id').or(legacyFilter);
       const removedIds = (pointingHere || []).map((p) => String(p.id)).filter((pid) => !newIds.includes(pid));
-      if (removedIds.length > 0) {
-        await reassignLegacyCategory(removedIds);
-      }
-    } else {
-      try {
-        const { data: rels } = await supabase.from('category_products').select('product_id').or(`category_id.eq.${targetCatId},category_id.eq.${targetSlug}`);
-        savedProductIds = Array.from(new Set((rels || []).map(r => r.product_id)));
-      } catch (e) {}
+      if (removedIds.length > 0) await reassignLegacyCategory(removedIds);
+
+      savedProductIds = newIds;
     }
 
     return res.json({
-      ...(category || { id, name }),
+      ...category,
       id: targetCatId,
       _id: targetCatId,
-      name: updatePayload.name || category?.name || name,
-      description: description || category?.subtitle || '',
-      subtitle: updatePayload.subtitle || category?.subtitle || description || '',
-      image_url: finalImage || category?.image_url,
-      image: finalImage || category?.image_url,
+      description: category.subtitle || '',
+      subtitle: category.subtitle || '',
+      image_url: category.image_url,
+      image: category.image_url,
       productCount: savedProductIds.length,
       productIds: savedProductIds,
     });
@@ -411,10 +436,12 @@ export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Fetch target category details
-    const { data: cat } = await supabase.from('categories').select('*').eq('id', id).maybeSingle();
-    const catSlug = cat?.slug || id;
-    const catName = cat?.name || id;
+    // Fetch target category details (by UUID or slug)
+    const { category: cat } = await findCategory(id);
+    if (!cat) return res.status(404).json({ message: 'Category not found.' });
+    const catId = cat.id;
+    const catSlug = cat.slug || '';
+    const catName = cat.name || '';
 
     // Check if any products are assigned to this category
     let dbProducts = [];
@@ -426,13 +453,13 @@ export const deleteCategory = async (req, res) => {
     } catch (e) {}
 
     try {
-      const { data: rels } = await supabase.from('category_products').select('product_id').eq('category_id', id);
+      const { data: rels } = await supabase.from('category_products').select('product_id').eq('category_id', catId);
       if (rels) catRels = rels;
     } catch (e) {}
 
     const assignedRelIds = new Set((catRels || []).map(r => r.product_id));
     (dbProducts || []).forEach(p => {
-      if (p.category_id === id || p.category === catSlug || p.category === catName || (p.category && p.category.toLowerCase() === catSlug.toLowerCase())) {
+      if (p.category_id === catId || p.category === catSlug || p.category === catName || (p.category && p.category.toLowerCase() === catSlug.toLowerCase())) {
         assignedRelIds.add(p.id);
       }
     });
@@ -444,10 +471,10 @@ export const deleteCategory = async (req, res) => {
     }
 
     try {
-      await supabase.from('category_products').delete().eq('category_id', id);
+      await supabase.from('category_products').delete().eq('category_id', catId);
     } catch (e) {}
 
-    const { error } = await supabase.from('categories').delete().eq('id', id);
+    const { error } = await supabase.from('categories').delete().eq('id', catId);
     if (error) throw error;
 
     return res.json({ message: 'Category deleted successfully' });
