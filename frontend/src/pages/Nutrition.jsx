@@ -113,18 +113,18 @@ export default function Nutrition() {
     {
       title: "Why Pure Desi Ghee?",
       icon: <Sparkles size={28} color="#2F6B3A" />,
-      desc: "Unlike industrial palm oil and hydrogenated fats used in commercial biscuits, pure Desi Ghee provides butyric acid, supporting gut lining integrity and enhancing bioavailability of fat-soluble vitamins (A, D, E, K)."
+      desc: "We choose desi ghee for its rich aroma, distinctive flavour and traditional goodness. It adds a delicious, melt-in-the-mouth texture to our bakes, bringing warmth and richness to every bite. At MILASTY, we combine desi ghee with wholesome millets and jaggery to create snacks where traditional ingredients meet great taste."
     },
     {
-      title: "Why Unrefined Organic Jaggery?",
+      title: "Why Unrefined Jaggery?",
       icon: <Award size={28} color="#2F6B3A" />,
-      desc: "Refined white sugar strips away minerals causing rapid blood glucose spikes. Organic jaggery retains essential trace elements like Iron, Magnesium, and Potassium, ensuring sustained clean energy."
+      desc: "We choose unrefined organic jaggery for its distinctive, caramel-like sweetness and traditional flavour. Unlike refined white sugar, jaggery retains some naturally occurring minerals from sugarcane juice. However, it is still an added sugar, best enjoyed in moderation."
     },
     {
       title: "Why Ancient Millets over Maida?",
       icon: <ShieldCheck size={28} color="#2F6B3A" />,
-      desc: "Refined Maida creates inflammatory mucus in the digestive tract. Millets (Bajra, Jowar, Ragi) deliver rich dietary fiber, naturally slow digestion, and keep you feeling full for longer."
-    }
+      desc: "We bring the goodness of traditional grains like Bajra, Jowar and Ragi into modern-day snacking. These millets naturally provide dietary fibre and a variety of nutrients, making them a valuable addition to a balanced diet."
+    },
   ];
 
   const handleDownload = async (url, filename) => {
@@ -777,12 +777,12 @@ export default function Nutrition() {
         <section style={{ width: '100%', maxWidth: '1200px', margin: '0 auto 6.5rem', paddingLeft: '1.5rem', paddingRight: '1.5rem', boxSizing: 'border-box' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem', flexWrap: 'wrap', gap: '1.25rem' }}>
             <div>
-              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', backgroundColor: '#E3EEDC', padding: '0.4rem 0.95rem', borderRadius: '999px', border: '1px solid #DCC8AE', display: 'inline-block', marginBottom: '0.75rem' }}>Clean Sourcing</span>
+              <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#2F6B3A', fontWeight: '850', backgroundColor: '#E3EEDC', padding: '0.4rem 0.95rem', borderRadius: '999px', border: '1px solid #DCC8AE', display: 'inline-block', marginBottom: '0.75rem' }}>Ingredients With Intention</span>
               <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontFamily: 'var(--font-serif)', color: '#32180D', fontWeight: '850', margin: 0 }}>
-                Why These Ingredients Matter
+                Why Our Ingredients Matter
               </h2>
               <p style={{ fontSize: '0.98rem', color: '#654B38', margin: '0.5rem 0 0 0', fontWeight: '550' }}>
-                We believe transparency starts with understanding what goes into your food.
+                We believe transparency starts with understanding what goes into your food
               </p>
             </div>
             <div className="section-scroll-buttons" style={{ display: 'flex', gap: '0.5rem' }}>

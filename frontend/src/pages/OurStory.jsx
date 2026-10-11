@@ -517,7 +517,7 @@ export default function OurStory() {
             style={{ 
               position: 'absolute', 
               top: '24px', 
-              left: '24px', 
+              right: '24px', 
               backgroundColor: '#2F6B3A', 
               color: '#FFFFFF', 
               padding: '0.65rem 1.25rem', 
@@ -586,10 +586,11 @@ export default function OurStory() {
                 letterSpacing: '0.05em',
                 boxShadow: '0 4px 12px rgba(47, 107, 58, 0.2)',
                 pointerEvents: 'none',
-                whiteSpace: 'nowrap',
+                maxWidth: 'calc(100% - 48px)',
+                lineHeight: '1.35',
               }}
             >
-              Milasty’s Founder
+              Anwesha, Founder of Milasty
             </div>
           </div>
 

@@ -19,6 +19,8 @@ router.get('/', getPublicProductDiscovery);
 router.get('/admin', protect, adminOnly, getAdminProductDiscovery);
 router.put('/admin/section', protect, adminOnly, updateSectionConfig);
 router.post('/admin/moods', protect, adminOnly, createMood);
+// reorder must be registered before /:id, otherwise PUT /moods/reorder is treated as mood id "reorder"
+router.put('/admin/moods/reorder', protect, adminOnly, reorderMoods);
 router.put('/admin/moods/:id', protect, adminOnly, updateMood);
 router.delete('/admin/moods/:id', protect, adminOnly, deleteMood);
 router.post('/admin/moods/reorder', protect, adminOnly, reorderMoods);
