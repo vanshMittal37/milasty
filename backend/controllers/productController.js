@@ -648,95 +648,48 @@ const labReportColumnsFromBody = (body) => {
   return { lab_reports, lab_report_url: lab_reports[0]?.url || '' };
 };
 
-// If the lab_reports migration hasn't been run yet, drop only that column and retry —
-// never let it trigger the generic fallback below (which can strip price columns).
-const isMissingLabReportsColumn = (error, payload) =>
-  payload.lab_reports !== undefined && (error.message || '').toLowerCase().includes('lab_reports');
-const isMissingDisplayOrderColumn = (error, payload) =>
-  payload.display_order !== undefined && (error.message || '').toLowerCase().includes('display_order');
 
-// Helper for safe product insertion handling missing columns in PostgREST schema cache
-const safeInsertProduct = async (payload) => {
-  let currentPayload = { ...payload };
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const { data, error } = await supabase
-      .from('products')
-      .insert([currentPayload])
-      .select()
-      .maybeSingle();
-
-    if (!error) return { data, error: null };
-
-    if (isMissingLabReportsColumn(error, currentPayload)) {
-      console.warn('[PRODUCTS] lab_reports column missing — run scripts/18_add_lab_reports_to_products.sql');
-      delete currentPayload.lab_reports;
-      continue;
-    }
-    if (isMissingDisplayOrderColumn(error, currentPayload)) {
-      console.warn('[PRODUCTS] display_order column missing — run scripts/21_product_display_order_and_bestseller.sql');
-      delete currentPayload.display_order;
-      continue;
-    }
-
-    const errMsg = (error.message || '').toLowerCase();
-    let stripped = false;
-    ['is_bestseller', 'category_id', 'base_price', 'discount_type', 'discount_value', 'original_price', 'price'].forEach(col => {
-      if (currentPayload[col] !== undefined && (errMsg.includes(col) || errMsg.includes('schema cache') || error.code === 'PGRST204')) {
-        delete currentPayload[col];
-        stripped = true;
-      }
-    });
-
-    if (!stripped) {
-      if (currentPayload.is_bestseller !== undefined) { delete currentPayload.is_bestseller; stripped = true; }
-      else if (currentPayload.category_id !== undefined) { delete currentPayload.category_id; stripped = true; }
-      else { return { data: null, error }; }
-    }
+/**
+ * Run a products insert/update, tolerating columns that don't exist in this database yet.
+ * Only the column NAMED in the error is dropped (and logged) — never a fixed list. The old helper
+ * stripped is_bestseller, price, original_price, category_id and the discount fields together whenever
+ * any single column was missing, so e.g. the Bestseller choice and price edits were silently lost.
+ */
+const MISSING_COLUMN_RE = [
+  /could not find the '([a-z0-9_]+)' column/i, // PostgREST PGRST204
+  /column "([a-z0-9_]+)"(?: of relation "[^"]+")? does not exist/i, // Postgres 42703
+];
+const missingColumnFrom = (error) => {
+  const msg = String(error?.message || '');
+  for (const re of MISSING_COLUMN_RE) {
+    const m = msg.match(re);
+    if (m) return m[1];
   }
-  return { data: null, error: new Error('Failed to insert product after column fallbacks') };
+  return null;
 };
 
-// Helper for safe product update handling missing columns in PostgREST schema cache
-const safeUpdateProduct = async (id, payload) => {
-  let currentPayload = { ...payload };
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const { data, error } = await supabase
-      .from('products')
-      .update(currentPayload)
-      .eq('id', id)
-      .select()
-      .maybeSingle();
-
-    if (!error) return { data, error: null };
-
-    if (isMissingLabReportsColumn(error, currentPayload)) {
-      console.warn('[PRODUCTS] lab_reports column missing — run scripts/18_add_lab_reports_to_products.sql');
-      delete currentPayload.lab_reports;
-      continue;
+export const runProductWrite = async (label, payload, write) => {
+  const currentPayload = { ...payload };
+  const dropped = [];
+  for (let attempt = 0; attempt <= Object.keys(payload).length; attempt++) {
+    const { data, error } = await write(currentPayload);
+    if (!error) {
+      if (dropped.length) console.warn(`[PRODUCTS] ${label} saved WITHOUT missing column(s): ${dropped.join(', ')} — add them to the products table.`);
+      return { data, error: null, dropped };
     }
-    if (isMissingDisplayOrderColumn(error, currentPayload)) {
-      console.warn('[PRODUCTS] display_order column missing — run scripts/21_product_display_order_and_bestseller.sql');
-      delete currentPayload.display_order;
-      continue;
-    }
-
-    const errMsg = (error.message || '').toLowerCase();
-    let stripped = false;
-    ['is_bestseller', 'category_id', 'base_price', 'discount_type', 'discount_value', 'original_price', 'price'].forEach(col => {
-      if (currentPayload[col] !== undefined && (errMsg.includes(col) || errMsg.includes('schema cache') || error.code === 'PGRST204')) {
-        delete currentPayload[col];
-        stripped = true;
-      }
-    });
-
-    if (!stripped) {
-      if (currentPayload.is_bestseller !== undefined) { delete currentPayload.is_bestseller; stripped = true; }
-      else if (currentPayload.category_id !== undefined) { delete currentPayload.category_id; stripped = true; }
-      else { return { data: null, error }; }
-    }
+    const col = missingColumnFrom(error);
+    if (!col || !(col in currentPayload)) return { data: null, error, dropped };
+    delete currentPayload[col];
+    dropped.push(col);
   }
-  return { data: null, error: new Error('Failed to update product after column fallbacks') };
+  return { data: null, error: new Error(`Failed to ${label} product after dropping missing columns: ${dropped.join(', ')}`), dropped };
 };
+
+const safeInsertProduct = (payload) =>
+  runProductWrite('insert', payload, (p) => supabase.from('products').insert([p]).select().maybeSingle());
+
+const safeUpdateProduct = (id, payload) =>
+  runProductWrite('update', payload, (p) => supabase.from('products').update(p).eq('id', id).select().maybeSingle());
 
 export const createProduct = async (req, res) => {
   try {

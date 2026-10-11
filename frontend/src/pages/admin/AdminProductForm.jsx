@@ -957,7 +957,7 @@ export default function AdminProductForm() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+            <div className="product-flags-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', alignItems: 'start' }}>
               <div>
                 <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Catalog Status
@@ -995,7 +995,7 @@ export default function AdminProductForm() {
                   onChange={(e) => setFormData({ ...formData, isBestseller: e.target.value === 'true' })}
                   className="admin-input"
                 >
-                  <option value="true">🔥 YES (Show in Homepage Bestseller Section)</option>
+                  <option value="true">🔥 YES (Bestseller Section)</option>
                   <option value="false">NO (Standard Item)</option>
                 </select>
               </div>

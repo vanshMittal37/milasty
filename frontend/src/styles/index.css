@@ -4940,3 +4940,18 @@ body.admin-body .admin-badge-danger {
   background-color: #DCC8AE;
   border-radius: 999px;
 }
+
+
+/* Admin product form: status / featured / bestseller / display-order row —
+   each control fills its own grid column (the global select rule uses width:auto, which overflowed) */
+.product-flags-grid > div {
+  min-width: 0;
+}
+
+.product-flags-grid .admin-input,
+.product-flags-grid select.admin-input {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
