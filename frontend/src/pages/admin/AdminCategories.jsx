@@ -41,7 +41,7 @@ export default function AdminCategories() {
   const fetchProducts = async () => {
     setProductsLoading(true);
     try {
-      const res = await api.get('/products');
+      const res = await api.get('/products?includeUpcoming=true&limit=500');
       const list = res.data.products || res.data || [];
       setAllProducts(list);
     } catch (err) {

@@ -79,7 +79,7 @@ export default function AdminReviewList() {
 
   const fetchProducts = async () => {
     try {
-      const res = await api.get('/products');
+      const res = await api.get('/products?includeUpcoming=true&limit=500');
       const list = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.products) ? res.data.products : []);
       setProducts(list);
       if (list.length > 0) {

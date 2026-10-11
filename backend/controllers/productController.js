@@ -339,16 +339,31 @@ export const getProducts = async (req, res) => {
           isBestseller: p.is_bestseller === true,
           displayOrder: parseDisplayOrder(p.display_order).value,
           createdAt: p.created_at || null,
+          launchDate: p.launch_date || null,
           rating: realRating,
           reviewCount: realReviewCount,
           variants,
         };
       });
 
+      // Pre-booking products are "upcoming" until their launch date and stay out of the normal
+      // catalogue (Home, Shop, Catalogue…). Admin pages pass includeUpcoming=true to see everything.
+      const includeUpcoming = String(req.query.includeUpcoming) === 'true';
+      const nowMs = Date.now();
+      const prebookedUpcoming = new Set();
+      const { data: prebookRows, error: prebookErr } = await supabase
+        .from('prebook_products')
+        .select('product_id, launch_date')
+        .eq('enabled', true);
+      if (prebookErr) console.warn('[PRODUCTS] pre-booking lookup notice:', prebookErr.message);
+      (prebookRows || []).forEach((r) => {
+        if (r.product_id && (!r.launch_date || new Date(r.launch_date).getTime() > nowMs)) prebookedUpcoming.add(String(r.product_id));
+      });
+
       let filtered = formatted.filter((p) => {
-        if (!p.launch_date && !p.launchDate) return true;
-        const d = new Date(p.launch_date || p.launchDate);
-        return d <= new Date(); // Only include launched products in main catalog
+        const ownLaunch = p.launchDate ? new Date(p.launchDate).getTime() : null;
+        p.isUpcoming = (ownLaunch !== null && ownLaunch > nowMs) || prebookedUpcoming.has(String(p.id));
+        return includeUpcoming || !p.isUpcoming;
       });
 
       if (minPrice || maxPrice) {

@@ -28,7 +28,7 @@ export default function AdminPrebookingList() {
     try {
       const [pbRes, prodRes] = await Promise.all([
         api.get('/prebookings/admin/all'),
-        api.get('/products?limit=100'),
+        api.get('/products?limit=500&includeUpcoming=true'),
       ]);
 
       const pbData = Array.isArray(pbRes.data) ? pbRes.data : (pbRes.data?.prebookings || []);

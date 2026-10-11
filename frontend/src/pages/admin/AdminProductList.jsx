@@ -21,7 +21,7 @@ export default function AdminProductList() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/products?search=${search}&limit=50`);
+      const res = await api.get(`/products?search=${search}&limit=500&includeUpcoming=true`);
       setProducts(res.data.products || []);
     } catch (e) {
       toast.error('Unable to load products.');

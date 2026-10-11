@@ -49,7 +49,7 @@ export default function AdminQuizManagement() {
     try {
       const [quizRes, prodRes] = await Promise.all([
         api.get('/quiz/admin/all'),
-        api.get('/products?limit=100'),
+        api.get('/products?limit=500&includeUpcoming=true'),
       ]);
 
       if (quizRes.data) setQuestions(quizRes.data);

@@ -93,7 +93,7 @@ export default function AdminDashboardMain() {
     try {
       const [statsRes, productsRes, reviewsRes] = await Promise.all([
         api.get('/orders/admin/analytics'),
-        api.get('/products?limit=100'),
+        api.get('/products?limit=500&includeUpcoming=true'),
         api.get('/reviews')
       ]);
       let statsData = statsRes.data || {};
