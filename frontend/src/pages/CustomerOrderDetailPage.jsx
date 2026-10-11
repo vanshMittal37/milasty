@@ -6,6 +6,7 @@ import {
   ClipboardList, Archive, Send, Star, XCircle, Navigation, ExternalLink, Loader2
 } from 'lucide-react';
 import api from '../api/axios';
+import OrderItemImage from '../components/OrderItemImage';
 import { useAuth } from '../context/AuthContext';
 
 // ─── Status stages (canonical order) ───────────────────────────────────────
@@ -650,7 +651,6 @@ export default function CustomerOrderDetailPage() {
                 {orderItems.map((item, idx) => {
                   const itemTitle = item.title || item.product_title || 'Millet Product';
                   const itemVariant = item.variantName || item.variant_name;
-                  const itemImage = item.image || item.product_image;
                   const itemQty = item.quantity || 1;
                   const itemPrice = item.price || 0;
                   const itemTotal = itemPrice * itemQty;
@@ -662,9 +662,7 @@ export default function CustomerOrderDetailPage() {
                       paddingBottom: idx < orderItems.length - 1 ? '1rem' : 0,
                       borderBottom: idx < orderItems.length - 1 ? `1px solid ${T.border}` : 'none',
                     }}>
-                      {itemImage && (
-                        <img src={itemImage} alt={itemTitle} style={{ width: '64px', height: '64px', borderRadius: '12px', objectFit: 'cover', border: `1px solid ${T.border}`, flexShrink: 0 }} />
-                      )}
+                      <OrderItemImage item={item} size={64} radius={12} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: '0.9rem', fontWeight: '700', color: T.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {itemTitle}

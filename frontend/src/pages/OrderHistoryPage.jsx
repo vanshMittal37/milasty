@@ -2,6 +2,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Package, Clock, Truck, ChevronRight, Search, Filter, AlertCircle, ShoppingBag, ShieldCheck, Star, Camera, CheckCircle2 } from 'lucide-react';
 import api from '../api/axios';
+import OrderItemImage from '../components/OrderItemImage';
 import { useAuth } from '../context/AuthContext';
 
 export default function OrderHistoryPage() {
@@ -331,7 +332,6 @@ export default function OrderHistoryPage() {
               const orderItemsList = order.order_items || order.items || [];
               const hasCustomization = orderItemsList.some((i) => Boolean(i.customization_note || i.customizationNote));
               const firstItem = orderItemsList[0] || {};
-              const firstItemImage = firstItem.image || firstItem.product_image || '/images/image1.jpeg';
 
               return (
                 <div key={order._id || order.id || order.orderId} style={{ ...cardStyle, padding: '1.5rem' }}>
@@ -362,7 +362,7 @@ export default function OrderHistoryPage() {
                   {/* Items Preview */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                      <img src={firstItemImage} alt="Product" style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '10px', border: `1px solid ${T.border}`, flexShrink: 0 }} />
+                      <OrderItemImage item={firstItem} size={60} />
                       <div>
                         <div style={{ fontSize: '0.95rem', color: T.textPrimary, fontWeight: '700' }}>
                           {firstItem.title || firstItem.product_title || 'Millet Bakery Item'}

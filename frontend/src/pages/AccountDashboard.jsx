@@ -12,6 +12,7 @@ import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import ConfirmationModal from '../components/ConfirmationModal';
 import api from '../api/axios';
+import OrderItemImage from '../components/OrderItemImage';
 
 
 // — Design tokens (mirrors --cp-* variables for inline JS)
@@ -537,12 +538,9 @@ export default function AccountDashboard() {
                   {recentOrders.map((order) => {
                     const status = order.status || order.orderStatus || 'Confirmed';
                     const date = new Date(order.createdAt || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-                    const img = order.items?.[0]?.image;
                     return (
                       <div key={order._id} style={{ ...cardStyle, padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                        {img && (
-                          <img src={img} alt="" style={{ width: '48px', height: '48px', borderRadius: '10px', objectFit: 'cover', border: `1px solid ${T.border}`, flexShrink: 0 }} />
-                        )}
+                        {order.items?.[0] && <OrderItemImage item={order.items[0]} size={48} />}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: '0.85rem', fontWeight: '800', color: T.textPrimary }}>
                             Order #{order.orderNumber || order._id?.slice(-8).toUpperCase()}
@@ -654,7 +652,7 @@ export default function AccountDashboard() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', padding: '0.75rem 0' }}>
                         {order.items.slice(0, 2).map((item, idx) => (
                           <div key={idx} style={{ display: 'flex', gap: '0.85rem', alignItems: 'center' }}>
-                            <img src={item.image} alt={item.title} style={{ width: '52px', height: '52px', borderRadius: '10px', objectFit: 'cover', border: `1px solid ${T.border}`, flexShrink: 0 }} />
+                            <OrderItemImage item={item} size={52} />
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ fontSize: '0.88rem', fontWeight: '700', color: T.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
                               <div style={{ fontSize: '0.76rem', color: T.textMuted }}>Qty: {item.quantity} • ₹{item.price * item.quantity}</div>

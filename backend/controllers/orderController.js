@@ -160,7 +160,7 @@ export const createOrder = async (req, res) => {
       validatedItems.push({
         product_id: dbProduct ? dbProduct.id : null,
         product_title: title,
-        product_image: item.image || item.product_image || (dbProduct ? dbProduct.primary_image : null) || null,
+        product_image: item.image || item.product_image || (dbProduct ? (dbProduct.image_url || dbProduct.primary_image) : null) || null,
         variant_id: item.variantId || item.variant_id || null,
         variant_name: item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard Pack',
         unit_price: unitPrice,
@@ -475,6 +475,40 @@ export const createOrder = async (req, res) => {
 };
 
 /**
+ * Order items store product_image at checkout, but older orders often saved none. Fill missing ones
+ * from the product's current image (products.image_url, then its gallery) so thumbnails always load.
+ */
+const UUID_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const attachItemImages = async (orders) => {
+  const list = (Array.isArray(orders) ? orders : [orders]).filter(Boolean);
+  const ids = new Set();
+  list.forEach((o) => (o.order_items || []).forEach((i) => {
+    if (!i.product_image && UUID_LIKE.test(String(i.product_id || ''))) ids.add(String(i.product_id));
+  }));
+  if (ids.size === 0) return orders;
+  try {
+    const images = new Map();
+    const { data: prods } = await supabase.from('products').select('id, image_url').in('id', [...ids]);
+    (prods || []).forEach((p) => { if (p.image_url) images.set(String(p.id), p.image_url); });
+    const stillMissing = [...ids].filter((id) => !images.has(id));
+    if (stillMissing.length > 0) {
+      const { data: gallery } = await supabase
+        .from('product_images')
+        .select('product_id, image_url, sort_order')
+        .in('product_id', stillMissing)
+        .order('sort_order', { ascending: true });
+      (gallery || []).forEach((g) => { if (g.image_url && !images.has(String(g.product_id))) images.set(String(g.product_id), g.image_url); });
+    }
+    list.forEach((o) => (o.order_items || []).forEach((i) => {
+      if (!i.product_image) i.product_image = images.get(String(i.product_id)) || null;
+    }));
+  } catch (e) {
+    console.warn('[ORDERS] attachItemImages notice:', e.message);
+  }
+  return orders;
+};
+
+/**
  * Format raw DB order payload into clean, consistent frontend payload (No fake placeholders)
  */
 export const formatOrderPayload = (o) => {
@@ -509,6 +543,8 @@ export const formatOrderPayload = (o) => {
       total_price: Number(item.total_price || item.totalPrice || ((item.unit_price || item.price || 0) * (item.quantity || 1))),
       customization_note: note,
       customizationNote: note,
+      image: item.product_image || item.image || null,
+      product_image: item.product_image || item.image || null,
     };
   });
 
@@ -641,6 +677,7 @@ export const getMyOrders = async (req, res) => {
       return true;
     });
 
+    await attachItemImages(filteredOrders);
     const formatted = filteredOrders.map(formatCustomerOrderPayload);
     res.json(formatted);
   } catch (error) {
@@ -672,6 +709,8 @@ export const getAllOrders = async (req, res) => {
       }
       return true;
     });
+
+    await attachItemImages(filteredOrders);
 
     // Attach cancellation / refund / shipment-cancel state (table may not exist before migration 19)
     const { data: cancellations } = await supabase
@@ -713,6 +752,7 @@ export const getOrderById = async (req, res) => {
 
     // Only the order's owner (or an admin) may read it — order numbers are guessable
     const respond = async (o) => {
+      await attachItemImages(o);
       const payload = req.user?.role === 'admin' ? formatOrderPayload(o) : formatCustomerOrderPayload(o);
       payload.cancellation = await getCustomerCancellation(o.id); // refund % / amount / status, if cancelled
       return payload;

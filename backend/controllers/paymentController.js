@@ -200,7 +200,7 @@ export const createPaymentSession = async (req, res) => {
       validatedItems.push({
         product_id: dbProduct ? dbProduct.id : null,
         product_title: title,
-        product_image: item.image || item.product_image || (dbProduct ? dbProduct.primary_image : null) || null,
+        product_image: item.image || item.product_image || (dbProduct ? (dbProduct.image_url || dbProduct.primary_image) : null) || null,
         variant_id: item.variantId || item.variant_id || null,
         variant_name: item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard Pack',
         unit_price: unitPrice,
