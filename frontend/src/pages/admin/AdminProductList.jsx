@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Search, RefreshCw } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, RefreshCw, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 import api from '../../api/axios';
 import PriceDisplay from '../../components/PriceDisplay';
 import ConfirmationModal from '../../components/ConfirmationModal';
@@ -12,7 +12,53 @@ export default function AdminProductList() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [savingOrder, setSavingOrder] = useState(false);
+  const [dragIndex, setDragIndex] = useState(null);
+  const [overIndex, setOverIndex] = useState(null);
+  const touchDrag = useRef(null);
   const { toast } = useToast();
+
+  // Reordering only makes sense on the full list (not a search result)
+  const canReorder = !search.trim() && products.length > 1;
+
+  // Persist the list order: row 1 → Display Order 1 (shown first on Home & Shop), row 2 → 2, …
+  const saveOrder = async (next, previous) => {
+    setProducts(next);
+    setSavingOrder(true);
+    try {
+      await api.put('/products/admin/reorder', { orderedIds: next.map((p) => p._id || p.id) });
+      toast.success('Product order saved.');
+    } catch (e) {
+      setProducts(previous);
+      toast.error(e.response?.data?.message || 'Could not save the product order.');
+    } finally {
+      setSavingOrder(false);
+    }
+  };
+
+  const moveProduct = (from, to) => {
+    if (!canReorder || savingOrder || from === to || from == null || to == null || to < 0 || to >= products.length) return;
+    const previous = products;
+    const next = [...products];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    saveOrder(next, previous);
+  };
+
+  // Touch drag (iPad / phones): HTML5 drag events don't fire for touch
+  const onTouchStartHandle = (index) => { touchDrag.current = { from: index }; setDragIndex(index); };
+  const onTouchMoveHandle = (e) => {
+    if (!touchDrag.current) return;
+    const t = e.touches[0];
+    const row = document.elementFromPoint(t.clientX, t.clientY)?.closest('tr[data-row-index]');
+    if (row) setOverIndex(Number(row.dataset.rowIndex));
+  };
+  const onTouchEndHandle = () => {
+    if (touchDrag.current && overIndex !== null) moveProduct(touchDrag.current.from, overIndex);
+    touchDrag.current = null;
+    setDragIndex(null);
+    setOverIndex(null);
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -57,6 +103,11 @@ export default function AdminProductList() {
           <p style={{ color: '#4A3B2E', fontSize: '0.8rem', margin: '0.2rem 0 0 0', fontWeight: '500' }}>
             Manage catalog inventory, prices, discounts, variants, and stock status.
           </p>
+          <p style={{ color: '#665A52', fontSize: '0.74rem', margin: '0.35rem 0 0 0', fontWeight: '600' }}>
+            {canReorder
+              ? (savingOrder ? 'Saving order…' : 'Drag ⋮⋮ (or use ↑ ↓) to set the order products appear on the Home & Shop pages.')
+              : 'Clear the search to reorder products.'}
+          </p>
         </div>
 
         <Link
@@ -94,6 +145,7 @@ export default function AdminProductList() {
           <table className="admin-table">
             <thead>
               <tr>
+                <th style={{ width: '64px' }}>Order</th>
                 <th>Product</th>
                 <th>Category</th>
                 <th>SKU</th>
@@ -105,7 +157,7 @@ export default function AdminProductList() {
               </tr>
             </thead>
             <tbody>
-              {products.map((p) => {
+              {products.map((p, index) => {
                 const hasVariants = Array.isArray(p.variants) && p.variants.length > 0;
                 let lowStockVariantCount = 0;
                 let outOfStockVariantCount = 0;
@@ -125,7 +177,43 @@ export default function AdminProductList() {
                 const displayOrigPrice = p.originalPrice || p.variants?.[0]?.originalPrice || displayPrice;
 
                 return (
-                  <tr key={p._id || p.slug}>
+                  <tr
+                    key={p._id || p.slug}
+                    data-row-index={index}
+                    draggable={canReorder && !savingOrder}
+                    onDragStart={(e) => { setDragIndex(index); e.dataTransfer.effectAllowed = 'move'; }}
+                    onDragOver={(e) => { if (dragIndex !== null) { e.preventDefault(); setOverIndex(index); } }}
+                    onDrop={(e) => { e.preventDefault(); moveProduct(dragIndex, index); setDragIndex(null); setOverIndex(null); }}
+                    onDragEnd={() => { setDragIndex(null); setOverIndex(null); }}
+                    style={{
+                      opacity: dragIndex === index ? 0.45 : 1,
+                      boxShadow: overIndex === index && dragIndex !== null && dragIndex !== index ? 'inset 0 3px 0 #C68A3A' : 'none',
+                    }}
+                  >
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <span
+                          title={canReorder ? 'Drag to reorder' : 'Clear the search to reorder'}
+                          onTouchStart={canReorder ? () => onTouchStartHandle(index) : undefined}
+                          onTouchMove={canReorder ? onTouchMoveHandle : undefined}
+                          onTouchEnd={canReorder ? onTouchEndHandle : undefined}
+                          style={{ cursor: canReorder ? 'grab' : 'not-allowed', color: canReorder ? '#8A6A50' : '#C9BCB0', display: 'flex', touchAction: 'none', padding: '0.2rem' }}
+                        >
+                          <GripVertical size={16} />
+                        </span>
+                        <span style={{ fontWeight: '800', color: '#4A3B2E', fontSize: '0.8rem', minWidth: '1.2rem' }}>{index + 1}</span>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <button type="button" aria-label="Move up" disabled={!canReorder || savingOrder || index === 0} onClick={() => moveProduct(index, index - 1)}
+                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#8A6A50', opacity: (!canReorder || index === 0) ? 0.3 : 1, display: 'flex' }}>
+                            <ChevronUp size={14} />
+                          </button>
+                          <button type="button" aria-label="Move down" disabled={!canReorder || savingOrder || index === products.length - 1} onClick={() => moveProduct(index, index + 1)}
+                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#8A6A50', opacity: (!canReorder || index === products.length - 1) ? 0.3 : 1, display: 'flex' }}>
+                            <ChevronDown size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </td>
                     <td style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                       <img src={p.image} alt={p.title} style={{ width: '44px', height: '44px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(231, 222, 213, 0.65)' }} />
                       <div>
@@ -171,9 +259,21 @@ export default function AdminProductList() {
                       )}
                     </td>
                     <td>
-                      <span className="admin-badge admin-badge-success">
-                        {p.status || 'active'}
-                      </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-start' }}>
+                        <span className="admin-badge admin-badge-success">
+                          {p.status || 'active'}
+                        </span>
+                        {p.hiddenReason === 'no_variants' && (
+                          <span className="admin-badge admin-badge-warning" title="Add at least one variant (pack size & price) to show it in the shop">
+                            Hidden: no variant
+                          </span>
+                        )}
+                        {p.hiddenReason === 'upcoming' && (
+                          <span className="admin-badge admin-badge-info" title="Shown in the shop from its launch date">
+                            Pre-booking
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>

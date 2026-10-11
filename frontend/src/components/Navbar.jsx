@@ -782,15 +782,18 @@ export default function Navbar() {
                 {/* Social Media Buttons */}
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '0.85rem', paddingTop: '0.2rem' }}>
                   {[
-                    { icon: Instagram, label: 'Instagram' },
-                    { icon: Facebook, label: 'Facebook' },
-                    { icon: Youtube, label: 'Youtube' },
-                    { icon: Linkedin, label: 'Linkedin' }
+                    { icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/milasty_' },
+                    { icon: Facebook, label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61587126537376' },
+                    { icon: Youtube, label: 'YouTube', href: 'https://www.youtube.com/@Milasty_millet-based-bakery' },
+                    { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/company/milasty/' }
                   ].map((soc, idx) => {
                     const SocIcon = soc.icon;
                     return (
-                      <button
+                      <a
                         key={idx}
+                        href={soc.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         aria-label={soc.label}
                         style={{
                           width: '40px',
@@ -804,11 +807,12 @@ export default function Navbar() {
                           justifyContent: 'center',
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
-                          padding: 0
+                          padding: 0,
+                          textDecoration: 'none'
                         }}
                       >
                         <SocIcon size={18} />
-                      </button>
+                      </a>
                     );
                   })}
                 </div>

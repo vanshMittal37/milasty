@@ -389,8 +389,8 @@ export default function CustomerOrderDetailPage() {
   const cancellation = order.cancellation || null;
   const inr = (v) => `₹${Number(v || 0).toLocaleString('en-IN', { minimumFractionDigits: Number(v) % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
   const REFUND_STATUS_TEXT = {
-    pending: 'Refund pending — it will be sent to your original payment method.',
-    processing: 'Refund in progress with our payment partner.',
+    pending: 'Refund initiated — it will be credited to your original payment method within 4–5 working days.',
+    processing: 'Refund in progress — it should reach your original payment method within 4–5 working days.',
     successful: 'Refund completed.',
     failed: 'There was a problem with your refund. Our team will contact you.',
     needs_review: 'Your refund is being reviewed by our team.',
@@ -779,6 +779,11 @@ export default function CustomerOrderDetailPage() {
                     <p style={{ margin: 0, fontSize: '0.86rem', fontWeight: '700', color: T.textPrimary }}>
                       Cancel this order{cancelQuote.prepaid ? ` and receive a ${inr(cancelQuote.refundAmount)} refund` : ''}? This cannot be undone.
                     </p>
+                    {cancelQuote.prepaid && cancelQuote.refundAmount > 0 && (
+                      <p style={{ margin: 0, fontSize: '0.8rem', color: T.textMuted }}>
+                        Refunds are credited to your original payment method within 4–5 working days.
+                      </p>
+                    )}
                     {cancelError && <p style={{ fontSize: '0.8rem', color: T.danger, margin: 0 }}>{cancelError}</p>}
                     <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                       <button

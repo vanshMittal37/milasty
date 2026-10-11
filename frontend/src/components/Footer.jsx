@@ -159,10 +159,10 @@ export default function Footer() {
                 </span>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                   {[
-                    { icon: Instagram, label: 'Instagram', href: 'https://instagram.com/milasty' },
-                    { icon: Facebook, label: 'Facebook', href: 'https://facebook.com/milasty' },
-                    { icon: Youtube, label: 'YouTube', href: 'https://youtube.com/@milasty' },
-                    { icon: Linkedin, label: 'LinkedIn', href: 'https://linkedin.com/company/milasty' }
+                    { icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/milasty_' },
+                    { icon: Facebook, label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61587126537376' },
+                    { icon: Youtube, label: 'YouTube', href: 'https://www.youtube.com/@Milasty_millet-based-bakery' },
+                    { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/company/milasty/' }
                   ].map((soc, idx) => {
                     const SocIcon = soc.icon;
                     return (

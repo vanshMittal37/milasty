@@ -67,7 +67,6 @@ export default function AdminProductForm() {
     status: 'active',
     isFeatured: true,
     isBestseller: false,
-    displayOrder: '',
     image: '',
     secondaryImage: '',
     labReportUrl: '',
@@ -337,7 +336,6 @@ export default function AdminProductForm() {
           status: p.status || (p.is_active !== false ? 'active' : 'inactive'),
           isFeatured: p.isFeatured !== false,
           isBestseller: isBs,
-          displayOrder: p.displayOrder ?? p.display_order ?? '',
           image: p.image || p.image_url || '',
           secondaryImage: p.secondaryImage || p.secondary_image_url || '',
           labReportUrl: p.labReportUrl || p.lab_report_url || '',
@@ -697,13 +695,6 @@ export default function AdminProductForm() {
       }
     }
 
-    const rawOrder = String(formData.displayOrder ?? '').trim();
-    const displayOrderNum = rawOrder === '' ? null : Number(rawOrder);
-    if (displayOrderNum !== null && (!Number.isInteger(displayOrderNum) || displayOrderNum < 1)) {
-      toast.error('Display Order must be a whole number of 1 or more (lower numbers show first), or left empty.');
-      return;
-    }
-
     setLoading(true);
 
     // The Bestseller dropdown alone decides the homepage Bestseller section; badges are saved as selected
@@ -733,7 +724,6 @@ export default function AdminProductForm() {
       variants: updatedPayloadVariants,
       isBestseller: isBestsellerActive,
       is_bestseller: isBestsellerActive,
-      displayOrder: displayOrderNum,
       pieces: formData.pieces ? String(formData.pieces).trim() : '',
       badges: finalPayloadBadges,
       ingredients: ingredientsList,
@@ -998,25 +988,6 @@ export default function AdminProductForm() {
                   <option value="true">🔥 YES (Bestseller Section)</option>
                   <option value="false">NO (Standard Item)</option>
                 </select>
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
-                  Display Order
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  inputMode="numeric"
-                  placeholder="e.g. 1 (shows first)"
-                  value={formData.displayOrder ?? ''}
-                  onChange={(e) => setFormData({ ...formData, displayOrder: e.target.value })}
-                  className="admin-input"
-                />
-                <span style={{ fontSize: '0.7rem', color: '#665A52', display: 'block', marginTop: '0.3rem' }}>
-                  Lower numbers appear first on the Home & Shop pages. Leave empty to list after ordered products.
-                </span>
               </div>
             </div>
           </div>
@@ -1751,6 +1722,11 @@ export default function AdminProductForm() {
                 </button>
               </div>
 
+              {(!formData.variants || formData.variants.length === 0) && (
+                <div style={{ fontSize: '0.76rem', fontWeight: '700', color: '#B45309', background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.35)', borderRadius: '8px', padding: '0.5rem 0.75rem' }}>
+                  This product has no variants, so it will be saved but stay hidden from the shop. Add at least one variant (pack size, weight in grams, price) to show it.
+                </div>
+              )}
               {formData.variants && formData.variants.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                   {formData.variants.map((v, index) => (

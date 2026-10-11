@@ -363,7 +363,10 @@ export const getProducts = async (req, res) => {
       let filtered = formatted.filter((p) => {
         const ownLaunch = p.launchDate ? new Date(p.launchDate).getTime() : null;
         p.isUpcoming = (ownLaunch !== null && ownLaunch > nowMs) || prebookedUpcoming.has(String(p.id));
-        return includeUpcoming || !p.isUpcoming;
+        // A product needs at least one variant (pack size + price) before customers can see it
+        p.hasVariants = Array.isArray(p.variants) && p.variants.length > 0;
+        p.hiddenReason = p.isUpcoming ? 'upcoming' : (!p.hasVariants ? 'no_variants' : null);
+        return includeUpcoming || !p.hiddenReason;
       });
 
       if (minPrice || maxPrice) {
@@ -706,6 +709,28 @@ const safeInsertProduct = (payload) =>
 const safeUpdateProduct = (id, payload) =>
   runProductWrite('update', payload, (p) => supabase.from('products').update(p).eq('id', id).select().maybeSingle());
 
+/**
+ * PUT /api/products/admin/reorder  { orderedIds: [productId, ...] }
+ * Saves the admin's drag-and-drop order: first product → display_order 1, second → 2, …
+ */
+export const reorderProducts = async (req, res) => {
+  try {
+    const ids = Array.isArray(req.body?.orderedIds) ? [...new Set(req.body.orderedIds.map(String).filter(Boolean))] : null;
+    if (!ids || ids.length === 0) return res.status(400).json({ message: 'orderedIds array is required' });
+
+    for (let i = 0; i < ids.length; i++) {
+      const { error } = await supabase.from('products').update({ display_order: i + 1 }).eq('id', ids[i]);
+      if (error) {
+        const hint = /display_order/i.test(error.message || '') ? ' Run scripts/21_product_display_order_and_bestseller.sql in Supabase.' : '';
+        return res.status(500).json({ message: `Could not save the product order: ${error.message}.${hint}` });
+      }
+    }
+    return res.json({ success: true, message: 'Product order saved.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error saving product order', error: error.message });
+  }
+};
+
 export const createProduct = async (req, res) => {
   try {
     const {
@@ -859,18 +884,9 @@ export const createProduct = async (req, res) => {
       });
       insertedVariants = await safeInsertVariants(variantRows);
     } else {
-      // Auto-create a default variant if no variants array was supplied
-      const defaultStock = Number(stock !== undefined && stock !== null && stock !== '' ? stock : 100);
-      const defaultVariantRow = {
-        product_id: product.id,
-        name: 'Standard Pack',
-        weight: 'Standard',
-        price: Number(price || 0),
-        original_price: Number(originalPrice || price || 0),
-        stock: defaultStock,
-        in_stock: defaultStock > 0,
-      };
-      insertedVariants = await safeInsertVariants([defaultVariantRow]);
+      // No auto-created "Standard Pack": a product without variants is saved as-is and stays hidden
+      // from the shop until the admin adds at least one real variant (with a gram weight).
+      insertedVariants = [];
     }
 
     const finalVariantStocksMap = {};
@@ -1116,17 +1132,9 @@ export const updateProduct = async (req, res) => {
         });
         updatedVariants = await safeInsertVariants(variantRows);
       } else {
-        const defaultStock = Number(updates.stock !== undefined && updates.stock !== null && updates.stock !== '' ? updates.stock : 100);
-        const defaultVariantRow = {
-          product_id: id,
-          name: 'Standard Pack',
-          weight: 'Standard',
-          price: targetPrice,
-          original_price: targetOriginalPrice,
-          stock: defaultStock,
-          in_stock: defaultStock > 0,
-        };
-        updatedVariants = await safeInsertVariants([defaultVariantRow]);
+        // No auto-created "Standard Pack": a product without variants is saved as-is and stays hidden
+        // from the shop until the admin adds at least one real variant (with a gram weight).
+        updatedVariants = [];
       }
     } else {
       const { data: existingV } = await supabase.from('product_variants').select('*').eq('product_id', id);
@@ -1147,17 +1155,7 @@ export const updateProduct = async (req, res) => {
           updatedVariants = existingV;
         }
       } else {
-        const defaultStock = Number(updates.stock !== undefined && updates.stock !== null && updates.stock !== '' ? updates.stock : 100);
-        const defaultVariantRow = {
-          product_id: id,
-          name: 'Standard Pack',
-          weight: 'Standard',
-          price: targetPrice,
-          original_price: targetOriginalPrice,
-          stock: defaultStock,
-          in_stock: defaultStock > 0,
-        };
-        updatedVariants = await safeInsertVariants([defaultVariantRow]);
+        updatedVariants = []; // no variants yet — product stays hidden from the shop until one is added
       }
     }
 
