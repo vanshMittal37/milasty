@@ -343,20 +343,41 @@ export async function fetchLiveShiprathRate({
     throw new Error(`Shiprath returned ${rawRates.length} rate(s) for pincode ${cleanPincode}, but none had the data needed to book a shipment.`);
   }
 
-  // Cheapest valid rate first — this order is also the automatic fallback order at booking time
-  formattedRates.sort((a, b) => a.total_charges - b.total_charges);
-  const selectedRate = formattedRates[0];
+  // MILASTY ships with ONE courier (Delhivery by default). Only that courier's rates are kept, so the
+  // checkout charge, the booked courier and the booking fallbacks are all that courier.
+  // Set SHIPRATH_COURIER=all on Railway to allow every courier again (cheapest wins).
+  const courierRates = filterToPreferredCourier(formattedRates);
+  if (!courierRates.length) {
+    console.warn(`[SHIPRATH RATE DIAGNOSTIC] No ${PREFERRED_COURIER} service for pincode ${cleanPincode} (available: ${formattedRates.map((r) => r.service_name).join(', ')})`);
+    throw new Error(`No ${PREFERRED_COURIER} service available for pincode ${cleanPincode}.`);
+  }
 
-  console.log(`[SHIPRATH RATE DIAGNOSTIC] After validation: ${formattedRates.length} valid carrier(s). Cheapest: "${selectedRate.service_name}" at ₹${selectedRate.total_charges}`);
+  // Cheapest rate of the chosen courier first — this order is also the fallback order at booking time
+  courierRates.sort((a, b) => a.total_charges - b.total_charges);
+  const selectedRate = courierRates[0];
+
+  console.log(`[SHIPRATH RATE DIAGNOSTIC] After validation: ${formattedRates.length} valid carrier(s), ${courierRates.length} ${PREFERRED_COURIER}. Selected: "${selectedRate.service_name}" at ₹${selectedRate.total_charges}`);
 
   return {
-    rateList: formattedRates,
+    rateList: courierRates,
     selectedRate,
     shippingCharge: selectedRate.total_charges,
     weight: calculatedWeight,
     dimensions: { ...shipPkg.dimensions },
     pincode: cleanPincode,
   };
+}
+
+// The only courier MILASTY books with. Matched (case-insensitive) against the courier / carrier /
+// service names Shiprath returns, e.g. "Delhivery 0.250 KG", "Delhivery Surface".
+const PREFERRED_COURIER = String(process.env.SHIPRATH_COURIER || 'delhivery').trim().toLowerCase();
+
+export function filterToPreferredCourier(rates) {
+  if (!PREFERRED_COURIER || PREFERRED_COURIER === 'all') return rates;
+  return rates.filter((r) => [
+    r.service_name, r.service_provider, r.product_type_name,
+    r.raw?.courier_name, r.raw?.carrier_name, r.raw?.service_name, r.raw?.service_provider,
+  ].some((v) => String(v || '').toLowerCase().includes(PREFERRED_COURIER)));
 }
 
 /**
@@ -845,6 +866,24 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
       } catch (rateErr) {
         console.error(`[SHIPRATH BOOK] ${order.order_number} → Rate fetch failed:`, rateErr.message);
         const errMsg = `Rate fetch failed: ${rateErr.message}`;
+        await markFailed(errMsg);
+        return { error: errMsg, rawError: rateErr.message };
+      }
+    }
+
+    // Only the chosen courier (Delhivery) is ever booked. Orders quoted before this rule may have
+    // saved another courier — for those, fetch live rates of the chosen courier instead.
+    const preferredCandidates = filterToPreferredCourier(candidateRates);
+    if (preferredCandidates.length) {
+      candidateRates = preferredCandidates;
+    } else if (candidateRates.length) {
+      rateSource = `live ${PREFERRED_COURIER} rates (saved checkout quote had no ${PREFERRED_COURIER} option)`;
+      try {
+        const rateResult = await fetchLiveShiprathRate({ pincode: destinationPincode, pkg, declaredValue });
+        candidateRates = rateResult.rateList || [];
+      } catch (rateErr) {
+        const errMsg = `No ${PREFERRED_COURIER} service for this order: ${rateErr.message}`;
+        console.error(`[SHIPRATH BOOK] ${order.order_number} → ${errMsg}`);
         await markFailed(errMsg);
         return { error: errMsg, rawError: rateErr.message };
       }

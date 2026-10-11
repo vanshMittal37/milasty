@@ -813,7 +813,7 @@ export default function Nutrition() {
             onTouchEnd={() => setIsIngredientsHovered(false)}
           >
             {whyIngredientsData.map((item, idx) => (
-              <div key={idx} style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
+              <div key={idx} className="card-warm-beige" style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', padding: '2.5rem 2.25rem', borderRadius: '24px', boxSizing: 'border-box', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                   <span style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>0{idx + 1}</span>
                   {item.icon}
@@ -865,7 +865,7 @@ export default function Nutrition() {
             style={{ touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none' }}
           >
             {whyIngredientsData[whyIngredientsIndex] && (
-              <div style={{ backgroundColor: '#F4EBDD', border: '1.5px solid #5C3A21', padding: '2rem 1.5rem', borderRadius: '24px', boxSizing: 'border-box' }}>
+              <div className="card-warm-beige" style={{ backgroundColor: 'var(--card-bg, #EAD8C3)', border: 'var(--card-border, 1px solid #D6C2A7)', boxShadow: 'var(--card-shadow, 0 6px 22px rgba(90, 60, 30, 0.09))', padding: '2rem 1.5rem', borderRadius: '24px', boxSizing: 'border-box' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                   <span style={{ fontSize: '1.4rem', fontFamily: 'var(--font-serif)', color: '#2F6B3A', fontWeight: '900' }}>
                     0{whyIngredientsIndex + 1}
