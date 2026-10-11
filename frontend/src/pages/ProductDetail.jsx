@@ -801,18 +801,7 @@ export default function ProductDetail() {
                   ({reviewsData.totalReviews || product.reviewCount} {(reviewsData.totalReviews || product.reviewCount) === 1 ? 'Review' : 'Reviews'})
                 </span>
               </div>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', color: '#DCC8AE' }}>
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star key={s} size={15} fill="none" color="#DCC8AE" />
-                  ))}
-                </div>
-                <span style={{ fontSize: '0.82rem', color: '#806A57', fontWeight: '600' }}>
-                  (No reviews yet)
-                </span>
-              </div>
-            )}
+            ) : null /* no rating line until the product has at least one review */}
 
             {/* Description */}
             {product.description && (

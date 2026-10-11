@@ -185,24 +185,17 @@ export default function ProductCard({ product }) {
         {/* Info grows to fill the card so every footer in a row sits at the same height */}
         <div className="card-info" style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
           {/* Rating stars */}
-          {(product.show_rating !== false && product.showRating !== false) && (
+          {/* Rating row only when the product has at least one review */}
+          {(product.show_rating !== false && product.showRating !== false) && product.rating > 0 && (product.reviewCount > 0 || product.reviews_count > 0 || product.totalReviews > 0) && (
             <div className="card-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.35rem' }}>
-              {product.rating > 0 && (product.reviewCount > 0 || product.reviews_count > 0 || product.totalReviews > 0) ? (
-                <>
-                  <div style={{ display: 'flex', color: '#2F6B3A' }}>
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={11} fill={i < Math.round(product.rating) ? '#2F6B3A' : 'none'} color="#2F6B3A" />
-                    ))}
-                  </div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '750' }}>
-                    {Number(product.rating).toFixed(1)} ({product.reviewCount || product.reviews_count || product.totalReviews})
-                  </span>
-                </>
-              ) : (
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600' }}>
-                  No reviews yet
-                </span>
-              )}
+              <div style={{ display: 'flex', color: '#2F6B3A' }}>
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={11} fill={i < Math.round(product.rating) ? '#2F6B3A' : 'none'} color="#2F6B3A" />
+                ))}
+              </div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '750' }}>
+                {Number(product.rating).toFixed(1)} ({product.reviewCount || product.reviews_count || product.totalReviews})
+              </span>
             </div>
           )}
 
