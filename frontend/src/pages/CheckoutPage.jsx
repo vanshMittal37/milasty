@@ -508,7 +508,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* Checkout Form */}
-        <form onSubmit={handlePlaceOrder} className="checkout-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2.5rem', alignItems: 'start' }}>
+        <form onSubmit={handlePlaceOrder} className="checkout-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: '2.5rem', alignItems: 'start' }}>
 
           {/* LEFT: Shipping Details & Payments */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

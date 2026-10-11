@@ -13,7 +13,7 @@ export default function InteractiveServiceShowcase({ products = initialProducts 
   const selectedVariant = activeProduct?.variants?.[0] || {};
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem', alignItems: 'center' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '3rem', alignItems: 'center' }}>
       {/* Left Column: Interactive List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         {dailyItems.map((item, idx) => {

@@ -407,7 +407,7 @@ export default function LegalPage() {
 
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
                   gap: '1rem',
                   marginBottom: '1.25rem'
                 }}>
@@ -1155,7 +1155,7 @@ export default function LegalPage() {
                   </div>
                 </div>
                 <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>When you place an order through WhatsApp or reach out to our team for inquiries, we may collect:</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.85rem' }}>
                   {["Your name", "Your phone number", "Your delivery address & pincode", "Order details (products & quantity)", "Payment confirmation (transaction reference only)"].map((item, idx) => (
                     <div key={idx} style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '0.85rem 1rem', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                       <Sparkles size={16} color="#2F6B3A" style={{ flexShrink: 0 }} />
@@ -1252,7 +1252,7 @@ export default function LegalPage() {
                   </div>
                 </div>
                 <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>You retain full control over your personal data at all times. You have the right to request:</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem' }}>
                   {[{ title: "Right to Inspect", desc: "To see what contact and order data we hold about you" }, { title: "Right to Correct", desc: "Correction of any incomplete or inaccurate delivery details" }, { title: "Right to Deletion", desc: "Deletion of your personal details after your order fulfillment" }].map((right, index) => (
                     <div key={index} style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '14px', padding: '1.15rem' }}>
                       <h4 style={{ color: '#2F6B3A', fontSize: '1rem', marginBottom: '0.35rem', fontWeight: '700' }}>{right.title}</h4>
@@ -1467,7 +1467,7 @@ export default function LegalPage() {
                   </div>
                 </div>
                 <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We ship across India through premium, reliable courier partners. All products are baked fresh upon order confirmation and dispatched within 24–48 hours. Delivery usually takes 3–7 business days depending on your pincode location.</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem' }}>
                   <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
                     <CheckCircle2 size={18} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '2px' }} />
                     <span style={{ fontSize: '0.9rem', color: '#654B38', lineHeight: '1.5' }}>Courier delays may occasionally happen due to operational or weather reasons.</span>

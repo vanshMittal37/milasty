@@ -460,7 +460,7 @@ export default function AccountDashboard() {
           </div>
 
           {/* 3. Quick Actions + Recent Orders */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.75rem', alignItems: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.75rem', alignItems: 'start' }}>
 
             {/* Quick Actions */}
             <div>
@@ -710,7 +710,7 @@ export default function AccountDashboard() {
               </Link>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))', gap: '1.25rem' }}>
               {wishlistItems.map((item) => {
                 const pId = item._id || item.slug;
                 const variant = item.variants?.[0];
@@ -814,7 +814,7 @@ export default function AccountDashboard() {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.15rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.15rem' }}>
               {user.addresses.map((addr, idx) => (
                 <div
                   key={addr._id || addr.id || idx}

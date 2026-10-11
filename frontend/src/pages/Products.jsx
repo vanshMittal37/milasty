@@ -91,7 +91,7 @@ export default function Products() {
         className="products-hero-section"
         style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', 
           gap: '3.5rem', 
           alignItems: 'center', 
           padding: '4.5rem 1.5rem 5.5rem',
@@ -224,7 +224,7 @@ export default function Products() {
               className="glass-card animate-slide-up products-featured-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
                 gap: '3.5rem',
                 alignItems: 'center',
                 backgroundColor: 'rgba(20, 10, 5, 0.55)',
@@ -348,7 +348,7 @@ export default function Products() {
 
           {/* Grid Layout */}
           {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '2.25rem' }}>
               {[1, 2, 3].map((i) => (
                 <div key={i} className="glass-card" style={{ height: '420px', backgroundColor: '#FCFAF6', borderRadius: '24px', opacity: 0.6 }} />
               ))}
@@ -396,7 +396,7 @@ export default function Products() {
             className="products-ritual-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
               gap: '2rem',
               textAlign: 'center',
             }}

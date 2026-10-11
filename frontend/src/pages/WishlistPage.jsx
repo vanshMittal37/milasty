@@ -237,7 +237,7 @@ export default function WishlistPage() {
                   className="wishlist-recommendations-grid"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
                     gap: '1.5rem',
                     width: '100%',
                   }}
@@ -323,7 +323,7 @@ export default function WishlistPage() {
                 className="wishlist-items-grid"
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))',
                   gap: '2.5rem',
                   marginBottom: '6rem'
                 }}
@@ -366,7 +366,7 @@ export default function WishlistPage() {
                   className="wishlist-recommendations-grid"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
                     gap: '1.5rem',
                     width: '100%',
                   }}

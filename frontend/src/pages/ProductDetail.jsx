@@ -504,7 +504,7 @@ export default function ProductDetail() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
             gap: '3rem',
             alignItems: 'start',
             marginBottom: '4rem'
@@ -1507,7 +1507,7 @@ export default function ProductDetail() {
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: '800', color: '#32180D', marginBottom: '1.5rem' }}>
               You May Also Like
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1.5rem' }}>
               {relatedProducts.map((p) => (
                 <ProductCard key={p._id || p.slug} product={p} />
               ))}

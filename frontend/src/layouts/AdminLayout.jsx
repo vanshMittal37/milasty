@@ -339,7 +339,7 @@ export default function AdminLayout() {
         className="admin-desktop-sidebar"
       >
         <style>{`
-          @media (min-width: 1024px) {
+          @media (min-width: 1280px) {
             .admin-desktop-sidebar {
               display: block !important;
             }
@@ -429,7 +429,7 @@ export default function AdminLayout() {
               className="admin-hamburger-btn"
             >
               <style>{`
-                @media (min-width: 1024px) {
+                @media (min-width: 1280px) {
                   .admin-hamburger-btn {
                     display: none !important;
                   }

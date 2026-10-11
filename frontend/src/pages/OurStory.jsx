@@ -406,7 +406,7 @@ export default function OurStory() {
         className="shop-hero"
         style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', 
           gap: '4rem', 
           alignItems: 'center', 
           padding: '5rem 0 6rem',
@@ -547,7 +547,7 @@ export default function OurStory() {
             paddingLeft: '1.5rem', 
             paddingRight: '1.5rem',
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', 
             gap: '4.5rem', 
             alignItems: 'center' 
           }}

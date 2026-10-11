@@ -3429,11 +3429,13 @@ body .milasty-confirm-modal.milasty-confirm-modal h4 {
 }
 
 /* Responsive admin layout */
-@media (max-width: 1023px) {
+/* Pinned sidebar only on wide screens; tablets & small laptops (< 1280px) use the hamburger drawer
+   so pages get the full width instead of being cut off on the right. */
+@media (max-width: 1279px) {
   .admin-desktop-sidebar { display: none !important; }
   .admin-main-container  { margin-left: 0 !important; }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .admin-desktop-sidebar { display: block !important; }
   .admin-main-container  { margin-left: 260px !important; }
 }
@@ -4954,4 +4956,52 @@ body.admin-body .admin-badge-danger {
   min-width: 0 !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
+}
+
+
+/* ==================================================
+   ADMIN — RESPONSIVE CONTENT (all admin pages)
+   Nothing may push past the screen edge: content shrinks, wide tables scroll inside their box.
+   ================================================== */
+.admin-main-container,
+.admin-main-container main,
+.admin-main-container main > * {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-table-container,
+.admin-table-wrapper,
+.admin-main-container div:has(> table.admin-table),
+.admin-main-container div:has(> table) {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* Keep table columns readable — the box scrolls sideways instead of squashing or clipping them */
+.admin-main-container table.admin-table {
+  min-width: 860px;
+}
+.admin-main-container table.admin-table th,
+.admin-main-container table.admin-table td {
+  vertical-align: middle;
+}
+
+/* Filter / toolbar rows wrap instead of overflowing */
+.admin-main-container main input.admin-input,
+.admin-main-container main select.admin-input {
+  max-width: 100%;
+}
+
+@media (max-width: 1279px) {
+  /* Top bar: the long "View Store" pill hides on tablets to leave room for the title */
+  .admin-main-container header .desktop-links { display: none !important; }
+}
+
+@media (max-width: 640px) {
+  .admin-main-container table.admin-table {
+    min-width: 720px;
+  }
 }

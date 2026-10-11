@@ -90,7 +90,7 @@ export default function AdminOrders() {
                 </div>
 
                 {/* Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
                   {/* Customer info */}
                   <div>
                     <h4 style={{ fontSize: '0.95rem', color: '#5C4028', marginBottom: '0.5rem' }}>Customer Details</h4>
