@@ -30,7 +30,6 @@ export default function ProductCard({ product }) {
   const formatMinimalBadge = (text) => {
     if (!text) return '';
     const lower = text.toLowerCase();
-    if (lower.includes('bestseller') || lower.includes('best seller')) return '🔥 BESTSELLER';
     if (lower.includes('gluten')) return '🛡️ GLUTEN-FREE';
     if (lower.includes('fiber')) return '🌾 HIGH FIBER';
     if (lower.includes('calcium')) return '💪 CALCIUM+';
@@ -128,10 +127,10 @@ export default function ProductCard({ product }) {
           <Heart size={15} fill={wishlisted ? '#2F6B3A' : 'none'} color={wishlisted ? '#2F6B3A' : 'var(--text-heading)'} />
         </button>
 
-        {/* Dynamic Badges — only badges the admin selected (a selected Bestseller badge takes the spot) */}
+        {/* Dynamic Badges — first badge the admin selected (no Bestseller badge: that is the dropdown's job) */}
         {(() => {
-          const badges = Array.isArray(product.badges) ? product.badges.filter(Boolean) : [];
-          const shown = badges.find((b) => /best\s*seller/i.test(String(b))) || badges[0];
+          const badges = Array.isArray(product.badges) ? product.badges.filter((b) => b && !/best\s*seller/i.test(String(b))) : [];
+          const shown = badges[0];
           if (!shown) return null;
           return (
             <div

@@ -464,7 +464,7 @@ export default function ProductDetail() {
 
   return (
     <div style={{ backgroundColor: '#F7F0E5', color: '#2B170D', minHeight: '100vh', paddingTop: '1rem', paddingBottom: '5rem' }}>
-      
+
       {/* Auth Prompt Modal for Logged-Out Guest Purchases */}
       <AuthPromptModal
         isOpen={showAuthModal}
@@ -475,16 +475,16 @@ export default function ProductDetail() {
 
       {/* Maximum Container Width */}
       <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 1.25rem' }}>
-        
+
         {/* Breadcrumbs Navigation */}
-        <nav 
+        <nav
           aria-label="Breadcrumb"
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.5rem', 
-            fontSize: '0.85rem', 
-            color: '#654B38', 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '0.85rem',
+            color: '#654B38',
             marginBottom: '2rem',
             flexWrap: 'wrap'
           }}
@@ -501,65 +501,65 @@ export default function ProductDetail() {
         </nav>
 
         {/* 2-Column Product Detail Layout */}
-        <div 
-          style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
             gap: '3rem',
             alignItems: 'start',
             marginBottom: '4rem'
           }}
         >
-          
+
           {/* LEFT COLUMN: Product Image Gallery */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            
+
             {/* Main Dominant Image Container */}
-            <div 
+            <div
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               onClick={() => setIsLightboxOpen(true)}
-              style={{ 
-                position: 'relative', 
-                width: '100%', 
-                paddingTop: '100%', 
-                borderRadius: '20px', 
-                overflow: 'hidden', 
-                backgroundColor: '#F4EBDD', 
+              style={{
+                position: 'relative',
+                width: '100%',
+                paddingTop: '100%',
+                borderRadius: '20px',
+                overflow: 'hidden',
+                backgroundColor: '#F4EBDD',
                 border: '1px solid #DCC8AE',
                 boxShadow: '0 8px 30px rgba(75, 45, 25, 0.08)',
                 cursor: 'zoom-in',
                 userSelect: 'none'
               }}
             >
-              <img 
-                src={images[selectedImageIndex] || product.image} 
-                alt={product.title} 
-                style={{ 
-                  position: 'absolute', 
-                  top: 0, 
-                  left: 0, 
-                  width: '100%', 
-                  height: '100%', 
+              <img
+                src={images[selectedImageIndex] || product.image}
+                alt={product.title}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
                   objectFit: 'contain',
                   transition: 'opacity 0.3s ease, transform 0.4s ease'
-                }} 
+                }}
               />
 
               {/* Save Discount Badge */}
               {hasDiscount && (
-                <div 
-                  style={{ 
-                    position: 'absolute', 
-                    top: '16px', 
-                    left: '16px', 
-                    backgroundColor: '#2F6B3A', 
-                    color: '#FFFFFF', 
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '16px',
+                    left: '16px',
+                    backgroundColor: '#2F6B3A',
+                    color: '#FFFFFF',
                     border: '1px solid #2F6B3A',
-                    padding: '0.35rem 0.85rem', 
-                    borderRadius: '999px', 
-                    fontSize: '0.75rem', 
+                    padding: '0.35rem 0.85rem',
+                    borderRadius: '999px',
+                    fontSize: '0.75rem',
                     fontWeight: '800',
                     letterSpacing: '0.05em',
                     boxShadow: '0 4px 12px rgba(47, 107, 58, 0.25)',
@@ -722,18 +722,18 @@ export default function ProductDetail() {
 
           {/* RIGHT COLUMN: Product Details & Purchase Actions */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            
+
             {/* Category / Badges Row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <span 
-                style={{ 
-                  fontSize: '0.72rem', 
-                  fontWeight: '800', 
-                  textTransform: 'uppercase', 
-                  letterSpacing: '0.08em', 
-                  color: '#2F6B3A', 
-                  backgroundColor: '#E3EEDC', 
-                  padding: '0.25rem 0.75rem', 
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: '800',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#2F6B3A',
+                  backgroundColor: '#E3EEDC',
+                  padding: '0.25rem 0.75rem',
                   borderRadius: '999px',
                   border: '1px solid #DCC8AE'
                 }}
@@ -742,16 +742,16 @@ export default function ProductDetail() {
               </span>
 
               {Array.isArray(product.badges) && product.badges.map((b, i) => (
-                <span 
-                  key={i} 
-                  style={{ 
-                    fontSize: '0.72rem', 
-                    fontWeight: '700', 
-                    textTransform: 'uppercase', 
-                    letterSpacing: '0.05em', 
-                    color: '#32180D', 
-                    backgroundColor: '#F1E5D4', 
-                    padding: '0.25rem 0.75rem', 
+                <span
+                  key={i}
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: '#32180D',
+                    backgroundColor: '#F1E5D4',
+                    padding: '0.25rem 0.75rem',
                     borderRadius: '999px',
                     border: '1px solid #DCC8AE'
                   }}
@@ -762,14 +762,14 @@ export default function ProductDetail() {
             </div>
 
             {/* Product Title */}
-            <h1 
-              style={{ 
-                fontFamily: 'var(--font-serif)', 
-                fontSize: 'clamp(1.85rem, 3.5vw, 2.5rem)', 
-                fontWeight: '850', 
-                color: '#32180D', 
-                margin: 0, 
-                lineHeight: '1.2' 
+            <h1
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: 'clamp(1.85rem, 3.5vw, 2.5rem)',
+                fontWeight: '850',
+                color: '#32180D',
+                margin: 0,
+                lineHeight: '1.2'
               }}
             >
               {product.title}
@@ -832,19 +832,19 @@ export default function ProductDetail() {
                     const cleanB = String(b).trim();
                     if (!cleanB) return null;
                     return (
-                      <div 
-                        key={idx} 
-                        style={{ 
-                          display: 'inline-flex', 
-                          alignItems: 'center', 
-                          gap: '0.35rem', 
-                          backgroundColor: '#E3EEDC', 
-                          border: '1px solid #DCC8AE', 
-                          padding: '0.3rem 0.75rem', 
-                          borderRadius: '999px', 
-                          fontSize: '0.8rem', 
-                          color: '#2F6B3A', 
-                          fontWeight: '700' 
+                      <div
+                        key={idx}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                          backgroundColor: '#E3EEDC',
+                          border: '1px solid #DCC8AE',
+                          padding: '0.3rem 0.75rem',
+                          borderRadius: '999px',
+                          fontSize: '0.8rem',
+                          color: '#2F6B3A',
+                          fontWeight: '700'
                         }}
                       >
                         <CheckCircle2 size={13} color="#2F6B3A" />
@@ -967,14 +967,14 @@ export default function ProductDetail() {
                     Optional
                   </span>
                 </div>
-                
+
                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '800', color: '#3A1F14', marginBottom: '0.2rem' }}>
                   Special Instructions
                 </label>
                 <p style={{ fontSize: '0.78rem', color: '#725D50', margin: '0 0 0.65rem 0', lineHeight: '1.45' }}>
                   Optional — tell us how you'd like this particular item prepared. Your instruction applies <strong>ONLY to this product</strong>.
                 </p>
-                
+
                 <div style={{ position: 'relative' }}>
                   <textarea
                     value={customizationNote}
@@ -1005,12 +1005,12 @@ export default function ProductDetail() {
 
             {/* Quantity Selector & Add to Cart Action Row */}
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap' }}>
-              <div 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  backgroundColor: '#F4EBDD', 
-                  border: '1px solid #DCC8AE', 
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: '#F4EBDD',
+                  border: '1px solid #DCC8AE',
                   borderRadius: '999px',
                   padding: '0.25rem 0.5rem'
                 }}
@@ -1240,12 +1240,12 @@ export default function ProductDetail() {
                     ))}
                   </div>
                   <p style={{ color: '#654B38', fontSize: '0.85rem', margin: 0, lineHeight: '1.5' }}>
-                    Handcrafted using 100% natural ingredients, organic millets, Desi Cow Ghee, and unrefined organic jaggery. No refined palm oil, no artificial preservatives, zero maida.
+                    Handcrafted using 100% natural ingredients, organic millets, Desi Ghee, and unrefined organic jaggery. No maida , no refined palm oil, no artificial preservatives.
                   </p>
                 </div>
               ) : (
                 <p style={{ color: '#654B38', lineHeight: '1.6', margin: 0 }}>
-                  Handcrafted using 100% natural ingredients, organic millets, Desi Cow Ghee, and unrefined organic jaggery. No refined palm oil, no artificial preservatives, zero maida.
+                  Handcrafted using 100% natural ingredients, organic millets, Desi Ghee, and unrefined organic jaggery. No maida , no refined palm oil, no artificial preservatives.
                 </p>
               )}
             </div>
@@ -1331,11 +1331,11 @@ export default function ProductDetail() {
 
                       {/* Photo Thumbnail */}
                       {rev.reviewImageUrl && (
-                        <img 
-                          src={rev.reviewImageUrl} 
-                          alt="Customer review photo" 
+                        <img
+                          src={rev.reviewImageUrl}
+                          alt="Customer review photo"
                           onClick={() => setSelectedModalImage(rev.reviewImageUrl)}
-                          style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #DCC8AE', cursor: 'pointer', marginTop: '0.5rem' }} 
+                          style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #DCC8AE', cursor: 'pointer', marginTop: '0.5rem' }}
                         />
                       )}
                     </div>
@@ -1353,7 +1353,7 @@ export default function ProductDetail() {
 
           {/* Photo Lightbox Modal */}
           {selectedModalImage && (
-            <div 
+            <div
               onClick={() => setSelectedModalImage(null)}
               style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}
             >
@@ -1363,26 +1363,26 @@ export default function ProductDetail() {
 
           {/* Fullscreen Product Gallery Lightbox Modal */}
           {isLightboxOpen && (
-            <div 
+            <div
               onClick={() => setIsLightboxOpen(false)}
-              style={{ 
-                position: 'fixed', 
-                inset: 0, 
-                backgroundColor: 'rgba(10, 5, 2, 0.95)', 
-                backdropFilter: 'blur(12px)', 
-                WebkitBackdropFilter: 'blur(12px)', 
-                zIndex: 999999, 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                justifyContent: 'space-between', 
+              style={{
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: 'rgba(10, 5, 2, 0.95)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                zIndex: 999999,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'space-between',
                 padding: '1.5rem',
                 userSelect: 'none'
               }}
             >
               {/* Top Bar */}
-              <div 
-                onClick={(e) => e.stopPropagation()} 
+              <div
+                onClick={(e) => e.stopPropagation()}
                 style={{ width: '100%', maxWidth: '1100px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#FFFDF9' }}
               >
                 <div>
@@ -1413,7 +1413,7 @@ export default function ProductDetail() {
               </div>
 
               {/* Center Image View with Chevrons */}
-              <div 
+              <div
                 onClick={(e) => e.stopPropagation()}
                 style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', maxWidth: '1000px', margin: '1rem 0' }}
               >
@@ -1481,8 +1481,8 @@ export default function ProductDetail() {
 
               {/* Bottom Thumbnails Strip */}
               {images.length > 1 && (
-                <div 
-                  onClick={(e) => e.stopPropagation()} 
+                <div
+                  onClick={(e) => e.stopPropagation()}
                   style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', padding: '0.5rem 1rem', maxWidth: '90vw' }}
                 >
                   {images.map((img, idx) => (

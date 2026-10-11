@@ -117,6 +117,10 @@ export function compareByDisplayOrder(a, b) {
   return String(a.id || '').localeCompare(String(b.id || ''));
 }
 
+// The Bestseller badge was removed: section membership is the is_bestseller flag only, so legacy
+// "Bestseller"/"Best Seller" badges are never saved or shown.
+const isBestsellerBadge = (b) => /best\s*seller/i.test(String(b || ''));
+
 // Explicit boolean from the admin dropdown ("true"/true → true). undefined = not provided.
 const parseBool = (v) => (v === undefined || v === null || v === '' ? undefined : v === true || String(v).toLowerCase() === 'true');
 
@@ -321,7 +325,7 @@ export const getProducts = async (req, res) => {
           secondaryImage: secondaryUrl,
           secondary_image_url: secondaryUrl,
           images: images,
-          badges: parsedBadges,
+          badges: parsedBadges.filter((b) => !isBestsellerBadge(b)),
           ingredients: parsedIngredients,
           allergens: p.allergens || '',
           benefits: p.benefits || [],
@@ -545,7 +549,7 @@ export const getProductBySlugOrId = async (req, res) => {
         secondaryImage: secondaryUrl,
         secondary_image_url: secondaryUrl,
         images: images,
-        badges: parsedBadges,
+        badges: parsedBadges.filter((b) => !isBestsellerBadge(b)),
         ingredients: parsedIngredients,
         allergens: p.allergens || '',
         benefits: p.benefits || [],
@@ -783,7 +787,7 @@ export const createProduct = async (req, res) => {
 
     // Bestseller membership comes ONLY from the admin dropdown; badges are display metadata.
     const isBestsellerRequested = parseBool(req.body.isBestseller ?? req.body.is_bestseller) === true;
-    const finalBadges = [...new Set(parsedBadges.map((b) => String(b).trim()).filter(Boolean))];
+    const finalBadges = [...new Set(parsedBadges.map((b) => String(b).trim()).filter(Boolean))].filter((b) => !isBestsellerBadge(b));
 
     const displayOrderParsed = parseDisplayOrder(req.body.displayOrder ?? req.body.display_order);
     if (displayOrderParsed.error) return res.status(400).json({ message: displayOrderParsed.error });
@@ -1014,7 +1018,7 @@ export const updateProduct = async (req, res) => {
 
     // Bestseller membership comes ONLY from the admin dropdown (unchanged if not sent); badges are display-only.
     const isBestsellerRequested = parseBool(updates.isBestseller ?? updates.is_bestseller);
-    const finalBadges = [...new Set(parsedBadges.map((b) => String(b).trim()).filter(Boolean))];
+    const finalBadges = [...new Set(parsedBadges.map((b) => String(b).trim()).filter(Boolean))].filter((b) => !isBestsellerBadge(b));
 
     const hasDisplayOrder = updates.displayOrder !== undefined || updates.display_order !== undefined;
     const displayOrderParsed = parseDisplayOrder(updates.displayOrder ?? updates.display_order);

@@ -30,7 +30,6 @@ export const PREDEFINED_NUTRITION_LIST = [
 ];
 
 export const PRESET_BADGES = [
-  'Bestseller',
   'High Fiber',
   'Gluten-Free',
   'Calcium+',
@@ -318,7 +317,8 @@ export default function AdminProductForm() {
 
         // Bestseller section membership = the product's flag only; badges load exactly as saved
         const isBs = p.isBestseller === true || p.is_bestseller === true;
-        setBadgesList([...new Set(parsedB)]);
+        // The Bestseller badge no longer exists — the Bestseller dropdown alone controls the section
+        setBadgesList([...new Set(parsedB)].filter((b) => !/best\s*seller/i.test(String(b))));
 
         setFormData({
           title: p.title || '',
@@ -495,7 +495,9 @@ export default function AdminProductForm() {
   const addCustomBadge = () => {
     const clean = customBadgeInput.trim();
     if (!clean) return;
-    if (!badgesList.includes(clean)) {
+    if (/best\s*seller/i.test(clean)) {
+      toast.error('Use the "Bestseller Product" dropdown instead of a badge.');
+    } else if (!badgesList.includes(clean)) {
       setBadgesList([...badgesList, clean]);
     }
     setCustomBadgeInput('');
@@ -706,7 +708,7 @@ export default function AdminProductForm() {
 
     // The Bestseller dropdown alone decides the homepage Bestseller section; badges are saved as selected
     const isBestsellerActive = formData.isBestseller === true;
-    const finalPayloadBadges = [...new Set(badgesList)];
+    const finalPayloadBadges = [...new Set(badgesList)].filter((b) => !/best\s*seller/i.test(String(b)));
 
     let updatedPayloadVariants = Array.isArray(formData.variants) ? [...formData.variants] : [];
     if (updatedPayloadVariants.length > 0) {
