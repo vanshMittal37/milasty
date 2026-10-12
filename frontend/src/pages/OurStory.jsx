@@ -516,16 +516,16 @@ export default function OurStory() {
           <div 
             style={{ 
               position: 'absolute', 
-              top: '24px', 
-              right: '24px', 
+              top: 'clamp(10px, 3vw, 24px)', 
+              right: 'clamp(10px, 3vw, 24px)', 
               backgroundColor: '#2F6B3A', 
               color: '#FFFFFF', 
-              padding: '0.65rem 1.25rem', 
-              borderRadius: '12px',
-              fontSize: '0.78rem',
+              padding: 'clamp(0.35rem, 1.4vw, 0.65rem) clamp(0.6rem, 2.6vw, 1.25rem)', 
+              borderRadius: 'clamp(8px, 2vw, 12px)',
+              fontSize: 'clamp(0.6rem, 2.3vw, 0.78rem)',
               fontWeight: '850',
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
+              letterSpacing: 'clamp(0.02em, 0.4vw, 0.05em)',
               boxShadow: '0 4px 12px rgba(47, 107, 58, 0.2)'
             }}
           >
@@ -574,19 +574,19 @@ export default function OurStory() {
             <div
               style={{
                 position: 'absolute',
-                top: '24px',
-                left: '24px',
+                top: 'clamp(10px, 3vw, 24px)',
+                left: 'clamp(10px, 3vw, 24px)',
                 backgroundColor: '#2F6B3A',
                 color: '#FFFFFF',
-                padding: '0.65rem 1.25rem',
-                borderRadius: '12px',
-                fontSize: '0.78rem',
+                padding: 'clamp(0.35rem, 1.4vw, 0.65rem) clamp(0.6rem, 2.6vw, 1.25rem)',
+                borderRadius: 'clamp(8px, 2vw, 12px)',
+                fontSize: 'clamp(0.6rem, 2.3vw, 0.78rem)',
                 fontWeight: '850',
                 textTransform: 'uppercase',
-                letterSpacing: '0.05em',
+                letterSpacing: 'clamp(0.02em, 0.4vw, 0.05em)',
                 boxShadow: '0 4px 12px rgba(47, 107, 58, 0.2)',
                 pointerEvents: 'none',
-                maxWidth: 'calc(100% - 48px)',
+                maxWidth: 'calc(100% - 2 * clamp(10px, 3vw, 24px))',
                 lineHeight: '1.35',
               }}
             >
