@@ -558,6 +558,39 @@ export default function AdminShippingLogistics() {
                 <strong style={{ color: '#0F172A' }}>₹{testResult.codCommission || 0} (Prepaid Only)</strong>
               </div>
             </div>
+
+            {/* Every option Shiprath's API returned — compare these numbers with the Shiprath dashboard */}
+            {Array.isArray(testResult.allRates) && testResult.allRates.length > 0 && (
+              <div style={{ marginTop: '1.25rem' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0F172A', marginBottom: '0.5rem' }}>
+                  All options returned by Shiprath API ({testResult.allRates.length})
+                </div>
+                <div style={{ overflowX: 'auto', border: '1px solid #E2E8F0', borderRadius: '8px', backgroundColor: '#FFFFFF' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', minWidth: '560px' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#F8FAFC', textAlign: 'left' }}>
+                        <th style={{ padding: '0.5rem 0.75rem' }}>Service</th>
+                        <th style={{ padding: '0.5rem 0.75rem' }}>Provider</th>
+                        <th style={{ padding: '0.5rem 0.75rem' }}>Price used</th>
+                        <th style={{ padding: '0.5rem 0.75rem' }}>All price fields from Shiprath</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {testResult.allRates.map((r, i) => (
+                        <tr key={i} style={{ borderTop: '1px solid #E2E8F0', backgroundColor: r.usedForCheckout ? '#F0FDF4' : 'transparent' }}>
+                          <td style={{ padding: '0.5rem 0.75rem', fontWeight: '700' }}>{r.serviceName}{r.usedForCheckout ? ' ✓ (checkout)' : ''}</td>
+                          <td style={{ padding: '0.5rem 0.75rem' }}>{r.serviceProvider || '—'}</td>
+                          <td style={{ padding: '0.5rem 0.75rem', fontWeight: '800' }}>₹{r.totalCharges}</td>
+                          <td style={{ padding: '0.5rem 0.75rem', fontFamily: 'monospace', fontSize: '0.72rem', color: '#475569' }}>
+                            {Object.entries(r.priceFields || {}).map(([k, v]) => `${k}: ${v}`).join(' · ') || '—'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
