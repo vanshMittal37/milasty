@@ -343,10 +343,22 @@ export async function fetchLiveShiprathRate({
     throw new Error(`Shiprath returned ${rawRates.length} rate(s) for pincode ${cleanPincode}, but none had the data needed to book a shipment.`);
   }
 
+  // Shiprath returns one product per weight slab ("Delhivery 0.250 KG", "… 0.5 KG", "… 2 KG"). The
+  // smallest slab is always cheapest, so without this check a 1.5 kg parcel was quoted (and would be
+  // booked) on the 0.25 kg product — wrong price, and the booking is rejected for exceeding the
+  // carrier weight limit. Keep only slabs that can carry the chargeable weight.
+  const { applicableWeightKg } = getChargeableWeight(calculatedWeight, shipPkg.dimensions);
+  const slabRates = formattedRates.filter((r) => {
+    const slab = rateWeightSlabKg(r);
+    const fits = slab === null || slab + 1e-9 >= applicableWeightKg;
+    if (!fits) console.log(`[SHIPRATH RATE DIAGNOSTIC] Skipping "${r.service_name}" ₹${r.total_charges} — ${slab} kg slab < ${applicableWeightKg} kg chargeable weight`);
+    return fits;
+  });
+
   // MILASTY ships with ONE courier (Delhivery by default). Only that courier's rates are kept, so the
   // checkout charge, the booked courier and the booking fallbacks are all that courier.
   // Set SHIPRATH_COURIER=all on Railway to allow every courier again (cheapest wins).
-  const courierRates = filterToPreferredCourier(formattedRates);
+  const courierRates = filterToPreferredCourier(slabRates);
   if (!courierRates.length) {
     console.warn(`[SHIPRATH RATE DIAGNOSTIC] No ${PREFERRED_COURIER} service for pincode ${cleanPincode} (available: ${formattedRates.map((r) => r.service_name).join(', ')})`);
     throw new Error(`No ${PREFERRED_COURIER} service available for pincode ${cleanPincode}.`);
@@ -371,6 +383,19 @@ export async function fetchLiveShiprathRate({
 // The only courier MILASTY books with. Matched (case-insensitive) against the courier / carrier /
 // service names Shiprath returns, e.g. "Delhivery 0.250 KG", "Delhivery Surface".
 const PREFERRED_COURIER = String(process.env.SHIPRATH_COURIER || 'delhivery').trim().toLowerCase();
+
+/** Weight slab (kg) written in a courier product's name, e.g. "Delhivery 0.250 KG" → 0.25; null if none. */
+export function rateWeightSlabKg(rate) {
+  const names = [rate?.service_name, rate?.product_type_name, rate?.raw?.courier_name, rate?.raw?.product_name, rate?.raw?.service_name];
+  for (const n of names) {
+    const m = String(n || '').match(/(\d+(?:\.\d+)?)\s*(kg|kgs|g|gm|gms)\b/i);
+    if (m) {
+      const v = Number(m[1]);
+      return /^g/i.test(m[2]) ? v / 1000 : v;
+    }
+  }
+  return null;
+}
 
 export function filterToPreferredCourier(rates) {
   if (!PREFERRED_COURIER || PREFERRED_COURIER === 'all') return rates;
@@ -873,7 +898,12 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
 
     // Only the chosen courier (Delhivery) is ever booked. Orders quoted before this rule may have
     // saved another courier — for those, fetch live rates of the chosen courier instead.
-    const preferredCandidates = filterToPreferredCourier(candidateRates);
+    // …and only weight slabs that can carry this parcel (older quotes may include too-small slabs)
+    const { applicableWeightKg: bookingWeightKg } = getChargeableWeight(pkg.totalWeightKg, pkg.dimensions);
+    const preferredCandidates = filterToPreferredCourier(candidateRates).filter((r) => {
+      const slab = rateWeightSlabKg(r);
+      return slab === null || slab + 1e-9 >= bookingWeightKg;
+    });
     if (preferredCandidates.length) {
       candidateRates = preferredCandidates;
     } else if (candidateRates.length) {
