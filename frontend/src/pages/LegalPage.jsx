@@ -1312,16 +1312,21 @@ export default function LegalPage() {
   const renderTermsAndConditions = () => {
     const tcSections = [
       { id: 'about', label: '1. About MILASTY', icon: Leaf },
-      { id: 'whatsapp-ordering', label: '2. WhatsApp Ordering', icon: MessageSquare },
-      { id: 'freshness', label: '3. Product & Variations', icon: Cookie },
-      { id: 'allergies', label: '4. Allergies & Ingredients', icon: AlertTriangle },
-      { id: 'health-disclaimer', label: '5. Health Disclaimer', icon: Heart },
-      { id: 'children-advisory', label: '6. Children Advisory', icon: Baby },
-      { id: 'shipping', label: '7. Pan-India Shipping', icon: Truck },
-      { id: 'returns-refunds', label: '8. Returns & Refunds', icon: RotateCcw },
-      { id: 'cancellation', label: '9. Cancellation Policy', icon: Clock },
-      { id: 'legal-jurisdiction', label: '10. Legal & Jurisdiction', icon: Scale },
-      { id: 'support-cta', label: '11. MILASTY Support', icon: PhoneCall },
+      { id: 'products-quality', label: '2. Products & Quality', icon: Cookie },
+      { id: 'allergies', label: '3. Ingredients & Allergens', icon: AlertTriangle },
+      { id: 'placing-order', label: '4. Placing an Order', icon: MessageSquare },
+      { id: 'pricing-payments', label: '5. Pricing & Payments', icon: CreditCard },
+      { id: 'custom-orders', label: '6. Customised Orders', icon: Sparkles },
+      { id: 'shipping', label: '7. Shipping & Delivery', icon: Truck },
+      { id: 'returns-refunds', label: '8. Cancellations & Refunds', icon: RotateCcw },
+      { id: 'cancellation', label: '9. Grievance Redressal', icon: PhoneCall },
+      { id: 'privacy', label: '10. Your Privacy', icon: Lock },
+      { id: 'website-experience', label: '11. Website Experience', icon: Globe2 },
+      { id: 'brand', label: '12. Respecting Our Brand', icon: Shield },
+      { id: 'changes', label: '13. Changes to Terms', icon: FileText },
+      { id: 'legal-jurisdiction', label: '14. Governing Law', icon: Scale },
+      { id: 'policies-overview', label: '15. Our Policies', icon: FileSpreadsheet },
+      { id: 'support-cta', label: '16. Contact MILASTY', icon: PhoneCall },
     ];
 
     return (
@@ -1331,13 +1336,13 @@ export default function LegalPage() {
             <FileText size={14} color="#2F6B3A" />
             <span style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#2F6B3A' }}>LEGAL • MILASTY</span>
           </div>
-          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', color: '#32180D', lineHeight: '1.15', marginBottom: '1rem', letterSpacing: '-0.01em' }}>Terms & Conditions</h1>
-          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#654B38', opacity: 0.9, maxWidth: '600px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
-            Clear, honest and transparent — just like MILASTY.
+          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', color: '#32180D', lineHeight: '1.15', marginBottom: '1rem', letterSpacing: '-0.01em' }}>Terms &amp; Conditions</h1>
+          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#654B38', opacity: 0.9, maxWidth: '620px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
+            Clear, honest and transparent — because great taste and thoughtful ingredients belong together.
           </p>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#654B38', backgroundColor: '#FFF9F0', padding: '0.35rem 0.9rem', borderRadius: '999px', border: '1px solid #E4D1B7' }}>
             <Clock size={14} color="#2F6B3A" />
-            <span>Last Updated: January 2026</span>
+            <span>Last Updated: October 2026</span>
           </div>
         </section>
 
@@ -1363,6 +1368,19 @@ export default function LegalPage() {
             </aside>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+
+              {/* WELCOME INTRO */}
+              <div className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)', background: 'linear-gradient(135deg, rgba(47, 107, 58, 0.06) 0%, rgba(255, 249, 240, 0.95) 100%)', border: '1.5px solid rgba(47, 107, 58, 0.2)' }}>
+                <p style={{ color: '#654B38', lineHeight: '1.85', fontSize: '1rem', margin: 0 }}>
+                  Welcome to <strong style={{ color: '#2F6B3A' }}>MILASTY</strong>. At MILASTY, we believe that great taste and thoughtful ingredients belong together. From our millet cookies and crackers to brownies, customised bakes and gifting collections, we put care into the products we create and the experience we offer.
+                  <br /><br />
+                  We value the trust you place in us. These Terms &amp; Conditions explain how ordering from MILASTY works, what you can expect from us, and how we aim to make your experience clear, convenient and enjoyable.
+                  <br /><br />
+                  By accessing our website or placing an order through our authorised direct consumer channels, you agree to these Terms &amp; Conditions.
+                </p>
+              </div>
+
+              {/* SECTION 1: ABOUT MILASTY */}
               <div id="about" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1373,89 +1391,156 @@ export default function LegalPage() {
                     <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>About MILASTY</h2>
                   </div>
                 </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>MILASTY is a premium Indian brand offering millet-based cookies baked with organic jaggery and pure Desi Ghee. Our website is informational, designed to educate you about our pure ingredients and artisanal small-batch bakery products, and orders are placed directly through WhatsApp.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY is a founder-led Indian millet-bakes brand operated as a sole proprietorship by <strong style={{ color: '#32180D' }}>Anwesha Chakraborty</strong>. Our products include millet cookies, crackers, brownies, customised cakes, gift hampers and other baked goods introduced from time to time.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.5rem' }}>These Terms apply to consumer purchases made through <strong style={{ color: '#2F6B3A' }}>www.milasty.com</strong> and our authorised direct ordering channels, including WhatsApp. Wholesale, distribution, retail-reseller, corporate gifting and other business-to-business orders are governed by separate terms or agreements.</p>
+                <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '16px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                    <FileSpreadsheet size={18} color="#2F6B3A" />
+                    <span style={{ fontWeight: '800', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2F6B3A' }}>Business Details</span>
+                  </div>
+                  {[
+                    { label: 'Business Name', value: 'MILASTY' },
+                    { label: 'Legal Proprietor', value: 'Anwesha Chakraborty' },
+                    { label: 'Address', value: 'B3-1503, Amrapali Golf Homes, Sector 4, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201016' },
+                    { label: 'Support Email', value: 'milasty.cookies@gmail.com' },
+                    { label: 'Phone / WhatsApp', value: '8927142056' },
+                    { label: 'FSSAI Licence', value: '22726446000086' },
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', gap: '0.65rem', fontSize: '0.92rem', alignItems: 'flex-start' }}>
+                      <span style={{ color: '#32180D', fontWeight: '700', minWidth: '140px', flexShrink: 0 }}>{item.label}:</span>
+                      <span style={{ color: '#654B38', lineHeight: '1.5' }}>{item.value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div id="whatsapp-ordering" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <MessageSquare size={22} color="#2F6B3A" />
-                  </div>
-                  <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 02</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Ordering Through WhatsApp</h2>
-                  </div>
-                </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We accept orders only via WhatsApp or direct messages. All orders placed on MILASTY generate a pre-formatted WhatsApp order receipt. Orders are confirmed and scheduled for small-batch baking after payment is successfully completed and final approval is provided over WhatsApp chat.</p>
-                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <Sparkles size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"No confusing checkout system — only simple, personal ordering."</span>
-                </div>
-              </div>
-
-              <div id="freshness" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+              {/* SECTION 2: PRODUCTS & QUALITY */}
+              <div id="products-quality" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Cookie size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 03</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Product Freshness & Variations</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 02</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Our Products &amp; Quality Commitment</h2>
                   </div>
                 </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>Our cookies are batch-made using natural, unrefined ingredients. Because every batch is handcrafted in small artisanal quantities without artificial colorings or chemical preservatives, minor differences in texture, shape, or shade of golden color are completely normal and a hallmark of authentic handcrafted baking.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>We aim to provide accurate information about our products so that you can make an informed choice. Product descriptions, photographs, ingredients, pack sizes, net quantities, prices and other relevant details are displayed to help you understand what you are purchasing.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>As some of our products are prepared and baked in batches, minor variations in shape, colour, texture or appearance may occur. We make reasonable efforts to ensure that such variations do not affect the product's conformity with its description or our quality standards.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <Sparkles size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>We may introduce new products, improve recipes or update packaging from time to time. Any material information relevant to your purchase will be communicated as appropriate.</span>
+                </div>
               </div>
 
+              {/* SECTION 3: INGREDIENTS & ALLERGENS */}
               <div id="allergies" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(185, 28, 28, 0.08)', border: '1px solid rgba(185, 28, 28, 0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <AlertTriangle size={22} color="#B91C1C" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 04</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Allergies & Ingredients</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#B91C1C', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 03</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Ingredients, Allergens &amp; Product Information</h2>
                   </div>
                 </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>While all our products are 100% free of Maida (refined wheat flour), Palm Oil, and artificial additives, they are prepared in a bakery facility that handles tree nuts, seeds, wheat, and dairy (Pure Desi Ghee).</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>We believe customers should have the information they need to choose products with confidence. Each MILASTY product has its own ingredient composition. Please review the product description and packaging for ingredient lists, allergen declarations, dietary information, storage instructions and applicable best-before or use-before details.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>Depending on the product, ingredients may include wheat, milk, nuts or other potential allergens. <strong style={{ color: '#32180D' }}>If you have a food allergy or a specific dietary requirement, please contact us before ordering</strong> so that we can clarify the information available for the product.</p>
                 <div style={{ backgroundColor: 'rgba(185, 28, 28, 0.06)', borderLeft: '4px solid #B91C1C', borderRadius: '14px', padding: '1.1rem 1.35rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
                     <AlertTriangle size={18} color="#B91C1C" />
-                    <span style={{ color: '#32180D', fontWeight: '700', fontSize: '0.95rem' }}>Allergen Warning Notice</span>
+                    <span style={{ color: '#32180D', fontWeight: '700', fontSize: '0.95rem' }}>Important Notice</span>
                   </div>
-                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>If you have severe allergic reactions to nuts, gluten, or dairy, please review the exact ingredient labels carefully or consult with our team on WhatsApp before placing your order.</p>
+                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>Please do not assume that a product is gluten-free, dairy-free, sugar-free or suitable for a particular medical condition unless this is expressly stated for that specific product. Our product descriptions provide food information, not medical advice or a guarantee of health outcomes.</p>
                 </div>
               </div>
 
-              <div id="health-disclaimer" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+              {/* SECTION 4: PLACING AN ORDER */}
+              <div id="placing-order" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Heart size={22} color="#2F6B3A" />
+                    <MessageSquare size={22} color="#2F6B3A" />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 04</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Placing &amp; Confirming an Order</h2>
+                  </div>
+                </div>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>You can place consumer orders through our website or an authorised direct ordering channel. Before completing your order, please review the selected products, quantities, prices, delivery address, contact details and any special instructions.</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.25rem 0', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  {[
+                    'After receiving an order, we will send an acknowledgement or confirmation through the relevant channel.',
+                    'An order is considered accepted when MILASTY confirms acceptance through the applicable ordering process.',
+                    'For WhatsApp orders, the written confirmation exchanged with you establishes the agreed product specifications, quantity, price and other order details.',
+                    'Any payment already collected for an order that cannot be fulfilled will be handled in accordance with our applicable policy and legal obligations.',
+                  ].map((point, idx) => (
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', color: '#654B38', fontSize: '0.95rem' }}>
+                      <CheckCircle2 size={16} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '3px' }} />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* SECTION 5: PRICING & PAYMENTS */}
+              <div id="pricing-payments" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <CreditCard size={22} color="#2F6B3A" />
                   </div>
                   <div>
                     <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 05</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Health Disclaimer</h2>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Transparent Pricing &amp; Payments</h2>
                   </div>
                 </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY cookies are made with wholesome, clean ingredients like millets, organic jaggery, and pure Desi Ghee. However, they are bakery food products and are not intended to diagnose, treat, cure, or prevent any disease or medical condition.</p>
-                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <Heart size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
-                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"Please consult a medical professional if you have specific dietary concerns."</span>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We want you to know what you are paying for before you complete a purchase. Prices are displayed in <strong style={{ color: '#32180D' }}>Indian Rupees (INR)</strong>. Applicable taxes, delivery charges and other mandatory charges will be disclosed before you finalise your order.</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+                  {[
+                    'We will not add optional products or services to your order without the required consent.',
+                    'We will not use misleading pricing, hidden charges or confusing checkout practices.',
+                    'Prices and offers may change over time. Any advertised discount will be presented transparently.',
+                    'Where an offer has eligibility conditions or limits, we will communicate those conditions clearly.',
+                  ].map((rule, idx) => (
+                    <div key={idx} style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
+                      <CheckCircle2 size={18} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '2px' }} />
+                      <span style={{ fontSize: '0.9rem', color: '#654B38', lineHeight: '1.5' }}>{rule}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ backgroundColor: 'rgba(185, 28, 28, 0.06)', borderLeft: '4px solid #B91C1C', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <AlertCircle size={20} color="#B91C1C" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>Please keep your payment credentials secure and never share your banking PINs or OTPs with anyone claiming to represent MILASTY.</span>
                 </div>
               </div>
 
-              <div id="children-advisory" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+              {/* SECTION 6: CUSTOMISED ORDERS */}
+              <div id="custom-orders" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Baby size={22} color="#2F6B3A" />
+                    <Sparkles size={22} color="#2F6B3A" />
                   </div>
                   <div>
                     <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 06</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Children Advisory</h2>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Customised Cakes, Hampers &amp; Special Orders</h2>
                   </div>
                 </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>MILASTY cookies are dense and crunchy due to the high fiber content of authentic ancient millets. Children below 6 years of age should consume these cookies only under adult supervision to prevent choking hazards.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>We understand that customised bakes and gifts often accompany meaningful occasions. For customised cakes, personalised hampers and other special orders, we encourage you to share your requirements clearly — including the preferred flavour, size, ingredients, decoration, personalisation and requested delivery date.</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.25rem 0', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  {[
+                    'We will confirm the agreed specifications and applicable payment arrangements before proceeding.',
+                    'Since customised products require advance preparation, changes to an order may depend on its preparation status.',
+                    'We will make reasonable efforts to fulfil the confirmed specifications. If a material change becomes necessary, we will communicate with you.',
+                    'Please inform us of any allergies or dietary requirements before the order is confirmed.',
+                  ].map((point, idx) => (
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', color: '#654B38', fontSize: '0.95rem' }}>
+                      <CheckCircle2 size={16} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '3px' }} />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
+              {/* SECTION 7: SHIPPING & DELIVERY */}
               <div id="shipping" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1463,22 +1548,17 @@ export default function LegalPage() {
                   </div>
                   <div>
                     <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 07</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Pan-India Shipping</h2>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Shipping &amp; Delivery</h2>
                   </div>
                 </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We ship across India through premium, reliable courier partners. All products are baked fresh upon order confirmation and dispatched within 24–48 hours. Delivery usually takes 3–7 business days depending on your pincode location.</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem' }}>
-                  <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
-                    <CheckCircle2 size={18} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <span style={{ fontSize: '0.9rem', color: '#654B38', lineHeight: '1.5' }}>Courier delays may occasionally happen due to operational or weather reasons.</span>
-                  </div>
-                  <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
-                    <CheckCircle2 size={18} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <span style={{ fontSize: '0.9rem', color: '#654B38', lineHeight: '1.5' }}>Please ensure your shipping address, pincode, and phone number are correct.</span>
-                  </div>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>We want your MILASTY order to reach you in good condition and with clear expectations about delivery. We work with delivery partners where necessary. Although we aim to meet the communicated timelines, unforeseen circumstances such as weather, transport disruption or courier delays may affect delivery.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <Truck size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>If a shipment is delayed, damaged, missing or delivered incorrectly, please contact us so that we can review the issue and help you. For complete details, see our <a href="/shipping" style={{ color: '#2F6B3A', fontWeight: '700' }}>Shipping &amp; Delivery Policy</a>.</span>
                 </div>
               </div>
 
+              {/* SECTION 8: CANCELLATIONS & REFUNDS */}
               <div id="returns-refunds" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1486,82 +1566,206 @@ export default function LegalPage() {
                   </div>
                   <div>
                     <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 08</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Returns & Refunds Policy</h2>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Cancellations, Refunds &amp; Replacements</h2>
                   </div>
                 </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.5rem' }}>Since MILASTY cookies are edible food products prepared fresh without preservatives, returns are not accepted once the order has been delivered. Refunds or replacements are possible only in genuine cases such as damaged outer packaging or incorrect items delivered.</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We want you to feel confident when placing an order with MILASTY. If something is not right with your order, please reach out to us promptly and share your order details. Photographs of the product and packaging may help us understand and investigate the concern.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.25rem' }}>
                   <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                     <Clock size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
-                    <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"Please report any issue within 24 hours of delivery with photo/video proof."</span>
+                    <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>We will review genuine concerns fairly and communicate the applicable resolution under our published policy and Indian consumer-protection law.</span>
                   </div>
                   <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                     <ShieldCheck size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
-                    <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>"A proper unboxing (parcel opening) video is mandatory to process any concern."</span>
+                    <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>Our policies are intended to explain the process clearly, not to take away any consumer right or remedy that the law protects.</span>
                   </div>
                 </div>
+                <p style={{ color: '#654B38', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>For full details, please read our <a href="/refund" style={{ color: '#2F6B3A', fontWeight: '700' }}>Refund &amp; Cancellation Policy</a>.</p>
               </div>
 
+              {/* SECTION 9: CUSTOMER SUPPORT & GRIEVANCE REDRESSAL */}
               <div id="cancellation" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Clock size={22} color="#2F6B3A" />
+                    <PhoneCall size={22} color="#2F6B3A" />
                   </div>
                   <div>
                     <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 09</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Order Cancellation Policy</h2>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Customer Support &amp; Grievance Redressal</h2>
                   </div>
                 </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '2rem' }}>Since cookies are prepared and packed soon after payment confirmation, cancellations are accepted only within a limited time window:</p>
-                <div className="tc-cancellation-timeline" style={{ marginBottom: '2rem' }}>
-                  <div className="tc-timeline-item">
-                    <div className="tc-timeline-badge"><span>03 HOURS</span></div>
-                    <div className="tc-timeline-content">
-                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Full Refund (100%)</h4>
-                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellations requested within 3 hours of payment.</p>
-                    </div>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>Your feedback matters to us, and we want you to have a clear way to reach us. For any concern about a product, payment, order, delivery or these Terms, please contact our designated grievance contact. Please include your order number, order date and a short description of your concern.</p>
+                <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '16px', padding: '1.5rem', marginBottom: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <UserCheck size={18} color="#2F6B3A" />
+                    <span style={{ fontWeight: '800', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2F6B3A' }}>Grievance Officer / Designated Contact</span>
                   </div>
-                  <div className="tc-timeline-item">
-                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(47, 107, 58, 0.15)', borderColor: 'rgba(47, 107, 58, 0.35)' }}><span>03–06 HRS</span></div>
-                    <div className="tc-timeline-content">
-                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>50% Refund</h4>
-                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellations requested between 3 to 6 hours after payment.</p>
+                  {[
+                    { label: 'Name', value: 'Ankit Chakraborty' },
+                    { label: 'Email', value: 'milasty.cookies@gmail.com' },
+                    { label: 'Phone / WhatsApp', value: '8250018663' },
+                    { label: 'Postal Address', value: 'B3-1503, Amrapali Golf Homes, Sector 4, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201016' },
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', gap: '0.65rem', fontSize: '0.92rem', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                      <span style={{ color: '#32180D', fontWeight: '700', minWidth: '130px', flexShrink: 0 }}>{item.label}:</span>
+                      <span style={{ color: '#654B38', lineHeight: '1.5' }}>{item.value}</span>
                     </div>
-                  </div>
-                  <div className="tc-timeline-item">
-                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(185, 28, 28, 0.08)', borderColor: 'rgba(185, 28, 28, 0.30)', color: '#B91C1C' }}><span>&gt; 06 HOURS</span></div>
-                    <div className="tc-timeline-content">
-                      <h4 style={{ color: '#B91C1C', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Cancellation Not Possible</h4>
-                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Baking & packing has already commenced.</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>• The cancellation window is calculated from the exact time the payment is successfully completed.</p>
-                  <p style={{ color: '#654B38', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>• Approved refunds are processed within 5–7 business days via the original payment method.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <Clock size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>We will acknowledge consumer grievances within <strong>48 hours</strong> and endeavour to resolve them within one month of receipt, in accordance with the applicable E-Commerce Rules.</span>
                 </div>
               </div>
 
+              {/* SECTION 10: YOUR PRIVACY */}
+              <div id="privacy" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Lock size={22} color="#2F6B3A" />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 10</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Your Privacy</h2>
+                  </div>
+                </div>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>We respect your privacy and the information you share with us. Our separate Privacy Policy explains how personal information is collected, used, stored and shared in connection with our website, orders and customer support.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '0.92rem', margin: 0 }}>For details, please read our <a href="/privacy" style={{ color: '#2F6B3A', fontWeight: '700' }}>Privacy Policy</a>.</p>
+              </div>
+
+              {/* SECTION 11: FAIR WEBSITE EXPERIENCE */}
+              <div id="website-experience" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Globe2 size={22} color="#2F6B3A" />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 11</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>A Fair &amp; Transparent Website Experience</h2>
+                  </div>
+                </div>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>We want our website to help you make informed decisions, without pressure or confusion. We aim to:</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  {[
+                    'Present product information and prices clearly.',
+                    'Disclose material conditions attached to offers.',
+                    'Identify paid or sponsored product placements clearly wherever applicable.',
+                    'Avoid misleading product descriptions, false urgency or confusing checkout practices.',
+                    'Seek the required consent before adding optional products or services.',
+                    'Present relevant product information in a way that helps you compare and choose.',
+                  ].map((point, idx) => (
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', color: '#654B38', fontSize: '0.95rem' }}>
+                      <CheckCircle2 size={16} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '3px' }} />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* SECTION 12: RESPECTING OUR BRAND */}
+              <div id="brand" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Shield size={22} color="#2F6B3A" />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 12</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Respecting Our Brand</h2>
+                  </div>
+                </div>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>The MILASTY name, logo, photographs, packaging designs, illustrations, written content and other original brand materials are owned by MILASTY or their respective rights holders, as applicable.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <Heart size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>You are welcome to browse our website and share links to our products. Reproducing, modifying or commercially using our protected content without permission is not permitted, except where allowed by law.</span>
+                </div>
+              </div>
+
+              {/* SECTION 13: CHANGES TO TERMS */}
+              <div id="changes" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <FileText size={22} color="#2F6B3A" />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 13</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Changes to These Terms</h2>
+                  </div>
+                </div>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>As MILASTY grows, we may update these Terms to reflect changes in our products, ordering process, customer experience or applicable requirements. The latest version will be published on this page with its updated date.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>We will not use an update to remove rights that have already accrued to customers or to avoid our obligations for an existing order. We encourage you to revisit this page whenever you wish to understand how we work.</p>
+              </div>
+
+              {/* SECTION 14: GOVERNING LAW */}
               <div id="legal-jurisdiction" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Scale size={22} color="#2F6B3A" />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 10</span>
-                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Legal & Jurisdiction</h2>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 14</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Governing Law &amp; Consumer Rights</h2>
                   </div>
                 </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', margin: 0 }}>These Terms & Conditions are governed under the laws of India. Any disputes or claims arising out of or related to our services fall exclusively under the jurisdiction of the competent courts of Noida, Uttar Pradesh, India.</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1rem' }}>These Terms are governed by the applicable laws of <strong style={{ color: '#32180D' }}>India</strong>. If a concern arises, we encourage you to contact us first so that we have an opportunity to understand the issue and work towards a fair resolution.</p>
+                <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.07)', borderLeft: '4px solid #2F6B3A', borderRadius: '14px', padding: '1.1rem 1.35rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <Scale size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                  <span style={{ color: '#32180D', fontWeight: '650', fontSize: '0.95rem', lineHeight: '1.5' }}>Nothing in these Terms is intended to exclude or limit consumer rights available under the <strong>Consumer Protection Act, 2019</strong>, the applicable E-Commerce Rules or other applicable laws. You may approach an appropriate consumer commission in accordance with applicable law.</span>
+                </div>
               </div>
 
+              {/* SECTION 15: HOW OUR POLICIES WORK TOGETHER */}
+              <div id="policies-overview" className="glass-card reveal-fade-up" style={{ padding: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.25rem' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: 'rgba(47, 107, 58, 0.10)', border: '1px solid rgba(47, 107, 58, 0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <FileSpreadsheet size={22} color="#2F6B3A" />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Section 15</span>
+                    <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>How Our Policies Work Together</h2>
+                  </div>
+                </div>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>These Terms explain the general conditions for using the MILASTY website and placing consumer orders. Our separate policies provide more detailed information on specific subjects:</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {[
+                    { label: 'Privacy Policy', href: '/privacy', desc: 'How we handle personal information.' },
+                    { label: 'Refund & Cancellation Policy', href: '/refund', desc: 'How cancellations, refunds, replacements and related concerns are handled.' },
+                    { label: 'Shipping & Delivery Policy', href: '/shipping', desc: 'Delivery availability, charges, timelines and delivery-related concerns.' },
+                  ].map((policy, i) => (
+                    <div key={i} style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <ArrowRight size={18} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                      <div>
+                        <a href={policy.href} style={{ color: '#2F6B3A', fontWeight: '700', fontSize: '0.95rem', textDecoration: 'none' }}>{policy.label}</a>
+                        <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>{policy.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* CTA SUPPORT SECTION */}
               <div id="support-cta" className="reveal-fade-up" style={{ backgroundColor: 'rgba(47, 107, 58, 0.08)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1.5px solid rgba(47, 107, 58, 0.35)', borderRadius: '24px', padding: 'clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem)', textAlign: 'center', boxShadow: '0 16px 40px rgba(75, 45, 25, 0.10)' }}>
                 <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#244f21', border: '1.5px solid #2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', boxShadow: '0 8px 20px rgba(47, 107, 58, 0.25)' }}>
                   <MessageSquare size={26} color="#FFFFFF" />
                 </div>
-                <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#32180D', marginBottom: '0.75rem' }}>Questions about our Terms & Conditions?</h3>
-                <p style={{ fontSize: '1.05rem', color: '#654B38', marginBottom: '1.75rem' }}>Reach us anytime on WhatsApp ❤️</p>
-                <a href={getWhatsappUrl("Terms & Conditions")} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: '0.9rem 2.25rem', fontSize: '1rem', fontWeight: '750', display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
+                <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#32180D', marginBottom: '0.5rem' }}>Contact MILASTY</h3>
+                <p style={{ fontSize: '1rem', color: '#654B38', marginBottom: '0.5rem' }}>Have a question before ordering, need help with a purchase or want to share feedback?</p>
+                <p style={{ fontSize: '0.95rem', color: '#654B38', marginBottom: '1.75rem', fontStyle: 'italic' }}>MILASTY — Where millets meet great taste. ❤️</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                  {[
+                    { icon: Globe2, label: 'www.milasty.com' },
+                    { icon: Megaphone, label: 'milasty.cookies@gmail.com' },
+                    { icon: PhoneCall, label: '8927142056' },
+                  ].map((item, i) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '999px', padding: '0.35rem 0.85rem', fontSize: '0.85rem', color: '#654B38' }}>
+                        <Icon size={14} color="#2F6B3A" />
+                        <span>{item.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <a href={getWhatsappUrl('Terms & Conditions')} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: '0.9rem 2.25rem', fontSize: '1rem', fontWeight: '750', display: 'inline-flex', alignItems: 'center', gap: '0.6rem' }}>
                   <MessageSquare size={18} />
                   <span>Contact MILASTY Support</span>
                 </a>
@@ -1572,7 +1776,6 @@ export default function LegalPage() {
       </div>
     );
   };
-
   const isShippingPage = path === '/shipping';
   const isRefundPage = path === '/refund';
   const isPrivacyPage = path === '/privacy';
