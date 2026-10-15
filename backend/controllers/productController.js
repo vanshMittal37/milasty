@@ -228,6 +228,10 @@ export const getProducts = async (req, res) => {
             weight: v.weight,
             price: Number(v.price),
             originalPrice: Number(v.original_price || v.price),
+            discountType: v.discount_type || 'none',
+            discountValue: Number(v.discount_value || 0),
+            shippingWeight: v.shipping_weight !== undefined && v.shipping_weight !== null ? Number(v.shipping_weight) : null,
+            sku: v.sku || '',
             stock: varStock,
             inStock: varStock > 0,
           };
@@ -303,6 +307,15 @@ export const getProducts = async (req, res) => {
           ? p.badges
           : (typeof p.badges === 'string' ? p.badges.split(',').map((s) => s.trim()).filter(Boolean) : []);
 
+        const inStockVariants = variants.filter(v => v.stock > 0 && v.price > 0);
+        const candidateVariants = inStockVariants.length > 0 ? inStockVariants : variants.filter(v => v.price > 0);
+        const lowestVariant = candidateVariants.length > 0
+          ? candidateVariants.reduce((min, curr) => (curr.price < min.price ? curr : min), candidateVariants[0])
+          : (variants[0] || null);
+
+        const startingPrice = lowestVariant ? Number(lowestVariant.price) : Number(p.price || 0);
+        const startingOriginalPrice = lowestVariant ? Number(lowestVariant.originalPrice || lowestVariant.price) : Number(p.original_price || p.price || 0);
+
         return {
           _id: p.id,
           id: p.id,
@@ -312,11 +325,13 @@ export const getProducts = async (req, res) => {
           description: p.description,
           category: p.category,
           category_id: p.category_id || '',
-          price: Number(variants[0]?.price || p.price || 0),
-          originalPrice: Number(variants[0]?.originalPrice || p.original_price || variants[0]?.price || p.price || 0),
-          basePrice: Number(p.base_price || p.nutrition_facts?.base_price || variants[0]?.originalPrice || variants[0]?.price || p.price || 0),
+          price: startingPrice,
+          originalPrice: startingOriginalPrice,
+          startingPrice: startingPrice,
+          basePrice: Number(p.base_price || p.nutrition_facts?.base_price || startingOriginalPrice || startingPrice || 0),
           discountType: p.discount_type || p.nutrition_facts?.discount_type || 'none',
           discountValue: p.discount_value !== undefined ? p.discount_value : (p.nutrition_facts?.discount_value || 0),
+          shippingWeight: p.shipping_weight !== undefined && p.shipping_weight !== null ? Number(p.shipping_weight) : null,
           stock: calculatedStock,
           sku: p.sku || 'MLS-PRD',
           status: p.is_active !== false ? 'active' : 'inactive',
@@ -470,6 +485,10 @@ export const getProductBySlugOrId = async (req, res) => {
           weight: v.weight,
           price: Number(v.price),
           originalPrice: Number(v.original_price || v.price),
+          discountType: v.discount_type || 'none',
+          discountValue: Number(v.discount_value || 0),
+          shippingWeight: v.shipping_weight !== undefined && v.shipping_weight !== null ? Number(v.shipping_weight) : null,
+          sku: v.sku || '',
           stock: varStock,
           inStock: varStock > 0,
         };
@@ -545,6 +564,15 @@ export const getProductBySlugOrId = async (req, res) => {
       const primaryUrl = primaryObj ? primaryObj.image_url : (p.image_url || '');
       const secondaryUrl = (images.length > 1 ? images[1].image_url : primaryUrl) || p.secondary_image_url || '';
 
+      const inStockVariants = variants.filter(v => v.stock > 0 && v.price > 0);
+      const candidateVariants = inStockVariants.length > 0 ? inStockVariants : variants.filter(v => v.price > 0);
+      const lowestVariant = candidateVariants.length > 0
+        ? candidateVariants.reduce((min, curr) => (curr.price < min.price ? curr : min), candidateVariants[0])
+        : (variants[0] || null);
+
+      const startingPrice = lowestVariant ? Number(lowestVariant.price) : Number(p.price || 0);
+      const startingOriginalPrice = lowestVariant ? Number(lowestVariant.originalPrice || lowestVariant.price) : Number(p.original_price || p.price || 0);
+
       const formatted = {
         _id: p.id,
         id: p.id,
@@ -554,11 +582,13 @@ export const getProductBySlugOrId = async (req, res) => {
         description: p.description,
         category: p.category,
         category_id: p.category_id || '',
-        price: Number(variants[0]?.price || p.price || 0),
-        originalPrice: Number(variants[0]?.originalPrice || p.original_price || variants[0]?.price || p.price || 0),
-        basePrice: Number(p.base_price || p.nutrition_facts?.base_price || variants[0]?.originalPrice || variants[0]?.price || p.price || 0),
+        price: startingPrice,
+        originalPrice: startingOriginalPrice,
+        startingPrice: startingPrice,
+        basePrice: Number(p.base_price || p.nutrition_facts?.base_price || startingOriginalPrice || startingPrice || 0),
         discountType: p.discount_type || p.nutrition_facts?.discount_type || 'none',
         discountValue: p.discount_value !== undefined ? p.discount_value : (p.nutrition_facts?.discount_value || 0),
+        shippingWeight: p.shipping_weight !== undefined && p.shipping_weight !== null ? Number(p.shipping_weight) : null,
         stock: calculatedStock,
         sku: p.sku || 'MLS-PRD',
         status: p.is_active !== false ? 'active' : 'inactive',
@@ -609,18 +639,41 @@ export const getProductBySlugOrId = async (req, res) => {
   }
 };
 
-// Helper for safe variant insertion supporting schema with/without stock column
+// Helper for safe variant insertion supporting schema with/without stock, discount, shipping_weight, and sku columns
 const safeInsertVariants = async (variantRows) => {
-  let { data, error } = await supabase.from('product_variants').insert(variantRows).select();
-  if (error && error.message && error.message.toLowerCase().includes('stock')) {
-    const fallbackRows = variantRows.map(({ stock, ...rest }) => rest);
-    const { data: fData, error: fErr } = await supabase.from('product_variants').insert(fallbackRows).select();
-    if (fErr) console.error('Supabase Variant Insert Fallback Error:', fErr);
-    if (fData) {
-      data = fData.map((v, i) => ({ ...v, stock: variantRows[i]?.stock }));
+  if (!variantRows || variantRows.length === 0) return [];
+  let currentRows = variantRows.map(r => ({ ...r }));
+  const dropped = [];
+
+  for (let attempt = 0; attempt <= 10; attempt++) {
+    let { data, error } = await supabase.from('product_variants').insert(currentRows).select();
+    if (!error) {
+      if (dropped.length > 0) {
+        console.warn(`[VARIANTS] Inserted variants after dropping missing column(s): ${dropped.join(', ')}`);
+        // Attach dropped fields back to returned data for frontend consistency
+        data = (data || []).map((row, idx) => ({
+          ...variantRows[idx],
+          ...row,
+        }));
+      }
+      return data || [];
     }
+
+    const missingCol = missingColumnFrom(error);
+    if (!missingCol) {
+      console.error('Supabase Variant Insert Error:', error);
+      return [];
+    }
+
+    console.warn(`[VARIANTS] Retrying variant insert without missing column: ${missingCol}`);
+    dropped.push(missingCol);
+    currentRows = currentRows.map((r) => {
+      const copy = { ...r };
+      delete copy[missingCol];
+      return copy;
+    });
   }
-  return data || [];
+  return [];
 };
 
 // Helper for resolving category info by ID or slug
@@ -840,6 +893,9 @@ export const createProduct = async (req, res) => {
       base_price: finalPriceVal,
       discount_type: finalDiscType,
       discount_value: finalDiscVal,
+      shipping_weight: (req.body.shippingWeight !== undefined && req.body.shippingWeight !== '' && req.body.shippingWeight !== null)
+        ? Number(req.body.shippingWeight)
+        : ((req.body.shipping_weight !== undefined && req.body.shipping_weight !== '' && req.body.shipping_weight !== null) ? Number(req.body.shipping_weight) : null),
       image_url: image || '',
       secondary_image_url: secondaryImage || '',
       lab_report_url: req.body.labReportUrl || req.body.lab_report_url || '',
@@ -872,15 +928,36 @@ export const createProduct = async (req, res) => {
     if (variants && Array.isArray(variants) && variants.length > 0) {
       const variantRows = variants.map((v) => {
         const vStock = Number(v.stock !== undefined && v.stock !== null && v.stock !== '' ? v.stock : 50);
-        return {
+        const vOrigPrice = Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : (v.price !== undefined && v.price !== '' ? v.price : price || 0));
+        const vDiscType = v.discountType || v.discount_type || 'none';
+        const vDiscVal = Number(v.discountValue !== undefined && v.discountValue !== '' ? v.discountValue : (v.discount_value || 0)) || 0;
+        let vPrice = Number(v.price !== undefined && v.price !== '' ? v.price : vOrigPrice);
+        if (vDiscType === 'percentage' && vDiscVal > 0) {
+          vPrice = Math.max(0, Math.round((vOrigPrice - (vOrigPrice * vDiscVal / 100)) * 100) / 100);
+        } else if (vDiscType === 'fixed' && vDiscVal > 0) {
+          vPrice = Math.max(0, Math.round((vOrigPrice - vDiscVal) * 100) / 100);
+        }
+        const vShipWeight = (v.shippingWeight !== undefined && v.shippingWeight !== '' && v.shippingWeight !== null)
+          ? Number(v.shippingWeight)
+          : ((v.shipping_weight !== undefined && v.shipping_weight !== '' && v.shipping_weight !== null) ? Number(v.shipping_weight) : null);
+
+        const row = {
           product_id: product.id,
           name: v.name || 'Standard Pack',
           weight: v.weight || 'Standard',
-          price: Number(v.price !== undefined && v.price !== '' ? v.price : price || 0),
-          original_price: Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : v.price || price || 0),
+          price: vPrice,
+          original_price: vOrigPrice,
+          discount_type: vDiscType,
+          discount_value: vDiscVal,
+          shipping_weight: vShipWeight,
+          sku: v.sku || '',
           stock: vStock,
           in_stock: v.inStock !== false && vStock > 0,
         };
+        if (v.id && /^[0-9a-fA-F-]{36}$/.test(String(v.id))) {
+          row.id = v.id;
+        }
+        return row;
       });
       insertedVariants = await safeInsertVariants(variantRows);
     } else {
@@ -919,6 +996,10 @@ export const createProduct = async (req, res) => {
         weight: v.weight,
         price: Number(v.price),
         originalPrice: Number(v.original_price || v.price),
+        discountType: v.discount_type || 'none',
+        discountValue: Number(v.discount_value || 0),
+        shippingWeight: v.shipping_weight !== undefined && v.shipping_weight !== null ? Number(v.shipping_weight) : null,
+        sku: v.sku || '',
         stock: vStock,
         inStock: vStock > 0,
       };
@@ -928,13 +1009,14 @@ export const createProduct = async (req, res) => {
       ? formattedVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
       : (stock !== undefined && stock !== null && stock !== '' ? Number(stock) : 100);
 
-    const basePrice = formattedVariants.length > 0
-      ? Number(formattedVariants[0].price)
-      : Number(price || 0);
+    const inStockCreated = formattedVariants.filter(v => v.stock > 0 && v.price > 0);
+    const candidateCreated = inStockCreated.length > 0 ? inStockCreated : formattedVariants.filter(v => v.price > 0);
+    const lowestCreated = candidateCreated.length > 0
+      ? candidateCreated.reduce((min, curr) => (curr.price < min.price ? curr : min), candidateCreated[0])
+      : (formattedVariants[0] || null);
 
-    const baseOriginalPrice = formattedVariants.length > 0
-      ? Number(formattedVariants[0].originalPrice)
-      : Number(originalPrice || basePrice);
+    const basePrice = lowestCreated ? Number(lowestCreated.price) : Number(price || 0);
+    const baseOriginalPrice = lowestCreated ? Number(lowestCreated.originalPrice || lowestCreated.price) : Number(originalPrice || basePrice);
 
     const savedImgs = await saveProductImages(product.id, req.body.images || req.body.image_gallery, image, secondaryImage);
     const primaryImg = savedImgs.find(i => i.is_primary) || savedImgs[0];
@@ -965,6 +1047,8 @@ export const createProduct = async (req, res) => {
       category: product.category,
       price: basePrice,
       originalPrice: baseOriginalPrice,
+      startingPrice: basePrice,
+      shippingWeight: product.shipping_weight !== undefined && product.shipping_weight !== null ? Number(product.shipping_weight) : null,
       stock: totalStock,
       sku: sku || 'MLS-PRD',
       status: product.is_active !== false ? 'active' : 'inactive',
@@ -1059,6 +1143,11 @@ export const updateProduct = async (req, res) => {
       base_price: basePriceVal,
       discount_type: discountTypeVal,
       discount_value: discountVal,
+      shipping_weight: updates.shippingWeight !== undefined
+        ? (updates.shippingWeight !== '' && updates.shippingWeight !== null ? Number(updates.shippingWeight) : null)
+        : (updates.shipping_weight !== undefined
+          ? (updates.shipping_weight !== '' && updates.shipping_weight !== null ? Number(updates.shipping_weight) : null)
+          : undefined),
       image_url: updates.image !== undefined ? updates.image : undefined,
       secondary_image_url: updates.secondaryImage !== undefined ? updates.secondaryImage : undefined,
       lab_report_url: updates.labReportUrl !== undefined ? updates.labReportUrl : (updates.lab_report_url !== undefined ? updates.lab_report_url : undefined),
@@ -1101,62 +1190,81 @@ export const updateProduct = async (req, res) => {
     }
 
     let updatedVariants = [];
-    const targetPrice = priceVal !== undefined ? priceVal : (updates.price ? Number(updates.price) : 0);
-    const targetOriginalPrice = originalPriceVal !== undefined ? originalPriceVal : targetPrice;
 
     if (updates.variants && Array.isArray(updates.variants)) {
-      await supabase.from('product_variants').delete().eq('product_id', id);
-
       if (updates.variants.length > 0) {
-        const variantRows = updates.variants.map((v, idx) => {
+        const incomingIds = updates.variants
+          .map((v) => v.id)
+          .filter((vid) => vid && /^[0-9a-fA-F-]{36}$/.test(String(vid)));
+
+        // Remove variants belonging to this product that were deleted by admin
+        if (incomingIds.length > 0) {
+          await supabase.from('product_variants').delete().eq('product_id', id).not('id', 'in', `(${incomingIds.join(',')})`);
+        } else {
+          await supabase.from('product_variants').delete().eq('product_id', id);
+        }
+
+        const variantRows = updates.variants.map((v) => {
           const vStock = Number(v.stock !== undefined && v.stock !== null && v.stock !== '' ? v.stock : 50);
-
-          let vPrice = Number(v.price !== undefined && v.price !== '' ? v.price : targetPrice);
-          let vOrigPrice = Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : vPrice);
-
-          // For single variant products or primary pack, apply target product price/MRP directly
-          if (updates.variants.length === 1 || v.name === 'Standard Pack' || idx === 0) {
-            if (updates.price !== undefined && updates.price !== null) vPrice = targetPrice;
-            if (updates.originalPrice !== undefined && updates.originalPrice !== null) vOrigPrice = targetOriginalPrice;
+          const vOrigPrice = Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : (v.price !== undefined && v.price !== '' ? v.price : 0));
+          const vDiscType = v.discountType || v.discount_type || 'none';
+          const vDiscVal = Number(v.discountValue !== undefined && v.discountValue !== '' ? v.discountValue : (v.discount_value || 0)) || 0;
+          let vPrice = Number(v.price !== undefined && v.price !== '' ? v.price : vOrigPrice);
+          if (vDiscType === 'percentage' && vDiscVal > 0) {
+            vPrice = Math.max(0, Math.round((vOrigPrice - (vOrigPrice * vDiscVal / 100)) * 100) / 100);
+          } else if (vDiscType === 'fixed' && vDiscVal > 0) {
+            vPrice = Math.max(0, Math.round((vOrigPrice - vDiscVal) * 100) / 100);
           }
+          const vShipWeight = (v.shippingWeight !== undefined && v.shippingWeight !== '' && v.shippingWeight !== null)
+            ? Number(v.shippingWeight)
+            : ((v.shipping_weight !== undefined && v.shipping_weight !== '' && v.shipping_weight !== null) ? Number(v.shipping_weight) : null);
 
-          return {
+          const row = {
             product_id: id,
             name: v.name || 'Standard Pack',
             weight: v.weight || 'Standard',
             price: vPrice,
             original_price: vOrigPrice,
+            discount_type: vDiscType,
+            discount_value: vDiscVal,
+            shipping_weight: vShipWeight,
+            sku: v.sku || '',
             stock: vStock,
             in_stock: v.inStock !== false && vStock > 0,
           };
+          if (v.id && /^[0-9a-fA-F-]{36}$/.test(String(v.id))) {
+            row.id = v.id;
+          }
+          return row;
         });
-        updatedVariants = await safeInsertVariants(variantRows);
+
+        const existingRows = variantRows.filter((r) => r.id);
+        const newRows = variantRows.filter((r) => !r.id);
+
+        let savedExisting = [];
+        for (const row of existingRows) {
+          const { id: rowId, ...rowFields } = row;
+          const { data: updatedRow, error: upErr } = await supabase.from('product_variants').update(rowFields).eq('id', rowId).select().maybeSingle();
+          if (!upErr && updatedRow) {
+            savedExisting.push(updatedRow);
+          } else {
+            savedExisting.push(row);
+          }
+        }
+
+        let savedNew = [];
+        if (newRows.length > 0) {
+          savedNew = await safeInsertVariants(newRows);
+        }
+
+        updatedVariants = [...savedExisting, ...savedNew];
       } else {
-        // No auto-created "Standard Pack": a product without variants is saved as-is and stays hidden
-        // from the shop until the admin adds at least one real variant (with a gram weight).
+        await supabase.from('product_variants').delete().eq('product_id', id);
         updatedVariants = [];
       }
     } else {
       const { data: existingV } = await supabase.from('product_variants').select('*').eq('product_id', id);
-      if (existingV && existingV.length > 0) {
-        if (updates.price !== undefined || updates.originalPrice !== undefined) {
-          const updatedRows = existingV.map((v, idx) => {
-            let pVal = Number(v.price);
-            let opVal = Number(v.original_price || v.price);
-            if (existingV.length === 1 || idx === 0) {
-              if (updates.price !== undefined && updates.price !== null) pVal = targetPrice;
-              if (updates.originalPrice !== undefined && updates.originalPrice !== null) opVal = targetOriginalPrice;
-            }
-            return { ...v, price: pVal, original_price: opVal };
-          });
-          await supabase.from('product_variants').delete().eq('product_id', id);
-          updatedVariants = await safeInsertVariants(updatedRows);
-        } else {
-          updatedVariants = existingV;
-        }
-      } else {
-        updatedVariants = []; // no variants yet — product stays hidden from the shop until one is added
-      }
+      updatedVariants = existingV || [];
     }
 
     const finalVariantStocksMap = {};
@@ -1191,6 +1299,10 @@ export const updateProduct = async (req, res) => {
         weight: v.weight,
         price: Number(v.price),
         originalPrice: Number(v.original_price || v.price),
+        discountType: v.discount_type || 'none',
+        discountValue: Number(v.discount_value || 0),
+        shippingWeight: v.shipping_weight !== undefined && v.shipping_weight !== null ? Number(v.shipping_weight) : null,
+        sku: v.sku || '',
         stock: vStock,
         inStock: vStock > 0,
       };
@@ -1199,6 +1311,15 @@ export const updateProduct = async (req, res) => {
     const totalStock = formattedVariants.length > 0
       ? formattedVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
       : (updates.stock !== undefined && updates.stock !== null && updates.stock !== '' ? Number(updates.stock) : 100);
+
+    const inStockUpdated = formattedVariants.filter(v => v.stock > 0 && v.price > 0);
+    const candidateUpdated = inStockUpdated.length > 0 ? inStockUpdated : formattedVariants.filter(v => v.price > 0);
+    const lowestUpdated = candidateUpdated.length > 0
+      ? candidateUpdated.reduce((min, curr) => (curr.price < min.price ? curr : min), candidateUpdated[0])
+      : (formattedVariants[0] || null);
+
+    const basePrice = lowestUpdated ? Number(lowestUpdated.price) : Number(updates.price || 0);
+    const baseOriginalPrice = lowestUpdated ? Number(lowestUpdated.originalPrice || lowestUpdated.price) : Number(updates.originalPrice || basePrice);
 
     // Sync category_products junction table on update
     if (resolvedCatId && id) {
@@ -1241,8 +1362,10 @@ export const updateProduct = async (req, res) => {
       subtitle: product.subtitle,
       description: product.description,
       category: product.category,
-      price: Number(formattedVariants[0]?.price || updates.price || 0),
-      originalPrice: Number(formattedVariants[0]?.originalPrice || updates.originalPrice || formattedVariants[0]?.price || 0),
+      price: basePrice,
+      originalPrice: baseOriginalPrice,
+      startingPrice: basePrice,
+      shippingWeight: product.shipping_weight !== undefined && product.shipping_weight !== null ? Number(product.shipping_weight) : null,
       stock: totalStock,
       sku: product.sku || updates.sku || 'MLS-PRD',
       status: product.is_active !== false ? 'active' : 'inactive',

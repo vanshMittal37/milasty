@@ -188,21 +188,46 @@ export async function calculatePackage(items = []) {
   // Accept both DB/order rows (snake_case) and raw cart items (camelCase)
   const norm = items.map((i) => ({
     title: i.product_title || i.title || i.name || 'Item',
+    product_id: i.product_id || i.productId || null,
     variant_id: i.variant_id || i.variantId || null,
     variant_name: i.variant_name || i.variantName || i.variantWeight || i.variant_weight || null,
     weight: typeof i.weight === 'string' ? i.weight : null,
+    shipping_weight: i.shipping_weight != null ? Number(i.shipping_weight) : (i.shippingWeight != null ? Number(i.shippingWeight) : null),
     quantity: Number(i.quantity ?? i.qty ?? 1),
   }));
 
-  // Variant weights from the database for items whose own fields don't carry a weight
-  const needDb = norm.filter((i) => i.variant_id && parseGramsFromWeightString(i.weight ?? i.variant_name) === null);
-  const dbWeights = new Map();
-  if (needDb.length) {
-    const uuids = needDb.map((i) => String(i.variant_id)).filter((id) => /^[0-9a-f-]{36}$/i.test(id));
-    if (uuids.length) {
-      const { data: rows, error } = await supabase.from('product_variants').select('id, weight').in('id', uuids);
-      if (error) throw new Error(`Could not load variant weights: ${error.message}`);
-      (rows || []).forEach((r) => dbWeights.set(String(r.id), r.weight));
+  // Fetch authoritative DB variants and products
+  const variantUuids = [...new Set(norm.map((i) => i.variant_id).filter((id) => id && /^[0-9a-fA-F-]{36}$/.test(String(id))))];
+  const productUuids = [...new Set(norm.map((i) => i.product_id).filter((id) => id && /^[0-9a-fA-F-]{36}$/.test(String(id))))];
+
+  const dbVariantsMap = new Map();
+  const dbProductsMap = new Map();
+
+  if (variantUuids.length > 0) {
+    try {
+      const { data: vRows, error: vErr } = await supabase
+        .from('product_variants')
+        .select('id, shipping_weight, weight, product_id')
+        .in('id', variantUuids);
+      if (!vErr && vRows) {
+        vRows.forEach((r) => dbVariantsMap.set(String(r.id), r));
+      }
+    } catch (e) {
+      console.warn('[SHIPRATH] Variant weight DB lookup notice:', e?.message);
+    }
+  }
+
+  if (productUuids.length > 0) {
+    try {
+      const { data: pRows, error: pErr } = await supabase
+        .from('products')
+        .select('id, shipping_weight, weight')
+        .in('id', productUuids);
+      if (!pErr && pRows) {
+        pRows.forEach((r) => dbProductsMap.set(String(r.id), r));
+      }
+    } catch (e) {
+      console.warn('[SHIPRATH] Product weight DB lookup notice:', e?.message);
     }
   }
 
@@ -214,24 +239,76 @@ export async function calculatePackage(items = []) {
     if (!Number.isInteger(i.quantity) || i.quantity < 1) {
       throw new Error(`Invalid quantity ${i.quantity} for "${i.title}"`);
     }
-    const sources = [i.weight, i.variant_name, i.variant_id ? dbWeights.get(String(i.variant_id)) : null];
+
     let grams = null;
     let source = null;
-    for (const src of sources) {
-      grams = parseGramsFromWeightString(src);
-      if (grams !== null && grams > 0) { source = src; break; }
-      grams = null;
+
+    // 1. Authoritative DB variant shipping weight
+    if (i.variant_id && dbVariantsMap.has(String(i.variant_id))) {
+      const dbV = dbVariantsMap.get(String(i.variant_id));
+      if (dbV.shipping_weight != null && Number(dbV.shipping_weight) > 0) {
+        grams = Number(dbV.shipping_weight);
+        source = 'variant_shipping_weight';
+      } else if (dbV.weight) {
+        const parsed = parseGramsFromWeightString(dbV.weight);
+        if (parsed != null && parsed > 0) {
+          grams = parsed;
+          source = 'variant_weight_fallback';
+        }
+      }
     }
+
+    // 2. Authoritative DB product shipping weight (for non-variant products or unconfigured variants)
+    if (grams === null && i.product_id && dbProductsMap.has(String(i.product_id))) {
+      const dbP = dbProductsMap.get(String(i.product_id));
+      if (dbP.shipping_weight != null && Number(dbP.shipping_weight) > 0) {
+        grams = Number(dbP.shipping_weight);
+        source = 'product_shipping_weight';
+      } else if (dbP.weight) {
+        const parsed = parseGramsFromWeightString(dbP.weight);
+        if (parsed != null && parsed > 0) {
+          grams = parsed;
+          source = 'product_weight_fallback';
+        }
+      }
+    }
+
+    // 3. Fallback to parsing weight string on the item itself
     if (grams === null) {
+      const sources = [i.weight, i.variant_name];
+      for (const src of sources) {
+        const parsed = parseGramsFromWeightString(src);
+        if (parsed != null && parsed > 0) {
+          grams = parsed;
+          source = 'item_weight_fallback';
+          break;
+        }
+      }
+    }
+
+    // 4. Fallback if item itself has a valid positive numeric shipping_weight passed directly
+    if (grams === null && i.shipping_weight != null && Number(i.shipping_weight) > 0) {
+      grams = Number(i.shipping_weight);
+      source = 'item_shipping_weight';
+    }
+
+    if (grams === null || grams <= 0) {
       unknown.push(`"${i.title}" (${i.variant_name || 'no variant'})`);
       continue;
     }
+
     productGrams += grams * i.quantity;
-    breakdown.push({ title: i.title, variant: i.variant_name, unit_grams: grams, quantity: i.quantity, source });
+    breakdown.push({
+      title: i.title,
+      variant: i.variant_name,
+      unit_grams: grams,
+      quantity: i.quantity,
+      source,
+    });
   }
 
-  if (unknown.length) {
-    throw new Error(`Weight unknown for ${unknown.join(', ')} — set a gram weight (e.g. "100g") on the product variant`);
+  if (unknown.length > 0) {
+    throw new Error(`Shipping weight unknown for ${unknown.join(', ')} — please set Shipping Weight (g) in admin.`);
   }
 
   const productWeightKg = Math.round(productGrams) / 1000;
@@ -1441,13 +1518,20 @@ export const trackShipment = async (req, res) => {
 export function canAccessOrder(user, order) {
   if (!user || !order) return false;
   if (user.role === 'admin') return true;
+
   const uid = user.id || user._id;
-  if (uid && order.user_id && String(order.user_id) === String(uid)) return true;
-  if (user.email && order.customer_email &&
-      String(user.email).toLowerCase().trim() === String(order.customer_email).toLowerCase().trim()) return true;
+  const orderUid = order.user_id || order.userId || order.user?.id || order.user?._id;
+  if (uid && orderUid && String(orderUid) === String(uid)) return true;
+
+  const userEmail = String(user.email || '').toLowerCase().trim();
+  const orderEmail = String(order.customer_email || order.customerEmail || order.email || order.user?.email || '').toLowerCase().trim();
+  if (userEmail && orderEmail && userEmail === orderEmail) return true;
+
   const digits = (v) => String(v || '').replace(/\D/g, '').slice(-10);
-  if (user.phone && order.customer_phone && digits(user.phone).length === 10 &&
-      digits(user.phone) === digits(order.customer_phone)) return true;
+  const userPhone = digits(user.phone || user.mobile);
+  const orderPhone = digits(order.customer_phone || order.customerPhone || order.phone || order.user?.phone);
+  if (userPhone && orderPhone && userPhone.length === 10 && userPhone === orderPhone) return true;
+
   return false;
 }
 

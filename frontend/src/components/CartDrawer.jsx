@@ -301,8 +301,7 @@ export default function CartDrawer() {
                   const displayVariant =
                     item.variantName && item.variantName !== 'default' && item.variantName !== 'Standard Pack'
                       ? item.variantName
-                      : item.weight ? item.weight
-                        : item.variantName === 'Standard Pack' ? 'Standard Pack' : null;
+                      : (item.variantName === 'Standard Pack' ? 'Standard Pack' : null);
                   const isMaxStockReached = item.availableStock !== undefined && item.quantity >= item.availableStock;
                   return (
                     <div key={itemKey} style={{

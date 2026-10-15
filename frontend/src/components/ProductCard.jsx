@@ -8,7 +8,18 @@ import PriceDisplay from './PriceDisplay';
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+  const defaultVariantIndex = (() => {
+    if (!product?.variants || product.variants.length === 0) return 0;
+    const inStock = product.variants
+      .map((v, idx) => ({ ...v, idx }))
+      .filter((v) => (v.stock !== undefined ? v.stock : 50) > 0 && Number(v.price) > 0);
+    const pool = inStock.length > 0 ? inStock : product.variants.map((v, idx) => ({ ...v, idx }));
+    if (pool.length === 0) return 0;
+    const lowest = pool.reduce((min, curr) => (Number(curr.price) < Number(min.price) ? curr : min), pool[0]);
+    return lowest.idx;
+  })();
+
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(defaultVariantIndex);
   const [btnText, setBtnText] = useState('Add to Cart');
 
   if (!product) return null;
@@ -216,15 +227,18 @@ export default function ProductCard({ product }) {
             </Link>
           </h3>
 
-          {/* Metric / Weight / Variant Label Badge & Selectors */}
+          {/* Metric / Variant Label Badge & Selectors */}
           {product?.variants && product.variants.length > 1 ? (
             <div className="card-variants" style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '0.55rem', alignItems: 'center' }}>
               {product.variants.map((v, vIdx) => {
-                const metricText = v.label || v.weight || v.name || `${v.unit || ''}`;
+                const variantLabel = `${v.name || 'Pack'} — ₹${v.price}`;
                 const isSelected = selectedVariantIndex === vIdx;
+                const vStock = v.stock !== undefined && v.stock !== null ? Number(v.stock) : 50;
+                const isOutOfStock = vStock <= 0 || v.inStock === false;
+
                 return (
                   <button
-                    key={vIdx}
+                    key={v.id || vIdx}
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -241,16 +255,18 @@ export default function ProductCard({ product }) {
                       color: isSelected ? '#FFFFFF' : 'var(--text-heading)',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
-                      lineHeight: '1.2'
+                      lineHeight: '1.2',
+                      opacity: isOutOfStock ? 0.6 : 1,
                     }}
+                    title={isOutOfStock ? `${v.name || 'Pack'} (Out of Stock)` : variantLabel}
                   >
-                    {metricText}
+                    {variantLabel}
                   </button>
                 );
               })}
             </div>
           ) : (
-            (selectedVariant?.label || selectedVariant?.weight || selectedVariant?.name || product?.weight || product?.unit) && (
+            (selectedVariant?.name || product?.title) && (
               <div style={{ marginBottom: '0.55rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <span
                   className="card-metric-badge"
@@ -267,7 +283,7 @@ export default function ProductCard({ product }) {
                     lineHeight: '1.2'
                   }}
                 >
-                  {selectedVariant?.label || selectedVariant?.weight || selectedVariant?.name || `${product?.weight || ''} ${product?.unit || ''}`.trim()}
+                  {selectedVariant?.name || 'Standard Pack'}
                 </span>
               </div>
             )
@@ -302,16 +318,21 @@ export default function ProductCard({ product }) {
             ? Number(selectedVariant.originalPrice)
             : Number(product?.originalPrice || product?.original_price || cardPrice);
 
+          const cardDiscountType = selectedVariant?.discountType || product?.discountType || product?.discount_type;
+          const cardDiscountValue = selectedVariant?.discountValue !== undefined && selectedVariant?.discountValue !== null
+            ? selectedVariant.discountValue
+            : (product?.discountValue !== undefined ? product.discountValue : product?.discount_value);
+
           return (
             <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid var(--card-border-color)', gap: '0.5rem', width: '100%', minWidth: 0, boxSizing: 'border-box', marginTop: 'auto' }}>
               <PriceDisplay
                 className="card-price-block"
                 style={{ minWidth: 0 }}
-                prefix={product?.variants && product.variants.length > 1 ? 'From ' : ''}
+                prefix=""
                 price={cardPrice}
                 originalPrice={cardOriginalPrice}
-                discountType={product?.discountType || product?.discount_type}
-                discountValue={product?.discountValue !== undefined ? product?.discountValue : product?.discount_value}
+                discountType={cardDiscountType}
+                discountValue={cardDiscountValue}
                 size="small"
               />
 

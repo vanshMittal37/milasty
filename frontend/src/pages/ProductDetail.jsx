@@ -261,8 +261,8 @@ export default function ProductDetail() {
   const discountPercent = hasDiscount ? Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100) : 0;
 
   const discountBadgeText = (() => {
-    const discType = product?.discountType || product?.discount_type;
-    const discVal = Number(product?.discountValue !== undefined ? product?.discountValue : product?.discount_value);
+    const discType = selectedVariant?.discountType || product?.discountType || product?.discount_type;
+    const discVal = Number(selectedVariant?.discountValue !== undefined && selectedVariant?.discountValue !== null ? selectedVariant.discountValue : (product?.discountValue !== undefined ? product.discountValue : product?.discount_value));
 
     if (discType === 'percentage' && discVal > 0) {
       return `${discVal}% OFF`;
@@ -912,7 +912,7 @@ export default function ProductDetail() {
                           opacity: isVOut ? 0.6 : 1
                         }}
                       >
-                        <span style={{ fontSize: '0.9rem', fontWeight: '800' }}>{v.weight || v.name}</span>
+                        <span style={{ fontSize: '0.9rem', fontWeight: '800' }}>{v.name || 'Pack'}</span>
                         <span style={{ fontSize: '0.78rem', color: isSelected ? '#2F6B3A' : '#654B38', fontWeight: '700' }}>₹{v.price}</span>
                         {isVOut && (
                           <span style={{ fontSize: '0.62rem', color: '#dc2626', fontWeight: '800', textTransform: 'uppercase' }}>Out of Stock</span>

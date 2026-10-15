@@ -186,8 +186,12 @@ export const createPaymentSession = async (req, res) => {
           (vName && (v.name === vName || v.weight === vName))
         );
 
+        let itemShippingWeight = null;
         if (dbVariant) {
           unitPrice = Number(dbVariant.price);
+          itemShippingWeight = dbVariant.shipping_weight != null ? Number(dbVariant.shipping_weight) : null;
+        } else if (dbProduct) {
+          itemShippingWeight = dbProduct.shipping_weight != null ? Number(dbProduct.shipping_weight) : null;
         }
       }
 
@@ -206,6 +210,7 @@ export const createPaymentSession = async (req, res) => {
         unit_price: unitPrice,
         quantity: item.quantity,
         total_price: itemTotal,
+        shipping_weight: dbVariant?.shipping_weight != null ? Number(dbVariant.shipping_weight) : (dbProduct?.shipping_weight != null ? Number(dbProduct.shipping_weight) : null),
         customization_note: cleanNote || null,
       });
     }
@@ -618,6 +623,7 @@ export const finalizeOrderFromPayment = async ({
         unit_price: item.unit_price,
         quantity: item.quantity,
         total_price: item.total_price,
+        shipping_weight: item.shipping_weight || null,
         customization_note: item.customization_note || item.customizationNote || item.instruction || item.notes || null,
       }));
 

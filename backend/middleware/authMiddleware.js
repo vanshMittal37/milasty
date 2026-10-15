@@ -10,33 +10,27 @@ export const protect = async (req, res, next) => {
       
       const targetId = decoded.id || decoded._id || decoded.userId;
 
+      let dbUser = null;
       try {
-        const { data: dbUser } = await supabase
+        const { data } = await supabase
           .from('users')
-          .select('id, name, email, phone, role, addresses')
+          .select('id, name, email, phone, role')
           .eq('id', targetId)
           .maybeSingle();
-
-        if (dbUser) {
-          req.user = {
-            ...dbUser,
-            _id: dbUser.id,
-            id: dbUser.id,
-          };
-        } else {
-          req.user = {
-            id: targetId,
-            _id: targetId,
-            role: decoded.role || 'customer',
-          };
-        }
+        dbUser = data;
       } catch (e) {
-        req.user = {
-          id: targetId,
-          _id: targetId,
-          role: decoded.role || 'customer',
-        };
+        // Fallback to token payload
       }
+
+      req.user = {
+        id: targetId,
+        _id: targetId,
+        name: dbUser?.name || decoded.name || 'Customer',
+        email: dbUser?.email || decoded.email || '',
+        phone: dbUser?.phone || decoded.phone || '',
+        role: dbUser?.role || decoded.role || 'customer',
+        ...(dbUser || {}),
+      };
 
       if (!req.user || !req.user.id) {
         return res.status(401).json({ message: 'User account not found' });
@@ -71,33 +65,27 @@ export const optionalProtect = async (req, res, next) => {
       
       const targetId = decoded.id || decoded._id || decoded.userId;
 
+      let dbUser = null;
       try {
-        const { data: dbUser } = await supabase
+        const { data } = await supabase
           .from('users')
-          .select('id, name, email, phone, role, addresses')
+          .select('id, name, email, phone, role')
           .eq('id', targetId)
           .maybeSingle();
-
-        if (dbUser) {
-          req.user = {
-            ...dbUser,
-            _id: dbUser.id,
-            id: dbUser.id,
-          };
-        } else {
-          req.user = {
-            id: targetId,
-            _id: targetId,
-            role: decoded.role || 'customer',
-          };
-        }
+        dbUser = data;
       } catch (e) {
-        req.user = {
-          id: targetId,
-          _id: targetId,
-          role: decoded.role || 'customer',
-        };
+        // Fallback to token payload
       }
+
+      req.user = {
+        id: targetId,
+        _id: targetId,
+        name: dbUser?.name || decoded.name || 'Customer',
+        email: dbUser?.email || decoded.email || '',
+        phone: dbUser?.phone || decoded.phone || '',
+        role: dbUser?.role || decoded.role || 'customer',
+        ...(dbUser || {}),
+      };
     } catch (error) {
       // Ignore token failure for optional verification
     }

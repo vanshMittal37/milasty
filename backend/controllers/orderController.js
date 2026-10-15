@@ -146,8 +146,12 @@ export const createOrder = async (req, res) => {
           (vName && (v.name === vName || v.weight === vName))
         );
 
+        let itemShippingWeight = null;
         if (dbVariant) {
           unitPrice = Number(dbVariant.price);
+          itemShippingWeight = dbVariant.shipping_weight != null ? Number(dbVariant.shipping_weight) : null;
+        } else if (dbProduct) {
+          itemShippingWeight = dbProduct.shipping_weight != null ? Number(dbProduct.shipping_weight) : null;
         }
       }
 
@@ -166,6 +170,7 @@ export const createOrder = async (req, res) => {
         unit_price: unitPrice,
         quantity: item.quantity,
         total_price: itemTotal,
+        shipping_weight: dbVariant?.shipping_weight != null ? Number(dbVariant.shipping_weight) : (dbProduct?.shipping_weight != null ? Number(dbProduct.shipping_weight) : null),
         customization_note: cleanNote || null,
         customizationNote: cleanNote || null,
       });
@@ -313,6 +318,7 @@ export const createOrder = async (req, res) => {
         unit_price: v.unit_price,
         quantity: v.quantity,
         total_price: v.total_price,
+        shipping_weight: v.shipping_weight || null,
         customization_note: v.customization_note || null,
       }));
 
@@ -761,6 +767,7 @@ export const getOrderById = async (req, res) => {
     const { identifier } = req.params;
     const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(identifier);
 
+    let order = null;
     let query = supabase.from('orders').select('*, order_items(*)');
 
     if (isUuid) {
@@ -769,7 +776,29 @@ export const getOrderById = async (req, res) => {
       query = query.eq('order_number', identifier);
     }
 
-    const { data: order, error } = await query.maybeSingle();
+    const { data: joinedOrder, error } = await query.maybeSingle();
+
+    if (!error && joinedOrder) {
+      order = joinedOrder;
+    } else {
+      // Fallback: direct table query in case relation embedding fails
+      let directQuery = supabase.from('orders').select('*');
+      if (isUuid) {
+        directQuery = directQuery.or(`id.eq.${identifier},order_number.eq.${identifier}`);
+      } else {
+        directQuery = directQuery.eq('order_number', identifier);
+      }
+      const { data: directOrder } = await directQuery.maybeSingle();
+      if (directOrder) {
+        order = directOrder;
+      }
+    }
+
+    // Ensure order_items are loaded even if relation failed
+    if (order && (!order.order_items || order.order_items.length === 0)) {
+      const { data: items } = await supabase.from('order_items').select('*').eq('order_id', order.id);
+      order.order_items = items || [];
+    }
 
     // Only the order's owner (or an admin) may read it — order numbers are guessable
     const respond = async (o) => {
@@ -810,17 +839,35 @@ export const getOrderById = async (req, res) => {
       return payload;
     };
 
-    if (!error && order) {
+    if (order) {
       if (!canAccessOrder(req.user, order)) return res.status(404).json({ message: 'Order details not found' });
       return res.json(await respond(order));
     }
 
-    // Search fallback
-    const { data: allOrders } = await supabase.from('orders').select('*, order_items(*)').limit(50);
+    // Search fallback across recent orders
+    let allOrders = null;
+    const { data: jOrders } = await supabase.from('orders').select('*, order_items(*)').limit(50);
+    allOrders = jOrders;
+    if (!allOrders || allOrders.length === 0) {
+      const { data: dOrders } = await supabase.from('orders').select('*').limit(50);
+      allOrders = dOrders;
+    }
+
     if (allOrders && allOrders.length > 0) {
-      const match = allOrders.find((o) => o.id === identifier || o.order_number === identifier || identifier.includes(o.order_number));
-      if (match && canAccessOrder(req.user, match)) {
-        return res.json(await respond(match));
+      const cleanIdent = String(identifier).trim().toLowerCase();
+      const match = allOrders.find((o) => 
+        String(o.id).toLowerCase() === cleanIdent || 
+        String(o.order_number).toLowerCase() === cleanIdent || 
+        cleanIdent.includes(String(o.order_number).toLowerCase())
+      );
+      if (match) {
+        if (!match.order_items || match.order_items.length === 0) {
+          const { data: items } = await supabase.from('order_items').select('*').eq('order_id', match.id);
+          match.order_items = items || [];
+        }
+        if (canAccessOrder(req.user, match)) {
+          return res.json(await respond(match));
+        }
       }
     }
 
