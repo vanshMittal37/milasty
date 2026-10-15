@@ -1221,6 +1221,7 @@ export async function claimOrderForBooking(orderId, fromStatuses) {
     .from('orders')
     .update({ shipment_status: 'creating' })
     .eq('id', orderId)
+    .neq('order_status', 'cancelled')
     .or(filter)
     .select('id');
 

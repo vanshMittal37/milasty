@@ -576,7 +576,11 @@ export const formatOrderPayload = (o) => {
     paymentMethod: displayPaymentMethod,
     rawPaymentMethod: o.payment_method || 'razorpay',
     paymentId: o.payment_id || null,
+    paid_at: o.paid_at || null,
+    paidAt: o.paid_at || null,
     createdAt: o.created_at || new Date().toISOString(),
+    estimatedDeliveryDate: o.created_at ? new Date(new Date(o.created_at).getTime() + 9 * 24 * 60 * 60 * 1000).toISOString() : null,
+    estimated_delivery_date: o.created_at ? new Date(new Date(o.created_at).getTime() + 9 * 24 * 60 * 60 * 1000).toISOString() : null,
     notes: notesFromOrder,
     special_instructions: notesFromOrder,
     items: formattedItems,
@@ -715,14 +719,31 @@ export const getAllOrders = async (req, res) => {
     // Attach cancellation / refund / shipment-cancel state (table may not exist before migration 19)
     const { data: cancellations } = await supabase
       .from('order_cancellations')
-      .select('id, order_id, refund_status, refund_percentage, refund_amount_paise, shipment_cancel_status, shipment_cancel_error')
+      .select('id, order_id, order_number, requested_at, order_created_at, reason, payment_method, razorpay_payment_id, amount_paid_paise, cancellation_charge_paise, refund_percentage, refund_amount_paise, non_refundable_paise, refund_status, refund_reference, refund_processed_at, refund_verified_via, shipment_cancel_status, shipment_cancel_error')
       .limit(5000);
     const byOrder = new Map((cancellations || []).map((c) => [c.order_id, c]));
 
     const formatted = filteredOrders.map((o) => {
       const payload = formatOrderPayload(o);
       const c = byOrder.get(o.id);
-      payload.cancellation = c ? { ...c, refund_amount: Number(c.refund_amount_paise) / 100 } : null;
+      if (c) {
+        const amountPaidPaise = Number(c.amount_paid_paise || 0);
+        const refundAmountPaise = Number(c.refund_amount_paise || 0);
+        const chargePaise = Number(c.cancellation_charge_paise ?? c.non_refundable_paise ?? (amountPaidPaise - refundAmountPaise));
+        payload.cancellation = {
+          ...c,
+          amount_paid: Math.round(amountPaidPaise) / 100,
+          refund_amount: Math.round(refundAmountPaise) / 100,
+          cancellation_charge: Math.round(chargePaise) / 100,
+          non_refundable: Math.round(chargePaise) / 100,
+          requested_at: c.requested_at,
+          order_created_at: c.order_created_at,
+          refund_processed_at: c.refund_processed_at,
+          refund_reference: c.refund_reference,
+        };
+      } else {
+        payload.cancellation = null;
+      }
       return payload;
     });
     res.json(formatted);
@@ -753,8 +774,39 @@ export const getOrderById = async (req, res) => {
     // Only the order's owner (or an admin) may read it — order numbers are guessable
     const respond = async (o) => {
       await attachItemImages(o);
-      const payload = req.user?.role === 'admin' ? formatOrderPayload(o) : formatCustomerOrderPayload(o);
-      payload.cancellation = await getCustomerCancellation(o.id); // refund % / amount / status, if cancelled
+      const isAdmin = req.user?.role === 'admin';
+      const payload = isAdmin ? formatOrderPayload(o) : formatCustomerOrderPayload(o);
+      const { data: rawCancel } = await supabase.from('order_cancellations').select('*').eq('order_id', o.id).maybeSingle();
+      if (rawCancel) {
+        const amountPaidPaise = Number(rawCancel.amount_paid_paise || 0);
+        const refundAmountPaise = Number(rawCancel.refund_amount_paise || 0);
+        const chargePaise = Number(rawCancel.cancellation_charge_paise ?? rawCancel.non_refundable_paise ?? (amountPaidPaise - refundAmountPaise));
+        payload.cancellation = {
+          ...customerCancellationView(rawCancel),
+          amount_paid: Math.round(amountPaidPaise) / 100,
+          refund_amount: Math.round(refundAmountPaise) / 100,
+          cancellation_charge: Math.round(chargePaise) / 100,
+          non_refundable: Math.round(chargePaise) / 100,
+          requested_at: rawCancel.requested_at,
+          order_created_at: rawCancel.order_created_at,
+          refund_processed_at: rawCancel.refund_processed_at,
+          refund_reference: rawCancel.refund_reference,
+          ...(isAdmin ? {
+            id: rawCancel.id,
+            order_id: rawCancel.order_id,
+            razorpay_payment_id: rawCancel.razorpay_payment_id,
+            amount_paid_paise: rawCancel.amount_paid_paise,
+            refund_amount_paise: rawCancel.refund_amount_paise,
+            cancellation_charge_paise: chargePaise,
+            shipment_cancel_status: rawCancel.shipment_cancel_status,
+            shipment_cancel_error: rawCancel.shipment_cancel_error,
+            refund_verified_via: rawCancel.refund_verified_via,
+            refund_processed_by_email: rawCancel.refund_processed_by_email,
+          } : {}),
+        };
+      } else {
+        payload.cancellation = null;
+      }
       return payload;
     };
 

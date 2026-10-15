@@ -8,6 +8,7 @@ import {
 import api from '../api/axios';
 import OrderItemImage from '../components/OrderItemImage';
 import { useAuth } from '../context/AuthContext';
+import { formatDateTime, calculateEstimatedDeliveryDate, formatInr } from '../utils/orderDateTime';
 
 // ─── Status stages (canonical order) ───────────────────────────────────────
 const STATUS_STAGES = [
@@ -421,9 +422,16 @@ export default function CustomerOrderDetailPage() {
   );
 
   const deliveryAddr = order.deliveryAddress || order.shippingAddress || {};
-  const placedDate = order.createdAt
-    ? new Date(order.createdAt).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })
-    : '—';
+  const orderPlacementFormatted = formatDateTime(order.createdAt);
+  const paidAtTimestamp = order.paidAt || order.paid_at;
+  const isCod = String(order.paymentMethod || order.payment_method || '').toLowerCase().includes('cod') ||
+                String(order.paymentMethod || order.payment_method || '').toLowerCase().includes('cash');
+  const paymentTransactionFormatted = isCod
+    ? 'Not applicable (Cash on Delivery — collected on delivery)'
+    : paidAtTimestamp
+      ? formatDateTime(paidAtTimestamp)
+      : (isPaid ? 'Completed at checkout (verification confirmed)' : 'Pending verification');
+  const estimatedDeliveryDate = calculateEstimatedDeliveryDate(order.createdAt, 9);
 
   return (
     <div style={{ paddingBottom: '4rem' }}>
@@ -438,7 +446,7 @@ export default function CustomerOrderDetailPage() {
 
         {/* ── ORDER HEADER ── */}
         <div style={{ ...cardStyle, padding: '1.75rem', marginBottom: '1.25rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: `1px solid ${T.border}`, paddingBottom: '1.25rem' }}>
             <div>
               <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: T.accent, fontWeight: '800', marginBottom: '0.25rem' }}>
                 ORDER DETAILS
@@ -460,8 +468,9 @@ export default function CustomerOrderDetailPage() {
                   {copyToast ? <><Check size={12} color={T.success} /> Copied!</> : <><Copy size={12} /> Copy</>}
                 </button>
               </div>
-              <div style={{ fontSize: '0.82rem', color: T.textMuted, marginTop: '0.3rem', fontWeight: '500' }}>
-                Placed on {placedDate}
+              <div style={{ fontSize: '0.84rem', color: T.textSecondary, marginTop: '0.4rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Clock size={14} color={T.accent} />
+                <span>Order Placed: <strong>{orderPlacementFormatted}</strong></span>
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
@@ -474,6 +483,45 @@ export default function CustomerOrderDetailPage() {
               }}>
                 {order.paymentMethod} · {isPaid ? 'Paid ✓' : 'Pending'}
               </span>
+            </div>
+          </div>
+
+          {/* Key Timestamps & Delivery Window Banner */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginTop: '1.25rem' }}>
+            <div style={{ padding: '0.85rem 1rem', backgroundColor: T.surfaceAlt, borderRadius: '12px', border: `1px solid ${T.border}` }}>
+              <div style={{ fontSize: '0.62rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.accent, marginBottom: '0.25rem' }}>
+                ORDER PLACEMENT
+              </div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: T.textPrimary }}>
+                {orderPlacementFormatted}
+              </div>
+              <div style={{ fontSize: '0.72rem', color: T.textMuted, marginTop: '0.15rem' }}>
+                Server timestamp (Asia/Kolkata)
+              </div>
+            </div>
+
+            <div style={{ padding: '0.85rem 1rem', backgroundColor: T.surfaceAlt, borderRadius: '12px', border: `1px solid ${T.border}` }}>
+              <div style={{ fontSize: '0.62rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.accent, marginBottom: '0.25rem' }}>
+                PAYMENT TRANSACTION
+              </div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: isPaid ? T.success : T.textPrimary }}>
+                {paymentTransactionFormatted}
+              </div>
+              <div style={{ fontSize: '0.72rem', color: T.textMuted, marginTop: '0.15rem' }}>
+                Method: {order.paymentMethod || 'Razorpay / Prepaid'}
+              </div>
+            </div>
+
+            <div style={{ padding: '0.85rem 1rem', backgroundColor: 'rgba(237,247,238,0.7)', borderRadius: '12px', border: `1px solid ${T.successBorder}` }}>
+              <div style={{ fontSize: '0.62rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: T.success, marginBottom: '0.25rem' }}>
+                ESTIMATED DELIVERY
+              </div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '800', color: T.success }}>
+                Estimated delivery by {estimatedDeliveryDate}
+              </div>
+              <div style={{ fontSize: '0.72rem', color: T.textMuted, marginTop: '0.15rem' }}>
+                Standard dispatch & delivery: 9 days from order
+              </div>
             </div>
           </div>
         </div>
@@ -603,29 +651,55 @@ export default function CustomerOrderDetailPage() {
           </div>
         )}
         {isCancelled && (
-          <div style={{ ...cardStyle, padding: '1.25rem 1.5rem', marginBottom: '1.25rem', backgroundColor: T.dangerBg, border: `1px solid ${T.dangerBorder}` }}>
+          <div style={{ ...cardStyle, padding: '1.5rem', marginBottom: '1.25rem', backgroundColor: T.dangerBg, border: `1px solid ${T.dangerBorder}` }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem' }}>
-              <XCircle size={20} color={T.danger} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
-              <div>
-                <div style={{ fontSize: '0.92rem', fontWeight: '800', color: T.danger }}>Order Cancelled</div>
+              <XCircle size={22} color={T.danger} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <div style={{ fontSize: '1rem', fontWeight: '900', color: T.danger }}>Order Cancelled</div>
+                    <div style={{ fontSize: '0.78rem', color: T.textMuted, marginTop: '0.2rem' }}>
+                      Cancelled at: <strong>{cancellation?.requestedAt ? formatDateTime(cancellation.requestedAt) : (order.cancelledAt ? formatDateTime(order.cancelledAt) : 'Recorded')}</strong>
+                    </div>
+                  </div>
+                  <span className="admin-badge admin-badge-danger" style={{ fontSize: '0.72rem', fontWeight: '800' }}>
+                    Status: Cancelled
+                  </span>
+                </div>
+
                 {(cancellation?.reason || order.cancelReason) && (
-                  <div style={{ fontSize: '0.82rem', color: T.danger, marginTop: '0.2rem', opacity: 0.85 }}>
-                    Reason: {cancellation?.reason || order.cancelReason}
+                  <div style={{ fontSize: '0.84rem', color: T.textSecondary, marginTop: '0.5rem', backgroundColor: 'rgba(255,255,255,0.7)', padding: '0.4rem 0.75rem', borderRadius: '6px', borderLeft: `3px solid ${T.danger}` }}>
+                    <strong>Reason:</strong> {cancellation?.reason || order.cancelReason}
                   </div>
                 )}
+
                 {cancellation && (
-                  <div style={{ marginTop: '0.75rem', fontSize: '0.84rem', color: T.textPrimary, lineHeight: '1.6' }}>
-                    {cancellation.refundStatus !== 'not_applicable' && (
-                      <div>
-                        Refund: <strong>{inr(cancellation.refundAmount)}</strong> ({cancellation.refundPercentage}% of {inr(cancellation.amountPaid)} paid)
-                        {cancellation.nonRefundable > 0 && <span style={{ color: T.textMuted }}> · {inr(cancellation.nonRefundable)} non-refundable</span>}
+                  <div style={{ marginTop: '0.85rem', fontSize: '0.84rem', color: T.textPrimary, lineHeight: '1.6' }}>
+                    {cancellation.refundStatus !== 'not_applicable' ? (
+                      <div style={{ background: '#FFFFFF', padding: '0.85rem 1rem', borderRadius: '10px', border: `1px solid ${T.border}`, marginBottom: '0.65rem' }}>
+                        <div style={{ fontWeight: '800', color: T.brand, marginBottom: '0.4rem', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          Refund &amp; Cancellation Charge Breakdown
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '0.5rem 1rem', fontSize: '0.82rem' }}>
+                          <div>Original Amount Paid: <strong>{inr(cancellation.amountPaid)}</strong></div>
+                          <div style={{ color: T.danger }}>10% Cancellation Charge: <strong>−{inr(cancellation.cancellationCharge ?? (cancellation.amountPaid * 0.1))}</strong></div>
+                          <div style={{ color: T.success, fontWeight: '800' }}>90% Eligible Refund: <strong>{inr(cancellation.refundAmount)}</strong></div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ background: '#FFFFFF', padding: '0.65rem 0.85rem', borderRadius: '8px', border: `1px solid ${T.border}`, marginBottom: '0.5rem', fontSize: '0.8rem', color: T.textMuted }}>
+                        Cash on Delivery order — No upfront payment was collected, so no cancellation charge or refund applies.
                       </div>
                     )}
-                    <div style={{ fontWeight: '700', marginTop: '0.2rem' }}>{REFUND_STATUS_TEXT[cancellation.refundStatus] || 'Refund status is being updated.'}</div>
+
+                    <div style={{ fontWeight: '700', marginTop: '0.35rem', color: T.textPrimary }}>
+                      {REFUND_STATUS_TEXT[cancellation.refundStatus] || 'Refund status is being updated.'}
+                    </div>
+
                     {cancellation.refundStatus === 'successful' && (
-                      <div style={{ color: T.textMuted, fontSize: '0.78rem' }}>
-                        {cancellation.refundProcessedAt && <>Processed {new Date(cancellation.refundProcessedAt).toLocaleString('en-IN')} · </>}
-                        Ref: {cancellation.refundReference}. Banks may take 5–7 working days to show it.
+                      <div style={{ color: T.textMuted, fontSize: '0.78rem', marginTop: '0.25rem' }}>
+                        {cancellation.refundProcessedAt && <>Processed on <strong>{formatDateTime(cancellation.refundProcessedAt)}</strong> · </>}
+                        Refund Reference ID: <code>{cancellation.refundReference}</code>. Banks typically reflect credits within 5–7 working days.
                       </div>
                     )}
                   </div>
@@ -703,47 +777,73 @@ export default function CustomerOrderDetailPage() {
             )}
 
             {/* Cancel — eligibility, refund % and amount are calculated by the server */}
+            {/* Expired Cancellation Window (> 3 hours) */}
             {cancelWindowClosed && (
-              <div style={{ ...cardStyle, padding: '1.25rem 1.5rem', fontSize: '0.84rem', color: T.textSecondary }}>
-                <strong style={{ color: T.textPrimary }}>Cancellation window closed.</strong> Orders can be cancelled within 5 hours of placing them. For help with this order, please contact MILASTY support.
+              <div style={{ ...cardStyle, padding: '1.25rem 1.5rem', backgroundColor: '#FFFDF9', border: `1px solid ${T.border}` }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                  <AlertCircle size={20} color={T.warning} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+                  <div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: '800', color: T.textPrimary, marginBottom: '0.35rem' }}>
+                      Cancellation Window Expired
+                    </div>
+                    <p style={{ margin: 0, fontSize: '0.84rem', color: T.textSecondary, lineHeight: '1.6' }}>
+                      You can no longer cancel this order because the 3-hour cancellation window has expired. Please contact customer support if you need assistance.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
+
+            {/* Eligible for Cancellation (within 3 hours) */}
             {canCancel && (
-              <div style={{ ...cardStyle, padding: '1.5rem', border: `1px solid ${T.dangerBorder}`, backgroundColor: 'rgba(254,236,236,0.4)' }}>
+              <div style={{ ...cardStyle, padding: '1.5rem', border: `1px solid ${T.dangerBorder}`, backgroundColor: 'rgba(254,236,236,0.35)' }}>
                 <h3 style={{ fontSize: '0.78rem', fontWeight: '900', color: T.danger, margin: '0 0 0.85rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  <AlertCircle size={14} /> Cancel Order
+                  <AlertCircle size={15} /> Cancel Order
                 </h3>
 
-                {/* Policy */}
-                <div style={{ fontSize: '0.8rem', color: T.textSecondary, lineHeight: '1.6', marginBottom: '0.85rem' }}>
-                  <div style={{ fontWeight: '800', color: T.textPrimary, marginBottom: '0.2rem' }}>Cancellation &amp; refund policy</div>
-                  <div>• Within 3 hours of ordering: 100% refund of the amount paid</div>
-                  <div>• After 3 hours, up to 5 hours: 50% refund of the amount paid</div>
-                  <div>• After 5 hours: cancellation is not available</div>
+                {/* Policy Summary */}
+                <div style={{ fontSize: '0.82rem', color: T.textSecondary, lineHeight: '1.6', marginBottom: '0.85rem' }}>
+                  <div style={{ fontWeight: '800', color: T.textPrimary, marginBottom: '0.2rem' }}>Cancellation &amp; Refund Policy:</div>
+                  <div>• Orders can be cancelled only within <strong>3 hours</strong> of order placement.</div>
+                  <div>• A <strong>10% cancellation charge</strong> will be deducted from your paid amount.</div>
+                  <div>• You will be eligible for a refund of the remaining <strong>90%</strong>, subject to payment verification.</div>
                 </div>
 
-                {/* What applies right now */}
-                <div style={{ padding: '0.75rem 0.9rem', borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.85)', border: `1px solid ${T.border}`, fontSize: '0.84rem', color: T.textPrimary, marginBottom: '0.85rem', lineHeight: '1.6' }}>
+                {/* Live Server Quote */}
+                <div style={{ padding: '0.85rem 1rem', borderRadius: '10px', backgroundColor: '#FFFFFF', border: `1px solid ${T.border}`, fontSize: '0.84rem', color: T.textPrimary, marginBottom: '0.95rem', lineHeight: '1.6' }}>
                   {cancelQuote.prepaid ? (
-                    <>
-                      If you cancel now: <strong>{cancelQuote.refundPercentage}% refund = {inr(cancelQuote.refundAmount)}</strong> of {inr(cancelQuote.amountPaid)} paid.
-                      {cancelQuote.nonRefundable > 0 && <> {inr(cancelQuote.nonRefundable)} is non-refundable.</>}
-                    </>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                        <span style={{ color: T.textMuted }}>Original Amount Paid:</span>
+                        <strong>{inr(cancelQuote.amountPaid)}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', color: T.danger, marginBottom: '0.25rem' }}>
+                        <span>10% Cancellation Charge:</span>
+                        <strong>−{inr(cancelQuote.cancellationCharge)}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', color: T.success, fontWeight: '800', borderTop: `1px solid ${T.border}`, paddingTop: '0.35rem', marginTop: '0.35rem' }}>
+                        <span>90% Eligible Refund:</span>
+                        <strong style={{ fontSize: '0.95rem' }}>{inr(cancelQuote.refundAmount)}</strong>
+                      </div>
+                    </div>
                   ) : (
-                    <>This is a Cash on Delivery order — nothing has been charged, so no refund is needed.</>
-                  )}
-                  {cancelQuote.currentTierEndsAt && cancelQuote.prepaid && (
-                    <div style={{ fontSize: '0.76rem', color: T.textMuted }}>
-                      This applies until {new Date(cancelQuote.currentTierEndsAt).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}. The final amount is confirmed when you cancel.
+                    <div style={{ color: T.textSecondary }}>
+                      This is a <strong>Cash on Delivery</strong> order. No payment was collected, so no refund or cancellation charge applies.
                     </div>
                   )}
-                  {cancelQuote.shipmentInTransit && (
-                    <div style={{ fontSize: '0.76rem', color: T.danger, marginTop: '0.2rem' }}>Your parcel is already with the courier; we will arrange its return.</div>
+                  {cancelQuote.expiresAt && (
+                    <div style={{ fontSize: '0.74rem', color: T.textMuted, marginTop: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Clock size={12} />
+                      <span>3-hour cancellation window expires at: <strong>{formatDateTime(cancelQuote.expiresAt)}</strong></span>
+                    </div>
                   )}
                 </div>
 
                 {cancelStep === 'form' ? (
                   <form onSubmit={handleReviewCancellation} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                    <label style={{ fontSize: '0.8rem', fontWeight: '700', color: T.textPrimary }}>
+                      Please select a cancellation reason:
+                    </label>
                     <select
                       value={cancelReason}
                       onChange={(e) => setCancelReason(e.target.value)}
@@ -761,7 +861,7 @@ export default function CustomerOrderDetailPage() {
                         onChange={(e) => setCancelOther(e.target.value)}
                         maxLength={500}
                         rows={3}
-                        placeholder="Tell us why you are cancelling"
+                        placeholder="Tell us why you are cancelling..."
                         style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '10px', border: `1px solid rgba(231,222,213,0.8)`, fontSize: '0.88rem', color: T.textPrimary, backgroundColor: 'rgba(255,255,255,0.9)', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical' }}
                       />
                     )}
@@ -771,21 +871,43 @@ export default function CustomerOrderDetailPage() {
                       disabled={!cancelReason || (cancelReason === 'Other' && cancelOther.trim().length < 3)}
                       style={{ padding: '0.65rem 1.5rem', backgroundColor: T.danger, color: '#FFFFFF', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', opacity: !cancelReason ? 0.65 : 1, alignSelf: 'flex-end' }}
                     >
-                      Continue
+                      Review Cancellation
                     </button>
                   </form>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    <p style={{ margin: 0, fontSize: '0.86rem', fontWeight: '700', color: T.textPrimary }}>
-                      Cancel this order{cancelQuote.prepaid ? ` and receive a ${inr(cancelQuote.refundAmount)} refund` : ''}? This cannot be undone.
+                  /* Confirmation Dialog */
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', background: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: `1px solid ${T.dangerBorder}` }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: '900', color: T.danger, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <AlertCircle size={18} /> Cancel this order?
+                    </div>
+
+                    <p style={{ margin: 0, fontSize: '0.88rem', color: T.textPrimary, lineHeight: '1.6', fontWeight: '500' }}>
+                      "A 10% cancellation charge will be deducted from your order amount. You will be eligible for a refund of the remaining 90%, subject to payment verification."
                     </p>
-                    {cancelQuote.prepaid && cancelQuote.refundAmount > 0 && (
-                      <p style={{ margin: 0, fontSize: '0.8rem', color: T.textMuted }}>
-                        Refunds are credited to your original payment method within 4–5 working days.
-                      </p>
+
+                    {cancelQuote.prepaid && (
+                      <div style={{ background: T.surfaceAlt, padding: '0.85rem 1rem', borderRadius: '10px', border: `1px solid ${T.border}`, fontSize: '0.84rem', lineHeight: '1.6' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                          <span style={{ color: T.textSecondary }}>Original Order Amount:</span>
+                          <strong>{inr(cancelQuote.amountPaid)}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', color: T.danger, marginBottom: '0.25rem' }}>
+                          <span>10% Cancellation Charge:</span>
+                          <strong>−{inr(cancelQuote.cancellationCharge)}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', color: T.success, fontWeight: '900', borderTop: `1px dashed ${T.border}`, paddingTop: '0.35rem', marginTop: '0.35rem', fontSize: '0.92rem' }}>
+                          <span>90% Eligible Refund:</span>
+                          <span>{inr(cancelQuote.refundAmount)}</span>
+                        </div>
+                        <div style={{ fontSize: '0.74rem', color: T.textMuted, marginTop: '0.5rem' }}>
+                          Refund will be processed to your original payment method within 4–5 business days after payment verification.
+                        </div>
+                      </div>
                     )}
-                    {cancelError && <p style={{ fontSize: '0.8rem', color: T.danger, margin: 0 }}>{cancelError}</p>}
-                    <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+
+                    {cancelError && <p style={{ fontSize: '0.82rem', color: T.danger, margin: 0 }}>{cancelError}</p>}
+
+                    <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', flexWrap: 'wrap', marginTop: '0.5rem' }}>
                       <button
                         type="button"
                         onClick={() => setCancelStep('form')}
@@ -800,7 +922,7 @@ export default function CustomerOrderDetailPage() {
                         disabled={cancelLoading}
                         style={{ padding: '0.65rem 1.5rem', backgroundColor: T.danger, color: '#FFFFFF', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: cancelLoading ? 'wait' : 'pointer', opacity: cancelLoading ? 0.65 : 1, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
                       >
-                        {cancelLoading ? <><RefreshCw size={14} /> Cancelling...</> : 'Yes, Cancel Order'}
+                        {cancelLoading ? <><RefreshCw size={14} className="animate-spin" /> Cancelling...</> : 'Confirm & Cancel Order'}
                       </button>
                     </div>
                   </div>

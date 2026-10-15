@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle2, ArrowRight, Truck, ShieldCheck, Navigation } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Truck, ShieldCheck, Navigation, Calendar, Clock, CreditCard } from 'lucide-react';
 import api from '../api/axios';
+import { formatDateOnly, formatTimeOnly, formatDateTime, calculateEstimatedDeliveryDate, formatInr } from '../utils/orderDateTime';
 
 export default function OrderSuccessPage() {
   const { orderId } = useParams();
@@ -32,13 +33,37 @@ export default function OrderSuccessPage() {
     }
   };
 
-
   const formattedAddressString = typeof order?.shippingAddress === 'object' && order?.shippingAddress !== null
     ? [order.shippingAddress.building, order.shippingAddress.addressLine, order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.pincode].filter(Boolean).join(', ')
     : String(order?.shippingAddress || 'Delivery Address Provided');
 
+  const isRazorpay = String(order?.rawPaymentMethod || order?.paymentMethod || '').toLowerCase() === 'razorpay';
+  const isCod = String(order?.rawPaymentMethod || order?.paymentMethod || '').toLowerCase() === 'cod';
   const isPaid = String(order?.paymentStatus || '').toLowerCase() === 'paid';
-  const displayPaymentStatus = isPaid ? '✓ PAID SUCCESSFULLY' : String(order?.paymentStatus || 'Pending').toUpperCase();
+  
+  let displayPaymentStatus = 'PENDING';
+  if (isPaid) {
+    displayPaymentStatus = '✓ PAID SUCCESSFULLY';
+  } else if (isCod) {
+    displayPaymentStatus = 'CASH ON DELIVERY (PENDING UPON DELIVERY)';
+  } else {
+    displayPaymentStatus = String(order?.paymentStatus || 'Pending').toUpperCase();
+  }
+
+  // Transaction timestamp handling: only actual timestamps; no fabricated data for COD or missing records
+  let transactionTimestampDisplay = null;
+  if (isCod) {
+    transactionTimestampDisplay = 'Not applicable (Cash on Delivery — collected on delivery)';
+  } else if (isPaid) {
+    const rawPaidAt = order?.paid_at || order?.paidAt || order?.createdAt;
+    transactionTimestampDisplay = rawPaidAt ? formatDateTime(rawPaidAt) : 'Recorded upon payment confirmation';
+  } else {
+    transactionTimestampDisplay = 'Awaiting payment confirmation';
+  }
+
+  const orderPlacementDate = order?.createdAt ? formatDateOnly(order.createdAt) : '—';
+  const orderPlacementTime = order?.createdAt ? formatTimeOnly(order.createdAt) : '—';
+  const estimatedDelivery = order?.createdAt ? calculateEstimatedDeliveryDate(order.createdAt, 9) : '—';
 
   return (
     <div style={{
@@ -148,16 +173,29 @@ export default function OrderSuccessPage() {
                   <span style={{ color: '#6B584C', fontWeight: '600' }}>Order ID:</span>
                   <span style={{ fontWeight: '800', color: '#2B140B' }}>#{order.orderNumber || order.orderId}</span>
                 </div>
+
+                {/* Placement Date & Time */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
+                  <span style={{ color: '#6B584C', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <Calendar size={13} color="#C68A3A" /> Order Date &amp; Time:
+                  </span>
+                  <span style={{ fontWeight: '700', color: '#2B140B' }}>
+                    {orderPlacementDate} at {orderPlacementTime}
+                  </span>
+                </div>
+
                 {order.customerName && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
                     <span style={{ color: '#6B584C', fontWeight: '600' }}>Customer:</span>
                     <span style={{ fontWeight: '700', color: '#2B140B' }}>{order.customerName}</span>
                   </div>
                 )}
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
                   <span style={{ color: '#6B584C', fontWeight: '600' }}>Payment Method:</span>
-                  <span style={{ fontWeight: '800', color: '#2F6B3A' }}>{order.paymentMethod}</span>
+                  <span style={{ fontWeight: '800', color: isPaid ? '#2F6B3A' : '#7C3D20' }}>{order.paymentMethod}</span>
                 </div>
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
                   <span style={{ color: '#6B584C', fontWeight: '600' }}>Payment Status:</span>
                   <span style={{ fontWeight: '800', color: isPaid ? '#2F6B3A' : '#D4AC0D', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
@@ -165,12 +203,47 @@ export default function OrderSuccessPage() {
                     {displayPaymentStatus}
                   </span>
                 </div>
+
+                {/* Payment Transaction Date & Time */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.85rem' }}>
+                  <span style={{ color: '#6B584C', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <Clock size={13} color="#2F6B3A" /> Transaction Time:
+                  </span>
+                  <span style={{ fontWeight: '700', color: '#2B140B', textAlign: 'right' }}>
+                    {transactionTimestampDisplay}
+                  </span>
+                </div>
+
                 {order.paymentId && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.85rem' }}>
                     <span style={{ color: '#6B584C', fontWeight: '600' }}>Payment ID:</span>
-                    <span style={{ fontWeight: '700', color: '#2B140B' }}>{order.paymentId}</span>
+                    <span style={{ fontWeight: '700', color: '#2B140B', fontFamily: 'monospace' }}>{order.paymentId}</span>
                   </div>
                 )}
+
+                {/* Estimated Delivery Date & Window (9 days from placement date) */}
+                <div style={{
+                  backgroundColor: 'rgba(47, 107, 58, 0.08)',
+                  border: '1px solid rgba(47, 107, 58, 0.25)',
+                  borderRadius: '12px',
+                  padding: '0.9rem 1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.35rem',
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#2F6B3A', fontWeight: '800', fontSize: '0.88rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Truck size={16} /> Estimated Delivery:
+                    </span>
+                    <span style={{ fontWeight: '900', color: '#2F6B3A', fontSize: '0.95rem' }}>
+                      Estimated delivery by {estimatedDelivery}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#654B38', lineHeight: '1.4' }}>
+                    Delivery period: <strong>9 days</strong> from order placement (artisan baking, freshness testing &amp; pan-India courier).
+                  </div>
+                </div>
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
                   <span style={{ color: '#6B584C', fontWeight: '600' }}>Delivery To:</span>
                   <span style={{ fontWeight: '700', color: '#2B140B', textAlign: 'right', maxWidth: '300px', fontSize: '0.85rem' }}>
@@ -191,7 +264,7 @@ export default function OrderSuccessPage() {
                 ) : (
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.85rem' }}>
                     <span style={{ color: '#6B584C', fontWeight: '600' }}>Shipment:</span>
-                    <span style={{ fontWeight: '600', color: '#B7791F', fontSize: '0.82rem' }}>Processing…</span>
+                    <span style={{ fontWeight: '600', color: '#B7791F', fontSize: '0.82rem' }}>Processing for dispatch…</span>
                   </div>
                 )}
 
@@ -201,7 +274,7 @@ export default function OrderSuccessPage() {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.4rem', fontSize: '1.1rem', fontWeight: '900', color: '#2B140B' }}>
-                  <span>Total Amount:</span>
+                  <span>Total Amount Paid:</span>
                   <span>₹{order.totalAmount || order.grandTotal || 0}</span>
                 </div>
 

@@ -1,9 +1,10 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Package, Clock, Truck, ChevronRight, Search, Filter, AlertCircle, ShoppingBag, ShieldCheck, Star, Camera, CheckCircle2 } from 'lucide-react';
 import api from '../api/axios';
 import OrderItemImage from '../components/OrderItemImage';
 import { useAuth } from '../context/AuthContext';
+import { formatDateTime } from '../utils/orderDateTime';
 
 export default function OrderHistoryPage() {
   const navigate = useNavigate();
@@ -352,9 +353,9 @@ export default function OrderHistoryPage() {
                       <span style={{ fontSize: '0.76rem', fontWeight: '600', color: isPaid ? T.success : T.warning, display: 'flex', alignItems: 'center', gap: '0.25rem', backgroundColor: isPaid ? T.successBg : T.warningBg, padding: '0.25rem 0.65rem', borderRadius: '8px' }}>
                         <ShieldCheck size={12} /> {order.paymentMethod} · {isPaid ? 'Paid' : 'Pending'}
                       </span>
-                      <div style={{ fontSize: '0.78rem', color: T.textMuted, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                      <div style={{ fontSize: '0.78rem', color: T.textMuted, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                         <Clock size={12} />
-                        {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        <span>{formatDateTime(order.createdAt)}</span>
                       </div>
                     </div>
                   </div>

@@ -2,16 +2,17 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { RefreshCw, Search, X, AlertTriangle, CheckCircle2, Truck, ReceiptIndianRupee, History, ExternalLink } from 'lucide-react';
 import api from '../../api/axios';
 
-// Admin: Cancellations & Refunds. Refunds are made manually in the Razorpay Dashboard and recorded here.
+// Admin: Cancellations & Refunds. Supports automatic 90% Razorpay refund initiation & manual recording.
 
 const FILTERS = [
   ['all', 'All cancellations'],
-  ['full', 'Full refunds — 100%'],
-  ['partial', 'Partial refunds — 50%'],
-  ['review', 'Pending admin review'],
+  ['eligible_90', 'Eligible Refunds (90%)'],
   ['pending_refund', 'Pending refund'],
   ['refund_successful', 'Refund successful'],
   ['refund_failed', 'Refund failed'],
+  ['full', 'Full refunds (100% legacy)'],
+  ['partial', 'Partial refunds (50% legacy)'],
+  ['review', 'Pending admin review'],
   ['shipment_failed', 'Shipment cancellation failed'],
 ];
 
@@ -163,21 +164,20 @@ export default function AdminCancellations() {
             No cancellations match this view.
           </div>
         ) : (
-          <table className="admin-table" style={{ minWidth: '1250px' }}>
+          <table className="admin-table" style={{ minWidth: '1350px' }}>
             <thead>
               <tr>
                 <th>Order ID</th>
                 <th>Customer</th>
                 <th>Contact</th>
                 <th>Ordered / Cancelled</th>
-                <th>Order Amount</th>
-                <th>Reason</th>
-                <th>Elapsed</th>
-                <th>Refund %</th>
-                <th>Refund Amount</th>
+                <th>Amount Paid</th>
+                <th>Charge (10%)</th>
+                <th>Refund (90%)</th>
                 <th>Razorpay Payment ID</th>
+                <th>Refund Status &amp; ID</th>
                 <th>Shipment</th>
-                <th>Refund Status</th>
+                <th>Reason</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -194,23 +194,39 @@ export default function AdminCancellations() {
                     <div style={{ color: '#665A52' }}>{c.orders?.customer_phone || ''}</div>
                   </td>
                   <td style={{ fontSize: '0.76rem', whiteSpace: 'nowrap' }}>
-                    <div>{dt(c.order_created_at)}</div>
-                    <div style={{ color: '#C62828' }}>{dt(c.requested_at)}</div>
+                    <div>Placed: {dt(c.order_created_at)}</div>
+                    <div style={{ color: '#C62828' }}>Cancelled: {dt(c.requested_at)}</div>
                   </td>
                   <td style={{ whiteSpace: 'nowrap' }}>
-                    {inr(c.orders?.grand_total)}
-                    <div style={{ fontSize: '0.7rem', color: '#665A52' }}>{String(c.payment_method || '').toLowerCase() === 'razorpay' ? 'Prepaid' : 'COD'}</div>
+                    <strong>{inr(c.amount_paid || c.orders?.grand_total)}</strong>
+                    <div style={{ fontSize: '0.7rem', color: '#665A52' }}>{String(c.payment_method || '').toLowerCase() === 'razorpay' ? 'Prepaid (Razorpay)' : 'COD'}</div>
                   </td>
-                  <td style={{ fontSize: '0.78rem', maxWidth: '180px' }}>{c.reason}</td>
-                  <td style={{ whiteSpace: 'nowrap', fontSize: '0.78rem' }}>{elapsed(c.elapsed_seconds)}</td>
-                  <td style={{ fontWeight: '800' }}>{c.refund_percentage}%</td>
-                  <td style={{ fontWeight: '800', color: '#2F7D32', whiteSpace: 'nowrap' }}>{inr(c.refund_amount)}</td>
+                  <td style={{ color: '#C62828', fontWeight: '700', whiteSpace: 'nowrap' }}>
+                    {inr(c.cancellation_charge ?? (c.amount_paid * 0.1))}
+                  </td>
+                  <td style={{ fontWeight: '800', color: '#2F7D32', whiteSpace: 'nowrap' }}>
+                    {inr(c.refund_amount)}
+                    <span style={{ fontSize: '0.72rem', color: '#665A52', marginLeft: '0.25rem' }}>({c.refund_percentage}%)</span>
+                  </td>
                   <td style={{ fontSize: '0.74rem' }}><code>{c.razorpay_payment_id || '—'}</code></td>
+                  <td>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                      <Badge map={REFUND_LABELS} value={c.refund_status} />
+                      {c.refund_reference && (
+                        <code style={{ fontSize: '0.68rem', color: '#665A52' }}>{c.refund_reference}</code>
+                      )}
+                      {c.refund_processed_at && (
+                        <span style={{ fontSize: '0.66rem', color: '#8A7B70' }}>{dt(c.refund_processed_at)}</span>
+                      )}
+                    </div>
+                  </td>
                   <td><Badge map={SHIPMENT_LABELS} value={c.shipment_cancel_status} /></td>
-                  <td><Badge map={REFUND_LABELS} value={c.refund_status} /></td>
+                  <td style={{ fontSize: '0.78rem', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={c.reason}>
+                    {c.reason}
+                  </td>
                   <td>
                     <button className="admin-btn-secondary" style={{ padding: '0.35rem 0.7rem', fontSize: '0.76rem' }} onClick={() => openDetail(c.id)} disabled={detailLoading}>
-                      View
+                      Manage
                     </button>
                   </td>
                 </tr>
@@ -294,6 +310,35 @@ function DetailPanel({ data, onClose, onChanged }) {
     manualConfirm ? 'Refund recorded as manually confirmed by admin.' : 'Refund verified with Razorpay and recorded.',
   );
 
+  const initiateRazorpayRefund = () => {
+    const isPrepaid = String(c.payment_method || o.payment_method || '').toLowerCase() === 'razorpay';
+    if (!isPrepaid || !c.razorpay_payment_id) {
+      alert('Automatic refund is only available for prepaid orders with a verified Razorpay payment ID.');
+      return;
+    }
+    const charge = c.cancellation_charge ?? (c.amount_paid * 0.1);
+    const conf = window.confirm(
+      `Initiate Razorpay API Refund?\n\n` +
+      `• Original Amount: ${inr(c.amount_paid)}\n` +
+      `• 10% Cancellation Charge: ${inr(charge)}\n` +
+      `• 90% Eligible Refund: ${inr(c.refund_amount)}\n` +
+      `• Payment ID: ${c.razorpay_payment_id}\n\n` +
+      `This will call the secure Razorpay API to process the refund immediately. Proceed?`
+    );
+    if (!conf) return;
+
+    run(
+      () => api.post(`/admin/cancellations/${c.id}/initiate-refund`),
+      'Razorpay refund executed successfully and verified via API!'
+    );
+  };
+
+  const isPrepaidRazorpay = String(c.payment_method || o.payment_method || '').toLowerCase() === 'razorpay' && Boolean(c.razorpay_payment_id);
+  const isCod = String(c.payment_method || o.payment_method || '').toLowerCase().includes('cod');
+  const estimatedDeliveryDate = c.order_created_at
+    ? new Date(new Date(c.order_created_at).getTime() + 9 * 86400000).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+    : '—';
+
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.55)', zIndex: 99999, display: 'flex', justifyContent: 'flex-end' }} onClick={onClose}>
       <div
@@ -303,7 +348,7 @@ function DetailPanel({ data, onClose, onChanged }) {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#C68A3A' }}>Cancellation</span>
+            <span style={{ fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#C68A3A' }}>Cancellation Details</span>
             <h3 style={{ fontSize: '1.3rem', fontFamily: 'var(--font-serif)', color: '#21150F', margin: '0.1rem 0 0', fontWeight: '800' }}>{c.order_number || o.order_number}</h3>
           </div>
           <button onClick={onClose} aria-label="Close" style={{ background: 'none', border: 'none', color: '#665A52', cursor: 'pointer' }}><X size={20} /></button>
@@ -315,26 +360,68 @@ function DetailPanel({ data, onClose, onChanged }) {
           </div>
         )}
 
-        {/* Refund */}
-        <Section icon={ReceiptIndianRupee} title="Refund" tone={['pending', 'failed', 'needs_review'].includes(c.refund_status) ? 'warn' : undefined}>
+        {/* Refund Breakdown & Actions */}
+        <Section icon={ReceiptIndianRupee} title="Refund &amp; Charges" tone={['pending', 'failed', 'needs_review'].includes(c.refund_status) ? 'warn' : undefined}>
           <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#2F7D32', fontFamily: 'var(--font-serif)' }}>
-            {inr(c.refund_amount)} <span style={{ fontSize: '0.85rem', color: '#665A52', fontWeight: '700' }}>to refund ({c.refund_percentage}%)</span>
+            {inr(c.refund_amount)} <span style={{ fontSize: '0.85rem', color: '#665A52', fontWeight: '700' }}>eligible refund ({c.refund_percentage}%)</span>
           </div>
-          <Row label="Amount paid">{inr(c.amount_paid)}</Row>
-          <Row label="Non-refundable">{inr(c.non_refundable)}</Row>
-          <Row label="Razorpay payment ID"><code>{c.razorpay_payment_id || 'none (COD / unpaid)'}</code></Row>
-          <Row label="Status"><Badge map={REFUND_LABELS} value={c.refund_status} /></Row>
+
+          <div style={{ background: '#FFFDF9', border: '1px solid rgba(231,222,213,0.8)', borderRadius: '10px', padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <Row label="Original Amount Paid">{inr(c.amount_paid)}</Row>
+            <Row label="10% Cancellation Charge"><span style={{ color: '#C62828' }}>−{inr(c.cancellation_charge ?? (c.amount_paid * 0.1))}</span></Row>
+            <Row label="90% Eligible Refund"><span style={{ color: '#2F7D32', fontWeight: '900' }}>{inr(c.refund_amount)}</span></Row>
+          </div>
+
+          <Row label="Payment Method">{c.payment_method ? String(c.payment_method).toUpperCase() : (o.payment_method ? String(o.payment_method).toUpperCase() : '—')}</Row>
+          <Row label="Razorpay Payment ID"><code>{c.razorpay_payment_id || (isCod ? 'Not applicable (COD)' : 'None')}</code></Row>
+          <Row label="Refund Status"><Badge map={REFUND_LABELS} value={c.refund_status} /></Row>
+
           {c.refund_status === 'successful' && (
-            <>
+            <div style={{ background: 'rgba(46,125,50,0.08)', border: '1px solid rgba(46,125,50,0.25)', borderRadius: '10px', padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
               <Row label="Refund ID"><code>{c.refund_reference}</code></Row>
               <Row label="Verified via">{c.refund_verified_via === 'razorpay_api' ? 'Razorpay API ✓' : 'Manually confirmed by admin'}</Row>
-              <Row label="Processed by">{c.refund_processed_by_email || '—'} · {dt(c.refund_processed_at)}</Row>
-            </>
+              <Row label="Processed At">{dt(c.refund_processed_at)}</Row>
+              <Row label="Processed By">{c.refund_processed_by_email || 'admin'}</Row>
+            </div>
           )}
+
           {c.refund_notes && <Row label="Notes">{c.refund_notes}</Row>}
 
+          {/* Automated Razorpay Refund Button */}
+          {isPrepaidRazorpay && CAN_MARK_REFUNDED.includes(c.refund_status) && (
+            <div style={{ padding: '0.85rem', background: '#E8F5E9', border: '1px solid #A5D6A7', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#1B5E20' }}>
+                Automated Gateway Refund:
+              </div>
+              <div style={{ fontSize: '0.74rem', color: '#2E7D32' }}>
+                Refunds <strong>{inr(c.refund_amount)}</strong> directly back to the customer's card/UPI via Razorpay with instant verification.
+              </div>
+              <button
+                onClick={initiateRazorpayRefund}
+                disabled={busy}
+                style={{
+                  padding: '0.6rem 1.15rem', borderRadius: '8px', border: 'none',
+                  background: '#2F7D32', color: '#FFF', fontWeight: '800', fontSize: '0.84rem',
+                  cursor: busy ? 'wait' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                  alignSelf: 'flex-start', opacity: busy ? 0.6 : 1,
+                }}
+              >
+                <CheckCircle2 size={15} />
+                <span>{busy ? 'Processing with Razorpay…' : `Initiate 90% Refund via Razorpay API (${inr(c.refund_amount)})`}</span>
+              </button>
+            </div>
+          )}
+
+          {/* COD Notice */}
+          {isCod && (
+            <div style={{ padding: '0.75rem', background: '#F5F5F5', border: '1px solid #E0E0E0', borderRadius: '8px', fontSize: '0.76rem', color: '#616161' }}>
+              ℹ️ <strong>Cash on Delivery order:</strong> No online payment was captured. Do not issue an online refund unless physical cash was collected.
+            </div>
+          )}
+
+          {/* Status Transitions */}
           {REFUND_ACTIONS[c.refund_status] && (
-            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
               {REFUND_ACTIONS[c.refund_status].map(([status, label]) => (
                 <button key={status} className="admin-btn-secondary" style={{ padding: '0.35rem 0.7rem', fontSize: '0.76rem' }} disabled={busy} onClick={() => changeRefundStatus(status)}>
                   {label}
@@ -343,11 +430,14 @@ function DetailPanel({ data, onClose, onChanged }) {
             </div>
           )}
 
+          {/* Manual Refund Entry as Fallback */}
           {CAN_MARK_REFUNDED.includes(c.refund_status) && (
-            <div style={{ borderTop: '1px dashed #E7DED5', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <div style={{ fontSize: '0.78rem', color: '#4A3B2E' }}>
-                1. In the Razorpay Dashboard, refund <strong>{inr(c.refund_amount)}</strong> on payment <code>{c.razorpay_payment_id || '—'}</code>.<br />
-                2. When Razorpay shows it as <em>processed</em>, paste the refund ID (<code>rfnd_…</code>) below.
+            <div style={{ borderTop: '1px dashed #E7DED5', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+              <div style={{ fontSize: '0.76rem', fontWeight: '700', color: '#5A2E16' }}>
+                Or Record Manual Refund:
+              </div>
+              <div style={{ fontSize: '0.74rem', color: '#4A3B2E' }}>
+                If refunded directly via the Razorpay dashboard or bank, paste the refund ID (<code>rfnd_…</code>) below:
               </div>
               <input className="admin-input" placeholder="Razorpay refund ID, e.g. rfnd_ABC123…" value={refundId} onChange={(e) => { setRefundId(e.target.value); setNeedsManual(null); setManualAck(false); }} />
               <textarea className="admin-input" rows={2} placeholder="Notes (optional)" value={refundNotes} onChange={(e) => setRefundNotes(e.target.value)} style={{ fontFamily: 'inherit' }} />
@@ -355,9 +445,9 @@ function DetailPanel({ data, onClose, onChanged }) {
                 <button
                   onClick={() => markRefunded(false)}
                   disabled={busy || !/^rfnd_[A-Za-z0-9]{6,}$/.test(refundId.trim())}
-                  style={{ padding: '0.55rem 1rem', borderRadius: '8px', border: 'none', background: '#2F7D32', color: '#FFF', fontWeight: '800', fontSize: '0.82rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', alignSelf: 'flex-start', opacity: busy ? 0.6 : 1 }}
+                  style={{ padding: '0.55rem 1rem', borderRadius: '8px', border: 'none', background: '#5A2E16', color: '#FFF', fontWeight: '800', fontSize: '0.8rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', alignSelf: 'flex-start', opacity: busy || !/^rfnd_[A-Za-z0-9]{6,}$/.test(refundId.trim()) ? 0.6 : 1 }}
                 >
-                  <CheckCircle2 size={14} /> {busy ? 'Verifying with Razorpay…' : 'Verify & Mark Refund Successful'}
+                  <CheckCircle2 size={14} /> {busy ? 'Verifying with Razorpay…' : 'Record Manual Refund'}
                 </button>
               ) : (
                 <div style={{ padding: '0.75rem', borderRadius: '10px', background: '#FFF6EE', border: '1px solid #F0C9A8', fontSize: '0.78rem', color: '#7A3E12', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -418,19 +508,24 @@ function DetailPanel({ data, onClose, onChanged }) {
           )}
         </Section>
 
-        {/* Order & cancellation */}
-        <Section title="Order & cancellation">
+        {/* Order & Cancellation Full Timestamps */}
+        <Section title="Order Timestamps &amp; Details">
           <Row label="Customer">{o.customer_name || '—'}</Row>
           <Row label="Email / Mobile">{o.customer_email || '—'} · {o.customer_phone || '—'}</Row>
-          <Row label="Ordered">{dt(c.order_created_at)}</Row>
-          <Row label="Cancelled">{dt(c.requested_at)} by {c.requested_by_role}</Row>
-          <Row label="Time elapsed">{elapsed(c.elapsed_seconds)}</Row>
-          <Row label="Reason">{c.reason}</Row>
-          <Row label="Payment">{String(o.payment_method || '').toUpperCase()} · {o.payment_status}</Row>
+          <Row label="Order Placement Time">{dt(c.order_created_at)}</Row>
+          <Row label="Payment Transaction Time">
+            {o.paid_at ? dt(o.paid_at) : (isCod ? 'Not applicable (Cash on Delivery)' : (String(o.payment_status).toLowerCase() === 'paid' ? 'Completed at checkout' : 'Pending'))}
+          </Row>
+          <Row label="Cancellation Time">{dt(c.requested_at)} by {c.requested_by_role}</Row>
+          <Row label="Estimated Delivery Date">Estimated by {estimatedDeliveryDate} (9 days from order)</Row>
+          <Row label="Time Elapsed Before Cancel">{elapsed(c.elapsed_seconds)}</Row>
+          <Row label="Cancellation Reason">{c.reason}</Row>
+          <Row label="Payment Method &amp; Status">{String(o.payment_method || '').toUpperCase()} · {o.payment_status}</Row>
           <Row label="Subtotal / Discount / Delivery">{inr(o.subtotal)} / −{inr(o.discount_amount)} / {inr(o.delivery_fee)}</Row>
-          <Row label="Grand total">{inr(o.grand_total)}</Row>
+          <Row label="Grand Total Paid">{inr(o.grand_total)}</Row>
           {(data.items || []).length > 0 && (
-            <div style={{ fontSize: '0.8rem', color: '#4A3B2E' }}>
+            <div style={{ fontSize: '0.8rem', color: '#4A3B2E', marginTop: '0.4rem', borderTop: '1px dashed #E7DED5', paddingTop: '0.4rem' }}>
+              <strong>Items in this order:</strong>
               {data.items.map((it) => (
                 <div key={it.id}>• {it.product_title || it.title} {it.variant_name ? `(${it.variant_name})` : ''} × {it.quantity}</div>
               ))}

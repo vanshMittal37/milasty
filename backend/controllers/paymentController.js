@@ -580,9 +580,11 @@ export const finalizeOrderFromPayment = async ({
 
     newOrder = orderRow;
 
-    // Optional columns (added by migration 15) — written separately so a missing column never
+    // Optional columns (added by migration 15 & 23) — written separately so a missing column never
     // blocks order creation after a successful payment.
+    const nowIso = new Date().toISOString();
     const { skipped: skippedCols } = await safeUpdateOrder(newOrder.id, {
+      paid_at: nowIso,
       razorpay_order_id: razorpay_order_id || null,
       razorpay_payment_id: razorpay_payment_id || null,
       delivery_city: session?.deliveryCity || null,
@@ -595,8 +597,9 @@ export const finalizeOrderFromPayment = async ({
       package_width_cm: session?.packageDimensions?.width ?? null,
       package_height_cm: session?.packageDimensions?.height ?? null,
     });
+    newOrder.paid_at = nowIso;
     if (skippedCols.length) {
-      console.warn(`[ORDER FINALIZATION] Columns missing in orders table (run scripts/15_shipping_automation_columns.sql): ${skippedCols.join(', ')}`);
+      console.warn(`[ORDER FINALIZATION] Columns missing in orders table (run scripts/15_shipping_automation_columns.sql or scripts/23_update_cancellation_policy_90_10.sql): ${skippedCols.join(', ')}`);
     }
     Object.assign(newOrder, {
       delivery_city: session?.deliveryCity || null,

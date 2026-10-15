@@ -1006,22 +1006,15 @@ export default function LegalPage() {
                   <div className="tc-timeline-item">
                     <div className="tc-timeline-badge"><span>0–3 HOURS</span></div>
                     <div className="tc-timeline-content">
-                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Full Refund (100%) ✓</h4>
-                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellations requested within 3 hours of payment.</p>
+                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>90% Refund (10% Cancellation Charge) ✓</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellations requested within 3 hours of order placement. A 10% cancellation charge is deducted, and the remaining 90% is refunded to your original payment method.</p>
                     </div>
                   </div>
                   <div className="tc-timeline-item">
-                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(47, 107, 58, 0.15)', borderColor: 'rgba(47, 107, 58, 0.35)' }}><span>3–6 HOURS</span></div>
+                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(185, 28, 28, 0.08)', borderColor: 'rgba(185, 28, 28, 0.30)', color: '#B91C1C' }}><span>AFTER 3 HOURS</span></div>
                     <div className="tc-timeline-content">
-                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>50% Refund ✓</h4>
-                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellations requested between 3 to 6 hours after payment.</p>
-                    </div>
-                  </div>
-                  <div className="tc-timeline-item">
-                    <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(185, 28, 28, 0.08)', borderColor: 'rgba(185, 28, 28, 0.30)', color: '#B91C1C' }}><span>AFTER 6 HOURS</span></div>
-                    <div className="tc-timeline-content">
-                      <h4 style={{ color: '#B91C1C', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Cancellation Not Possible ✕</h4>
-                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Small-batch baking and dispatch preparation has commenced.</p>
+                      <h4 style={{ color: '#B91C1C', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Cancellation Window Expired ✕</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellation is no longer possible because fresh ingredient preparation and small-batch baking have commenced. Please contact customer support for further assistance.</p>
                     </div>
                   </div>
                 </div>

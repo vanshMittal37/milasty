@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Search, Filter, RefreshCw, Eye, X, Package, CreditCard, MapPin, User, Mail, Phone, Sparkles, Printer, Zap, ExternalLink, Truck, CheckCircle2, AlertCircle } from 'lucide-react';
 import api from '../../api/axios';
 import CreateShipmentDialog from './CreateShipmentDialog';
+import { formatDateTime, calculateEstimatedDeliveryDate, formatInr } from '../../utils/orderDateTime';
 
 const STAGES = ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'];
 
@@ -371,8 +372,11 @@ export default function AdminOrderList() {
 
                 return (
                   <tr key={o.id || o._id}>
-                    <td style={{ fontFamily: 'monospace', fontWeight: '800', color: '#21150F' }}>
-                      {orderNum}
+                    <td style={{ fontFamily: 'monospace', fontWeight: '800', color: '#21150F', whiteSpace: 'nowrap' }}>
+                      <div>{orderNum}</div>
+                      <div style={{ fontSize: '0.72rem', color: '#665A52', fontFamily: 'inherit', fontWeight: '600', marginTop: '0.2rem' }}>
+                        {formatDateTime(o.createdAt || o.created_at)}
+                      </div>
                     </td>
                     <td>
                       <div style={{ fontWeight: '700', color: '#21150F' }}>{custName}</div>
@@ -579,7 +583,7 @@ export default function AdminOrderList() {
             </div>
 
             {/* Payment & Status Banner */}
-            <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
+            <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
               <div>
                 <span style={{ fontSize: '0.72rem', color: '#665A52', textTransform: 'uppercase', fontWeight: '700' }}>Payment Information</span>
                 <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#21150F', marginTop: '0.1rem' }}>
@@ -609,15 +613,66 @@ export default function AdminOrderList() {
                 </select>
               </div>
             </div>
+
+            {/* Order Timestamps & Critical Dates Section */}
+            <div style={{ background: '#FFFDF9', border: '1px solid rgba(231, 222, 213, 0.85)', borderRadius: '12px', padding: '1rem', marginBottom: '1.25rem' }}>
+              <div style={{ fontSize: '0.72rem', color: '#C68A3A', textTransform: 'uppercase', fontWeight: '800', letterSpacing: '0.06em', marginBottom: '0.6rem' }}>
+                Order Timestamps &amp; Delivery Window
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem 1.25rem', fontSize: '0.82rem' }}>
+                <div>
+                  <span style={{ color: '#665A52', display: 'block', fontSize: '0.72rem' }}>Order Placed:</span>
+                  <strong style={{ color: '#21150F' }}>{formatDateTime(selectedOrder.createdAt || selectedOrder.created_at)}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#665A52', display: 'block', fontSize: '0.72rem' }}>Payment Transaction:</span>
+                  <strong style={{ color: (selectedOrder.paymentStatus || selectedOrder.payment_status) === 'paid' ? '#2F7D32' : '#B7791F' }}>
+                    {String(selectedOrder.paymentMethod || selectedOrder.payment_method || '').toLowerCase().includes('cod')
+                      ? 'Not applicable (Cash on Delivery)'
+                      : (selectedOrder.paidAt || selectedOrder.paid_at
+                          ? formatDateTime(selectedOrder.paidAt || selectedOrder.paid_at)
+                          : ((selectedOrder.paymentStatus || selectedOrder.payment_status) === 'paid' ? 'Completed at checkout' : 'Pending verification'))}
+                  </strong>
+                </div>
+                <div>
+                  <span style={{ color: '#665A52', display: 'block', fontSize: '0.72rem' }}>Estimated Delivery:</span>
+                  <strong style={{ color: '#2F7D32' }}>
+                    Estimated by {calculateEstimatedDeliveryDate(selectedOrder.createdAt || selectedOrder.created_at, 9)} (9 days)
+                  </strong>
+                </div>
+                <div>
+                  <span style={{ color: '#665A52', display: 'block', fontSize: '0.72rem' }}>Shipment Booking:</span>
+                  <strong style={{ color: '#21150F' }}>
+                    {selectedOrder.shipment_booked_at ? formatDateTime(selectedOrder.shipment_booked_at) : 'Not booked yet'}
+                  </strong>
+                </div>
+              </div>
+            </div>
+
             {/* Cancellation / refund / shipment-cancel state (managed on the Cancellations & Refunds page) */}
             {selectedOrder.cancellation && (
-              <div style={{ background: '#FFF6EE', border: '1px solid #F0C9A8', borderRadius: '12px', padding: '0.85rem 1rem', marginBottom: '1rem', fontSize: '0.8rem', color: '#7A3E12', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <div>
-                  <strong>Cancelled by customer.</strong> Refund {selectedOrder.cancellation.refund_percentage}% (₹{Number(selectedOrder.cancellation.refund_amount).toFixed(2)}) — {String(selectedOrder.cancellation.refund_status).replace(/_/g, ' ')}.
-                  {' '}Shipment cancellation: {String(selectedOrder.cancellation.shipment_cancel_status).replace(/_/g, ' ')}.
-                  {selectedOrder.cancellation.shipment_cancel_error && <div style={{ color: '#C62828', marginTop: '0.2rem' }}>{selectedOrder.cancellation.shipment_cancel_error}</div>}
+              <div style={{ background: '#FFF6EE', border: '1px solid #F0C9A8', borderRadius: '12px', padding: '1rem', marginBottom: '1.25rem', fontSize: '0.82rem', color: '#7A3E12' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <strong style={{ fontSize: '0.88rem', color: '#C62828' }}>⚠️ Cancelled by Customer</strong>
+                  <a href="/admin/cancellations" style={{ fontWeight: '800', color: '#5A2E16', fontSize: '0.78rem' }}>Manage in Cancellations &amp; Refunds →</a>
                 </div>
-                <a href="/admin/cancellations" style={{ fontWeight: '800', color: '#5A2E16', whiteSpace: 'nowrap' }}>Open in Cancellations &amp; Refunds →</a>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.4rem 0.85rem', fontSize: '0.78rem' }}>
+                  <div>Cancelled At: <strong>{formatDateTime(selectedOrder.cancellation.requested_at || selectedOrder.cancellation.requestedAt)}</strong></div>
+                  <div>10% Charge: <strong style={{ color: '#C62828' }}>−{formatInr(selectedOrder.cancellation.cancellation_charge ?? selectedOrder.cancellation.cancellationCharge ?? (selectedOrder.grandTotal * 0.1))}</strong></div>
+                  <div>90% Refund: <strong style={{ color: '#2F7D32' }}>{formatInr(selectedOrder.cancellation.refund_amount ?? selectedOrder.cancellation.refundAmount)}</strong></div>
+                  <div>Refund Status: <strong>{String(selectedOrder.cancellation.refund_status || selectedOrder.cancellation.refundStatus).replace(/_/g, ' ').toUpperCase()}</strong></div>
+                  {(selectedOrder.cancellation.refund_reference || selectedOrder.cancellation.refundReference) && (
+                    <div>Refund Ref: <code>{selectedOrder.cancellation.refund_reference || selectedOrder.cancellation.refundReference}</code></div>
+                  )}
+                  {(selectedOrder.cancellation.refund_processed_at || selectedOrder.cancellation.refundProcessedAt) && (
+                    <div>Refund Processed: {formatDateTime(selectedOrder.cancellation.refund_processed_at || selectedOrder.cancellation.refundProcessedAt)}</div>
+                  )}
+                </div>
+                {selectedOrder.cancellation.shipment_cancel_error && (
+                  <div style={{ color: '#C62828', marginTop: '0.4rem', fontSize: '0.74rem' }}>
+                    Shipment cancellation error: {selectedOrder.cancellation.shipment_cancel_error}
+                  </div>
+                )}
               </div>
             )}
 
@@ -949,6 +1004,8 @@ export default function AdminOrderList() {
                 ? [selectedOrder.shippingAddress.building, selectedOrder.shippingAddress.addressLine, selectedOrder.shippingAddress.city].filter(Boolean).join(', ')
                 : selectedOrder.shippingAddress || 'N/A'}
               </div>
+              <div><strong>Order Placement:</strong> {formatDateTime(selectedOrder.createdAt || selectedOrder.created_at)}</div>
+              <div><strong>Estimated Delivery:</strong> Estimated by {calculateEstimatedDeliveryDate(selectedOrder.createdAt || selectedOrder.created_at, 9)}</div>
               <div><strong>Status:</strong> {(selectedOrder.orderStatus || selectedOrder.status || 'Confirmed').toUpperCase()}</div>
             </div>
 
