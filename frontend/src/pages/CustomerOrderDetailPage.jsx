@@ -379,14 +379,22 @@ export default function CustomerOrderDetailPage() {
     );
   }
 
-  const currentStatus = order.orderStatus || order.status || 'Confirmed';
+  const createdAtMs = new Date(order.createdAt || order.created_at).getTime();
+  const isOlderThan3Hours = !isNaN(createdAtMs) && (Date.now() - createdAtMs >= 3 * 3600 * 1000);
+
+  // Automatically show status as Processing after 3 hours if still marked Confirmed
+  let rawStatus = order.orderStatus || order.status || order.order_status || 'Confirmed';
+  if (isOlderThan3Hours && String(rawStatus).toLowerCase() === 'confirmed') {
+    rawStatus = 'Processing';
+  }
+  const currentStatus = rawStatus;
   const normStatus = normaliseStatus(currentStatus);
   const isCancelled = normStatus.toLowerCase() === 'cancelled';
   const isDelivered = normStatus.toLowerCase() === 'delivered';
   const isPaid = String(order.paymentStatus).toLowerCase() === 'paid';
 
-  const canCancel = !isCancelled && !isDelivered && Boolean(cancelQuote?.eligible);
-  const cancelWindowClosed = !isCancelled && !isDelivered && cancelQuote?.code === 'WINDOW_CLOSED';
+  const canCancel = !isCancelled && !isDelivered && !isOlderThan3Hours && Boolean(cancelQuote?.eligible);
+  const cancelWindowClosed = !isCancelled && !isDelivered && (isOlderThan3Hours || cancelQuote?.code === 'WINDOW_CLOSED');
   const cancellation = order.cancellation || null;
   const inr = (v) => `₹${Number(v || 0).toLocaleString('en-IN', { minimumFractionDigits: Number(v) % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
   const REFUND_STATUS_TEXT = {
@@ -683,7 +691,7 @@ export default function CustomerOrderDetailPage() {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '0.5rem 1rem', fontSize: '0.82rem' }}>
                           <div>Original Amount Paid: <strong>{inr(cancellation.amountPaid)}</strong></div>
                           <div style={{ color: T.danger }}>10% Cancellation Charge: <strong>−{inr(cancellation.cancellationCharge ?? (cancellation.amountPaid * 0.1))}</strong></div>
-                          <div style={{ color: T.success, fontWeight: '800' }}>90% Eligible Refund: <strong>{inr(cancellation.refundAmount)}</strong></div>
+                          <div style={{ color: T.success, fontWeight: '800' }}>Eligible Refund: <strong>{inr(cancellation.refundAmount)}</strong></div>
                         </div>
                       </div>
                     ) : (
@@ -805,8 +813,8 @@ export default function CustomerOrderDetailPage() {
                 <div style={{ fontSize: '0.82rem', color: T.textSecondary, lineHeight: '1.6', marginBottom: '0.85rem' }}>
                   <div style={{ fontWeight: '800', color: T.textPrimary, marginBottom: '0.2rem' }}>Cancellation &amp; Refund Policy:</div>
                   <div>• Orders can be cancelled only within <strong>3 hours</strong> of order placement.</div>
-                  <div>• A <strong>10% cancellation charge</strong> will be deducted from your paid amount.</div>
-                  <div>• You will be eligible for a refund of the remaining <strong>90%</strong>, subject to payment verification.</div>
+                  <div>• A <strong>10% cancellation charge</strong> applies to the product amount only.</div>
+                  <div>• Delivery charges are excluded from the cancellation charge and refunded where applicable.</div>
                 </div>
 
                 {/* Live Server Quote */}
@@ -818,11 +826,11 @@ export default function CustomerOrderDetailPage() {
                         <strong>{inr(cancelQuote.amountPaid)}</strong>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', color: T.danger, marginBottom: '0.25rem' }}>
-                        <span>10% Cancellation Charge:</span>
+                        <span>10% Cancellation Charge (Product Only):</span>
                         <strong>−{inr(cancelQuote.cancellationCharge)}</strong>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', color: T.success, fontWeight: '800', borderTop: `1px solid ${T.border}`, paddingTop: '0.35rem', marginTop: '0.35rem' }}>
-                        <span>90% Eligible Refund:</span>
+                        <span>Eligible Refund:</span>
                         <strong style={{ fontSize: '0.95rem' }}>{inr(cancelQuote.refundAmount)}</strong>
                       </div>
                     </div>
@@ -882,7 +890,7 @@ export default function CustomerOrderDetailPage() {
                     </div>
 
                     <p style={{ margin: 0, fontSize: '0.88rem', color: T.textPrimary, lineHeight: '1.6', fontWeight: '500' }}>
-                      "A 10% cancellation charge will be deducted from your order amount. You will be eligible for a refund of the remaining 90%, subject to payment verification."
+                      "A 10% cancellation charge will be deducted from the product amount only. Delivery charges are excluded from the cancellation charge and refunded where applicable."
                     </p>
 
                     {cancelQuote.prepaid && (
@@ -892,11 +900,11 @@ export default function CustomerOrderDetailPage() {
                           <strong>{inr(cancelQuote.amountPaid)}</strong>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', color: T.danger, marginBottom: '0.25rem' }}>
-                          <span>10% Cancellation Charge:</span>
+                          <span>10% Cancellation Charge (Product Only):</span>
                           <strong>−{inr(cancelQuote.cancellationCharge)}</strong>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', color: T.success, fontWeight: '900', borderTop: `1px dashed ${T.border}`, paddingTop: '0.35rem', marginTop: '0.35rem', fontSize: '0.92rem' }}>
-                          <span>90% Eligible Refund:</span>
+                          <span>Eligible Refund:</span>
                           <span>{inr(cancelQuote.refundAmount)}</span>
                         </div>
                         <div style={{ fontSize: '0.74rem', color: T.textMuted, marginTop: '0.5rem' }}>

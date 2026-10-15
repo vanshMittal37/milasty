@@ -856,7 +856,7 @@ export default function LegalPage() {
             <RotateCcw size={14} color="#2F6B3A" />
             <span style={{ fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#2F6B3A' }}>POLICY • MILASTY</span>
           </div>
-          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', color: '#32180D', lineHeight: '1.15', marginBottom: '1rem', letterSpacing: '-0.01em' }}>Refund & Replacement Policy</h1>
+          <h1 className="font-serif" style={{ fontSize: 'clamp(2.2rem, 5vw, 3.6rem)', color: '#32180D', lineHeight: '1.15', marginBottom: '1rem', letterSpacing: '-0.01em' }}>Refund &amp; Cancellation Policy</h1>
           <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: '#654B38', opacity: 0.9, maxWidth: '620px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
             Simple, fair, and transparent — because MILASTY values trust 🍪
           </p>
@@ -1001,21 +1001,48 @@ export default function LegalPage() {
                     <h2 className="font-serif" style={{ fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', color: '#32180D', margin: 0 }}>Order Cancellation Policy</h2>
                   </div>
                 </div>
-                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '2rem' }}>Since our millet cookies are prepared and packed soon after payment confirmation, cancellations are accepted only within strict time windows:</p>
+                <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.5rem' }}>
+                  Since our millet cookies are prepared and packed soon after payment confirmation, cancellations are accepted only within the first 3 hours:
+                </p>
                 <div className="tc-cancellation-timeline" style={{ marginBottom: '1.5rem' }}>
                   <div className="tc-timeline-item">
                     <div className="tc-timeline-badge"><span>0–3 HOURS</span></div>
                     <div className="tc-timeline-content">
-                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>90% Refund (10% Cancellation Charge) ✓</h4>
-                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellations requested within 3 hours of order placement. A 10% cancellation charge is deducted, and the remaining 90% is refunded to your original payment method.</p>
+                      <h4 style={{ color: '#32180D', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Easy Cancellation &amp; Refund ✓</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0, lineHeight: '1.6' }}>
+                        Cancellations requested within 3 hours of placing the order are eligible for a refund after deducting a 10% cancellation charge on the product amount only. Delivery charges are excluded from the cancellation charge and refunded where applicable.
+                      </p>
                     </div>
                   </div>
                   <div className="tc-timeline-item">
                     <div className="tc-timeline-badge" style={{ backgroundColor: 'rgba(185, 28, 28, 0.08)', borderColor: 'rgba(185, 28, 28, 0.30)', color: '#B91C1C' }}><span>AFTER 3 HOURS</span></div>
                     <div className="tc-timeline-content">
-                      <h4 style={{ color: '#B91C1C', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Cancellation Window Expired ✕</h4>
-                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0 }}>Cancellation is no longer possible because fresh ingredient preparation and small-batch baking have commenced. Please contact customer support for further assistance.</p>
+                      <h4 style={{ color: '#B91C1C', fontSize: '1.1rem', margin: '0 0 0.25rem', fontWeight: '700' }}>Cancellation Window Closed ✕</h4>
+                      <p style={{ color: '#654B38', fontSize: '0.88rem', margin: 0, lineHeight: '1.6' }}>
+                        Cancellations and refunds for change of mind are not accepted after 3 hours, as small-batch baking and dispatch preparation may have commenced.
+                      </p>
                     </div>
+                  </div>
+                </div>
+
+                <p style={{ color: '#654B38', fontSize: '0.92rem', lineHeight: '1.65', margin: '1rem 0' }}>
+                  Exceptions apply where a refund or other remedy is required under applicable consumer protection laws.
+                </p>
+
+                {/* Automatic status transition notice */}
+                <div style={{
+                  backgroundColor: 'rgba(47, 107, 58, 0.07)',
+                  borderLeft: '4px solid #2F6B3A',
+                  borderRadius: '12px',
+                  padding: '1rem 1.25rem',
+                  marginTop: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.75rem'
+                }}>
+                  <Clock size={18} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <div style={{ fontSize: '0.88rem', color: '#654B38', lineHeight: '1.55' }}>
+                    <strong style={{ color: '#2B140B' }}>Automatic Order Progression:</strong> After 3 hours, the order status automatically changes from “Confirmed” to “Processing”, along with disabling the cancel option.
                   </div>
                 </div>
               </div>

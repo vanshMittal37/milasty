@@ -1,5 +1,7 @@
 import { calculatePackage, parseGramsFromWeightString } from '../controllers/shipratController.js';
 import { canAccessOrder } from '../controllers/shipratController.js';
+import { quoteCancellation, refundPercentageFor } from '../controllers/cancellationController.js';
+import { autoTransitionConfirmedOrders } from '../controllers/orderController.js';
 
 async function runTests() {
   console.log('--- STARTING VERIFICATION TESTS ---');
@@ -93,6 +95,59 @@ async function runTests() {
 
   // Non-matching user
   assert(canAccessOrder({ role: 'user', id: 'other', email: 'intruder@test.com', phone: '9111111111' }, mockOrder) === false, 'Non-matching user cannot access order');
+
+  // 5. 10% Cancellation Charge on Product Amount Only
+  console.log('\n[5] Testing Cancellation Charge Calculation (10% on Product Amount Only)');
+  const eligiblePrepaidOrder = {
+    created_at: new Date(Date.now() - 3600 * 1000).toISOString(), // 1 hour ago
+    order_status: 'confirmed',
+    shipment_status: 'pending',
+    payment_method: 'razorpay',
+    payment_status: 'paid',
+    grand_total: 550, // ₹500 product + ₹50 delivery
+    delivery_fee: 50,
+  };
+  const quote = quoteCancellation(eligiblePrepaidOrder);
+  assert(quote.eligible === true, 'Order within 3 hours is eligible for cancellation');
+  assert(quote.amountPaid === 550, 'Original amount paid is ₹550');
+  assert(quote.cancellationCharge === 50, `Cancellation charge is 10% of product amount ₹500 = ₹50 (got ${quote.cancellationCharge})`);
+  assert(quote.refundAmount === 500, `Refund amount is ₹550 - ₹50 = ₹500 (delivery fee fully refunded) (got ${quote.refundAmount})`);
+
+  // 6. Cancellation Window Closes after 3 Hours
+  console.log('\n[6] Testing Cancellation Window Expiry After 3 Hours');
+  const expiredOrder = {
+    created_at: new Date(Date.now() - 3.5 * 3600 * 1000).toISOString(), // 3.5 hours ago
+    order_status: 'confirmed',
+    shipment_status: 'pending',
+    payment_method: 'razorpay',
+    payment_status: 'paid',
+    grand_total: 550,
+    delivery_fee: 50,
+  };
+  const expiredQuote = quoteCancellation(expiredOrder);
+  assert(expiredQuote.eligible === false, 'Order older than 3 hours is not eligible for cancellation');
+  assert(expiredQuote.code === 'WINDOW_CLOSED', 'Cancellation code is WINDOW_CLOSED');
+
+  // 7. Auto-Transition Confirmed to Processing After 3 Hours
+  console.log('\n[7] Testing Auto-Transition from Confirmed to Processing');
+  const ordersToTransition = [
+    {
+      id: 'mock-fresh-order',
+      created_at: new Date(Date.now() - 1 * 3600 * 1000).toISOString(), // 1h ago
+      order_status: 'confirmed',
+      status: 'Confirmed',
+    },
+    {
+      id: 'mock-stale-order',
+      created_at: new Date(Date.now() - 3.2 * 3600 * 1000).toISOString(), // 3.2h ago
+      order_status: 'confirmed',
+      status: 'Confirmed',
+    }
+  ];
+  await autoTransitionConfirmedOrders(ordersToTransition);
+  assert(ordersToTransition[0].order_status === 'confirmed', 'Order under 3 hours remains confirmed');
+  assert(ordersToTransition[1].order_status === 'processing', 'Order over 3 hours transitions to processing');
+  assert(ordersToTransition[1].orderStatus === 'Processing', 'Order over 3 hours has orderStatus Processing');
 
   console.log(`\n--- TEST SUMMARY: ${passed} PASSED, ${failed} FAILED ---`);
   if (failed > 0) {

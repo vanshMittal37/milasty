@@ -63,8 +63,15 @@ export function quoteCancellation(order, nowMs = Date.now()) {
   }
 
   const prepaid = String(order.payment_method || '').toLowerCase() === 'razorpay' && String(order.payment_status || '').toLowerCase() === 'paid';
-  const amountPaidPaise = prepaid ? Math.round(Number(order.grand_total || 0) * 100) : 0;
-  const cancellationChargePaise = prepaid ? Math.round((amountPaidPaise * CANCELLATION_CHARGE_PERCENTAGE) / 100) : 0;
+  const deliveryCharge = Number(order.delivery_fee || order.delivery_charge || order.shipping_fee || 0);
+  const totalPaid = Number(order.grand_total || 0);
+  const productAmount = Math.max(0, totalPaid - deliveryCharge);
+
+  const productAmountPaise = prepaid ? Math.round(productAmount * 100) : 0;
+  const amountPaidPaise = prepaid ? Math.round(totalPaid * 100) : 0;
+  // 10% cancellation charge applies to product amount only:
+  const cancellationChargePaise = prepaid ? Math.round((productAmountPaise * CANCELLATION_CHARGE_PERCENTAGE) / 100) : 0;
+  // Delivery charges are excluded from cancellation charge and refunded where applicable:
   const refundAmountPaise = prepaid ? (amountPaidPaise - cancellationChargePaise) : 0;
   const windowEnd = new Date(orderCreatedMs + CANCELLATION_WINDOW_S * 1000);
 
@@ -337,8 +344,13 @@ export const requestCancellation = async (req, res) => {
       }
 
       const prepaid = String(order.payment_method || '').toLowerCase() === 'razorpay' && String(order.payment_status || '').toLowerCase() === 'paid';
-      const amountPaidPaise = prepaid ? Math.round(Number(order.grand_total || 0) * 100) : 0;
-      const cancellationChargePaise = prepaid ? Math.round((amountPaidPaise * CANCELLATION_CHARGE_PERCENTAGE) / 100) : 0;
+      const deliveryCharge = Number(order.delivery_fee || order.delivery_charge || order.shipping_fee || 0);
+      const totalPaid = Number(order.grand_total || 0);
+      const productAmount = Math.max(0, totalPaid - deliveryCharge);
+
+      const productAmountPaise = prepaid ? Math.round(productAmount * 100) : 0;
+      const amountPaidPaise = prepaid ? Math.round(totalPaid * 100) : 0;
+      const cancellationChargePaise = prepaid ? Math.round((productAmountPaise * CANCELLATION_CHARGE_PERCENTAGE) / 100) : 0;
       const refundAmountPaise = prepaid ? (amountPaidPaise - cancellationChargePaise) : 0;
       const refundStatus = prepaid
         ? (!order.payment_id || !String(order.payment_id).startsWith('pay_') ? 'needs_review' : 'pending')

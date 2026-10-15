@@ -649,6 +649,76 @@ export const formatCustomerOrderPayload = (o) => {
 };
 
 /**
+ * Automatically transitions orders from "confirmed" to "processing" after 3 hours.
+ * Disables cancellation window and updates database asynchronously.
+ */
+export const autoTransitionConfirmedOrders = async (orders) => {
+  if (!orders) return;
+  const list = (Array.isArray(orders) ? orders : [orders]).filter(Boolean);
+  const now = Date.now();
+  const THREE_HOURS_MS = 3 * 3600 * 1000;
+  const idsToTransition = [];
+
+  for (const o of list) {
+    const st = String(o.order_status || o.orderStatus || o.status || '').toLowerCase();
+    if (st === 'confirmed') {
+      const createdAtMs = new Date(o.created_at || o.createdAt).getTime();
+      if (!isNaN(createdAtMs) && (now - createdAtMs >= THREE_HOURS_MS)) {
+        o.order_status = 'processing';
+        o.orderStatus = 'Processing';
+        o.status = 'Processing';
+        const rawId = o.id || o._id;
+        if (rawId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(rawId))) {
+          idsToTransition.push(rawId);
+        }
+      }
+    }
+  }
+
+  if (idsToTransition.length > 0) {
+    try {
+      await supabase
+        .from('orders')
+        .update({ order_status: 'processing', updated_at: new Date().toISOString() })
+        .in('id', idsToTransition);
+      console.log(`[ORDER AUTO-TRANSITION] Transitioned ${idsToTransition.length} order(s) older than 3 hours from Confirmed to Processing.`);
+    } catch (e) {
+      console.warn('[ORDER AUTO-TRANSITION] Notice:', e?.message);
+    }
+  }
+};
+
+/**
+ * Background sweeper that queries the database for any confirmed orders older than 3 hours
+ * and automatically transitions their status to "processing".
+ */
+export const sweepConfirmedOrders = async () => {
+  try {
+    const threeHoursAgo = new Date(Date.now() - 3 * 3600 * 1000).toISOString();
+    const { data: staleOrders, error } = await supabase
+      .from('orders')
+      .select('id, order_status, created_at')
+      .in('order_status', ['confirmed', 'Confirmed'])
+      .lte('created_at', threeHoursAgo);
+
+    if (error) {
+      return;
+    }
+
+    if (staleOrders && staleOrders.length > 0) {
+      const ids = staleOrders.map((o) => o.id).filter(Boolean);
+      await supabase
+        .from('orders')
+        .update({ order_status: 'processing', updated_at: new Date().toISOString() })
+        .in('id', ids);
+      console.log(`[SWEEPER] Auto-transitioned ${ids.length} orders older than 3 hours from Confirmed to Processing.`);
+    }
+  } catch (err) {
+    console.warn('[SWEEPER] Error during order auto-transition sweep:', err?.message);
+  }
+};
+
+/**
  * GET CUSTOMER MY ORDERS
  * Only returns real finalized purchases (paid Razorpay OR confirmed COD orders)
  * GET /api/orders/my-orders
@@ -688,6 +758,7 @@ export const getMyOrders = async (req, res) => {
     });
 
     await attachItemImages(filteredOrders);
+    await autoTransitionConfirmedOrders(filteredOrders);
     const formatted = filteredOrders.map(formatCustomerOrderPayload);
     res.json(formatted);
   } catch (error) {
@@ -721,6 +792,7 @@ export const getAllOrders = async (req, res) => {
     });
 
     await attachItemImages(filteredOrders);
+    await autoTransitionConfirmedOrders(filteredOrders);
 
     // Attach cancellation / refund / shipment-cancel state (table may not exist before migration 19)
     const { data: cancellations } = await supabase
@@ -802,6 +874,7 @@ export const getOrderById = async (req, res) => {
 
     // Only the order's owner (or an admin) may read it — order numbers are guessable
     const respond = async (o) => {
+      await autoTransitionConfirmedOrders(o);
       await attachItemImages(o);
       const isAdmin = req.user?.role === 'admin';
       const payload = isAdmin ? formatOrderPayload(o) : formatCustomerOrderPayload(o);

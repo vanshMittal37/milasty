@@ -87,8 +87,9 @@ BEGIN
   v_prepaid := lower(coalesce(o.payment_method, '')) = 'razorpay' AND lower(coalesce(o.payment_status, '')) = 'paid';
   IF v_prepaid THEN
     v_paid   := round(coalesce(o.grand_total, 0) * 100)::BIGINT;
-    v_charge := round(v_paid * 0.10)::BIGINT;                   -- 10% cancellation charge
-    v_refund := v_paid - v_charge;                              -- 90% eligible refund
+    -- 10% cancellation charge on product amount only; delivery charges are refunded where applicable
+    v_charge := round(greatest(0, round((coalesce(o.grand_total, 0) - coalesce(o.delivery_fee, coalesce(o.delivery_charge, coalesce(o.shipping_fee, 0)))) * 100)) * 0.10)::BIGINT;
+    v_refund := v_paid - v_charge;
     v_refund_st := CASE
       WHEN coalesce(o.payment_id, '') NOT LIKE 'pay\_%' THEN 'needs_review'
       WHEN v_refund = 0 THEN 'not_applicable'
