@@ -4693,18 +4693,33 @@ input[placeholder*="filter"] {
   padding-left: 2.75rem !important;
 }
 
-/* Filter select – compact width */
+/* Admin select inputs — full width in form grids with adequate right padding for arrow */
 select.admin-input {
-  width: auto !important;
-  min-width: 140px !important;
+  width: 100% !important;
+  min-width: 160px;
   border-radius: 10px !important;
-  padding-right: 2.25rem !important;
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 2rem !important;
+  font-size: 0.85rem !important;
+  line-height: 1.4 !important;
+  height: 38px !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23665A52' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
   background-position: right 0.65rem center !important;
   -webkit-appearance: none !important;
   appearance: none !important;
   cursor: pointer !important;
+  box-sizing: border-box !important;
+}
+
+/* Filter select – compact width in toolbars/filters only */
+.admin-toolbar select.admin-input,
+.admin-filters select.admin-input,
+.admin-search-wrap select.admin-input {
+  width: auto !important;
+  min-width: 140px !important;
 }
 
 /* ==============================================

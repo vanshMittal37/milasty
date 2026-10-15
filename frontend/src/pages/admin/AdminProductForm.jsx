@@ -1667,7 +1667,7 @@ export default function AdminProductForm() {
                   />
                 </div>
 
-                <div>
+                <div style={{ minWidth: '165px' }}>
                   <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     Discount Type
                   </label>
@@ -1675,6 +1675,7 @@ export default function AdminProductForm() {
                     value={formData.discountType}
                     onChange={(e) => handleDiscountTypeChange(e.target.value)}
                     className="admin-input"
+                    style={{ height: '38px', minWidth: '165px', width: '100%', fontSize: '0.85rem', padding: '0.35rem 2rem 0.35rem 0.75rem', lineHeight: '1.4' }}
                   >
                     <option value="none">No Discount</option>
                     <option value="percentage">Percentage (%)</option>
@@ -1821,7 +1822,7 @@ export default function AdminProductForm() {
                         </button>
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', alignItems: 'end' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem', alignItems: 'end' }}>
                         {/* 1. Variant Name */}
                         <div>
                           <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Variant Name</label>
@@ -1831,7 +1832,7 @@ export default function AdminProductForm() {
                             onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
                             placeholder="e.g. Regular Pack"
                             className="admin-input"
-                            style={{ height: '36px', fontSize: '0.8rem' }}
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
                           />
                         </div>
 
@@ -1844,7 +1845,7 @@ export default function AdminProductForm() {
                             onChange={(e) => handleVariantChange(index, 'weight', e.target.value)}
                             placeholder="e.g. 100g"
                             className="admin-input"
-                            style={{ height: '36px', fontSize: '0.8rem' }}
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
                           />
                         </div>
 
@@ -1859,18 +1860,18 @@ export default function AdminProductForm() {
                             onChange={(e) => handleVariantChange(index, 'originalPrice', e.target.value)}
                             placeholder="e.g. 120"
                             className="admin-input"
-                            style={{ height: '36px', fontSize: '0.8rem' }}
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
                           />
                         </div>
 
                         {/* 4. Discount Type */}
-                        <div>
+                        <div style={{ minWidth: '160px' }}>
                           <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Discount Type</label>
                           <select
                             value={v.discountType || 'none'}
                             onChange={(e) => handleVariantChange(index, 'discountType', e.target.value)}
                             className="admin-input"
-                            style={{ height: '36px', fontSize: '0.78rem' }}
+                            style={{ height: '38px', minWidth: '160px', width: '100%', fontSize: '0.82rem', padding: '0.35rem 2rem 0.35rem 0.75rem', lineHeight: '1.4' }}
                           >
                             <option value="none">No Discount</option>
                             <option value="percentage">Percentage (%)</option>
@@ -1890,7 +1891,7 @@ export default function AdminProductForm() {
                             onChange={(e) => handleVariantChange(index, 'discountValue', e.target.value)}
                             placeholder="0"
                             className="admin-input"
-                            style={{ height: '36px', fontSize: '0.8rem' }}
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
                           />
                         </div>
 
@@ -1906,7 +1907,7 @@ export default function AdminProductForm() {
                             readOnly
                             placeholder="Auto"
                             className="admin-input"
-                            style={{ height: '36px', fontSize: '0.8rem', backgroundColor: 'rgba(231, 222, 213, 0.4)', fontWeight: '850', color: '#2F6B3A', cursor: 'not-allowed' }}
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4', backgroundColor: 'rgba(231, 222, 213, 0.4)', fontWeight: '850', color: '#2F6B3A', cursor: 'not-allowed' }}
                           />
                         </div>
 
@@ -1920,7 +1921,7 @@ export default function AdminProductForm() {
                             onChange={(e) => handleVariantChange(index, 'stock', e.target.value)}
                             placeholder="50"
                             className="admin-input"
-                            style={{ height: '36px', fontSize: '0.8rem' }}
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
                           />
                         </div>
 
@@ -1935,7 +1936,7 @@ export default function AdminProductForm() {
                             onChange={(e) => handleVariantChange(index, 'shippingWeight', e.target.value)}
                             placeholder="e.g. 150"
                             className="admin-input"
-                            style={{ height: '36px', fontSize: '0.8rem' }}
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
                           />
                         </div>
 
@@ -1948,7 +1949,7 @@ export default function AdminProductForm() {
                             onChange={(e) => handleVariantChange(index, 'sku', e.target.value)}
                             placeholder="MLS-VAR-001"
                             className="admin-input"
-                            style={{ height: '36px', fontSize: '0.8rem' }}
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
                           />
                         </div>
                       </div>
