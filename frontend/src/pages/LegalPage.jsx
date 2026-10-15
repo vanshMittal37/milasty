@@ -1339,7 +1339,7 @@ export default function LegalPage() {
           </div>
         </section>
 
-        <div className="container" style={{ maxWidth: '1180px', margin: '0 auto', padding: '0 1.25rem 6rem', position: 'relative' }}>
+        <div className="container" style={{ maxWidth: '1180px', margin: '0 auto', padding: '0 clamp(0.75rem, 3vw, 1.25rem) 6rem', position: 'relative' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '2.5rem', alignItems: 'start' }} className="tc-layout-grid">
             <aside style={{ position: 'sticky', top: '100px', backgroundColor: '#FFF9F0', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius: '20px', border: '1px solid #E4D1B7', padding: '1.25rem 1rem', boxShadow: '0 12px 32px rgba(75, 45, 25, 0.08)', display: 'none' }} className="tc-sticky-nav">
               <div style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#2F6B3A', marginBottom: '1rem', paddingLeft: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -1386,22 +1386,30 @@ export default function LegalPage() {
                 </div>
                 <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>MILASTY is a founder-led Indian millet-bakes brand operated as a sole proprietorship by <strong style={{ color: '#32180D' }}>Anwesha Chakraborty</strong>. Our products include millet cookies, crackers, brownies, customised cakes, gift hampers and other baked goods introduced from time to time.</p>
                 <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.5rem' }}>These Terms apply to consumer purchases made through <strong style={{ color: '#2F6B3A' }}>www.milasty.com</strong> and our authorised direct ordering channels, including WhatsApp. Wholesale, distribution, retail-reseller, corporate gifting and other business-to-business orders are governed by separate terms or agreements.</p>
-                <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '16px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                <div className="tc-info-box">
+                  <div className="tc-info-box-header">
                     <FileSpreadsheet size={18} color="#2F6B3A" />
-                    <span style={{ fontWeight: '800', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2F6B3A' }}>Business Details</span>
+                    <span className="tc-info-box-title">Business Details</span>
                   </div>
                   {[
-                    { label: 'Business Name', value: 'MILASTY' },
-                    { label: 'Legal Proprietor', value: 'Anwesha Chakraborty' },
-                    { label: 'Address', value: 'B3-1503, Amrapali Golf Homes, Sector 4, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201016' },
-                    { label: 'Support Email', value: 'milasty.cookies@gmail.com' },
-                    { label: 'Phone / WhatsApp', value: '8927142056' },
-                    { label: 'FSSAI Licence', value: '22726446000086' },
+                    { label: 'Business Name', value: 'MILASTY', type: 'text' },
+                    { label: 'Legal Proprietor', value: 'Anwesha Chakraborty', type: 'text' },
+                    { label: 'Address', value: 'B3-1503, Amrapali Golf Homes, Sector 4, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201016', type: 'text' },
+                    { label: 'Support Email', value: 'milasty.cookies@gmail.com', type: 'email' },
+                    { label: 'Phone / WhatsApp', value: '8927142056', type: 'phone' },
+                    { label: 'FSSAI Licence', value: '22726446000086', type: 'text' },
                   ].map((item, i) => (
-                    <div key={i} style={{ display: 'flex', gap: '0.65rem', fontSize: '0.92rem', alignItems: 'flex-start' }}>
-                      <span style={{ color: '#32180D', fontWeight: '700', minWidth: '140px', flexShrink: 0 }}>{item.label}:</span>
-                      <span style={{ color: '#654B38', lineHeight: '1.5' }}>{item.value}</span>
+                    <div key={i} className="tc-info-row">
+                      <span className="tc-info-label">{item.label}:</span>
+                      <span className="tc-info-value">
+                        {item.type === 'email' ? (
+                          <a href={`mailto:${item.value}`}>{item.value}</a>
+                        ) : item.type === 'phone' ? (
+                          <a href={`tel:${item.value}`}>+91 {item.value}</a>
+                        ) : (
+                          item.value
+                        )}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -1588,20 +1596,28 @@ export default function LegalPage() {
                   </div>
                 </div>
                 <p style={{ color: '#654B38', lineHeight: '1.75', fontSize: '1rem', marginBottom: '1.25rem' }}>Your feedback matters to us, and we want you to have a clear way to reach us. For any concern about a product, payment, order, delivery or these Terms, please contact our designated grievance contact. Please include your order number, order date and a short description of your concern.</p>
-                <div style={{ backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '16px', padding: '1.5rem', marginBottom: '1.25rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <div className="tc-info-box" style={{ marginBottom: '1.25rem' }}>
+                  <div className="tc-info-box-header">
                     <UserCheck size={18} color="#2F6B3A" />
-                    <span style={{ fontWeight: '800', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2F6B3A' }}>Grievance Officer / Designated Contact</span>
+                    <span className="tc-info-box-title">Grievance Officer / Designated Contact</span>
                   </div>
                   {[
-                    { label: 'Name', value: 'Ankit Chakraborty' },
-                    { label: 'Email', value: 'milasty.cookies@gmail.com' },
-                    { label: 'Phone / WhatsApp', value: '8250018663' },
-                    { label: 'Postal Address', value: 'B3-1503, Amrapali Golf Homes, Sector 4, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201016' },
+                    { label: 'Name', value: 'Ankit Chakraborty', type: 'text' },
+                    { label: 'Email', value: 'milasty.cookies@gmail.com', type: 'email' },
+                    { label: 'Phone / WhatsApp', value: '8250018663', type: 'phone' },
+                    { label: 'Postal Address', value: 'B3-1503, Amrapali Golf Homes, Sector 4, Greater Noida West, Gautam Buddha Nagar, Uttar Pradesh - 201016', type: 'text' },
                   ].map((item, i) => (
-                    <div key={i} style={{ display: 'flex', gap: '0.65rem', fontSize: '0.92rem', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                      <span style={{ color: '#32180D', fontWeight: '700', minWidth: '130px', flexShrink: 0 }}>{item.label}:</span>
-                      <span style={{ color: '#654B38', lineHeight: '1.5' }}>{item.value}</span>
+                    <div key={i} className="tc-info-row">
+                      <span className="tc-info-label">{item.label}:</span>
+                      <span className="tc-info-value">
+                        {item.type === 'email' ? (
+                          <a href={`mailto:${item.value}`}>{item.value}</a>
+                        ) : item.type === 'phone' ? (
+                          <a href={`tel:${item.value}`}>+91 {item.value}</a>
+                        ) : (
+                          item.value
+                        )}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -1743,18 +1759,36 @@ export default function LegalPage() {
                 <h3 className="font-serif" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2rem)', color: '#32180D', marginBottom: '0.5rem' }}>Contact MILASTY</h3>
                 <p style={{ fontSize: '1rem', color: '#654B38', marginBottom: '0.5rem' }}>Have a question before ordering, need help with a purchase or want to share feedback?</p>
                 <p style={{ fontSize: '0.95rem', color: '#654B38', marginBottom: '1.75rem', fontStyle: 'italic' }}>MILASTY — Where millets meet great taste. ❤️</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem', justifyContent: 'center', marginBottom: '1.5rem', width: '100%', boxSizing: 'border-box' }}>
                   {[
-                    { icon: Globe2, label: 'www.milasty.com' },
-                    { icon: Megaphone, label: 'milasty.cookies@gmail.com' },
-                    { icon: PhoneCall, label: '8927142056' },
+                    { icon: Globe2, label: 'www.milasty.com', href: 'https://www.milasty.com' },
+                    { icon: Megaphone, label: 'milasty.cookies@gmail.com', href: 'mailto:milasty.cookies@gmail.com' },
+                    { icon: PhoneCall, label: '8927142056', href: 'tel:8927142056' },
                   ].map((item, i) => {
                     const Icon = item.icon;
                     return (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', backgroundColor: '#FFF9F0', border: '1px solid #E4D1B7', borderRadius: '999px', padding: '0.35rem 0.85rem', fontSize: '0.85rem', color: '#654B38' }}>
-                        <Icon size={14} color="#2F6B3A" />
-                        <span>{item.label}</span>
-                      </div>
+                      <a
+                        key={i}
+                        href={item.href}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.45rem',
+                          backgroundColor: '#FFF9F0',
+                          border: '1px solid #E4D1B7',
+                          borderRadius: '999px',
+                          padding: '0.4rem 0.9rem',
+                          fontSize: '0.85rem',
+                          color: '#654B38',
+                          textDecoration: 'none',
+                          maxWidth: '100%',
+                          boxSizing: 'border-box',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        <Icon size={14} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                        <span style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{item.label}</span>
+                      </a>
                     );
                   })}
                 </div>

@@ -534,6 +534,15 @@ body.customer-portal-body textarea::placeholder {
   border: 1px solid #DCC8AE !important;
   box-shadow: 0 4px 16px rgba(75, 45, 25, 0.05) !important;
   color: #2B170D !important;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .legal-page .glass-card {
+    padding: 1.25rem 1rem !important;
+    border-radius: 16px !important;
+  }
 }
 
 .legal-page h1,
@@ -3064,6 +3073,103 @@ footer.transparent-blurred-footer {
     gap: 0.75rem;
     padding: 1rem 1.15rem;
   }
+}
+
+/* Terms & Conditions / Legal Info Cards (Business Details & Grievance Officer) */
+.tc-info-box {
+  background-color: #FFF9F0;
+  border: 1px solid #E4D1B7;
+  border-radius: 16px;
+  padding: clamp(1rem, 3.5vw, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(75, 45, 25, 0.04);
+}
+
+.tc-info-box-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(228, 209, 183, 0.75);
+}
+
+.tc-info-box-title {
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2F6B3A;
+}
+
+.tc-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.92rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px dashed rgba(228, 209, 183, 0.55);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.tc-info-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+@media (min-width: 640px) {
+  .tc-info-row {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+}
+
+.tc-info-label {
+  color: #32180D;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .tc-info-label {
+    min-width: 140px;
+    font-size: 0.92rem;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+}
+
+.tc-info-value {
+  color: #654B38;
+  line-height: 1.55;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  flex: 1;
+}
+
+.tc-info-value a {
+  color: #2F6B3A;
+  text-decoration: none;
+  font-weight: 650;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  transition: color 0.15s ease;
+}
+
+.tc-info-value a:hover {
+  text-decoration: underline;
+  color: #1F4726;
 }
 
 /* Shipping Process Visual Flow */
