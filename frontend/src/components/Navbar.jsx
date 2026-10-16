@@ -159,17 +159,20 @@ export default function Navbar() {
             <div className="announcement-marquee-track">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="announcement-marquee-content">
-                  <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery</span>
                   {promos.map((p, idx) => (
                     <span 
                       key={idx} 
                       onClick={(e) => handleCopyCoupon(p.code, e)}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
                       title={`Click to copy code ${p.code}`}
                     >
-                      <span> • Use code&nbsp;</span>
+                      {p.description ? (
+                        <span>{p.description}&nbsp;•&nbsp;</span>
+                      ) : null}
+                      <span>Use code&nbsp;</span>
                       <strong style={{ color: '#b9cd94', textDecoration: 'underline' }}>{p.code}</strong>
                       <span>&nbsp;for {p.discountText}{p.minOrderAmount > 0 ? ` on orders above ₹${p.minOrderAmount}` : ''}</span>
+                      <span style={{ margin: '0 1.5rem', opacity: 0.4 }}>•</span>
                     </span>
                   ))}
                 </div>

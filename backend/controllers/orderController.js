@@ -1,7 +1,8 @@
 import { supabase } from '../config/supabase.js';
+import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
 import { syncAuthUsersToProfiles } from './authController.js';
 import { getDeliveryChargeForPincode } from './paymentController.js';
-import { canAccessOrder, customerShipmentStatus } from './shipratController.js';
+import { canAccessOrder, customerShipmentStatus, syncSingleOrderTracking } from './shipratController.js';
 import { requestCancellation, getCustomerCancellation } from './cancellationController.js';
 
 // Status Canonical Mappings
@@ -679,7 +680,7 @@ export const autoTransitionConfirmedOrders = async (orders) => {
     try {
       await supabase
         .from('orders')
-        .update({ order_status: 'processing', updated_at: new Date().toISOString() })
+        .update({ order_status: 'processing' })
         .in('id', idsToTransition);
       console.log(`[ORDER AUTO-TRANSITION] Transitioned ${idsToTransition.length} order(s) older than 3 hours from Confirmed to Processing.`);
     } catch (e) {
@@ -709,13 +710,42 @@ export const sweepConfirmedOrders = async () => {
       const ids = staleOrders.map((o) => o.id).filter(Boolean);
       await supabase
         .from('orders')
-        .update({ order_status: 'processing', updated_at: new Date().toISOString() })
+        .update({ order_status: 'processing' })
         .in('id', ids);
       console.log(`[SWEEPER] Auto-transitioned ${ids.length} orders older than 3 hours from Confirmed to Processing.`);
     }
   } catch (err) {
     console.warn('[SWEEPER] Error during order auto-transition sweep:', err?.message);
   }
+};
+
+/**
+ * Automatically sync tracking and transition shipped orders on the fly.
+ * Checks orders that have an AWB and are in 'shipped' / 'out_for_delivery' / 'packed'.
+ */
+export const autoSyncActiveShippedOrders = async (orders) => {
+  if (!Array.isArray(orders) || orders.length === 0) return;
+  const TEN_MINUTES_AGO = Date.now() - 10 * 60 * 1000;
+  const candidates = orders.filter((o) => {
+    const rawSt = String(o.order_status || o.orderStatus || o.status || '').toLowerCase();
+    const hasAwb = Boolean(o.awb_number || o.awb);
+    if (!hasAwb) return false;
+    if (['cancelled', 'delivered'].includes(rawSt)) return false;
+    if (!['shipped', 'out_for_delivery', 'packed'].includes(rawSt)) return false;
+    const lastCheck = o.shipment_tracking_updated_at ? new Date(o.shipment_tracking_updated_at).getTime() : 0;
+    return !lastCheck || lastCheck < TEN_MINUTES_AGO;
+  });
+
+  if (candidates.length === 0) return;
+
+  // Sync up to 4 orders non-blockingly
+  Promise.allSettled(
+    candidates.slice(0, 4).map(async (o) => {
+      try {
+        await syncSingleOrderTracking(o);
+      } catch (e) {}
+    })
+  ).catch(() => {});
 };
 
 /**
@@ -759,6 +789,7 @@ export const getMyOrders = async (req, res) => {
 
     await attachItemImages(filteredOrders);
     await autoTransitionConfirmedOrders(filteredOrders);
+    await autoSyncActiveShippedOrders(filteredOrders);
     const formatted = filteredOrders.map(formatCustomerOrderPayload);
     res.json(formatted);
   } catch (error) {
@@ -793,6 +824,7 @@ export const getAllOrders = async (req, res) => {
 
     await attachItemImages(filteredOrders);
     await autoTransitionConfirmedOrders(filteredOrders);
+    await autoSyncActiveShippedOrders(filteredOrders);
 
     // Attach cancellation / refund / shipment-cancel state (table may not exist before migration 19)
     const { data: cancellations } = await supabase
@@ -974,6 +1006,13 @@ export const updateOrderStatus = async (req, res) => {
     if (orderStatus) {
       const canonical = CANONICAL_STATUS_MAP[orderStatus] || orderStatus.toLowerCase();
       updates.order_status = canonical;
+      if (canonical === 'delivered') {
+        updates.shipment_status = 'delivered';
+      } else if (canonical === 'out_for_delivery') {
+        updates.shipment_status = 'out_for_delivery';
+      } else if (canonical === 'shipped') {
+        updates.shipment_status = 'in_transit';
+      }
     }
     if (paymentStatus) {
       updates.payment_status = String(paymentStatus).toLowerCase();

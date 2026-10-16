@@ -1508,6 +1508,36 @@ export const trackShipment = async (req, res) => {
       return res.status(502).json({ success: false, message: data?.message || 'Shiprath returned no tracking data.', tracking: data });
     }
 
+    // Auto-advance matching order in DB if courier has moved forward
+    try {
+      const highestMapped = findHighestTrackingStatus(data);
+      if (highestMapped) {
+        const { data: order } = await supabase
+          .from('orders')
+          .select('id, order_number, order_status, shipment_status')
+          .or(`awb_number.eq.${awb},awb.eq.${awb}`)
+          .maybeSingle();
+
+        if (order && String(order.order_status || '').toLowerCase() !== 'cancelled') {
+          const currentProgressIdx = SHIPMENT_PROGRESS.indexOf(String(order.shipment_status || 'booked').toLowerCase());
+          const newProgressIdx = SHIPMENT_PROGRESS.indexOf(highestMapped);
+          if (newProgressIdx > currentProgressIdx) {
+            const newOrderStatus = highestMapped === 'delivered' ? 'delivered'
+              : highestMapped === 'out_for_delivery' ? 'out_for_delivery'
+              : 'shipped';
+            await safeUpdateOrder(order.id, {
+              shipment_status: highestMapped,
+              order_status: newOrderStatus,
+              shipment_tracking_updated_at: new Date().toISOString(),
+            });
+            console.log(`[ADMIN TRACK AUTO-SYNC] Order ${order.order_number} (${awb}) updated to ${newOrderStatus} (${highestMapped})`);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[ADMIN TRACK AUTO-SYNC] Notice:', e.message);
+    }
+
     return res.json({ success: true, tracking: data });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Error tracking shipment.', error: error.message });
@@ -1536,21 +1566,9 @@ export function canAccessOrder(user, order) {
 }
 
 // Shipment progress, in order. Tracking may only move an order forward along this list.
-const SHIPMENT_PROGRESS = ['pending', 'creating', 'failed', 'booked', 'picked_up', 'in_transit', 'out_for_delivery', 'delivered'];
+export const SHIPMENT_PROGRESS = ['pending', 'creating', 'failed', 'booked', 'picked_up', 'in_transit', 'out_for_delivery', 'delivered'];
 
-/** Pull the current status text out of a Shiprath tracking response (shape varies by carrier). */
-function extractTrackingStatus(trackData) {
-  const d = trackData?.data && typeof trackData.data === 'object' && !Array.isArray(trackData.data) ? trackData.data : trackData;
-  const events = extractTrackingEvents(trackData);
-  const candidates = [
-    d?.current_status, d?.current_status_name, d?.shipment_status, d?.status_name, d?.status_text,
-    typeof d?.status === 'string' ? d.status : null,
-    events[0]?.status, events[0]?.activity,
-  ];
-  return candidates.find((s) => typeof s === 'string' && s.trim()) || null;
-}
-
-function extractTrackingEvents(trackData) {
+export function extractTrackingEvents(trackData) {
   const d = trackData?.data && typeof trackData.data === 'object' && !Array.isArray(trackData.data) ? trackData.data : trackData;
   const list = d?.shipment_track || d?.scans || d?.tracking_data || trackData?.shipment_track || [];
   return Array.isArray(list) ? list : [];
@@ -1558,14 +1576,298 @@ function extractTrackingEvents(trackData) {
 
 /** Map carrier status text to MILASTY shipment_status. Returns null when unrecognised. */
 export function mapTrackingStatus(text) {
-  const s = String(text || '').toLowerCase();
+  if (!text) return null;
+  const s = String(text).toLowerCase().trim();
   if (!s) return null;
-  if (/\brto\b|return(ed)?\s*to\s*origin/.test(s)) return null; // RTO is handled manually by admin
-  if (/out\s*for\s*delivery|\bofd\b/.test(s)) return 'out_for_delivery';
-  if (/\bdelivered\b/.test(s) && !/undelivered|not\s*delivered/.test(s)) return 'delivered';
-  if (/in[\s-]*transit|dispatched|shipped|reached|arrived|connected|bagged|\bhub\b/.test(s)) return 'in_transit';
-  if (/picked\s*up|pickup\s*(done|complete)/.test(s)) return 'picked_up';
+
+  // RTO (Return to Origin) is handled manually by admin
+  if (/\brto\b|return(ed)?[\s_-]*to[\s_-]*origin/i.test(s)) return null;
+
+  // Delivered: must be delivered, but NOT failed/undelivered/rescheduled
+  if (/(?:^|[_\s-])(?:delivered|dlvd|successful(?:ly)?[\s_-]*delivered|delivery[\s_-]*done|completed[\s_-]*delivery)(?:$|[_\s-])/i.test(s) ||
+      (/\bdelivered\b/i.test(s) && !/undelivered|not[\s_-]*delivered|failed[\s_-]*delivery|attempted/i.test(s))) {
+    return 'delivered';
+  }
+
+  // Out for Delivery
+  if (/out[\s_-]*for[\s_-]*delivery|\bofd\b|out[\s_-]*to[\s_-]*delivery|delivery[\s_-]*out|outfordelivery/i.test(s)) {
+    return 'out_for_delivery';
+  }
+
+  // In Transit
+  if (/in[\s_-]*transit|intransit|dispatched|shipped|reached|arrived|connected|bagged|\bhub\b|departed|in[\s_-]*network|forwarded|transhipment/i.test(s)) {
+    return 'in_transit';
+  }
+
+  // Picked Up
+  if (/picked[\s_-]*up|pickup[\s_-]*(?:done|complete|successful|scheduled)|collected/i.test(s)) {
+    return 'picked_up';
+  }
+
+  // Booked / Created
+  if (/booked|manifested|created|soft[\s_-]*data|shipment[\s_-]*created/i.test(s)) {
+    return 'booked';
+  }
+
   return null;
+}
+
+/**
+ * Scan all top-level status strings AND all nested scan events to find the highest milestone reached.
+ */
+export function findHighestTrackingStatus(trackData) {
+  if (!trackData) return null;
+  const d = trackData?.data && typeof trackData.data === 'object' && !Array.isArray(trackData.data) ? trackData.data : trackData;
+  const events = extractTrackingEvents(trackData);
+
+  const candidateTexts = [
+    d?.current_status,
+    d?.current_status_name,
+    d?.shipment_status,
+    d?.status_name,
+    d?.status_text,
+    typeof d?.status === 'string' ? d.status : null,
+    d?.latest_status,
+    d?.tracking_status,
+    d?.delivery_status,
+  ];
+
+  for (const e of events) {
+    if (e && typeof e === 'object') {
+      candidateTexts.push(e.status, e.activity, e.remark, e.scan_type, e.status_name, e.status_text);
+    } else if (typeof e === 'string') {
+      candidateTexts.push(e);
+    }
+  }
+
+  let highestStatus = null;
+  let highestIndex = -1;
+
+  for (const text of candidateTexts) {
+    if (typeof text !== 'string' || !text.trim()) continue;
+    const mapped = mapTrackingStatus(text);
+    if (!mapped) continue;
+    const idx = SHIPMENT_PROGRESS.indexOf(mapped);
+    if (idx > highestIndex) {
+      highestIndex = idx;
+      highestStatus = mapped;
+    }
+  }
+
+  return highestStatus;
+}
+
+/**
+ * Live sync tracking status for a single order from Shiprath.
+ * Transitions order_status to 'out_for_delivery' or 'delivered' if courier tracking advanced.
+ */
+export async function syncSingleOrderTracking(orderOrId) {
+  try {
+    let order = null;
+    if (typeof orderOrId === 'object' && orderOrId !== null) {
+      order = orderOrId;
+    } else if (typeof orderOrId === 'string') {
+      const isUuid = /^[0-9a-fA-F-]{36}$/.test(orderOrId);
+      let q = supabase.from('orders').select('*');
+      q = isUuid ? q.eq('id', orderOrId) : q.eq('order_number', orderOrId);
+      const { data, error } = await q.maybeSingle();
+      if (error || !data) return { success: false, message: 'Order not found' };
+      order = data;
+    }
+
+    if (!order) return { success: false, message: 'Invalid order' };
+
+    const currentOrderStatus = String(order.order_status || '').toLowerCase();
+    if (currentOrderStatus === 'cancelled') {
+      return { success: false, message: 'Order is cancelled' };
+    }
+
+    const awb = order.awb_number || order.awb || null;
+    if (!awb) {
+      return { success: false, message: 'Order has no AWB' };
+    }
+
+    let headers;
+    try {
+      headers = getShiprathHeaders();
+    } catch (e) {
+      return { success: false, message: 'Shiprath credentials not configured' };
+    }
+
+    const trackRes = await fetch(`${SHIPRATH_BASE_URL}/shipment/shipment_tracking`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ awb_number: awb, awb }),
+      signal: AbortSignal.timeout(15000),
+    });
+
+    const trackData = await trackRes.json();
+    if (!trackData?.status && !trackData?.success && !Array.isArray(trackData?.data?.shipment_track) && !trackData?.data) {
+      return { success: false, message: trackData?.message || 'No tracking info from carrier' };
+    }
+
+    const currentShipmentStatus = String(order.shipment_status || 'booked').toLowerCase();
+    const highestMapped = findHighestTrackingStatus(trackData);
+
+    if (!highestMapped) {
+      return { success: true, updated: false, orderStatus: currentOrderStatus, shipmentStatus: currentShipmentStatus };
+    }
+
+    const currentProgressIdx = SHIPMENT_PROGRESS.indexOf(currentShipmentStatus);
+    const newProgressIdx = SHIPMENT_PROGRESS.indexOf(highestMapped);
+    const isForward = newProgressIdx > currentProgressIdx;
+
+    if (isForward && currentOrderStatus !== 'cancelled') {
+      let newOrderStatus = currentOrderStatus;
+      if (highestMapped === 'delivered') {
+        newOrderStatus = 'delivered';
+      } else if (highestMapped === 'out_for_delivery') {
+        newOrderStatus = 'out_for_delivery';
+      } else if (['in_transit', 'picked_up'].includes(highestMapped)) {
+        if (!['shipped', 'out_for_delivery', 'delivered'].includes(currentOrderStatus)) {
+          newOrderStatus = 'shipped';
+        }
+      }
+
+      const updates = {
+        shipment_status: highestMapped,
+        order_status: newOrderStatus,
+        shipment_tracking_updated_at: new Date().toISOString(),
+      };
+
+      const { error: upErr } = await safeUpdateOrder(order.id, updates);
+      if (!upErr) {
+        console.log(`[AUTO-TRACK SYNC] ✅ Order ${order.order_number} (${awb}) automatically updated: ` +
+          `order_status: ${currentOrderStatus} -> ${newOrderStatus}, shipment_status: ${currentShipmentStatus} -> ${highestMapped}`);
+        order.shipment_status = highestMapped;
+        order.order_status = newOrderStatus;
+        order.shipment_tracking_updated_at = updates.shipment_tracking_updated_at;
+
+        return {
+          success: true,
+          updated: true,
+          orderStatus: newOrderStatus,
+          shipmentStatus: highestMapped,
+        };
+      } else {
+        console.warn(`[AUTO-TRACK SYNC] Failed to update DB for order ${order.order_number}:`, upErr.message);
+      }
+    }
+
+    return {
+      success: true,
+      updated: false,
+      orderStatus: currentOrderStatus,
+      shipmentStatus: currentShipmentStatus,
+    };
+  } catch (err) {
+    console.warn(`[AUTO-TRACK SYNC] Error syncing tracking for order:`, err?.message);
+    return { success: false, message: err?.message };
+  }
+}
+
+/**
+ * Periodic background sweeper:
+ * Finds all active shipped orders (shipped, out_for_delivery, packed with an AWB)
+ * and automatically updates their status to 'out_for_delivery' or 'delivered'
+ * as the courier progresses.
+ */
+export async function sweepShippedOrders() {
+  try {
+    const { data: activeOrders, error } = await supabase
+      .from('orders')
+      .select('id, order_number, order_status, shipment_status, awb_number, created_at, shipment_tracking_updated_at')
+      .in('order_status', ['shipped', 'Shipped', 'out_for_delivery', 'Out for Delivery', 'packed', 'Packed'])
+      .not('awb_number', 'is', null)
+      .neq('order_status', 'cancelled')
+      .neq('order_status', 'delivered')
+      .limit(30);
+
+    if (error || !activeOrders || activeOrders.length === 0) {
+      return;
+    }
+
+    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+    const ordersToSync = activeOrders.filter((o) => {
+      if (!o.awb_number) return false;
+      const lastChecked = o.shipment_tracking_updated_at ? new Date(o.shipment_tracking_updated_at).getTime() : 0;
+      return !lastChecked || lastChecked < fiveMinutesAgo;
+    });
+
+    if (ordersToSync.length === 0) return;
+
+    console.log(`[SHIPMENT SWEEPER] Checking tracking for ${ordersToSync.length} active shipped order(s)...`);
+
+    for (const order of ordersToSync) {
+      await syncSingleOrderTracking(order);
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+  } catch (err) {
+    console.warn('[SHIPMENT SWEEPER] Error in background shipment sweep:', err?.message);
+  }
+}
+
+/**
+ * POST /api/shipping/webhook (and /api/shiprat/webhook)
+ * Public webhook receiver for real-time tracking updates pushed by Shiprath or courier partners.
+ * Immediately transitions order_status to 'out_for_delivery' or 'delivered'.
+ */
+export async function handleShipmentWebhook(req, res) {
+  try {
+    const payload = req.body || {};
+    console.log('[SHIPMENT WEBHOOK RECEIVED]', JSON.stringify(payload).slice(0, 500));
+
+    const awb = payload.awb || payload.awb_number || payload.data?.awb || payload.data?.awb_number || payload.waybill;
+    const orderNumber = payload.order_id || payload.order_number || payload.data?.order_id || payload.data?.order_number;
+
+    if (!awb && !orderNumber) {
+      return res.status(200).json({ success: true, message: 'Webhook received (no AWB/order identified).' });
+    }
+
+    let query = supabase.from('orders').select('*');
+    if (awb) {
+      query = query.eq('awb_number', String(awb).trim());
+    } else {
+      query = query.eq('order_number', String(orderNumber).trim());
+    }
+
+    const { data: order, error } = await query.maybeSingle();
+    if (error || !order) {
+      return res.status(200).json({ success: true, message: 'Order not matched in MILASTY system.' });
+    }
+
+    const mapped = findHighestTrackingStatus(payload);
+
+    if (mapped) {
+      const currentShipmentStatus = String(order.shipment_status || 'booked').toLowerCase();
+      const currentOrderStatus = String(order.order_status || '').toLowerCase();
+      const currentIdx = SHIPMENT_PROGRESS.indexOf(currentShipmentStatus);
+      const newIdx = SHIPMENT_PROGRESS.indexOf(mapped);
+
+      if (newIdx > currentIdx && currentOrderStatus !== 'cancelled') {
+        const newOrderStatus = mapped === 'delivered' ? 'delivered'
+          : mapped === 'out_for_delivery' ? 'out_for_delivery'
+          : 'shipped';
+
+        const updates = {
+          shipment_status: mapped,
+          order_status: newOrderStatus,
+          shipment_tracking_updated_at: new Date().toISOString(),
+        };
+
+        await safeUpdateOrder(order.id, updates);
+        console.log(`[SHIPMENT WEBHOOK] ✅ Order ${order.order_number} automatically updated to ${newOrderStatus} (${mapped})`);
+        return res.json({ success: true, updated: true, newStatus: newOrderStatus });
+      }
+    }
+
+    await syncSingleOrderTracking(order);
+
+    return res.status(200).json({ success: true, message: 'Webhook processed successfully' });
+  } catch (err) {
+    console.error('[SHIPMENT WEBHOOK ERROR]', err);
+    return res.status(200).json({ success: true, message: 'Webhook acknowledged with error' });
+  }
 }
 
 /**
@@ -1617,7 +1919,7 @@ export const trackOrderShipment = async (req, res) => {
             date: e.date || e.datetime || e.scan_date || e.updated_at || null,
           }));
 
-          const mapped = mapTrackingStatus(extractTrackingStatus(trackData));
+          const mapped = findHighestTrackingStatus(trackData);
           const isForward = mapped && SHIPMENT_PROGRESS.indexOf(mapped) > SHIPMENT_PROGRESS.indexOf(shipmentStatus);
 
           if (isForward && String(order.order_status || '').toLowerCase() !== 'cancelled') {

@@ -196,9 +196,13 @@ export const getFeaturedPromoCoupon = async (req, res) => {
         : `₹${valNum} OFF`;
 
       const conditionText = minOrder > 0 ? `on orders above ₹${minOrder}` : '';
-      const displayText = `Use code ${coupon.code} for ${discountText}${conditionText ? ' ' + conditionText : ''}`.trim();
+      const desc = coupon.description ? String(coupon.description).trim() : '';
+      const displayText = desc
+        ? `${desc} • Use code ${coupon.code} for ${discountText}${conditionText ? ' ' + conditionText : ''}`.trim()
+        : `Use code ${coupon.code} for ${discountText}${conditionText ? ' ' + conditionText : ''}`.trim();
 
       return {
+        id: coupon.id,
         code: coupon.code,
         discountType: coupon.discount_type,
         discountValue: valNum,
@@ -206,6 +210,7 @@ export const getFeaturedPromoCoupon = async (req, res) => {
         maxDiscount: Number(coupon.max_discount || 0),
         discountText,
         displayText,
+        description: desc,
       };
     });
 

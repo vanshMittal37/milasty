@@ -7,6 +7,8 @@ import {
   trackShipment,
   trackOrderShipment,
   diagnoseCredentials,
+  handleShipmentWebhook,
+  sweepShippedOrders,
 } from '../controllers/shipratController.js';
 import { protect, adminOnly, optionalProtect } from '../middleware/authMiddleware.js';
 import { requestCancellation } from '../controllers/cancellationController.js';
@@ -17,6 +19,9 @@ const router = express.Router();
 
 // Dynamic live rate calculation (used by Checkout & Cart)
 router.post('/rates', optionalProtect, getShiprathRates);
+
+// Public webhook endpoint for courier / Shiprath real-time status callbacks
+router.post('/webhook', handleShipmentWebhook);
 
 // Raw live track by AWB (returns unfiltered Shiprath data — admin only)
 router.get('/track/:awb', protect, adminOnly, trackShipment);
@@ -37,6 +42,16 @@ router.post('/test-rate', protect, adminOnly, adminTestRate);
 
 // Manual shipment creation trigger
 router.post('/book', protect, adminOnly, bookShipmentForOrder);
+
+// Admin manual trigger to sweep & sync all active shipped orders with carrier tracking
+router.post('/sync-active', protect, adminOnly, async (req, res) => {
+  try {
+    await sweepShippedOrders();
+    res.json({ success: true, message: 'Active shipped orders tracking sync completed.' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
 // ─── Diagnostic (PUBLIC — NO AUTH) ───────────────────────────────────────────
 // Safe: does NOT expose secrets, does NOT create shipments
