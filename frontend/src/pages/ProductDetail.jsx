@@ -288,6 +288,19 @@ export default function ProductDetail() {
 
   const wishlisted = isInWishlist(product._id || product.id || product.slug);
 
+  const totalReviewsCount = Number(
+    (reviewsData && reviewsData.totalReviews !== undefined && reviewsData.totalReviews !== null)
+      ? reviewsData.totalReviews
+      : (Array.isArray(reviewsData?.reviews) ? reviewsData.reviews.length : (product.reviewCount || 0))
+  ) || 0;
+  const hasReviews = totalReviewsCount > 0;
+
+  useEffect(() => {
+    if (activeTab === 'reviews' && !hasReviews) {
+      setActiveTab('nutrition');
+    }
+  }, [activeTab, hasReviews]);
+
   const handleQuantityIncrease = () => {
     if (quantity >= currentStock) {
       if (showToast) showToast("You've reached the maximum available quantity for this pack.");
@@ -787,7 +800,7 @@ export default function ProductDetail() {
             )}
 
             {/* Rating / Review Info */}
-            {((reviewsData.totalReviews || product.reviewCount || 0) > 0) ? (
+            {hasReviews ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', color: '#2F6B3A' }}>
                   {[1, 2, 3, 4, 5].map((s) => (
@@ -803,7 +816,7 @@ export default function ProductDetail() {
                   {Number(reviewsData.averageRating || product.rating || 5).toFixed(1)}
                 </span>
                 <span style={{ fontSize: '0.82rem', color: '#806A57' }}>
-                  ({reviewsData.totalReviews || product.reviewCount} {(reviewsData.totalReviews || product.reviewCount) === 1 ? 'Review' : 'Reviews'})
+                  ({totalReviewsCount} {totalReviewsCount === 1 ? 'Review' : 'Reviews'})
                 </span>
               </div>
             ) : null /* no rating line until the product has at least one review */}
@@ -1191,22 +1204,24 @@ export default function ProductDetail() {
                 Verified Lab Report
               </button>
             )}
-            <button
-              onClick={() => setActiveTab('reviews')}
-              style={{
-                padding: '0.75rem 1.25rem',
-                border: 'none',
-                backgroundColor: 'transparent',
-                color: activeTab === 'reviews' ? '#2F6B3A' : '#654B38',
-                borderBottom: activeTab === 'reviews' ? '2px solid #2F6B3A' : '2px solid transparent',
-                fontWeight: '800',
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Customer Reviews ({reviewsData.totalReviews || 0})
-            </button>
+            {hasReviews && (
+              <button
+                onClick={() => setActiveTab('reviews')}
+                style={{
+                  padding: '0.75rem 1.25rem',
+                  border: 'none',
+                  backgroundColor: 'transparent',
+                  color: activeTab === 'reviews' ? '#2F6B3A' : '#654B38',
+                  borderBottom: activeTab === 'reviews' ? '2px solid #2F6B3A' : '2px solid transparent',
+                  fontWeight: '800',
+                  fontSize: '0.95rem',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Customer Reviews ({totalReviewsCount})
+              </button>
+            )}
           </div>
 
           {activeTab === 'nutrition' && (
@@ -1287,7 +1302,7 @@ export default function ProductDetail() {
             </div>
           )}
 
-          {activeTab === 'reviews' && (
+          {activeTab === 'reviews' && hasReviews && (
             <div style={{ backgroundColor: '#F4EBDD', padding: '2rem', borderRadius: '20px', border: '1px solid #DCC8AE' }}>
               {/* Reviews Summary Header */}
               <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '2rem', paddingBottom: '1.5rem', borderBottom: '1px solid #DCC8AE' }}>
