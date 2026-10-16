@@ -181,8 +181,8 @@ export const CartProvider = ({ children }) => {
 
     const selectedVariant = variant || (product.variants && product.variants[0]) || {};
     const unitPrice = selectedVariant.price !== undefined ? Number(selectedVariant.price) : Number(product.price || 0);
-    const variantName = selectedVariant.name || selectedVariant.variantName || 'Standard Pack';
-    const variantId = selectedVariant.id || selectedVariant._id || variantName;
+    const variantName = selectedVariant.name || selectedVariant.variantName || product.netWeight || product.net_weight || 'Standard Pack';
+    const variantId = selectedVariant.id || selectedVariant._id || (selectedVariant.name ? variantName : 'base');
     const pId = product._id || product.id || product.slug || 'item';
     const cleanNote = String(customizationNote || '').trim().slice(0, 300);
     
@@ -222,7 +222,6 @@ export const CartProvider = ({ children }) => {
           variantWeight: selectedVariant.weight || product.netWeight || product.net_weight || product.nutritionFacts?.net_weight || product.weight || null,
           unitPrice,
           originalPrice: Number(selectedVariant.originalPrice || selectedVariant.price || product.originalPrice || product.price || unitPrice),
-          weight: selectedVariant.weight || product.weight || null,
           shipping_weight: selectedVariant.shipping_weight || selectedVariant.shippingWeight || product.shipping_weight || product.shippingWeight || null,
           quantity: qty,
           totalPrice: unitPrice * qty,

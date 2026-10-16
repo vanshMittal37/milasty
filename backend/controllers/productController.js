@@ -380,9 +380,9 @@ export const getProducts = async (req, res) => {
       let filtered = formatted.filter((p) => {
         const ownLaunch = p.launchDate ? new Date(p.launchDate).getTime() : null;
         p.isUpcoming = (ownLaunch !== null && ownLaunch > nowMs) || prebookedUpcoming.has(String(p.id));
-        // A product needs at least one variant (pack size + price) before customers can see it
+        // Products without variants show with their base details entered by the admin
         p.hasVariants = Array.isArray(p.variants) && p.variants.length > 0;
-        p.hiddenReason = p.isUpcoming ? 'upcoming' : (!p.hasVariants ? 'no_variants' : null);
+        p.hiddenReason = p.isUpcoming ? 'upcoming' : null;
         return includeUpcoming || !p.hiddenReason;
       });
 

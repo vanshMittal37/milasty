@@ -263,9 +263,9 @@ export default function AdminProductList() {
                         <span className="admin-badge admin-badge-success">
                           {p.status || 'active'}
                         </span>
-                        {p.hiddenReason === 'no_variants' && (
-                          <span className="admin-badge admin-badge-warning" title="Add at least one variant (pack size & price) to show it in the shop">
-                            Hidden: no variant
+                        {!p.hasVariants && (
+                          <span className="admin-badge" style={{ backgroundColor: '#EBF3E8', color: '#2F6B3A' }} title="Showing in shop with base details entered by admin">
+                            Base Pack
                           </span>
                         )}
                         {p.hiddenReason === 'upcoming' && (

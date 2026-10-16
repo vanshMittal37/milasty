@@ -511,9 +511,6 @@ export default function CustomerOrderDetailPage() {
               <div style={{ fontSize: '0.88rem', fontWeight: '800', color: T.textPrimary }}>
                 {orderPlacementFormatted}
               </div>
-              <div style={{ fontSize: '0.72rem', color: T.textMuted, marginTop: '0.15rem' }}>
-                Server timestamp (Asia/Kolkata)
-              </div>
             </div>
 
             <div style={{ padding: '0.85rem 1rem', backgroundColor: T.surfaceAlt, borderRadius: '12px', border: `1px solid ${T.border}` }}>
@@ -523,9 +520,6 @@ export default function CustomerOrderDetailPage() {
               <div style={{ fontSize: '0.88rem', fontWeight: '800', color: isPaid ? T.success : T.textPrimary }}>
                 {paymentTransactionFormatted}
               </div>
-              <div style={{ fontSize: '0.72rem', color: T.textMuted, marginTop: '0.15rem' }}>
-                Method: {order.paymentMethod || 'Razorpay / Prepaid'}
-              </div>
             </div>
 
             <div style={{ padding: '0.85rem 1rem', backgroundColor: 'rgba(237,247,238,0.7)', borderRadius: '12px', border: `1px solid ${T.successBorder}` }}>
@@ -534,9 +528,6 @@ export default function CustomerOrderDetailPage() {
               </div>
               <div style={{ fontSize: '0.88rem', fontWeight: '800', color: T.success }}>
                 Estimated delivery by {estimatedDeliveryDate}
-              </div>
-              <div style={{ fontSize: '0.72rem', color: T.textMuted, marginTop: '0.15rem' }}>
-                Standard dispatch & delivery: 9 days from order
               </div>
             </div>
           </div>
