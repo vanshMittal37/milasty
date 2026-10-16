@@ -608,7 +608,7 @@ const INTERNAL_ORDER_FIELDS = [
   'selected_rate_snapshot', 'shipping_rate_options', 'quoted_weight_kg',
   'booked_carrier_id', 'booked_courier_id', 'booked_product_id', 'booked_service_name', 'booked_shipping_charge',
   'shipment_booking_response', 'shipment_attempts', 'shipment_error', 'shipment_last_attempt_at',
-  'courier_name', 'tracking_url', 'shipment_id', 'razorpay_signature',
+  'tracking_url', 'shipment_id', 'razorpay_signature',
 ];
 
 // Display labels the customer pages match against (badges, filters, progress tracker)

@@ -260,6 +260,11 @@ export default function ProductDetail() {
   const hasDiscount = currentOriginalPrice > currentPrice;
   const discountPercent = hasDiscount ? Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100) : 0;
 
+  const currentWeight = hasVariants
+    ? (selectedVariant?.weight || '')
+    : (product.netWeight || product.net_weight || product.nutritionFacts?.net_weight || product.nutritionFacts?.netWeight || product.weight || '');
+  const currentPieces = product.pieces || product.nutritionFacts?.pieces || '';
+
   const discountBadgeText = (() => {
     const discType = product?.discountType || product?.discount_type;
     const discVal = Number(product?.discountValue !== undefined ? product?.discountValue : product?.discount_value);
@@ -876,6 +881,31 @@ export default function ProductDetail() {
               )}
             </div>
 
+            {/* Prominent Net Weight Highlight Badge */}
+            {currentWeight && (
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  backgroundColor: '#E3EEDC',
+                  border: '1px solid #C4D9BA',
+                  padding: '0.35rem 0.85rem',
+                  borderRadius: '999px',
+                  fontSize: '0.82rem',
+                  fontWeight: '800',
+                  color: '#2F6B3A',
+                  width: 'fit-content',
+                  marginBottom: '0.4rem',
+                  boxShadow: '0 2px 6px rgba(47, 107, 58, 0.08)',
+                }}
+              >
+                <Package size={14} color="#2F6B3A" />
+                <span>Net Weight: <strong>{currentWeight}</strong></span>
+                {currentPieces && <span style={{ color: '#4A3B2E', fontWeight: '600' }}>• {currentPieces}</span>}
+              </div>
+            )}
+
             {/* Variant Pack Size Selector */}
             {hasVariants && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
@@ -887,6 +917,7 @@ export default function ProductDetail() {
                     const isSelected = index === selectedVariantIndex;
                     const vStock = v.stock !== undefined && v.stock !== null ? Number(v.stock) : 50;
                     const isVOut = vStock <= 0;
+                    const hasBothNames = v.name && v.weight && String(v.name).trim().toLowerCase() !== String(v.weight).trim().toLowerCase();
 
                     return (
                       <button
@@ -912,7 +943,12 @@ export default function ProductDetail() {
                           opacity: isVOut ? 0.6 : 1
                         }}
                       >
-                        <span style={{ fontSize: '0.9rem', fontWeight: '800' }}>{v.weight || v.name}</span>
+                        <span style={{ fontSize: '0.9rem', fontWeight: '800' }}>{v.name || v.weight}</span>
+                        {hasBothNames && (
+                          <span style={{ fontSize: '0.72rem', color: isSelected ? '#2F6B3A' : '#654B38', fontWeight: '700' }}>
+                            Net Wt: {v.weight}
+                          </span>
+                        )}
                         <span style={{ fontSize: '0.78rem', color: isSelected ? '#2F6B3A' : '#654B38', fontWeight: '700' }}>₹{v.price}</span>
                         {isVOut && (
                           <span style={{ fontSize: '0.62rem', color: '#dc2626', fontWeight: '800', textTransform: 'uppercase' }}>Out of Stock</span>

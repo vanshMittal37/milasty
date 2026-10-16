@@ -332,6 +332,8 @@ export const getProducts = async (req, res) => {
           targetAudience: p.target_audience || '',
           nutritionFacts: normalizedNutrition,
           pieces: p.nutrition_facts?.pieces || p.pieces || '',
+          netWeight: p.net_weight || p.nutrition_facts?.net_weight || p.nutrition_facts?.netWeight || '',
+          shippingWeight: p.shipping_weight || p.nutrition_facts?.shipping_weight || p.nutrition_facts?.shippingWeight || '',
           labReportUrl: p.lab_report_url || '',
           labReports: normalizeLabReports(p),
           isFeatured: p.is_featured !== false,
@@ -574,6 +576,8 @@ export const getProductBySlugOrId = async (req, res) => {
         targetAudience: p.target_audience || '',
         nutritionFacts: normalizedNutrition,
         pieces: p.nutrition_facts?.pieces || p.pieces || '',
+        netWeight: p.net_weight || p.nutrition_facts?.net_weight || p.nutrition_facts?.netWeight || '',
+        shippingWeight: p.shipping_weight || p.nutrition_facts?.shipping_weight || p.nutrition_facts?.shippingWeight || '',
         labReportUrl: p.lab_report_url || '',
         labReports: normalizeLabReports(p),
         isFeatured: p.is_featured !== false,
@@ -803,9 +807,14 @@ export const createProduct = async (req, res) => {
       });
     }
 
+    const finalNetWeight = req.body.netWeight || req.body.net_weight || req.body.nutritionFacts?.net_weight || '';
+    const finalShippingWeight = req.body.shippingWeight || req.body.shipping_weight || req.body.nutritionFacts?.shipping_weight || '';
+
     const mergedNutritionFacts = {
       ...(typeof nutritionFacts === 'object' && nutritionFacts !== null ? nutritionFacts : {}),
       pieces: pieces || (typeof nutritionFacts === 'object' ? nutritionFacts?.pieces : '') || '',
+      net_weight: finalNetWeight,
+      shipping_weight: finalShippingWeight,
       variant_stocks: variantStocksMap,
     };
 
@@ -840,6 +849,8 @@ export const createProduct = async (req, res) => {
       base_price: finalPriceVal,
       discount_type: finalDiscType,
       discount_value: finalDiscVal,
+      net_weight: finalNetWeight,
+      shipping_weight: finalShippingWeight,
       image_url: image || '',
       secondary_image_url: secondaryImage || '',
       lab_report_url: req.body.labReportUrl || req.body.lab_report_url || '',
@@ -980,6 +991,8 @@ export const createProduct = async (req, res) => {
       targetAudience: product.target_audience || '',
       nutritionFacts: product.nutrition_facts || {},
       pieces: product.nutrition_facts?.pieces || pieces || '',
+      netWeight: finalNetWeight,
+      shippingWeight: finalShippingWeight,
       isFeatured: product.is_featured !== false,
       variants: formattedVariants,
     };
@@ -1048,6 +1061,9 @@ export const updateProduct = async (req, res) => {
     const discountTypeVal = updates.discountType || updates.discount_type || 'none';
     const discountVal = updates.discountValue !== undefined ? Number(updates.discountValue) : (updates.discount_value !== undefined ? Number(updates.discount_value) : 0);
 
+    const finalNetWeight = updates.netWeight || updates.net_weight || updates.nutritionFacts?.net_weight || '';
+    const finalShippingWeight = updates.shippingWeight || updates.shipping_weight || updates.nutritionFacts?.shipping_weight || '';
+
     const updatePayload = {
       title: updates.title,
       subtitle: updates.subtitle || '',
@@ -1059,6 +1075,8 @@ export const updateProduct = async (req, res) => {
       base_price: basePriceVal,
       discount_type: discountTypeVal,
       discount_value: discountVal,
+      net_weight: finalNetWeight,
+      shipping_weight: finalShippingWeight,
       image_url: updates.image !== undefined ? updates.image : undefined,
       secondary_image_url: updates.secondaryImage !== undefined ? updates.secondaryImage : undefined,
       lab_report_url: updates.labReportUrl !== undefined ? updates.labReportUrl : (updates.lab_report_url !== undefined ? updates.lab_report_url : undefined),
@@ -1067,6 +1085,8 @@ export const updateProduct = async (req, res) => {
       nutrition_facts: {
         ...(typeof updates.nutritionFacts === 'object' && updates.nutritionFacts !== null ? updates.nutritionFacts : {}),
         pieces: updates.pieces || (typeof updates.nutritionFacts === 'object' ? updates.nutritionFacts?.pieces : '') || '',
+        net_weight: finalNetWeight,
+        shipping_weight: finalShippingWeight,
         variant_stocks: Object.keys(variantStocksMap).length > 0 ? variantStocksMap : updates.nutritionFacts?.variant_stocks,
         base_price: basePriceVal,
         discount_type: discountTypeVal,

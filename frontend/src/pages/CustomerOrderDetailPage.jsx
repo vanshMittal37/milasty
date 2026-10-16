@@ -260,8 +260,16 @@ export default function CustomerOrderDetailPage() {
   const [cancelQuote, setCancelQuote] = useState(null);   // server-calculated eligibility + refund preview
   const [cancelStep, setCancelStep] = useState('form');   // 'form' → 'confirm'
   const [copyToast, setCopyToast] = useState(false);
+  const [awbCopyToast, setAwbCopyToast] = useState(false);
   const [shipTracking, setShipTracking] = useState(null);
   const [trackLoading, setTrackLoading] = useState(false);
+
+  const handleCopyAwb = (awbCode) => {
+    if (!awbCode) return;
+    navigator.clipboard.writeText(awbCode);
+    setAwbCopyToast(true);
+    setTimeout(() => setAwbCopyToast(false), 2000);
+  };
 
   useEffect(() => {
     if (!isAuthenticated) { navigate('/login'); }
@@ -481,123 +489,210 @@ export default function CustomerOrderDetailPage() {
         {/* ── ORDER PROGRESS TRACKER ── */}
         <OrderProgressTracker currentStatus={currentStatus} />
 
-        {/* ── SHIPMENT TRACKING CARD (no courier details shown to customers) ── */}
+        {/* ── SHIPMENT TRACKING CARD (Shiprath Courier Tracking like in Admin Order Log) ── */}
         {!isCancelled && (
           <div style={{
             ...cardStyle,
-            padding: '1.5rem',
-            marginBottom: '1.25rem',
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(245,237,229,0.85) 100%)',
-            border: '1px solid rgba(198,138,58,0.25)',
+            padding: '1.75rem',
+            marginBottom: '1.5rem',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(247,242,236,0.92) 100%)',
+            border: '1.5px solid rgba(198,138,58,0.3)',
+            boxShadow: '0 8px 30px rgba(90, 46, 22, 0.08)',
           }}>
-            <h3 style={{
-              fontSize: '0.78rem', fontWeight: '900', color: T.textPrimary,
-              margin: '0 0 1rem 0', textTransform: 'uppercase', letterSpacing: '0.1em',
-              display: 'flex', alignItems: 'center', gap: '0.5rem',
-            }}>
-              <span style={{ width: '3px', height: '14px', borderRadius: '2px', backgroundColor: T.accent, display: 'inline-block' }} />
-              <Navigation size={14} color={T.accent} />
-              Live Shipment Tracking
-            </h3>
-
-            {trackLoading && !shipTracking && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: T.textMuted, fontSize: '0.87rem' }}>
-                <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
-                Fetching live tracking data...
+            {/* Header with Title, Shiprath portal link and Track Shipment Button */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '1.25rem', borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.85rem' }}>
+              <div>
+                <div style={{ fontSize: '0.68rem', color: '#665A52', textTransform: 'uppercase', fontWeight: '800', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                  <Truck size={15} color="#C68A3A" />
+                  <span>Shiprath B2C Courier Tracking</span>
+                </div>
+                <div style={{ fontSize: '1.1rem', fontWeight: '900', color: '#21150F', fontFamily: 'var(--font-serif)' }}>
+                  Live Package Journey
+                </div>
               </div>
-            )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {/* AWB & Courier Row */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
                 {(order.awb_number || order.awb || shipTracking?.awb) && (
-                  <div style={{
-                    flex: 1, minWidth: '160px',
-                    padding: '0.85rem 1rem',
-                    backgroundColor: 'rgba(245,237,229,0.6)',
-                    borderRadius: '10px',
-                    border: `1px solid rgba(198,138,58,0.2)`,
-                  }}>
-                    <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.accent, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>AWB Number</div>
-                    <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary, fontFamily: 'monospace', letterSpacing: '0.05em' }}>{order.awb_number || order.awb || shipTracking?.awb}</div>
-                  </div>
+                  <a
+                    href="https://shiprath.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      padding: '0.45rem 0.85rem',
+                      borderRadius: '8px',
+                      backgroundColor: 'rgba(198,138,58,0.12)',
+                      color: '#5A2E16',
+                      border: '1px solid rgba(198,138,58,0.3)',
+                      fontSize: '0.78rem',
+                      fontWeight: '700',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    <span>Shiprath Portal</span>
+                    <ExternalLink size={12} />
+                  </a>
                 )}
-                <div style={{
-                  flex: 1, minWidth: '160px',
-                  padding: '0.85rem 1rem',
-                  backgroundColor: 'rgba(245,237,229,0.6)',
-                  borderRadius: '10px',
-                  border: `1px solid rgba(198,138,58,0.2)`,
-                }}>
-                  <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.accent, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>Shipment</div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.textPrimary }}>
-                    {SHIPMENT_LABELS[shipTracking?.shipment_status || order.shipment_status] || 'Processing'}
-                  </div>
-                </div>
-                {shipTracking?.tracking?.estimated_delivery && (
-                  <div style={{
-                    flex: 1, minWidth: '160px',
-                    padding: '0.85rem 1rem',
-                    backgroundColor: 'rgba(237,247,238,0.7)',
-                    borderRadius: '10px',
-                    border: `1px solid rgba(46,125,50,0.2)`,
-                  }}>
-                    <div style={{ fontSize: '0.62rem', fontWeight: '800', color: T.success, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>Est. Delivery</div>
-                    <div style={{ fontSize: '0.9rem', fontWeight: '800', color: T.success }}>{shipTracking.tracking.estimated_delivery}</div>
-                  </div>
-                )}
+
+                <button
+                  type="button"
+                  onClick={() => fetchShipTracking(order.id || order._id || order.orderId || id)}
+                  disabled={trackLoading}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    borderRadius: '8px',
+                    backgroundColor: '#381423',
+                    color: '#FFF',
+                    border: 'none',
+                    fontSize: '0.8rem',
+                    fontWeight: '800',
+                    cursor: trackLoading ? 'wait' : 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    boxShadow: '0 2px 8px rgba(56, 20, 35, 0.25)',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <RefreshCw size={13} style={{ animation: trackLoading ? 'spin 1s linear infinite' : 'none' }} />
+                  <span>{trackLoading ? 'Tracking...' : 'Track Shipment'}</span>
+                </button>
               </div>
-
-              {/* Latest tracking event */}
-              {shipTracking?.tracking?.shipment_track?.[0] && (
-                <div style={{
-                  padding: '0.85rem 1rem',
-                  backgroundColor: T.infoBg,
-                  borderRadius: '10px',
-                  border: `1px solid rgba(21,101,192,0.15)`,
-                  display: 'flex', alignItems: 'flex-start', gap: '0.7rem',
-                }}>
-                  <Truck size={16} color={T.info} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
-                  <div>
-                    <div style={{ fontSize: '0.82rem', fontWeight: '700', color: T.info }}>
-                      {shipTracking.tracking.shipment_track[0].activity || 'In transit'}
-                    </div>
-                    {shipTracking.tracking.shipment_track[0].location && (
-                      <div style={{ fontSize: '0.75rem', color: T.textMuted, marginTop: '0.15rem' }}>
-                        📍 {shipTracking.tracking.shipment_track[0].location}
-                      </div>
-                    )}
-                    {shipTracking.tracking.shipment_track[0].date && (
-                      <div style={{ fontSize: '0.72rem', color: T.textMuted, marginTop: '0.1rem' }}>
-                        {new Date(shipTracking.tracking.shipment_track[0].date).toLocaleString('en-IN')}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Earlier tracking events */}
-              {shipTracking?.tracking?.shipment_track?.length > 1 && (
-                <details style={{ fontSize: '0.8rem', color: T.textSecondary }}>
-                  <summary style={{ cursor: 'pointer', fontWeight: '700', color: T.brand }}>View full journey</summary>
-                  <ul style={{ margin: '0.6rem 0 0', paddingLeft: '1.1rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                    {shipTracking.tracking.shipment_track.slice(1).map((ev, i) => (
-                      <li key={i}>
-                        <span style={{ fontWeight: '700' }}>{ev.activity || 'Update'}</span>
-                        {ev.location && <span> · {ev.location}</span>}
-                        {ev.date && <span style={{ color: T.textMuted }}> · {new Date(ev.date).toLocaleString('en-IN')}</span>}
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              )}
             </div>
 
-            {!trackLoading && !(order.awb_number || order.awb || shipTracking?.awb) && (
-              <div style={{ fontSize: '0.84rem', color: T.textMuted, fontWeight: '500', marginTop: '0.5rem' }}>
-                Your shipment is being prepared. Tracking details will appear here once it is dispatched.
+            {/* Courier, AWB & Status Info Banner */}
+            <div style={{
+              background: 'rgba(252, 250, 247, 0.85)',
+              border: '1px solid rgba(231, 222, 213, 0.8)',
+              borderRadius: '12px',
+              padding: '1.1rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.85rem',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  {(order.awb_number || order.awb || shipTracking?.awb) ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#665A52', textTransform: 'uppercase' }}>AWB:</span>
+                      <code style={{
+                        backgroundColor: '#FFFFFF',
+                        border: '1px solid #E7DED5',
+                        padding: '0.2rem 0.55rem',
+                        borderRadius: '6px',
+                        color: '#381423',
+                        fontWeight: '800',
+                        fontSize: '0.88rem',
+                        letterSpacing: '0.04em',
+                      }}>
+                        {order.awb_number || order.awb || shipTracking?.awb}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyAwb(order.awb_number || order.awb || shipTracking?.awb)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: '#C68A3A',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
+                          fontSize: '0.74rem',
+                          fontWeight: '700',
+                          padding: '0.2rem 0.4rem',
+                        }}
+                      >
+                        {awbCopyToast ? <><Check size={12} color="#2E7D32" /> Copied</> : <><Copy size={12} /> Copy</>}
+                      </button>
+                      {(order.courier_name || shipTracking?.courier_name) && (
+                        <span style={{ color: '#4A3B2E', fontSize: '0.82rem', fontWeight: '700' }}>
+                          • {order.courier_name || shipTracking?.courier_name}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: '0.85rem', color: '#B7791F', fontWeight: '700' }}>
+                      Order is being freshly baked and packed — courier tracking code will be generated upon dispatch.
+                    </div>
+                  )}
+                </div>
+
+                {/* Status Pill & Estimated Delivery */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{
+                    padding: '0.3rem 0.85rem',
+                    borderRadius: '999px',
+                    fontSize: '0.78rem',
+                    fontWeight: '850',
+                    letterSpacing: '0.04em',
+                    backgroundColor: String(shipTracking?.shipment_status || order.shipment_status).toLowerCase() === 'delivered' ? '#EDF7EE' : '#FEF9EC',
+                    color: String(shipTracking?.shipment_status || order.shipment_status).toLowerCase() === 'delivered' ? '#2E7D32' : '#B7791F',
+                    border: `1px solid ${String(shipTracking?.shipment_status || order.shipment_status).toLowerCase() === 'delivered' ? '#A5D6A7' : '#E7DED5'}`,
+                    textTransform: 'uppercase',
+                  }}>
+                    {String(shipTracking?.shipment_status || order.shipment_status || 'Processing').replace(/_/g, ' ')}
+                  </span>
+                  {(shipTracking?.estimated_delivery || shipTracking?.tracking?.estimated_delivery) && (
+                    <span style={{ fontSize: '0.78rem', color: '#4A3B2E', fontWeight: '700', backgroundColor: '#EDF7EE', padding: '0.3rem 0.75rem', borderRadius: '999px', border: '1px solid #A5D6A7' }}>
+                      📅 EDD: {shipTracking?.estimated_delivery || shipTracking?.tracking?.estimated_delivery}
+                    </span>
+                  )}
+                </div>
               </div>
-            )}
+
+              {/* Live Tracking Scan Events (Matches Admin Order Log) */}
+              {(order.awb_number || order.awb || shipTracking?.awb) && (
+                <div style={{ borderTop: '1px solid rgba(231, 222, 213, 0.65)', paddingTop: '0.85rem', marginTop: '0.35rem' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: '800', color: '#4A3B2E', textTransform: 'uppercase', marginBottom: '0.65rem' }}>
+                    Shipment Updates &amp; Scan History
+                  </div>
+
+                  {trackLoading && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#665A52', fontSize: '0.82rem', padding: '0.5rem 0' }}>
+                      <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />
+                      <span>Contacting Shiprath courier network for live status...</span>
+                    </div>
+                  )}
+
+                  {!trackLoading && (shipTracking?.events || shipTracking?.tracking?.shipment_track || []).length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+                      {(shipTracking?.events || shipTracking?.tracking?.shipment_track || []).map((ev, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: '0.65rem',
+                            padding: '0.65rem 0.85rem',
+                            backgroundColor: i === 0 ? '#FFFFFF' : 'rgba(255,255,255,0.5)',
+                            borderRadius: '8px',
+                            border: `1px solid ${i === 0 ? 'rgba(198,138,58,0.3)' : 'rgba(231,222,213,0.5)'}`,
+                          }}
+                        >
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: i === 0 ? '#2E7D32' : '#C68A3A', marginTop: '0.35rem', flexShrink: 0 }} />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '0.85rem', fontWeight: i === 0 ? '800' : '700', color: '#21150F' }}>
+                              {ev.activity || ev.status || 'Courier Scan Update'}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#665A52', marginTop: '0.1rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                              {ev.location && <span>📍 {ev.location}</span>}
+                              {ev.date && <span>· 🕒 {new Date(ev.date).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : !trackLoading && (order.awb_number || order.awb) ? (
+                    <div style={{ fontSize: '0.82rem', color: '#665A52', padding: '0.35rem 0' }}>
+                      Shipment booked with courier ({order.courier_name || 'Shiprath Partner'}). Awaiting first transit scan.
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
 
             <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
           </div>

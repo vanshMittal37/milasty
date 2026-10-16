@@ -1569,6 +1569,7 @@ export const trackOrderShipment = async (req, res) => {
     return res.json({
       success: true,
       awb,
+      courier_name: order.courier_name || 'Shiprath Delivery Partner',
       shipment_status: customerShipmentStatus(shipmentStatus),
       order_status: orderStatus,
       message: awb ? null : 'Order confirmed. Your shipment is being prepared.',

@@ -42,18 +42,7 @@ export default function Navbar() {
   };
 
   // Promo state and showToast MUST be declared before any useEffect
-  const [promos, setPromos] = useState([
-    {
-      code: 'WELCOME10',
-      discountText: '10% OFF',
-      minOrderAmount: 300,
-    },
-    {
-      code: 'MILASTY100',
-      discountText: '₹100 OFF',
-      minOrderAmount: 500,
-    },
-  ]);
+  const [promos, setPromos] = useState([]);
   const { showToast } = useCart();
   const accountMenuRef = useRef(null);
   const touchStartRef = useRef(null);
@@ -110,12 +99,16 @@ export default function Navbar() {
     const fetchPromo = async () => {
       try {
         const res = await api.get('/coupons/featured');
-        if (res.data?.success && res.data?.promos && res.data.promos.length > 0) {
+        if (res.data?.success && Array.isArray(res.data?.promos) && res.data.promos.length > 0) {
           setPromos(res.data.promos);
         } else if (res.data?.promo) {
           setPromos([res.data.promo]);
+        } else {
+          setPromos([]);
         }
-      } catch (e) {}
+      } catch (e) {
+        setPromos([]);
+      }
     };
     fetchPromo();
   }, []);
@@ -147,27 +140,27 @@ export default function Navbar() {
           boxSizing: 'border-box'
         }}
       >
-        {/* Top Announcement Bar - Continuous Smooth Marquee */}
-        <div 
-          className="announcement-bar"
-          style={{ 
-            backgroundColor: '#1A0C05', 
-            color: '#FCFAF6', 
-            fontSize: '0.82rem', 
-            padding: '0.55rem 0', 
-            borderBottom: '1px solid rgba(255,255,255,0.08)', 
-            position: 'relative',
-            transition: 'background-color 0.35s ease',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          <div className="announcement-marquee-track">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="announcement-marquee-content">
-                <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery</span>
-                {promos && promos.length > 0 ? (
-                  promos.map((p, idx) => (
+        {/* Top Announcement Bar - Continuous Smooth Marquee (Only shown when coupons exist) */}
+        {promos && promos.length > 0 && (
+          <div 
+            className="announcement-bar"
+            style={{ 
+              backgroundColor: '#1A0C05', 
+              color: '#FCFAF6', 
+              fontSize: '0.82rem', 
+              padding: '0.55rem 0', 
+              borderBottom: '1px solid rgba(255,255,255,0.08)', 
+              position: 'relative',
+              transition: 'background-color 0.35s ease',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            <div className="announcement-marquee-track">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="announcement-marquee-content">
+                  <span>Handcrafted Millet Bakes • Pure Desi Ghee • Organic Jaggery</span>
+                  {promos.map((p, idx) => (
                     <span 
                       key={idx} 
                       onClick={(e) => handleCopyCoupon(p.code, e)}
@@ -178,14 +171,12 @@ export default function Navbar() {
                       <strong style={{ color: '#b9cd94', textDecoration: 'underline' }}>{p.code}</strong>
                       <span>&nbsp;for {p.discountText}{p.minOrderAmount > 0 ? ` on orders above ₹${p.minOrderAmount}` : ''}</span>
                     </span>
-                  ))
-                ) : (
-                  <span> • Special Offers Available</span>
-                )}
-              </div>
-            ))}
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
 
         {/* Main Header Container */}

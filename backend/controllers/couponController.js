@@ -182,9 +182,9 @@ export const getFeaturedPromoCoupon = async (req, res) => {
     if (featuredList.length === 0) {
       return res.json({
         success: true,
-        promos: defaultPromos,
-        marqueeText: defaultPromos.map((p) => p.displayText).join(' • '),
-        promo: defaultPromos[0],
+        promos: [],
+        marqueeText: '',
+        promo: null,
       });
     }
 
@@ -219,31 +219,11 @@ export const getFeaturedPromoCoupon = async (req, res) => {
     });
   } catch (error) {
     console.error('getFeaturedPromoCoupon error:', error);
-    const defaultPromos = [
-      {
-        code: 'WELCOME10',
-        discountType: 'percentage',
-        discountValue: 10,
-        minOrderAmount: 300,
-        maxDiscount: 200,
-        discountText: '10% OFF',
-        displayText: 'Use code WELCOME10 for 10% OFF on orders above ₹300',
-      },
-      {
-        code: 'MILASTY100',
-        discountType: 'fixed',
-        discountValue: 100,
-        minOrderAmount: 500,
-        maxDiscount: 100,
-        discountText: '₹100 OFF',
-        displayText: 'Use code MILASTY100 for ₹100 OFF on orders above ₹500',
-      },
-    ];
     return res.json({
       success: true,
-      promos: defaultPromos,
-      marqueeText: defaultPromos.map((p) => p.displayText).join(' • '),
-      promo: defaultPromos[0],
+      promos: [],
+      marqueeText: '',
+      promo: null,
     });
   }
 };

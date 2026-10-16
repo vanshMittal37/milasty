@@ -218,6 +218,8 @@ export const CartProvider = ({ children }) => {
           image,
           variantName,
           variantId: selectedVariant.id || selectedVariant._id || null,
+          weight: selectedVariant.weight || product.netWeight || product.net_weight || product.nutritionFacts?.net_weight || product.weight || null,
+          variantWeight: selectedVariant.weight || product.netWeight || product.net_weight || product.nutritionFacts?.net_weight || product.weight || null,
           unitPrice,
           originalPrice: selectedVariant.originalPrice || product.originalPrice || unitPrice,
           quantity: qty,

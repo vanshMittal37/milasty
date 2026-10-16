@@ -63,6 +63,8 @@ export default function AdminProductForm() {
     discountValue: '',
     stock: '',
     pieces: '',
+    netWeight: '',
+    shippingWeight: '',
     sku: '',
     status: 'active',
     isFeatured: true,
@@ -332,6 +334,8 @@ export default function AdminProductForm() {
           discountValue: p.discountValue !== undefined ? p.discountValue : (p.discount_value !== undefined ? p.discount_value : (p.nutritionFacts?.discount_value || '')),
           stock: p.stock !== undefined && p.stock !== null ? p.stock : '',
           pieces: p.pieces || p.nutritionFacts?.pieces || '',
+          netWeight: p.netWeight || p.net_weight || p.nutritionFacts?.net_weight || p.nutritionFacts?.netWeight || '',
+          shippingWeight: p.shippingWeight || p.shipping_weight || p.nutritionFacts?.shipping_weight || p.nutritionFacts?.shippingWeight || '',
           sku: p.sku || '',
           status: p.status || (p.is_active !== false ? 'active' : 'inactive'),
           isFeatured: p.isFeatured !== false,
@@ -725,12 +729,18 @@ export default function AdminProductForm() {
       isBestseller: isBestsellerActive,
       is_bestseller: isBestsellerActive,
       pieces: formData.pieces ? String(formData.pieces).trim() : '',
+      netWeight: formData.netWeight ? String(formData.netWeight).trim() : '',
+      net_weight: formData.netWeight ? String(formData.netWeight).trim() : '',
+      shippingWeight: formData.shippingWeight ? String(formData.shippingWeight).trim() : '',
+      shipping_weight: formData.shippingWeight ? String(formData.shippingWeight).trim() : '',
       badges: finalPayloadBadges,
       ingredients: ingredientsList,
       benefits: benefitsList,
       nutritionFacts: {
         ...nutritionMap,
         pieces: formData.pieces ? String(formData.pieces).trim() : '',
+        net_weight: formData.netWeight ? String(formData.netWeight).trim() : '',
+        shipping_weight: formData.shippingWeight ? String(formData.shippingWeight).trim() : '',
         base_price: basePriceNum,
         discount_type: formData.discountType || 'none',
         discount_value: Number(formData.discountValue) || 0,
@@ -1668,8 +1678,8 @@ export default function AdminProductForm() {
               </div>
             </div>
 
-            {/* Stock & SKU */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1.25rem' }}>
+            {/* Stock, Pieces, Net Weight, Shipping Weight & SKU */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem' }}>
               <div>
                 <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                   Total Stock Quantity
@@ -1694,6 +1704,38 @@ export default function AdminProductForm() {
                   placeholder="e.g. 6 Pieces"
                   className="admin-input"
                 />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  Net Weight
+                </label>
+                <input
+                  type="text"
+                  value={formData.netWeight}
+                  onChange={(e) => setFormData({ ...formData, netWeight: e.target.value })}
+                  placeholder="e.g. 150g or 45g"
+                  className="admin-input"
+                />
+                <span style={{ fontSize: '0.68rem', color: '#665A52', marginTop: '0.25rem', display: 'block' }}>
+                  Shown to customer on product page.
+                </span>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                  Shipping Weight (g)
+                </label>
+                <input
+                  type="text"
+                  value={formData.shippingWeight}
+                  onChange={(e) => setFormData({ ...formData, shippingWeight: e.target.value })}
+                  placeholder="e.g. 150"
+                  className="admin-input"
+                />
+                <span style={{ fontSize: '0.68rem', color: '#665A52', marginTop: '0.25rem', display: 'block' }}>
+                  Used by Shiprath for non-variant products.
+                </span>
               </div>
 
               <div>
