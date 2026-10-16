@@ -92,6 +92,19 @@ export default function ProductDetail() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isLightboxOpen]);
 
+  const totalReviewsCount = Number(
+    (reviewsData && reviewsData.totalReviews !== undefined && reviewsData.totalReviews !== null)
+      ? reviewsData.totalReviews
+      : (Array.isArray(reviewsData?.reviews) ? reviewsData.reviews.length : (product?.reviewCount || 0))
+  ) || 0;
+  const hasReviews = totalReviewsCount > 0;
+
+  useEffect(() => {
+    if (activeTab === 'reviews' && !hasReviews) {
+      setActiveTab('nutrition');
+    }
+  }, [activeTab, hasReviews]);
+
   const fetchProduct = async () => {
     setLoading(true);
     try {
@@ -175,7 +188,7 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F0E5' }}>
+      <div style={{ minHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', color: '#32180D' }}>
           <div className="animate-spin" style={{ width: '40px', height: '40px', border: '3px solid #DCC8AE', borderTopColor: '#2F6B3A', borderRadius: '50%' }} />
           <span style={{ fontSize: '0.95rem', fontWeight: '600', letterSpacing: '0.05em' }}>Loading Product Details...</span>
@@ -186,7 +199,7 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div style={{ minHeight: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F0E5', color: '#32180D', textAlign: 'center', padding: '2rem' }}>
+      <div style={{ minHeight: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', color: '#32180D', textAlign: 'center', padding: '2rem' }}>
         <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '1rem' }}>Product Not Found</h2>
         <p style={{ color: '#654B38', marginBottom: '1.5rem' }}>The product you are looking for does not exist or has been removed.</p>
         <Link to="/shop" className="btn-primary" style={{ padding: '0.75rem 1.5rem', borderRadius: '999px', backgroundColor: '#2F6B3A', color: '#FFFFFF', textDecoration: 'none' }}>
@@ -287,19 +300,6 @@ export default function ProductDetail() {
   })();
 
   const wishlisted = isInWishlist(product._id || product.id || product.slug);
-
-  const totalReviewsCount = Number(
-    (reviewsData && reviewsData.totalReviews !== undefined && reviewsData.totalReviews !== null)
-      ? reviewsData.totalReviews
-      : (Array.isArray(reviewsData?.reviews) ? reviewsData.reviews.length : (product.reviewCount || 0))
-  ) || 0;
-  const hasReviews = totalReviewsCount > 0;
-
-  useEffect(() => {
-    if (activeTab === 'reviews' && !hasReviews) {
-      setActiveTab('nutrition');
-    }
-  }, [activeTab, hasReviews]);
 
   const handleQuantityIncrease = () => {
     if (quantity >= currentStock) {
@@ -481,7 +481,22 @@ export default function ProductDetail() {
   );
 
   return (
-    <div style={{ backgroundColor: '#F7F0E5', color: '#2B170D', minHeight: '100vh', paddingTop: '1rem', paddingBottom: '5rem' }}>
+    <div
+      style={{
+        backgroundColor: 'transparent',
+        backgroundImage: 'linear-gradient(rgba(247, 240, 229, 0.25), rgba(247, 240, 229, 0.25)), url(/images/about_background_image.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat',
+        color: '#2B170D',
+        minHeight: '100vh',
+        paddingTop: '1rem',
+        paddingBottom: '5rem',
+        width: '100%',
+        boxSizing: 'border-box'
+      }}
+    >
 
       {/* Auth Prompt Modal for Logged-Out Guest Purchases */}
       <AuthPromptModal
