@@ -25,6 +25,7 @@ import productDiscoveryRoutes from './routes/productDiscoveryRoutes.js';
 import shipratRoutes from './routes/shipratRoutes.js';
 import cancellationRoutes from './routes/cancellationRoutes.js';
 import { supabase } from './config/supabase.js';
+import { sweepConfirmedOrders } from './controllers/orderController.js';
 
 dotenv.config();
 
@@ -156,4 +157,8 @@ app.listen(PORT, async () => {
   console.log(`🚀 MILASTY API Server running on port ${PORT}`);
   // Check cart column on startup
   await ensureCartColumn();
+  // Sweep confirmed orders older than 3 hours on startup
+  await sweepConfirmedOrders();
+  // Schedule sweep every 5 minutes
+  setInterval(sweepConfirmedOrders, 5 * 60 * 1000);
 });

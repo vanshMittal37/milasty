@@ -61,6 +61,7 @@ export default function AdminProductForm() {
     originalPrice: '',
     discountType: 'none',
     discountValue: '',
+    shippingWeight: '',
     stock: '',
     pieces: '',
     netWeight: '',
@@ -335,7 +336,7 @@ export default function AdminProductForm() {
           stock: p.stock !== undefined && p.stock !== null ? p.stock : '',
           pieces: p.pieces || p.nutritionFacts?.pieces || '',
           netWeight: p.netWeight || p.net_weight || p.nutritionFacts?.net_weight || p.nutritionFacts?.netWeight || '',
-          shippingWeight: p.shippingWeight || p.shipping_weight || p.nutritionFacts?.shipping_weight || p.nutritionFacts?.shippingWeight || '',
+          shippingWeight: p.shippingWeight !== undefined && p.shippingWeight !== null && p.shippingWeight !== '' ? p.shippingWeight : (p.shipping_weight !== undefined && p.shipping_weight !== null && p.shipping_weight !== '' ? p.shipping_weight : (p.nutritionFacts?.shipping_weight || p.nutritionFacts?.shippingWeight || '')),
           sku: p.sku || '',
           status: p.status || (p.is_active !== false ? 'active' : 'inactive'),
           isFeatured: p.isFeatured !== false,
@@ -350,9 +351,17 @@ export default function AdminProductForm() {
           targetAudience: p.targetAudience || p.target_audience || '',
           allow_customization: Boolean(p.allow_customization || p.allowCustomization),
           customization_placeholder: p.customization_placeholder || p.customizationPlaceholder || '',
-          variants: (p.variants || []).map(v => ({
-            ...v,
-            stock: v.stock !== undefined && v.stock !== null ? v.stock : (v.in_stock ? 50 : 0)
+          variants: (p.variants || []).map((v) => ({
+            id: v.id,
+            name: v.name || '',
+            weight: v.weight || '',
+            originalPrice: v.originalPrice !== undefined && v.originalPrice !== null ? v.originalPrice : (v.original_price !== undefined && v.original_price !== null ? v.original_price : (v.price || '')),
+            discountType: v.discountType || v.discount_type || 'none',
+            discountValue: v.discountValue !== undefined && v.discountValue !== null ? v.discountValue : (v.discount_value !== undefined && v.discount_value !== null ? v.discount_value : ''),
+            price: v.price !== undefined && v.price !== null ? v.price : '',
+            stock: v.stock !== undefined && v.stock !== null ? v.stock : (v.in_stock ? 50 : 0),
+            shippingWeight: v.shippingWeight !== undefined && v.shippingWeight !== null ? v.shippingWeight : (v.shipping_weight !== undefined && v.shipping_weight !== null ? v.shipping_weight : ''),
+            sku: v.sku || '',
           })),
         });
 
@@ -606,15 +615,37 @@ export default function AdminProductForm() {
   // Variant helpers
   const handleVariantChange = (index, field, value) => {
     const updated = [...formData.variants];
-    updated[index] = { ...updated[index], [field]: value };
-    setFormData({ ...formData, variants: updated });
+    const current = { ...updated[index], [field]: value };
+
+    if (field === 'originalPrice' || field === 'discountType' || field === 'discountValue') {
+      const orig = field === 'originalPrice' ? value : current.originalPrice;
+      const dType = field === 'discountType' ? value : (current.discountType || 'none');
+      const dVal = field === 'discountValue' ? value : (current.discountValue || '');
+      current.price = computeBasePrice(orig, dType, dVal);
+    }
+
+    updated[index] = current;
+    setFormData((prev) => ({ ...prev, variants: updated }));
   };
 
   const addVariant = () => {
-    setFormData({
-      ...formData,
-      variants: [...formData.variants, { name: '', weight: '', price: '', originalPrice: '', stock: '' }],
-    });
+    setFormData((prev) => ({
+      ...prev,
+      variants: [
+        ...prev.variants,
+        {
+          name: '',
+          weight: '',
+          originalPrice: '',
+          discountType: 'none',
+          discountValue: '',
+          price: '',
+          stock: '',
+          shippingWeight: '',
+          sku: '',
+        },
+      ],
+    }));
   };
 
   const removeVariant = (index) => {
@@ -705,19 +736,30 @@ export default function AdminProductForm() {
     const isBestsellerActive = formData.isBestseller === true;
     const finalPayloadBadges = [...new Set(badgesList)].filter((b) => !/best\s*seller/i.test(String(b)));
 
-    let updatedPayloadVariants = Array.isArray(formData.variants) ? [...formData.variants] : [];
-    if (updatedPayloadVariants.length > 0) {
-      updatedPayloadVariants = updatedPayloadVariants.map((v, idx) => {
-        if (updatedPayloadVariants.length === 1 || idx === 0 || v.name === 'Standard Pack') {
-          return {
-            ...v,
-            price: calculatedFinalPrice,
-            originalPrice: calculatedOriginalPrice,
-          };
-        }
-        return v;
-      });
-    }
+    let updatedPayloadVariants = (Array.isArray(formData.variants) ? formData.variants : []).map((v) => {
+      const orig = Number(v.originalPrice);
+      const pr = Number(v.price);
+      const finalPrice = (!isNaN(pr) && pr >= 0) ? pr : ((!isNaN(orig) && orig > 0) ? orig : 0);
+      const finalOrig = (!isNaN(orig) && orig > 0) ? orig : finalPrice;
+      const shipWeight = v.shippingWeight !== '' && v.shippingWeight !== null && v.shippingWeight !== undefined ? Number(v.shippingWeight) : null;
+      return {
+        ...v,
+        id: v.id || undefined,
+        name: v.name || 'Standard Pack',
+        weight: v.weight || 'Standard',
+        originalPrice: finalOrig,
+        original_price: finalOrig,
+        discountType: v.discountType || 'none',
+        discount_type: v.discountType || 'none',
+        discountValue: v.discountValue !== '' && v.discountValue !== null && v.discountValue !== undefined ? Number(v.discountValue) : 0,
+        discount_value: v.discountValue !== '' && v.discountValue !== null && v.discountValue !== undefined ? Number(v.discountValue) : 0,
+        price: finalPrice,
+        stock: v.stock !== '' && v.stock !== null && v.stock !== undefined ? Number(v.stock) : 50,
+        shippingWeight: shipWeight,
+        shipping_weight: shipWeight,
+        sku: v.sku || '',
+      };
+    });
 
     const cleanLabReports = (formData.labReports || [])
       .map((r) => ({ title: String(r.title || '').trim(), url: String(r.url || '').trim() }))
@@ -725,14 +767,14 @@ export default function AdminProductForm() {
 
     const payload = {
       ...formData,
+      shippingWeight: formData.shippingWeight !== '' && formData.shippingWeight !== null && formData.shippingWeight !== undefined ? Number(formData.shippingWeight) : null,
+      shipping_weight: formData.shippingWeight !== '' && formData.shippingWeight !== null && formData.shippingWeight !== undefined ? Number(formData.shippingWeight) : null,
       variants: updatedPayloadVariants,
       isBestseller: isBestsellerActive,
       is_bestseller: isBestsellerActive,
       pieces: formData.pieces ? String(formData.pieces).trim() : '',
       netWeight: formData.netWeight ? String(formData.netWeight).trim() : '',
       net_weight: formData.netWeight ? String(formData.netWeight).trim() : '',
-      shippingWeight: formData.shippingWeight ? String(formData.shippingWeight).trim() : '',
-      shipping_weight: formData.shippingWeight ? String(formData.shippingWeight).trim() : '',
       badges: finalPayloadBadges,
       ingredients: ingredientsList,
       benefits: benefitsList,
@@ -1632,7 +1674,7 @@ export default function AdminProductForm() {
                   />
                 </div>
 
-                <div>
+                <div style={{ minWidth: '165px' }}>
                   <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
                     Discount Type
                   </label>
@@ -1640,6 +1682,7 @@ export default function AdminProductForm() {
                     value={formData.discountType}
                     onChange={(e) => handleDiscountTypeChange(e.target.value)}
                     className="admin-input"
+                    style={{ height: '38px', minWidth: '165px', width: '100%', fontSize: '0.85rem', padding: '0.35rem 2rem 0.35rem 0.75rem', lineHeight: '1.4' }}
                   >
                     <option value="none">No Discount</option>
                     <option value="percentage">Percentage (%)</option>
@@ -1727,7 +1770,9 @@ export default function AdminProductForm() {
                   Shipping Weight (g)
                 </label>
                 <input
-                  type="text"
+                  type="number"
+                  min="0"
+                  step="any"
                   value={formData.shippingWeight}
                   onChange={(e) => setFormData({ ...formData, shippingWeight: e.target.value })}
                   placeholder="e.g. 150"
@@ -1754,10 +1799,10 @@ export default function AdminProductForm() {
 
             {/* Pack Variants List */}
             <div style={{ border: '1px solid rgba(231, 222, 213, 0.65)', padding: '1.25rem', borderRadius: '12px', backgroundColor: 'var(--admin-surface-elevated)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div>
                   <h4 style={{ fontSize: '0.92rem', color: '#21150F', fontWeight: '800', margin: 0 }}>Pack Weight Variants</h4>
-                  <p style={{ fontSize: '0.74rem', color: '#665A52', margin: '0.15rem 0 0 0' }}>Add pack size options (e.g., 100g, 250g, 500g).</p>
+                  <p style={{ fontSize: '0.74rem', color: '#665A52', margin: '0.15rem 0 0 0' }}>Configure individual variant pricing, discounts, stock, and shipping weight.</p>
                 </div>
                 <button type="button" onClick={addVariant} className="admin-btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.78rem' }}>
                   <Plus size={14} /> Add Variant Option
@@ -1770,28 +1815,167 @@ export default function AdminProductForm() {
                 </div>
               )}
               {formData.variants && formData.variants.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {formData.variants.map((v, index) => (
-                    <div key={index} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr)) 44px', gap: '0.75rem', alignItems: 'end', padding: '0.85rem', borderRadius: '10px', backgroundColor: 'var(--admin-surface-card)', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
-                      <div>
-                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Name</label>
-                        <input type="text" value={v.name} onChange={(e) => handleVariantChange(index, 'name', e.target.value)} placeholder="Regular Pack" className="admin-input" style={{ height: '36px', fontSize: '0.8rem' }} />
+                    <div
+                      key={index}
+                      style={{
+                        padding: '1rem',
+                        borderRadius: '12px',
+                        backgroundColor: 'var(--admin-surface-card)',
+                        border: '1px solid rgba(231, 222, 213, 0.75)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.75rem'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(231, 222, 213, 0.8)', paddingBottom: '0.4rem' }}>
+                        <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#8C5E38' }}>
+                          Variant #{index + 1}: {v.name || 'Unnamed Variant'} {v.price ? `— ₹${v.price}` : ''}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeVariant(index)}
+                          className="admin-icon-btn"
+                          style={{ color: '#C62828', height: '30px', width: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="Remove Variant"
+                        >
+                          <Trash2 size={15} />
+                        </button>
                       </div>
-                      <div>
-                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Weight</label>
-                        <input type="text" value={v.weight} onChange={(e) => handleVariantChange(index, 'weight', e.target.value)} placeholder="100g" className="admin-input" style={{ height: '36px', fontSize: '0.8rem' }} />
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem', alignItems: 'end' }}>
+                        {/* 1. Variant Name */}
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Variant Name</label>
+                          <input
+                            type="text"
+                            value={v.name || ''}
+                            onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
+                            placeholder="e.g. Regular Pack"
+                            className="admin-input"
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
+                          />
+                        </div>
+
+                        {/* 2. Product Weight */}
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Net Weight</label>
+                          <input
+                            type="text"
+                            value={v.weight || ''}
+                            onChange={(e) => handleVariantChange(index, 'weight', e.target.value)}
+                            placeholder="e.g. 100g"
+                            className="admin-input"
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
+                          />
+                        </div>
+
+                        {/* 3. Original Price / MRP (₹) */}
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>MRP / Orig Price (₹)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="any"
+                            value={v.originalPrice !== undefined ? v.originalPrice : ''}
+                            onChange={(e) => handleVariantChange(index, 'originalPrice', e.target.value)}
+                            placeholder="e.g. 120"
+                            className="admin-input"
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
+                          />
+                        </div>
+
+                        {/* 4. Discount Type */}
+                        <div style={{ minWidth: '160px' }}>
+                          <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Discount Type</label>
+                          <select
+                            value={v.discountType || 'none'}
+                            onChange={(e) => handleVariantChange(index, 'discountType', e.target.value)}
+                            className="admin-input"
+                            style={{ height: '38px', minWidth: '160px', width: '100%', fontSize: '0.82rem', padding: '0.35rem 2rem 0.35rem 0.75rem', lineHeight: '1.4' }}
+                          >
+                            <option value="none">No Discount</option>
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="fixed">Fixed Flat (₹)</option>
+                          </select>
+                        </div>
+
+                        {/* 5. Discount Value */}
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Discount Value</label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="any"
+                            value={v.discountValue !== undefined ? v.discountValue : ''}
+                            disabled={!v.discountType || v.discountType === 'none'}
+                            onChange={(e) => handleVariantChange(index, 'discountValue', e.target.value)}
+                            placeholder="0"
+                            className="admin-input"
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
+                          />
+                        </div>
+
+                        {/* 6. Automatically Calculated Selling Price (₹) */}
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#2F6B3A', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                            <span>Selling Price (₹)</span>
+                            <span style={{ fontSize: '0.58rem', backgroundColor: '#E3EEDC', color: '#2F6B3A', padding: '0.1rem 0.3rem', borderRadius: '3px', fontWeight: '800' }}>AUTO</span>
+                          </label>
+                          <input
+                            type="number"
+                            value={v.price !== undefined ? v.price : ''}
+                            readOnly
+                            placeholder="Auto"
+                            className="admin-input"
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4', backgroundColor: 'rgba(231, 222, 213, 0.4)', fontWeight: '850', color: '#2F6B3A', cursor: 'not-allowed' }}
+                          />
+                        </div>
+
+                        {/* 7. Stock Quantity */}
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Stock Qty</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={v.stock !== undefined ? v.stock : ''}
+                            onChange={(e) => handleVariantChange(index, 'stock', e.target.value)}
+                            placeholder="50"
+                            className="admin-input"
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
+                          />
+                        </div>
+
+                        {/* 8. Shipping Weight (g) */}
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Shipping Wt (g)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="any"
+                            value={v.shippingWeight !== undefined ? v.shippingWeight : ''}
+                            onChange={(e) => handleVariantChange(index, 'shippingWeight', e.target.value)}
+                            placeholder="e.g. 150"
+                            className="admin-input"
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
+                          />
+                        </div>
+
+                        {/* 9. SKU Code */}
+                        <div>
+                          <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>SKU Code</label>
+                          <input
+                            type="text"
+                            value={v.sku || ''}
+                            onChange={(e) => handleVariantChange(index, 'sku', e.target.value)}
+                            placeholder="MLS-VAR-001"
+                            className="admin-input"
+                            style={{ height: '38px', fontSize: '0.82rem', padding: '0.35rem 0.65rem', lineHeight: '1.4' }}
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Price (₹)</label>
-                        <input type="number" value={v.price} onChange={(e) => handleVariantChange(index, 'price', e.target.value)} placeholder="99" className="admin-input" style={{ height: '36px', fontSize: '0.8rem' }} />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: '0.68rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>Stock</label>
-                        <input type="number" value={v.stock} onChange={(e) => handleVariantChange(index, 'stock', e.target.value)} placeholder="50" className="admin-input" style={{ height: '36px', fontSize: '0.8rem' }} />
-                      </div>
-                      <button type="button" onClick={() => removeVariant(index)} className="admin-icon-btn" style={{ color: '#C62828', height: '36px' }}>
-                        <Trash2 size={14} />
-                      </button>
                     </div>
                   ))}
                 </div>

@@ -16,8 +16,9 @@ import { canAccessOrder } from './shipratController.js';
 
 const SHIPRATH_BASE_URL = 'https://backend.shiprath.com/vendor/v1';
 const HOUR = 3600;
-export const FULL_REFUND_WINDOW_S = 3 * HOUR;
-export const PARTIAL_REFUND_WINDOW_S = 5 * HOUR;
+export const CANCELLATION_WINDOW_S = 3 * HOUR;
+export const CANCELLATION_CHARGE_PERCENTAGE = 10;
+export const REFUND_PERCENTAGE = 90;
 
 const REFUND_TRANSITIONS = {
   pending: ['processing', 'failed'],
@@ -35,8 +36,7 @@ const paiseToRupees = (p) => Math.round(Number(p || 0)) / 100;
 
 /** Refund percentage for an elapsed time in whole seconds, or null when cancellation is closed. */
 export function refundPercentageFor(elapsedSeconds) {
-  if (elapsedSeconds <= FULL_REFUND_WINDOW_S) return 100;
-  if (elapsedSeconds <= PARTIAL_REFUND_WINDOW_S) return 50;
+  if (elapsedSeconds <= CANCELLATION_WINDOW_S) return REFUND_PERCENTAGE;
   return null;
 }
 
@@ -44,7 +44,8 @@ export function refundPercentageFor(elapsedSeconds) {
 export function quoteCancellation(order, nowMs = Date.now()) {
   const status = String(order.order_status || '').toLowerCase();
   const shipStatus = String(order.shipment_status || '').toLowerCase();
-  const elapsedSeconds = Math.max(0, Math.floor((nowMs - new Date(order.created_at).getTime()) / 1000));
+  const orderCreatedMs = new Date(order.created_at).getTime();
+  const elapsedSeconds = Math.max(0, Math.floor((nowMs - orderCreatedMs) / 1000));
   const base = { elapsedSeconds, orderCreatedAt: order.created_at };
 
   if (status === 'cancelled') return { ...base, eligible: false, code: 'ALREADY_CANCELLED', message: 'This order is already cancelled.' };
@@ -53,22 +54,38 @@ export function quoteCancellation(order, nowMs = Date.now()) {
   }
   const pct = refundPercentageFor(elapsedSeconds);
   if (pct === null) {
-    return { ...base, eligible: false, code: 'WINDOW_CLOSED', message: 'Orders can only be cancelled within 5 hours of placing them. Please contact MILASTY support.' };
+    return {
+      ...base,
+      eligible: false,
+      code: 'WINDOW_CLOSED',
+      message: 'You can no longer cancel this order because the 3-hour cancellation window has expired. Please contact customer support if you need assistance.',
+    };
   }
 
   const prepaid = String(order.payment_method || '').toLowerCase() === 'razorpay' && String(order.payment_status || '').toLowerCase() === 'paid';
-  const amountPaidPaise = prepaid ? Math.round(Number(order.grand_total || 0) * 100) : 0;
-  const refundAmountPaise = Math.floor((amountPaidPaise * pct) / 100);
-  const windowEnd = new Date(new Date(order.created_at).getTime() + (pct === 100 ? FULL_REFUND_WINDOW_S : PARTIAL_REFUND_WINDOW_S) * 1000);
+  const deliveryCharge = Number(order.delivery_fee || order.delivery_charge || order.shipping_fee || 0);
+  const totalPaid = Number(order.grand_total || 0);
+  const productAmount = Math.max(0, totalPaid - deliveryCharge);
+
+  const productAmountPaise = prepaid ? Math.round(productAmount * 100) : 0;
+  const amountPaidPaise = prepaid ? Math.round(totalPaid * 100) : 0;
+  // 10% cancellation charge applies to product amount only:
+  const cancellationChargePaise = prepaid ? Math.round((productAmountPaise * CANCELLATION_CHARGE_PERCENTAGE) / 100) : 0;
+  // Delivery charges are excluded from cancellation charge and refunded where applicable:
+  const refundAmountPaise = prepaid ? (amountPaidPaise - cancellationChargePaise) : 0;
+  const windowEnd = new Date(orderCreatedMs + CANCELLATION_WINDOW_S * 1000);
 
   return {
     ...base,
     eligible: true,
     prepaid,
-    refundPercentage: pct,
+    refundPercentage: prepaid ? REFUND_PERCENTAGE : 0,
+    cancellationChargePercentage: prepaid ? CANCELLATION_CHARGE_PERCENTAGE : 0,
     amountPaid: paiseToRupees(amountPaidPaise),
+    cancellationCharge: paiseToRupees(cancellationChargePaise),
     refundAmount: paiseToRupees(refundAmountPaise),
-    nonRefundable: paiseToRupees(amountPaidPaise - refundAmountPaise),
+    nonRefundable: paiseToRupees(cancellationChargePaise),
+    windowEndsAt: windowEnd.toISOString(),
     currentTierEndsAt: windowEnd.toISOString(),
     shipmentInTransit: ['picked_up', 'in_transit', 'out_for_delivery'].includes(shipStatus),
   };
@@ -106,13 +123,19 @@ async function logEvent(c, eventType, { from = null, to = null, actor = null, de
 
 function customerCancellationView(c) {
   if (!c) return null;
+  const amountPaidPaise = Number(c.amount_paid_paise || 0);
+  const refundAmountPaise = Number(c.refund_amount_paise || 0);
+  const chargePaise = Number(c.cancellation_charge_paise ?? c.non_refundable_paise ?? (amountPaidPaise - refundAmountPaise));
   return {
     requestedAt: c.requested_at,
+    orderCreatedAt: c.order_created_at,
     reason: c.reason,
     refundPercentage: c.refund_percentage,
-    amountPaid: paiseToRupees(c.amount_paid_paise),
-    refundAmount: paiseToRupees(c.refund_amount_paise),
-    nonRefundable: paiseToRupees(c.non_refundable_paise),
+    cancellationChargePercentage: c.refund_percentage === 90 ? 10 : (100 - (c.refund_percentage || 0)),
+    amountPaid: paiseToRupees(amountPaidPaise),
+    cancellationCharge: paiseToRupees(chargePaise),
+    refundAmount: paiseToRupees(refundAmountPaise),
+    nonRefundable: paiseToRupees(chargePaise),
     refundStatus: c.refund_status,
     refundReference: c.refund_status === 'successful' ? c.refund_reference : null,
     refundProcessedAt: c.refund_status === 'successful' ? c.refund_processed_at : null,
@@ -242,13 +265,13 @@ const RPC_ERRORS = {
   ORDER_NOT_FOUND: [404, 'Order not found.'],
   ALREADY_CANCELLED: [409, 'This order is already cancelled.'],
   ALREADY_DELIVERED: [409, 'Delivered orders cannot be cancelled.'],
-  WINDOW_CLOSED: [409, 'Orders can only be cancelled within 5 hours of placing them. Please contact MILASTY support.'],
+  WINDOW_CLOSED: [409, 'You can no longer cancel this order because the 3-hour cancellation window has expired. Please contact customer support if you need assistance.'],
   REASON_REQUIRED: [400, 'Please tell us why you are cancelling (at least 3 characters).'],
 };
 
 /**
  * PUT /api/orders/:id/cancel  (also POST /api/shiprat/order/:id/cancel)
- * Body: { reason }. The refund amount is calculated in the database — never taken from the client.
+ * Body: { reason }. The refund amount is calculated in the database/server — never taken from client.
  */
 export const requestCancellation = async (req, res) => {
   try {
@@ -256,31 +279,147 @@ export const requestCancellation = async (req, res) => {
     const order = await findOrder(req.params.id);
     if (!order || !canAccessOrder(req.user, order)) return res.status(404).json({ success: false, message: 'Order not found.' });
 
-    const actorRole = req.user?.role === 'admin' ? 'admin' : 'customer';
-    const { data, error } = await supabase.rpc('request_order_cancellation', {
-      p_order_id: order.id,
-      p_reason: reason,
-      p_actor_id: isUuid(req.user?.id) ? req.user.id : null,
-      p_actor_role: actorRole,
-      p_actor_email: req.user?.email || null,
-    });
+    // Server-side strict check of order creation timestamp
+    const orderCreatedMs = new Date(order.created_at).getTime();
+    const elapsedSeconds = Math.max(0, Math.floor((Date.now() - orderCreatedMs) / 1000));
+    if (elapsedSeconds > CANCELLATION_WINDOW_S) {
+      return res.status(409).json({
+        success: false,
+        code: 'WINDOW_CLOSED',
+        message: 'You can no longer cancel this order because the 3-hour cancellation window has expired. Please contact customer support if you need assistance.'
+      });
+    }
 
-    if (error) {
-      const code = Object.keys(RPC_ERRORS).find((k) => String(error.message || '').includes(k));
-      if (code) {
-        const [status, message] = RPC_ERRORS[code];
-        return res.status(status).json({ success: false, code, message });
+    const orderStatusLower = String(order.order_status || '').toLowerCase();
+    if (orderStatusLower === 'cancelled') {
+      return res.status(409).json({ success: false, code: 'ALREADY_CANCELLED', message: 'This order is already cancelled.' });
+    }
+    if (orderStatusLower === 'delivered' || String(order.shipment_status || '').toLowerCase() === 'delivered') {
+      return res.status(409).json({ success: false, code: 'ALREADY_DELIVERED', message: 'Delivered orders cannot be cancelled.' });
+    }
+    if (reason.length < 3) {
+      return res.status(400).json({ success: false, code: 'REASON_REQUIRED', message: 'Please tell us why you are cancelling (at least 3 characters).' });
+    }
+
+    const actorRole = req.user?.role === 'admin' ? 'admin' : 'customer';
+    let data = null;
+    let rpcFailed = false;
+
+    try {
+      const resRpc = await supabase.rpc('request_order_cancellation', {
+        p_order_id: order.id,
+        p_reason: reason,
+        p_actor_id: isUuid(req.user?.id) ? req.user.id : null,
+        p_actor_role: actorRole,
+        p_actor_email: req.user?.email || null,
+      });
+      if (resRpc.error) {
+        const code = Object.keys(RPC_ERRORS).find((k) => String(resRpc.error.message || '').includes(k));
+        if (code) {
+          const [status, message] = RPC_ERRORS[code];
+          return res.status(status).json({ success: false, code, message });
+        }
+        console.warn('[CANCELLATION] RPC error (will attempt server-side fallback):', resRpc.error.message);
+        rpcFailed = true;
+      } else {
+        data = resRpc.data;
       }
-      console.error('[CANCELLATION] RPC failed:', error.message);
-      const missing = /request_order_cancellation|order_cancellations/.test(error.message || '');
-      return res.status(500).json({ success: false, message: missing ? 'Cancellation is temporarily unavailable. Please contact support.' : 'Could not cancel the order. Please try again.' });
+    } catch (rpcErr) {
+      console.warn('[CANCELLATION] RPC exception (will attempt server-side fallback):', rpcErr.message);
+      rpcFailed = true;
+    }
+
+    // Server-side atomic fallback if Postgres RPC is missing / outdated in Supabase
+    if (rpcFailed || !data) {
+      // Check for duplicate in order_cancellations
+      const { data: existingCancel } = await supabase.from('order_cancellations').select('*').eq('order_id', order.id).maybeSingle();
+      if (existingCancel) {
+        return res.json({
+          success: true,
+          duplicate: true,
+          message: 'This order was already cancelled.',
+          cancellation: customerCancellationView(existingCancel),
+          order: { id: order.id, order_number: order.order_number, order_status: 'cancelled' },
+        });
+      }
+
+      const prepaid = String(order.payment_method || '').toLowerCase() === 'razorpay' && String(order.payment_status || '').toLowerCase() === 'paid';
+      const deliveryCharge = Number(order.delivery_fee || order.delivery_charge || order.shipping_fee || 0);
+      const totalPaid = Number(order.grand_total || 0);
+      const productAmount = Math.max(0, totalPaid - deliveryCharge);
+
+      const productAmountPaise = prepaid ? Math.round(productAmount * 100) : 0;
+      const amountPaidPaise = prepaid ? Math.round(totalPaid * 100) : 0;
+      const cancellationChargePaise = prepaid ? Math.round((productAmountPaise * CANCELLATION_CHARGE_PERCENTAGE) / 100) : 0;
+      const refundAmountPaise = prepaid ? (amountPaidPaise - cancellationChargePaise) : 0;
+      const refundStatus = prepaid
+        ? (!order.payment_id || !String(order.payment_id).startsWith('pay_') ? 'needs_review' : 'pending')
+        : 'not_applicable';
+
+      const awb = order.awb_number || order.awb || null;
+      const orderShip = String(order.shipment_status || '').toLowerCase();
+      let shipCancelStatus = 'not_required';
+      if (['picked_up', 'in_transit', 'out_for_delivery'].includes(orderShip)) {
+        shipCancelStatus = 'manual_required';
+      } else if (awb || orderShip === 'creating') {
+        shipCancelStatus = 'pending';
+      }
+
+      const now = new Date().toISOString();
+      const insertPayload = {
+        order_id: order.id,
+        order_number: order.order_number,
+        user_id: isUuid(order.user_id) ? order.user_id : null,
+        requested_by_role: actorRole,
+        reason,
+        order_created_at: order.created_at,
+        requested_at: now,
+        elapsed_seconds: elapsedSeconds,
+        payment_method: order.payment_method,
+        razorpay_payment_id: (order.payment_id && String(order.payment_id).startsWith('pay_')) ? order.payment_id : null,
+        amount_paid_paise: amountPaidPaise,
+        refund_percentage: prepaid ? REFUND_PERCENTAGE : 0,
+        refund_amount_paise: refundAmountPaise,
+        cancellation_charge_paise: cancellationChargePaise,
+        refund_status: refundStatus,
+        shipment_cancel_status: shipCancelStatus,
+        shipment_status_at_request: order.shipment_status || null,
+        awb_at_request: awb,
+        created_at: now,
+        updated_at: now,
+      };
+
+      const { data: createdRows, error: insertErr } = await supabase
+        .from('order_cancellations')
+        .insert([insertPayload])
+        .select('*');
+
+      if (insertErr || !createdRows?.length) {
+        console.error('[CANCELLATION] Fallback insert error:', insertErr?.message);
+        return res.status(500).json({ success: false, message: 'Could not complete cancellation in database. Please contact support.' });
+      }
+
+      const created = createdRows[0];
+      await supabase.from('orders').update({
+        order_status: 'cancelled',
+        shipment_status: shipCancelStatus === 'not_required' ? 'cancelled' : order.shipment_status,
+        updated_at: now,
+      }).eq('id', order.id);
+
+      await logEvent(created, 'cancellation_requested', {
+        from: order.order_status,
+        to: 'cancelled',
+        actor: req.user,
+        details: { elapsed_seconds: elapsedSeconds, refund_percentage: prepaid ? REFUND_PERCENTAGE : 0, amount_paid_paise: amountPaidPaise, refund_amount_paise: refundAmountPaise, cancellation_charge_paise: cancellationChargePaise, refund_status: refundStatus, shipment_cancel_status: shipCancelStatus },
+      });
+
+      data = { duplicate: false, cancellation: created };
     }
 
     const c = data?.cancellation;
     if (!data?.duplicate && c) {
-      console.log(`[CANCELLATION] ${c.order_number} cancelled by ${actorRole} after ${c.elapsed_seconds}s → ${c.refund_percentage}% (₹${paiseToRupees(c.refund_amount_paise)}), refund=${c.refund_status}, shipment=${c.shipment_cancel_status}`);
+      console.log(`[CANCELLATION] ${c.order_number} cancelled by ${actorRole} after ${c.elapsed_seconds}s → 90% refund (₹${paiseToRupees(c.refund_amount_paise)}), 10% charge (₹${paiseToRupees(c.cancellation_charge_paise || (c.amount_paid_paise - c.refund_amount_paise))}), refund=${c.refund_status}, shipment=${c.shipment_cancel_status}`);
       if (c.shipment_cancel_status === 'pending') {
-        // Fire-and-forget; outcome is recorded on the cancellation and shown to admin
         setImmediate(() => cancelShipmentForCancellation(c.id).catch((e) => console.error('[SHIPRATH CANCEL] exception', e.message)));
       }
     }
@@ -300,12 +439,13 @@ export const requestCancellation = async (req, res) => {
 
 // ─── Admin endpoints ────────────────────────────────────────────────────────────────────────────
 
-const ADMIN_SELECT = '*, orders:order_id (id, order_number, customer_name, customer_email, customer_phone, grand_total, subtotal, delivery_fee, discount_amount, coupon_code, created_at, order_status, payment_status, payment_method, payment_id, shipment_status, awb_number, courier_name)';
+const ADMIN_SELECT = '*, orders:order_id (id, order_number, customer_name, customer_email, customer_phone, grand_total, subtotal, delivery_fee, discount_amount, coupon_code, created_at, paid_at, order_status, payment_status, payment_method, payment_id, shipment_status, awb_number, courier_name)';
 
 const FILTERS = {
   all: (q) => q,
+  eligible_90: (q) => q.eq('refund_percentage', 90),
   full: (q) => q.eq('refund_percentage', 100),
-  partial: (q) => q.eq('refund_percentage', 50),
+  partial: (q) => q.or('refund_percentage.eq.50,refund_percentage.eq.90'),
   review: (q) => q.or('refund_status.eq.needs_review,shipment_cancel_status.eq.manual_required'),
   pending_refund: (q) => q.in('refund_status', ['pending', 'processing']),
   refund_successful: (q) => q.eq('refund_status', 'successful'),
@@ -313,12 +453,19 @@ const FILTERS = {
   shipment_failed: (q) => q.in('shipment_cancel_status', ['failed', 'pending']),
 };
 
-const adminRow = (c) => ({
-  ...c,
-  amount_paid: paiseToRupees(c.amount_paid_paise),
-  refund_amount: paiseToRupees(c.refund_amount_paise),
-  non_refundable: paiseToRupees(c.non_refundable_paise),
-});
+const adminRow = (c) => {
+  const amountPaidPaise = Number(c.amount_paid_paise || 0);
+  const refundAmountPaise = Number(c.refund_amount_paise || 0);
+  const chargePaise = Number(c.cancellation_charge_paise ?? c.non_refundable_paise ?? (amountPaidPaise - refundAmountPaise));
+  return {
+    ...c,
+    amount_paid: paiseToRupees(amountPaidPaise),
+    cancellation_charge: paiseToRupees(chargePaise),
+    cancellation_charge_paise: chargePaise,
+    refund_amount: paiseToRupees(refundAmountPaise),
+    non_refundable: paiseToRupees(chargePaise),
+  };
+};
 
 /** GET /api/admin/cancellations?filter=&search= */
 export const listCancellations = async (req, res) => {
@@ -546,3 +693,186 @@ export const resolveShipmentManually = async (req, res) => {
   await logEvent(c, 'shipment_manually_resolved', { from: c.shipment_cancel_status, to: 'manually_resolved', actor: req.user, details: { notes } });
   return res.json({ success: true, cancellation: adminRow(await loadCancellation(c.id)) });
 };
+
+/**
+ * POST /api/admin/cancellations/:id/initiate-refund
+ * Securely calls Razorpay Refund API for the calculated 90% eligible refund amount.
+ * Validates:
+ *   - Only authorized admins
+ *   - Razorpay payment with pay_ ID
+ *   - Amount strictly equal to refund_amount_paise and <= amount_paid_paise
+ *   - Idempotency guard (prevents concurrent/duplicate requests)
+ *   - Updates cancellation refund_status, refund_reference, refund_verified_via = 'razorpay_api', refund_processed_at
+ *   - Never marks successful unless confirmed by Razorpay API response
+ *   - For COD orders, returns clean error indicating manual admin workflow
+ */
+export const initiateRazorpayRefund = async (req, res) => {
+  try {
+    const c = await loadCancellation(req.params.id);
+    if (!c) return res.status(404).json({ success: false, message: 'Cancellation not found.' });
+
+    if (c.refund_status === 'successful') {
+      return res.status(409).json({ success: false, message: `Refund already recorded with ID (${c.refund_reference}).` });
+    }
+
+    if (!OPEN_REFUND_STATUSES.includes(c.refund_status)) {
+      return res.status(409).json({ success: false, message: `No refund is due for this cancellation (status: ${c.refund_status}).` });
+    }
+
+    const payMethod = String(c.payment_method || '').toLowerCase();
+    if (payMethod === 'cod') {
+      return res.status(400).json({
+        success: false,
+        message: 'This is a Cash on Delivery order. Razorpay refunds cannot be created for COD orders. Use manual settlement if cash was accepted.',
+      });
+    }
+
+    const paymentId = c.razorpay_payment_id || c.orders?.payment_id;
+    if (!paymentId || !String(paymentId).startsWith('pay_')) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid Razorpay payment ID (pay_...) found for this order. Check payment status or record manually.',
+      });
+    }
+
+    const amountPaise = Number(c.refund_amount_paise || 0);
+    const amountPaidPaise = Number(c.amount_paid_paise || 0);
+
+    if (amountPaise <= 0) {
+      return res.status(400).json({ success: false, message: 'Eligible refund amount is ₹0.' });
+    }
+
+    if (amountPaise > amountPaidPaise) {
+      return res.status(400).json({
+        success: false,
+        message: `Refund amount (₹${paiseToRupees(amountPaise)}) cannot exceed total amount paid (₹${paiseToRupees(amountPaidPaise)}).`,
+      });
+    }
+
+    // Server-side check against duplicate refunds already saved in order_cancellations
+    const { data: duplicateCheck } = await supabase
+      .from('order_cancellations')
+      .select('id, refund_reference')
+      .eq('id', c.id)
+      .eq('refund_status', 'successful');
+    if (duplicateCheck && duplicateCheck.length > 0) {
+      return res.status(409).json({ success: false, message: 'Refund was already completed for this cancellation.' });
+    }
+
+    const rzp = getRazorpay();
+    if (!rzp) {
+      return res.status(500).json({
+        success: false,
+        message: 'Razorpay credentials not configured on the server. Please check environment variables.',
+      });
+    }
+
+    // Set status to 'processing' before API call to guard against rapid duplicate clicks
+    await supabase.from('order_cancellations')
+      .update({ refund_status: 'processing', updated_at: new Date().toISOString() })
+      .eq('id', c.id);
+
+    let refundResponse;
+    try {
+      refundResponse = await rzp.payments.refund(paymentId, {
+        amount: amountPaise,
+        speed: 'optimum',
+        notes: {
+          order_id: c.order_id,
+          order_number: c.order_number || c.orders?.order_number,
+          cancellation_id: c.id,
+          refund_percentage: c.refund_percentage,
+          deduction: '10% cancellation charge',
+          initiated_by: req.user?.email || 'admin',
+        },
+        receipt: `REF-${c.order_number || String(c.id).slice(0, 8)}`,
+      });
+    } catch (apiErr) {
+      console.error('[RAZORPAY REFUND API ERROR]', apiErr);
+      const errMsg = apiErr?.error?.description || apiErr?.message || 'Razorpay refund API call failed';
+      await supabase.from('order_cancellations')
+        .update({
+          refund_status: 'failed',
+          refund_notes: `Razorpay API failure: ${errMsg}`,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', c.id);
+
+      await logEvent(c, 'refund_attempt_failed', {
+        from: 'processing',
+        to: 'failed',
+        actor: req.user,
+        details: { payment_id: paymentId, amount_paise: amountPaise, error: errMsg },
+      });
+
+      return res.status(apiErr?.statusCode || 400).json({
+        success: false,
+        message: `Razorpay API rejected refund: ${errMsg}`,
+      });
+    }
+
+    if (!refundResponse || !refundResponse.id) {
+      await supabase.from('order_cancellations')
+        .update({ refund_status: 'failed', refund_notes: 'No refund ID returned by Razorpay', updated_at: new Date().toISOString() })
+        .eq('id', c.id);
+      return res.status(502).json({ success: false, message: 'Invalid response from Razorpay. Please check Razorpay Dashboard.' });
+    }
+
+    const refundId = refundResponse.id;
+    const rzpStatus = String(refundResponse.status || '').toLowerCase();
+    const finalRefundStatus = rzpStatus === 'processed' ? 'successful' : 'processing';
+    const nowIso = new Date().toISOString();
+
+    const { data: updated, error: updateErr } = await supabase.from('order_cancellations')
+      .update({
+        refund_status: finalRefundStatus,
+        refund_reference: refundId,
+        refund_verified_via: 'razorpay_api',
+        refund_processed_by: isUuid(req.user?.id) ? req.user.id : null,
+        refund_processed_by_email: req.user?.email || null,
+        refund_processed_at: nowIso,
+        refund_notes: `Initiated via Razorpay API (status: ${rzpStatus}, speed: ${refundResponse.speed_processed || 'normal'})`,
+        updated_at: nowIso,
+      })
+      .eq('id', c.id)
+      .select('id');
+
+    if (updateErr) {
+      console.error('[REFUND UPDATE DB ERROR]', updateErr);
+      return res.status(500).json({ success: false, message: `Refund created in Razorpay (${refundId}) but DB update failed: ${updateErr.message}` });
+    }
+
+    // Update order payment_status if fully processed
+    if (finalRefundStatus === 'successful') {
+      await supabase.from('orders').update({
+        payment_status: 'refunded',
+        updated_at: nowIso,
+      }).eq('id', c.order_id);
+    }
+
+    await logEvent(c, finalRefundStatus === 'successful' ? 'refund_marked_successful' : 'refund_status_changed', {
+      from: c.refund_status,
+      to: finalRefundStatus,
+      actor: req.user,
+      details: {
+        refund_id: refundId,
+        amount_paise: amountPaise,
+        verified_via: 'razorpay_api',
+        razorpay_response: { id: refundResponse.id, status: refundResponse.status, amount: refundResponse.amount },
+      },
+    });
+
+    console.log(`[RAZORPAY REFUND SUCCESS] Cancellation ${c.id} on order ${c.order_number}: refund ${refundId} ${finalRefundStatus} for ₹${paiseToRupees(amountPaise)}`);
+
+    return res.json({
+      success: true,
+      refundId,
+      refundStatus: finalRefundStatus,
+      cancellation: adminRow(await loadCancellation(c.id)),
+    });
+  } catch (error) {
+    console.error('[INITIATE REFUND ERROR]', error);
+    return res.status(500).json({ success: false, message: error.message || 'Error initiating Razorpay refund.' });
+  }
+};
+

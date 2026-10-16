@@ -271,7 +271,7 @@ export default function Products() {
                 <div style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--primary-dark)' }}>
                   ₹{featuredProduct.variants?.[0]?.price || 599}
                   <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600', marginLeft: '0.45rem' }}>
-                    for {featuredProduct.variants?.[0]?.weight || 'Trio Pack'}
+                    for {featuredProduct.variants?.[0]?.name || featuredProduct.variants?.[0]?.variantName || 'Trio Pack'}
                   </span>
                 </div>
 

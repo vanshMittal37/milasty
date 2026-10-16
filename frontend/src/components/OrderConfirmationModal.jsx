@@ -36,7 +36,7 @@ export default function OrderConfirmationModal({ formData, onClose }) {
       // Fallback direct WhatsApp redirect
       let message = `*NEW ORDER - MILASTY RITUAL BASKET*\n\n`;
       cartItems.forEach((item, index) => {
-        message += `${index + 1}. ${item.title} (${item.variantName} - ${item.weight}) x ${item.quantity} = ₹${item.totalPrice}\n`;
+        message += `${index + 1}. ${item.title} (${item.variantName || 'Pack'}) x ${item.quantity} = ₹${item.totalPrice}\n`;
       });
       message += `\n*Total:* ₹${totalAmount}\n*Name:* ${formData.customerName}\n*Phone:* ${formData.phone}\n*Address:* ${formData.address}, Pincode: ${formData.pincode}`;
 

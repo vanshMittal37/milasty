@@ -146,8 +146,12 @@ export const createOrder = async (req, res) => {
           (vName && (v.name === vName || v.weight === vName))
         );
 
+        let itemShippingWeight = null;
         if (dbVariant) {
           unitPrice = Number(dbVariant.price);
+          itemShippingWeight = dbVariant.shipping_weight != null ? Number(dbVariant.shipping_weight) : null;
+        } else if (dbProduct) {
+          itemShippingWeight = dbProduct.shipping_weight != null ? Number(dbProduct.shipping_weight) : null;
         }
       }
 
@@ -166,6 +170,7 @@ export const createOrder = async (req, res) => {
         unit_price: unitPrice,
         quantity: item.quantity,
         total_price: itemTotal,
+        shipping_weight: dbVariant?.shipping_weight != null ? Number(dbVariant.shipping_weight) : (dbProduct?.shipping_weight != null ? Number(dbProduct.shipping_weight) : null),
         customization_note: cleanNote || null,
         customizationNote: cleanNote || null,
       });
@@ -313,6 +318,7 @@ export const createOrder = async (req, res) => {
         unit_price: v.unit_price,
         quantity: v.quantity,
         total_price: v.total_price,
+        shipping_weight: v.shipping_weight || null,
         customization_note: v.customization_note || null,
       }));
 
@@ -576,7 +582,11 @@ export const formatOrderPayload = (o) => {
     paymentMethod: displayPaymentMethod,
     rawPaymentMethod: o.payment_method || 'razorpay',
     paymentId: o.payment_id || null,
+    paid_at: o.paid_at || null,
+    paidAt: o.paid_at || null,
     createdAt: o.created_at || new Date().toISOString(),
+    estimatedDeliveryDate: o.created_at ? new Date(new Date(o.created_at).getTime() + 9 * 24 * 60 * 60 * 1000).toISOString() : null,
+    estimated_delivery_date: o.created_at ? new Date(new Date(o.created_at).getTime() + 9 * 24 * 60 * 60 * 1000).toISOString() : null,
     notes: notesFromOrder,
     special_instructions: notesFromOrder,
     items: formattedItems,
@@ -639,6 +649,76 @@ export const formatCustomerOrderPayload = (o) => {
 };
 
 /**
+ * Automatically transitions orders from "confirmed" to "processing" after 3 hours.
+ * Disables cancellation window and updates database asynchronously.
+ */
+export const autoTransitionConfirmedOrders = async (orders) => {
+  if (!orders) return;
+  const list = (Array.isArray(orders) ? orders : [orders]).filter(Boolean);
+  const now = Date.now();
+  const THREE_HOURS_MS = 3 * 3600 * 1000;
+  const idsToTransition = [];
+
+  for (const o of list) {
+    const st = String(o.order_status || o.orderStatus || o.status || '').toLowerCase();
+    if (st === 'confirmed') {
+      const createdAtMs = new Date(o.created_at || o.createdAt).getTime();
+      if (!isNaN(createdAtMs) && (now - createdAtMs >= THREE_HOURS_MS)) {
+        o.order_status = 'processing';
+        o.orderStatus = 'Processing';
+        o.status = 'Processing';
+        const rawId = o.id || o._id;
+        if (rawId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(rawId))) {
+          idsToTransition.push(rawId);
+        }
+      }
+    }
+  }
+
+  if (idsToTransition.length > 0) {
+    try {
+      await supabase
+        .from('orders')
+        .update({ order_status: 'processing', updated_at: new Date().toISOString() })
+        .in('id', idsToTransition);
+      console.log(`[ORDER AUTO-TRANSITION] Transitioned ${idsToTransition.length} order(s) older than 3 hours from Confirmed to Processing.`);
+    } catch (e) {
+      console.warn('[ORDER AUTO-TRANSITION] Notice:', e?.message);
+    }
+  }
+};
+
+/**
+ * Background sweeper that queries the database for any confirmed orders older than 3 hours
+ * and automatically transitions their status to "processing".
+ */
+export const sweepConfirmedOrders = async () => {
+  try {
+    const threeHoursAgo = new Date(Date.now() - 3 * 3600 * 1000).toISOString();
+    const { data: staleOrders, error } = await supabase
+      .from('orders')
+      .select('id, order_status, created_at')
+      .in('order_status', ['confirmed', 'Confirmed'])
+      .lte('created_at', threeHoursAgo);
+
+    if (error) {
+      return;
+    }
+
+    if (staleOrders && staleOrders.length > 0) {
+      const ids = staleOrders.map((o) => o.id).filter(Boolean);
+      await supabase
+        .from('orders')
+        .update({ order_status: 'processing', updated_at: new Date().toISOString() })
+        .in('id', ids);
+      console.log(`[SWEEPER] Auto-transitioned ${ids.length} orders older than 3 hours from Confirmed to Processing.`);
+    }
+  } catch (err) {
+    console.warn('[SWEEPER] Error during order auto-transition sweep:', err?.message);
+  }
+};
+
+/**
  * GET CUSTOMER MY ORDERS
  * Only returns real finalized purchases (paid Razorpay OR confirmed COD orders)
  * GET /api/orders/my-orders
@@ -678,6 +758,7 @@ export const getMyOrders = async (req, res) => {
     });
 
     await attachItemImages(filteredOrders);
+    await autoTransitionConfirmedOrders(filteredOrders);
     const formatted = filteredOrders.map(formatCustomerOrderPayload);
     res.json(formatted);
   } catch (error) {
@@ -711,18 +792,36 @@ export const getAllOrders = async (req, res) => {
     });
 
     await attachItemImages(filteredOrders);
+    await autoTransitionConfirmedOrders(filteredOrders);
 
     // Attach cancellation / refund / shipment-cancel state (table may not exist before migration 19)
     const { data: cancellations } = await supabase
       .from('order_cancellations')
-      .select('id, order_id, refund_status, refund_percentage, refund_amount_paise, shipment_cancel_status, shipment_cancel_error')
+      .select('id, order_id, order_number, requested_at, order_created_at, reason, payment_method, razorpay_payment_id, amount_paid_paise, cancellation_charge_paise, refund_percentage, refund_amount_paise, non_refundable_paise, refund_status, refund_reference, refund_processed_at, refund_verified_via, shipment_cancel_status, shipment_cancel_error')
       .limit(5000);
     const byOrder = new Map((cancellations || []).map((c) => [c.order_id, c]));
 
     const formatted = filteredOrders.map((o) => {
       const payload = formatOrderPayload(o);
       const c = byOrder.get(o.id);
-      payload.cancellation = c ? { ...c, refund_amount: Number(c.refund_amount_paise) / 100 } : null;
+      if (c) {
+        const amountPaidPaise = Number(c.amount_paid_paise || 0);
+        const refundAmountPaise = Number(c.refund_amount_paise || 0);
+        const chargePaise = Number(c.cancellation_charge_paise ?? c.non_refundable_paise ?? (amountPaidPaise - refundAmountPaise));
+        payload.cancellation = {
+          ...c,
+          amount_paid: Math.round(amountPaidPaise) / 100,
+          refund_amount: Math.round(refundAmountPaise) / 100,
+          cancellation_charge: Math.round(chargePaise) / 100,
+          non_refundable: Math.round(chargePaise) / 100,
+          requested_at: c.requested_at,
+          order_created_at: c.order_created_at,
+          refund_processed_at: c.refund_processed_at,
+          refund_reference: c.refund_reference,
+        };
+      } else {
+        payload.cancellation = null;
+      }
       return payload;
     });
     res.json(formatted);
@@ -740,6 +839,7 @@ export const getOrderById = async (req, res) => {
     const { identifier } = req.params;
     const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(identifier);
 
+    let order = null;
     let query = supabase.from('orders').select('*, order_items(*)');
 
     if (isUuid) {
@@ -748,27 +848,99 @@ export const getOrderById = async (req, res) => {
       query = query.eq('order_number', identifier);
     }
 
-    const { data: order, error } = await query.maybeSingle();
+    const { data: joinedOrder, error } = await query.maybeSingle();
+
+    if (!error && joinedOrder) {
+      order = joinedOrder;
+    } else {
+      // Fallback: direct table query in case relation embedding fails
+      let directQuery = supabase.from('orders').select('*');
+      if (isUuid) {
+        directQuery = directQuery.or(`id.eq.${identifier},order_number.eq.${identifier}`);
+      } else {
+        directQuery = directQuery.eq('order_number', identifier);
+      }
+      const { data: directOrder } = await directQuery.maybeSingle();
+      if (directOrder) {
+        order = directOrder;
+      }
+    }
+
+    // Ensure order_items are loaded even if relation failed
+    if (order && (!order.order_items || order.order_items.length === 0)) {
+      const { data: items } = await supabase.from('order_items').select('*').eq('order_id', order.id);
+      order.order_items = items || [];
+    }
 
     // Only the order's owner (or an admin) may read it — order numbers are guessable
     const respond = async (o) => {
+      await autoTransitionConfirmedOrders(o);
       await attachItemImages(o);
-      const payload = req.user?.role === 'admin' ? formatOrderPayload(o) : formatCustomerOrderPayload(o);
-      payload.cancellation = await getCustomerCancellation(o.id); // refund % / amount / status, if cancelled
+      const isAdmin = req.user?.role === 'admin';
+      const payload = isAdmin ? formatOrderPayload(o) : formatCustomerOrderPayload(o);
+      const { data: rawCancel } = await supabase.from('order_cancellations').select('*').eq('order_id', o.id).maybeSingle();
+      if (rawCancel) {
+        const amountPaidPaise = Number(rawCancel.amount_paid_paise || 0);
+        const refundAmountPaise = Number(rawCancel.refund_amount_paise || 0);
+        const chargePaise = Number(rawCancel.cancellation_charge_paise ?? rawCancel.non_refundable_paise ?? (amountPaidPaise - refundAmountPaise));
+        payload.cancellation = {
+          ...customerCancellationView(rawCancel),
+          amount_paid: Math.round(amountPaidPaise) / 100,
+          refund_amount: Math.round(refundAmountPaise) / 100,
+          cancellation_charge: Math.round(chargePaise) / 100,
+          non_refundable: Math.round(chargePaise) / 100,
+          requested_at: rawCancel.requested_at,
+          order_created_at: rawCancel.order_created_at,
+          refund_processed_at: rawCancel.refund_processed_at,
+          refund_reference: rawCancel.refund_reference,
+          ...(isAdmin ? {
+            id: rawCancel.id,
+            order_id: rawCancel.order_id,
+            razorpay_payment_id: rawCancel.razorpay_payment_id,
+            amount_paid_paise: rawCancel.amount_paid_paise,
+            refund_amount_paise: rawCancel.refund_amount_paise,
+            cancellation_charge_paise: chargePaise,
+            shipment_cancel_status: rawCancel.shipment_cancel_status,
+            shipment_cancel_error: rawCancel.shipment_cancel_error,
+            refund_verified_via: rawCancel.refund_verified_via,
+            refund_processed_by_email: rawCancel.refund_processed_by_email,
+          } : {}),
+        };
+      } else {
+        payload.cancellation = null;
+      }
       return payload;
     };
 
-    if (!error && order) {
+    if (order) {
       if (!canAccessOrder(req.user, order)) return res.status(404).json({ message: 'Order details not found' });
       return res.json(await respond(order));
     }
 
-    // Search fallback
-    const { data: allOrders } = await supabase.from('orders').select('*, order_items(*)').limit(50);
+    // Search fallback across recent orders
+    let allOrders = null;
+    const { data: jOrders } = await supabase.from('orders').select('*, order_items(*)').limit(50);
+    allOrders = jOrders;
+    if (!allOrders || allOrders.length === 0) {
+      const { data: dOrders } = await supabase.from('orders').select('*').limit(50);
+      allOrders = dOrders;
+    }
+
     if (allOrders && allOrders.length > 0) {
-      const match = allOrders.find((o) => o.id === identifier || o.order_number === identifier || identifier.includes(o.order_number));
-      if (match && canAccessOrder(req.user, match)) {
-        return res.json(await respond(match));
+      const cleanIdent = String(identifier).trim().toLowerCase();
+      const match = allOrders.find((o) => 
+        String(o.id).toLowerCase() === cleanIdent || 
+        String(o.order_number).toLowerCase() === cleanIdent || 
+        cleanIdent.includes(String(o.order_number).toLowerCase())
+      );
+      if (match) {
+        if (!match.order_items || match.order_items.length === 0) {
+          const { data: items } = await supabase.from('order_items').select('*').eq('order_id', match.id);
+          match.order_items = items || [];
+        }
+        if (canAccessOrder(req.user, match)) {
+          return res.json(await respond(match));
+        }
       }
     }
 

@@ -131,7 +131,7 @@ export default function CartPage() {
                       </div>
                     )}
                     <div style={{ fontSize: '0.82rem', color: '#6B584C', marginBottom: '0.55rem', fontWeight: '500' }}>
-                      Pack: <strong style={{ color: '#2B140B' }}>{item.variantName} {item.weight ? `(${item.weight})` : ''}</strong>
+                      Pack: <strong style={{ color: '#2B140B' }}>{item.variantName || 'Standard Pack'}</strong>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>

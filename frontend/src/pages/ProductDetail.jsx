@@ -266,8 +266,8 @@ export default function ProductDetail() {
   const currentPieces = product.pieces || product.nutritionFacts?.pieces || '';
 
   const discountBadgeText = (() => {
-    const discType = product?.discountType || product?.discount_type;
-    const discVal = Number(product?.discountValue !== undefined ? product?.discountValue : product?.discount_value);
+    const discType = selectedVariant?.discountType || product?.discountType || product?.discount_type;
+    const discVal = Number(selectedVariant?.discountValue !== undefined && selectedVariant?.discountValue !== null ? selectedVariant.discountValue : (product?.discountValue !== undefined ? product.discountValue : product?.discount_value));
 
     if (discType === 'percentage' && discVal > 0) {
       return `${discVal}% OFF`;
@@ -943,7 +943,7 @@ export default function ProductDetail() {
                           opacity: isVOut ? 0.6 : 1
                         }}
                       >
-                        <span style={{ fontSize: '0.9rem', fontWeight: '800' }}>{v.name || v.weight}</span>
+                        <span style={{ fontSize: '0.9rem', fontWeight: '800' }}>{v.name || v.weight || 'Pack'}</span>
                         {hasBothNames && (
                           <span style={{ fontSize: '0.72rem', color: isSelected ? '#2F6B3A' : '#654B38', fontWeight: '700' }}>
                             Net Wt: {v.weight}

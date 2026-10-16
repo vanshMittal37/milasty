@@ -534,6 +534,15 @@ body.customer-portal-body textarea::placeholder {
   border: 1px solid #DCC8AE !important;
   box-shadow: 0 4px 16px rgba(75, 45, 25, 0.05) !important;
   color: #2B170D !important;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .legal-page .glass-card {
+    padding: 1.25rem 1rem !important;
+    border-radius: 16px !important;
+  }
 }
 
 .legal-page h1,
@@ -3066,6 +3075,103 @@ footer.transparent-blurred-footer {
   }
 }
 
+/* Terms & Conditions / Legal Info Cards (Business Details & Grievance Officer) */
+.tc-info-box {
+  background-color: #FFF9F0;
+  border: 1px solid #E4D1B7;
+  border-radius: 16px;
+  padding: clamp(1rem, 3.5vw, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(75, 45, 25, 0.04);
+}
+
+.tc-info-box-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(228, 209, 183, 0.75);
+}
+
+.tc-info-box-title {
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2F6B3A;
+}
+
+.tc-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.92rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px dashed rgba(228, 209, 183, 0.55);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.tc-info-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+@media (min-width: 640px) {
+  .tc-info-row {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+}
+
+.tc-info-label {
+  color: #32180D;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .tc-info-label {
+    min-width: 140px;
+    font-size: 0.92rem;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+}
+
+.tc-info-value {
+  color: #654B38;
+  line-height: 1.55;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  flex: 1;
+}
+
+.tc-info-value a {
+  color: #2F6B3A;
+  text-decoration: none;
+  font-weight: 650;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  transition: color 0.15s ease;
+}
+
+.tc-info-value a:hover {
+  text-decoration: underline;
+  color: #1F4726;
+}
+
 /* Shipping Process Visual Flow */
 .shipping-process-flow {
   display: flex;
@@ -4587,18 +4693,33 @@ input[placeholder*="filter"] {
   padding-left: 2.75rem !important;
 }
 
-/* Filter select – compact width */
+/* Admin select inputs — full width in form grids with adequate right padding for arrow */
 select.admin-input {
-  width: auto !important;
-  min-width: 140px !important;
+  width: 100% !important;
+  min-width: 160px;
   border-radius: 10px !important;
-  padding-right: 2.25rem !important;
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 2rem !important;
+  font-size: 0.85rem !important;
+  line-height: 1.4 !important;
+  height: 38px !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23665A52' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
   background-position: right 0.65rem center !important;
   -webkit-appearance: none !important;
   appearance: none !important;
   cursor: pointer !important;
+  box-sizing: border-box !important;
+}
+
+/* Filter select – compact width in toolbars/filters only */
+.admin-toolbar select.admin-input,
+.admin-filters select.admin-input,
+.admin-search-wrap select.admin-input {
+  width: auto !important;
+  min-width: 140px !important;
 }
 
 /* ==============================================

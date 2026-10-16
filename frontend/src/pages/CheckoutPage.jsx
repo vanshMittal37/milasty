@@ -814,7 +814,7 @@ export default function CheckoutPage() {
                       <div style={{ flexGrow: 1 }}>
                         <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#2B140B', margin: '0 0 0.15rem 0', lineHeight: '1.25' }}>{item.title}</h4>
                         <span style={{ fontSize: '0.78rem', color: '#6B584C', display: 'block' }}>
-                          Qty: {item.quantity} • {item.variantName || 'Standard Pack'} {item.weight ? `(${item.weight})` : ''}
+                          Qty: {item.quantity} • {item.variantName || 'Standard Pack'}
                         </span>
                       </div>
                       <span style={{ fontWeight: '900', color: '#2B140B', fontSize: '1.05rem', flexShrink: 0 }}>
