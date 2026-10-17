@@ -911,7 +911,14 @@ export default function CheckoutPage() {
 
               {errorMessage && (
                 <div style={{ backgroundColor: '#FADBD8', border: '1px solid #C0392B', color: '#78281F', padding: '0.85rem 1rem', borderRadius: '12px', fontSize: '0.85rem', marginBottom: '1.5rem', fontWeight: '600', lineHeight: '1.4' }}>
-                  {errorMessage}
+                  <div>{errorMessage}</div>
+                  {/enquiry|contact/i.test(errorMessage) && (
+                    <div style={{ marginTop: '0.45rem' }}>
+                      <a href="/contact" style={{ color: '#5B1E17', fontWeight: '800', textDecoration: 'underline' }}>
+                        Open Enquiry Form &rarr;
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
 

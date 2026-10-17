@@ -129,11 +129,24 @@ export const createPaymentSession = async (req, res) => {
     // Fall back to the submitted items only if the server cart is empty (e.g. a failed cart sync).
     let items = Array.isArray(clientItems) ? clientItems : [];
     const authUserId = req.user ? (req.user.id || req.user._id) : null;
+    let userRow = null;
     if (authUserId) {
-      const { data: cartRow } = await supabase.from('users').select('cart').eq('id', authUserId).maybeSingle();
-      if (Array.isArray(cartRow?.cart) && cartRow.cart.length > 0) {
-        items = cartRow.cart;
+      const { data } = await supabase.from('users').select('id, role, cart').eq('id', authUserId).maybeSingle();
+      userRow = data;
+      if (Array.isArray(data?.cart) && data.cart.length > 0) {
+        items = data.cart;
       }
+    } else if (finalEmail) {
+      const { data } = await supabase.from('users').select('id, role').ilike('email', finalEmail.trim()).maybeSingle();
+      userRow = data;
+    }
+
+    if (userRow && (userRow.role === 'disabled' || userRow.role === 'blocked')) {
+      return res.status(403).json({
+        success: false,
+        code: 'CUSTOMER_BLOCKED',
+        message: 'You are blocked by admin. Contact to the admin using enquiry form.',
+      });
     }
 
     if (!items || !items.length) {
@@ -173,6 +186,8 @@ export const createPaymentSession = async (req, res) => {
       const dbProduct = dbProducts ? dbProducts.find((p) => p.id === targetId || p.slug === targetId) : null;
       let unitPrice = Number(item.unit_price || item.unitPrice || 149);
       let title = item.title || 'MILASTY Artisan Bake';
+      let dbVariant = null;
+      let itemShippingWeight = null;
 
       if (dbProduct) {
         title = dbProduct.title;
@@ -180,13 +195,12 @@ export const createPaymentSession = async (req, res) => {
         const vId = item.variantId || item.variant_id;
         const vWeight = item.variantWeight || item.variant_weight;
 
-        const dbVariant = (dbProduct.product_variants || []).find((v) => 
+        dbVariant = (dbProduct.product_variants || []).find((v) => 
           (vId && v.id === vId) || 
           (vWeight && (v.weight === vWeight || v.name === vWeight)) || 
           (vName && (v.name === vName || v.weight === vName))
         );
 
-        let itemShippingWeight = null;
         if (dbVariant) {
           unitPrice = Number(dbVariant.price);
           itemShippingWeight = dbVariant.shipping_weight != null ? Number(dbVariant.shipping_weight) : null;
@@ -205,12 +219,12 @@ export const createPaymentSession = async (req, res) => {
         product_id: dbProduct ? dbProduct.id : null,
         product_title: title,
         product_image: item.image || item.product_image || (dbProduct ? (dbProduct.image_url || dbProduct.primary_image) : null) || null,
-        variant_id: item.variantId || item.variant_id || null,
-        variant_name: item.variantName || item.variant_name || item.variantWeight || item.variant_weight || 'Standard Pack',
+        variant_id: item.variantId || item.variant_id || (dbVariant ? dbVariant.id : null),
+        variant_name: item.variantName || item.variant_name || item.variantWeight || item.variant_weight || (dbVariant ? (dbVariant.name || dbVariant.weight) : 'Standard Pack'),
         unit_price: unitPrice,
         quantity: item.quantity,
         total_price: itemTotal,
-        shipping_weight: dbVariant?.shipping_weight != null ? Number(dbVariant.shipping_weight) : (dbProduct?.shipping_weight != null ? Number(dbProduct.shipping_weight) : null),
+        shipping_weight: itemShippingWeight != null ? itemShippingWeight : (dbProduct?.shipping_weight != null ? Number(dbProduct.shipping_weight) : null),
         customization_note: cleanNote || null,
       });
     }

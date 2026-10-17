@@ -33,6 +33,10 @@ export default function OrderConfirmationModal({ formData, onClose }) {
       window.open(whatsappUrl, '_blank');
     } catch (error) {
       console.error('Error logging order:', error);
+      if (error.response?.data?.code === 'CUSTOMER_BLOCKED' || /blocked by admin/i.test(error.response?.data?.message || '')) {
+        alert(error.response?.data?.message || 'You are blocked by admin. Contact to the admin using enquiry form.');
+        return;
+      }
       // Fallback direct WhatsApp redirect
       let message = `*NEW ORDER - MILASTY RITUAL BASKET*\n\n`;
       cartItems.forEach((item, index) => {
