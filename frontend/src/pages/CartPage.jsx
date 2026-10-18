@@ -7,6 +7,7 @@ import { useDelivery } from '../context/DeliveryContext';
 import CustomizeItemModal from '../components/CustomizeItemModal';
 import AllIndiaDeliveryBadge from '../components/common/AllIndiaDeliveryBadge';
 import FreeDeliveryProgress from '../components/common/FreeDeliveryProgress';
+import VariantEditButton from '../components/VariantEditButton';
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -131,8 +132,9 @@ export default function CartPage() {
                         <span>Pre-order {item.expected_ship_date || item.expectedShipDate || item.launchDate ? `• Ships from: ${item.expected_ship_date || item.expectedShipDate || item.launchDate}` : ''}</span>
                       </div>
                     )}
-                    <div style={{ fontSize: '0.82rem', color: '#6B584C', marginBottom: '0.55rem', fontWeight: '500' }}>
-                      Pack: <strong style={{ color: '#2B140B' }}>{item.variantName || 'Standard Pack'}</strong>
+                    <div style={{ fontSize: '0.82rem', color: '#6B584C', marginBottom: '0.55rem', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <div>Pack: <strong style={{ color: '#2B140B' }}>{item.variantName || 'Standard Pack'}</strong></div>
+                      <VariantEditButton item={item} />
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
