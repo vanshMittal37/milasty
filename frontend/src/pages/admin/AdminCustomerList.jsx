@@ -295,12 +295,15 @@ export default function AdminCustomerList() {
       {/* Confirmation Modal before Disabling Customer */}
       {customerToDisable &&
         createPortal(
+          // Compact confirm dialog. Text uses divs with explicit sizes because global h3/p/span
+          // font-size rules (some !important) would otherwise inflate it.
           <div
+            onClick={() => setCustomerToDisable(null)}
             style={{
               position: 'fixed',
               inset: 0,
-              backgroundColor: 'rgba(33, 21, 15, 0.65)',
-              backdropFilter: 'blur(4px)',
+              backgroundColor: 'rgba(33, 21, 15, 0.55)',
+              backdropFilter: 'blur(3px)',
               zIndex: 99999,
               display: 'flex',
               alignItems: 'center',
@@ -309,93 +312,90 @@ export default function AdminCustomerList() {
             }}
           >
             <div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Disable customer"
+              onClick={(e) => e.stopPropagation()}
               style={{
                 backgroundColor: '#FFFFFF',
-                borderRadius: '20px',
+                borderRadius: '16px',
                 width: '100%',
-                maxWidth: '480px',
-                boxShadow: '0 24px 60px rgba(0,0,0,0.25)',
+                maxWidth: '400px',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.22)',
                 border: '1px solid #E8DFD5',
-                overflow: 'hidden',
+                padding: '1.15rem 1.25rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.85rem',
+                fontSize: '0.84rem',
+                lineHeight: 1.45,
+                color: '#21150F',
               }}
             >
-              {/* Modal Header */}
-              <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #F0E6D8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#FEE2E2', color: '#DC2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <AlertTriangle size={18} />
-                  </div>
-                  <div>
-                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#21150F' }}>
-                      Disable Customer Account
-                    </h3>
-                    <p style={{ margin: 0, fontSize: '0.74rem', color: '#665A52' }}>
-                      Confirm blocking order access for this customer
-                    </p>
-                  </div>
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <div style={{ width: '32px', height: '32px', flexShrink: 0, borderRadius: '50%', backgroundColor: '#FEE2E2', color: '#DC2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <AlertTriangle size={16} />
                 </div>
+                <div style={{ flex: 1, fontSize: '1rem', fontWeight: 800 }}>Disable this customer?</div>
                 <button
                   type="button"
+                  aria-label="Close"
                   onClick={() => setCustomerToDisable(null)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#665A52', padding: '0.25rem' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#665A52', padding: '0.2rem', display: 'flex' }}
                 >
-                  <X size={18} />
+                  <X size={17} />
                 </button>
               </div>
 
-              {/* Modal Body */}
-              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ backgroundColor: '#FBF8F4', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #EAE0D5' }}>
-                  <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#8C6F5A', fontWeight: '800', marginBottom: '0.2rem' }}>
-                    Target Customer
-                  </div>
-                  <div style={{ fontWeight: '800', color: '#21150F', fontSize: '0.95rem' }}>
-                    {customerToDisable.name || 'Unnamed Customer'}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: '#665A52', marginTop: '0.15rem' }}>
-                    {customerToDisable.email || customerToDisable.phone || 'No contact info'}
-                  </div>
+              {/* Customer */}
+              <div style={{ backgroundColor: '#FBF8F4', padding: '0.6rem 0.8rem', borderRadius: '10px', border: '1px solid #EAE0D5' }}>
+                <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{customerToDisable.name || 'Unnamed Customer'}</div>
+                <div style={{ fontSize: '0.78rem', color: '#665A52', overflowWrap: 'anywhere' }}>
+                  {customerToDisable.email || customerToDisable.phone || 'No contact info'}
                 </div>
-
-                {/* Warning Alert Box */}
-                <div style={{ backgroundColor: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '12px', padding: '0.95rem 1.1rem', color: '#991B1B', fontSize: '0.84rem', lineHeight: '1.5' }}>
-                  <p style={{ margin: '0 0 0.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <ShieldAlert size={16} />
-                    <span>This customer will not be able to place any orders</span>
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    If you disable this customer, they will never be able to complete checkout or place orders. If they attempt to order, they will see the message:
-                    <strong style={{ display: 'block', margin: '0.4rem 0 0', fontStyle: 'italic', color: '#7F1D1D' }}>
-                      "You are blocked by admin. Contact to the admin using enquiry form."
-                    </strong>
-                  </p>
-                </div>
-
-                <p style={{ margin: 0, fontSize: '0.78rem', color: '#665A52' }}>
-                  The customer will be added to the <strong>Disabled Customers</strong> list, and you can re-enable them at any time.
-                </p>
               </div>
 
-              {/* Modal Footer */}
-              <div style={{ padding: '1rem 1.5rem', backgroundColor: '#FBF8F4', borderTop: '1px solid #F0E6D8', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              {/* Consequence */}
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', color: '#991B1B', fontSize: '0.82rem' }}>
+                <ShieldAlert size={15} style={{ flexShrink: 0, marginTop: '0.15rem' }} />
+                <div>
+                  They won't be able to place orders and will be asked to contact you via the enquiry form.
+                  You can re-enable them anytime from <strong>Disabled Customers</strong>.
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', marginTop: '0.15rem' }}>
                 <button
                   type="button"
                   onClick={() => setCustomerToDisable(null)}
                   className="admin-btn-secondary"
-                  style={{ padding: '0.55rem 1.25rem', fontSize: '0.82rem' }}
+                  style={{ padding: '0.5rem 1.1rem', fontSize: '0.82rem' }}
                 >
                   Cancel
                 </button>
-
                 <button
                   type="button"
                   onClick={() => handleToggleStatus(customerToDisable._id || customerToDisable.id, 'active')}
                   disabled={updatingId === (customerToDisable._id || customerToDisable.id)}
-                  className="admin-btn-danger"
-                  style={{ padding: '0.55rem 1.35rem', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                  style={{
+                    padding: '0.5rem 1.1rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    border: 'none',
+                    borderRadius: '10px',
+                    backgroundColor: '#DC2626',
+                    color: '#FFFFFF',
+                    cursor: updatingId === (customerToDisable._id || customerToDisable.id) ? 'wait' : 'pointer',
+                    opacity: updatingId === (customerToDisable._id || customerToDisable.id) ? 0.7 : 1,
+                  }}
                 >
                   <UserX size={15} />
-                  <span>{updatingId === (customerToDisable._id || customerToDisable.id) ? 'Disabling...' : 'Yes, Disable Customer'}</span>
+                  {updatingId === (customerToDisable._id || customerToDisable.id) ? 'Disabling…' : 'Disable'}
                 </button>
               </div>
             </div>
