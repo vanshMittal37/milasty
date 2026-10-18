@@ -322,6 +322,74 @@ export const CartProvider = ({ children }) => {
     await persistCartChanges(updatedList);
   };
 
+  // Available variants per product in the cart (productId -> variants[]), used to let customers
+  // switch pack size from the cart/checkout. Fetched once per product.
+  const [productVariants, setProductVariants] = useState({});
+  const requestedVariantIdsRef = useRef(new Set());
+  useEffect(() => {
+    const missing = [...new Set(cartItems.map((i) => i.productId || i.product_id).filter(Boolean))]
+      .filter((id) => !requestedVariantIdsRef.current.has(id));
+    missing.forEach((id) => {
+      requestedVariantIdsRef.current.add(id);
+      api.get(`/products/${id}`)
+        .then((res) => {
+          const variants = Array.isArray(res.data?.variants) ? res.data.variants : [];
+          setProductVariants((prev) => ({ ...prev, [id]: variants }));
+        })
+        .catch(() => requestedVariantIdsRef.current.delete(id));
+    });
+  }, [cartItems]);
+
+  const getVariantsForItem = (item) => productVariants[item.productId || item.product_id] || [];
+
+  // Switch a cart line to another variant of the same product. If the cart already holds that
+  // variant (with the same special instruction), the two lines are merged.
+  const changeCartItemVariant = async (targetId, variant) => {
+    if (!targetId || !variant) return;
+    const source = cartItems.find((item) => item.cartItemId === targetId);
+    if (!source) return;
+
+    const unitPrice = Number(variant.price || 0);
+    const newVariantId = variant.id || variant._id || null;
+    const newVariantName = variant.name || variant.weight || source.variantName;
+    const note = String(source.customization_note || '').trim();
+
+    const duplicate = cartItems.find((item) =>
+      item.cartItemId !== targetId &&
+      (item.productId || item.product_id) === (source.productId || source.product_id) &&
+      newVariantId && (item.variantId || item.variant_id) === newVariantId &&
+      String(item.customization_note || '').trim() === note
+    );
+
+    let updatedList;
+    if (duplicate) {
+      const qty = duplicate.quantity + source.quantity;
+      updatedList = cartItems
+        .filter((item) => item.cartItemId !== targetId)
+        .map((item) => (item.cartItemId === duplicate.cartItemId
+          ? { ...item, quantity: qty, totalPrice: item.unitPrice * qty }
+          : item));
+    } else {
+      updatedList = cartItems.map((item) => (item.cartItemId === targetId
+        ? {
+            ...item,
+            variantName: newVariantName,
+            variantId: newVariantId,
+            weight: variant.weight || item.weight,
+            variantWeight: variant.weight || item.variantWeight,
+            unitPrice,
+            originalPrice: Number(variant.originalPrice || variant.price || unitPrice),
+            shipping_weight: variant.shippingWeight ?? variant.shipping_weight ?? item.shipping_weight ?? null,
+            totalPrice: unitPrice * item.quantity,
+          }
+        : item));
+    }
+
+    setCartItems(updatedList);
+    await persistCartChanges(updatedList);
+    showToast(`✓ Changed to ${newVariantName}`);
+  };
+
   const clearCart = async () => {
     setCartItems([]);
     setAppliedCoupon(null);
@@ -488,6 +556,8 @@ export const CartProvider = ({ children }) => {
         freeDeliveryThreshold,
         isFreeDelivery,
         amountForFreeDelivery,
+        getVariantsForItem,
+        changeCartItemVariant,
       }}
     >
       {children}

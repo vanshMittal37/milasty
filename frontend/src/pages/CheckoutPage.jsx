@@ -8,6 +8,7 @@ import api from '../api/axios';
 import ModalPortal from '../components/ModalPortal';
 import CustomizeItemModal from '../components/CustomizeItemModal';
 import AllIndiaDeliveryBadge from '../components/common/AllIndiaDeliveryBadge';
+import VariantEditButton from '../components/VariantEditButton';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -814,9 +815,10 @@ export default function CheckoutPage() {
                       />
                       <div style={{ flexGrow: 1 }}>
                         <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#2B140B', margin: '0 0 0.15rem 0', lineHeight: '1.25' }}>{item.title}</h4>
-                        <span style={{ fontSize: '0.78rem', color: '#6B584C', display: 'block' }}>
-                          Qty: {item.quantity} • {item.variantName || 'Standard Pack'}
-                        </span>
+                        <div style={{ fontSize: '0.78rem', color: '#6B584C', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '0.78rem' }}>Qty: {item.quantity} • {item.variantName || 'Standard Pack'}</span>
+                          <VariantEditButton item={item} />
+                        </div>
                       </div>
                       <span style={{ fontWeight: '900', color: '#2B140B', fontSize: '1.05rem', flexShrink: 0 }}>
                         ₹{item.totalPrice}

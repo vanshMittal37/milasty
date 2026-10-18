@@ -8,6 +8,7 @@ import api from '../api/axios';
 import CustomizeItemModal from './CustomizeItemModal';
 import AllIndiaDeliveryBadge from './common/AllIndiaDeliveryBadge';
 import FreeDeliveryProgress from './common/FreeDeliveryProgress';
+import VariantEditButton from './VariantEditButton';
 
 export default function CartDrawer() {
   const navigate = useNavigate();
@@ -333,8 +334,9 @@ export default function CartDrawer() {
                           </div>
                         )}
                         {displayVariant && (
-                          <div style={{ fontSize: '0.75rem', color: '#634B3B', marginBottom: '0.3rem', fontWeight: '500' }}>
+                          <div style={{ fontSize: '0.75rem', color: '#634B3B', marginBottom: '0.3rem', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             {displayVariant}
+                            <VariantEditButton item={item} />
                           </div>
                         )}
                         <div style={{ fontSize: '0.9rem', color: '#2A170F', fontWeight: '800', marginBottom: '0.5rem' }}>₹{unitPrice}</div>
