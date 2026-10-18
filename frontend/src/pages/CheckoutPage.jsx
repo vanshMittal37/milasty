@@ -886,12 +886,7 @@ export default function CheckoutPage() {
                   {fetchingShippingFee ? (
                     <span style={{ color: '#A38C7A', fontSize: '0.82rem' }}>Calculating...</span>
                   ) : shippingQuote && isFreeDelivery ? (
-                    <span style={{ fontWeight: '800', color: '#2F6B3A' }}>
-                      {dynamicShippingFee > 0 && (
-                        <span style={{ textDecoration: 'line-through', color: '#A38C7A', fontWeight: '600', marginRight: '0.4rem' }}>₹{dynamicShippingFee}</span>
-                      )}
-                      FREE
-                    </span>
+                    <span style={{ fontWeight: '800', color: '#2F6B3A' }}>FREE</span>
                   ) : shippingQuote ? (
                     <span style={{ fontWeight: '700', color: '#2B140B' }}>₹{dynamicShippingFee}</span>
                   ) : (

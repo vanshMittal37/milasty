@@ -30,18 +30,19 @@ router.post('/', async (req, res) => {
       secure: true,
     });
 
+    // PDFs (lab reports) go up as 'raw': with 'auto' they are stored as images, and Cloudinary
+    // blocks PDF delivery from the image type by default (401 "deny or ACL failure").
+    const isPdf = typeof image === 'string' && image.startsWith('data:application/pdf');
+    const uploadOptions = isPdf
+      ? { folder: 'milasty/products', resource_type: 'raw', public_id: `report_${Date.now()}.pdf` }
+      : { folder: 'milasty/products', resource_type: 'auto' };
+
     let uploadResult;
     try {
-      uploadResult = await cloudinary.uploader.upload(image, {
-        folder: 'milasty/products',
-        resource_type: 'auto',
-      });
+      uploadResult = await cloudinary.uploader.upload(image, uploadOptions);
     } catch (signedErr) {
       console.warn('Signed upload failed, trying unsigned upload:', signedErr.message);
-      uploadResult = await cloudinary.uploader.unsigned_upload(image, uploadPreset, {
-        folder: 'milasty/products',
-        resource_type: 'auto',
-      });
+      uploadResult = await cloudinary.uploader.unsigned_upload(image, uploadPreset, uploadOptions);
     }
 
     if (uploadResult && uploadResult.secure_url) {

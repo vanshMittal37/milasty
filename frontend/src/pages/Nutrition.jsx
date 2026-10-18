@@ -130,7 +130,11 @@ export default function Nutrition() {
   const handleDownload = async (url, filename) => {
     try {
       const response = await fetch(url);
+      // Never save an error page as a .pdf — it produces a file that can't be opened
+      if (!response.ok) throw new Error(`Report request failed (HTTP ${response.status})`);
       const blob = await response.blob();
+      const head = await blob.slice(0, 5).text();
+      if (head !== '%PDF-') throw new Error('Report URL did not return a PDF');
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = blobUrl;
