@@ -1,5 +1,52 @@
 import { supabase } from '../config/supabase.js';
 
+export const FREE_DELIVERY_TYPE = 'free_delivery';
+
+const isCouponLive = (coupon, now = new Date()) => {
+  const startsValid = !coupon.starts_at || new Date(coupon.starts_at) <= now;
+  const expiresValid = !coupon.expires_at || new Date(coupon.expires_at) > now;
+  const usageValid = coupon.usage_limit === null || coupon.usage_limit === undefined || Number(coupon.usage_count || 0) < Number(coupon.usage_limit);
+  return startsValid && expiresValid && usageValid;
+};
+
+/**
+ * Lowest order subtotal (₹) that unlocks free delivery, taken from the active "free_delivery"
+ * coupons the admin manages in the Coupons tab. Applied automatically — no code needed.
+ * Returns null when no free delivery offer is running.
+ */
+export const getFreeDeliveryThreshold = async () => {
+  try {
+    const { data: coupons, error } = await supabase
+      .from('coupons')
+      .select('*')
+      .eq('discount_type', FREE_DELIVERY_TYPE)
+      .eq('is_active', true);
+
+    if (error || !coupons) return null;
+
+    const thresholds = coupons
+      .filter((c) => isCouponLive(c))
+      .map((c) => Math.max(0, Number(c.min_order_amount || 0)));
+
+    return thresholds.length > 0 ? Math.min(...thresholds) : null;
+  } catch (e) {
+    console.warn('getFreeDeliveryThreshold notice:', e.message);
+    return null;
+  }
+};
+
+export const qualifiesForFreeDelivery = (subtotal, threshold) =>
+  threshold !== null && threshold !== undefined && Number(subtotal || 0) >= threshold;
+
+/**
+ * PUBLIC API — Free delivery threshold for cart progress messages
+ * GET /api/coupons/free-delivery
+ */
+export const getFreeDeliveryOffer = async (req, res) => {
+  const threshold = await getFreeDeliveryThreshold();
+  return res.json({ success: true, active: threshold !== null, threshold });
+};
+
 /**
  * PUBLIC API — Validate Coupon Code Server-Side (Single Source of Truth)
  * POST /api/coupons/validate
@@ -50,6 +97,15 @@ export const validateCoupon = async (req, res) => {
 
     if (!coupon) {
       return res.status(404).json({ valid: false, message: 'Invalid coupon code.' });
+    }
+
+    // Free delivery offers are applied automatically, they are not redeemable codes
+    if (coupon.discount_type === FREE_DELIVERY_TYPE) {
+      const minOrder = Number(coupon.min_order_amount || 0);
+      return res.status(400).json({
+        valid: false,
+        message: `No code needed — free delivery is applied automatically on orders of ₹${minOrder} or more.`,
+      });
     }
 
     // 1. Check Active Status
@@ -191,6 +247,24 @@ export const getFeaturedPromoCoupon = async (req, res) => {
     const promos = featuredList.map((coupon) => {
       const valNum = Number(coupon.discount_value || 0);
       const minOrder = Number(coupon.min_order_amount || 0);
+
+      if (coupon.discount_type === FREE_DELIVERY_TYPE) {
+        const desc = coupon.description ? String(coupon.description).trim() : '';
+        const offerText = minOrder > 0 ? `FREE delivery on orders above ₹${minOrder}` : 'FREE delivery on all orders';
+        return {
+          id: coupon.id,
+          code: coupon.code,
+          discountType: coupon.discount_type,
+          discountValue: 0,
+          minOrderAmount: minOrder,
+          maxDiscount: 0,
+          isFreeDelivery: true,
+          discountText: 'FREE DELIVERY',
+          displayText: desc ? `${desc} • ${offerText}` : offerText,
+          description: desc,
+        };
+      }
+
       const discountText = coupon.discount_type === 'percentage'
         ? `${valNum}% OFF`
         : `₹${valNum} OFF`;
@@ -248,11 +322,9 @@ export const getActiveCoupons = async (req, res) => {
     if (error) throw error;
 
     const now = new Date();
+    // Free delivery offers are automatic, so they are not listed as codes to apply
     const validCoupons = (coupons || []).filter((coupon) => {
-      const startsValid = !coupon.starts_at || new Date(coupon.starts_at) <= now;
-      const expiresValid = !coupon.expires_at || new Date(coupon.expires_at) > now;
-      const usageValid = coupon.usage_limit === null || coupon.usage_limit === undefined || Number(coupon.usage_count || 0) < Number(coupon.usage_limit);
-      return startsValid && expiresValid && usageValid;
+      return coupon.discount_type !== FREE_DELIVERY_TYPE && isCouponLive(coupon, now);
     }).map((coupon) => {
       const valNum = Number(coupon.discount_value || 0);
       const minOrder = Number(coupon.min_order_amount || 0);
@@ -394,17 +466,18 @@ export const createCoupon = async (req, res) => {
       return res.status(400).json({ message: 'Coupon code is required.' });
     }
 
-    const valNum = Number(discountValue);
-    if (isNaN(valNum) || valNum <= 0) {
+    const isFreeDelivery = discountType === FREE_DELIVERY_TYPE;
+    const valNum = isFreeDelivery ? 0 : Number(discountValue);
+    if (!isFreeDelivery && (isNaN(valNum) || valNum <= 0)) {
       return res.status(400).json({ message: 'Discount value must be greater than zero.' });
     }
 
     const payload = {
       code: cleanCode,
-      discount_type: discountType === 'fixed' ? 'fixed' : 'percentage',
+      discount_type: isFreeDelivery ? FREE_DELIVERY_TYPE : (discountType === 'fixed' ? 'fixed' : 'percentage'),
       discount_value: valNum,
       min_order_amount: Math.max(0, Number(minOrderAmount || 0)),
-      max_discount: maxDiscountAmount !== null && maxDiscountAmount !== undefined ? Number(maxDiscountAmount) : (maxDiscount ? Number(maxDiscount) : null),
+      max_discount: isFreeDelivery ? null : (maxDiscountAmount !== null && maxDiscountAmount !== undefined ? Number(maxDiscountAmount) : (maxDiscount ? Number(maxDiscount) : null)),
       is_active: is_active !== undefined ? !!is_active : !!isActive,
       is_featured: is_featured !== undefined ? !!is_featured : !!isFeatured,
       starts_at: startsAt ? new Date(startsAt).toISOString() : new Date().toISOString(),
@@ -477,6 +550,13 @@ export const updateCoupon = async (req, res) => {
     if (body.description !== undefined) updatePayload.description = String(body.description || '').trim();
     if (body.expiresAt !== undefined) updatePayload.expires_at = body.expiresAt ? new Date(body.expiresAt).toISOString() : null;
     if (body.expires_at !== undefined) updatePayload.expires_at = body.expires_at ? new Date(body.expires_at).toISOString() : null;
+
+    if (updatePayload.discount_type === FREE_DELIVERY_TYPE) {
+      updatePayload.discount_value = 0;
+      updatePayload.max_discount = null;
+    } else if (updatePayload.discount_type && !['percentage', 'fixed'].includes(updatePayload.discount_type)) {
+      return res.status(400).json({ message: 'Invalid discount type.' });
+    }
 
     let { data: coupon, error } = await supabase
       .from('coupons')

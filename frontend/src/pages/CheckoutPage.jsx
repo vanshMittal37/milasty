@@ -11,7 +11,7 @@ import AllIndiaDeliveryBadge from '../components/common/AllIndiaDeliveryBadge';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const { cartItems, subtotal, appliedCoupon, couponDiscountAmount, updateCartItemCustomization, removeCartItemCustomization, clearCart } = useCart();
+  const { cartItems, subtotal, appliedCoupon, couponDiscountAmount, updateCartItemCustomization, removeCartItemCustomization, clearCart, isFreeDelivery } = useCart();
   const { user, isAuthenticated, addAddress, updateAddress } = useAuth();
   const { deliveryInfo, checkPincode } = useDelivery();
 
@@ -249,7 +249,8 @@ export default function CheckoutPage() {
 
   // Order total = products - discount + delivery (the server recalculates and is authoritative)
   const eligibleSubtotal = Math.max(0, subtotal - couponDiscountAmount);
-  const effectiveDeliveryFee = dynamicShippingFee;
+  // Free delivery offer (Coupons tab) waives the courier charge; the server applies the same rule
+  const effectiveDeliveryFee = isFreeDelivery ? 0 : dynamicShippingFee;
 
   const effectiveGrandTotal = serverGrandTotal ?? (eligibleSubtotal + effectiveDeliveryFee);
   const canPay = Boolean(shippingQuote) && !fetchingShippingFee;
@@ -884,6 +885,13 @@ export default function CheckoutPage() {
                   <span>Delivery</span>
                   {fetchingShippingFee ? (
                     <span style={{ color: '#A38C7A', fontSize: '0.82rem' }}>Calculating...</span>
+                  ) : shippingQuote && isFreeDelivery ? (
+                    <span style={{ fontWeight: '800', color: '#2F6B3A' }}>
+                      {dynamicShippingFee > 0 && (
+                        <span style={{ textDecoration: 'line-through', color: '#A38C7A', fontWeight: '600', marginRight: '0.4rem' }}>₹{dynamicShippingFee}</span>
+                      )}
+                      FREE
+                    </span>
                   ) : shippingQuote ? (
                     <span style={{ fontWeight: '700', color: '#2B140B' }}>₹{dynamicShippingFee}</span>
                   ) : (

@@ -58,9 +58,9 @@ export default function AdminCouponList() {
       await api.post('/coupons', {
         code: code.toUpperCase().trim(),
         discountType,
-        discountValue: Number(discountValue),
+        discountValue: discountType === 'free_delivery' ? 0 : Number(discountValue),
         minOrderAmount: Number(minOrderAmount || 0),
-        maxDiscountAmount: Number(maxDiscountAmount || 0),
+        maxDiscountAmount: discountType === 'free_delivery' ? 0 : Number(maxDiscountAmount || 0),
         isFeatured,
         description,
         isActive: true,
@@ -101,9 +101,9 @@ export default function AdminCouponList() {
       await api.put(`/coupons/${targetId}`, {
         code: editCode.toUpperCase().trim(),
         discount_type: editDiscountType,
-        discount_value: Number(editDiscountValue),
+        discount_value: editDiscountType === 'free_delivery' ? 0 : Number(editDiscountValue),
         min_order_amount: Number(editMinOrderAmount || 0),
-        max_discount: Number(editMaxDiscountAmount || 0),
+        max_discount: editDiscountType === 'free_delivery' ? 0 : Number(editMaxDiscountAmount || 0),
         is_featured: editIsFeatured,
         is_active: editIsActive,
         description: editDescription,
@@ -203,49 +203,62 @@ export default function AdminCouponList() {
                 >
                   <option value="percentage">Percentage (%)</option>
                   <option value="fixed">Fixed Flat (₹)</option>
+                  <option value="free_delivery">Free Delivery</option>
                 </select>
               </div>
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Discount Value *
-                </label>
-                <input
-                  type="number"
-                  required
-                  min="1"
-                  value={discountValue}
-                  onChange={(e) => setDiscountValue(Number(e.target.value))}
-                  className="admin-input"
-                />
-              </div>
+              {discountType !== 'free_delivery' && (
+                <div>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Discount Value *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={discountValue}
+                    onChange={(e) => setDiscountValue(Number(e.target.value))}
+                    className="admin-input"
+                  />
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
                 <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Min Order (₹)
+                  {discountType === 'free_delivery' ? 'Free Delivery Above (₹) *' : 'Min Order (₹)'}
                 </label>
                 <input
                   type="number"
                   min="0"
+                  required={discountType === 'free_delivery'}
                   value={minOrderAmount}
                   onChange={(e) => setMinOrderAmount(Number(e.target.value))}
                   className="admin-input"
                 />
               </div>
-              <div>
-                <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Max Discount (₹)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={maxDiscountAmount}
-                  onChange={(e) => setMaxDiscountAmount(Number(e.target.value))}
-                  className="admin-input"
-                />
-              </div>
+              {discountType !== 'free_delivery' && (
+                <div>
+                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Max Discount (₹)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={maxDiscountAmount}
+                    onChange={(e) => setMaxDiscountAmount(Number(e.target.value))}
+                    className="admin-input"
+                  />
+                </div>
+              )}
             </div>
+
+            {discountType === 'free_delivery' && (
+              <p style={{ fontSize: '0.76rem', color: '#665A52', margin: '-0.4rem 0 0', lineHeight: 1.45 }}>
+                Applied automatically — customers don't type a code. When the cart total reaches this amount,
+                delivery becomes free, and the cart shows "Add ₹X more for FREE delivery" until then.
+              </p>
+            )}
 
             <div>
               <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
@@ -332,9 +345,15 @@ export default function AdminCouponList() {
                             )}
                           </div>
                           <div style={{ fontSize: '0.76rem', color: '#665A52', marginTop: '0.15rem' }}>
-                            {discType === 'percentage' ? `${discVal}% OFF` : `₹${discVal} FLAT OFF`}
-                            {minOrd > 0 ? ` • Min Order: ₹${minOrd}` : ''}
-                            {maxCap > 0 ? ` • Max Discount: ₹${maxCap}` : ''}
+                            {discType === 'free_delivery'
+                              ? `FREE DELIVERY on orders ₹${minOrd}+ • Auto-applied`
+                              : (
+                                <>
+                                  {discType === 'percentage' ? `${discVal}% OFF` : `₹${discVal} FLAT OFF`}
+                                  {minOrd > 0 ? ` • Min Order: ₹${minOrd}` : ''}
+                                  {maxCap > 0 ? ` • Max Discount: ₹${maxCap}` : ''}
+                                </>
+                              )}
                           </div>
                         </div>
                       </div>
@@ -472,48 +491,54 @@ export default function AdminCouponList() {
                   >
                     <option value="percentage">Percentage (%)</option>
                     <option value="fixed">Fixed Flat (₹)</option>
+                    <option value="free_delivery">Free Delivery</option>
                   </select>
                 </div>
-                <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    Discount Value *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="1"
-                    value={editDiscountValue}
-                    onChange={(e) => setEditDiscountValue(Number(e.target.value))}
-                    className="admin-input"
-                  />
-                </div>
+                {editDiscountType !== 'free_delivery' && (
+                  <div>
+                    <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Discount Value *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      value={editDiscountValue}
+                      onChange={(e) => setEditDiscountValue(Number(e.target.value))}
+                      className="admin-input"
+                    />
+                  </div>
+                )}
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    Min Order (₹)
+                    {editDiscountType === 'free_delivery' ? 'Free Delivery Above (₹) *' : 'Min Order (₹)'}
                   </label>
                   <input
                     type="number"
                     min="0"
+                    required={editDiscountType === 'free_delivery'}
                     value={editMinOrderAmount}
                     onChange={(e) => setEditMinOrderAmount(Number(e.target.value))}
                     className="admin-input"
                   />
                 </div>
-                <div>
-                  <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    Max Cap (₹)
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={editMaxDiscountAmount}
-                    onChange={(e) => setEditMaxDiscountAmount(Number(e.target.value))}
-                    className="admin-input"
-                  />
-                </div>
+                {editDiscountType !== 'free_delivery' && (
+                  <div>
+                    <label style={{ fontSize: '0.74rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Max Cap (₹)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={editMaxDiscountAmount}
+                      onChange={(e) => setEditMaxDiscountAmount(Number(e.target.value))}
+                      className="admin-input"
+                    />
+                  </div>
+                )}
               </div>
 
               <div>

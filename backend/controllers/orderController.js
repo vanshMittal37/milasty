@@ -2,6 +2,7 @@ import { supabase } from '../config/supabase.js';
 import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
 import { syncAuthUsersToProfiles } from './authController.js';
 import { getDeliveryChargeForPincode } from './paymentController.js';
+import { getFreeDeliveryThreshold, qualifiesForFreeDelivery, FREE_DELIVERY_TYPE } from './couponController.js';
 import { canAccessOrder, customerShipmentStatus, syncSingleOrderTracking } from './shipratController.js';
 import { requestCancellation, getCustomerCancellation } from './cancellationController.js';
 
@@ -202,7 +203,9 @@ export const createOrder = async (req, res) => {
       .join(' | ');
 
     // SERVER-ENFORCED DELIVERY CHARGE FROM DATABASE
-    const { deliveryFee, city: deliveryCity, state: deliveryState } = await getDeliveryChargeForPincode(finalPincode, subtotal);
+    const { deliveryFee: courierFee, city: deliveryCity, state: deliveryState } = await getDeliveryChargeForPincode(finalPincode, subtotal);
+    // Free delivery offer (Coupons tab) waives the delivery charge above the threshold
+    const deliveryFee = qualifiesForFreeDelivery(subtotal, await getFreeDeliveryThreshold()) ? 0 : courierFee;
 
     // Coupon calculation
     let discountAmount = 0;
@@ -219,7 +222,7 @@ export const createOrder = async (req, res) => {
           .eq('is_active', true)
           .maybeSingle();
 
-        if (coupon) {
+        if (coupon && coupon.discount_type !== FREE_DELIVERY_TYPE) {
           const now = new Date();
           const startsValid = !coupon.starts_at || new Date(coupon.starts_at) <= now;
           const expiresValid = !coupon.expires_at || new Date(coupon.expires_at) > now;

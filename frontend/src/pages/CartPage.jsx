@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useDelivery } from '../context/DeliveryContext';
 import CustomizeItemModal from '../components/CustomizeItemModal';
 import AllIndiaDeliveryBadge from '../components/common/AllIndiaDeliveryBadge';
+import FreeDeliveryProgress from '../components/common/FreeDeliveryProgress';
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function CartPage() {
     couponDiscountAmount,
     applyCoupon,
     removeCoupon,
+    isFreeDelivery,
   } = useCart();
   const { calculateDeliveryFee } = useDelivery();
 
@@ -32,7 +34,6 @@ export default function CartPage() {
   const eligibleSubtotal = Math.max(0, subtotal - couponDiscountAmount);
   const deliveryCalc = calculateDeliveryFee(eligibleSubtotal);
   const effectiveDeliveryFee = deliveryCalc.fee;
-  const isFreeDelivery = deliveryCalc.isFree;
 
   const effectiveGrandTotal = eligibleSubtotal + effectiveDeliveryFee;
 
@@ -273,6 +274,8 @@ export default function CartPage() {
                 </div>
               )}
 
+              <FreeDeliveryProgress style={{ marginBottom: '1rem' }} />
+
               {/* All India Delivery Badge */}
               <div style={{ marginBottom: '1.25rem' }}>
                 <AllIndiaDeliveryBadge compact style={{ width: '100%', justifyContent: 'center', padding: '8px 14px' }} />
@@ -292,9 +295,13 @@ export default function CartPage() {
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Shipping Fee</span>
-                  <span style={{ fontWeight: '700', color: '#6B584C', fontSize: '0.85rem' }}>
-                    Calculated at Checkout
-                  </span>
+                  {isFreeDelivery ? (
+                    <span style={{ fontWeight: '800', color: '#2F6B3A' }}>FREE</span>
+                  ) : (
+                    <span style={{ fontWeight: '700', color: '#6B584C', fontSize: '0.85rem' }}>
+                      Calculated at Checkout
+                    </span>
+                  )}
                 </div>
               </div>
 

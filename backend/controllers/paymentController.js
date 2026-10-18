@@ -8,6 +8,7 @@ import {
   saveShippingQuote,
 } from './shipratController.js';
 import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
+import { getFreeDeliveryThreshold, qualifiesForFreeDelivery, FREE_DELIVERY_TYPE } from './couponController.js';
 
 // Payment sessions (keyed by razorpay_order_id): cart, address, totals and the selected shipping
 // rate captured before payment. Kept in memory for speed AND persisted in the Supabase
@@ -278,19 +279,28 @@ export const createPaymentSession = async (req, res) => {
 
     const chosenRate = shippingQuote.selectedRate; // cheapest valid rate — never chosen by the client
     const allRates = shippingQuote.rateList;
-    const deliveryFee = Number(chosenRate.total_charges);
-    console.log(`[PAYMENT SESSION] Auto-selected "${chosenRate.service_name}" ₹${deliveryFee} (carrier_id="${chosenRate.carrier_id}" courier_id="${chosenRate.courier_id}" product_id="${chosenRate.product_id}") for ${finalPincode} @ ${packageWeightKg}kg`);
+    const courierFee = Number(chosenRate.total_charges);
+    console.log(`[PAYMENT SESSION] Auto-selected "${chosenRate.service_name}" ₹${courierFee} (carrier_id="${chosenRate.carrier_id}" courier_id="${chosenRate.courier_id}" product_id="${chosenRate.product_id}") for ${finalPincode} @ ${packageWeightKg}kg`);
 
     // The customer must pay exactly what they were shown. If the rate moved, show the new amount first.
-    if (expectedDeliveryFee !== null && expectedDeliveryFee !== undefined && Number(expectedDeliveryFee) !== deliveryFee) {
+    // expectedDeliveryFee is the courier quote the checkout displayed (before any free delivery offer).
+    if (expectedDeliveryFee !== null && expectedDeliveryFee !== undefined && Number(expectedDeliveryFee) !== courierFee) {
       const newQuoteId = saveShippingQuote(shippingQuote);
       return res.status(409).json({
         success: false,
         code: 'SHIPPING_CHANGED',
-        message: `The delivery charge for your pincode has been updated to ₹${deliveryFee}. Please review your total and pay again.`,
-        deliveryFee,
+        message: `The delivery charge for your pincode has been updated to ₹${courierFee}. Please review your total and pay again.`,
+        deliveryFee: courierFee,
         quoteId: newQuoteId,
       });
+    }
+
+    // Free delivery offer (Coupons tab): the customer pays ₹0 delivery, MILASTY absorbs the courier cost
+    const freeDeliveryThreshold = await getFreeDeliveryThreshold();
+    const isFreeDelivery = qualifiesForFreeDelivery(subtotal, freeDeliveryThreshold);
+    const deliveryFee = isFreeDelivery ? 0 : courierFee;
+    if (isFreeDelivery) {
+      console.log(`[PAYMENT SESSION] Free delivery applied (subtotal ₹${subtotal} ≥ ₹${freeDeliveryThreshold}); courier cost ₹${courierFee} absorbed`);
     }
 
     // Server-side Coupon discount calculation (Single Source of Truth)
@@ -308,7 +318,7 @@ export const createPaymentSession = async (req, res) => {
           .eq('is_active', true)
           .maybeSingle();
 
-        if (coupon) {
+        if (coupon && coupon.discount_type !== FREE_DELIVERY_TYPE) {
           const now = new Date();
           const startsValid = !coupon.starts_at || new Date(coupon.starts_at) <= now;
           const expiresValid = !coupon.expires_at || new Date(coupon.expires_at) > now;
@@ -348,7 +358,9 @@ export const createPaymentSession = async (req, res) => {
         message: `Your order total has been updated to ₹${grandTotal}. Please review and pay again.`,
         subtotal,
         discountAmount,
-        deliveryFee,
+        deliveryFee: courierFee,
+        isFreeDelivery,
+        freeDeliveryThreshold,
         grandTotal,
         quoteId: saveShippingQuote(shippingQuote),
       });
@@ -416,6 +428,7 @@ export const createPaymentSession = async (req, res) => {
       items: validatedItems,
       subtotal,
       deliveryFee,
+      courierFee,
       discountAmount,
       coupon_id: validatedCouponId,
       coupon_code: validatedCouponCode,
@@ -448,6 +461,7 @@ export const createPaymentSession = async (req, res) => {
       currency: razorpayOrder.currency || 'INR',
       grandTotal,
       deliveryFee,
+      isFreeDelivery,
       subtotal,
       discountAmount,
       couponCode: validatedCouponCode,
@@ -563,7 +577,8 @@ export const finalizeOrderFromPayment = async ({
     selected_courier_id: session?.selectedRate ? String(session.selectedRate.courier_id ?? '') : null,
     selected_product_id: session?.selectedRate ? String(session.selectedRate.product_id ?? '') : null,
     selected_service_name: session?.selectedRate?.service_name || null,
-    selected_delivery_fee: session?.deliveryFee || 0,
+    // Courier cost of the selected rate (differs from delivery_fee when free delivery applied)
+    selected_delivery_fee: session?.courierFee ?? session?.deliveryFee ?? 0,
   };
 
   if (!session) {

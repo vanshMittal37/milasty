@@ -159,8 +159,13 @@ export default function Navbar() {
             <div className="announcement-marquee-track">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="announcement-marquee-content">
-                  {promos.map((p, idx) => (
-                    <span 
+                  {promos.map((p, idx) => p.isFreeDelivery ? (
+                    <span key={idx} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <span>{p.displayText}</span>
+                      <span style={{ margin: '0 1.5rem', opacity: 0.4 }}>•</span>
+                    </span>
+                  ) : (
+                    <span
                       key={idx} 
                       onClick={(e) => handleCopyCoupon(p.code, e)}
                       style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}

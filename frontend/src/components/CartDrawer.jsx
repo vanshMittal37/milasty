@@ -7,6 +7,7 @@ import { useDelivery } from '../context/DeliveryContext';
 import api from '../api/axios';
 import CustomizeItemModal from './CustomizeItemModal';
 import AllIndiaDeliveryBadge from './common/AllIndiaDeliveryBadge';
+import FreeDeliveryProgress from './common/FreeDeliveryProgress';
 
 export default function CartDrawer() {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ export default function CartDrawer() {
     applyCoupon,
     removeCoupon,
     grandTotal,
+    isFreeDelivery,
   } = useCart();
 
   const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
@@ -148,7 +150,6 @@ export default function CartDrawer() {
   const eligibleSubtotal = Math.max(0, subtotal - couponDiscountAmount);
   const deliveryCalc = calculateDeliveryFee(eligibleSubtotal);
   const deliveryCharge = deliveryCalc.fee;
-  const isFreeDelivery = deliveryCalc.isFree;
   const totalAmount = eligibleSubtotal + deliveryCharge;
 
   const handleCheckPinSubmit = async (e) => {
@@ -546,6 +547,8 @@ export default function CartDrawer() {
             boxShadow: '0 -10px 30px rgba(42, 23, 15, 0.08)',
             flexShrink: 0,
           }}>
+            <FreeDeliveryProgress style={{ marginBottom: '0.9rem', background: isFreeDelivery ? 'rgba(47, 107, 58, 0.1)' : '#FFFFFF' }} />
+
             {/* Summary rows */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBottom: '1.1rem', fontSize: '0.88rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#634B3B' }}>
@@ -560,9 +563,13 @@ export default function CartDrawer() {
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#634B3B' }}>
                 <span>Delivery</span>
-                <span style={{ fontWeight: '700', color: '#634B3B', fontSize: '0.82rem' }}>
-                  Calculated at Checkout
-                </span>
+                {isFreeDelivery ? (
+                  <span style={{ fontWeight: '800', color: '#2F6B3A' }}>FREE</span>
+                ) : (
+                  <span style={{ fontWeight: '700', color: '#634B3B', fontSize: '0.82rem' }}>
+                    Calculated at Checkout
+                  </span>
+                )}
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '1.25rem', color: '#2A170F', paddingTop: '0.65rem', marginTop: '0.15rem', borderTop: '1px solid rgba(120, 75, 40, 0.14)' }}>
                 <span>Item Total</span>

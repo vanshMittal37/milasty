@@ -389,6 +389,19 @@ export const CartProvider = ({ children }) => {
     setCouponDiscountAmount(newDiscount);
   }, [subtotal, appliedCoupon]);
 
+  // Free delivery offer managed by admin in the Coupons tab (applied automatically above the threshold).
+  // Refreshed whenever the cart opens so admin changes show up without a reload.
+  const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState(null);
+  useEffect(() => {
+    api.get('/coupons/free-delivery')
+      .then((res) => setFreeDeliveryThreshold(res.data?.active ? Number(res.data.threshold) : null))
+      .catch(() => setFreeDeliveryThreshold(null));
+  }, [isCartOpen]);
+
+  const hasFreeDeliveryOffer = freeDeliveryThreshold !== null;
+  const isFreeDelivery = hasFreeDeliveryOffer && subtotal >= freeDeliveryThreshold;
+  const amountForFreeDelivery = hasFreeDeliveryOffer ? Math.max(0, freeDeliveryThreshold - subtotal) : 0;
+
   const deliveryFee = 0;
   const grandTotal = Math.max(0, subtotal - couponDiscountAmount);
   const totalItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
@@ -472,6 +485,9 @@ export const CartProvider = ({ children }) => {
         applyCoupon,
         removeCoupon,
         syncServerCart,
+        freeDeliveryThreshold,
+        isFreeDelivery,
+        amountForFreeDelivery,
       }}
     >
       {children}
