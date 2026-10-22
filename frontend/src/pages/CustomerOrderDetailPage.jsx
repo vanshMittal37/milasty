@@ -205,6 +205,7 @@ export default function CustomerOrderDetailPage() {
   const [shipTracking, setShipTracking] = useState(null);
   const [trackLoading, setTrackLoading] = useState(false);
   const [showUpdates, setShowUpdates] = useState(false);
+  const [loadError, setLoadError] = useState(null); // 'not_found' | 'server'
 
   useEffect(() => {
     if (!isAuthenticated) { navigate('/login'); }
@@ -213,6 +214,7 @@ export default function CustomerOrderDetailPage() {
 
   const fetchOrderDetail = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const res = await api.get(`/orders/detail/${id}`);
       const fetchedOrder = res.data;
@@ -223,7 +225,11 @@ export default function CustomerOrderDetailPage() {
       if (['shipped', 'out_for_delivery', 'out for delivery', 'delivered'].includes(st)) {
         fetchShipTracking(fetchedOrder?.id || fetchedOrder?._id || id);
       }
-    } catch (e) { console.error('Error fetching order', e); }
+    } catch (e) {
+      console.error('Error fetching order', e);
+      // Only a 404 means the order doesn't exist (or isn't yours); anything else is a server problem
+      setLoadError(e.response?.status === 404 ? 'not_found' : 'server');
+    }
     finally { setLoading(false); }
   };
 
@@ -304,9 +310,19 @@ export default function CustomerOrderDetailPage() {
       <div style={{ padding: '4rem 0', textAlign: 'center', minHeight: '60vh' }}>
         <div style={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.1rem' }}>
           <ShieldAlert size={48} color={T.danger} />
-          <div style={{ color: T.textPrimary, fontSize: '1.4rem', fontWeight: 800 }}>Order Not Found</div>
-          <div style={{ color: T.textMuted, fontSize: '0.92rem' }}>We couldn't retrieve this order. Please check the link.</div>
-          <Link to="/account/orders" style={primaryButtonStyle}>Back to My Orders</Link>
+          {loadError === 'server' ? (
+            <>
+              <div style={{ color: T.textPrimary, fontSize: '1.4rem', fontWeight: 800 }}>We couldn't load this order</div>
+              <div style={{ color: T.textMuted, fontSize: '0.92rem' }}>Something went wrong on our side. Please try again in a moment.</div>
+              <button type="button" onClick={fetchOrderDetail} style={primaryButtonStyle}><RefreshCw size={15} /> Try again</button>
+            </>
+          ) : (
+            <>
+              <div style={{ color: T.textPrimary, fontSize: '1.4rem', fontWeight: 800 }}>Order Not Found</div>
+              <div style={{ color: T.textMuted, fontSize: '0.92rem' }}>We couldn't find this order in your account. Please check the link.</div>
+            </>
+          )}
+          <Link to="/account/orders" style={loadError === 'server' ? secondaryButtonStyle : primaryButtonStyle}>Back to My Orders</Link>
         </div>
       </div>
     );
