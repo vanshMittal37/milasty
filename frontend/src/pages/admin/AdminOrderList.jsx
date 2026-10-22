@@ -571,6 +571,11 @@ export default function AdminOrderList() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#C68A3A', fontWeight: '700', fontSize: '0.8rem', marginBottom: '0.6rem' }}>
                   <MapPin size={15} /> Delivery Address
                 </div>
+                {selectedOrder.recipient_name && (
+                  <div style={{ fontSize: '0.8rem', color: '#2F6B3A', fontWeight: '700', backgroundColor: '#EAEFE5', borderRadius: '8px', padding: '0.4rem 0.6rem', marginBottom: '0.5rem' }}>
+                    🎁 Deliver to: {selectedOrder.recipient_name} · {selectedOrder.recipient_phone}
+                  </div>
+                )}
                 <div style={{ fontSize: '0.82rem', color: '#21150F', lineHeight: '1.4' }}>
                   {typeof selectedOrder.shippingAddress === 'object'
                     ? [selectedOrder.shippingAddress.fullName, selectedOrder.shippingAddress.building, selectedOrder.shippingAddress.addressLine, selectedOrder.shippingAddress.city, selectedOrder.shippingAddress.state].filter(Boolean).join(', ')

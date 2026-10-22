@@ -121,7 +121,18 @@ export const createPaymentSession = async (req, res) => {
       quoteId = null,              // shipping quote the checkout displayed (opaque id, no courier data)
       expectedDeliveryFee = null,  // delivery charge the customer saw — must match what we charge
       expectedGrandTotal = null,   // total the customer saw
+      recipient = null,            // "Deliver to someone else": { name, phone } — address is shippingAddress
     } = req.body;
+
+    let recipientName = null;
+    let recipientPhone = null;
+    if (recipient && (recipient.name || recipient.phone)) {
+      recipientName = String(recipient.name || '').trim().slice(0, 100);
+      recipientPhone = String(recipient.phone || '').replace(/\D/g, '').slice(-10);
+      if (!recipientName || recipientPhone.length !== 10) {
+        return res.status(400).json({ success: false, message: "Please enter the recipient's name and a valid 10-digit mobile number." });
+      }
+    }
 
     const finalEmail = customerEmail || email || '';
     const finalPhone = customerPhone || phone || '';
@@ -423,6 +434,8 @@ export const createPaymentSession = async (req, res) => {
       customerPhone: finalPhone || req.user?.phone || '',
       shippingAddress: formattedAddress,
       pincode: finalPincode,
+      recipientName,
+      recipientPhone,
       deliveryCity,
       deliveryState,
       items: validatedItems,
@@ -587,11 +600,18 @@ export const finalizeOrderFromPayment = async ({
 
   let newOrder = null;
 
+  // The recipient is also written into the notes so admin sees it even before migration 25 adds
+  // the recipient_name / recipient_phone columns.
+  const recipientNote = session?.recipientName
+    ? `Deliver to: ${session.recipientName} (${session.recipientPhone})`
+    : null;
+  const orderNotes = [recipientNote, session?.notes].filter(Boolean).join(' | ') || null;
+
   try {
     // Try inserting with notes column first
     let { data: orderRow, error: insertErr } = await supabase
       .from('orders')
-      .insert([{ ...baseOrderPayload, notes: session?.notes || null }])
+      .insert([{ ...baseOrderPayload, notes: orderNotes }])
       .select()
       .single();
 
@@ -623,6 +643,8 @@ export const finalizeOrderFromPayment = async ({
       razorpay_payment_id: razorpay_payment_id || null,
       delivery_city: session?.deliveryCity || null,
       delivery_state: session?.deliveryState || null,
+      recipient_name: session?.recipientName || null,
+      recipient_phone: session?.recipientPhone || null,
       selected_rate_snapshot: session?.selectedRate || null,
       shipping_rate_options: Array.isArray(session?.rateList) ? session.rateList.map(({ raw, ...r }) => r) : null,
       quoted_weight_kg: session?.packageWeightKg ?? null,

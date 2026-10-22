@@ -875,8 +875,9 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
     const paymentModeVal = 'prepaid';
     const codAmountVal = 0;
 
-    const custName = String(order.customer_name || order.customerName || order.user?.name || 'Customer').slice(0, 100);
-    const custMobile = String(order.customer_phone || order.customerPhone || order.phone || '').replace(/\D/g, '').slice(-10) || '9876543210';
+    // "Deliver to someone else": the recipient is the consignee; the buyer stays the customer
+    const custName = String(order.recipient_name || order.customer_name || order.customerName || order.user?.name || 'Customer').slice(0, 100);
+    const custMobile = String(order.recipient_phone || order.customer_phone || order.customerPhone || order.phone || '').replace(/\D/g, '').slice(-10) || '9876543210';
     const custEmail = String(order.customer_email || order.customerEmail || order.user?.email || 'orders@milasty.com').slice(0, 100);
 
     // Package details stored on the order for admin visibility
@@ -1353,6 +1354,8 @@ export const getShipmentPreview = async (req, res) => {
         order_number: order.order_number,
         customer_name: order.customer_name,
         customer_phone: order.customer_phone,
+        recipient_name: order.recipient_name || null,
+        recipient_phone: order.recipient_phone || null,
         shipping_address: order.shipping_address,
         pincode: order.pincode,
         delivery_fee: Number(order.delivery_fee || 0),

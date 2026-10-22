@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   MessageSquare, MapPin, ShieldCheck, Mail, Send, CheckCircle2,
   Package, ArrowRight, ChevronDown, AlertCircle
@@ -24,6 +24,15 @@ export default function Contact() {
   });
 
   const [activeFaq, setActiveFaq] = useState(null);
+
+  // "Contact Support" from an order page links here as /contact?order=MIL-123456 — start the message with it
+  const [searchParams] = useSearchParams();
+  const orderRef = (searchParams.get('order') || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 30);
+  useEffect(() => {
+    if (orderRef) {
+      setFormData(prev => (prev.message ? prev : { ...prev, message: `Order #${orderRef}: ` }));
+    }
+  }, [orderRef]);
 
   // Auto pre-fill name, email, phone if user is logged in
   useEffect(() => {

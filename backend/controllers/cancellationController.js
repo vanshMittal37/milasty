@@ -121,7 +121,7 @@ async function logEvent(c, eventType, { from = null, to = null, actor = null, de
   if (error) console.error('[CANCELLATION AUDIT] Could not write event', eventType, error.message);
 }
 
-function customerCancellationView(c) {
+export function customerCancellationView(c) {
   if (!c) return null;
   const amountPaidPaise = Number(c.amount_paid_paise || 0);
   const refundAmountPaise = Number(c.refund_amount_paise || 0);

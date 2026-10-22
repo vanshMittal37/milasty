@@ -4,7 +4,7 @@ import { syncAuthUsersToProfiles } from './authController.js';
 import { getDeliveryChargeForPincode } from './paymentController.js';
 import { getFreeDeliveryThreshold, qualifiesForFreeDelivery, FREE_DELIVERY_TYPE } from './couponController.js';
 import { canAccessOrder, customerShipmentStatus, syncSingleOrderTracking } from './shipratController.js';
-import { requestCancellation, getCustomerCancellation } from './cancellationController.js';
+import { requestCancellation, getCustomerCancellation, customerCancellationView } from './cancellationController.js';
 
 // Status Canonical Mappings
 const CANONICAL_STATUS_MAP = {

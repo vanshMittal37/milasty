@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, CreditCard, Truck, CheckCircle2, XCircle, Lock, ShoppingBag, MapPin, Plus, Edit3, Check, X, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, CreditCard, Truck, CheckCircle2, XCircle, Lock, ShoppingBag, MapPin, Plus, Edit3, Check, X, AlertTriangle, Gift } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useDelivery } from '../context/DeliveryContext';
@@ -46,6 +46,19 @@ export default function CheckoutPage() {
     pincode: selectedAddress?.pincode || deliveryInfo?.pincode || '',
   });
 
+  // "Deliver to someone else" (friend / family): the buyer stays the customer, the parcel goes to the recipient
+  const [deliverToOther, setDeliverToOther] = useState(false);
+  const [recipient, setRecipient] = useState({ name: '', phone: '', building: '', addressLine: '', city: '', state: '', pincode: '' });
+  const [recipientErrors, setRecipientErrors] = useState({});
+  const deliveryPincode = deliverToOther ? recipient.pincode : formData?.pincode;
+
+  const handleRecipientChange = (e) => {
+    const { name, value } = e.target;
+    setRecipient(prev => ({ ...prev, [name]: value }));
+    setErrorMessage('');
+    if (recipientErrors[name]) setRecipientErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
   const [editingCustomizationItem, setEditingCustomizationItem] = useState(null);
   // Delivery charge quoted by the server. The courier is chosen automatically server-side;
   // the customer only ever sees the amount. { deliveryFee, quoteId }
@@ -59,7 +72,7 @@ export default function CheckoutPage() {
 
   // Fetch the delivery charge for this pincode + cart
   useEffect(() => {
-    const pin = String(formData?.pincode || '').trim();
+    const pin = String(deliveryPincode || '').trim();
     setServerGrandTotal(null);
     if (pin && /^\d{6}$/.test(pin)) {
       setFetchingShippingFee(true);
@@ -82,7 +95,7 @@ export default function CheckoutPage() {
     } else {
       setShippingQuote(null);
     }
-  }, [formData?.pincode, cartItems]);
+  }, [deliveryPincode, cartItems]);
 
   // Authentication & Empty Cart Guard
   useEffect(() => {
@@ -292,27 +305,42 @@ export default function CheckoutPage() {
       errors.phone = 'Please enter a valid 10-digit mobile number';
     }
 
-    if (!formData.addressLine.trim()) errors.addressLine = 'Street address is required';
-    if (!formData.city.trim()) errors.city = 'City is required';
-    if (!formData.state.trim()) errors.state = 'State is required';
+    // The buyer's own address is only needed when the order is delivered to them
+    if (!deliverToOther) {
+      if (!formData.addressLine.trim()) errors.addressLine = 'Street address is required';
+      if (!formData.city.trim()) errors.city = 'City is required';
+      if (!formData.state.trim()) errors.state = 'State is required';
 
-    // Pincode validation
-    const pinVal = formData.pincode.trim();
-    if (!pinVal) {
-      errors.pincode = 'Pincode is required';
-    } else if (!/^\d{6}$/.test(pinVal)) {
-      errors.pincode = 'Please enter a valid 6-digit pincode';
+      const pinVal = formData.pincode.trim();
+      if (!pinVal) {
+        errors.pincode = 'Pincode is required';
+      } else if (!/^\d{6}$/.test(pinVal)) {
+        errors.pincode = 'Please enter a valid 6-digit pincode';
+      }
+    }
+
+    const rErrors = {};
+    if (deliverToOther) {
+      if (!recipient.name.trim()) rErrors.name = "Recipient's name is required";
+      if (!/^\d{10}$/.test(recipient.phone.replace(/[\s-+]/g, '').slice(-10))) rErrors.phone = 'Enter a valid 10-digit mobile number';
+      if (!recipient.addressLine.trim()) rErrors.addressLine = 'Street address is required';
+      if (!recipient.city.trim()) rErrors.city = 'City is required';
+      if (!recipient.state.trim()) rErrors.state = 'State is required';
+      if (!/^\d{6}$/.test(recipient.pincode.trim())) rErrors.pincode = 'Enter a valid 6-digit pincode';
     }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    setRecipientErrors(rErrors);
+    return Object.keys(errors).length === 0 && Object.keys(rErrors).length === 0;
   };
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
-      setErrorMessage('Please correct the validation errors in delivery details.');
+      setErrorMessage(deliverToOther
+        ? "Please check your details and the recipient's delivery address."
+        : 'Please correct the validation errors in delivery details.');
       return;
     }
 
@@ -330,15 +358,25 @@ export default function CheckoutPage() {
         customerName: formData.customerName,
         email: formData.email,
         phone: formData.phone,
-        shippingAddress: {
-          building: formData.building,
-          addressLine: formData.addressLine,
-          city: formData.city,
-          state: formData.state,
-          country: 'India',
-          pincode: formData.pincode,
-        },
-        pincode: formData.pincode,
+        shippingAddress: deliverToOther
+          ? {
+              building: recipient.building,
+              addressLine: recipient.addressLine,
+              city: recipient.city,
+              state: recipient.state,
+              country: 'India',
+              pincode: recipient.pincode.trim(),
+            }
+          : {
+              building: formData.building,
+              addressLine: formData.addressLine,
+              city: formData.city,
+              state: formData.state,
+              country: 'India',
+              pincode: formData.pincode,
+            },
+        pincode: deliverToOther ? recipient.pincode.trim() : formData.pincode,
+        recipient: deliverToOther ? { name: recipient.name.trim(), phone: recipient.phone } : null,
         items: cartItems,
         couponCode: appliedCoupon ? appliedCoupon.code : null,
         paymentMethod: 'Razorpay',
@@ -529,7 +567,7 @@ export default function CheckoutPage() {
                   <span>1. Delivery Address</span>
                 </h2>
 
-                {savedAddresses.length > 0 && (
+                {savedAddresses.length > 0 && !deliverToOther && (
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button
                       type="button"
@@ -576,8 +614,38 @@ export default function CheckoutPage() {
                 )}
               </div>
 
+              {/* DELIVER TO SOMEONE ELSE TOGGLE */}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={deliverToOther}
+                onClick={() => { setDeliverToOther(v => !v); setErrorMessage(''); }}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: '0.85rem', textAlign: 'left',
+                  padding: '0.9rem 1rem', marginBottom: '1.25rem', borderRadius: '14px', cursor: 'pointer',
+                  backgroundColor: deliverToOther ? '#EAEFE5' : '#FFFFFF',
+                  border: deliverToOther ? '1.5px solid #2F6B3A' : '1.5px solid #E4D1B7',
+                  fontFamily: 'inherit',
+                }}
+              >
+                <Gift size={20} color="#2F6B3A" style={{ flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2B140B' }}>Deliver to someone else</div>
+                  <div style={{ fontSize: '0.76rem', color: '#6B584C', fontWeight: 600 }}>Send this order to a friend or family member's address</div>
+                </div>
+                <div style={{
+                  width: '42px', height: '24px', borderRadius: '999px', flexShrink: 0, position: 'relative',
+                  backgroundColor: deliverToOther ? '#2F6B3A' : '#D8CCB8', transition: 'background-color 0.2s',
+                }}>
+                  <div style={{
+                    position: 'absolute', top: '3px', left: deliverToOther ? '21px' : '3px', width: '18px', height: '18px',
+                    borderRadius: '50%', backgroundColor: '#FFFFFF', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }} />
+                </div>
+              </button>
+
               {/* SAVED ADDRESS SELECTOR CARD */}
-              {savedAddresses.length > 0 && selectedAddress ? (
+              {deliverToOther ? null : savedAddresses.length > 0 && selectedAddress ? (
                 <div
                   style={{
                     backgroundColor: '#FFFFFF',
@@ -670,6 +738,12 @@ export default function CheckoutPage() {
               {/* Form Input Fields */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
+                {deliverToOther && (
+                  <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    Your details
+                  </div>
+                )}
+
                 {/* Full name input */}
                 <div>
                   <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Name *</label>
@@ -688,7 +762,7 @@ export default function CheckoutPage() {
                 {/* Email and Phone grid */}
                 <div className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email Address</label>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email <span style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'none', letterSpacing: 0, color: '#8C7766' }}>(Optional)</span></label>
                     <input
                       type="email"
                       name="email"
@@ -699,7 +773,7 @@ export default function CheckoutPage() {
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone Number *</label>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Mobile Number *</label>
                     <input
                       type="tel"
                       required
@@ -713,6 +787,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
+                {!deliverToOther && (<>
                 {/* Building / House Details */}
                 <div>
                   <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Flat / House / Building Details</label>
@@ -784,6 +859,41 @@ export default function CheckoutPage() {
                     {fieldErrors.pincode && <span style={{ fontSize: '0.72rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem', display: 'block' }}>{fieldErrors.pincode}</span>}
                   </div>
                 </div>
+                </>)}
+
+                {/* Recipient's delivery details ("Deliver to someone else") */}
+                {deliverToOther && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem', paddingTop: '1.25rem', borderTop: '1px dashed #D8CCB8' }}>
+                    <div>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2F6B3A', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Recipient's details</div>
+                      <div style={{ fontSize: '0.76rem', color: '#6B584C', marginTop: '0.2rem' }}>The courier will deliver to this person and call this number.</div>
+                    </div>
+                    {[
+                      [{ name: 'name', label: "Recipient's Name *", placeholder: 'Full name' }, { name: 'phone', label: 'Mobile Number *', placeholder: '10-digit mobile', type: 'tel' }],
+                      [{ name: 'building', label: 'Flat / House / Building', placeholder: 'Flat 402, B Block' }],
+                      [{ name: 'addressLine', label: 'Area / Locality *', placeholder: 'Street, area, landmark' }],
+                      [{ name: 'city', label: 'City *', placeholder: 'City' }, { name: 'state', label: 'State *', placeholder: 'State' }, { name: 'pincode', label: 'Pincode *', placeholder: '6 digits', maxLength: 6 }],
+                    ].map((row) => (
+                      <div key={row[0].name} className="checkout-grid" style={{ display: 'grid', gridTemplateColumns: `repeat(${row.length}, 1fr)`, gap: '0.75rem' }}>
+                        {row.map((f) => (
+                          <div key={f.name}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#5A3422', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{f.label}</label>
+                            <input
+                              type={f.type || 'text'}
+                              name={f.name}
+                              maxLength={f.maxLength}
+                              value={recipient[f.name]}
+                              onChange={handleRecipientChange}
+                              placeholder={f.placeholder}
+                              style={{ width: '100%', padding: '0.75rem 0.85rem', borderRadius: '12px', border: recipientErrors[f.name] ? '1.5px solid #C0392B' : '1.5px solid #D8CCB8', fontSize: '0.88rem', outline: 'none', fontFamily: f.name === 'pincode' ? 'monospace' : 'inherit', backgroundColor: '#F3EDE2', color: '#2B140B', fontWeight: '600', boxSizing: 'border-box' }}
+                            />
+                            {recipientErrors[f.name] && <div style={{ fontSize: '0.72rem', color: '#C0392B', fontWeight: '600', marginTop: '0.25rem' }}>{recipientErrors[f.name]}</div>}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
