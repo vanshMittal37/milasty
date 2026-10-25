@@ -103,6 +103,29 @@ export function calculateEstimatedDeliveryDate(placementDate, days = 9) {
   }
 }
 
+/**
+ * Full delivery date in IST, e.g. "Tuesday, 3 November 2026".
+ * Built from parts so every browser renders the same order (some locales add commas or reorder).
+ */
+export function formatDeliveryDate(val) {
+  if (!val) return null;
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return null;
+  const parts = {};
+  new Intl.DateTimeFormat('en-GB', { timeZone: TIMEZONE, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+    .formatToParts(d)
+    .forEach((p) => { parts[p.type] = p.value; });
+  return `${parts.weekday}, ${parts.day} ${parts.month} ${parts.year}`;
+}
+
+/** Estimated delivery as a Date: the order placement time plus the standard delivery period (9 days). */
+export function estimatedDeliveryFrom(placementDate, days = 9) {
+  if (!placementDate) return null;
+  const d = new Date(placementDate);
+  if (isNaN(d.getTime())) return null;
+  return new Date(d.getTime() + days * 24 * 60 * 60 * 1000);
+}
+
 /** Format currency with rupee symbol */
 export function formatInr(val) {
   const num = Number(val || 0);

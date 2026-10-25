@@ -35,8 +35,9 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
+  // identifier: email address or mobile number
+  const login = async (identifier, password) => {
+    const res = await api.post('/auth/login', { identifier, password });
     if (res.data?.token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
       localStorage.setItem('milasty_token', res.data.token);

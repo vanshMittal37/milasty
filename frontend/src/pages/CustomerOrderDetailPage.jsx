@@ -3,12 +3,13 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   CheckCircle2, Clock, MapPin, ShieldAlert, ArrowLeft, PackageCheck, AlertCircle,
   Copy, Check, MessageCircle, ChevronRight, Package, Truck, ShoppingBag, RefreshCw,
-  Archive, Send, Star, XCircle, Navigation, Loader2, CalendarDays, Heart,
+  Archive, Send, Star, XCircle, Navigation, Loader2, Heart,
 } from 'lucide-react';
 import api from '../api/axios';
 import OrderItemImage from '../components/OrderItemImage';
+import EstimatedDeliveryCard from '../components/EstimatedDeliveryCard';
 import { useAuth } from '../context/AuthContext';
-import { formatDateTime, formatDateOnly, formatTimeOnly } from '../utils/orderDateTime';
+import { formatDateTime, formatDateOnly, formatTimeOnly, formatDeliveryDate } from '../utils/orderDateTime';
 
 // Note: text below uses divs with explicit sizes (not h1–h3/p) because global heading/paragraph
 // font-size rules in index.css (some !important) would otherwise override them.
@@ -179,14 +180,6 @@ function OrderJourney({ activeIdx }) {
   );
 }
 
-// "Expected by" date — the courier's estimate once shipped, otherwise the order's own estimate
-function formatEstimate(val) {
-  if (!val) return null;
-  const d = new Date(val);
-  if (isNaN(d.getTime())) return String(val);
-  return d.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-}
-
 // ─── Main Page ───────────────────────────────────────────────────────────────
 export default function CustomerOrderDetailPage() {
   const { id } = useParams();
@@ -206,14 +199,16 @@ export default function CustomerOrderDetailPage() {
   const [trackLoading, setTrackLoading] = useState(false);
   const [showUpdates, setShowUpdates] = useState(false);
   const [loadError, setLoadError] = useState(null); // 'not_found' | 'server'
+  const [cancelSuccess, setCancelSuccess] = useState(''); // shown once, right after a successful cancellation
 
   useEffect(() => {
     if (!isAuthenticated) { navigate('/login'); }
     else { fetchOrderDetail(); }
   }, [id, isAuthenticated]);
 
-  const fetchOrderDetail = async () => {
-    setLoading(true);
+  // silent: refresh in place (after cancelling) instead of replacing the page with the loader
+  const fetchOrderDetail = async ({ silent = false } = {}) => {
+    if (!silent) setLoading(true);
     setLoadError(null);
     try {
       const res = await api.get(`/orders/detail/${id}`);
@@ -273,9 +268,14 @@ export default function CustomerOrderDetailPage() {
     setCancelLoading(true);
     setCancelError('');
     try {
-      await api.put(`/orders/${id}/cancel`, { reason: finalCancelReason });
+      const res = await api.put(`/orders/${id}/cancel`, { reason: finalCancelReason });
       setCancelStep('closed');
-      await fetchOrderDetail();
+      setCancelQuote(null);
+      // Show the cancelled state immediately, then load the stored order + refund record from the server
+      setOrder((prev) => (prev ? { ...prev, orderStatus: 'Cancelled', status: 'Cancelled', cancellation: res.data?.cancellation || prev.cancellation } : prev));
+      setCancelSuccess(res.data?.duplicate ? 'This order was already cancelled.' : 'Your order has been cancelled successfully.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      await fetchOrderDetail({ silent: true });
     } catch (err) {
       setCancelError(err.response?.data?.message || 'Error cancelling order');
       setCancelStep('form');
@@ -314,7 +314,7 @@ export default function CustomerOrderDetailPage() {
             <>
               <div style={{ color: T.textPrimary, fontSize: '1.4rem', fontWeight: 800 }}>We couldn't load this order</div>
               <div style={{ color: T.textMuted, fontSize: '0.92rem' }}>Something went wrong on our side. Please try again in a moment.</div>
-              <button type="button" onClick={fetchOrderDetail} style={primaryButtonStyle}><RefreshCw size={15} /> Try again</button>
+              <button type="button" onClick={() => fetchOrderDetail()} style={primaryButtonStyle}><RefreshCw size={15} /> Try again</button>
             </>
           ) : (
             <>
@@ -344,6 +344,7 @@ export default function CustomerOrderDetailPage() {
   const statusLabel = isCancelled ? 'Cancelled' : JOURNEY[stepIdx].title;
 
   const paymentStatus = String(order.paymentStatus || order.payment_status || '').toLowerCase();
+  const isRefunded = paymentStatus === 'refunded';
   const isPaid = paymentStatus === 'paid';
   const isPaymentFailed = paymentStatus === 'failed';
   const paymentMethodRaw = String(order.paymentMethod || order.payment_method || '').toLowerCase();
@@ -356,6 +357,15 @@ export default function CustomerOrderDetailPage() {
   const cancelWindowClosed = !isCancelled && !isDelivered && (isOlderThan3Hours || cancelQuote?.code === 'WINDOW_CLOSED');
   const cancellation = order.cancellation || null;
   const inr = (v) => `₹${Number(v || 0).toLocaleString('en-IN', { minimumFractionDigits: Number(v) % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
+  // Refund progress, shown separately from the order status
+  const REFUND_STATUS_LABEL = {
+    pending: ['Refund Pending', 'warning'],
+    processing: ['Refund Processing', 'warning'],
+    successful: ['Refund Successful', 'success'],
+    failed: ['Refund Failed', 'danger'],
+    needs_review: ['Refund Under Review', 'warning'],
+  };
+  const refundBadge = isCancelled && cancellation ? REFUND_STATUS_LABEL[cancellation.refundStatus] : null;
   const REFUND_STATUS_TEXT = {
     pending: 'Refund initiated — it will be credited to your original payment method within 4–5 working days.',
     processing: 'Refund in progress — it should reach your original payment method within 4–5 working days.',
@@ -377,8 +387,9 @@ export default function CustomerOrderDetailPage() {
   const awb = order.awb_number || order.awb || shipTracking?.awb || null;
   const courierName = order.courier_name || shipTracking?.courier_name || null;
   const trackingEvents = shipTracking?.events || shipTracking?.tracking?.shipment_track || [];
-  const estimateRaw = shipTracking?.estimated_delivery || shipTracking?.tracking?.estimated_delivery || order.estimatedDeliveryDate || order.estimated_delivery_date;
-  const estimate = formatEstimate(estimateRaw);
+  // The courier's estimate once shipped (if it is a real date), otherwise the order's own estimate
+  const courierEstimate = shipTracking?.estimated_delivery || shipTracking?.tracking?.estimated_delivery;
+  const estimateDate = formatDeliveryDate(courierEstimate) ? courierEstimate : (order.estimatedDeliveryDate || order.estimated_delivery_date);
 
   const deliveryAddr = order.deliveryAddress || order.shippingAddress || {};
   const hasAddress = typeof deliveryAddr === 'string' ? Boolean(deliveryAddr) : Boolean(deliveryAddr.fullName || deliveryAddr.addressLine);
@@ -423,7 +434,11 @@ export default function CustomerOrderDetailPage() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.45rem' }}>
               <Pill tone={isCancelled ? 'danger' : isDelivered ? 'success' : 'warning'}>Status: {statusLabel}</Pill>
-              {isPaid ? (
+              {refundBadge ? (
+                <Pill tone={refundBadge[1]}>{refundBadge[0]}</Pill>
+              ) : isRefunded ? (
+                <Pill tone="success">Refunded</Pill>
+              ) : isPaid ? (
                 <Pill tone="success">Payment successful ✓</Pill>
               ) : isPaymentFailed ? (
                 <Pill tone="danger">Payment failed ✕</Pill>
@@ -452,7 +467,18 @@ export default function CustomerOrderDetailPage() {
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem' }}>
               <XCircle size={22} color={T.danger} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '1rem', fontWeight: 900, color: T.danger }}>Order Cancelled</div>
+                {cancelSuccess && (
+                  <div role="status" style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.7rem', padding: '0.55rem 0.8rem', borderRadius: '10px', backgroundColor: T.successBg, border: `1px solid ${T.successBorder}`, color: T.success, fontSize: '0.84rem', fontWeight: 800 }}>
+                    <CheckCircle2 size={16} /> {cancelSuccess}
+                  </div>
+                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 900, color: T.danger }}>Order Cancelled</div>
+                  {refundBadge && <Pill tone={refundBadge[1]}>{refundBadge[0]}</Pill>}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: T.textSecondary, marginTop: '0.2rem' }}>
+                  This order will not be prepared or shipped.
+                </div>
                 <div style={{ fontSize: '0.78rem', color: T.textMuted, marginTop: '0.2rem' }}>
                   Cancelled at: <strong>{cancellation?.requestedAt ? formatDateTime(cancellation.requestedAt) : (order.cancelledAt ? formatDateTime(order.cancelledAt) : 'Recorded')}</strong>
                 </div>
@@ -801,7 +827,7 @@ export default function CustomerOrderDetailPage() {
                         </div>
                         <div style={{ fontSize: '0.86rem', color: T.textPrimary, lineHeight: 1.6 }}>
                           {cancelQuote.prepaid
-                            ? `You'll receive ${inr(cancelQuote.refundAmount)} back to your original payment method within 4–5 working days.`
+                            ? `A cancellation charge of ${inr(cancelQuote.cancellationCharge)} (10% of the product amount) applies. You'll receive ${inr(cancelQuote.refundAmount)} back to your original payment method within 4–5 working days.`
                             : 'Your order will be cancelled. No payment was collected, so nothing needs to be refunded.'}
                         </div>
                         {cancelError && <div style={{ fontSize: '0.82rem', color: T.danger }}>{cancelError}</div>}
@@ -849,7 +875,7 @@ export default function CustomerOrderDetailPage() {
                 )}
                 <div style={{ height: '1px', backgroundColor: T.border, margin: '0.25rem 0' }} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 900 }}>
-                  <span style={{ fontSize: '1rem', color: T.textPrimary }}>{isPaid ? 'Total Paid' : 'Order Total'}</span>
+                  <span style={{ fontSize: '1rem', color: T.textPrimary }}>{isPaid || isRefunded ? 'Total Paid' : 'Order Total'}</span>
                   <span style={{ fontSize: '1.05rem', color: T.brand }}>{inr(grandTotal)}</span>
                 </div>
                 <div style={{ fontSize: '0.72rem', color: T.textMuted }}>Prices include all applicable taxes.</div>
@@ -857,8 +883,8 @@ export default function CustomerOrderDetailPage() {
                 <div style={{ marginTop: '0.4rem', padding: '0.75rem 0.85rem', borderRadius: '10px', backgroundColor: T.surfaceAlt, display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.8rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.8rem', color: T.textMuted }}>Payment status</span>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: isPaid ? T.success : isPaymentFailed ? T.danger : T.warning }}>
-                      {isPaid ? 'Payment successful' : isPaymentFailed ? 'Payment failed' : isCod ? 'Pay on delivery' : 'Payment pending'}
+                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: isPaid || isRefunded ? T.success : isPaymentFailed ? T.danger : T.warning }}>
+                      {isRefunded ? 'Refunded' : isPaid ? 'Payment successful' : isPaymentFailed ? 'Payment failed' : isCod ? 'Pay on delivery' : 'Payment pending'}
                     </span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem' }}>
@@ -876,21 +902,7 @@ export default function CustomerOrderDetailPage() {
             </div>
 
             {/* ── 8. DELIVERY ESTIMATE ── */}
-            {!isCancelled && !isDelivered && (
-              <div style={{ ...cardStyle, padding: '1.4rem', backgroundColor: 'rgba(237,247,238,0.6)', border: `1px solid ${T.successBorder}` }}>
-                <div style={{ ...eyebrowStyle, color: T.success, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <CalendarDays size={13} /> Your Delivery Estimate
-                </div>
-                <div role="heading" aria-level={2} style={{ ...sectionHeadingStyle, margin: '0.35rem 0 0.4rem', color: T.success }}>
-                  {estimate ? `Expected by ${estimate}` : 'Delivery estimate coming soon'}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: T.textSecondary, lineHeight: 1.55 }}>
-                  {estimate
-                    ? "Your order is expected to arrive by this date. We'll update your shipment details when tracking becomes available."
-                    : "We're confirming the delivery timeline for your order. Please check back here for updates, or contact us if you need assistance."}
-                </div>
-              </div>
-            )}
+            {!isCancelled && !isDelivered && <EstimatedDeliveryCard date={estimateDate} />}
 
             {/* ── 9. NEED HELP ── */}
             <div style={{ ...cardStyle, padding: '1.4rem' }}>

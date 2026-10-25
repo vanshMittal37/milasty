@@ -1,8 +1,48 @@
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../config/supabase.js';
+import { normalizeIndianMobile, isEmailAddress } from '../utils/phone.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'milasty_super_secret_jwt_key_2026';
+
+// Compared against when no account matches, so a wrong identifier takes as long as a wrong password
+const DUMMY_HASH = bcrypt.hashSync('milasty-no-such-account', 10);
+
+// Brute-force guard for login: per IP + identifier, in memory (resets on restart)
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_FAILURES = 10;
+const loginFailures = new Map();
+
+function loginBlocked(key) {
+  const entry = loginFailures.get(key);
+  if (!entry) return false;
+  if (Date.now() - entry.first > LOGIN_WINDOW_MS) {
+    loginFailures.delete(key);
+    return false;
+  }
+  return entry.count >= LOGIN_MAX_FAILURES;
+}
+
+function recordLoginFailure(key) {
+  const entry = loginFailures.get(key);
+  if (!entry || Date.now() - entry.first > LOGIN_WINDOW_MS) loginFailures.set(key, { count: 1, first: Date.now() });
+  else entry.count += 1;
+}
+
+/**
+ * Accounts whose stored phone is this mobile number. Stored formats vary (+91…, 0…, plain), so match
+ * on the trailing 10 digits and confirm with the normalizer.
+ */
+async function findUsersByMobile(mobile, columns = 'id, phone') {
+  const { data, error } = await supabase.from('users').select(columns).like('phone', `%${mobile}`);
+  if (error) throw error;
+  return (data || []).filter((u) => normalizeIndianMobile(u.phone) === mobile);
+}
+
+// Binds a reset link to the password it replaces, so the link stops working once it has been used
+const passwordVersion = (passwordHash) =>
+  crypto.createHash('sha256').update(String(passwordHash || '')).digest('hex').slice(0, 16);
 
 // Register User with Supabase Auth & PostgreSQL users table
 export const registerUser = async (req, res) => {
@@ -15,11 +55,10 @@ export const registerUser = async (req, res) => {
     }
 
     // Mobile number is mandatory: 10-digit Indian mobile, optional +91 / 0 prefix, spaces/dashes allowed
-    const phoneDigits = String(rawPhone || '').replace(/[\s\-()]/g, '').replace(/^(\+?91|0)(?=\d{10}$)/, '');
-    if (!/^[6-9]\d{9}$/.test(phoneDigits)) {
+    const phone = normalizeIndianMobile(rawPhone);
+    if (!phone) {
       return res.status(400).json({ message: 'Please enter a valid 10-digit mobile number' });
     }
-    const phone = phoneDigits;
     if (!email || !email.trim()) {
       return res.status(400).json({ message: 'Please enter your email address' });
     }
@@ -48,6 +87,19 @@ export const registerUser = async (req, res) => {
 
     if (dbCheckErr) {
       console.error('Supabase DB check error:', dbCheckErr);
+    }
+
+    // An account that already has a password belongs to someone — registering again must never
+    // replace its password (that would hand the account to whoever knows the email address).
+    // Only password-less profiles (created from orders / Auth sync) may be claimed here.
+    if (existingDbUser?.password_hash) {
+      return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
+    }
+
+    // Mobile login identifies the account by its number, so a number may belong to only one account
+    const phoneOwners = await findUsersByMobile(phone);
+    if (phoneOwners.some((u) => u.id !== existingDbUser?.id)) {
+      return res.status(400).json({ message: 'This mobile number is already registered. Please log in instead.' });
     }
 
     // Check Supabase Auth engine for existing user
@@ -193,38 +245,59 @@ export const registerUser = async (req, res) => {
 };
 
 
-// Login User & Admin with Supabase Auth
-// Login User & Admin with Supabase Auth
+// Login User & Admin: email + password or mobile number + password.
+// The identifier only finds the account; the bcrypt password check is what authenticates.
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    // `email` is still accepted from older clients
+    const identifier = String(req.body.identifier ?? req.body.email ?? '').trim();
+    const { password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Please provide email and password' });
+    if (!identifier || !password) {
+      return res.status(400).json({ message: 'Please enter your email address or mobile number and your password' });
     }
 
-    const cleanEmail = email.toLowerCase().trim();
-
-    // 1. Fetch user record from Supabase PostgreSQL 'users' table
-    const { data: user, error: dbError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', cleanEmail)
-      .maybeSingle();
-
-    if (dbError || !user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+    const byEmail = identifier.includes('@');
+    const mobile = byEmail ? null : normalizeIndianMobile(identifier);
+    if (byEmail ? !isEmailAddress(identifier) : !mobile) {
+      return res.status(400).json({ message: 'Please enter a valid email address or 10-digit mobile number' });
     }
 
-    // 2. Verify password with stored bcrypt hash
-    if (!user.password_hash) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+    const invalidMessage = byEmail ? 'Invalid email or password' : 'Invalid mobile number or password';
+    const throttleKey = `${req.ip}|${byEmail ? identifier.toLowerCase() : mobile}`;
+    if (loginBlocked(throttleKey)) {
+      return res.status(429).json({ message: 'Too many unsuccessful sign-in attempts. Please wait 15 minutes and try again, or reset your password.' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+    // 1. Find the candidate account(s)
+    let candidates = [];
+    if (byEmail) {
+      const { data, error } = await supabase.from('users').select('*').eq('email', identifier.toLowerCase()).maybeSingle();
+      if (error) throw error;
+      if (data) candidates = [data];
+    } else {
+      candidates = await findUsersByMobile(mobile, '*');
     }
+
+    // 2. Verify the password. A number shared by older accounts logs into the one whose password
+    //    matches; if several match we can't tell which account is meant, so ask for the email.
+    const withPassword = candidates.filter((u) => u.password_hash);
+    const matched = [];
+    for (const u of withPassword) {
+      if (await bcrypt.compare(password, u.password_hash)) matched.push(u);
+    }
+    if (withPassword.length === 0) await bcrypt.compare(password, DUMMY_HASH);
+
+    if (matched.length === 0) {
+      recordLoginFailure(throttleKey);
+      return res.status(401).json({ message: invalidMessage });
+    }
+    if (matched.length > 1) {
+      return res.status(409).json({ message: 'More than one account uses this mobile number. Please sign in with your email address.' });
+    }
+
+    const user = matched[0];
+    loginFailures.delete(throttleKey);
 
     // 3. Keep Supabase Auth password synchronized in background
     try {
@@ -536,33 +609,45 @@ export const changePassword = async (req, res) => {
 };
 
 // Forgot Password — Resend API + JWT reset token (no Supabase admin API, no nodemailer)
+// Accepts the registered email or mobile number. The link always goes to the account's registered
+// email address: there is no SMS provider configured, so a mobile number can't be verified by OTP.
 export const forgotPassword = async (req, res) => {
+  const genericReply = "If an account exists for these details, we'll send a password reset link to its registered email address shortly. Please check your Inbox and Spam folder.";
   try {
-    const { email } = req.body;
+    const identifier = String(req.body.identifier ?? req.body.email ?? '').trim();
 
-    if (!email) {
-      return res.status(400).json({ message: 'Please enter your email address' });
+    if (!identifier) {
+      return res.status(400).json({ message: 'Please enter your email address or mobile number' });
     }
 
-    const cleanEmail = email.toLowerCase().trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(cleanEmail)) {
-      return res.status(400).json({ message: 'Please enter a valid email address' });
+    const byEmail = identifier.includes('@');
+    const mobile = byEmail ? null : normalizeIndianMobile(identifier);
+    if (byEmail ? !isEmailAddress(identifier) : !mobile) {
+      return res.status(400).json({ message: 'Please enter a valid email address or 10-digit mobile number' });
     }
 
     const frontendUrl = (process.env.FRONTEND_URL || 'https://milasty.vercel.app').replace(/\/$/, '');
-    console.log(`[FORGOT PASSWORD] Request for: ${cleanEmail}`);
 
-    // 1. Look up user name for personalized greeting
-    const { data: dbUser } = await supabase
-      .from('users')
-      .select('id, name')
-      .eq('email', cleanEmail)
-      .maybeSingle();
+    // 1. Find the account. Unknown details get the same reply, so this can't be used to probe accounts.
+    let dbUser = null;
+    if (byEmail) {
+      const { data } = await supabase.from('users').select('id, name, email, password_hash').eq('email', identifier.toLowerCase()).maybeSingle();
+      dbUser = data;
+    } else {
+      const owners = await findUsersByMobile(mobile, 'id, name, email, password_hash');
+      if (owners.length > 1) console.warn(`[FORGOT PASSWORD] Mobile ${mobile} belongs to ${owners.length} accounts — not sending; customer must use their email.`);
+      dbUser = owners.length === 1 ? owners[0] : null;
+    }
+    if (!dbUser?.email) {
+      console.log(`[FORGOT PASSWORD] No unique account with an email for the ${byEmail ? 'email' : 'mobile number'} entered`);
+      return res.json({ message: genericReply });
+    }
+    const cleanEmail = dbUser.email.toLowerCase();
+    console.log(`[FORGOT PASSWORD] Request for account ${dbUser.id} (via ${byEmail ? 'email' : 'mobile'})`);
 
-    // 2. Generate a secure JWT reset token (1 hour expiry)
+    // 2. Generate a secure JWT reset token (1 hour expiry), bound to this account and its current password
     const resetToken = jwt.sign(
-      { email: cleanEmail, purpose: 'password_reset' },
+      { sub: dbUser.id, email: cleanEmail, purpose: 'password_reset', pwv: passwordVersion(dbUser.password_hash) },
       JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -592,7 +677,7 @@ export const forgotPassword = async (req, res) => {
     // 4. Send via Resend API
     if (!process.env.RESEND_API_KEY) {
       console.error('[FORGOT PASSWORD] ❌ RESEND_API_KEY not set in environment!');
-      return res.json({ message: "If an account exists for this email, you'll receive a password reset link shortly." });
+      return res.json({ message: genericReply });
     }
 
     try {
@@ -624,8 +709,8 @@ export const forgotPassword = async (req, res) => {
       console.error('[FORGOT PASSWORD] ❌ Resend fetch error:', rErr.message);
     }
 
-    // Always respond with success (security: don't reveal if email exists)
-    res.json({ message: "If an account exists for this email, you'll receive a password reset link shortly. Please check your Inbox and Spam folder." });
+    // Always respond with success (security: don't reveal if the account exists)
+    res.json({ message: genericReply });
   } catch (error) {
     console.error('[FORGOT PASSWORD] Unhandled error:', error);
     res.status(500).json({ message: 'Error processing password reset request', error: error.message });
@@ -637,7 +722,7 @@ export const forgotPassword = async (req, res) => {
 // Reset Password — supports both JWT reset tokens and Supabase access tokens
 export const resetPassword = async (req, res) => {
   try {
-    const { email, password, access_token, token } = req.body;
+    const { password, access_token, token } = req.body;
 
     if (!password) {
       return res.status(400).json({ message: 'Please enter a new password' });
@@ -650,76 +735,71 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    let cleanEmail = email ? email.toLowerCase().trim() : null;
-    let targetUserId = null;
+    // The account is identified ONLY by proof of email ownership: our signed reset token or a Supabase
+    // recovery session. An email address in the request body is never trusted on its own.
+    let dbUser = null;
 
     // 1. Verify our JWT reset token (from Gmail/Resend email link)
     if (token) {
+      let decoded;
       try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        if (decoded.purpose !== 'password_reset') {
-          return res.status(400).json({ message: 'Invalid reset token. Please request a new link.' });
-        }
-        cleanEmail = decoded.email;
-        console.log(`[RESET PASSWORD] JWT token verified for: ${cleanEmail}`);
+        decoded = jwt.verify(token, JWT_SECRET);
       } catch (jwtErr) {
         if (jwtErr.name === 'TokenExpiredError') {
           return res.status(400).json({ message: 'This reset link has expired. Please request a new one.' });
         }
         return res.status(400).json({ message: 'Invalid reset token. Please request a new link.' });
       }
-    }
-
-    // 2. Fallback: Supabase access_token (from Supabase email flow)
-    if (!cleanEmail && access_token) {
+      if (decoded.purpose !== 'password_reset') {
+        return res.status(400).json({ message: 'Invalid reset token. Please request a new link.' });
+      }
+      const query = supabase.from('users').select('id, email, password_hash');
+      const { data } = await (decoded.sub ? query.eq('id', decoded.sub) : query.eq('email', String(decoded.email || '').toLowerCase())).maybeSingle();
+      dbUser = data;
+      // Links issued since this release carry pwv: once the password changes, the link is spent
+      if (dbUser && decoded.pwv && decoded.pwv !== passwordVersion(dbUser.password_hash)) {
+        return res.status(400).json({ message: 'This reset link has already been used. Please request a new one.' });
+      }
+    } else if (access_token) {
+      // 2. Supabase access_token (from the Supabase recovery email flow) — verified by Supabase
       try {
         const { data: userData } = await supabase.auth.getUser(access_token);
-        if (userData?.user?.email) {
-          cleanEmail = userData.user.email;
-          targetUserId = userData.user.id;
+        const authEmail = userData?.user?.email?.toLowerCase();
+        if (authEmail) {
+          const { data } = await supabase.from('users').select('id, email, password_hash').eq('email', authEmail).maybeSingle();
+          dbUser = data;
         }
       } catch (e) {}
     }
 
-    if (!cleanEmail) {
-      return res.status(400).json({ message: 'Unable to identify user. Please request a new password reset link.' });
+    if (!dbUser) {
+      return res.status(400).json({ message: 'This reset link is invalid. Please request a new password reset link.' });
     }
 
-    console.log(`[RESET PASSWORD] Updating password for: ${cleanEmail}`);
+    console.log(`[RESET PASSWORD] Updating password for account ${dbUser.id}`);
 
-    // 3. Find user in PostgreSQL
-    if (!targetUserId) {
-      const { data: dbUser } = await supabase
-        .from('users')
-        .select('id, email')
-        .eq('email', cleanEmail)
-        .maybeSingle();
-      if (dbUser) targetUserId = dbUser.id;
-    }
-
-    // 4. Update bcrypt hash in PostgreSQL users table
+    // 3. Update bcrypt hash in PostgreSQL users table
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
     const { error: updateErr } = await supabase
       .from('users')
       .update({ password_hash: passwordHash, updated_at: new Date() })
-      .eq('email', cleanEmail);
+      .eq('id', dbUser.id);
 
     if (updateErr) {
       console.error('[RESET PASSWORD] DB update error:', updateErr.message);
+      return res.status(500).json({ message: 'Could not update your password. Please try again.' });
     }
 
-    // 5. Also update Supabase Auth (best effort)
-    if (targetUserId) {
-      try {
-        await supabase.auth.admin.updateUserById(targetUserId, { password });
-      } catch (authErr) {
-        console.warn('[RESET PASSWORD] Supabase Auth update warning:', authErr.message);
-      }
+    // 4. Also update Supabase Auth (best effort)
+    try {
+      await supabase.auth.admin.updateUserById(dbUser.id, { password });
+    } catch (authErr) {
+      console.warn('[RESET PASSWORD] Supabase Auth update warning:', authErr.message);
     }
 
-    console.log(`[RESET PASSWORD] ✅ Password updated for: ${cleanEmail}`);
+    console.log(`[RESET PASSWORD] ✅ Password updated for account ${dbUser.id}`);
     res.json({ message: 'Password updated successfully. You can now log in with your new password.' });
   } catch (error) {
     console.error('[RESET PASSWORD] Unhandled error:', error);

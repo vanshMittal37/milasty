@@ -1,17 +1,21 @@
 import Razorpay from 'razorpay';
 import { supabase } from '../config/supabase.js';
 import { canAccessOrder } from './shipratController.js';
+import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
+import { withRecipient } from '../utils/orderRecipient.js';
 
 /**
- * Order cancellations, manual refund tracking and Shiprath shipment cancellation.
- * Schema + atomic cancel function: scripts/19_order_cancellations_and_refunds.sql
+ * Order cancellations, refund tracking and Shiprath shipment cancellation.
+ * Schema + atomic cancel function: scripts/19, 23 and 26 (26 is the current request_order_cancellation).
  *
  * Policy (the SQL function request_order_cancellation is authoritative; quoteCancellation mirrors it
  * for the customer preview):
- *   elapsed <= 3h → 100%   ·   3h < elapsed <= 5h → 50%   ·   > 5h → blocked
- *   base = amount paid (grand total) for paid Razorpay orders, 0 for COD; refund rounded down to the paisa.
+ *   elapsed <= 3h → cancellable; > 3h → blocked
+ *   paid Razorpay orders: 10% charge on the product amount (grand total − delivery fee), the rest is
+ *   refunded; COD / unpaid orders: nothing charged, nothing refunded. Amounts are in paise.
  *
- * Refunds are made MANUALLY by an admin in the Razorpay Dashboard. Nothing here moves money.
+ * Refunds go out only when an admin starts one (Razorpay Refund API) or records one made in the
+ * Razorpay Dashboard. A refund is "successful" only once Razorpay reports it processed.
  */
 
 const SHIPRATH_BASE_URL = 'https://backend.shiprath.com/vendor/v1';
@@ -147,6 +151,43 @@ export async function getCustomerCancellation(orderId) {
   if (!isUuid(orderId)) return null;
   const { data, error } = await supabase.from('order_cancellations').select('*').eq('order_id', orderId).maybeSingle();
   return error ? null : customerCancellationView(data);
+}
+
+/**
+ * The cancellation record is the source of truth that an order was cancelled. Make the order row agree
+ * with it: order_status 'cancelled', and an order that was never booked gets shipment_status 'cancelled'
+ * so the courier booking can't pick it up. Safe to call repeatedly.
+ *
+ * Earlier releases wrote orders.updated_at (a column production doesn't have), which failed silently and
+ * left cancelled orders showing as Confirmed/Processing — this also repairs those.
+ *
+ * @returns {Promise<boolean>} true when the order row is (now) cancelled
+ */
+export async function syncOrderWithCancellation(c, order = null) {
+  if (!c?.order_id) return false;
+  const current = order || (await supabase.from('orders').select('id, order_status, shipment_status').eq('id', c.order_id).maybeSingle()).data;
+  if (!current) return false;
+
+  const patch = {};
+  if (String(current.order_status || '').toLowerCase() !== 'cancelled') patch.order_status = 'cancelled';
+  const ship = String(current.shipment_status || '').toLowerCase();
+  if (c.shipment_cancel_status === 'not_required' && ['', 'not_created', 'pending', 'failed'].includes(ship)) {
+    patch.shipment_status = 'cancelled';
+  }
+  if (Object.keys(patch).length === 0) return true;
+
+  const { error } = await safeUpdateOrder(c.order_id, patch);
+  if (error) {
+    console.error(`[CANCELLATION] ❌ Could not mark order ${c.order_number || c.order_id} cancelled:`, error.message);
+    await logEvent(c, 'order_status_sync_failed', { to: 'cancelled', details: { error: error.message, patch } });
+    return false;
+  }
+  if (patch.order_status) {
+    console.warn(`[CANCELLATION] Order ${c.order_number || c.order_id} was "${current.order_status}" despite its cancellation record — set to cancelled.`);
+    await logEvent(c, 'order_status_synced', { from: current.order_status, to: 'cancelled', details: patch });
+  }
+  Object.assign(current, patch);
+  return true;
 }
 
 function getRazorpay() {
@@ -389,34 +430,36 @@ export const requestCancellation = async (req, res) => {
         updated_at: now,
       };
 
+      // order_id is UNIQUE: if a simultaneous request won the race, this insert fails with 23505
       const { data: createdRows, error: insertErr } = await supabase
         .from('order_cancellations')
         .insert([insertPayload])
         .select('*');
 
-      if (insertErr || !createdRows?.length) {
+      if (insertErr?.code === '23505') {
+        const { data: winner } = await supabase.from('order_cancellations').select('*').eq('order_id', order.id).maybeSingle();
+        data = { duplicate: true, cancellation: winner };
+      } else if (insertErr || !createdRows?.length) {
         console.error('[CANCELLATION] Fallback insert error:', insertErr?.message);
         return res.status(500).json({ success: false, message: 'Could not complete cancellation in database. Please contact support.' });
+      } else {
+        const created = createdRows[0];
+        await logEvent(created, 'cancellation_requested', {
+          from: order.order_status,
+          to: 'cancelled',
+          actor: req.user,
+          details: { via: 'server_fallback', elapsed_seconds: elapsedSeconds, refund_percentage: prepaid ? REFUND_PERCENTAGE : 0, amount_paid_paise: amountPaidPaise, refund_amount_paise: refundAmountPaise, cancellation_charge_paise: cancellationChargePaise, refund_status: refundStatus, shipment_cancel_status: shipCancelStatus },
+        });
+        data = { duplicate: false, cancellation: created };
       }
-
-      const created = createdRows[0];
-      await supabase.from('orders').update({
-        order_status: 'cancelled',
-        shipment_status: shipCancelStatus === 'not_required' ? 'cancelled' : order.shipment_status,
-        updated_at: now,
-      }).eq('id', order.id);
-
-      await logEvent(created, 'cancellation_requested', {
-        from: order.order_status,
-        to: 'cancelled',
-        actor: req.user,
-        details: { elapsed_seconds: elapsedSeconds, refund_percentage: prepaid ? REFUND_PERCENTAGE : 0, amount_paid_paise: amountPaidPaise, refund_amount_paise: refundAmountPaise, cancellation_charge_paise: cancellationChargePaise, refund_status: refundStatus, shipment_cancel_status: shipCancelStatus },
-      });
-
-      data = { duplicate: false, cancellation: created };
     }
 
     const c = data?.cancellation;
+    // The order row must say "cancelled" before we tell the customer it is — verify, don't assume
+    const orderSynced = await syncOrderWithCancellation(c);
+    if (!orderSynced) {
+      console.error(`[CANCELLATION] ⚠️ ${order.order_number}: cancellation recorded but order row not updated — it will be repaired on the next read.`);
+    }
     if (!data?.duplicate && c) {
       console.log(`[CANCELLATION] ${c.order_number} cancelled by ${actorRole} after ${c.elapsed_seconds}s → 90% refund (₹${paiseToRupees(c.refund_amount_paise)}), 10% charge (₹${paiseToRupees(c.cancellation_charge_paise || (c.amount_paid_paise - c.refund_amount_paise))}), refund=${c.refund_status}, shipment=${c.shipment_cancel_status}`);
       if (c.shipment_cancel_status === 'pending') {
@@ -439,7 +482,9 @@ export const requestCancellation = async (req, res) => {
 
 // ─── Admin endpoints ────────────────────────────────────────────────────────────────────────────
 
-const ADMIN_SELECT = '*, orders:order_id (id, order_number, customer_name, customer_email, customer_phone, grand_total, subtotal, delivery_fee, discount_amount, coupon_code, created_at, paid_at, order_status, payment_status, payment_method, payment_id, shipment_status, awb_number, courier_name)';
+// orders (*) rather than a column list, so the recipient columns are included once migration 26 adds
+// them without breaking this query before it runs. account = the customer account that owns the order.
+const ADMIN_SELECT = '*, orders:order_id (*), account:user_id (id, name, email, phone)';
 
 const FILTERS = {
   all: (q) => q,
@@ -459,6 +504,7 @@ const adminRow = (c) => {
   const chargePaise = Number(c.cancellation_charge_paise ?? c.non_refundable_paise ?? (amountPaidPaise - refundAmountPaise));
   return {
     ...c,
+    orders: c.orders ? withRecipient(c.orders) : c.orders,
     amount_paid: paiseToRupees(amountPaidPaise),
     cancellation_charge: paiseToRupees(chargePaise),
     cancellation_charge_paise: chargePaise,
@@ -475,6 +521,11 @@ export const listCancellations = async (req, res) => {
     query = FILTERS[filter](query);
     const { data, error } = await query;
     if (error) return res.status(500).json({ success: false, message: error.message });
+
+    // Repair orders whose row never got the cancelled status (see syncOrderWithCancellation)
+    await Promise.all((data || [])
+      .filter((c) => c.orders && String(c.orders.order_status || '').toLowerCase() !== 'cancelled')
+      .map((c) => syncOrderWithCancellation(c, c.orders)));
 
     const term = String(req.query.search || '').trim().toLowerCase();
     const rows = (data || []).filter((c) => !term || [
@@ -655,6 +706,7 @@ export const markRefundSuccessful = async (req, res) => {
     }
     if (!updated?.length) return res.status(409).json({ success: false, message: 'Refund status changed in the meantime. Reload and try again.' });
 
+    await markOrderRefunded(c);
     await logEvent(c, 'refund_marked_successful', {
       from: c.refund_status, to: 'successful', actor: req.user,
       details: { refund_id: refundId, amount_paise: c.refund_amount_paise, verified_via: verifiedVia, verification, notes },
@@ -694,17 +746,57 @@ export const resolveShipmentManually = async (req, res) => {
   return res.json({ success: true, cancellation: adminRow(await loadCancellation(c.id)) });
 };
 
+
+/** Once a refund is confirmed, the order's payment status says so too (customer + admin order views). */
+async function markOrderRefunded(c) {
+  const { error } = await safeUpdateOrder(c.order_id, { payment_status: 'refunded' });
+  if (error) console.error(`[REFUND] Could not set payment_status=refunded on ${c.order_number}:`, error.message);
+}
+
+/** Apply Razorpay's view of a refund to the cancellation. Only "processed" becomes successful. */
+async function applyRazorpayRefund(c, refund, actor, eventType) {
+  const rzpStatus = String(refund.status || '').toLowerCase();
+  const next = rzpStatus === 'processed' ? 'successful' : rzpStatus === 'failed' ? 'failed' : 'processing';
+  const nowIso = new Date().toISOString();
+  const { data: updated, error } = await supabase.from('order_cancellations')
+    .update({
+      refund_status: next,
+      refund_reference: refund.id,
+      refund_verified_via: 'razorpay_api',
+      refund_processed_by: isUuid(actor?.id) ? actor.id : null,
+      refund_processed_by_email: actor?.email || null,
+      refund_processed_at: next === 'successful' ? nowIso : null,
+      refund_notes: `Razorpay refund ${refund.id}: ${rzpStatus || 'unknown'}${next === 'failed' ? ' — retry or refund manually' : ''}`,
+      updated_at: nowIso,
+    })
+    .eq('id', c.id)
+    .neq('refund_status', 'successful')
+    .select('id');
+  if (error) return { error };
+  if (next === 'successful') await markOrderRefunded(c);
+  if (updated?.length) {
+    await logEvent(c, next === 'successful' ? 'refund_marked_successful' : eventType, {
+      from: c.refund_status, to: next, actor,
+      details: { refund_id: refund.id, amount_paise: refund.amount, razorpay_status: rzpStatus, verified_via: 'razorpay_api' },
+    });
+  }
+  return { status: next, rzpStatus };
+}
+
+/** A refund Razorpay already holds for this cancellation (e.g. an earlier attempt whose response was lost). */
+async function findExistingRazorpayRefund(rzp, paymentId, cancellationId) {
+  const list = await rzp.payments.fetchMultipleRefund(paymentId, { count: 100 });
+  return (list?.items || []).find((r) => r?.notes?.cancellation_id === cancellationId && r.status !== 'failed') || null;
+}
+
 /**
  * POST /api/admin/cancellations/:id/initiate-refund
- * Securely calls Razorpay Refund API for the calculated 90% eligible refund amount.
- * Validates:
- *   - Only authorized admins
- *   - Razorpay payment with pay_ ID
- *   - Amount strictly equal to refund_amount_paise and <= amount_paid_paise
- *   - Idempotency guard (prevents concurrent/duplicate requests)
- *   - Updates cancellation refund_status, refund_reference, refund_verified_via = 'razorpay_api', refund_processed_at
- *   - Never marks successful unless confirmed by Razorpay API response
- *   - For COD orders, returns clean error indicating manual admin workflow
+ * Calls the Razorpay Refund API for the eligible refund amount (calculated at cancellation time).
+ *   - Admin only (router); COD / no Razorpay payment → refused, use manual settlement
+ *   - Duplicate-safe: the row is atomically claimed (open status → processing) so only one request can
+ *     reach Razorpay, and a refund Razorpay already has for this cancellation is adopted, never repeated
+ *   - Marked successful only when Razorpay reports the refund "processed"; otherwise it stays processing
+ *     until "Sync with Razorpay" (or the admin confirming it) records the outcome
  */
 export const initiateRazorpayRefund = async (req, res) => {
   try {
@@ -714,8 +806,18 @@ export const initiateRazorpayRefund = async (req, res) => {
     if (c.refund_status === 'successful') {
       return res.status(409).json({ success: false, message: `Refund already recorded with ID (${c.refund_reference}).` });
     }
-
-    if (!OPEN_REFUND_STATUSES.includes(c.refund_status)) {
+    // 'processing' means a refund may already be on its way (this endpoint sets it before calling
+    // Razorpay), so never start another from it: sync with Razorpay, or move it back to Pending first.
+    if (c.refund_status === 'processing') {
+      return res.status(409).json({
+        success: false,
+        message: c.refund_reference
+          ? `Refund ${c.refund_reference} is already in progress at Razorpay. Use "Sync with Razorpay" to check its status.`
+          : 'A refund is already being processed for this cancellation. Use "Sync with Razorpay" to check it, or set it back to Pending if no refund was made.',
+      });
+    }
+    const claimable = ['pending', 'failed', 'needs_review'];
+    if (!claimable.includes(c.refund_status)) {
       return res.status(409).json({ success: false, message: `No refund is due for this cancellation (status: ${c.refund_status}).` });
     }
 
@@ -737,11 +839,9 @@ export const initiateRazorpayRefund = async (req, res) => {
 
     const amountPaise = Number(c.refund_amount_paise || 0);
     const amountPaidPaise = Number(c.amount_paid_paise || 0);
-
     if (amountPaise <= 0) {
       return res.status(400).json({ success: false, message: 'Eligible refund amount is ₹0.' });
     }
-
     if (amountPaise > amountPaidPaise) {
       return res.status(400).json({
         success: false,
@@ -749,28 +849,40 @@ export const initiateRazorpayRefund = async (req, res) => {
       });
     }
 
-    // Server-side check against duplicate refunds already saved in order_cancellations
-    const { data: duplicateCheck } = await supabase
-      .from('order_cancellations')
-      .select('id, refund_reference')
-      .eq('id', c.id)
-      .eq('refund_status', 'successful');
-    if (duplicateCheck && duplicateCheck.length > 0) {
-      return res.status(409).json({ success: false, message: 'Refund was already completed for this cancellation.' });
-    }
-
     const rzp = getRazorpay();
     if (!rzp) {
-      return res.status(500).json({
-        success: false,
-        message: 'Razorpay credentials not configured on the server. Please check environment variables.',
-      });
+      return res.status(500).json({ success: false, message: 'Razorpay credentials not configured on the server. Please check environment variables.' });
     }
 
-    // Set status to 'processing' before API call to guard against rapid duplicate clicks
-    await supabase.from('order_cancellations')
-      .update({ refund_status: 'processing', updated_at: new Date().toISOString() })
-      .eq('id', c.id);
+    // Atomic claim: only the request that moves the row out of its current status may call Razorpay.
+    // A second click (or a second admin) finds the status already changed and stops here.
+    const claimNote = `Refund requested via Razorpay API by ${req.user?.email || 'admin'} at ${new Date().toISOString()}`;
+    const { data: claimed, error: claimErr } = await supabase.from('order_cancellations')
+      .update({ refund_status: 'processing', refund_notes: claimNote, updated_at: new Date().toISOString() })
+      .eq('id', c.id)
+      .eq('refund_status', c.refund_status)
+      .select('id');
+    if (claimErr) return res.status(500).json({ success: false, message: claimErr.message });
+    if (!claimed?.length) {
+      return res.status(409).json({ success: false, message: 'This refund is already being processed. Reload to see its current status.' });
+    }
+    const claimedRow = { ...c, refund_status: 'processing' };
+
+    // An earlier attempt may have reached Razorpay even though we never saw the answer — adopt it
+    try {
+      const existing = await findExistingRazorpayRefund(rzp, paymentId, c.id);
+      if (existing) {
+        const applied = await applyRazorpayRefund(claimedRow, existing, req.user, 'refund_adopted_from_razorpay');
+        if (applied.error) return res.status(500).json({ success: false, message: `Razorpay already has refund ${existing.id} but saving it failed: ${applied.error.message}` });
+        return res.json({ success: true, refundId: existing.id, refundStatus: applied.status, adopted: true, cancellation: adminRow(await loadCancellation(c.id)) });
+      }
+    } catch (lookupErr) {
+      // Can't confirm there is no earlier refund — don't risk refunding twice
+      await supabase.from('order_cancellations')
+        .update({ refund_status: c.refund_status, refund_notes: `Could not check Razorpay for earlier refunds: ${lookupErr?.error?.description || lookupErr.message}`, updated_at: new Date().toISOString() })
+        .eq('id', c.id).eq('refund_status', 'processing');
+      return res.status(502).json({ success: false, message: 'Could not reach Razorpay to check for an earlier refund. Nothing was refunded — please try again.' });
+    }
 
     let refundResponse;
     try {
@@ -781,98 +893,94 @@ export const initiateRazorpayRefund = async (req, res) => {
           order_id: c.order_id,
           order_number: c.order_number || c.orders?.order_number,
           cancellation_id: c.id,
-          refund_percentage: c.refund_percentage,
-          deduction: '10% cancellation charge',
+          deduction: '10% cancellation charge on product amount',
           initiated_by: req.user?.email || 'admin',
         },
         receipt: `REF-${c.order_number || String(c.id).slice(0, 8)}`,
       });
     } catch (apiErr) {
-      console.error('[RAZORPAY REFUND API ERROR]', apiErr);
+      console.error('[RAZORPAY REFUND API ERROR]', apiErr?.error || apiErr?.message || apiErr);
       const errMsg = apiErr?.error?.description || apiErr?.message || 'Razorpay refund API call failed';
+      // No answer at all (network / timeout): the refund may exist — keep it processing so it's synced, not retried blind
+      const noAnswer = !apiErr?.statusCode;
       await supabase.from('order_cancellations')
         .update({
-          refund_status: 'failed',
-          refund_notes: `Razorpay API failure: ${errMsg}`,
+          refund_status: noAnswer ? 'processing' : 'failed',
+          refund_notes: noAnswer
+            ? `No response from Razorpay (${errMsg}). Use "Sync with Razorpay" before retrying.`
+            : `Razorpay rejected the refund: ${errMsg}`,
           updated_at: new Date().toISOString(),
         })
         .eq('id', c.id);
-
       await logEvent(c, 'refund_attempt_failed', {
-        from: 'processing',
-        to: 'failed',
-        actor: req.user,
-        details: { payment_id: paymentId, amount_paise: amountPaise, error: errMsg },
+        from: c.refund_status, to: noAnswer ? 'processing' : 'failed', actor: req.user,
+        details: { payment_id: paymentId, amount_paise: amountPaise, error: errMsg, http: apiErr?.statusCode || null },
       });
-
-      return res.status(apiErr?.statusCode || 400).json({
+      return res.status(noAnswer ? 502 : 400).json({
         success: false,
-        message: `Razorpay API rejected refund: ${errMsg}`,
+        message: noAnswer
+          ? 'Razorpay did not respond. The refund may or may not have been created — use "Sync with Razorpay" to check before trying again.'
+          : `Razorpay rejected the refund: ${errMsg}`,
       });
     }
 
-    if (!refundResponse || !refundResponse.id) {
+    if (!refundResponse?.id) {
       await supabase.from('order_cancellations')
-        .update({ refund_status: 'failed', refund_notes: 'No refund ID returned by Razorpay', updated_at: new Date().toISOString() })
+        .update({ refund_notes: 'Razorpay returned no refund ID — check the Razorpay Dashboard, then use "Sync with Razorpay".', updated_at: new Date().toISOString() })
         .eq('id', c.id);
-      return res.status(502).json({ success: false, message: 'Invalid response from Razorpay. Please check Razorpay Dashboard.' });
+      return res.status(502).json({ success: false, message: 'Invalid response from Razorpay. Please check the Razorpay Dashboard.' });
     }
 
-    const refundId = refundResponse.id;
-    const rzpStatus = String(refundResponse.status || '').toLowerCase();
-    const finalRefundStatus = rzpStatus === 'processed' ? 'successful' : 'processing';
-    const nowIso = new Date().toISOString();
-
-    const { data: updated, error: updateErr } = await supabase.from('order_cancellations')
-      .update({
-        refund_status: finalRefundStatus,
-        refund_reference: refundId,
-        refund_verified_via: 'razorpay_api',
-        refund_processed_by: isUuid(req.user?.id) ? req.user.id : null,
-        refund_processed_by_email: req.user?.email || null,
-        refund_processed_at: nowIso,
-        refund_notes: `Initiated via Razorpay API (status: ${rzpStatus}, speed: ${refundResponse.speed_processed || 'normal'})`,
-        updated_at: nowIso,
-      })
-      .eq('id', c.id)
-      .select('id');
-
-    if (updateErr) {
-      console.error('[REFUND UPDATE DB ERROR]', updateErr);
-      return res.status(500).json({ success: false, message: `Refund created in Razorpay (${refundId}) but DB update failed: ${updateErr.message}` });
+    const applied = await applyRazorpayRefund(claimedRow, refundResponse, req.user, 'refund_initiated');
+    if (applied.error) {
+      console.error('[REFUND UPDATE DB ERROR]', applied.error);
+      return res.status(500).json({ success: false, message: `Refund created in Razorpay (${refundResponse.id}) but saving it failed: ${applied.error.message}. Use "Sync with Razorpay".` });
     }
 
-    // Update order payment_status if fully processed
-    if (finalRefundStatus === 'successful') {
-      await supabase.from('orders').update({
-        payment_status: 'refunded',
-        updated_at: nowIso,
-      }).eq('id', c.order_id);
-    }
-
-    await logEvent(c, finalRefundStatus === 'successful' ? 'refund_marked_successful' : 'refund_status_changed', {
-      from: c.refund_status,
-      to: finalRefundStatus,
-      actor: req.user,
-      details: {
-        refund_id: refundId,
-        amount_paise: amountPaise,
-        verified_via: 'razorpay_api',
-        razorpay_response: { id: refundResponse.id, status: refundResponse.status, amount: refundResponse.amount },
-      },
-    });
-
-    console.log(`[RAZORPAY REFUND SUCCESS] Cancellation ${c.id} on order ${c.order_number}: refund ${refundId} ${finalRefundStatus} for ₹${paiseToRupees(amountPaise)}`);
-
-    return res.json({
-      success: true,
-      refundId,
-      refundStatus: finalRefundStatus,
-      cancellation: adminRow(await loadCancellation(c.id)),
-    });
+    console.log(`[RAZORPAY REFUND] Cancellation ${c.id} on ${c.order_number}: refund ${refundResponse.id} ${applied.rzpStatus} → ${applied.status} for ₹${paiseToRupees(amountPaise)}`);
+    return res.json({ success: true, refundId: refundResponse.id, refundStatus: applied.status, cancellation: adminRow(await loadCancellation(c.id)) });
   } catch (error) {
     console.error('[INITIATE REFUND ERROR]', error);
     return res.status(500).json({ success: false, message: error.message || 'Error initiating Razorpay refund.' });
   }
 };
 
+/**
+ * POST /api/admin/cancellations/:id/sync-refund
+ * Reads the refund's real state from Razorpay (by its refund id, or by looking for one tagged with this
+ * cancellation) and records it: processed → successful, failed → failed, otherwise still processing.
+ */
+export const syncRefundWithRazorpay = async (req, res) => {
+  try {
+    const c = await loadCancellation(req.params.id);
+    if (!c) return res.status(404).json({ success: false, message: 'Cancellation not found.' });
+    if (c.refund_status === 'successful') {
+      return res.json({ success: true, refundStatus: 'successful', cancellation: adminRow(c) });
+    }
+    const paymentId = c.razorpay_payment_id || c.orders?.payment_id;
+    if (!paymentId || !String(paymentId).startsWith('pay_')) {
+      return res.status(400).json({ success: false, message: 'This order has no Razorpay payment to check.' });
+    }
+    const rzp = getRazorpay();
+    if (!rzp) return res.status(500).json({ success: false, message: 'Razorpay credentials not configured on the server.' });
+
+    let refund = null;
+    try {
+      refund = c.refund_reference
+        ? await rzp.payments.fetchRefund(paymentId, c.refund_reference)
+        : await findExistingRazorpayRefund(rzp, paymentId, c.id);
+    } catch (err) {
+      return res.status(502).json({ success: false, message: `Could not reach Razorpay: ${err?.error?.description || err.message}` });
+    }
+    if (!refund) {
+      return res.json({ success: true, refundStatus: c.refund_status, message: 'Razorpay has no refund for this cancellation yet.', cancellation: adminRow(c) });
+    }
+
+    const applied = await applyRazorpayRefund(c, refund, req.user, 'refund_synced');
+    if (applied.error) return res.status(500).json({ success: false, message: applied.error.message });
+    return res.json({ success: true, refundStatus: applied.status, refundId: refund.id, cancellation: adminRow(await loadCancellation(c.id)) });
+  } catch (error) {
+    console.error('[SYNC REFUND ERROR]', error);
+    return res.status(500).json({ success: false, message: 'Error syncing refund with Razorpay.' });
+  }
+};

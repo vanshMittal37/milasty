@@ -122,6 +122,22 @@ export function compareByDisplayOrder(a, b) {
 const isBestsellerBadge = (b) => /best\s*seller/i.test(String(b || ''));
 
 // Explicit boolean from the admin dropdown ("true"/true → true). undefined = not provided.
+/**
+ * Shipping weight is courier-only data: it lives in products.shipping_weight / product_variants.shipping_weight.
+ * Older saves also copied it into nutrition_facts, and the storefront prints every nutrition_facts entry
+ * on the product page — so it is removed from nutrition_facts whenever we read or write it.
+ */
+const withoutShippingWeight = (facts) => {
+  if (!facts || typeof facts !== 'object' || Array.isArray(facts)) return facts || {};
+  const clean = {};
+  for (const [key, val] of Object.entries(facts)) {
+    const label = val && typeof val === 'object' ? val.label : '';
+    if (/^shipping[\s_-]*weight$/i.test(key) || /^shipping[\s_-]*weight$/i.test(String(label || '').trim())) continue;
+    clean[key] = val;
+  }
+  return clean;
+};
+
 const parseBool = (v) => (v === undefined || v === null || v === '' ? undefined : v === true || String(v).toLowerCase() === 'true');
 
 export const getProducts = async (req, res) => {
@@ -272,7 +288,7 @@ export const getProducts = async (req, res) => {
 
         // Normalize nutrition_facts object
         const rawFacts = p.nutrition_facts || {};
-        const normalizedNutrition = { ...rawFacts };
+        const normalizedNutrition = withoutShippingWeight(rawFacts);
 
         if (rawFacts.energyKcal && !normalizedNutrition.energy) {
           normalizedNutrition.energy = { label: 'Calories / Energy', value: Number(rawFacts.energyKcal), unit: 'kcal/100g' };
@@ -509,7 +525,7 @@ export const getProductBySlugOrId = async (req, res) => {
 
       // Normalize nutrition_facts object to handle both new structured format { key: { label, value, unit } } and legacy keys
       const rawFacts = p.nutrition_facts || {};
-      const normalizedNutrition = { ...rawFacts };
+      const normalizedNutrition = withoutShippingWeight(rawFacts);
 
       if (rawFacts.energyKcal && !normalizedNutrition.energy) {
         normalizedNutrition.energy = { label: 'Calories / Energy', value: Number(rawFacts.energyKcal), unit: 'kcal/100g' };
@@ -864,10 +880,9 @@ export const createProduct = async (req, res) => {
     const finalShippingWeight = req.body.shippingWeight || req.body.shipping_weight || req.body.nutritionFacts?.shipping_weight || '';
 
     const mergedNutritionFacts = {
-      ...(typeof nutritionFacts === 'object' && nutritionFacts !== null ? nutritionFacts : {}),
+      ...withoutShippingWeight(typeof nutritionFacts === 'object' && nutritionFacts !== null ? nutritionFacts : {}),
       pieces: pieces || (typeof nutritionFacts === 'object' ? nutritionFacts?.pieces : '') || '',
       net_weight: finalNetWeight,
-      shipping_weight: finalShippingWeight,
       variant_stocks: variantStocksMap,
     };
 
@@ -1072,7 +1087,7 @@ export const createProduct = async (req, res) => {
       allergens: product.allergens || '',
       benefits: product.benefits || [],
       targetAudience: product.target_audience || '',
-      nutritionFacts: product.nutrition_facts || {},
+      nutritionFacts: withoutShippingWeight(product.nutrition_facts),
       pieces: product.nutrition_facts?.pieces || pieces || '',
       netWeight: finalNetWeight,
       shippingWeight: finalShippingWeight,
@@ -1145,7 +1160,6 @@ export const updateProduct = async (req, res) => {
     const discountVal = updates.discountValue !== undefined ? Number(updates.discountValue) : (updates.discount_value !== undefined ? Number(updates.discount_value) : 0);
 
     const finalNetWeight = updates.netWeight || updates.net_weight || updates.nutritionFacts?.net_weight || '';
-    const finalShippingWeight = updates.shippingWeight || updates.shipping_weight || updates.nutritionFacts?.shipping_weight || '';
 
     const updatePayload = {
       title: updates.title,
@@ -1170,10 +1184,9 @@ export const updateProduct = async (req, res) => {
       ...labReportColumnsFromBody(updates),
       ingredients: parsedIngredients,
       nutrition_facts: {
-        ...(typeof updates.nutritionFacts === 'object' && updates.nutritionFacts !== null ? updates.nutritionFacts : {}),
+        ...withoutShippingWeight(typeof updates.nutritionFacts === 'object' && updates.nutritionFacts !== null ? updates.nutritionFacts : {}),
         pieces: updates.pieces || (typeof updates.nutritionFacts === 'object' ? updates.nutritionFacts?.pieces : '') || '',
         net_weight: finalNetWeight,
-        shipping_weight: finalShippingWeight,
         variant_stocks: Object.keys(variantStocksMap).length > 0 ? variantStocksMap : updates.nutritionFacts?.variant_stocks,
         base_price: basePriceVal,
         discount_type: discountTypeVal,
@@ -1397,7 +1410,7 @@ export const updateProduct = async (req, res) => {
       allergens: product.allergens || '',
       benefits: product.benefits || [],
       targetAudience: product.target_audience || '',
-      nutritionFacts: product.nutrition_facts || {},
+      nutritionFacts: withoutShippingWeight(product.nutrition_facts),
       pieces: product.nutrition_facts?.pieces || updates.pieces || '',
       isFeatured: product.is_featured !== false,
       variants: formattedVariants,

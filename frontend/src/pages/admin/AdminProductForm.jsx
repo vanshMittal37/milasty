@@ -383,9 +383,11 @@ export default function AdminProductForm() {
         const rawNutr = p.nutritionFacts || p.nutrition_facts || {};
         const nMap = {};
 
-        // Parse key-value entries
+        // Parse key-value entries. Internal fields stored in the same JSON are not nutrition rows —
+        // loading them as rows re-saved them (e.g. shipping weight kept reappearing on the product page).
+        const INTERNAL_NUTRITION_KEYS = ['pieces', 'variant_stocks', 'shipping_weight', 'shippingWeight', 'net_weight', 'base_price', 'discount_type', 'discount_value'];
         Object.entries(rawNutr).forEach(([k, val]) => {
-          if (k === 'pieces' || k === 'variant_stocks') return;
+          if (INTERNAL_NUTRITION_KEYS.includes(k)) return;
           if (val && typeof val === 'object' && val.value !== undefined) {
             nMap[k] = { label: val.label || k.replace(/_/g, ' '), value: val.value, unit: val.unit || 'g' };
           } else if (val !== undefined && val !== null && val !== '') {
@@ -782,7 +784,7 @@ export default function AdminProductForm() {
         ...nutritionMap,
         pieces: formData.pieces ? String(formData.pieces).trim() : '',
         net_weight: formData.netWeight ? String(formData.netWeight).trim() : '',
-        shipping_weight: formData.shippingWeight ? String(formData.shippingWeight).trim() : '',
+        // shipping weight is sent as shippingWeight only — never inside nutritionFacts (shown to customers)
         base_price: basePriceNum,
         discount_type: formData.discountType || 'none',
         discount_value: Number(formData.discountValue) || 0,

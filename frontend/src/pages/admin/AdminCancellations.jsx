@@ -188,7 +188,12 @@ export default function AdminCancellations() {
                     {c.order_number || c.orders?.order_number}
                     {!c.admin_seen_at && <span className="admin-badge admin-badge-warning" style={{ marginLeft: '0.35rem', fontSize: '0.62rem' }}>NEW</span>}
                   </td>
-                  <td>{c.orders?.customer_name || '—'}</td>
+                  <td>
+                    {c.orders?.customer_name || '—'}
+                    {c.orders?.recipient_name && (
+                      <div style={{ fontSize: '0.7rem', color: '#2F6B3A', fontWeight: 700 }}>Recipient: {c.orders.recipient_name}</div>
+                    )}
+                  </td>
                   <td style={{ fontSize: '0.76rem' }}>
                     <div>{c.orders?.customer_email || '—'}</div>
                     <div style={{ color: '#665A52' }}>{c.orders?.customer_phone || ''}</div>
@@ -281,8 +286,8 @@ function DetailPanel({ data, onClose, onChanged }) {
     setBusy(true);
     setMsg(null);
     try {
-      await fn();
-      setMsg({ type: 'ok', text: okText });
+      const result = await fn();
+      setMsg({ type: 'ok', text: typeof result === 'string' ? result : okText });
       await onChanged();
     } catch (e) {
       const body = e.response?.data;
@@ -327,17 +332,24 @@ function DetailPanel({ data, onClose, onChanged }) {
     );
     if (!conf) return;
 
-    run(
-      () => api.post(`/admin/cancellations/${c.id}/initiate-refund`),
-      'Razorpay refund executed successfully and verified via API!'
-    );
+    run(async () => {
+      const res = await api.post(`/admin/cancellations/${c.id}/initiate-refund`);
+      return res.data?.refundStatus === 'successful'
+        ? `Razorpay processed refund ${res.data.refundId}.`
+        : `Refund ${res.data?.refundId} created — Razorpay is still processing it. Use "Sync with Razorpay" to update.`;
+    });
   };
+
+  const syncRefund = () => run(async () => {
+    const res = await api.post(`/admin/cancellations/${c.id}/sync-refund`);
+    return res.data?.message || `Razorpay status recorded: ${REFUND_LABELS[res.data?.refundStatus]?.[0] || res.data?.refundStatus}.`;
+  });
 
   const isPrepaidRazorpay = String(c.payment_method || o.payment_method || '').toLowerCase() === 'razorpay' && Boolean(c.razorpay_payment_id);
   const isCod = String(c.payment_method || o.payment_method || '').toLowerCase().includes('cod');
-  const estimatedDeliveryDate = c.order_created_at
-    ? new Date(new Date(c.order_created_at).getTime() + 9 * 86400000).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
-    : '—';
+  // A refund already sent to Razorpay must be synced, not started again
+  const refundInFlight = c.refund_status === 'processing';
+  const account = c.account || null;
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.55)', zIndex: 99999, display: 'flex', justifyContent: 'flex-end' }} onClick={onClose}>
@@ -376,6 +388,16 @@ function DetailPanel({ data, onClose, onChanged }) {
           <Row label="Razorpay Payment ID"><code>{c.razorpay_payment_id || (isCod ? 'Not applicable (COD)' : 'None')}</code></Row>
           <Row label="Refund Status"><Badge map={REFUND_LABELS} value={c.refund_status} /></Row>
 
+          {c.refund_reference && c.refund_status !== 'successful' && (
+            <Row label="Refund ID"><code>{c.refund_reference}</code></Row>
+          )}
+
+          {isPrepaidRazorpay && c.refund_status !== 'successful' && c.refund_status !== 'not_applicable' && (
+            <button className="admin-btn-secondary" onClick={syncRefund} disabled={busy} style={{ alignSelf: 'flex-start', padding: '0.4rem 0.85rem', fontSize: '0.78rem' }}>
+              <RefreshCw size={13} /> Sync with Razorpay
+            </button>
+          )}
+
           {c.refund_status === 'successful' && (
             <div style={{ background: 'rgba(46,125,50,0.08)', border: '1px solid rgba(46,125,50,0.25)', borderRadius: '10px', padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
               <Row label="Refund ID"><code>{c.refund_reference}</code></Row>
@@ -388,7 +410,7 @@ function DetailPanel({ data, onClose, onChanged }) {
           {c.refund_notes && <Row label="Notes">{c.refund_notes}</Row>}
 
           {/* Automated Razorpay Refund Button */}
-          {isPrepaidRazorpay && CAN_MARK_REFUNDED.includes(c.refund_status) && (
+          {isPrepaidRazorpay && CAN_MARK_REFUNDED.includes(c.refund_status) && !refundInFlight && (
             <div style={{ padding: '0.85rem', background: '#E8F5E9', border: '1px solid #A5D6A7', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
               <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#1B5E20' }}>
                 Automated Gateway Refund:
@@ -510,14 +532,21 @@ function DetailPanel({ data, onClose, onChanged }) {
 
         {/* Order & Cancellation Full Timestamps */}
         <Section title="Order Timestamps &amp; Details">
-          <Row label="Customer">{o.customer_name || '—'}</Row>
+          <Row label="Customer (ordered by)">{o.customer_name || '—'}</Row>
           <Row label="Email / Mobile">{o.customer_email || '—'} · {o.customer_phone || '—'}</Row>
+          <Row label="Customer Account">
+            {account ? `${account.name || '—'} · ${account.email || '—'}${account.phone ? ` · ${account.phone}` : ''}` : 'Guest checkout (no account)'}
+          </Row>
+          <Row label="Recipient (deliver to)">
+            {o.recipient_name ? `${o.recipient_name}${o.recipient_phone ? ` · ${o.recipient_phone}` : ''}` : 'Same as customer'}
+          </Row>
+          <Row label="Order Status">{String(o.order_status || '—').replace(/_/g, ' ')}</Row>
+          <Row label="Shipment Status">{String(o.shipment_status || '—').replace(/_/g, ' ')}</Row>
           <Row label="Order Placement Time">{dt(c.order_created_at)}</Row>
           <Row label="Payment Transaction Time">
             {o.paid_at ? dt(o.paid_at) : (isCod ? 'Not applicable (Cash on Delivery)' : (String(o.payment_status).toLowerCase() === 'paid' ? 'Completed at checkout' : 'Pending'))}
           </Row>
           <Row label="Cancellation Time">{dt(c.requested_at)} by {c.requested_by_role}</Row>
-          <Row label="Estimated Delivery Date">Estimated by {estimatedDeliveryDate} (9 days from order)</Row>
           <Row label="Time Elapsed Before Cancel">{elapsed(c.elapsed_seconds)}</Row>
           <Row label="Cancellation Reason">{c.reason}</Row>
           <Row label="Payment Method &amp; Status">{String(o.payment_method || '').toUpperCase()} · {o.payment_status}</Row>

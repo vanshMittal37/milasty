@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Check, ArrowRight, ArrowLeft, RefreshCw } from 'lucide-react';
+import { User, Check, ArrowRight, ArrowLeft, RefreshCw } from 'lucide-react';
 import api from '../api/axios';
 import { useToast } from '../context/ToastContext';
 import { AuthLayout, AuthInput, AuthButton, AuthAlert } from '../components/common/AuthComponents';
+import { parseLoginIdentifier } from '../utils/loginIdentifier';
 
 export default function ForgotPasswordPage() {
   const { toast } = useToast();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,25 +24,13 @@ export default function ForgotPasswordPage() {
     return () => clearInterval(timer);
   }, [cooldown]);
 
-  const validateEmail = (val) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(val);
-  };
-
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
 
-    if (!email.trim()) {
-      const msg = 'Please enter your email address.';
-      setError(msg);
-      toast.error(msg);
-      return;
-    }
-
-    if (!validateEmail(email.trim())) {
-      const msg = 'Please enter a valid email address.';
-      setError(msg);
-      toast.error(msg);
+    const parsed = parseLoginIdentifier(identifier);
+    if (parsed.error) {
+      setError(parsed.error);
+      toast.error(parsed.error);
       return;
     }
 
@@ -49,7 +38,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      const res = await api.post('/auth/forgot-password', { email: email.trim() });
+      const res = await api.post('/auth/forgot-password', { identifier: parsed.value });
       setSent(true);
       setCooldown(60);
       toast.success(res.data?.message || 'Password reset link sent! Please check your email.');
@@ -103,8 +92,8 @@ export default function ForgotPasswordPage() {
               Check Your Email
             </h1>
             <p style={{ color: '#5A4438', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
-              We've sent password reset instructions to{' '}
-              <strong style={{ color: '#2B1710', wordBreak: 'break-all' }}>{email}</strong>. Please check your inbox and follow the secure link.
+              If an account matches{' '}
+              <strong style={{ color: '#2B1710', wordBreak: 'break-all' }}>{identifier.trim()}</strong>, we've sent a secure reset link to its registered email address. Please check your inbox and spam folder.
             </p>
           </div>
 
@@ -163,7 +152,7 @@ export default function ForgotPasswordPage() {
       badge="ACCOUNT SECURITY"
       titleLine1="Forgot"
       titleLine2="Password"
-      subtitle="Enter the email address associated with your MILASTY account and we'll send you a secure link to reset your password."
+      subtitle="Enter the email address or mobile number of your MILASTY account. We'll send a secure reset link to the account's registered email address."
       trustBadges={[
         { icon: '🔒', text: '256-bit Encryption' },
         { icon: '🌿', text: 'MILASTY Protection' },
@@ -175,18 +164,21 @@ export default function ForgotPasswordPage() {
       {/* Form View */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
         <AuthInput
-          label="EMAIL ADDRESS"
-          type="email"
-          icon={Mail}
-          value={email}
+          label="EMAIL ADDRESS OR MOBILE NUMBER"
+          type="text"
+          inputMode="email"
+          icon={User}
+          value={identifier}
           onChange={(e) => {
-            setEmail(e.target.value);
+            setIdentifier(e.target.value);
             if (error) setError('');
           }}
-          placeholder="Enter your registered email"
+          placeholder="Enter your email or mobile number"
           required
-          autoComplete="email"
-          id="forgot-email"
+          autoComplete="username"
+          autoCapitalize="none"
+          spellCheck={false}
+          id="forgot-identifier"
         />
 
         <AuthButton loading={loading} loadingText="Sending..." icon={ArrowRight}>

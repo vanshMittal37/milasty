@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle2, ArrowRight, Truck, ShieldCheck, Navigation, Calendar, Clock, CreditCard } from 'lucide-react';
+import { CheckCircle2, XCircle, ArrowRight, Truck, ShieldCheck, Navigation, Calendar, Clock } from 'lucide-react';
 import api from '../api/axios';
-import { formatDateOnly, formatTimeOnly, formatDateTime, calculateEstimatedDeliveryDate, formatInr } from '../utils/orderDateTime';
+import EstimatedDeliveryCard from '../components/EstimatedDeliveryCard';
+import { formatDateOnly, formatTimeOnly, formatDateTime, estimatedDeliveryFrom } from '../utils/orderDateTime';
 
 export default function OrderSuccessPage() {
   const { orderId } = useParams();
@@ -21,8 +22,9 @@ export default function OrderSuccessPage() {
       const res = await api.get(`/orders/detail/${orderId}`);
       const fetched = res.data;
       setOrder(fetched);
+      const cancelled = String(fetched?.orderStatus || fetched?.status || '').toLowerCase() === 'cancelled';
       // If AWB not yet assigned, poll a few more times to catch fast Shiprath bookings
-      if (!fetched?.awb_number && !fetched?.awb && pollCount.current < 3) {
+      if (!cancelled && !fetched?.awb_number && !fetched?.awb && pollCount.current < 3) {
         pollCount.current += 1;
         pollRef.current = setTimeout(fetchOrderDetails, 3000);
       }
@@ -63,7 +65,8 @@ export default function OrderSuccessPage() {
 
   const orderPlacementDate = order?.createdAt ? formatDateOnly(order.createdAt) : '—';
   const orderPlacementTime = order?.createdAt ? formatTimeOnly(order.createdAt) : '—';
-  const estimatedDelivery = order?.createdAt ? calculateEstimatedDeliveryDate(order.createdAt, 9) : '—';
+  const isCancelled = String(order?.orderStatus || order?.status || '').toLowerCase() === 'cancelled';
+  const recipientName = order?.recipient_name || null;
 
   return (
     <div style={{
@@ -130,24 +133,26 @@ export default function OrderSuccessPage() {
               width: '80px', 
               height: '80px', 
               borderRadius: '50%', 
-              backgroundColor: '#EAEFE5', 
-              color: '#2F6B3A', 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
+              backgroundColor: isCancelled ? '#FEECEC' : '#EAEFE5',
+              color: isCancelled ? '#C62828' : '#2F6B3A',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               marginBottom: '1.75rem',
-              border: '2px solid #2F6B3A',
-              boxShadow: '0 4px 12px rgba(47, 107, 58, 0.15)'
+              border: `2px solid ${isCancelled ? '#C62828' : '#2F6B3A'}`,
+              boxShadow: isCancelled ? '0 4px 12px rgba(198, 40, 40, 0.12)' : '0 4px 12px rgba(47, 107, 58, 0.15)'
             }}
           >
-            <CheckCircle2 size={44} strokeWidth={1.5} />
+            {isCancelled ? <XCircle size={44} strokeWidth={1.5} /> : <CheckCircle2 size={44} strokeWidth={1.5} />}
           </div>
 
           <h1 style={{ fontSize: '2.1rem', fontFamily: 'var(--font-serif)', color: '#2B140B', fontWeight: '800', marginBottom: '0.75rem', letterSpacing: '-0.01em' }}>
-            Order Confirmed
+            {isCancelled ? 'Order Cancelled' : 'Order Confirmed'}
           </h1>
           <p style={{ color: '#6B584C', fontSize: '0.98rem', lineHeight: '1.6', marginBottom: '2.25rem', maxWidth: '480px', margin: '0 auto 2.25rem' }}>
-            Thank you for choosing MILASTY. Your order has been placed successfully and queued for fresh artisan baking.
+            {isCancelled
+              ? 'This order has been cancelled and will not be prepared or shipped. Refund details are on your order page.'
+              : 'Thank you for choosing MILASTY. Your order has been placed successfully and queued for fresh artisan baking.'}
           </p>
 
           {/* Details summary block */}
@@ -221,30 +226,19 @@ export default function OrderSuccessPage() {
                   </div>
                 )}
 
-                {/* Estimated Delivery Date & Window (9 days from placement date) */}
-                <div style={{
-                  backgroundColor: 'rgba(47, 107, 58, 0.08)',
-                  border: '1px solid rgba(47, 107, 58, 0.25)',
-                  borderRadius: '12px',
-                  padding: '0.9rem 1rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.35rem',
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ color: '#2F6B3A', fontWeight: '800', fontSize: '0.88rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <Truck size={16} /> Estimated Delivery:
-                    </span>
-                    <span style={{ fontWeight: '900', color: '#2F6B3A', fontSize: '0.95rem' }}>
-                      Estimated delivery by {estimatedDelivery}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: '#654B38', lineHeight: '1.4' }}>
-                    Delivery period: <strong>9 days</strong> from order placement (artisan baking, freshness testing &amp; pan-India courier).
-                  </div>
-                </div>
+                {/* Estimated delivery: placement date + the standard delivery period */}
+                {!isCancelled && <EstimatedDeliveryCard date={estimatedDeliveryFrom(order.createdAt)} />}
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
+                {recipientName && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
+                    <span style={{ color: '#6B584C', fontWeight: '600' }}>Recipient:</span>
+                    <span style={{ fontWeight: '700', color: '#2B140B', textAlign: 'right' }}>
+                      {recipientName}{order.recipient_phone ? ` · ${order.recipient_phone}` : ''}
+                    </span>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
                   <span style={{ color: '#6B584C', fontWeight: '600' }}>Delivery To:</span>
                   <span style={{ fontWeight: '700', color: '#2B140B', textAlign: 'right', maxWidth: '300px', fontSize: '0.85rem' }}>
                     {formattedAddressString}
@@ -252,7 +246,12 @@ export default function OrderSuccessPage() {
                 </div>
 
                 {/* Shipment status */}
-                {(order.awb_number || order.awb) ? (
+                {isCancelled ? (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.85rem' }}>
+                    <span style={{ color: '#6B584C', fontWeight: '600' }}>Shipment:</span>
+                    <span style={{ fontWeight: '700', color: '#C62828', fontSize: '0.82rem' }}>Not shipped — order cancelled</span>
+                  </div>
+                ) : (order.awb_number || order.awb) ? (
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E4D1B7', paddingBottom: '0.65rem', fontSize: '0.9rem' }}>
                     <span style={{ color: '#6B584C', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                       <Navigation size={14} style={{ color: '#2F6B3A' }} /> Tracking (AWB):

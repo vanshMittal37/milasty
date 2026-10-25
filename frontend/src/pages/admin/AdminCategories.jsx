@@ -5,6 +5,52 @@ import ConfirmationModal from '../../components/ConfirmationModal';
 import { useToast } from '../../context/ToastContext';
 import { useCategories } from '../../context/CategoryContext';
 
+const ACCEPTED_IMAGE_TYPES = /^image\/(jpeg|jpg|png|webp)$/i;
+const MAX_SOURCE_BYTES = 10 * 1024 * 1024; // what the admin may pick; it is resized before upload
+const MAX_EDGE_PX = 1600;                   // category tiles never display larger than this
+
+const readAsDataUrl = (blob) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = () => reject(new Error('The file could not be read. Please choose it again.'));
+  reader.readAsDataURL(blob);
+});
+
+/**
+ * Downscale big photos in the browser so the upload stays small (phone photos are often 5–10 MB,
+ * which is slow and can exceed hosting request limits). Small images are sent as they are.
+ * WEBP keeps PNG transparency; browsers that can't encode WEBP fall back to the original file.
+ */
+async function prepareCategoryImage(file) {
+  const original = await readAsDataUrl(file);
+  const img = await new Promise((resolve, reject) => {
+    const el = new Image();
+    el.onload = () => resolve(el);
+    el.onerror = () => reject(new Error('This image could not be opened. Please choose a JPG, PNG or WEBP image.'));
+    el.src = original;
+  });
+  const scale = Math.min(1, MAX_EDGE_PX / Math.max(img.naturalWidth, img.naturalHeight));
+  if (scale === 1 && file.size <= 1.5 * 1024 * 1024) return original;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(img.naturalWidth * scale);
+  canvas.height = Math.round(img.naturalHeight * scale);
+  canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+  const resized = canvas.toDataURL('image/webp', 0.88);
+  if (!resized.startsWith('data:image/webp')) return original;
+  return resized.length < original.length ? resized : original;
+}
+
+// Message for a failed upload: the server's own explanation when there is one
+function uploadErrorMessage(err) {
+  if (!err.response) return 'Upload failed: could not reach the server. Check your internet connection and try again.';
+  const { status, data } = err.response;
+  if (data?.message) return data.message;
+  if (status === 401 || status === 403) return 'Your admin session has expired. Please log in again and retry.';
+  if (status === 413) return 'This image is too large to upload. Please choose a smaller image.';
+  return `Upload failed (error ${status}). Please try again.`;
+}
+
 export default function AdminCategories() {
   const { categories, categoriesLoading: fetching, refreshCategories } = useCategories();
   
@@ -26,6 +72,9 @@ export default function AdminCategories() {
   const [editCategoryData, setEditCategoryData] = useState(null);
   const [editProductSearch, setEditProductSearch] = useState('');
   const [editImageUploading, setEditImageUploading] = useState(false);
+  // Upload feedback per form: { status: 'uploading'|'done'|'error', progress, message, preview }
+  const [createUpload, setCreateUpload] = useState(null);
+  const [editUpload, setEditUpload] = useState(null);
   const [updating, setUpdating] = useState(false);
 
   // Delete State
@@ -70,48 +119,71 @@ export default function AdminCategories() {
     });
   };
 
-  // Image File Upload Helper using Cloudinary Endpoint
-  const handleFileUpload = (e, isEdit = false) => {
-    const file = e.target.files[0];
+  // Image upload (Cloudinary via /api/upload). The category keeps its current image until a new one
+  // has uploaded AND the form is saved — a failed upload changes nothing.
+  const handleFileUpload = async (e, isEdit = false) => {
+    const input = e.target;
+    const file = input.files?.[0];
+    input.value = ''; // lets the admin pick the same file again after an error
     if (!file) return;
 
-    if (!file.type.match(/^image\/(jpeg|jpg|png|webp)$/i)) {
-      toast.error('Only JPG, JPEG, PNG, or WEBP images are supported');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('File size exceeds 5MB limit');
-      return;
-    }
-
-    if (isEdit) setEditImageUploading(true);
-    else setUploadingImage(true);
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = async () => {
-      try {
-        const base64Data = reader.result;
-        const res = await api.post('/upload', { image: base64Data });
-        if (res.data && res.data.url) {
-          if (isEdit) {
-            setEditCategoryData(prev => ({ ...prev, image: res.data.url, image_url: res.data.url }));
-          } else {
-            setImage(res.data.url);
-          }
-          toast.success('Category image uploaded successfully!');
-        } else {
-          toast.error('Cloudinary upload failed');
-        }
-      } catch (err) {
-        console.error('Image upload error:', err);
-        toast.error('Image upload failed. Check connection.');
-      } finally {
-        if (isEdit) setEditImageUploading(false);
-        else setUploadingImage(false);
-      }
+    const setStatus = isEdit ? setEditUpload : setCreateUpload;
+    const setBusy = isEdit ? setEditImageUploading : setUploadingImage;
+    const fail = (message) => {
+      setStatus((prev) => ({ ...prev, status: 'error', message }));
+      toast.error(message);
     };
+
+    if (!ACCEPTED_IMAGE_TYPES.test(file.type)) {
+      fail('Only JPG, PNG or WEBP images are supported.');
+      return;
+    }
+    if (file.size > MAX_SOURCE_BYTES) {
+      fail('This image is larger than 10 MB. Please choose a smaller image.');
+      return;
+    }
+
+    const preview = URL.createObjectURL(file);
+    setStatus({ status: 'uploading', progress: 0, message: 'Preparing image…', preview });
+    setBusy(true);
+    try {
+      const imageData = await prepareCategoryImage(file);
+      const res = await api.post('/upload', { image: imageData }, {
+        onUploadProgress: (ev) => {
+          if (!ev.total) return;
+          const progress = Math.min(99, Math.round((ev.loaded / ev.total) * 100));
+          setStatus((prev) => ({ ...prev, progress, message: `Uploading… ${progress}%` }));
+        },
+      });
+      const url = res.data?.url;
+      if (!url) throw Object.assign(new Error('no url'), { response: { status: 502, data: { message: 'Upload finished but no image URL was returned. Please try again.' } } });
+
+      if (isEdit) setEditCategoryData((prev) => (prev ? { ...prev, image: url, image_url: url } : prev));
+      else setImage(url);
+      setStatus({ status: 'done', progress: 100, preview, message: isEdit ? 'New image uploaded — click "Update Category" to save it.' : 'Image uploaded.' });
+      toast.success('Image uploaded. Save the category to apply it.');
+    } catch (err) {
+      console.error('Category image upload error:', err);
+      // Errors from reading/resizing the file already carry a message for the admin
+      fail(err.response || err.isAxiosError ? uploadErrorMessage(err) : err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const UploadStatus = ({ state }) => {
+    if (!state) return null;
+    const color = state.status === 'error' ? '#C62828' : state.status === 'done' ? '#2F7D32' : '#8A5A1F';
+    return (
+      <div role={state.status === 'error' ? 'alert' : 'status'} style={{ marginTop: '0.5rem' }}>
+        {state.status === 'uploading' && (
+          <div style={{ height: '6px', borderRadius: '999px', backgroundColor: 'rgba(198,138,58,0.18)', overflow: 'hidden', marginBottom: '0.35rem' }}>
+            <div style={{ width: `${state.progress || 5}%`, height: '100%', backgroundColor: '#C68A3A', transition: 'width 0.2s ease' }} />
+          </div>
+        )}
+        <div style={{ fontSize: '0.74rem', fontWeight: 700, color }}>{state.message}</div>
+      </div>
+    );
   };
 
   const handleCreate = async (e) => {
@@ -138,6 +210,7 @@ export default function AdminCategories() {
       setName('');
       setDescription('');
       setImage('');
+      setCreateUpload(null);
       setSelectedProductIds([]);
       setProductSearch('');
       refreshCategories();
@@ -159,6 +232,7 @@ export default function AdminCategories() {
       productIds: Array.isArray(cat.productIds) ? cat.productIds : []
     });
     setEditProductSearch('');
+    setEditUpload(null);
     setEditModalOpen(true);
   };
 
@@ -171,7 +245,13 @@ export default function AdminCategories() {
 
     setUpdating(true);
     try {
-      await api.put(`/categories/${editCategoryData.id}`, editCategoryData);
+      const res = await api.put(`/categories/${editCategoryData.id}`, editCategoryData);
+      // Confirm the server stored the image we uploaded, not just that the request succeeded
+      if (editUpload?.status === 'done' && res.data?.image_url && res.data.image_url !== editCategoryData.image_url) {
+        toast.error('The category saved, but the new image was not stored. Please upload it again.');
+        return;
+      }
+      setEditUpload(null);
       toast.success('Category updated successfully.');
       setEditModalOpen(false);
       setEditCategoryData(null);
@@ -196,6 +276,10 @@ export default function AdminCategories() {
       setDeleteTargetId(null);
     }
   };
+
+  // Image currently saved for the category being edited (not the unsaved upload)
+  const savedEditCategory = editCategoryData ? categories.find((c) => (c._id || c.id) === editCategoryData.id) : null;
+  const savedEditImage = savedEditCategory?.image_url || savedEditCategory?.image || null;
 
   // Analytics Metrics
   const totalCategories = categories.length;
@@ -346,11 +430,14 @@ export default function AdminCategories() {
                     <Trash2 size={16} />
                   </button>
                 </div>
+              ) : createUpload?.status === 'uploading' && createUpload.preview ? (
+                <img src={createUpload.preview} alt="Uploading" style={{ width: '60px', height: '60px', borderRadius: '8px', objectFit: 'cover', opacity: 0.55 }} />
               ) : (
                 <span style={{ fontSize: '0.68rem', color: '#f59e0b', fontWeight: '700' }}>
                   ⚠️ Category image is required for publishing.
                 </span>
               )}
+              <UploadStatus state={createUpload} />
             </div>
 
             {/* PRODUCTS IN THIS CATEGORY */}
@@ -610,12 +697,21 @@ export default function AdminCategories() {
               <div style={{ backgroundColor: 'var(--admin-surface-elevated)', padding: '0.85rem', borderRadius: '10px', border: '1px solid rgba(231, 222, 213, 0.65)' }}>
                 <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>Category Image</label>
                 
-                {editCategoryData.image ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                    <img src={editCategoryData.image} alt="Preview" style={{ width: '50px', height: '50px', borderRadius: '8px', objectFit: 'cover' }} />
-                    <span style={{ fontSize: '0.72rem', color: '#665A52' }}>Current Image Active</span>
-                  </div>
-                ) : null}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.6rem', flexWrap: 'wrap' }}>
+                  {/* The saved image stays until a new one has uploaded and the category is updated */}
+                  {savedEditImage && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <img src={savedEditImage} alt="Current category" style={{ width: '50px', height: '50px', borderRadius: '8px', objectFit: 'cover' }} />
+                      <span style={{ fontSize: '0.72rem', color: '#665A52' }}>Current image</span>
+                    </div>
+                  )}
+                  {editUpload?.preview && editUpload.status !== 'error' && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <img src={editUpload.preview} alt="New category" style={{ width: '50px', height: '50px', borderRadius: '8px', objectFit: 'cover', opacity: editUpload.status === 'uploading' ? 0.55 : 1, outline: '2px solid #C68A3A', outlineOffset: '2px' }} />
+                      <span style={{ fontSize: '0.72rem', color: '#8A5A1F', fontWeight: 700 }}>New image</span>
+                    </div>
+                  )}
+                </div>
 
                 <label className="admin-btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.85rem', fontSize: '0.78rem', cursor: editImageUploading ? 'not-allowed' : 'pointer' }}>
                   <Upload size={14} />
@@ -628,6 +724,8 @@ export default function AdminCategories() {
                     disabled={editImageUploading}
                   />
                 </label>
+                <div style={{ fontSize: '0.7rem', color: '#665A52', marginTop: '0.4rem' }}>JPG, PNG or WEBP · up to 10 MB · large photos are resized automatically</div>
+                <UploadStatus state={editUpload} />
               </div>
 
               {/* PRODUCTS IN THIS CATEGORY */}

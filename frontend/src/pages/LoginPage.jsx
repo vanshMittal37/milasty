@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { User, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { AuthLayout, AuthInput, AuthButton, AuthAlert } from '../components/common/AuthComponents';
+import { parseLoginIdentifier } from '../utils/loginIdentifier';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -18,8 +19,9 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim()) {
-      setError('Please enter your email address.');
+    const parsed = parseLoginIdentifier(identifier);
+    if (parsed.error) {
+      setError(parsed.error);
       return;
     }
     if (!password) {
@@ -31,12 +33,13 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const user = await login(email.trim(), password);
+      const user = await login(parsed.value, password);
       toast.success(`Welcome back, ${user?.name || 'Customer'}!`);
       const returnTarget = location.state?.from || (user?.role === 'admin' ? '/admin/dashboard' : '/account');
       navigate(returnTarget, { replace: true });
     } catch (err) {
-      const msg = err.response?.data?.message || 'Invalid email or password. Please try again.';
+      const fallback = parsed.type === 'phone' ? 'Invalid mobile number or password. Please try again.' : 'Invalid email or password. Please try again.';
+      const msg = err.response?.data?.message || (err.response ? fallback : 'Could not reach MILASTY. Please check your connection and try again.');
       setError(msg);
       toast.error(msg);
     } finally {
@@ -56,20 +59,23 @@ export default function LoginPage() {
 
       {/* Login Form */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-        {/* Email Field */}
+        {/* Email or mobile number */}
         <AuthInput
-          label="EMAIL ADDRESS"
-          type="email"
-          icon={Mail}
-          value={email}
+          label="EMAIL ADDRESS OR MOBILE NUMBER"
+          type="text"
+          inputMode="email"
+          icon={User}
+          value={identifier}
           onChange={(e) => {
-            setEmail(e.target.value);
+            setIdentifier(e.target.value);
             if (error) setError('');
           }}
-          placeholder="Enter your email address"
+          placeholder="Enter your email or mobile number"
           required
-          autoComplete="email"
-          id="login-email"
+          autoComplete="username"
+          autoCapitalize="none"
+          spellCheck={false}
+          id="login-identifier"
         />
 
         {/* Password Field with Forgot Link & Eye Toggle */}

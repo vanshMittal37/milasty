@@ -4,7 +4,34 @@ import { syncAuthUsersToProfiles } from './authController.js';
 import { getDeliveryChargeForPincode } from './paymentController.js';
 import { getFreeDeliveryThreshold, qualifiesForFreeDelivery, FREE_DELIVERY_TYPE } from './couponController.js';
 import { canAccessOrder, customerShipmentStatus, syncSingleOrderTracking } from './shipratController.js';
-import { requestCancellation, getCustomerCancellation, customerCancellationView } from './cancellationController.js';
+import { requestCancellation, getCustomerCancellation, customerCancellationView, syncOrderWithCancellation } from './cancellationController.js';
+import { resolveRecipient } from '../utils/orderRecipient.js';
+
+/**
+ * A cancellation record means the order is cancelled, whatever the order row says (older releases
+ * could record the cancellation without updating the row). Fix the rows in place before anything reads
+ * order_status, so customer pages, admin lists and the auto-transition all see "cancelled".
+ * @returns {Promise<Map<string, object>>} cancellation rows by order id
+ */
+async function reconcileCancelledOrders(orders) {
+  const list = (Array.isArray(orders) ? orders : [orders]).filter((o) => o && o.id);
+  if (list.length === 0) return new Map();
+  const { data: cancellations, error } = await supabase
+    .from('order_cancellations')
+    .select('*')
+    .in('order_id', list.map((o) => o.id));
+  if (error) {
+    console.warn('[ORDERS] Could not load cancellations to reconcile:', error.message);
+    return new Map();
+  }
+  const byOrder = new Map((cancellations || []).map((c) => [c.order_id, c]));
+  await Promise.all(list.map(async (o) => {
+    const c = byOrder.get(o.id);
+    if (!c || String(o.order_status || '').toLowerCase() === 'cancelled') return;
+    if (!(await syncOrderWithCancellation(c, o))) o.order_status = 'cancelled'; // still show it correctly
+  }));
+  return byOrder;
+}
 
 // Status Canonical Mappings
 const CANONICAL_STATUS_MAP = {
@@ -554,6 +581,8 @@ export const formatOrderPayload = (o) => {
 
   const rawItems = o.items || o.order_items || [];
   const notesFromOrder = o.notes || o.special_instructions || o.customization_notes || null;
+  // Person receiving the parcel when the customer ordered for someone else; null = the customer
+  const recipient = resolveRecipient(o);
 
   const formattedItems = (rawItems || []).map((item) => {
     const note = item.customization_note || item.customizationNote || item.instruction || item.notes || null;
@@ -587,6 +616,10 @@ export const formatOrderPayload = (o) => {
     customerEmail: o.customer_email || '',
     customerPhone: phoneVal,
     phone: phoneVal,
+    recipient_name: recipient.name,
+    recipient_phone: recipient.phone,
+    recipientName: recipient.name,
+    recipientPhone: recipient.phone,
     shippingAddress: o.shipping_address || '',
     pincode: o.pincode || '',
     subtotal: Number(o.subtotal || 0),
@@ -700,10 +733,12 @@ export const autoTransitionConfirmedOrders = async (orders) => {
 
   if (idsToTransition.length > 0) {
     try {
+      // Only rows still "confirmed" — never overwrite a cancellation that landed in the meantime
       await supabase
         .from('orders')
         .update({ order_status: 'processing' })
-        .in('id', idsToTransition);
+        .in('id', idsToTransition)
+        .in('order_status', ['confirmed', 'Confirmed']);
       console.log(`[ORDER AUTO-TRANSITION] Transitioned ${idsToTransition.length} order(s) older than 3 hours from Confirmed to Processing.`);
     } catch (e) {
       console.warn('[ORDER AUTO-TRANSITION] Notice:', e?.message);
@@ -729,11 +764,15 @@ export const sweepConfirmedOrders = async () => {
     }
 
     if (staleOrders && staleOrders.length > 0) {
-      const ids = staleOrders.map((o) => o.id).filter(Boolean);
+      // Orders with a cancellation record are cancelled, not "processing" — repair those instead
+      const byOrder = await reconcileCancelledOrders(staleOrders);
+      const ids = staleOrders.filter((o) => !byOrder.has(o.id)).map((o) => o.id).filter(Boolean);
+      if (ids.length === 0) return;
       await supabase
         .from('orders')
         .update({ order_status: 'processing' })
-        .in('id', ids);
+        .in('id', ids)
+        .in('order_status', ['confirmed', 'Confirmed']);
       console.log(`[SWEEPER] Auto-transitioned ${ids.length} orders older than 3 hours from Confirmed to Processing.`);
     }
   } catch (err) {
@@ -809,6 +848,7 @@ export const getMyOrders = async (req, res) => {
       return true;
     });
 
+    await reconcileCancelledOrders(filteredOrders);
     await attachItemImages(filteredOrders);
     await autoTransitionConfirmedOrders(filteredOrders);
     await autoSyncActiveShippedOrders(filteredOrders);
@@ -844,6 +884,7 @@ export const getAllOrders = async (req, res) => {
       return true;
     });
 
+    await reconcileCancelledOrders(filteredOrders);
     await attachItemImages(filteredOrders);
     await autoTransitionConfirmedOrders(filteredOrders);
     await autoSyncActiveShippedOrders(filteredOrders);
@@ -928,6 +969,7 @@ export const getOrderById = async (req, res) => {
 
     // Only the order's owner (or an admin) may read it — order numbers are guessable
     const respond = async (o) => {
+      await reconcileCancelledOrders(o);
       await autoTransitionConfirmedOrders(o);
       await attachItemImages(o);
       const isAdmin = req.user?.role === 'admin';
@@ -1042,6 +1084,19 @@ export const updateOrderStatus = async (req, res) => {
 
     if (Object.keys(updates).length === 0) {
       return res.status(400).json({ message: 'No valid status updates provided' });
+    }
+
+    // A cancelled order can't be moved back into fulfilment (refund / shipment are handled in Cancellations)
+    if (updates.order_status && updates.order_status !== 'cancelled') {
+      const { data: target } = await (isUuid
+        ? supabase.from('orders').select('id, order_status').eq('id', id)
+        : supabase.from('orders').select('id, order_status').eq('order_number', id)).maybeSingle();
+      if (target) {
+        const { data: cancellation } = await supabase.from('order_cancellations').select('id').eq('order_id', target.id).maybeSingle();
+        if (cancellation || String(target.order_status || '').toLowerCase() === 'cancelled') {
+          return res.status(409).json({ message: 'This order has been cancelled, so its status can no longer be changed. Manage its refund and shipment from Cancellations & Refunds.' });
+        }
+      }
     }
 
     let query = supabase.from('orders').update(updates);

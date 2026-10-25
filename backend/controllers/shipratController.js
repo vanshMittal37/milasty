@@ -1,5 +1,6 @@
 import { supabase } from '../config/supabase.js';
 import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
+import { resolveRecipient } from '../utils/orderRecipient.js';
 
 // ─── Shiprath B2C Constants ──────────────────────────────────────────────────
 const SHIPRATH_BASE_URL = 'https://backend.shiprath.com/vendor/v1';
@@ -876,8 +877,10 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
     const codAmountVal = 0;
 
     // "Deliver to someone else": the recipient is the consignee; the buyer stays the customer
-    const custName = String(order.recipient_name || order.customer_name || order.customerName || order.user?.name || 'Customer').slice(0, 100);
-    const custMobile = String(order.recipient_phone || order.customer_phone || order.customerPhone || order.phone || '').replace(/\D/g, '').slice(-10) || '9876543210';
+    // (orders saved before the recipient columns existed keep the recipient in their notes)
+    const recipient = resolveRecipient(order);
+    const custName = String(recipient.name || order.customer_name || order.customerName || order.user?.name || 'Customer').slice(0, 100);
+    const custMobile = String(recipient.phone || order.customer_phone || order.customerPhone || order.phone || '').replace(/\D/g, '').slice(-10) || '9876543210';
     const custEmail = String(order.customer_email || order.customerEmail || order.user?.email || 'orders@milasty.com').slice(0, 100);
 
     // Package details stored on the order for admin visibility
@@ -1354,8 +1357,8 @@ export const getShipmentPreview = async (req, res) => {
         order_number: order.order_number,
         customer_name: order.customer_name,
         customer_phone: order.customer_phone,
-        recipient_name: order.recipient_name || null,
-        recipient_phone: order.recipient_phone || null,
+        recipient_name: resolveRecipient(order).name,
+        recipient_phone: resolveRecipient(order).phone,
         shipping_address: order.shipping_address,
         pincode: order.pincode,
         delivery_fee: Number(order.delivery_fee || 0),
@@ -1460,8 +1463,13 @@ export const bookShipmentForOrder = async (req, res) => {
     }
 
     // Re-read after taking the lock: the customer may have cancelled between our first read and the claim
-    const { data: lockedOrder } = await supabase.from('orders').select('order_status').eq('id', order.id).maybeSingle();
-    if (String(lockedOrder?.order_status || '').toLowerCase() === 'cancelled') {
+    // The cancellation record counts even if the order row was never updated (older releases)
+    const [{ data: lockedOrder }, { data: cancellationRow }] = await Promise.all([
+      supabase.from('orders').select('order_status').eq('id', order.id).maybeSingle(),
+      supabase.from('order_cancellations').select('id').eq('order_id', order.id).maybeSingle(),
+    ]);
+    if (cancellationRow || String(lockedOrder?.order_status || '').toLowerCase() === 'cancelled') {
+      await safeUpdateOrder(order.id, { order_status: 'cancelled' });
       await safeUpdateOrder(order.id, { shipment_status: 'cancelled' });
       return res.status(400).json({ success: false, code: 'NOT_ELIGIBLE', message: 'This order was cancelled — no shipment was created.' });
     }

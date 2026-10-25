@@ -9,6 +9,7 @@ import {
   retryShipmentCancel,
   resolveShipmentManually,
   initiateRazorpayRefund,
+  syncRefundWithRazorpay,
 } from '../controllers/cancellationController.js';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
@@ -23,6 +24,7 @@ router.get('/:id', getCancellationDetail);
 router.post('/:id/refund-status', updateRefundStatus);
 router.post('/:id/mark-refunded', markRefundSuccessful);
 router.post('/:id/initiate-refund', initiateRazorpayRefund);
+router.post('/:id/sync-refund', syncRefundWithRazorpay);
 router.post('/:id/retry-shipment-cancel', retryShipmentCancel);
 router.post('/:id/resolve-shipment', resolveShipmentManually);
 
