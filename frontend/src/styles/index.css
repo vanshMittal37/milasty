@@ -1906,6 +1906,14 @@ a {
   font-size: inherit !important;
 }
 
+/* Shop page: the green second half of section headings ("Explore the MILASTY Collection") was
+   picking up the global body-text span size (~17px). Size it relative to its heading instead. */
+.shop-page h2 span {
+  font-size: 0.8em;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
 /* Scale up the gold/yellow section sub-badges to be more visible and attractive */
 .home-page span[style*="uppercase"],
 .home-page span[style*="letter-spacing"] {
