@@ -3,6 +3,7 @@ import { supabase } from '../config/supabase.js';
 import { canAccessOrder } from './shipratController.js';
 import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
 import { withRecipient } from '../utils/orderRecipient.js';
+import { triggerOrderNotificationAsync } from '../services/orderNotificationService.js';
 
 /**
  * Order cancellations, refund tracking and Shiprath shipment cancellation.
@@ -465,6 +466,20 @@ export const requestCancellation = async (req, res) => {
       if (c.shipment_cancel_status === 'pending') {
         setImmediate(() => cancelShipmentForCancellation(c.id).catch((e) => console.error('[SHIPRATH CANCEL] exception', e.message)));
       }
+
+      // Trigger WhatsApp order_cancelled notification (non-blocking)
+      if (!data?.duplicate) {
+        triggerOrderNotificationAsync({
+          order: { ...order, order_status: 'cancelled' },
+          eventType: 'order_cancelled',
+          extraData: {
+            reason: c?.reason || reason,
+            refundNote: c?.refund_percentage > 0
+              ? `Eligible for ${c.refund_percentage}% refund (₹${paiseToRupees(c.refund_amount_paise)}), processed within 5-7 business days.`
+              : null,
+          },
+        });
+      }
     }
 
     return res.json({
@@ -707,6 +722,17 @@ export const markRefundSuccessful = async (req, res) => {
     if (!updated?.length) return res.status(409).json({ success: false, message: 'Refund status changed in the meantime. Reload and try again.' });
 
     await markOrderRefunded(c);
+
+    // Trigger WhatsApp refund_processed notification (non-blocking)
+    triggerOrderNotificationAsync({
+      order: c.orders || { id: c.order_id, order_number: c.order_number, user_id: c.user_id },
+      eventType: 'refund_processed',
+      extraData: {
+        refundAmount: paiseToRupees(c.refund_amount_paise),
+        refundReference: refundId,
+      },
+    });
+
     await logEvent(c, 'refund_marked_successful', {
       from: c.refund_status, to: 'successful', actor: req.user,
       details: { refund_id: refundId, amount_paise: c.refund_amount_paise, verified_via: verifiedVia, verification, notes },
@@ -773,7 +799,18 @@ async function applyRazorpayRefund(c, refund, actor, eventType) {
     .neq('refund_status', 'successful')
     .select('id');
   if (error) return { error };
-  if (next === 'successful') await markOrderRefunded(c);
+  if (next === 'successful') {
+    await markOrderRefunded(c);
+    // Trigger WhatsApp refund_processed notification (non-blocking)
+    triggerOrderNotificationAsync({
+      order: c.orders || { id: c.order_id, order_number: c.order_number, user_id: c.user_id },
+      eventType: 'refund_processed',
+      extraData: {
+        refundAmount: paiseToRupees(c.refund_amount_paise || refund.amount),
+        refundReference: refund.id,
+      },
+    });
+  }
   if (updated?.length) {
     await logEvent(c, next === 'successful' ? 'refund_marked_successful' : eventType, {
       from: c.refund_status, to: next, actor,

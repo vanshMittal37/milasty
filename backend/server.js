@@ -24,9 +24,12 @@ import ingredientRoutes from './routes/ingredientRoutes.js';
 import productDiscoveryRoutes from './routes/productDiscoveryRoutes.js';
 import shipratRoutes from './routes/shipratRoutes.js';
 import cancellationRoutes from './routes/cancellationRoutes.js';
+import adminWhatsAppRoutes from './routes/adminWhatsAppRoutes.js';
 import { supabase } from './config/supabase.js';
 import { sweepConfirmedOrders } from './controllers/orderController.js';
 import { sweepShippedOrders } from './controllers/shipratController.js';
+import { initializeWhatsApp } from './services/whatsappService.js';
+import { recoverPendingJobs } from './services/notificationQueue.js';
 
 dotenv.config();
 
@@ -105,6 +108,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin/cancellations', cancellationRoutes); // before /api/admin so userRoutes can't shadow it
+app.use('/api/admin/whatsapp', adminWhatsAppRoutes); // WhatsApp singleton management
 app.use('/api/admin', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/delivery-charges', deliveryChargeRoutes);
@@ -162,6 +166,13 @@ app.listen(PORT, async () => {
   await sweepConfirmedOrders();
   // Sweep active shipped orders to automatically track and advance to out_for_delivery / delivered
   await sweepShippedOrders();
+  // Initialize WhatsApp Baileys singleton service & recover pending jobs
+  try {
+    await initializeWhatsApp();
+    await recoverPendingJobs();
+  } catch (waErr) {
+    console.warn('[STARTUP] WhatsApp initialization notice:', waErr.message);
+  }
   // Schedule sweeps every 5 minutes
   setInterval(sweepConfirmedOrders, 5 * 60 * 1000);
   setInterval(sweepShippedOrders, 5 * 60 * 1000);

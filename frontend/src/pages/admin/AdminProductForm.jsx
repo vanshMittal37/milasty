@@ -65,7 +65,6 @@ export default function AdminProductForm() {
     stock: '',
     pieces: '',
     netWeight: '',
-    shippingWeight: '',
     sku: '',
     status: 'active',
     isFeatured: true,

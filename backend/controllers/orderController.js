@@ -6,6 +6,7 @@ import { getFreeDeliveryThreshold, qualifiesForFreeDelivery, FREE_DELIVERY_TYPE 
 import { canAccessOrder, customerShipmentStatus, syncSingleOrderTracking } from './shipratController.js';
 import { requestCancellation, getCustomerCancellation, customerCancellationView, syncOrderWithCancellation } from './cancellationController.js';
 import { resolveRecipient } from '../utils/orderRecipient.js';
+import { triggerOrderNotificationAsync } from '../services/orderNotificationService.js';
 
 /**
  * A cancellation record means the order is cancelled, whatever the order row says (older releases
@@ -514,6 +515,14 @@ export const createOrder = async (req, res) => {
     // This guard prevents returning a phantom order in unexpected code paths
     if (!order) {
       return res.status(500).json({ message: 'Order could not be persisted to the database. Please contact support.' });
+    }
+
+    // Trigger WhatsApp order confirmation for COD orders (non-blocking)
+    if (isCod) {
+      triggerOrderNotificationAsync({
+        order,
+        eventType: 'order_confirmed',
+      });
     }
 
     // No shipment is created here — admin creates it from the Orders Log once the order is packed
@@ -1121,6 +1130,38 @@ export const updateOrderStatus = async (req, res) => {
     }
 
     console.log('[ADMIN STATUS UPDATE SUCCESS]', { orderId: id, newStatus: updatedOrder.order_status });
+
+    // Asynchronously trigger status change notifications (non-blocking)
+    if (orderStatus) {
+      const canonical = CANONICAL_STATUS_MAP[orderStatus] || orderStatus.toLowerCase();
+      if (canonical === 'processing') {
+        triggerOrderNotificationAsync({ order: updatedOrder, eventType: 'order_processing' });
+      } else if (canonical === 'packed') {
+        triggerOrderNotificationAsync({ order: updatedOrder, eventType: 'order_packed' });
+      } else if (canonical === 'shipped') {
+        triggerOrderNotificationAsync({
+          order: updatedOrder,
+          eventType: 'order_shipped',
+          extraData: {
+            courierName: updatedOrder.booked_service_name || updatedOrder.selected_service_name,
+            awb: updatedOrder.awb_number || updatedOrder.awb,
+            trackingUrl: updatedOrder.tracking_url,
+          },
+        });
+      } else if (canonical === 'out_for_delivery') {
+        triggerOrderNotificationAsync({
+          order: updatedOrder,
+          eventType: 'order_out_for_delivery',
+          extraData: {
+            courierName: updatedOrder.booked_service_name || updatedOrder.selected_service_name,
+            awb: updatedOrder.awb_number || updatedOrder.awb,
+          },
+        });
+      } else if (canonical === 'delivered') {
+        triggerOrderNotificationAsync({ order: updatedOrder, eventType: 'order_delivered' });
+      }
+    }
+
     res.json({
       success: true,
       message: 'Order status updated successfully',

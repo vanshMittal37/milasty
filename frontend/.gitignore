@@ -21,6 +21,7 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
+vite.config.js.timestamp-*
 
 # Editor-specific files/directories
 .vscode/*

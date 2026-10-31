@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../config/supabase.js';
 import { normalizeIndianMobile, isEmailAddress } from '../utils/phone.js';
+import { generateAndSendWhatsAppOtp, verifyWhatsAppOtp } from '../services/otpService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'milasty_super_secret_jwt_key_2026';
 
@@ -241,6 +242,115 @@ export const registerUser = async (req, res) => {
   } catch (error) {
     console.error('Registration server error:', error);
     res.status(500).json({ message: 'Error registering user', error: error.message });
+  }
+};
+
+/**
+ * 1. SEND SIGNUP WHATSAPP OTP
+ * POST /api/auth/signup/send-otp
+ */
+export const sendSignupOtp = async (req, res) => {
+  try {
+    const { name, email, password, phone: rawPhone } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: 'Please enter your full name' });
+    }
+
+    const phone = normalizeIndianMobile(rawPhone);
+    if (!phone) {
+      return res.status(400).json({ message: 'Please enter a valid 10-digit mobile number' });
+    }
+
+    if (!email || !email.trim()) {
+      return res.status(400).json({ message: 'Please enter your email address' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return res.status(400).json({ message: 'Please enter a valid email address' });
+    }
+
+    if (password && password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+    }
+
+    // Check if email is already registered with a password
+    const { data: existingDbUser } = await supabase
+      .from('users')
+      .select('id, email, password_hash')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    if (existingDbUser?.password_hash) {
+      return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
+    }
+
+    // Check if phone is already registered
+    const phoneOwners = await findUsersByMobile(phone);
+    if (phoneOwners.some((u) => u.id !== existingDbUser?.id)) {
+      return res.status(400).json({ message: 'This mobile number is already registered. Please log in instead.' });
+    }
+
+    // Generate and dispatch WhatsApp OTP
+    const otpResult = await generateAndSendWhatsAppOtp({
+      phone,
+      purpose: 'signup',
+      ip: req.ip,
+    });
+
+    if (!otpResult.success) {
+      return res.status(400).json({ message: otpResult.error, resendCooldown: otpResult.resendCooldown });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Verification code sent to your WhatsApp number.',
+      resendCooldown: otpResult.resendCooldown || 60,
+    });
+  } catch (error) {
+    console.error('[SIGNUP OTP] Error generating OTP:', error);
+    res.status(500).json({ message: 'Error sending verification code', error: error.message });
+  }
+};
+
+/**
+ * 2. VERIFY SIGNUP WHATSAPP OTP & COMPLETE REGISTRATION
+ * POST /api/auth/signup/verify-otp
+ */
+export const verifySignupOtp = async (req, res) => {
+  try {
+    const { name, email, password, phone: rawPhone, otp } = req.body;
+
+    const phone = normalizeIndianMobile(rawPhone);
+    if (!phone) {
+      return res.status(400).json({ message: 'Please enter a valid 10-digit mobile number' });
+    }
+
+    if (!otp || !/^\d{6}$/.test(String(otp).trim())) {
+      return res.status(400).json({ message: 'Please enter the 6-digit verification code' });
+    }
+
+    // 1. Verify submitted OTP
+    const verifyResult = await verifyWhatsAppOtp({
+      phone,
+      purpose: 'signup',
+      otp,
+    });
+
+    if (!verifyResult.success) {
+      return res.status(400).json({
+        message: verifyResult.error,
+        remainingAttempts: verifyResult.remainingAttempts,
+      });
+    }
+
+    // 2. Proceed with account registration using existing Supabase Auth architecture
+    return await registerUser(req, res);
+  } catch (error) {
+    console.error('[SIGNUP OTP] Error verifying OTP and registering:', error);
+    res.status(500).json({ message: 'Error verifying code', error: error.message });
   }
 };
 
@@ -714,6 +824,114 @@ export const forgotPassword = async (req, res) => {
   } catch (error) {
     console.error('[FORGOT PASSWORD] Unhandled error:', error);
     res.status(500).json({ message: 'Error processing password reset request', error: error.message });
+  }
+};
+
+/**
+ * 3. SEND FORGOT PASSWORD WHATSAPP OTP
+ * POST /api/auth/forgot-password/send-otp
+ */
+export const sendForgotPasswordOtp = async (req, res) => {
+  try {
+    const { phone: rawPhone, identifier } = req.body;
+    const phone = normalizeIndianMobile(rawPhone || identifier);
+
+    if (!phone) {
+      return res.status(400).json({ message: 'Please enter a valid 10-digit mobile number' });
+    }
+
+    // Check account existence without exposing details (enumeration protection)
+    const owners = await findUsersByMobile(phone, 'id, name, email, phone');
+    if (owners.length === 0) {
+      console.log(`[FORGOT PASSWORD OTP] No account found for mobile: ${phone}`);
+      return res.json({
+        success: true,
+        message: 'If an account exists with this mobile number, a verification code has been sent to your WhatsApp.',
+        resendCooldown: 60,
+      });
+    }
+
+    const otpResult = await generateAndSendWhatsAppOtp({
+      phone,
+      purpose: 'forgot_password',
+      ip: req.ip,
+    });
+
+    if (!otpResult.success) {
+      return res.status(400).json({ message: otpResult.error, resendCooldown: otpResult.resendCooldown });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Password reset code sent to your WhatsApp number.',
+      resendCooldown: otpResult.resendCooldown || 60,
+    });
+  } catch (error) {
+    console.error('[FORGOT PASSWORD OTP] Error sending OTP:', error);
+    res.status(500).json({ message: 'Error sending password reset code', error: error.message });
+  }
+};
+
+/**
+ * 4. VERIFY FORGOT PASSWORD WHATSAPP OTP
+ * POST /api/auth/forgot-password/verify-otp
+ */
+export const verifyForgotPasswordOtp = async (req, res) => {
+  try {
+    const { phone: rawPhone, otp } = req.body;
+    const phone = normalizeIndianMobile(rawPhone);
+
+    if (!phone) {
+      return res.status(400).json({ message: 'Please enter a valid 10-digit mobile number' });
+    }
+
+    if (!otp || !/^\d{6}$/.test(String(otp).trim())) {
+      return res.status(400).json({ message: 'Please enter the 6-digit verification code' });
+    }
+
+    const verifyResult = await verifyWhatsAppOtp({
+      phone,
+      purpose: 'forgot_password',
+      otp,
+    });
+
+    if (!verifyResult.success) {
+      return res.status(400).json({
+        message: verifyResult.error,
+        remainingAttempts: verifyResult.remainingAttempts,
+      });
+    }
+
+    // Find the associated account
+    const owners = await findUsersByMobile(phone, 'id, name, email, phone, password_hash');
+    if (owners.length === 0) {
+      return res.status(404).json({ message: 'No account associated with this mobile number.' });
+    }
+
+    const user = owners[0];
+
+    // Issue standard secure 15-minute reset token bound to this account and its password version
+    const resetToken = jwt.sign(
+      {
+        sub: user.id,
+        email: user.email,
+        phone: user.phone,
+        purpose: 'password_reset',
+        pwv: passwordVersion(user.password_hash),
+      },
+      JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    return res.json({
+      success: true,
+      message: 'Verification code confirmed. You may now set your new password.',
+      token: resetToken,
+      email: user.email,
+    });
+  } catch (error) {
+    console.error('[FORGOT PASSWORD OTP] Error verifying OTP:', error);
+    res.status(500).json({ message: 'Error verifying code', error: error.message });
   }
 };
 

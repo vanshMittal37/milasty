@@ -54,6 +54,7 @@ import AdminPrebookingList from './pages/admin/AdminPrebookingList';
 import AdminQuizManagement from './pages/admin/AdminQuizManagement';
 import AdminIngredients from './pages/admin/AdminIngredients';
 import AdminProductDiscovery from './pages/admin/AdminProductDiscovery';
+import AdminWhatsApp from './pages/admin/AdminWhatsApp';
 
 // Dedicated Customer Portal Layout
 import CustomerLayout from './layouts/CustomerLayout';
@@ -176,6 +177,7 @@ export default function App() {
                       <Route path="recommendation-quiz" element={<AdminQuizManagement />} />
                       <Route path="honest-ingredients" element={<AdminIngredients />} />
                       <Route path="product-discovery" element={<AdminProductDiscovery />} />
+                      <Route path="whatsapp" element={<AdminWhatsApp />} />
                     </Route>
 
                     {/* Customer Portal (Separate Shell, No Website Navbar) */}

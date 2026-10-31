@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { User, Check, ArrowRight, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { User, Check, ArrowRight, ArrowLeft, RefreshCw, MessageSquare, ShieldCheck, Edit2 } from 'lucide-react';
 import api from '../api/axios';
 import { useToast } from '../context/ToastContext';
 import { AuthLayout, AuthInput, AuthButton, AuthAlert } from '../components/common/AuthComponents';
 import { parseLoginIdentifier } from '../utils/loginIdentifier';
 
 export default function ForgotPasswordPage() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [identifier, setIdentifier] = useState('');
-  const [sent, setSent] = useState(false);
+  const [sentEmail, setSentEmail] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [cooldown, setCooldown] = useState(0);
+  const [remainingAttempts, setRemainingAttempts] = useState(null);
 
   useEffect(() => {
     let timer;
@@ -37,15 +41,67 @@ export default function ForgotPasswordPage() {
     setError('');
     setLoading(true);
 
+    // If identifier is a mobile number, use WhatsApp OTP flow
+    if (parsed.type === 'phone') {
+      try {
+        const res = await api.post('/auth/forgot-password/send-otp', { phone: parsed.value });
+        setOtpSent(true);
+        setCooldown(res.data?.resendCooldown || 60);
+        setRemainingAttempts(null);
+        toast.success('Password reset code sent to your WhatsApp number!');
+      } catch (err) {
+        const msg = err.response?.data?.message || 'Failed to send WhatsApp reset code. Please try again.';
+        setError(msg);
+        toast.error(msg);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // If identifier is an email, use the email reset link flow
+      try {
+        const res = await api.post('/auth/forgot-password', { identifier: parsed.value });
+        setSentEmail(true);
+        setCooldown(60);
+        toast.success(res.data?.message || 'Password reset link sent! Please check your email.');
+      } catch (err) {
+        const msg = err.response?.data?.message || 'Something went wrong. Please try again.';
+        setError(msg);
+        toast.error(msg);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    if (e) e.preventDefault();
+
+    const cleanOtp = otp.trim();
+    if (!cleanOtp || !/^\d{6}$/.test(cleanOtp)) {
+      setError('Please enter the 6-digit verification code.');
+      return;
+    }
+
+    const parsed = parseLoginIdentifier(identifier);
+    setLoading(true);
+    setError('');
+
     try {
-      const res = await api.post('/auth/forgot-password', { identifier: parsed.value });
-      setSent(true);
-      setCooldown(60);
-      toast.success(res.data?.message || 'Password reset link sent! Please check your email.');
+      const res = await api.post('/auth/forgot-password/verify-otp', {
+        phone: parsed.value,
+        otp: cleanOtp,
+      });
+
+      toast.success('Code confirmed! Please set your new password.');
+      // Seamlessly navigate to Reset Password page with the verified token
+      navigate(`/reset-password?token=${res.data.token}&email=${encodeURIComponent(res.data.email || '')}`);
     } catch (err) {
-      const msg = err.response?.data?.message || 'Something went wrong. Please try again.';
+      const msg = err.response?.data?.message || 'Invalid verification code. Please check and try again.';
       setError(msg);
       toast.error(msg);
+      if (err.response?.data?.remainingAttempts !== undefined) {
+        setRemainingAttempts(err.response.data.remainingAttempts);
+      }
     } finally {
       setLoading(false);
     }
@@ -56,12 +112,11 @@ export default function ForgotPasswordPage() {
     handleSubmit();
   };
 
-  if (sent) {
-    /* Polished Success Card matching Forgot Password Success Structure */
+  // State A: Email reset link success card
+  if (sentEmail) {
     return (
       <AuthLayout trustBadges={[]}>
         <div style={{ textAlign: 'center', padding: '0.4rem 0', display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-          {/* Green Circle Check Badge */}
           <div
             style={{
               width: '56px',
@@ -93,12 +148,11 @@ export default function ForgotPasswordPage() {
             </h1>
             <p style={{ color: '#5A4438', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
               If an account matches{' '}
-              <strong style={{ color: '#2B1710', wordBreak: 'break-all' }}>{identifier.trim()}</strong>, we've sent a secure reset link to its registered email address. Please check your inbox and spam folder.
+              <strong style={{ color: '#2B1710', wordBreak: 'break-all' }}>{identifier.trim()}</strong>, we've sent a secure reset link to its registered email address.
             </p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.2rem' }}>
-            {/* Resend Email Button */}
             <button
               type="button"
               onClick={handleResend}
@@ -124,7 +178,6 @@ export default function ForgotPasswordPage() {
               <span>{cooldown > 0 ? `Resend Email (${cooldown}s)` : 'Resend Email'}</span>
             </button>
 
-            {/* Back to Login Link */}
             <Link
               to="/login"
               style={{
@@ -138,7 +191,7 @@ export default function ForgotPasswordPage() {
                 gap: '0.35rem',
               }}
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={15} />
               <span>Back to Login</span>
             </Link>
           </div>
@@ -147,45 +200,178 @@ export default function ForgotPasswordPage() {
     );
   }
 
+  // State B: WhatsApp OTP sent verification form
+  if (otpSent) {
+    return (
+      <AuthLayout
+        badge="SECURITY VERIFICATION"
+        titleLine1="Enter WhatsApp"
+        titleLine2="Reset Code"
+        subtitle="We've sent a 6-digit password reset code to your WhatsApp number."
+      >
+        <AuthAlert message={error} type="error" />
+
+        <form onSubmit={handleVerifyOtp} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+          <div
+            style={{
+              padding: '1rem',
+              backgroundColor: '#F7F3EB',
+              borderRadius: '14px',
+              border: '1.5px solid #1F5A28',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.85rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    backgroundColor: '#CDE5CB',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#1F5A28',
+                  }}
+                >
+                  <MessageSquare size={16} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#2B1710' }}>
+                    WhatsApp Reset Code
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#5A4438' }}>
+                    Sent to {identifier.trim()}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setOtpSent(false);
+                  setOtp('');
+                  setError('');
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#1F5A28',
+                  fontSize: '0.78rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
+                  padding: '4px',
+                }}
+              >
+                <Edit2 size={13} />
+                <span>Edit</span>
+              </button>
+            </div>
+
+            <AuthInput
+              label="6-DIGIT VERIFICATION CODE *"
+              type="text"
+              icon={ShieldCheck}
+              value={otp}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                setOtp(val);
+                if (error) setError('');
+              }}
+              placeholder="000000"
+              required
+              autoFocus
+              inputMode="numeric"
+              maxLength={6}
+              id="reset-otp"
+            />
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+              <span style={{ color: '#5A4438' }}>Didn't receive the code?</span>
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={cooldown > 0 || loading}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: cooldown > 0 ? '#8C7A6F' : '#1F5A28',
+                  fontWeight: '800',
+                  cursor: cooldown > 0 ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                }}
+              >
+                <RefreshCw size={13} style={{ animation: loading ? 'authSpinner 0.8s linear infinite' : 'none' }} />
+                <span>{cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend WhatsApp OTP'}</span>
+              </button>
+            </div>
+          </div>
+
+          <AuthButton loading={loading} loadingText="Verifying Code..." icon={ArrowRight}>
+            Verify Code & Set Password
+          </AuthButton>
+
+          <div style={{ textAlign: 'center', paddingTop: '0.4rem' }}>
+            <Link
+              to="/login"
+              style={{
+                fontSize: '0.86rem',
+                color: '#1F5A28',
+                fontWeight: '700',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+              }}
+            >
+              <ArrowLeft size={15} />
+              <span>Back to Login</span>
+            </Link>
+          </div>
+        </form>
+      </AuthLayout>
+    );
+  }
+
+  // State C: Initial Request Form (Enter Email or Mobile)
   return (
     <AuthLayout
-      badge="ACCOUNT SECURITY"
-      titleLine1="Forgot"
-      titleLine2="Password"
-      subtitle="Enter the email address or mobile number of your MILASTY account. We'll send a secure reset link to the account's registered email address."
-      trustBadges={[
-        { icon: '🔒', text: '256-bit Encryption' },
-        { icon: '🌿', text: 'MILASTY Protection' },
-      ]}
+      badge="PASSWORD RECOVERY"
+      titleLine1="Forgot Your"
+      titleLine2="Password?"
+      subtitle="Enter your registered mobile number for instant WhatsApp OTP verification, or your email address for a reset link."
     >
-      {/* Error Alert */}
       <AuthAlert message={error} type="error" />
 
-      {/* Form View */}
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         <AuthInput
-          label="EMAIL ADDRESS OR MOBILE NUMBER"
+          label="EMAIL ADDRESS OR MOBILE NUMBER *"
           type="text"
-          inputMode="email"
           icon={User}
           value={identifier}
           onChange={(e) => {
             setIdentifier(e.target.value);
             if (error) setError('');
           }}
-          placeholder="Enter your email or mobile number"
+          placeholder="e.g. 98765 43210 or yourname@gmail.com"
           required
-          autoComplete="username"
-          autoCapitalize="none"
-          spellCheck={false}
+          autoFocus
           id="forgot-identifier"
         />
 
-        <AuthButton loading={loading} loadingText="Sending..." icon={ArrowRight}>
-          Send Reset Link
+        <AuthButton loading={loading} loadingText="Sending Reset Code..." icon={ArrowRight}>
+          Continue
         </AuthButton>
 
-        <div style={{ textAlign: 'center', paddingTop: '0.1rem' }}>
+        <div style={{ textAlign: 'center', paddingTop: '0.4rem' }}>
           <Link
             to="/login"
             style={{
@@ -198,7 +384,7 @@ export default function ForgotPasswordPage() {
               gap: '0.35rem',
             }}
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={15} />
             <span>Back to Login</span>
           </Link>
         </div>

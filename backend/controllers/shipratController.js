@@ -1,6 +1,7 @@
 import { supabase } from '../config/supabase.js';
 import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
 import { resolveRecipient } from '../utils/orderRecipient.js';
+import { triggerOrderNotificationAsync } from '../services/orderNotificationService.js';
 
 // ─── Shiprath B2C Constants ──────────────────────────────────────────────────
 const SHIPRATH_BASE_URL = 'https://backend.shiprath.com/vendor/v1';
@@ -1489,6 +1490,17 @@ export const bookShipmentForOrder = async (req, res) => {
       });
     }
 
+    // Trigger WhatsApp order_shipped notification (non-blocking)
+    triggerOrderNotificationAsync({
+      order: { ...order, awb_number: result.awb, awb: result.awb },
+      eventType: 'order_shipped',
+      extraData: {
+        courierName: result.courier_name,
+        awb: result.awb,
+        trackingUrl: result.tracking_url,
+      },
+    });
+
     return res.json({ success: true, ...result, raw: undefined });
   } catch (error) {
     console.error('[SHIPRATH RETRY ROUTE] Exception:', error.message);
@@ -1753,6 +1765,21 @@ export async function syncSingleOrderTracking(orderOrId) {
         order.shipment_status = highestMapped;
         order.order_status = newOrderStatus;
         order.shipment_tracking_updated_at = updates.shipment_tracking_updated_at;
+
+        // Trigger WhatsApp notifications for out_for_delivery and delivered (non-blocking, idempotent)
+        if (highestMapped === 'out_for_delivery') {
+          triggerOrderNotificationAsync({
+            order,
+            eventType: 'order_out_for_delivery',
+            extraData: { awb },
+          });
+        } else if (highestMapped === 'delivered') {
+          triggerOrderNotificationAsync({
+            order,
+            eventType: 'order_delivered',
+            extraData: { awb },
+          });
+        }
 
         return {
           success: true,

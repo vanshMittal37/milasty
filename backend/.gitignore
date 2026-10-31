@@ -40,3 +40,9 @@ coverage/
 *.sln
 *.sw?
 .DS_Store
+
+
+.baileys_auth/
+scratch/
+whatsapp-test.js
+whatsapp-send-test.js

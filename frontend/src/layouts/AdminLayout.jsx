@@ -119,6 +119,7 @@ export default function AdminLayout() {
       title: 'Customers & Support',
       items: [
         { label: 'Customers', path: '/admin/customers', icon: Users },
+        { label: 'WhatsApp Automation', path: '/admin/whatsapp', icon: MessageSquare },
         { label: 'Inquiries', path: '/admin/inquiries', icon: MessageSquare },
         { label: 'Reviews & Testimonials', path: '/admin/reviews', icon: Star },
       ]
@@ -148,6 +149,7 @@ export default function AdminLayout() {
     if (path.includes('/admin/cancellations')) return { title: 'Cancellations & Refunds', breadcrumb: 'Sales / Cancellations & Refunds' };
     if (path.includes('/admin/customers')) return { title: 'Customers', breadcrumb: 'Users / Customer List' };
     if (path.includes('/admin/inquiries')) return { title: 'Customer Inquiries', breadcrumb: 'Support / Customer Inquiries' };
+    if (path.includes('/admin/whatsapp')) return { title: 'WhatsApp Automation', breadcrumb: 'Channels / WhatsApp Automation' };
     if (path.includes('/admin/coupons')) return { title: 'Coupons', breadcrumb: 'Promotions / Coupons' };
     if (path.includes('/admin/reviews')) return { title: 'Reviews Moderation', breadcrumb: 'Feedback / Reviews' };
     if (path.includes('/admin/product-discovery')) return { title: 'Product Discovery', breadcrumb: 'Content / Product Discovery' };

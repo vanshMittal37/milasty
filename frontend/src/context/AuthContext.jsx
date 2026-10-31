@@ -47,8 +47,10 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
-  const register = async (name, email, password, phone) => {
-    const res = await api.post('/auth/register', { name, email, password, phone });
+  const register = async (name, email, password, phone, otp = null) => {
+    const endpoint = otp ? '/auth/signup/verify-otp' : '/auth/register';
+    const payload = otp ? { name, email, password, phone, otp } : { name, email, password, phone };
+    const res = await api.post(endpoint, payload);
     if (res.data?.token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
       localStorage.setItem('milasty_token', res.data.token);

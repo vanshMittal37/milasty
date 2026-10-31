@@ -9,6 +9,7 @@ import {
 } from './shipratController.js';
 import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
 import { getFreeDeliveryThreshold, qualifiesForFreeDelivery, FREE_DELIVERY_TYPE } from './couponController.js';
+import { triggerOrderNotificationAsync } from '../services/orderNotificationService.js';
 
 // Payment sessions (keyed by razorpay_order_id): cart, address, totals and the selected shipping
 // rate captured before payment. Kept in memory for speed AND persisted in the Supabase
@@ -825,6 +826,18 @@ export const finalizeOrderFromPayment = async ({
   if (!newOrder) {
     throw new Error('Order could not be persisted to the database after payment verification');
   }
+
+  // Asynchronously dispatch WhatsApp order confirmation & payment success notifications (non-blocking)
+  triggerOrderNotificationAsync({
+    order: newOrder,
+    eventType: 'order_confirmed',
+  });
+  triggerOrderNotificationAsync({
+    order: newOrder,
+    eventType: 'payment_successful',
+    extraData: { paymentId: razorpay_payment_id || newOrder.payment_id },
+  });
+
   return newOrder;
 
   } finally {
