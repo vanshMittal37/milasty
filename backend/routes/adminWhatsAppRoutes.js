@@ -4,6 +4,7 @@ import {
   getQRCode,
   reconnect,
   disconnect,
+  clearSession,
   sendTestMessage,
   getNotificationHistory,
   getNotificationStats,
@@ -19,6 +20,7 @@ router.get('/status', getConnectionStatus);
 router.get('/qr', getQRCode);
 router.post('/reconnect', reconnect);
 router.post('/disconnect', disconnect);
+router.post('/clear-session', clearSession);
 router.post('/test-message', sendTestMessage);
 router.get('/history', getNotificationHistory);
 router.get('/stats', getNotificationStats);

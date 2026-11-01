@@ -325,6 +325,175 @@ export async function sendWhatsAppMessage(phone, messageText, options = {}) {
 }
 
 /**
+ * Checks whether a filename corresponds to a Baileys auth session file.
+ * Baileys multi-file auth stores:
+ *  - creds.json
+ *  - app-state-sync-key-*.json
+ *  - app-state-sync-version-*.json
+ *  - pre-key-*.json
+ *  - sender-key-*.json
+ *  - sender-key-memory-*.json
+ *  - session-*.json
+ *  - Baileys-specific atomic write temp files (e.g. creds.json.tmp, .creds.json.tmp, .tmp-creds.json)
+ *
+ * NOTE: Unrelated .tmp files (e.g. cache.tmp, report.tmp) are explicitly preserved.
+ */
+export function isBaileysAuthFile(filename) {
+  if (!filename || typeof filename !== 'string') return false;
+
+  const baileysPrefixes = [
+    'app-state-sync-key-',
+    'app-state-sync-version-',
+    'pre-key-',
+    'session-',
+    'sender-key-',
+    'sender-key-memory-',
+    'baileys_store',
+  ];
+
+  // Helper to check if a base name matches Baileys credential format
+  const isBaileysBaseName = (name) => {
+    if (!name) return false;
+    const clean = name.startsWith('.') ? name.slice(1) : name;
+    if (clean === 'creds.json') return true;
+    if (clean.endsWith('.json')) {
+      return baileysPrefixes.some((prefix) => clean.startsWith(prefix));
+    }
+    return false;
+  };
+
+  // Exact credentials or state JSON files
+  if (isBaileysBaseName(filename)) return true;
+
+  // Baileys atomic write temp files ending in .tmp (e.g. creds.json.tmp, .creds.json.tmp)
+  if (filename.endsWith('.tmp')) {
+    const baseWithoutTmp = filename.slice(0, -4);
+    return isBaileysBaseName(baseWithoutTmp);
+  }
+
+  // Baileys atomic write temp files with .tmp- prefix (e.g. .tmp-creds.json)
+  if (filename.startsWith('.tmp-')) {
+    const baseWithoutPrefix = filename.slice(5);
+    return isBaileysBaseName(baseWithoutPrefix);
+  }
+
+  return false;
+}
+
+/**
+ * Safely removes only expired Baileys authentication files inside WHATSAPP_AUTH_DIR.
+ * - Validates directory path using fs.realpathSync().
+ * - Rejects symlinked auth directories.
+ * - Preserves the directory itself (vital for persistent volume mount roots).
+ * - Preserves unrelated files and system folders (e.g. lost+found, cache.tmp, .gitkeep).
+ * - Protects local .baileys_auth session.
+ * - Returns a clear success/failure result object: { success, deletedCount, error? }.
+ */
+export function clearAuthDirectory() {
+  try {
+    const rawTargetDir = process.env.WHATSAPP_AUTH_DIR || AUTH_DIR;
+    if (!rawTargetDir || !fs.existsSync(rawTargetDir)) {
+      return { success: true, deletedCount: 0, message: 'Directory does not exist; nothing to clean.' };
+    }
+
+    // Security check: reject if the auth directory path itself is a symlink
+    const lstatDir = fs.lstatSync(rawTargetDir);
+    if (lstatDir.isSymbolicLink()) {
+      const errMsg = `Security rejection: WHATSAPP_AUTH_DIR (${rawTargetDir}) cannot be a symbolic link.`;
+      console.error(`[WHATSAPP SERVICE] ${errMsg}`);
+      return { success: false, deletedCount: 0, error: errMsg };
+    }
+
+    // Resolve canonical physical realpath
+    let realTarget;
+    try {
+      realTarget = fs.realpathSync(rawTargetDir);
+    } catch (realErr) {
+      const errMsg = `Failed to resolve realpath for auth dir: ${realErr.message}`;
+      console.error(`[WHATSAPP SERVICE] ${errMsg}`);
+      return { success: false, deletedCount: 0, error: errMsg };
+    }
+
+    // Ensure resolved path is an actual directory
+    const realStat = fs.statSync(realTarget);
+    if (!realStat.isDirectory()) {
+      const errMsg = `Security rejection: resolved WHATSAPP_AUTH_DIR (${realTarget}) is not a directory.`;
+      console.error(`[WHATSAPP SERVICE] ${errMsg}`);
+      return { success: false, deletedCount: 0, error: errMsg };
+    }
+
+    // Protect local developer session: resolve DEFAULT_AUTH_DIR realpath if it exists
+    let realDefault = null;
+    try {
+      if (fs.existsSync(DEFAULT_AUTH_DIR)) {
+        realDefault = fs.realpathSync(DEFAULT_AUTH_DIR);
+      }
+    } catch (e) {
+      realDefault = path.resolve(DEFAULT_AUTH_DIR);
+    }
+
+    if (realDefault && realTarget === realDefault) {
+      if (process.env.WHATSAPP_AUTH_DIR) {
+        console.log('[WHATSAPP SERVICE] Preserving local .baileys_auth session; skipping local clear.');
+        return { success: true, deletedCount: 0, skipped: true };
+      }
+      if (process.env.NODE_ENV !== 'test') {
+        console.log('[WHATSAPP SERVICE] Local environment detected: preserving local .baileys_auth session.');
+        return { success: true, deletedCount: 0, skipped: true };
+      }
+    }
+
+    console.log(`[WHATSAPP SERVICE] Safely removing Baileys authentication files inside: ${realTarget}`);
+    const entries = fs.readdirSync(realTarget);
+    let deletedCount = 0;
+    const deletionErrors = [];
+
+    for (const entry of entries) {
+      // Exclude Linux volume system folders, git keeps, and non-Baileys files
+      if (entry === 'lost+found' || entry === '.gitkeep' || !isBaileysAuthFile(entry)) {
+        continue;
+      }
+
+      const entryPath = path.join(realTarget, entry);
+      const resolvedEntry = path.resolve(entryPath);
+
+      // Strict path confinement: verify resolved entry is strictly within realTarget
+      if (!resolvedEntry.startsWith(realTarget + path.sep)) {
+        console.warn(`[WHATSAPP SERVICE] Path confinement violation detected for ${entry}; skipping.`);
+        continue;
+      }
+
+      try {
+        const stat = fs.lstatSync(resolvedEntry);
+        // Never delete directories
+        if (stat.isDirectory()) {
+          continue;
+        }
+        // Only unlink Baileys session files or symlinks pointing within auth dir
+        if (stat.isFile() || stat.isSymbolicLink()) {
+          fs.unlinkSync(resolvedEntry);
+          deletedCount += 1;
+        }
+      } catch (rmErr) {
+        console.error(`[WHATSAPP SERVICE] Failed to delete ${entry}:`, rmErr.message);
+        deletionErrors.push(`${entry}: ${rmErr.message}`);
+      }
+    }
+
+    if (deletionErrors.length > 0) {
+      const errMsg = `Failed to remove some credentials (${deletionErrors.length} errors): ${deletionErrors.join('; ')}`;
+      return { success: false, deletedCount, error: errMsg };
+    }
+
+    console.log(`[WHATSAPP SERVICE] Cleaned ${deletedCount} Baileys auth files from ${path.basename(realTarget)}.`);
+    return { success: true, deletedCount };
+  } catch (err) {
+    console.error('[WHATSAPP SERVICE] Failed to clean auth directory contents:', err.message);
+    return { success: false, deletedCount: 0, error: err.message };
+  }
+}
+
+/**
  * Disconnects the WhatsApp socket.
  * If clearAuth is true, removes stored credentials so a new number (e.g. client's number) can be linked.
  */
@@ -346,18 +515,21 @@ export async function disconnectWhatsApp(clearAuth = false) {
   notifyStateChange('disconnected');
 
   if (clearAuth) {
-    try {
-      if (fs.existsSync(AUTH_DIR)) {
-        console.log(`[WHATSAPP SERVICE] Clearing authentication directory: ${AUTH_DIR}`);
-        fs.rmSync(AUTH_DIR, { recursive: true, force: true });
-        fs.mkdirSync(AUTH_DIR, { recursive: true });
-      }
-    } catch (rmErr) {
-      console.error('[WHATSAPP SERVICE] Failed to clear auth directory:', rmErr.message);
+    const clearResult = clearAuthDirectory();
+    if (!clearResult || clearResult.success === false) {
+      const errMsg = clearResult?.error || 'Failed to delete authentication credentials during disconnect.';
+      console.error(`[WHATSAPP SERVICE] Disconnect credential clearance failed: ${errMsg}`);
+      throw new Error(errMsg);
     }
+    return {
+      success: true,
+      message: 'WhatsApp disconnected and authentication session cleared successfully.',
+      clearAuth: true,
+      deletedCount: clearResult.deletedCount,
+    };
   }
 
-  return { success: true, message: 'WhatsApp disconnected successfully' };
+  return { success: true, message: 'WhatsApp disconnected successfully', clearAuth: false };
 }
 
 /**
@@ -367,6 +539,54 @@ export async function reconnectWhatsApp() {
   console.log('[WHATSAPP SERVICE] Admin requested manual reconnect...');
   await disconnectWhatsApp(false);
   return initializeWhatsApp();
+}
+
+// Concurrency mutex lock to prevent simultaneous clear operations from creating duplicate sockets
+let activeClearPromise = null;
+
+/**
+ * Clears stored authentication session and immediately re-initializes
+ * the socket to generate a fresh QR code for pairing.
+ * Concurrent requests safely join the existing in-flight operation.
+ * If credential deletion fails, aborts socket restart and reports failure.
+ */
+export async function clearSessionAndRestart() {
+  if (activeClearPromise) {
+    console.log('[WHATSAPP SERVICE] Clear session already in progress. Joining in-flight operation...');
+    return activeClearPromise;
+  }
+
+  activeClearPromise = (async () => {
+    console.log('[WHATSAPP SERVICE] Admin requested Clear Session & Restart...');
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
+
+    isInitializing = false;
+    cleanupCurrentSocket();
+    connectedUser = null;
+    currentQR = null;
+    currentQRDataUrl = null;
+    reconnectAttempts = 0;
+
+    const clearResult = clearAuthDirectory();
+    if (!clearResult || clearResult.success === false) {
+      const errMsg = clearResult?.error || 'Failed to clear session authentication files.';
+      console.error(`[WHATSAPP SERVICE] Clear session aborted: ${errMsg}`);
+      notifyStateChange('disconnected');
+      throw new Error(errMsg);
+    }
+
+    notifyStateChange('connecting');
+    return initializeWhatsApp();
+  })();
+
+  try {
+    return await activeClearPromise;
+  } finally {
+    activeClearPromise = null;
+  }
 }
 
 // ─── Graceful Shutdown Handlers ──────────────────────────────────────────────

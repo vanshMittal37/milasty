@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   MessageSquare, RefreshCw, QrCode, Smartphone, Send, ShieldCheck,
   AlertTriangle, CheckCircle2, Clock, XCircle, LogOut, ArrowRight,
-  HelpCircle, Search, Filter, PhoneCall, ExternalLink, Zap
+  HelpCircle, Search, Filter, PhoneCall, ExternalLink, Zap, Trash2
 } from 'lucide-react';
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
@@ -24,6 +24,7 @@ export default function AdminWhatsApp() {
   const [actionLoading, setActionLoading] = useState(false);
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
   const [clearAuthOnDisconnect, setClearAuthOnDisconnect] = useState(false);
+  const [showClearSessionModal, setShowClearSessionModal] = useState(false);
 
   // Test Message State
   const [testPhone, setTestPhone] = useState('');
@@ -160,6 +161,22 @@ export default function AdminWhatsApp() {
     } finally {
       setActionLoading(false);
       setClearAuthOnDisconnect(false);
+    }
+  };
+
+  // Action: Clear WhatsApp Session & Generate Fresh QR Code
+  const handleClearSession = async () => {
+    setActionLoading(true);
+    setShowClearSessionModal(false);
+    try {
+      const res = await api.post('/admin/whatsapp/clear-session');
+      toast.success(res.data?.message || 'WhatsApp session cleared. Fresh QR code generated!');
+      await fetchStatusAndStats();
+      await fetchQrCode();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to clear WhatsApp session.');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -337,28 +354,53 @@ export default function AdminWhatsApp() {
               <span>Disconnect</span>
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={handleReconnect}
-              disabled={actionLoading}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                backgroundColor: '#1F5A28',
-                color: '#FFFFFF',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '0.65rem 1.25rem',
-                fontSize: '0.85rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(31, 90, 40, 0.2)',
-              }}
-            >
-              <Zap size={15} />
-              <span>Reconnect Now</span>
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => setShowClearSessionModal(true)}
+                disabled={actionLoading}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  backgroundColor: '#FDF0ED',
+                  color: '#DC2626',
+                  border: '1.5px solid #FCA5A5',
+                  borderRadius: '12px',
+                  padding: '0.65rem 1.15rem',
+                  fontSize: '0.85rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                title="Delete expired credentials from server and start fresh QR pairing"
+              >
+                <Trash2 size={15} />
+                <span>Clear Auth Session</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleReconnect}
+                disabled={actionLoading}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  backgroundColor: '#1F5A28',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '0.65rem 1.25rem',
+                  fontSize: '0.85rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(31, 90, 40, 0.2)',
+                }}
+              >
+                <Zap size={15} />
+                <span>Reconnect Now</span>
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -580,26 +622,47 @@ export default function AdminWhatsApp() {
                   2. Tap <strong>Linked Devices</strong> &gt; <strong>Link a Device</strong>.<br />
                   3. Point your camera at this QR code.
                 </div>
-                <button
-                  type="button"
-                  onClick={fetchQrCode}
-                  disabled={loadingQr}
-                  style={{
-                    marginTop: '0.75rem',
-                    background: 'none',
-                    border: 'none',
-                    color: '#1F5A28',
-                    fontSize: '0.78rem',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.3rem',
-                  }}
-                >
-                  <RefreshCw size={13} style={{ animation: loadingQr ? 'spin 1s linear infinite' : 'none' }} />
-                  <span>Refresh QR Code</span>
-                </button>
+                <div style={{ display: 'flex', gap: '0.6rem', marginTop: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={fetchQrCode}
+                    disabled={loadingQr}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#1F5A28',
+                      fontSize: '0.78rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                    }}
+                  >
+                    <RefreshCw size={13} style={{ animation: loadingQr ? 'spin 1s linear infinite' : 'none' }} />
+                    <span>Refresh QR Code</span>
+                  </button>
+                  <span style={{ color: '#D8CCB8' }}>•</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowClearSessionModal(true)}
+                    disabled={actionLoading}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#DC2626',
+                      fontSize: '0.78rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                    }}
+                  >
+                    <Trash2 size={13} />
+                    <span>Reset & Clear Session</span>
+                  </button>
+                </div>
               </div>
             ) : (
               // Disconnected / Initializing View
@@ -633,7 +696,7 @@ export default function AdminWhatsApp() {
                 <p style={{ fontSize: '0.82rem', color: '#5A4438', margin: '0.35rem 0 1.25rem' }}>
                   Automatic customer order notifications and OTP messages are currently queued in safe offline mode.
                 </p>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                   <button
                     type="button"
                     onClick={handleReconnect}
@@ -676,6 +739,43 @@ export default function AdminWhatsApp() {
                     <QrCode size={14} />
                     <span>Generate QR</span>
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowClearSessionModal(true)}
+                    disabled={actionLoading}
+                    style={{
+                      padding: '0.65rem 1.1rem',
+                      backgroundColor: '#FDF0ED',
+                      color: '#DC2626',
+                      borderRadius: '10px',
+                      border: '1.5px solid #FCA5A5',
+                      fontSize: '0.85rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                    }}
+                  >
+                    <Trash2 size={14} />
+                    <span>Clear Auth Session</span>
+                  </button>
+                </div>
+
+                <div
+                  style={{
+                    marginTop: '1.25rem',
+                    padding: '0.85rem 1rem',
+                    backgroundColor: '#FFF8F6',
+                    borderRadius: '10px',
+                    border: '1px solid #FECACA',
+                    textAlign: 'left',
+                    fontSize: '0.8rem',
+                    color: '#7F1D1D',
+                    lineHeight: '1.45',
+                  }}
+                >
+                  <strong>Session logged out or showing error 401?</strong> If previous authentication credentials expired or were unlinked on WhatsApp, click <strong>Clear Auth Session</strong> above. This will safely remove expired credentials from the server volume (<code style={{ backgroundColor: '#FEE2E2', padding: '1px 4px', borderRadius: '4px' }}>/data/baileys_auth</code>) and immediately generate a fresh QR code for pairing.
                 </div>
               </div>
             )}
@@ -990,15 +1090,28 @@ export default function AdminWhatsApp() {
       <ConfirmationModal
         isOpen={showDisconnectModal}
         onClose={() => setShowDisconnectModal(false)}
+        onCancel={() => setShowDisconnectModal(false)}
         onConfirm={handleConfirmDisconnect}
         title={clearAuthOnDisconnect ? 'Connect a Different WhatsApp Number?' : 'Disconnect WhatsApp Service?'}
         message={
           clearAuthOnDisconnect
-            ? 'This will clear stored authentication credentials from the server. You will be provided a fresh QR code to scan and link another WhatsApp account.'
+            ? 'This will clear stored authentication credentials from the server volume. You will be provided a fresh QR code to scan and link another WhatsApp account.'
             : 'Are you sure you want to disconnect WhatsApp? Your stored credentials will be preserved, and you can reconnect anytime with one click.'
         }
         confirmText={clearAuthOnDisconnect ? 'Clear & Re-link' : 'Disconnect'}
-        confirmButtonClass={clearAuthOnDisconnect ? 'btn-danger' : 'btn-warning'}
+        isDanger={Boolean(clearAuthOnDisconnect)}
+      />
+
+      {/* ─── Clear Session & Restart Confirmation Modal ────────────────────────────── */}
+      <ConfirmationModal
+        isOpen={showClearSessionModal}
+        onClose={() => setShowClearSessionModal(false)}
+        onCancel={() => setShowClearSessionModal(false)}
+        onConfirm={handleClearSession}
+        title="Clear WhatsApp Session & Generate Fresh QR?"
+        message="This will delete the expired Baileys authentication files inside the persistent storage volume (/data/baileys_auth). The WhatsApp service will immediately restart in pairing mode and generate a fresh QR code for you to scan with your phone."
+        confirmText="Yes, Clear Session & Generate QR"
+        isDanger={true}
       />
     </div>
   );

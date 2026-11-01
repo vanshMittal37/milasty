@@ -3,6 +3,8 @@ import {
   reconnectWhatsApp,
   disconnectWhatsApp,
   sendWhatsAppMessage,
+  clearSessionAndRestart,
+  initializeWhatsApp,
 } from '../services/whatsappService.js';
 import { getQueueMemoryState } from '../services/notificationQueue.js';
 import { supabase } from '../config/supabase.js';
@@ -74,7 +76,7 @@ export const getConnectionStatus = async (req, res) => {
  */
 export const getQRCode = async (req, res) => {
   try {
-    const status = getWhatsAppStatus();
+    let status = getWhatsAppStatus();
 
     if (status.isConnected) {
       return res.json({
@@ -85,6 +87,16 @@ export const getQRCode = async (req, res) => {
         qr: null,
         qrDataUrl: null,
       });
+    }
+
+    // If socket is disconnected and has no active QR, trigger initialization to generate QR
+    if (!status.qr && status.status === 'disconnected') {
+      try {
+        await initializeWhatsApp();
+        status = getWhatsAppStatus();
+      } catch (initErr) {
+        console.warn('[ADMIN WHATSAPP] QR on-demand initialization notice:', initErr.message);
+      }
     }
 
     return res.json({
@@ -140,7 +152,34 @@ export const disconnect = async (req, res) => {
     });
   } catch (error) {
     console.error('[ADMIN WHATSAPP] Error during disconnection:', error);
-    res.status(500).json({ success: false, message: 'Failed to disconnect WhatsApp', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: `Failed to disconnect WhatsApp: ${error.message || 'credential clearance failed'}`,
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * 4b. CLEAR WHATSAPP SESSION & RESTART
+ * POST /api/admin/whatsapp/clear-session
+ * Safely wipes stored Baileys credentials and restarts the socket to generate a fresh QR code.
+ */
+export const clearSession = async (req, res) => {
+  try {
+    console.log(`[ADMIN WHATSAPP] Clear session requested by admin: ${req.user?.email || req.user?.id}`);
+    await clearSessionAndRestart();
+    res.json({
+      success: true,
+      message: 'WhatsApp session cleared. Generating fresh pairing QR code...',
+    });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error clearing session:', error);
+    res.status(500).json({
+      success: false,
+      message: `Failed to clear WhatsApp session: ${error.message || 'credential deletion failed'}`,
+      error: error.message,
+    });
   }
 };
 
