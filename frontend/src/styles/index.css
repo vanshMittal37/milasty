@@ -4058,6 +4058,54 @@ select.admin-input {
   box-shadow: 0 0 0 3px rgba(47, 107, 58, 0.12) !important;
 }
 
+/* ---- Milasty Auth Input & Button Layout Rules ---- */
+.milasty-auth-input {
+  padding-left: 46px !important;
+  padding-right: 16px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 48px !important;
+  box-sizing: border-box !important;
+}
+
+.milasty-auth-input.has-right-element {
+  padding-right: 46px !important;
+}
+
+.milasty-auth-input:not(.has-icon) {
+  padding-left: 16px !important;
+}
+
+.milasty-auth-btn {
+  padding: 0.75rem 1.4rem !important;
+  min-height: 50px !important;
+  height: auto !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+@media (max-width: 600px) {
+  .milasty-auth-page {
+    padding: 1.25rem 0.85rem 2rem !important;
+  }
+  .milasty-auth-card {
+    padding: 1.5rem 1.15rem 1.35rem !important;
+    border-radius: 20px !important;
+    gap: 1.1rem !important;
+  }
+  .milasty-auth-card .auth-heading {
+    font-size: 1.85rem !important;
+    line-height: 1.2 !important;
+  }
+  .milasty-auth-btn {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.92rem !important;
+  }
+}
+
 /* ---- Search Bar Borders ---- */
 input[type="search"],
 .search-input,

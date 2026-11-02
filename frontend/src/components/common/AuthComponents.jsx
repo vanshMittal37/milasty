@@ -74,12 +74,12 @@ export function AuthLayout({ badge, titleLine1, titleLine2, title, subtitle, chi
           position: 'relative',
           zIndex: 2,
           width: '100%',
-          maxWidth: '520px',
+          maxWidth: '500px',
           backgroundColor: '#F8F3E9',
-          borderRadius: '26px',
+          borderRadius: '24px',
           border: '1.5px solid #E2D7C7',
           boxShadow: '0 20px 48px rgba(35, 20, 10, 0.22), 0 4px 14px rgba(0,0,0,0.05)',
-          padding: '2.5rem 2.25rem 2rem',
+          padding: 'clamp(1.5rem, 4vw, 2.25rem) clamp(1.1rem, 3.5vw, 2.25rem) clamp(1.25rem, 3.5vw, 2rem)',
           display: 'flex',
           flexDirection: 'column',
           gap: '1.25rem',
@@ -277,7 +277,7 @@ export function AuthInput({
             className="input-left-icon"
             style={{
               position: 'absolute',
-              left: '14px',
+              left: '16px',
               top: '50%',
               transform: 'translateY(-50%)',
               pointerEvents: 'none',
@@ -287,6 +287,8 @@ export function AuthInput({
               color: isFocused ? '#1F5A28' : '#5A4438',
               transition: 'color 0.2s',
               zIndex: 2,
+              width: '20px',
+              height: '20px',
             }}
           >
             <Icon size={18} style={{ strokeWidth: 2.2 }} />
@@ -308,9 +310,12 @@ export function AuthInput({
           style={{
             width: '100%',
             height: '48px',
+            paddingLeft: Icon ? '46px' : '16px',
+            paddingRight: rightElement ? '46px' : '16px',
+            paddingTop: '0',
+            paddingBottom: '0',
             borderRadius: '12px',
-            border: `1.5px solid ${error ? '#B8321E' : isFocused ? '#1F5A28' : '#D8CCB8'
-              }`,
+            border: `1.5px solid ${error ? '#B8321E' : isFocused ? '#1F5A28' : '#D8CCB8'}`,
             boxShadow: isFocused ? '0 0 0 3px rgba(31, 90, 40, 0.15)' : 'none',
             fontSize: '0.92rem',
             fontWeight: '600',
@@ -329,7 +334,7 @@ export function AuthInput({
             className="password-toggle"
             style={{
               position: 'absolute',
-              right: '10px',
+              right: '12px',
               top: '50%',
               transform: 'translateY(-50%)',
               display: 'flex',
@@ -364,21 +369,25 @@ export function AuthButton({
       type={type}
       disabled={disabled || loading}
       onClick={onClick}
+      className="milasty-auth-btn"
       style={{
         width: '100%',
-        height: '50px',
-        marginTop: '0.2rem',
+        minHeight: '50px',
+        height: 'auto',
+        padding: '0.75rem 1.4rem',
+        marginTop: '0.25rem',
         backgroundColor: '#1F5A28',
         color: '#FFFFFF',
         borderRadius: '12px',
         border: 'none',
         fontWeight: '700',
-        fontSize: '0.98rem',
+        fontSize: '0.95rem',
         letterSpacing: '0.01em',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '0.5rem',
+        textAlign: 'center',
+        gap: '0.6rem',
         cursor: disabled || loading ? 'not-allowed' : 'pointer',
         opacity: disabled || loading ? 0.78 : 1,
         transition: 'all 0.2s ease',
@@ -389,7 +398,7 @@ export function AuthButton({
       }}
     >
       {loading ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%' }}>
           <div
             style={{
               width: '18px',
@@ -398,15 +407,16 @@ export function AuthButton({
               borderTopColor: '#FFFFFF',
               borderRadius: '50%',
               animation: 'authSpinner 0.8s linear infinite',
+              flexShrink: 0,
             }}
           />
           <span style={{ color: '#FFFFFF', fontWeight: '700' }}>{loadingText}</span>
         </div>
       ) : (
-        <>
-          <span style={{ color: '#FFFFFF', fontWeight: '700' }}>{children}</span>
-          {Icon && <Icon size={18} color="#FFFFFF" style={{ strokeWidth: 2.8 }} />}
-        </>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', minWidth: 0 }}>
+          <span style={{ color: '#FFFFFF', fontWeight: '800', lineHeight: 1.35, textAlign: 'center' }}>{children}</span>
+          {Icon && <Icon size={18} color="#FFFFFF" style={{ strokeWidth: 2.8, flexShrink: 0 }} />}
+        </div>
       )}
     </button>
   );
