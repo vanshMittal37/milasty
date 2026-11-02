@@ -151,6 +151,9 @@ export default function AdminOrderList() {
         courier_name: result.courier_name || 'Shiprath Partner',
         shipment_status: 'booked',
         shipment_error: null,
+        orderStatus: 'Packed',
+        status: 'Packed',
+        order_status: 'packed',
       };
       setOrders((prev) => prev.map((o) => ((o.id === orderId || o._id === orderId) ? { ...o, ...patch } : o)));
       setSelectedOrder((prev) => (prev && (prev.id === orderId || prev._id === orderId) ? { ...prev, ...patch } : prev));

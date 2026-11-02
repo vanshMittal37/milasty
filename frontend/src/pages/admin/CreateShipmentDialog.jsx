@@ -98,6 +98,7 @@ export default function CreateShipmentDialog({ orderId, onClose, onCreated }) {
         {step === 'done' && result && (
           <div style={{ background: '#E8F5E9', border: '1px solid #A5D6A7', borderRadius: '12px', padding: '1rem', color: '#1B5E20', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '800' }}><CheckCircle2 size={16} /> {result.alreadyBooked ? 'Shipment already existed — nothing new was created.' : 'Shipment created with Shiprath.'}</div>
+            <div>Order Status: <strong>Packed</strong></div>
             <div>AWB: <code>{result.awb || '(not returned yet — check Shiprath panel)'}</code></div>
             <div>Courier: {result.courier_name || '—'}{result.fallbackUsed ? ' (fallback — the courier quoted at checkout was rejected)' : ''}</div>
             <button onClick={onClose} className="admin-btn-secondary" style={{ alignSelf: 'flex-start', marginTop: '0.4rem' }}>Done</button>

@@ -51,19 +51,17 @@ export default function RegisterPage() {
       setError('Please enter your full name.');
       return false;
     }
-    if (!email.trim()) {
-      setError('Please enter a valid email address.');
-      return false;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.toLowerCase().trim())) {
-      setError('Please enter a valid email address.');
-      return false;
-    }
     const phoneDigits = phone.replace(/[\s\-()]/g, '').replace(/^(\+?91|0)(?=\d{10}$)/, '');
     if (!/^[6-9]\d{9}$/.test(phoneDigits)) {
       setError('Please enter a valid 10-digit Indian mobile number.');
       return false;
+    }
+    if (email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.toLowerCase().trim())) {
+        setError('Please enter a valid email address.');
+        return false;
+      }
     }
     if (password.length < 6) {
       setError('Password must be at least 6 characters long.');
@@ -161,23 +159,6 @@ export default function RegisterPage() {
           id="register-name"
         />
 
-        {/* Email Address */}
-        <AuthInput
-          label="EMAIL ADDRESS *"
-          type="email"
-          icon={Mail}
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            if (error) setError('');
-          }}
-          placeholder="Enter your email address"
-          required
-          disabled={otpSent}
-          autoComplete="email"
-          id="register-email"
-        />
-
         {/* Mobile Number */}
         <AuthInput
           label="MOBILE NUMBER *"
@@ -194,6 +175,23 @@ export default function RegisterPage() {
           inputMode="numeric"
           autoComplete="tel"
           id="register-phone"
+        />
+
+        {/* Email Address (Optional, star removed) */}
+        <AuthInput
+          label="EMAIL ADDRESS"
+          type="email"
+          icon={Mail}
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (error) setError('');
+          }}
+          placeholder="Enter your email address (optional)"
+          required={false}
+          disabled={otpSent}
+          autoComplete="email"
+          id="register-email"
         />
 
         {/* Password (Only editable before OTP verification step) */}

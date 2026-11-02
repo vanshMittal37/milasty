@@ -1242,8 +1242,9 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
         shipment_id: shipmentId,
         courier_name: courierName,
         tracking_url: trackingUrl,
-        // Booking ≠ physically shipped: order_status is left as-is (confirmed). It moves to
-        // shipped / out_for_delivery / delivered only from Shiprath tracking (trackOrderShipment).
+        // When admin creates shipment, product/order status transitions to 'packed' for both admin and customer dashboards
+        order_status: 'packed',
+        status: 'Packed',
         shipment_status: 'booked',
         ...packageFields,
         shipment_error: null,
@@ -1271,6 +1272,9 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
       shipment_id: shipmentId,
       courier_name: courierName,
       tracking_url: trackingUrl,
+      order_status: 'packed',
+      orderStatus: 'Packed',
+      status: 'Packed',
       carrier_id: bookedRate.carrier_id,
       courier_id: bookedRate.courier_id ?? '',
       product_id: bookedRate.product_id,
@@ -1437,9 +1441,15 @@ export const bookShipmentForOrder = async (req, res) => {
     }
 
     if (order.awb_number || order.awb || shipStatus === 'booked') {
+      if (['confirmed', 'processing'].includes(String(order.order_status || '').toLowerCase())) {
+        await safeUpdateOrder(order.id, { order_status: 'packed', status: 'Packed' });
+      }
       return res.status(409).json({
         success: false,
         code: 'ALREADY_BOOKED',
+        order_status: 'packed',
+        orderStatus: 'Packed',
+        status: 'Packed',
         message: `Shipment already booked${order.awb_number ? ` (AWB ${order.awb_number})` : ''}. Not creating another one.`,
       });
     }
@@ -1501,7 +1511,14 @@ export const bookShipmentForOrder = async (req, res) => {
       },
     });
 
-    return res.json({ success: true, ...result, raw: undefined });
+    return res.json({
+      success: true,
+      ...result,
+      order_status: 'packed',
+      orderStatus: 'Packed',
+      status: 'Packed',
+      raw: undefined,
+    });
   } catch (error) {
     console.error('[SHIPRATH RETRY ROUTE] Exception:', error.message);
     return res.status(500).json({ success: false, message: 'Error booking shipment.', error: error.message });

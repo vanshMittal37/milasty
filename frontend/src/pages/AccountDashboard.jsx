@@ -590,7 +590,7 @@ export default function AccountDashboard() {
               />
             </div>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              {['All', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map((s) => (
+              {['All', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Delivered', 'Cancelled'].map((s) => (
                 <button
                   key={s}
                   onClick={() => setOrderStatusFilter(s)}

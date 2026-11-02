@@ -60,17 +60,39 @@ export const registerUser = async (req, res) => {
     if (!phone) {
       return res.status(400).json({ message: 'Please enter a valid 10-digit mobile number' });
     }
-    if (!email || !email.trim()) {
-      return res.status(400).json({ message: 'Please enter your email address' });
-    }
-    if (!password) {
-      return res.status(400).json({ message: 'Please enter a password' });
+    const rawEmail = String(email || '').trim();
+    let cleanEmail = '';
+    let existingDbUser = null;
+
+    if (rawEmail) {
+      cleanEmail = rawEmail.toLowerCase();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cleanEmail)) {
+        return res.status(400).json({ message: 'Please enter a valid email address' });
+      }
+
+      // Check if user exists in Supabase PostgreSQL 'users' table
+      const { data: dbUser, error: dbCheckErr } = await supabase
+        .from('users')
+        .select('id, email, password_hash')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+
+      if (dbCheckErr) {
+        console.error('Supabase DB check error:', dbCheckErr);
+      }
+
+      if (dbUser?.password_hash) {
+        return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
+      }
+      existingDbUser = dbUser;
+    } else {
+      // If email is not provided, use an internal unique mobile-based email to satisfy database NOT NULL/UNIQUE constraints
+      cleanEmail = `${phone}@customer.milasty.com`;
     }
 
-    const cleanEmail = email.toLowerCase().trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(cleanEmail)) {
-      return res.status(400).json({ message: 'Please enter a valid email address' });
+    if (!password) {
+      return res.status(400).json({ message: 'Please enter a password' });
     }
 
     if (password.length < 6) {
@@ -79,27 +101,9 @@ export const registerUser = async (req, res) => {
 
     const role = cleanEmail === 'admin@milasty.com' ? 'admin' : 'customer';
 
-    // 2. Check if user exists in Supabase PostgreSQL 'users' table AND Supabase Auth
-    const { data: existingDbUser, error: dbCheckErr } = await supabase
-      .from('users')
-      .select('id, email, password_hash')
-      .eq('email', cleanEmail)
-      .maybeSingle();
-
-    if (dbCheckErr) {
-      console.error('Supabase DB check error:', dbCheckErr);
-    }
-
-    // An account that already has a password belongs to someone — registering again must never
-    // replace its password (that would hand the account to whoever knows the email address).
-    // Only password-less profiles (created from orders / Auth sync) may be claimed here.
-    if (existingDbUser?.password_hash) {
-      return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
-    }
-
     // Mobile login identifies the account by its number, so a number may belong to only one account
     const phoneOwners = await findUsersByMobile(phone);
-    if (phoneOwners.some((u) => u.id !== existingDbUser?.id)) {
+    if (phoneOwners.length > 0 && (!existingDbUser || phoneOwners.some((u) => u.id !== existingDbUser.id))) {
       return res.status(400).json({ message: 'This mobile number is already registered. Please log in instead.' });
     }
 
@@ -229,11 +233,13 @@ export const registerUser = async (req, res) => {
     // Issue JWT session token
     const token = jwt.sign({ id: newUser.id, role: newUser.role }, JWT_SECRET, { expiresIn: '30d' });
 
+    const displayEmail = (newUser.email && newUser.email.endsWith('@customer.milasty.com')) ? '' : newUser.email;
+
     res.status(201).json({
       _id: newUser.id,
       id: newUser.id,
       name: newUser.name,
-      email: newUser.email,
+      email: displayEmail,
       phone: newUser.phone,
       role: newUser.role,
       addresses: newUser.addresses || [],
@@ -262,29 +268,30 @@ export const sendSignupOtp = async (req, res) => {
       return res.status(400).json({ message: 'Please enter a valid 10-digit mobile number' });
     }
 
-    if (!email || !email.trim()) {
-      return res.status(400).json({ message: 'Please enter your email address' });
-    }
+    let existingDbUser = null;
+    const rawEmail = String(email || '').trim();
+    if (rawEmail) {
+      const cleanEmail = rawEmail.toLowerCase();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cleanEmail)) {
+        return res.status(400).json({ message: 'Please enter a valid email address' });
+      }
 
-    const cleanEmail = email.toLowerCase().trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(cleanEmail)) {
-      return res.status(400).json({ message: 'Please enter a valid email address' });
+      // Check if email is already registered with a password
+      const { data } = await supabase
+        .from('users')
+        .select('id, email, password_hash')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+      existingDbUser = data;
+
+      if (existingDbUser?.password_hash) {
+        return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
+      }
     }
 
     if (password && password.length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters long' });
-    }
-
-    // Check if email is already registered with a password
-    const { data: existingDbUser } = await supabase
-      .from('users')
-      .select('id, email, password_hash')
-      .eq('email', cleanEmail)
-      .maybeSingle();
-
-    if (existingDbUser?.password_hash) {
-      return res.status(400).json({ message: 'This email address is already registered. Please log in instead.' });
     }
 
     // Check if phone is already registered
@@ -417,11 +424,13 @@ export const loginUser = async (req, res) => {
     // Issue JWT session token
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
 
+    const displayEmail = (user.email && user.email.endsWith('@customer.milasty.com')) ? '' : user.email;
+
     res.json({
       _id: user.id,
       id: user.id,
       name: user.name,
-      email: user.email,
+      email: displayEmail,
       phone: user.phone,
       role: user.role,
       addresses: user.addresses || [],
@@ -446,11 +455,13 @@ export const getMe = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    const displayEmail = (user.email && user.email.endsWith('@customer.milasty.com')) ? '' : user.email;
+
     res.json({
       _id: user.id,
       id: user.id,
       name: user.name,
-      email: user.email,
+      email: displayEmail,
       phone: user.phone,
       role: user.role,
       addresses: user.addresses || [],
@@ -648,11 +659,13 @@ export const updateProfile = async (req, res) => {
 
     if (error) throw error;
 
+    const displayEmail = (user.email && user.email.endsWith('@customer.milasty.com')) ? '' : user.email;
+
     res.json({
       _id: user.id,
       id: user.id,
       name: user.name,
-      email: user.email,
+      email: displayEmail,
       phone: user.phone,
       role: user.role,
       addresses: user.addresses || [],
