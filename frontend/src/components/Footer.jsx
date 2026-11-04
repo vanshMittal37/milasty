@@ -225,7 +225,7 @@ export default function Footer() {
             color: '#D8C6B4',
           }}
         >
-          <div>© {new Date().getFullYear()} MILASTY Foods Private Limited. All Rights Reserved.</div>
+          <div>™ MILASTY (Home-Based Millet Bakery). All Rights Reserved.</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
             <span>Crafted with</span>
             <Heart size={14} color="#E06D53" fill="#E06D53" />
