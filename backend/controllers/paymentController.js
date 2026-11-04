@@ -10,6 +10,7 @@ import {
 import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
 import { getFreeDeliveryThreshold, qualifiesForFreeDelivery, FREE_DELIVERY_TYPE } from './couponController.js';
 import { triggerOrderNotificationAsync } from '../services/orderNotificationService.js';
+import { triggerEventAsync } from '../services/whatsappEventService.js';
 
 // Payment sessions (keyed by razorpay_order_id): cart, address, totals and the selected shipping
 // rate captured before payment. Kept in memory for speed AND persisted in the Supabase
@@ -830,7 +831,7 @@ export const finalizeOrderFromPayment = async ({
   // Asynchronously dispatch WhatsApp order confirmation & payment success notifications (non-blocking)
   triggerOrderNotificationAsync({
     order: newOrder,
-    eventType: 'order_confirmed',
+    eventType: 'order_placed',
   });
   triggerOrderNotificationAsync({
     order: newOrder,

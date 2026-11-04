@@ -108,6 +108,21 @@ export const AuthProvider = ({ children }) => {
     return updatedAddresses;
   };
 
+  const getPreferences = async () => {
+    const res = await api.get('/auth/preferences');
+    if (res.data?.preferences) {
+      setUser((prev) => ({ ...prev, notification_preferences: res.data.preferences }));
+    }
+    return res.data?.preferences;
+  };
+
+  const updatePreferences = async (preferences) => {
+    const res = await api.put('/auth/preferences', preferences);
+    const updatedPrefs = res.data?.preferences || preferences;
+    setUser((prev) => ({ ...prev, notification_preferences: updatedPrefs }));
+    return updatedPrefs;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -123,6 +138,8 @@ export const AuthProvider = ({ children }) => {
         updateProfile,
         updateAddress,
         setDefaultAddress,
+        getPreferences,
+        updatePreferences,
       }}
     >
       {children}

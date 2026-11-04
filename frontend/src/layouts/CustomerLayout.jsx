@@ -68,6 +68,7 @@ export default function CustomerLayout() {
     {
       title: 'ACCOUNT',
       items: [
+        { label: 'Notifications', path: '/account?tab=preferences', icon: Bell },
         { label: 'Change Password', path: '/account?tab=password', icon: Lock },
       ]
     },
@@ -85,6 +86,7 @@ export default function CustomerLayout() {
     if (path === '/account') {
       if (search.includes('tab=addresses')) return { category: 'ACCOUNT / ADDRESSES', title: 'Delivery Locations', subtitle: 'Manage your saved shipping addresses for fast checkout.' };
       if (search.includes('tab=profile')) return { category: 'ACCOUNT / PROFILE', title: 'My Profile', subtitle: 'Manage your account name, email and phone number.' };
+      if (search.includes('tab=preferences')) return { category: 'ACCOUNT / PREFERENCES', title: 'WhatsApp Preferences', subtitle: 'Manage your WhatsApp communication preferences for updates and offers.' };
       if (search.includes('tab=password')) return { category: 'ACCOUNT / SECURITY', title: 'Change Password', subtitle: 'Update your account password and security settings.' };
       return { category: 'ACCOUNT OVERVIEW', title: `${getGreeting()}, ${userName} ☀️`, subtitle: "Here's what's happening with your MILASTY account today." };
     }

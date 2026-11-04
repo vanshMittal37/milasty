@@ -6,14 +6,26 @@ import {
   clearSessionAndRestart,
   initializeWhatsApp,
 } from '../services/whatsappService.js';
-import { getQueueMemoryState } from '../services/notificationQueue.js';
-import { supabase } from '../config/supabase.js';
+import {
+  getNotificationHistory as fetchNotificationHistory,
+  getQueueStats,
+  retryNotification,
+  getQueueMemoryState,
+} from '../services/notificationQueue.js';
+import {
+  getNotificationSettings,
+  updateNotificationSettings,
+  getAdminRecipients,
+  addAdminRecipient,
+  updateAdminRecipient,
+  deleteAdminRecipient,
+} from '../services/whatsappSettingsService.js';
 import { normalizeIndianMobile } from '../utils/phone.js';
 
 // In-memory rate limiting for admin test messages: adminId/ip -> { count, windowStart }
 const testMessageRateLimits = new Map();
 const TEST_MSG_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-const MAX_TEST_MESSAGES_PER_WINDOW = 15;
+const MAX_TEST_MESSAGES_PER_WINDOW = 20;
 
 function checkTestMessageRateLimit(key) {
   if (!key) return true;
@@ -134,7 +146,6 @@ export const reconnect = async (req, res) => {
 /**
  * 4. DISCONNECT WHATSAPP
  * POST /api/admin/whatsapp/disconnect
- * Body: { clearAuth: boolean } (clearAuth = true clears session credentials to link a new number)
  */
 export const disconnect = async (req, res) => {
   try {
@@ -163,7 +174,6 @@ export const disconnect = async (req, res) => {
 /**
  * 4b. CLEAR WHATSAPP SESSION & RESTART
  * POST /api/admin/whatsapp/clear-session
- * Safely wipes stored Baileys credentials and restarts the socket to generate a fresh QR code.
  */
 export const clearSession = async (req, res) => {
   try {
@@ -186,7 +196,6 @@ export const clearSession = async (req, res) => {
 /**
  * 5. SEND TEST WHATSAPP MESSAGE
  * POST /api/admin/whatsapp/test-message
- * Body: { phone, message }
  */
 export const sendTestMessage = async (req, res) => {
   try {
@@ -257,92 +266,39 @@ export const sendTestMessage = async (req, res) => {
 };
 
 /**
- * 6. GET NOTIFICATION HISTORY (FILTERABLE)
- * GET /api/admin/whatsapp/history?status=all|sent|pending|failed&limit=50&offset=0
+ * 6. GET NOTIFICATION HISTORY (FILTERABLE BY RECIPIENT TYPE, EVENT, STATUS, SEARCH)
+ * GET /api/admin/whatsapp/history
  */
 export const getNotificationHistory = async (req, res) => {
   try {
-    const statusFilter = req.query.status ? String(req.query.status).toLowerCase().trim() : 'all';
+    const status = req.query.status ? String(req.query.status).toLowerCase().trim() : 'all';
+    const recipientType = req.query.recipientType ? String(req.query.recipientType).toLowerCase().trim() : 'all';
+    const eventType = req.query.eventType ? String(req.query.eventType).toLowerCase().trim() : 'all';
+    const search = req.query.search ? String(req.query.search).trim() : null;
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50));
     const offset = Math.max(0, parseInt(req.query.offset, 10) || 0);
 
-    // 1. Try querying Supabase public.whatsapp_notifications table
-    try {
-      let query = supabase
-        .from('whatsapp_notifications')
-        .select('*', { count: 'exact' });
+    const { total, notifications } = await fetchNotificationHistory({
+      limit,
+      offset,
+      status,
+      eventType,
+      recipientType,
+      search,
+    });
 
-      if (['sent', 'pending', 'failed'].includes(statusFilter)) {
-        query = query.eq('status', statusFilter);
-      }
-
-      query = query
-        .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
-
-      const { data, count, error } = await query;
-
-      if (!error && Array.isArray(data)) {
-        const notifications = data.map((n) => ({
-          id: n.id,
-          recipient_phone: n.recipient_phone,
-          masked_phone: maskPhoneNumber(n.recipient_phone),
-          event_type: n.event_type,
-          reference_id: n.reference_id,
-          message_body: n.message_body,
-          status: n.status,
-          attempts: n.attempts,
-          last_error: n.last_error,
-          sent_via: n.sent_via,
-          sent_at: n.sent_at,
-          created_at: n.created_at,
-          metadata: n.metadata,
-        }));
-
-        return res.json({
-          success: true,
-          source: 'database',
-          total: count ?? notifications.length,
-          limit,
-          offset,
-          notifications,
-        });
-      }
-    } catch (dbErr) {
-      // Table may not exist before migration 28 — fall back smoothly to memory
-    }
-
-    // 2. Fallback to in-memory queue history
-    const { history } = getQueueMemoryState();
-    let filtered = history;
-
-    if (['sent', 'pending', 'failed'].includes(statusFilter)) {
-      filtered = history.filter((item) => String(item.status || '').toLowerCase() === statusFilter);
-    }
-
-    const paginated = filtered.slice(offset, offset + limit).map((n) => ({
-      id: n.id,
-      recipient_phone: n.recipient_phone,
+    const masked = notifications.map((n) => ({
+      ...n,
+      recipient_type: n.recipient_type || 'customer',
       masked_phone: maskPhoneNumber(n.recipient_phone),
-      event_type: n.event_type,
-      reference_id: n.reference_id,
-      message_body: n.message_body,
-      status: n.status || 'pending',
-      attempts: n.attempts || 0,
-      last_error: n.last_error || null,
-      sent_via: n.sent_via || 'whatsapp',
-      sent_at: n.sent_at || null,
-      created_at: n.created_at || new Date().toISOString(),
-      metadata: n.metadata || {},
     }));
 
     return res.json({
       success: true,
-      source: 'memory',
-      total: filtered.length,
+      total,
       limit,
       offset,
-      notifications: paginated,
+      notifications: masked,
     });
   } catch (error) {
     console.error('[ADMIN WHATSAPP] Error fetching history:', error);
@@ -351,66 +307,140 @@ export const getNotificationHistory = async (req, res) => {
 };
 
 /**
- * 7. GET MESSAGE STATISTICS
+ * 7. GET MESSAGE STATISTICS WITH CUSTOMER & ADMIN BREAKDOWN
  * GET /api/admin/whatsapp/stats
  */
 export const getNotificationStats = async (req, res) => {
   try {
-    // 1. Try querying Supabase
-    try {
-      const [allRes, sentRes, pendingRes, failedRes] = await Promise.all([
-        supabase.from('whatsapp_notifications').select('id', { count: 'exact', head: true }),
-        supabase.from('whatsapp_notifications').select('id', { count: 'exact', head: true }).eq('status', 'sent'),
-        supabase.from('whatsapp_notifications').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('whatsapp_notifications').select('id', { count: 'exact', head: true }).eq('status', 'failed'),
-      ]);
-
-      if (!allRes.error) {
-        const total = allRes.count || 0;
-        const sent = sentRes.count || 0;
-        const pending = pendingRes.count || 0;
-        const failed = failedRes.count || 0;
-        const finished = sent + failed;
-        const successRate = finished > 0 ? `${((sent / finished) * 100).toFixed(1)}%` : '100.0%';
-
-        return res.json({
-          success: true,
-          source: 'database',
-          stats: {
-            total,
-            sent,
-            pending,
-            failed,
-            successRate,
-          },
-        });
-      }
-    } catch (e) {
-      // Fall through to memory
-    }
-
-    // 2. Fallback to in-memory history
-    const { history, pendingQueue } = getQueueMemoryState();
-    const sent = history.filter((i) => i.status === 'sent').length;
-    const failed = history.filter((i) => i.status === 'failed').length;
-    const pending = pendingQueue.length + history.filter((i) => i.status === 'pending').length;
-    const total = history.length;
-    const finished = sent + failed;
-    const successRate = finished > 0 ? `${((sent / finished) * 100).toFixed(1)}%` : '100.0%';
-
+    const queueData = await getQueueStats();
     return res.json({
       success: true,
-      source: 'memory',
-      stats: {
-        total,
-        sent,
-        pending,
-        failed,
-        successRate,
-      },
+      stats: queueData.stats,
+      queueLength: queueData.queueLength,
+      isProcessing: queueData.isProcessing,
+      dbTableAvailable: queueData.dbTableAvailable,
     });
   } catch (error) {
     console.error('[ADMIN WHATSAPP] Error fetching stats:', error);
     res.status(500).json({ success: false, message: 'Error retrieving statistics', error: error.message });
+  }
+};
+
+/**
+ * 8. RETRY FAILED NOTIFICATION
+ * POST /api/admin/whatsapp/retry/:id
+ */
+export const retryNotificationHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'Notification ID is required.' });
+    }
+
+    const result = await retryNotification(id);
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    return res.json({ success: true, message: result.message });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error retrying notification:', error);
+    res.status(500).json({ success: false, message: 'Failed to retry notification', error: error.message });
+  }
+};
+
+/**
+ * 9. GET NOTIFICATION MATRIX SETTINGS
+ * GET /api/admin/whatsapp/settings
+ */
+export const getSettingsHandler = async (req, res) => {
+  try {
+    const settings = await getNotificationSettings();
+    res.json({ success: true, settings });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error fetching settings:', error);
+    res.status(500).json({ success: false, message: 'Failed to retrieve notification settings', error: error.message });
+  }
+};
+
+/**
+ * 10. UPDATE NOTIFICATION MATRIX SETTINGS
+ * PUT /api/admin/whatsapp/settings
+ */
+export const updateSettingsHandler = async (req, res) => {
+  try {
+    const { settings } = req.body;
+    if (!settings || typeof settings !== 'object') {
+      return res.status(400).json({ success: false, message: 'Invalid settings payload.' });
+    }
+
+    const updated = await updateNotificationSettings(settings);
+    res.json({ success: true, message: 'Notification settings updated successfully', settings: updated });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error updating settings:', error);
+    res.status(500).json({ success: false, message: 'Failed to update notification settings', error: error.message });
+  }
+};
+
+/**
+ * 11. GET ADMIN RECIPIENTS
+ * GET /api/admin/whatsapp/recipients
+ */
+export const getRecipientsHandler = async (req, res) => {
+  try {
+    const recipients = await getAdminRecipients();
+    res.json({ success: true, recipients });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error fetching recipients:', error);
+    res.status(500).json({ success: false, message: 'Failed to retrieve admin recipients', error: error.message });
+  }
+};
+
+/**
+ * 12. ADD ADMIN RECIPIENT
+ * POST /api/admin/whatsapp/recipients
+ */
+export const addRecipientHandler = async (req, res) => {
+  try {
+    const { name, phone, is_primary, categories } = req.body;
+    const recipient = await addAdminRecipient({ name, phone, is_primary, categories });
+    res.status(201).json({ success: true, message: 'Admin recipient added successfully', recipient });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error adding recipient:', error);
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * 13. UPDATE ADMIN RECIPIENT
+ * PUT /api/admin/whatsapp/recipients/:id
+ */
+export const updateRecipientHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+    const updated = await updateAdminRecipient(id, updates);
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Admin recipient not found.' });
+    }
+    res.json({ success: true, message: 'Admin recipient updated successfully', recipient: updated });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error updating recipient:', error);
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * 14. DELETE ADMIN RECIPIENT
+ * DELETE /api/admin/whatsapp/recipients/:id
+ */
+export const deleteRecipientHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await deleteAdminRecipient(id);
+    res.json({ success: true, message: 'Admin recipient removed successfully' });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error deleting recipient:', error);
+    res.status(500).json({ success: false, message: 'Failed to delete admin recipient', error: error.message });
   }
 };

@@ -4,7 +4,7 @@ import {
   LayoutGrid, Package, Heart, MapPin, User, Lock, LogOut,
   ChevronRight, Plus, Trash2, Edit3, ShoppingBag, Search,
   Calendar, ArrowRight, CheckCircle2, AlertCircle, Eye, EyeOff, 
-  Mail, Phone, MessageSquare, X, Check, RefreshCw
+  Mail, Phone, MessageSquare, X, Check, RefreshCw, Bell, Shield, MessageCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -115,7 +115,7 @@ const cardStyle = {
 export default function AccountDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAuthenticated, logout, addAddress, deleteAddress, updateProfile, updateAddress, setDefaultAddress } = useAuth();
+  const { user, isAuthenticated, logout, addAddress, deleteAddress, updateProfile, updateAddress, setDefaultAddress, updatePreferences } = useAuth();
   const { wishlistItems, wishlistCount, toggleWishlist } = useWishlist();
   const { totalItemCount, setIsCartOpen, addToCart } = useCart();
   const { toast } = useToast();
@@ -152,6 +152,13 @@ export default function AccountDashboard() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
 
+  // WhatsApp Notification Preferences
+  const [preferencesForm, setPreferencesForm] = useState({
+    whatsapp: true,
+    whatsapp_promotional: false,
+  });
+  const [savingPreferences, setSavingPreferences] = useState(false);
+
   useEffect(() => {
     setActiveTab(queryTab || 'overview');
   }, [queryTab]);
@@ -161,6 +168,12 @@ export default function AccountDashboard() {
     fetchOrders();
     if (user) {
       setProfileForm({ name: user.name || '', email: user.email || '', phone: user.phone || '' });
+      if (user.notification_preferences) {
+        setPreferencesForm({
+          whatsapp: user.notification_preferences.whatsapp !== false,
+          whatsapp_promotional: Boolean(user.notification_preferences.whatsapp_promotional),
+        });
+      }
     }
   }, [isAuthenticated, user]);
 
@@ -247,6 +260,24 @@ export default function AccountDashboard() {
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) { toast.error(err.response?.data?.message || 'Error updating password.'); }
     finally { setPasswordLoading(false); }
+  };
+
+  // WhatsApp Notification Preferences
+  const handleSavePreferences = async (overridePrefs = null) => {
+    const toSave = overridePrefs || preferencesForm;
+    setSavingPreferences(true);
+    try {
+      if (typeof updatePreferences === 'function') {
+        await updatePreferences(toSave);
+      } else {
+        await api.put('/auth/preferences', toSave);
+      }
+      toast.success('WhatsApp preferences updated successfully.');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update preferences.');
+    } finally {
+      setSavingPreferences(false);
+    }
   };
 
   const passwordChecklist = [
@@ -355,6 +386,19 @@ export default function AccountDashboard() {
               >
                 <Lock size={15} />
                 <span>Change Password</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('preferences')}
+                style={{
+                  padding: '0.6rem 1.25rem', fontSize: '0.83rem', fontWeight: '700',
+                  borderRadius: '12px', border: `1px solid ${T.border}`,
+                  color: T.textSecondary, backgroundColor: '#F7F0E8', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '0.45rem',
+                  transition: 'all 0.18s ease',
+                }}
+              >
+                <Bell size={15} />
+                <span>WhatsApp Settings</span>
               </button>
               <button
                 onClick={() => setShowLogoutModal(true)}
@@ -945,6 +989,196 @@ export default function AccountDashboard() {
       {/* ================================================
           TAB 6: CHANGE PASSWORD
           ================================================ */}
+      {/* ================================================
+          TAB: WHATSAPP NOTIFICATION PREFERENCES
+          ================================================ */}
+      {activeTab === 'preferences' && (
+        <div style={{ ...cardStyle, padding: '2.25rem', maxWidth: '640px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+            <div style={{ padding: '8px', borderRadius: '10px', backgroundColor: '#EDF7EE', color: '#2E7D32', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <MessageCircle size={22} color="#2E7D32" />
+            </div>
+            <div>
+              <h2 style={{ fontSize: '1.15rem', fontWeight: '800', color: T.textPrimary, margin: 0 }}>
+                WhatsApp Communication Preferences
+              </h2>
+            </div>
+          </div>
+          <p style={{ fontSize: '0.85rem', color: T.textSecondary, margin: '0 0 1.75rem 0', lineHeight: '1.5' }}>
+            Control which automated messages you receive on your registered WhatsApp mobile number. Changes are saved instantly to your account.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {/* 1. Transactional Order Updates */}
+            <div style={{
+              padding: '1.25rem',
+              backgroundColor: T.surfaceAlt,
+              borderRadius: '14px',
+              border: `1px solid ${T.border}`,
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: '1rem',
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                  <span style={{ fontSize: '0.95rem', fontWeight: '800', color: T.textPrimary }}>
+                    Order & Delivery Updates
+                  </span>
+                  <span style={{
+                    fontSize: '0.62rem',
+                    fontWeight: '800',
+                    textTransform: 'uppercase',
+                    backgroundColor: preferencesForm.whatsapp ? T.successBg : '#F3F4F6',
+                    color: preferencesForm.whatsapp ? T.success : '#6B7280',
+                    padding: '0.15rem 0.5rem',
+                    borderRadius: '999px',
+                    border: `1px solid ${preferencesForm.whatsapp ? '#A5D6A7' : '#D1D5DB'}`,
+                  }}>
+                    {preferencesForm.whatsapp ? 'Active' : 'Disabled'}
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.82rem', color: T.textMuted, margin: 0, lineHeight: '1.5' }}>
+                  Real-time status updates including order placed, order confirmed, courier tracking links, out for delivery, and delivery confirmations.
+                </p>
+              </div>
+              <label style={{ position: 'relative', display: 'inline-block', width: '48px', height: '26px', flexShrink: 0, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={preferencesForm.whatsapp}
+                  onChange={(e) => {
+                    const updated = { ...preferencesForm, whatsapp: e.target.checked };
+                    setPreferencesForm(updated);
+                  }}
+                  style={{ opacity: 0, width: 0, height: 0 }}
+                />
+                <span style={{
+                  position: 'absolute', cursor: 'pointer', inset: 0,
+                  backgroundColor: preferencesForm.whatsapp ? '#2E7D32' : '#D1D5DB',
+                  borderRadius: '999px', transition: '0.2s ease',
+                }}>
+                  <span style={{
+                    position: 'absolute', content: '""', height: '20px', width: '20px',
+                    left: preferencesForm.whatsapp ? '25px' : '3px', bottom: '3px',
+                    backgroundColor: 'white', borderRadius: '50%', transition: '0.2s ease',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  }} />
+                </span>
+              </label>
+            </div>
+
+            {/* 2. Promotional & Offers */}
+            <div style={{
+              padding: '1.25rem',
+              backgroundColor: T.surfaceAlt,
+              borderRadius: '14px',
+              border: `1px solid ${T.border}`,
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: '1rem',
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                  <span style={{ fontSize: '0.95rem', fontWeight: '800', color: T.textPrimary }}>
+                    Promotions & Exclusive Offers
+                  </span>
+                  <span style={{
+                    fontSize: '0.62rem',
+                    fontWeight: '800',
+                    textTransform: 'uppercase',
+                    backgroundColor: preferencesForm.whatsapp_promotional ? T.accentLight : '#F3F4F6',
+                    color: preferencesForm.whatsapp_promotional ? T.accent : '#6B7280',
+                    padding: '0.15rem 0.5rem',
+                    borderRadius: '999px',
+                    border: `1px solid ${preferencesForm.whatsapp_promotional ? '#F5D889' : '#D1D5DB'}`,
+                  }}>
+                    {preferencesForm.whatsapp_promotional ? 'Subscribed' : 'Opted Out'}
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.82rem', color: T.textMuted, margin: 0, lineHeight: '1.5' }}>
+                  Exclusive seasonal offers, discount coupons, and new bake launches. (Default is off; we respect your inbox).
+                </p>
+              </div>
+              <label style={{ position: 'relative', display: 'inline-block', width: '48px', height: '26px', flexShrink: 0, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={preferencesForm.whatsapp_promotional}
+                  onChange={(e) => {
+                    const updated = { ...preferencesForm, whatsapp_promotional: e.target.checked };
+                    setPreferencesForm(updated);
+                  }}
+                  style={{ opacity: 0, width: 0, height: 0 }}
+                />
+                <span style={{
+                  position: 'absolute', cursor: 'pointer', inset: 0,
+                  backgroundColor: preferencesForm.whatsapp_promotional ? '#C68A3A' : '#D1D5DB',
+                  borderRadius: '999px', transition: '0.2s ease',
+                }}>
+                  <span style={{
+                    position: 'absolute', content: '""', height: '20px', width: '20px',
+                    left: preferencesForm.whatsapp_promotional ? '25px' : '3px', bottom: '3px',
+                    backgroundColor: 'white', borderRadius: '50%', transition: '0.2s ease',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  }} />
+                </span>
+              </label>
+            </div>
+
+            {/* Security Notice */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.85rem 1rem',
+              backgroundColor: '#FEF9EC',
+              borderRadius: '10px',
+              border: '1px solid #F0D68A',
+            }}>
+              <Shield size={18} color="#B7791F" style={{ flexShrink: 0 }} />
+              <div style={{ fontSize: '0.78rem', color: '#7A5535', lineHeight: '1.45' }}>
+                <strong>Account Security:</strong> One-Time Passwords (OTPs) and password reset notifications are essential security safeguards and will always be delivered regardless of preferences.
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => handleSavePreferences()}
+                disabled={savingPreferences}
+                style={{
+                  padding: '0.75rem 2rem',
+                  fontSize: '0.85rem',
+                  borderRadius: '10px',
+                  border: 'none',
+                  backgroundColor: T.brand,
+                  color: '#FFFFFF',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  opacity: savingPreferences ? 0.75 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                }}
+              >
+                {savingPreferences ? (
+                  <>
+                    <RefreshCw size={15} style={{ animation: 'spin 1s linear infinite' }} />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Check size={16} />
+                    Save Preferences
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {activeTab === 'password' && (
         <div style={{ ...cardStyle, padding: '2.25rem', maxWidth: '520px' }}>
           <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: T.textPrimary, margin: '0 0 0.4rem 0' }}>Update Password</h2>

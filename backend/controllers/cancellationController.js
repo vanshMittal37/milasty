@@ -4,6 +4,7 @@ import { canAccessOrder } from './shipratController.js';
 import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
 import { withRecipient } from '../utils/orderRecipient.js';
 import { triggerOrderNotificationAsync } from '../services/orderNotificationService.js';
+import { triggerEventAsync } from '../services/whatsappEventService.js';
 
 /**
  * Order cancellations, refund tracking and Shiprath shipment cancellation.
@@ -467,8 +468,14 @@ export const requestCancellation = async (req, res) => {
         setImmediate(() => cancelShipmentForCancellation(c.id).catch((e) => console.error('[SHIPRATH CANCEL] exception', e.message)));
       }
 
-      // Trigger WhatsApp order_cancelled notification (non-blocking)
+      // Trigger WhatsApp notifications (non-blocking)
       if (!data?.duplicate) {
+        if (actorRole === 'customer') {
+          triggerEventAsync('CANCELLATION_REQUESTED', {
+            order: { ...order, order_status: 'cancelled' },
+            cancellationReason: c?.reason || reason,
+          });
+        }
         triggerOrderNotificationAsync({
           order: { ...order, order_status: 'cancelled' },
           eventType: 'order_cancelled',

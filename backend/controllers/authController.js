@@ -4,8 +4,14 @@ import jwt from 'jsonwebtoken';
 import { supabase } from '../config/supabase.js';
 import { normalizeIndianMobile, isEmailAddress } from '../utils/phone.js';
 import { generateAndSendWhatsAppOtp, verifyWhatsAppOtp } from '../services/otpService.js';
+import { triggerEventAsync } from '../services/whatsappEventService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'milasty_super_secret_jwt_key_2026';
+
+export const DEFAULT_NOTIFICATION_PREFERENCES = {
+  whatsapp: true,
+  whatsapp_promotional: false,
+};
 
 // Compared against when no account matches, so a wrong identifier takes as long as a wrong password
 const DUMMY_HASH = bcrypt.hashSync('milasty-no-such-account', 10);
@@ -235,6 +241,14 @@ export const registerUser = async (req, res) => {
 
     const displayEmail = (newUser.email && newUser.email.endsWith('@customer.milasty.com')) ? '' : newUser.email;
 
+    // Asynchronously dispatch WhatsApp registration notifications (Customer Welcome + Admin Alert)
+    triggerEventAsync('CUSTOMER_REGISTERED', {
+      user: newUser,
+      name: newUser.name,
+      phone: newUser.phone,
+      email: displayEmail,
+    });
+
     res.status(201).json({
       _id: newUser.id,
       id: newUser.id,
@@ -243,6 +257,10 @@ export const registerUser = async (req, res) => {
       phone: newUser.phone,
       role: newUser.role,
       addresses: newUser.addresses || [],
+      notification_preferences: {
+        ...DEFAULT_NOTIFICATION_PREFERENCES,
+        ...(newUser.notification_preferences || {}),
+      },
       token,
     });
   } catch (error) {
@@ -434,6 +452,10 @@ export const loginUser = async (req, res) => {
       phone: user.phone,
       role: user.role,
       addresses: user.addresses || [],
+      notification_preferences: {
+        ...DEFAULT_NOTIFICATION_PREFERENCES,
+        ...(user.notification_preferences || {}),
+      },
       token,
     });
   } catch (error) {
@@ -445,14 +467,25 @@ export const loginUser = async (req, res) => {
 export const getMe = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { data: user, error } = await supabase
+    let user = null;
+    const { data: userWithPrefs, error: errWithPrefs } = await supabase
       .from('users')
-      .select('id, name, email, phone, role, addresses')
+      .select('id, name, email, phone, role, addresses, notification_preferences')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
-    if (error || !user) {
+    if (errWithPrefs && errWithPrefs.code === '42703') {
+      const { data: basicUser, error: basicErr } = await supabase
+        .from('users')
+        .select('id, name, email, phone, role, addresses')
+        .eq('id', userId)
+        .maybeSingle();
+      if (basicErr || !basicUser) return res.status(404).json({ message: 'User not found' });
+      user = basicUser;
+    } else if (errWithPrefs || !userWithPrefs) {
       return res.status(404).json({ message: 'User not found' });
+    } else {
+      user = userWithPrefs;
     }
 
     const displayEmail = (user.email && user.email.endsWith('@customer.milasty.com')) ? '' : user.email;
@@ -465,6 +498,10 @@ export const getMe = async (req, res) => {
       phone: user.phone,
       role: user.role,
       addresses: user.addresses || [],
+      notification_preferences: {
+        ...DEFAULT_NOTIFICATION_PREFERENCES,
+        ...(user.notification_preferences || {}),
+      },
     });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching profile', error: error.message });
@@ -669,6 +706,10 @@ export const updateProfile = async (req, res) => {
       phone: user.phone,
       role: user.role,
       addresses: user.addresses || [],
+      notification_preferences: {
+        ...DEFAULT_NOTIFICATION_PREFERENCES,
+        ...(user.notification_preferences || {}),
+      },
     });
   } catch (error) {
     res.status(500).json({ message: 'Error updating profile', error: error.message });
@@ -692,7 +733,7 @@ export const changePassword = async (req, res) => {
       });
     }
 
-    const { data: user } = await supabase.from('users').select('id, email, password_hash').eq('id', userId).single();
+    const { data: user } = await supabase.from('users').select('id, email, phone, name, password_hash').eq('id', userId).single();
     if (!user) {
       return res.status(404).json({ message: 'User profile not found' });
     }
@@ -724,6 +765,11 @@ export const changePassword = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(newPassword, salt);
     await supabase.from('users').update({ password_hash: passwordHash, updated_at: new Date() }).eq('id', userId);
+
+    // Asynchronously dispatch WhatsApp customer security notification
+    if (user?.phone) {
+      triggerEventAsync('PASSWORD_CHANGED', { user, userId, phone: user.phone, name: user.name });
+    }
 
     res.json({ message: 'Password changed successfully.' });
   } catch (error) {
@@ -984,7 +1030,7 @@ export const resetPassword = async (req, res) => {
       if (decoded.purpose !== 'password_reset') {
         return res.status(400).json({ message: 'Invalid reset token. Please request a new link.' });
       }
-      const query = supabase.from('users').select('id, email, password_hash');
+      const query = supabase.from('users').select('id, email, phone, name, password_hash');
       const { data } = await (decoded.sub ? query.eq('id', decoded.sub) : query.eq('email', String(decoded.email || '').toLowerCase())).maybeSingle();
       dbUser = data;
       // Links issued since this release carry pwv: once the password changes, the link is spent
@@ -997,7 +1043,7 @@ export const resetPassword = async (req, res) => {
         const { data: userData } = await supabase.auth.getUser(access_token);
         const authEmail = userData?.user?.email?.toLowerCase();
         if (authEmail) {
-          const { data } = await supabase.from('users').select('id, email, password_hash').eq('email', authEmail).maybeSingle();
+          const { data } = await supabase.from('users').select('id, email, phone, name, password_hash').eq('email', authEmail).maybeSingle();
           dbUser = data;
         }
       } catch (e) {}
@@ -1031,6 +1077,17 @@ export const resetPassword = async (req, res) => {
     }
 
     console.log(`[RESET PASSWORD] ✅ Password updated for account ${dbUser.id}`);
+
+    // Asynchronously dispatch WhatsApp customer security notification
+    if (dbUser?.phone) {
+      triggerEventAsync('PASSWORD_RESET_COMPLETED', {
+        user: dbUser,
+        userId: dbUser.id,
+        phone: dbUser.phone,
+        name: dbUser.name,
+      });
+    }
+
     res.json({ message: 'Password updated successfully. You can now log in with your new password.' });
   } catch (error) {
     console.error('[RESET PASSWORD] Unhandled error:', error);
@@ -1089,5 +1146,122 @@ export const syncAuthUsersToProfiles = async () => {
   }
 };
 
+/**
+ * GET CUSTOMER NOTIFICATION PREFERENCES
+ * GET /api/auth/preferences
+ * Protected by protect middleware (auth required).
+ * Strictly scoped to req.user.id.
+ */
+export const getUserPreferences = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, notification_preferences')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error && error.code !== '42703') {
+      console.error('[USER PREFERENCES GET ERROR]', error);
+      return res.status(500).json({ success: false, message: 'Error retrieving preferences' });
+    }
+
+    const prefs = {
+      ...DEFAULT_NOTIFICATION_PREFERENCES,
+      ...(user?.notification_preferences || {}),
+    };
+
+    return res.json({
+      success: true,
+      preferences: {
+        whatsapp: Boolean(prefs.whatsapp),
+        whatsapp_promotional: Boolean(prefs.whatsapp_promotional),
+      },
+    });
+  } catch (err) {
+    console.error('[USER PREFERENCES GET EXCEPTION]', err);
+    return res.status(500).json({ success: false, message: 'Server error retrieving preferences' });
+  }
+};
+
+/**
+ * UPDATE CUSTOMER NOTIFICATION PREFERENCES
+ * PUT /api/auth/preferences
+ * Protected by protect middleware (auth required).
+ * Strictly scoped to req.user.id (cannot modify other users).
+ * Strict boolean validation on inputs.
+ */
+export const updateUserPreferences = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    const bodyPrefs = req.body?.preferences || req.body || {};
+    const { whatsapp, whatsapp_promotional } = bodyPrefs;
+
+    // Strict validation: values, if provided, MUST be booleans
+    if (typeof whatsapp !== 'undefined' && typeof whatsapp !== 'boolean') {
+      return res.status(400).json({ success: false, message: 'Field "whatsapp" must be a boolean (true or false)' });
+    }
+    if (typeof whatsapp_promotional !== 'undefined' && typeof whatsapp_promotional !== 'boolean') {
+      return res.status(400).json({ success: false, message: 'Field "whatsapp_promotional" must be a boolean (true or false)' });
+    }
+
+    // Fetch existing preferences
+    const { data: user, error: fetchErr } = await supabase
+      .from('users')
+      .select('id, notification_preferences')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (fetchErr && fetchErr.code !== '42703') {
+      console.error('[USER PREFERENCES FETCH ERROR]', fetchErr);
+      return res.status(500).json({ success: false, message: 'Error updating preferences' });
+    }
+
+    const currentPrefs = {
+      ...DEFAULT_NOTIFICATION_PREFERENCES,
+      ...(user?.notification_preferences || {}),
+    };
+
+    const newPrefs = {
+      whatsapp: typeof whatsapp === 'boolean' ? whatsapp : currentPrefs.whatsapp,
+      whatsapp_promotional: typeof whatsapp_promotional === 'boolean' ? whatsapp_promotional : currentPrefs.whatsapp_promotional,
+    };
+
+    // Update public.users
+    const { error: updateErr } = await supabase
+      .from('users')
+      .update({
+        notification_preferences: newPrefs,
+        updated_at: new Date(),
+      })
+      .eq('id', userId);
+
+    if (updateErr) {
+      if (updateErr.code === '42703') {
+        console.warn('[USER PREFERENCES] notification_preferences column not yet in DB schema. Returning updated preferences.');
+      } else {
+        console.error('[USER PREFERENCES UPDATE ERROR]', updateErr);
+        return res.status(500).json({ success: false, message: 'Failed to update preferences in database' });
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: 'Notification preferences updated successfully',
+      preferences: newPrefs,
+    });
+  } catch (err) {
+    console.error('[USER PREFERENCES UPDATE EXCEPTION]', err);
+    return res.status(500).json({ success: false, message: 'Server error updating preferences' });
+  }
+};
 
 

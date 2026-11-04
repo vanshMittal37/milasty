@@ -521,7 +521,7 @@ export const createOrder = async (req, res) => {
     if (isCod) {
       triggerOrderNotificationAsync({
         order,
-        eventType: 'order_confirmed',
+        eventType: 'order_placed',
       });
     }
 
@@ -1134,7 +1134,9 @@ export const updateOrderStatus = async (req, res) => {
     // Asynchronously trigger status change notifications (non-blocking)
     if (orderStatus) {
       const canonical = CANONICAL_STATUS_MAP[orderStatus] || orderStatus.toLowerCase();
-      if (canonical === 'processing') {
+      if (canonical === 'confirmed') {
+        triggerOrderNotificationAsync({ order: updatedOrder, eventType: 'order_confirmed' });
+      } else if (canonical === 'processing') {
         triggerOrderNotificationAsync({ order: updatedOrder, eventType: 'order_processing' });
       } else if (canonical === 'packed') {
         triggerOrderNotificationAsync({ order: updatedOrder, eventType: 'order_packed' });

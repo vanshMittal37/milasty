@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { supabase } from '../config/supabase.js';
+import { triggerEventAsync } from '../services/whatsappEventService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -155,11 +156,15 @@ export const createInquiry = async (req, res) => {
     localList.unshift(newInquiry);
     writeLocalInquiries(localList);
 
-    // Return success response to website UI ONLY. (Do NOT send any email/WhatsApp/SMS!)
+    // Asynchronously dispatch two-way WhatsApp notifications (Customer Acknowledgement + Admin Alert)
+    const finalizedInquiry = dbSavedInquiry || newInquiry;
+    triggerEventAsync('CUSTOMER_ENQUIRY_CREATED', { inquiry: finalizedInquiry });
+
+    // Return success response to website UI
     return res.status(201).json({
       success: true,
       message: 'Thank you for contacting MILASTY. Your inquiry has been received successfully.',
-      inquiry: dbSavedInquiry || newInquiry,
+      inquiry: finalizedInquiry,
     });
   } catch (error) {
     console.error('createInquiry controller error:', error);

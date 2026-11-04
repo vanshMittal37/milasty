@@ -15,6 +15,8 @@ import {
   verifySignupOtp,
   sendForgotPasswordOtp,
   verifyForgotPasswordOtp,
+  getUserPreferences,
+  updateUserPreferences,
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -25,6 +27,8 @@ router.post('/signup/send-otp', sendSignupOtp);
 router.post('/signup/verify-otp', verifySignupOtp);
 router.post('/login', loginUser);
 router.get('/me', protect, getMe);
+router.get('/preferences', protect, getUserPreferences);
+router.put('/preferences', protect, updateUserPreferences);
 router.post('/address', protect, addAddress);
 router.delete('/address/:addressId', protect, deleteAddress);
 router.post('/forgot-password', forgotPassword);
