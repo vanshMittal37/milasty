@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Star, Heart } from 'lucide-react';
+import { ShoppingBag, Star, Heart, Minus, Plus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import PriceDisplay from './PriceDisplay';
 
 export default function ProductCard({ product }) {
-  const { addToCart } = useCart();
+  const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const defaultVariantIndex = (() => {
     if (!product?.variants || product.variants.length === 0) return 0;
@@ -20,22 +20,90 @@ export default function ProductCard({ product }) {
   })();
 
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(defaultVariantIndex);
-  const [btnText, setBtnText] = useState('Add to Cart');
+  const [selectedQty, setSelectedQty] = useState(1);
+  const [btnText, setBtnText] = useState('Add');
 
   if (!product) return null;
 
   const selectedVariant = product?.variants?.[selectedVariantIndex] || product?.variants?.[0] || {};
   const wishlisted = isInWishlist(product?._id || product?.id || product?.slug);
 
-  const handleAddToCart = async () => {
+  const maxStock = selectedVariant?.stock !== undefined && selectedVariant?.stock !== null
+    ? Number(selectedVariant.stock)
+    : (product?.stock !== undefined && product?.stock !== null ? Number(product.stock) : 50);
+  const isOutOfStock = maxStock <= 0 || selectedVariant?.inStock === false || product?.inStock === false;
+
+  // Real-time synchronization with cart state
+  const pId = product?._id || product?.id || product?.slug;
+  const vName = selectedVariant?.name || selectedVariant?.variantName || 'Standard Pack';
+  const vId = selectedVariant?.id || selectedVariant?._id;
+
+  const cartItem = (cartItems || []).find((item) => {
+    const itemPId = item.productId || item.product_id || item.id || item._id;
+    const matchesProduct = itemPId === pId || item.title === product?.title;
+    if (!matchesProduct) return false;
+
+    const itemVName = item.variantName || item.variant_name;
+    const itemVId = item.variantId || item.variant_id;
+    if (vId && itemVId) {
+      return itemVId === vId;
+    }
+    if (vName && itemVName) {
+      return itemVName.toLowerCase() === vName.toLowerCase();
+    }
+    return true;
+  });
+
+  const cartQuantity = cartItem ? Number(cartItem.quantity || 0) : 0;
+
+  // Handlers for cart and local quantity adjustments
+  const handleCartDecrement = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!cartItem) return;
+    const targetId = cartItem.cartItemId || cartItem.id || cartItem._id;
+    if (cartQuantity <= 1) {
+      removeFromCart(targetId);
+    } else {
+      updateQuantity(targetId, cartQuantity - 1);
+    }
+  };
+
+  const handleCartIncrement = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!cartItem) return;
+    if (cartQuantity >= maxStock) return;
+    const targetId = cartItem.cartItemId || cartItem.id || cartItem._id;
+    updateQuantity(targetId, cartQuantity + 1);
+  };
+
+  const handleLocalDecrement = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setSelectedQty((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleLocalIncrement = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setSelectedQty((prev) => Math.min(maxStock, prev + 1));
+  };
+
+  const handleAddToCart = async (e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (isOutOfStock) return;
     setBtnText('Adding...');
     try {
-      await addToCart(product, selectedVariant);
+      await addToCart(product, selectedVariant, selectedQty);
       setBtnText('✓ Added');
-      setTimeout(() => setBtnText('Add to Cart'), 1500);
-    } catch (e) {
+      setTimeout(() => setBtnText('Add'), 1500);
+    } catch (err) {
       setBtnText('Unable to add');
-      setTimeout(() => setBtnText('Add to Cart'), 2000);
+      setTimeout(() => setBtnText('Add'), 2000);
     }
   };
   const formatMinimalBadge = (text) => {
@@ -336,35 +404,219 @@ export default function ProductCard({ product }) {
                 size="small"
               />
 
-              <div className="card-cta-wrap" style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    handleAddToCart();
-                  }}
-                  className="btn-primary add-cart-btn"
-                  style={{
-                    padding: '0.45rem 0.85rem',
-                    fontSize: '0.78rem',
-                    borderRadius: '999px',
-                    backgroundColor: '#2F6B3A',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    fontWeight: '800',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.3rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 2px 8px rgba(47, 107, 58, 0.25)',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  <ShoppingBag size={13} color="#FFFFFF" />
-                  <span>{btnText === 'Add to Cart' ? 'Add' : btnText}</span>
-                </button>
+              <div className="card-cta-wrap" style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
+                {isOutOfStock ? (
+                  <span
+                    style={{
+                      padding: '0.35rem 0.65rem',
+                      fontSize: '0.74rem',
+                      borderRadius: '999px',
+                      backgroundColor: 'var(--card-inner-bg)',
+                      color: 'var(--text-muted)',
+                      border: '1px solid var(--card-border-color)',
+                      fontWeight: '750',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Out of Stock
+                  </span>
+                ) : cartQuantity > 0 ? (
+                  /* In-Cart Two-Way Synchronized Stepper */
+                  <div
+                    className="card-in-cart-stepper"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      backgroundColor: '#2F6B3A',
+                      borderRadius: '999px',
+                      padding: '2px',
+                      boxShadow: '0 2px 8px rgba(47, 107, 58, 0.25)',
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={handleCartDecrement}
+                      aria-label="Decrease quantity"
+                      style={{
+                        width: '26px',
+                        height: '26px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                        color: '#FFFFFF',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        padding: 0,
+                        transition: 'background-color 0.15s',
+                      }}
+                      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)')}
+                      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)')}
+                    >
+                      <Minus size={13} strokeWidth={3} />
+                    </button>
+
+                    <span
+                      style={{
+                        minWidth: '22px',
+                        textAlign: 'center',
+                        color: '#FFFFFF',
+                        fontWeight: '800',
+                        fontSize: '0.82rem',
+                        padding: '0 4px',
+                        userSelect: 'none',
+                      }}
+                    >
+                      {cartQuantity}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={handleCartIncrement}
+                      disabled={cartQuantity >= maxStock}
+                      aria-label="Increase quantity"
+                      style={{
+                        width: '26px',
+                        height: '26px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        backgroundColor: cartQuantity >= maxStock ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.15)',
+                        color: '#FFFFFF',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: cartQuantity >= maxStock ? 'not-allowed' : 'pointer',
+                        opacity: cartQuantity >= maxStock ? 0.5 : 1,
+                        padding: 0,
+                        transition: 'background-color 0.15s',
+                      }}
+                      onMouseOver={(e) => {
+                        if (cartQuantity < maxStock) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                      }}
+                      onMouseOut={(e) => {
+                        if (cartQuantity < maxStock) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+                      }}
+                    >
+                      <Plus size={13} strokeWidth={3} />
+                    </button>
+                  </div>
+                ) : (
+                  /* Pre-Add Quantity Selector with Add Button */
+                  <div
+                    className="card-pre-add-group"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        backgroundColor: 'var(--card-inner-bg)',
+                        border: '1px solid var(--card-border-color)',
+                        borderRadius: '999px',
+                        padding: '2px',
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={handleLocalDecrement}
+                        disabled={selectedQty <= 1}
+                        aria-label="Decrease quantity"
+                        style={{
+                          width: '22px',
+                          height: '22px',
+                          borderRadius: '50%',
+                          border: 'none',
+                          backgroundColor: 'transparent',
+                          color: selectedQty <= 1 ? 'var(--text-muted)' : 'var(--text-heading)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: selectedQty <= 1 ? 'not-allowed' : 'pointer',
+                          opacity: selectedQty <= 1 ? 0.4 : 1,
+                          padding: 0,
+                        }}
+                      >
+                        <Minus size={11} strokeWidth={2.5} />
+                      </button>
+
+                      <span
+                        style={{
+                          minWidth: '16px',
+                          textAlign: 'center',
+                          fontSize: '0.76rem',
+                          fontWeight: '800',
+                          color: 'var(--text-heading)',
+                          userSelect: 'none',
+                          padding: '0 2px',
+                        }}
+                      >
+                        {selectedQty}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={handleLocalIncrement}
+                        disabled={selectedQty >= maxStock}
+                        aria-label="Increase quantity"
+                        style={{
+                          width: '22px',
+                          height: '22px',
+                          borderRadius: '50%',
+                          border: 'none',
+                          backgroundColor: 'transparent',
+                          color: selectedQty >= maxStock ? 'var(--text-muted)' : 'var(--text-heading)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: selectedQty >= maxStock ? 'not-allowed' : 'pointer',
+                          opacity: selectedQty >= maxStock ? 0.4 : 1,
+                          padding: 0,
+                        }}
+                      >
+                        <Plus size={11} strokeWidth={2.5} />
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleAddToCart}
+                      className="btn-primary add-cart-btn"
+                      style={{
+                        padding: '0.42rem 0.72rem',
+                        fontSize: '0.78rem',
+                        borderRadius: '999px',
+                        backgroundColor: '#2F6B3A',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        fontWeight: '800',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.28rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        boxShadow: '0 2px 8px rgba(47, 107, 58, 0.25)',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <ShoppingBag size={13} color="#FFFFFF" />
+                      <span>{btnText}</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           );

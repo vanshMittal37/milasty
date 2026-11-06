@@ -72,6 +72,23 @@ export const DEFAULT_CUSTOMER_PREFERENCES = {
 };
 
 /**
+ * Simplified Customer Order Notification Policy:
+ * Customers receive ONLY three important order updates:
+ * 1. Order Confirmed (ORDER_CONFIRMED)
+ * 2. Order Shipped (ORDER_SHIPPED / ORDER_DISPATCHED)
+ * 3. Order Delivered (ORDER_DELIVERED)
+ * All other customer order status events (e.g. ORDER_PLACED, ORDER_PROCESSING,
+ * ORDER_PACKED, ORDER_REACHED_CITY, ORDER_OUT_FOR_DELIVERY) are suppressed
+ * centrally at this backend routing level.
+ */
+export const ALLOWED_CUSTOMER_ORDER_EVENTS = new Set([
+  'ORDER_CONFIRMED',
+  'ORDER_SHIPPED',
+  'ORDER_DISPATCHED',
+  'ORDER_DELIVERED',
+]);
+
+/**
  * Classify event into communication channel tier: 'security' | 'promotional' | 'transactional'
  * - 'security': Essential account security alerts and OTPs. NEVER suppressible.
  * - 'promotional': Campaigns, marketing, discounts, promotional offers. Requires opt-in (default false).
@@ -186,7 +203,13 @@ export async function triggerEvent(eventName, payload = {}) {
       let suppressed = false;
       let suppressReason = '';
 
-      if (channelTier === 'security') {
+      // Central Suppression for Customer Order Updates:
+      // Customers ONLY receive Order Confirmed, Order Shipped, and Order Delivered.
+      const isOrderEvent = category === 'order' || String(eventName).toUpperCase().startsWith('ORDER_');
+      if (isOrderEvent && !ALLOWED_CUSTOMER_ORDER_EVENTS.has(String(eventName).toUpperCase())) {
+        suppressed = true;
+        suppressReason = `Suppressed customer event ${eventName} per simplified 3-update policy (only Confirmed, Shipped, Delivered sent to customers)`;
+      } else if (channelTier === 'security') {
         // Essential security and OTP messages are NEVER suppressed
         suppressed = false;
       } else if (channelTier === 'promotional') {
@@ -420,7 +443,7 @@ async function buildCustomerNotification(eventName, payload) {
         orderId: order.id,
         referenceId: displayId,
         templateName: 'customerOrderShipped',
-        idempotencyKey: `order:${order.id}:customer:ORDER_SHIPPED:${awb || 'default'}`,
+        idempotencyKey: `order:${order.id}:customer:ORDER_SHIPPED`,
       };
     }
 

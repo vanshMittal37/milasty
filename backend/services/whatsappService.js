@@ -72,10 +72,27 @@ function notifyStateChange(newState) {
 }
 
 /**
+ * WhatsApp Test Mode Helpers
+ * Permitted test recipient: 918791383595 (8791383595 formatted as 918791383595).
+ * When active, all outgoing WhatsApp and fallback SMS messages route strictly to this number.
+ */
+export const isWhatsAppTestMode = () => {
+  return String(process.env.WHATSAPP_TEST_MODE || '').toLowerCase() === 'true';
+};
+
+export const getWhatsAppTestNumber = () => {
+  const raw = process.env.WHATSAPP_TEST_NUMBER || '918791383595';
+  return normalizeIndianMobile(raw) || '8791383595';
+};
+
+/**
  * Returns the current live status of the WhatsApp singleton service.
  */
 export function getWhatsAppStatus() {
   const isConnected = connectionState === 'connected' && sock !== null;
+  const testModeActive = isWhatsAppTestMode();
+  const testNumber = getWhatsAppTestNumber();
+
   return {
     isConnected,
     status: connectionState,
@@ -89,6 +106,25 @@ export function getWhatsAppStatus() {
     qrDataUrl: connectionState === 'qr_ready' ? currentQRDataUrl : null,
     qrTimestamp,
     authDir: process.env.NODE_ENV === 'production' ? '[configured]' : AUTH_DIR,
+    testMode: {
+      enabled: testModeActive,
+      testNumber: `91${testNumber}`,
+      testNumberMasked: '+91 87913 ***95',
+      description: testModeActive
+        ? 'Test mode is ACTIVE: All outgoing WhatsApp and SMS messages are safely redirected to 918791383595'
+        : 'Production mode: Messages are delivered directly to their designated recipients',
+    },
+    customerPolicy: {
+      enabledEvents: ['ORDER_CONFIRMED', 'ORDER_SHIPPED', 'ORDER_DELIVERED'],
+      suppressedIntermediateEvents: [
+        'ORDER_PLACED',
+        'ORDER_PROCESSING',
+        'ORDER_PACKED',
+        'ORDER_REACHED_CITY',
+        'ORDER_OUT_FOR_DELIVERY',
+      ],
+      description: 'Simplified 3-update policy: Customers only receive Confirmed, Shipped, and Delivered messages',
+    },
   };
 }
 
@@ -291,9 +327,18 @@ export async function sendWhatsAppMessage(phone, messageText, options = {}) {
       throw new Error('Message text cannot be empty');
     }
 
-    const jid = formatWhatsAppJid(phone);
+    let targetPhone = phone;
+    const testMode = isWhatsAppTestMode();
+
+    if (testMode) {
+      const testPhone = getWhatsAppTestNumber();
+      console.log(`[WHATSAPP TEST MODE] 🔒 Re-routing message destined for ${phone} to test number 91${testPhone}`);
+      targetPhone = testPhone;
+    }
+
+    const jid = formatWhatsAppJid(targetPhone);
     if (!jid) {
-      throw new Error(`Invalid mobile number format: ${phone}. Must be a valid 10-digit Indian mobile number.`);
+      throw new Error(`Invalid mobile number format: ${targetPhone}. Must be a valid 10-digit Indian mobile number.`);
     }
 
     // Ensure WhatsApp is connected
@@ -305,12 +350,14 @@ export async function sendWhatsAppMessage(phone, messageText, options = {}) {
     lastMessageAt = new Date().toISOString();
 
     const messageId = result?.key?.id || `msg_${Date.now()}`;
-    console.log(`[WHATSAPP SERVICE] 📤 Message sent successfully to ${phone} (ID: ${messageId})`);
+    console.log(`[WHATSAPP SERVICE] 📤 Message sent successfully to ${targetPhone}${testMode ? ` (Test Mode redirect from ${phone})` : ''} (ID: ${messageId})`);
 
     return {
       success: true,
       messageId,
-      recipient: phone,
+      recipient: targetPhone,
+      originalRecipient: testMode ? phone : undefined,
+      testModeActive: testMode,
       jid,
       timestamp: lastMessageAt,
     };

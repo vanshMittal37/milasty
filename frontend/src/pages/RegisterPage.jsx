@@ -5,6 +5,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { AuthLayout, AuthInput, AuthButton, AuthAlert } from '../components/common/AuthComponents';
+import GoogleAuthButton, { AuthDivider } from '../components/GoogleAuthButton';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -139,6 +140,14 @@ export default function RegisterPage() {
     >
       {/* Error Alert */}
       <AuthAlert message={error} type="error" />
+
+      {/* Google Authentication Option (Shown on initial signup step) */}
+      {!otpSent && (
+        <>
+          <GoogleAuthButton text="Continue with Google" />
+          <AuthDivider text="OR CONTINUE WITH EMAIL / PHONE" />
+        </>
+      )}
 
       {/* Registration Form */}
       <form onSubmit={otpSent ? handleVerifyAndRegister : handleRequestOtp} style={{ display: 'flex', flexDirection: 'column', gap: '1.05rem' }}>

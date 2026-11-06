@@ -108,26 +108,17 @@ export const customerOrderConfirmed = ({
   paymentMethod = 'Prepaid',
   itemsSummary = '',
 }) => {
-  const isCod = String(paymentMethod || '').toLowerCase() === 'cod';
-  const paymentLabel = isCod ? 'Cash on Delivery (COD)' : 'Prepaid (Verified)';
-  const displayId = orderNumber || orderId;
+  const displayId = orderNumber || orderId || 'MILASTY';
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
 
   const lines = [
-    `🌿 Namaste ${customerName}!`,
+    `🌿 Namaste ${customerName},`,
     '',
-    `Your order *#${displayId}* has been confirmed! ✨`,
-    '',
-    '━━━━━━━━━━━━━━━━━━',
-    'ORDER CONFIRMATION',
+    'Good news! Your MILASTY order has been confirmed 💛',
     '',
     `Order ID: #${displayId}`,
-    `Items: ${itemsSummary || 'Handcrafted Millet Bakes'}`,
-    `Order Total: ${formatINR(orderTotal)}`,
-    `Payment Mode: ${paymentLabel}`,
-    '━━━━━━━━━━━━━━━━━━',
     '',
-    'Our bakers are crafting your wholesome, preservative-free millet treats.',
+    'We are preparing your items with love and care.',
   ];
 
   if (orderUrl) {
@@ -136,7 +127,7 @@ export const customerOrderConfirmed = ({
   }
 
   lines.push('');
-  lines.push('Warm regards,');
+  lines.push('With love,');
   lines.push('Team MILASTY 🌿');
 
   return lines.join('\n');
@@ -198,55 +189,31 @@ export const customerOrderShipped = ({
   customerName = 'Valued Customer',
   orderId = '',
   orderNumber = '',
-  estimatedDelivery = '3-5 business days',
+  estimatedDelivery = '',
   courierName = '',
   trackingNumber = '',
   trackingUrl = '',
   timelineStep = 'shipped',
 }) => {
-  const displayId = orderNumber || orderId;
-  const customerOrderUrl = getCustomerOrderUrl(orderId, orderNumber);
-  const trackLink = getCourierTrackingUrl(trackingNumber, trackingUrl, customerOrderUrl);
-
-  // Visual tracking timeline
-  const timeline = [
-    '✅ Order Placed / ऑर्डर किया गया',
-    '|',
-    '✅ Dispatch / डिस्पैच',
-    '|',
-    '⚪ Reached Your City / आपके शहर में पहुंचा',
-    '|',
-    '⚪ Out for Delivery / डिलीवरी के लिए निकला',
-    '|',
-    '⚪ Delivered / डिलीवर हुआ',
-  ].join('\n');
+  const displayId = orderNumber || orderId || 'MILASTY';
+  const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
 
   const lines = [
-    `🌿 Namaste ${customerName}!`,
+    `🌿 Namaste ${customerName},`,
     '',
-    `Your order *#${displayId}* from MILASTY has been shipped! 💛`,
+    `Your MILASTY order #${displayId} is on its way! 💛`,
     '',
-    `Your package is expected to reach you within approximately ${estimatedDelivery}.`,
-    '',
-    'Track your package’s journey below.',
-    '',
-    '━━━━━━━━━━━━━━━━━━',
-    '📦 YOUR ORDER JOURNEY',
-    '',
-    timeline,
-    '━━━━━━━━━━━━━━━━━━',
   ];
 
-  if (courierName) {
-    lines.push(`Courier Partner: ${courierName}`);
-  }
-  if (trackingNumber) {
-    lines.push(`Tracking ID: ${trackingNumber}`);
+  if (estimatedDelivery && String(estimatedDelivery).trim()) {
+    lines.push(`Expected Delivery: ${String(estimatedDelivery).trim()}`);
+  } else {
+    lines.push('Your package is on its way. We will keep you updated.');
   }
 
-  if (trackLink) {
+  if (orderUrl) {
     lines.push('');
-    lines.push(`👉 Track Your Order: ${trackLink}`);
+    lines.push(`👉 View Your Order: ${orderUrl}`);
   }
 
   lines.push('');
@@ -342,19 +309,16 @@ export const customerOrderOutForDelivery = ({ customerName = 'Valued Customer', 
 };
 
 export const customerOrderDelivered = ({ customerName = 'Valued Customer', orderId = '', orderNumber = '' }) => {
-  const displayId = orderNumber || orderId;
+  const displayId = orderNumber || orderId || 'MILASTY';
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
 
   const lines = [
-    `🌿 Namaste ${customerName}!`,
+    `🌿 Namaste ${customerName},`,
     '',
-    `Your MILASTY order *#${displayId}* has been *Delivered*! 🎉`,
+    `Your MILASTY order #${displayId} has been delivered ✨`,
     '',
-    'We hope you and your family love the wholesome goodness, pure Desi Ghee aroma, and authentic taste of our millet treats.',
-    '',
-    'Enjoy your healthy snacks! 💛',
-    '',
-    'Have feedback or need assistance? Reply directly to this WhatsApp number.',
+    'We hope you love your new MILASTY pieces.',
+    'We would love to hear about your experience!',
   ];
 
   if (orderUrl) {

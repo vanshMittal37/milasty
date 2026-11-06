@@ -74,6 +74,8 @@ export const getConnectionStatus = async (req, res) => {
       reconnectAttempts: status.reconnectAttempts,
       hasSessionAuth: status.hasSessionAuth,
       hasQrCode: Boolean(status.qrDataUrl || status.qr),
+      testMode: status.testMode,
+      customerPolicy: status.customerPolicy,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {

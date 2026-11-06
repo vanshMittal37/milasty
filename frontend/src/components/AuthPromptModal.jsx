@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { X, Lock, LogIn, UserPlus, ShieldCheck } from 'lucide-react';
 import ModalPortal from './ModalPortal';
+import GoogleAuthButton, { AuthDivider } from './GoogleAuthButton';
 
 export default function AuthPromptModal({ isOpen, onClose, title = "Login Required", message = "Please log in or create an account to purchase MILASTY products." }) {
   const navigate = useNavigate();
@@ -96,6 +97,18 @@ export default function AuthPromptModal({ isOpen, onClose, title = "Login Requir
         >
           {message}
         </p>
+
+        {/* Google Sign-In */}
+        <div style={{ marginBottom: '1.25rem' }}>
+          <GoogleAuthButton
+            text="Continue with Google"
+            onSuccess={() => {
+              onClose();
+            }}
+          />
+        </div>
+
+        <AuthDivider text="OR CONTINUE WITH EMAIL / PHONE" />
 
         {/* CTAs */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>

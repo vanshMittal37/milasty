@@ -60,6 +60,20 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
+  const loginWithGoogle = async (credentialOrPayload) => {
+    const payload = typeof credentialOrPayload === 'string'
+      ? { credential: credentialOrPayload }
+      : credentialOrPayload;
+    const res = await api.post('/auth/google', payload);
+    if (res.data?.token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+      localStorage.setItem('milasty_token', res.data.token);
+    }
+    setUser(res.data);
+    setToken(res.data.token);
+    return res.data;
+  };
+
   const logout = () => {
     // Clear authorization headers
     delete api.defaults.headers.common['Authorization'];
@@ -131,6 +145,7 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated: !!token,
         isAdmin: user?.role === 'admin',
         login,
+        loginWithGoogle,
         register,
         logout,
         addAddress,

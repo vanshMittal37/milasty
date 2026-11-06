@@ -2,7 +2,9 @@ import { supabase } from '../config/supabase.js';
 import {
   sendWhatsAppMessage,
   getWhatsAppStatus,
-  onWhatsAppStateChange
+  onWhatsAppStateChange,
+  isWhatsAppTestMode,
+  getWhatsAppTestNumber
 } from './whatsappService.js';
 import { normalizeIndianMobile } from '../utils/phone.js';
 
@@ -76,9 +78,15 @@ async function sendMsg91SmsFallback(phone, messageBody, metadata = {}) {
     return { success: false, reason: 'MSG91_AUTH_KEY not configured' };
   }
 
-  const cleanPhone = normalizeIndianMobile(phone);
+  let cleanPhone = normalizeIndianMobile(phone);
   if (!cleanPhone) {
     return { success: false, reason: 'Invalid Indian phone number' };
+  }
+
+  if (isWhatsAppTestMode()) {
+    const testPhone = getWhatsAppTestNumber();
+    console.log(`[MSG91 FALLBACK TEST MODE] 🔒 Re-routing fallback SMS destined for ${cleanPhone} to test number 91${testPhone}`);
+    cleanPhone = testPhone;
   }
 
   try {

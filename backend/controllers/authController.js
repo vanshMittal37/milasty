@@ -1264,4 +1264,224 @@ export const updateUserPreferences = async (req, res) => {
   }
 };
 
+/**
+ * GOOGLE SIGN-IN & SIGN-UP
+ * POST /api/auth/google
+ *
+ * Verifies Google ID token / credential directly against Google's tokeninfo API.
+ * Creates new customer record or safely links existing account with matching verified email.
+ * Strictly prevents Google authentication from escalating privileges or creating admin accounts.
+ * Returns standard MILASTY JWT session token compatible with all protected routes and cart merge.
+ */
+export const googleAuth = async (req, res) => {
+  try {
+    const { credential, token: inputToken, access_token } = req.body;
+    const googleIdToken = credential || inputToken;
+
+    if (!googleIdToken && !access_token) {
+      return res.status(400).json({ success: false, message: 'Google credential token is required' });
+    }
+
+    let payload = null;
+
+    if (googleIdToken) {
+      // 1. Verify Google ID token via Google tokeninfo endpoint
+      const verifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(googleIdToken)}`;
+      const googleResp = await fetch(verifyUrl);
+
+      if (!googleResp.ok) {
+        const errData = await googleResp.json().catch(() => ({}));
+        console.warn('[GOOGLE AUTH] Token verification failed:', errData);
+        return res.status(401).json({ success: false, message: 'Invalid or expired Google authentication token' });
+      }
+
+      payload = await googleResp.json();
+    } else if (access_token) {
+      // Userinfo fallback for access token flow
+      const userinfoResp = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+      if (!userinfoResp.ok) {
+        return res.status(401).json({ success: false, message: 'Invalid Google access token' });
+      }
+      payload = await userinfoResp.json();
+    }
+
+    if (!payload || !payload.email) {
+      return res.status(400).json({ success: false, message: 'Could not retrieve email from Google profile' });
+    }
+
+    // 2. Security validation: Verify email is verified by Google
+    const isEmailVerified = payload.email_verified === true || String(payload.email_verified) === 'true';
+    if (!isEmailVerified) {
+      return res.status(400).json({ success: false, message: 'Your Google email address is not verified. Please verify it with Google first.' });
+    }
+
+    // 3. Security validation: Validate audience if GOOGLE_CLIENT_ID configured
+    const configuredClientId = process.env.GOOGLE_CLIENT_ID;
+    if (configuredClientId && payload.aud && payload.aud !== configuredClientId) {
+      console.error('[GOOGLE AUTH] Audience mismatch. Expected:', configuredClientId, 'Got:', payload.aud);
+      return res.status(401).json({ success: false, message: 'Google authentication client ID mismatch' });
+    }
+
+    // 4. Security validation: Check issuer and expiry
+    if (payload.iss && !payload.iss.includes('accounts.google.com')) {
+      return res.status(401).json({ success: false, message: 'Invalid token issuer' });
+    }
+    if (payload.exp && Number(payload.exp) < Math.floor(Date.now() / 1000)) {
+      return res.status(401).json({ success: false, message: 'Google authentication token has expired' });
+    }
+
+    const cleanEmail = String(payload.email).toLowerCase().trim();
+    const googleSub = String(payload.sub || '');
+    const fullName = String(payload.name || cleanEmail.split('@')[0] || 'Customer').trim();
+    const avatarUrl = payload.picture || null;
+
+    // 5. Check if user already exists (by google_id or verified email)
+    let existingUser = null;
+
+    // Try finding by google_id first
+    if (googleSub) {
+      const { data: userByGoogleId, error: googleErr } = await supabase
+        .from('users')
+        .select('*')
+        .eq('google_id', googleSub)
+        .maybeSingle();
+
+      if (!googleErr && userByGoogleId) {
+        existingUser = userByGoogleId;
+      }
+    }
+
+    // If not found by google_id, match by verified email (safe account linking)
+    if (!existingUser) {
+      const { data: userByEmail, error: emailErr } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+
+      if (!emailErr && userByEmail) {
+        existingUser = userByEmail;
+      }
+    }
+
+    let finalUser = null;
+    let isNewUser = false;
+
+    if (existingUser) {
+      finalUser = existingUser;
+
+      // Update google_id and avatar if missing
+      const updateData = { updated_at: new Date() };
+      if (!existingUser.google_id && googleSub) {
+        updateData.google_id = googleSub;
+      }
+      if (!existingUser.avatar_url && avatarUrl) {
+        updateData.avatar_url = avatarUrl;
+      }
+
+      if (Object.keys(updateData).length > 1) {
+        const { data: updated, error: uErr } = await supabase
+          .from('users')
+          .update(updateData)
+          .eq('id', existingUser.id)
+          .select('*')
+          .maybeSingle();
+
+        if (!uErr && updated) {
+          finalUser = updated;
+        }
+      }
+    } else {
+      // 6. Create new customer account (Strictly customer role! Never admin.)
+      isNewUser = true;
+      const newAuthId = 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+
+      const baseInsert = {
+        id: newAuthId,
+        name: fullName,
+        email: cleanEmail,
+        password_hash: '', // No password; Google OAuth authenticated
+        phone: '', // Phone number collected when needed (e.g. checkout)
+        role: 'customer',
+        notification_preferences: DEFAULT_NOTIFICATION_PREFERENCES,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+
+      // Try inserting with google_id & avatar_url
+      let { data: createdUser, error: insertErr } = await supabase
+        .from('users')
+        .insert([{ ...baseInsert, google_id: googleSub, avatar_url: avatarUrl }])
+        .select('*')
+        .single();
+
+      // Retry without optional columns if migration 31 hasn't run yet in DB
+      if (insertErr && (insertErr.code === '42703' || insertErr.message?.includes('google_id'))) {
+        console.warn('[GOOGLE AUTH] google_id column not yet in DB schema. Inserting without it.');
+        const retry = await supabase
+          .from('users')
+          .insert([baseInsert])
+          .select('*')
+          .single();
+        createdUser = retry.data;
+        insertErr = retry.error;
+      }
+
+      if (insertErr || !createdUser) {
+        console.error('[GOOGLE AUTH] Failed to create user in DB:', insertErr);
+        return res.status(500).json({ success: false, message: 'Database error creating customer account' });
+      }
+
+      finalUser = createdUser;
+
+      // Asynchronously trigger customer registration WhatsApp alert
+      triggerEventAsync('CUSTOMER_REGISTERED', {
+        user: finalUser,
+        name: finalUser.name,
+        phone: finalUser.phone || '',
+        email: finalUser.email,
+      });
+    }
+
+    // 7. Check if user is disabled or blocked
+    if (finalUser.role === 'disabled' || finalUser.role === 'blocked') {
+      return res.status(403).json({
+        success: false,
+        code: 'CUSTOMER_BLOCKED',
+        message: 'Your account is blocked by admin. Please contact support via enquiry form.',
+      });
+    }
+
+    // 8. Issue standard MILASTY JWT session token
+    const token = jwt.sign(
+      { id: finalUser.id, role: finalUser.role },
+      JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    const displayEmail = (finalUser.email && finalUser.email.endsWith('@customer.milasty.com')) ? '' : finalUser.email;
+
+    return res.json({
+      success: true,
+      message: isNewUser ? 'Welcome to MILASTY! Account created with Google.' : 'Welcome back!',
+      isNewUser,
+      _id: finalUser.id,
+      id: finalUser.id,
+      name: finalUser.name,
+      email: displayEmail,
+      phone: finalUser.phone || '',
+      role: finalUser.role,
+      addresses: finalUser.addresses || [],
+      notification_preferences: finalUser.notification_preferences || DEFAULT_NOTIFICATION_PREFERENCES,
+      avatar_url: finalUser.avatar_url || avatarUrl || null,
+      token,
+    });
+  } catch (error) {
+    console.error('[GOOGLE AUTH EXCEPTION]', error);
+    return res.status(500).json({ success: false, message: 'Error authenticating with Google', error: error.message });
+  }
+};
+
 

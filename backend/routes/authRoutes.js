@@ -17,11 +17,13 @@ import {
   verifyForgotPasswordOtp,
   getUserPreferences,
   updateUserPreferences,
+  googleAuth,
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
+router.post('/google', googleAuth);
 router.post('/register', registerUser);
 router.post('/signup/send-otp', sendSignupOtp);
 router.post('/signup/verify-otp', verifySignupOtp);

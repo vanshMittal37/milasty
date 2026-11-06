@@ -564,6 +564,66 @@ export default function AdminWhatsApp() {
         </div>
       </div>
 
+      {/* ─── WhatsApp Safe Test Mode Banner ────────────────────────────────────────── */}
+      {statusData?.testMode?.enabled && (
+        <div
+          style={{
+            backgroundColor: '#FEF3C7',
+            border: '1.5px solid #F59E0B',
+            borderRadius: '14px',
+            padding: '1rem 1.25rem',
+            marginBottom: '1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            boxShadow: '0 4px 14px rgba(217, 119, 6, 0.08)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                backgroundColor: '#FDE68A',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#B45309',
+                flexShrink: 0,
+              }}
+            >
+              <AlertTriangle size={22} />
+            </div>
+            <div>
+              <div style={{ fontWeight: '800', color: '#92400E', fontSize: '0.95rem' }}>
+                WHATSAPP TEST MODE ACTIVE — ZERO REAL CUSTOMER/ADMIN IMPACT
+              </div>
+              <div style={{ fontSize: '0.82rem', color: '#78350F', marginTop: '2px', lineHeight: '1.4' }}>
+                All outgoing WhatsApp and fallback SMS dispatches are intercepted and routed strictly to verified testing device{' '}
+                <strong>{statusData.testMode.testNumber || '918791383595'}</strong> ({statusData.testMode.testNumberMasked || '+91 87913 ***95'}). Real customer and admin phone numbers will not receive test messages.
+              </div>
+            </div>
+          </div>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: '800',
+              backgroundColor: '#B45309',
+              color: '#FFFFFF',
+              padding: '6px 14px',
+              borderRadius: '999px',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Safe Test Mode
+          </span>
+        </div>
+      )}
+
       {/* ─── Navigation Tabs ──────────────────────────────────────────────────────── */}
       <div
         style={{
@@ -980,6 +1040,118 @@ export default function AdminWhatsApp() {
               </button>
             </form>
           </div>
+        </div>
+
+        {/* Box C: Simplified Customer Notification Policy */}
+        <div style={{ ...panelCardStyle, marginTop: '1.5rem' }}>
+          <div style={panelHeaderStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <ShieldCheck size={20} color="#1F5A28" />
+              <div>
+                <h2 style={panelTitleStyle}>Simplified Customer Order Policy (Active)</h2>
+                <div style={{ fontSize: '0.8rem', color: '#5A4438', marginTop: '2px' }}>
+                  Customers receive strictly three premium WhatsApp updates. Intermediate stages are suppressed centrally.
+                </div>
+              </div>
+            </div>
+            <span
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: '800',
+                backgroundColor: '#E7F4E8',
+                color: '#1F5A28',
+                padding: '4px 12px',
+                borderRadius: '999px',
+              }}
+            >
+              3-Update Policy Enforced
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: '1rem',
+              marginTop: '0.75rem',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: '#FAF7F2',
+                borderRadius: '12px',
+                padding: '1rem',
+                border: '1.5px solid #CDE5CB',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                <CheckCircle2 size={16} color="#1F5A28" />
+                <span style={{ fontWeight: '800', fontSize: '0.88rem', color: '#1F5A28' }}>1. Order Confirmed</span>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: '#5A4438', margin: 0, lineHeight: '1.4' }}>
+                Sent immediately when COD order or prepaid payment is verified. Direct link to canonical order details.
+              </p>
+            </div>
+
+            <div
+              style={{
+                backgroundColor: '#FAF7F2',
+                borderRadius: '12px',
+                padding: '1rem',
+                border: '1.5px solid #CDE5CB',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                <CheckCircle2 size={16} color="#1F5A28" />
+                <span style={{ fontWeight: '800', fontSize: '0.88rem', color: '#1F5A28' }}>2. Order Shipped</span>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: '#5A4438', margin: 0, lineHeight: '1.4' }}>
+                Clean dispatch notice with expected delivery. Strictly strips courier names, AWBs, and courier URLs.
+              </p>
+            </div>
+
+            <div
+              style={{
+                backgroundColor: '#FAF7F2',
+                borderRadius: '12px',
+                padding: '1rem',
+                border: '1.5px solid #CDE5CB',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                <CheckCircle2 size={16} color="#1F5A28" />
+                <span style={{ fontWeight: '800', fontSize: '0.88rem', color: '#1F5A28' }}>3. Order Delivered</span>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: '#5A4438', margin: 0, lineHeight: '1.4' }}>
+                Delivered celebration update with customer feedback prompt. Pure handcrafted brand experience.
+              </p>
+            </div>
+          </div>
+
+          <div
+            style={{
+              marginTop: '1rem',
+              padding: '0.75rem 1rem',
+              backgroundColor: '#FFFBEB',
+              borderRadius: '10px',
+              border: '1px solid #FCD34D',
+              fontSize: '0.78rem',
+              color: '#92400E',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+            }}
+          >
+            <span>
+              🔒 <strong>Central Router Suppression:</strong> Order Placed, Processing, Packed, Reached City, and Out for Delivery are automatically suppressed for customers.
+            </span>
+            <span style={{ color: '#78350F', fontWeight: '700' }}>
+              Admin alerts remain 100% active.
+            </span>
+          </div>
+        </div>
         </div>
       )}
 
