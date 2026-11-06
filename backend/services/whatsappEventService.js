@@ -14,33 +14,52 @@ function extractItemsSummary(order) {
 }
 
 /**
- * Resolve customer phone number safely from order object or DB user profile
+ * Resolve customer phone number safely following the 4-tier priority:
+ * 1. Valid WhatsApp/contact number saved specifically for the order (order.customer_phone / order.phone)
+ * 2. Valid recipient phone for gift orders, if applicable (order.recipient_phone / resolveRecipient)
+ * 3. Valid customer account phone number from DB user profile
+ * 4. If no valid number exists, skip WhatsApp notification and record a clear reason
  */
 export async function resolveCustomerMobile(orderOrPayload) {
   if (!orderOrPayload) return null;
 
-  // 1. Direct phone fields
-  const directPhone = orderOrPayload.customer_phone ||
+  const orderRef = orderOrPayload.id || orderOrPayload.order_id || orderOrPayload.order_number || orderOrPayload.orderNumber || 'N/A';
+
+  // 1. Order-specific WhatsApp / contact number (saved specifically for this order)
+  const orderPhone = orderOrPayload.customer_phone ||
     orderOrPayload.customerPhone ||
-    orderOrPayload.phone ||
-    orderOrPayload.recipient_phone;
+    orderOrPayload.phone;
+  let normalizedOrderPhone = normalizeIndianMobile(orderPhone);
+  if (normalizedOrderPhone) {
+    return normalizedOrderPhone;
+  }
 
-  let normalized = normalizeIndianMobile(directPhone);
-  if (normalized) return normalized;
+  // 2. Valid recipient phone for gift orders, if applicable
+  const recipientPhone = orderOrPayload.recipient_phone ||
+    orderOrPayload.recipientPhone;
+  let normalizedRecipient = normalizeIndianMobile(recipientPhone);
+  if (normalizedRecipient) {
+    return normalizedRecipient;
+  }
 
-  // 2. Shipping recipient object
   if (typeof resolveRecipient === 'function') {
     try {
       const recipient = resolveRecipient(orderOrPayload);
       if (recipient?.phone) {
-        normalized = normalizeIndianMobile(recipient.phone);
+        const normalized = normalizeIndianMobile(recipient.phone);
         if (normalized) return normalized;
       }
     } catch (e) {}
   }
 
-  // 3. User profile in Supabase
-  const userId = orderOrPayload.user_id || orderOrPayload.userId || orderOrPayload.id;
+  // 3. Customer account phone number from attached user object or Supabase user profile
+  const inlineUserPhone = orderOrPayload.user?.phone || orderOrPayload.user_phone || orderOrPayload.userPhone;
+  if (inlineUserPhone) {
+    const normalizedInline = normalizeIndianMobile(inlineUserPhone);
+    if (normalizedInline) return normalizedInline;
+  }
+
+  const userId = orderOrPayload.user_id || orderOrPayload.userId;
   if (userId) {
     try {
       const { data: user } = await supabase
@@ -50,12 +69,14 @@ export async function resolveCustomerMobile(orderOrPayload) {
         .maybeSingle();
 
       if (user?.phone) {
-        normalized = normalizeIndianMobile(user.phone);
-        if (normalized) return normalized;
+        const normalizedUserPhone = normalizeIndianMobile(user.phone);
+        if (normalizedUserPhone) return normalizedUserPhone;
       }
     } catch (e) {}
   }
 
+  // 4. If no valid number exists, skip WhatsApp notification and record clear reason
+  console.log(`[WHATSAPP PHONE RESOLUTION] Skipped notification for order #${orderRef}: No valid mobile phone found on order, gift recipient, or customer profile.`);
   return null;
 }
 
@@ -494,10 +515,12 @@ async function buildCustomerNotification(eventName, payload) {
       const phone = await resolveCustomerMobile(order);
       if (!phone) return null;
       const displayId = order.order_number || order.orderNumber || order.id?.slice(0, 8);
+      const reviewUrl = payload.reviewUrl || templates.getCustomerOrderReviewUrl(order.id, displayId);
       const message = templates.customerOrderDelivered({
         customerName: order.customer_name || order.customerName || 'Valued Customer',
         orderId: order.id,
         orderNumber: displayId,
+        reviewUrl,
       });
       return {
         phone,

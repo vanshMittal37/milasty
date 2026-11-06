@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   createCustomerReview,
+  getOrderReviewDetails,
   getMyCustomerReviews,
   getProductReviews,
   getAllAdminReviews,
@@ -21,6 +22,7 @@ const router = express.Router();
 
 // CUSTOMER & PUBLIC PRODUCT REVIEWS
 router.post('/reviews', protect, createCustomerReview);
+router.get('/reviews/order/:orderId', protect, getOrderReviewDetails);
 router.get('/reviews/my-reviews', protect, getMyCustomerReviews);
 router.get('/reviews/product/:productId', getProductReviews);
 

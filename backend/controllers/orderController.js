@@ -7,6 +7,7 @@ import { canAccessOrder, customerShipmentStatus, syncSingleOrderTracking } from 
 import { requestCancellation, getCustomerCancellation, customerCancellationView, syncOrderWithCancellation } from './cancellationController.js';
 import { resolveRecipient } from '../utils/orderRecipient.js';
 import { triggerOrderNotificationAsync } from '../services/orderNotificationService.js';
+import { normalizeIndianMobile } from '../utils/phone.js';
 
 /**
  * A cancellation record means the order is cancelled, whatever the order row says (older releases
@@ -76,7 +77,11 @@ export const createOrder = async (req, res) => {
     } = req.body;
 
     const finalEmail = customerEmail || email || '';
-    const finalPhone = customerPhone || phone || '';
+    const rawPhone = customerPhone || phone || req.user?.phone || '';
+    const finalPhone = normalizeIndianMobile(rawPhone);
+    if (!finalPhone) {
+      return res.status(400).json({ message: 'Please enter a valid 10-digit mobile number for order delivery and updates.' });
+    }
 
     const authUserId = req.user ? (req.user.id || req.user._id) : null;
     let userRow = null;

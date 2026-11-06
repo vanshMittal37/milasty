@@ -34,6 +34,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import AccountDashboard from './pages/AccountDashboard';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import CustomerOrderDetailPage from './pages/CustomerOrderDetailPage';
+import OrderReviewPage from './pages/OrderReviewPage';
 import CustomerInquiryList from './pages/CustomerInquiryList';
 import CustomerInquiryDetail from './pages/CustomerInquiryDetail';
 
@@ -186,6 +187,7 @@ export default function App() {
                       <Route path="/dashboard" element={<Navigate to="/account" replace />} />
                       <Route path="/account/orders" element={<OrderHistoryPage />} />
                       <Route path="/account/orders/:id" element={<CustomerOrderDetailPage />} />
+                      <Route path="/account/orders/:orderId/review" element={<OrderReviewPage />} />
                       <Route path="/account/inquiries" element={<CustomerInquiryList />} />
                       <Route path="/account/inquiries/:id" element={<CustomerInquiryDetail />} />
                     </Route>

@@ -208,6 +208,139 @@ export const createCustomerReview = async (req, res) => {
 };
 
 /**
+ * 1B. CUSTOMER: GET DELIVERED ORDER REVIEW DETAILS & ELIGIBLE PRODUCTS
+ * GET /api/reviews/order/:orderId
+ */
+export const getOrderReviewDetails = async (req, res) => {
+  try {
+    const userId = req.user ? (req.user.id || req.user._id) : null;
+    const userEmail = req.user?.email ? req.user.email.toLowerCase().trim() : '';
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+
+    const { orderId } = req.params;
+    if (!orderId) {
+      return res.status(400).json({ success: false, message: 'Order ID is required' });
+    }
+
+    // 1. Fetch order by id or order_number
+    let order = null;
+    try {
+      const { data: dbOrder, error: orderErr } = await supabase
+        .from('orders')
+        .select('*, order_items(*)')
+        .or(`id.eq.${orderId},order_number.eq.${orderId}`)
+        .maybeSingle();
+
+      if (!orderErr && dbOrder) {
+        order = dbOrder;
+      }
+    } catch (err) {
+      console.warn('[ORDER REVIEW DETAILS] DB order fetch notice:', err.message);
+    }
+
+    if (!order && global.memoryOrders) {
+      const memOrders = Array.from(global.memoryOrders.values());
+      order = memOrders.find((o) => o.id === orderId || o.order_number === orderId);
+    }
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    // 2. Server-side ownership validation
+    const oUserId = order.user_id || order.userId;
+    const oEmail = (order.customer_email || order.email || '').toLowerCase().trim();
+    const isOwner = String(oUserId) === String(userId) || (userEmail && oEmail === userEmail);
+
+    if (!isOwner) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to view or review this order.',
+      });
+    }
+
+    // 3. Delivery status verification
+    const isDelivered = String(order.order_status || order.status || '').toLowerCase() === 'delivered';
+    if (!isDelivered) {
+      return res.status(400).json({
+        success: false,
+        isDelivered: false,
+        message: 'Reviews can only be submitted after your order has been successfully delivered.',
+      });
+    }
+
+    // 4. Fetch existing customer reviews for these products
+    let existingReviews = [];
+    try {
+      const { data: revs } = await supabase
+        .from('product_reviews')
+        .select('*')
+        .eq('user_id', String(userId))
+        .eq('review_source', 'customer');
+      if (revs) existingReviews = revs;
+    } catch (e) {
+      console.warn('[ORDER REVIEW DETAILS] Existing reviews lookup notice:', e.message);
+    }
+
+    const reviewedMap = new Map();
+    existingReviews.forEach((r) => {
+      if (r.product_id) {
+        reviewedMap.set(String(r.product_id), r);
+      }
+    });
+
+    const productsMap = await getProductsLookupMap();
+    const rawItems = order.order_items || order.items || [];
+
+    const items = rawItems.map((item) => {
+      const pId = String(item.product_id || item.productId || item.id || '');
+      const prod = productsMap.get(pId) || productsMap.get(pId.toLowerCase()) || {};
+      const title = item.product_title || item.title || item.name || prod.title || 'MILASTY Treat';
+      const image = item.product_image || item.image || prod.image || '';
+      const existing = reviewedMap.get(pId);
+
+      return {
+        productId: pId,
+        orderItemId: item.id || null,
+        title,
+        image,
+        variantName: item.variant_name || item.variant || 'Standard Pack',
+        quantity: item.quantity || 1,
+        unitPrice: Number(item.unit_price || item.price || 0),
+        alreadyReviewed: Boolean(existing),
+        existingReview: existing
+          ? {
+              id: existing.id,
+              rating: existing.rating,
+              comment: existing.comment,
+              status: existing.status || 'pending',
+              createdAt: existing.created_at,
+            }
+          : null,
+      };
+    });
+
+    return res.json({
+      success: true,
+      order: {
+        id: order.id,
+        orderNumber: order.order_number || order.id?.slice(0, 8),
+        status: order.order_status || 'delivered',
+        deliveredAt: order.delivered_at || order.updated_at,
+        customerName: order.customer_name || 'Customer',
+        items,
+      },
+    });
+  } catch (error) {
+    console.error('[ORDER REVIEW DETAILS ERROR]', error);
+    res.status(500).json({ success: false, message: 'Error retrieving order review details', error: error.message });
+  }
+};
+
+/**
  * 2. CUSTOMER: GET MY REVIEWS
  * GET /api/reviews/my-reviews
  */

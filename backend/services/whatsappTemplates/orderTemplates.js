@@ -34,6 +34,17 @@ export const getCustomerOrderUrl = (orderId = '', orderNumber = '') => {
 };
 
 /**
+ * Safely generate a customer direct order review URL: /account/orders/:id/review
+ */
+export const getCustomerOrderReviewUrl = (orderId = '', orderNumber = '') => {
+  const targetId = orderId || orderNumber;
+  if (!targetId || targetId === 'undefined' || targetId === 'null' || !String(targetId).trim()) {
+    return '';
+  }
+  return `${getFrontendBaseUrl()}/account/orders/${encodeURIComponent(String(targetId).trim())}/review`;
+};
+
+/**
  * Generate courier tracking URL. If a valid courier tracking number/AWB exists, use the
  * Shiprath tracking URL: https://shiprath.com/track/:awb. Otherwise fall back to the customer order URL.
  */
@@ -308,27 +319,34 @@ export const customerOrderOutForDelivery = ({ customerName = 'Valued Customer', 
   return lines.join('\n');
 };
 
-export const customerOrderDelivered = ({ customerName = 'Valued Customer', orderId = '', orderNumber = '' }) => {
+export const customerOrderDelivered = ({
+  customerName = 'Valued Customer',
+  orderId = '',
+  orderNumber = '',
+  reviewUrl = '',
+}) => {
   const displayId = orderNumber || orderId || 'MILASTY';
+  const targetReviewUrl = reviewUrl || getCustomerOrderReviewUrl(orderId, orderNumber);
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
+  const finalReviewLink = targetReviewUrl || orderUrl;
 
   const lines = [
-    `🌿 Namaste ${customerName},`,
+    `🌿 Namaste ${customerName}!`,
     '',
-    `Your MILASTY order #${displayId} has been delivered ✨`,
+    `Your MILASTY order #${displayId} has been successfully delivered! 💛`,
     '',
-    'We hope you love your new MILASTY pieces.',
-    'We would love to hear about your experience!',
+    'We hope you love your purchase.',
+    '',
+    "Your experience means a lot to us. We'd love to hear what you think!",
+    '',
+    '⭐ Share your experience:',
+    finalReviewLink,
+    '',
+    'Thank you for choosing MILASTY.',
+    '',
+    'With love,',
+    'Team MILASTY 🌿',
   ];
-
-  if (orderUrl) {
-    lines.push('');
-    lines.push(`👉 View Your Order: ${orderUrl}`);
-  }
-
-  lines.push('');
-  lines.push('With love,');
-  lines.push('Team MILASTY 🌿');
 
   return lines.join('\n');
 };

@@ -11,6 +11,7 @@ import { safeUpdateOrder } from '../utils/safeOrderUpdate.js';
 import { getFreeDeliveryThreshold, qualifiesForFreeDelivery, FREE_DELIVERY_TYPE } from './couponController.js';
 import { triggerOrderNotificationAsync } from '../services/orderNotificationService.js';
 import { triggerEventAsync } from '../services/whatsappEventService.js';
+import { normalizeIndianMobile } from '../utils/phone.js';
 
 // Payment sessions (keyed by razorpay_order_id): cart, address, totals and the selected shipping
 // rate captured before payment. Kept in memory for speed AND persisted in the Supabase
@@ -137,7 +138,11 @@ export const createPaymentSession = async (req, res) => {
     }
 
     const finalEmail = customerEmail || email || '';
-    const finalPhone = customerPhone || phone || '';
+    const rawPhone = customerPhone || phone || req.user?.phone || '';
+    const finalPhone = normalizeIndianMobile(rawPhone);
+    if (!finalPhone) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid 10-digit mobile number for order delivery and updates.' });
+    }
 
     // Authenticated checkout: the server-side cart is the source of truth (same cart on every device).
     // Fall back to the submitted items only if the server cart is empty (e.g. a failed cart sync).

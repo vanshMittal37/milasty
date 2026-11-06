@@ -22,8 +22,8 @@ export default function CustomerLayout() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) navigate('/login');
-  }, [isAuthenticated, navigate]);
+    if (!isAuthenticated) navigate('/login', { state: { from: location.pathname } });
+  }, [isAuthenticated, navigate, location.pathname]);
 
   useEffect(() => {
     document.body.classList.add('customer-portal-body');
