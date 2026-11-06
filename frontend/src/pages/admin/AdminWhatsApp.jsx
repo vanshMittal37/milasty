@@ -752,6 +752,7 @@ export default function AdminWhatsApp() {
           TAB 1: OVERVIEW & DEVICE PAIRING
       ══════════════════════════════════════════════════════════════════════════════ */}
       {activeTab === 'overview' && (
+        <>
         <div
           style={{
             display: 'grid',
@@ -1152,7 +1153,7 @@ export default function AdminWhatsApp() {
             </span>
           </div>
         </div>
-        </div>
+        </>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════════════
