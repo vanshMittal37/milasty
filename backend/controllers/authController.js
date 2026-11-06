@@ -207,7 +207,7 @@ export const registerUser = async (req, res) => {
       }
 
       if (!newAuthId) {
-        newAuthId = 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+        newAuthId = crypto.randomUUID();
       }
 
       // Insert new record into public.users
@@ -1396,7 +1396,21 @@ export const googleAuth = async (req, res) => {
     } else {
       // 6. Create new customer account (Strictly customer role! Never admin.)
       isNewUser = true;
-      const newAuthId = 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      let newAuthId = crypto.randomUUID();
+
+      // Attempt to sync user with Supabase Auth admin if available
+      try {
+        const { data: authUserData } = await supabase.auth.admin.createUser({
+          email: cleanEmail,
+          email_confirm: true,
+          user_metadata: { name: fullName, role: 'customer', avatar_url: avatarUrl },
+        });
+        if (authUserData?.user?.id) {
+          newAuthId = authUserData.user.id;
+        }
+      } catch (authErr) {
+        // If Supabase Auth admin API is unavailable or user already exists, crypto.randomUUID() is used
+      }
 
       const baseInsert = {
         id: newAuthId,
@@ -1427,6 +1441,21 @@ export const googleAuth = async (req, res) => {
           .single();
         createdUser = retry.data;
         insertErr = retry.error;
+      }
+
+      // If error is 22P02 (invalid UUID), retry letting PostgreSQL generate the UUID natively via DEFAULT gen_random_uuid()
+      if (insertErr && insertErr.code === '22P02') {
+        console.warn('[GOOGLE AUTH] Retrying insert allowing database to assign native UUID.');
+        const { id: _omitted, ...insertWithoutId } = baseInsert;
+        const retryDbUuid = await supabase
+          .from('users')
+          .insert([insertWithoutId])
+          .select('*')
+          .single();
+        if (!retryDbUuid.error && retryDbUuid.data) {
+          createdUser = retryDbUuid.data;
+          insertErr = null;
+        }
       }
 
       if (insertErr || !createdUser) {
