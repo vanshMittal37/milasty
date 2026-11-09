@@ -511,6 +511,8 @@ export const finalizeOrderFromPayment = async ({
   razorpay_order_id,
   razorpay_payment_id,
   razorpay_signature = null,
+  capturedAmount = null,
+  capturedCurrency = null,
   sessionOverride = null,
 }) => {
   const lockKey = razorpay_payment_id || razorpay_order_id;
@@ -524,16 +526,26 @@ export const finalizeOrderFromPayment = async ({
       if (razorpay_payment_id || razorpay_order_id) {
         // limit(1), not maybeSingle(): maybeSingle() errors (returns null) when legacy duplicate
         // rows exist, which would let a retry create yet another duplicate order.
+        const orConds = [
+          razorpay_payment_id ? `payment_id.eq.${razorpay_payment_id}` : null,
+          razorpay_order_id ? `payment_id.eq.${razorpay_order_id}` : null,
+          razorpay_order_id ? `razorpay_order_id.eq.${razorpay_order_id}` : null,
+          razorpay_payment_id ? `razorpay_payment_id.eq.${razorpay_payment_id}` : null,
+        ].filter(Boolean).join(',');
+
         const { data: existingRows } = await supabase
           .from('orders')
           .select('*, order_items(*)')
-          .or(`payment_id.eq.${razorpay_payment_id || 'N/A'},payment_id.eq.${razorpay_order_id || 'N/A'}`)
+          .or(orConds || 'payment_id.eq.N/A')
           .order('created_at', { ascending: true })
           .limit(1);
         const existing = existingRows?.[0];
         if (existing) {
-          console.log('[ORDER FINALIZATION] Returned existing order from concurrent wait:', existing.order_number);
-          return existing;
+          const isPaid = String(existing.payment_status || '').toLowerCase() === 'paid';
+          if (isPaid) {
+            console.log('[ORDER FINALIZATION] Returned existing paid order from concurrent wait:', existing.order_number);
+            return existing;
+          }
         }
       }
       attempts++;
@@ -544,29 +556,97 @@ export const finalizeOrderFromPayment = async ({
 
   try {
     // Idempotency check: check if order already created in Supabase
+    let existingOrder = null;
     if (razorpay_payment_id || razorpay_order_id) {
+      const orConditions = [
+        razorpay_payment_id ? `payment_id.eq.${razorpay_payment_id}` : null,
+        razorpay_order_id ? `payment_id.eq.${razorpay_order_id}` : null,
+        razorpay_order_id ? `razorpay_order_id.eq.${razorpay_order_id}` : null,
+        razorpay_payment_id ? `razorpay_payment_id.eq.${razorpay_payment_id}` : null,
+      ].filter(Boolean).join(',');
+
       const { data: existingOrderRows, error: existingErr } = await supabase
         .from('orders')
         .select('*, order_items(*)')
-        .or(`payment_id.eq.${razorpay_payment_id || 'N/A'},payment_id.eq.${razorpay_order_id || 'N/A'}`)
+        .or(orConditions)
         .order('created_at', { ascending: true })
         .limit(1);
 
       if (existingErr) {
-        // Never create an order when we can't confirm one doesn't already exist
         throw new Error(`Idempotency check failed: ${existingErr.message}`);
       }
-      const existingOrder = existingOrderRows?.[0];
+      existingOrder = existingOrderRows?.[0];
+    }
 
-      if (existingOrder) {
-        console.log('[ORDER FINALIZATION] Order already exists (idempotent duplicate prevented):', existingOrder.order_number);
+    if (existingOrder) {
+      const isAlreadyPaid = String(existingOrder.payment_status || '').toLowerCase() === 'paid';
+
+      if (isAlreadyPaid) {
+        console.log('[ORDER FINALIZATION] Order already exists and is paid (idempotent duplicate prevented):', existingOrder.order_number);
         return existingOrder;
       }
+
+      // Existing pending order found: update it to paid rather than returning pending status
+      console.log(`[ORDER FINALIZATION] Existing pending order found: ${existingOrder.order_number}. Updating to paid...`);
+      const nowIso = new Date().toISOString();
+      const finalPaymentId = razorpay_payment_id || existingOrder.payment_id || razorpay_order_id;
+
+      const updatePayload = {
+        payment_status: 'paid',
+        order_status: 'confirmed',
+        payment_id: finalPaymentId,
+        razorpay_payment_id: razorpay_payment_id || null,
+        razorpay_order_id: razorpay_order_id || existingOrder.razorpay_order_id || null,
+        paid_at: nowIso,
+      };
+
+      const { error: updateErr } = await safeUpdateOrder(existingOrder.id, updatePayload);
+      if (updateErr) {
+        console.error(`[ORDER FINALIZATION] Failed to update pending order ${existingOrder.order_number} to paid:`, updateErr.message);
+        throw new Error(`Failed to update pending order to paid: ${updateErr.message}`);
+      }
+
+      existingOrder.payment_status = 'paid';
+      existingOrder.order_status = 'confirmed';
+      existingOrder.payment_id = finalPaymentId;
+      existingOrder.razorpay_payment_id = razorpay_payment_id || existingOrder.razorpay_payment_id;
+      existingOrder.razorpay_order_id = razorpay_order_id || existingOrder.razorpay_order_id;
+      existingOrder.paid_at = nowIso;
+
+      if (razorpay_order_id) {
+        await setSessionStatus(razorpay_order_id, 'paid');
+      }
+
+      // Trigger ORDER_CONFIRMED WhatsApp notification (deduplication key prevents duplicate sends)
+      triggerEventAsync('ORDER_CONFIRMED', {
+        order: existingOrder,
+        orderId: existingOrder.id,
+        orderNumber: existingOrder.order_number,
+      });
+
+      return existingOrder;
     }
 
 
   // Get session data
   let session = sessionOverride || await loadSession(razorpay_order_id);
+
+  // Validate captured amount and currency against session
+  if (capturedAmount && session) {
+    const expectedPaise = session.amountInPaise || Math.round(Number(session.grandTotal || 0) * 100);
+    if (expectedPaise) {
+      const diff = Math.abs(Number(capturedAmount) - Number(expectedPaise));
+      if (diff > 100) {
+        console.error(`[PAYMENT SECURITY] Amount mismatch for ${razorpay_order_id}: Expected ${expectedPaise} paise, received ${capturedAmount} paise.`);
+        throw new Error(`Payment amount mismatch: Expected ₹${(expectedPaise / 100).toFixed(2)}, received ₹${(capturedAmount / 100).toFixed(2)}`);
+      }
+    }
+  }
+
+  if (capturedCurrency && String(capturedCurrency).toUpperCase() !== 'INR') {
+    console.error(`[PAYMENT SECURITY] Currency mismatch for ${razorpay_order_id}: Expected INR, received ${capturedCurrency}.`);
+    throw new Error(`Payment currency mismatch: Expected INR, received ${capturedCurrency}`);
+  }
 
   const orderNumber = `MIL-${Date.now().toString().slice(-6)}`;
 
@@ -833,15 +913,11 @@ export const finalizeOrderFromPayment = async ({
     throw new Error('Order could not be persisted to the database after payment verification');
   }
 
-  // Asynchronously dispatch WhatsApp order confirmation & payment success notifications (non-blocking)
-  triggerOrderNotificationAsync({
+  // Asynchronously dispatch WhatsApp customer order confirmation (strictly 3 events: confirmed, shipped, delivered)
+  triggerEventAsync('ORDER_CONFIRMED', {
     order: newOrder,
-    eventType: 'order_placed',
-  });
-  triggerOrderNotificationAsync({
-    order: newOrder,
-    eventType: 'payment_successful',
-    extraData: { paymentId: razorpay_payment_id || newOrder.payment_id },
+    orderId: newOrder.id,
+    orderNumber: newOrder.order_number,
   });
 
   return newOrder;
@@ -948,7 +1024,8 @@ export const handleRazorpayWebhook = async (req, res) => {
     const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.from(JSON.stringify(req.body));
 
     if (!webhookSecret) {
-      console.warn('[WEBHOOK] RAZORPAY_WEBHOOK_SECRET not set — skipping signature verification (not recommended for production)');
+      console.error('[WEBHOOK] RAZORPAY_WEBHOOK_SECRET and RAZORPAY_KEY_SECRET not configured on server. Rejecting webhook to prevent unverified execution.');
+      return res.status(500).json({ status: 'server_configuration_error' });
     } else if (!receivedSignature) {
       console.warn('[WEBHOOK] No x-razorpay-signature header received — rejecting');
       return res.status(400).json({ status: 'missing_signature' });
@@ -977,12 +1054,18 @@ export const handleRazorpayWebhook = async (req, res) => {
       const razorpay_order_id = paymentEntity?.order_id || orderEntity?.id;
       const razorpay_payment_id = paymentEntity?.id;
 
+      const capturedAmount = paymentEntity?.amount || orderEntity?.amount_paid || orderEntity?.amount;
+      const capturedCurrency = paymentEntity?.currency || orderEntity?.currency || 'INR';
+
       if (razorpay_order_id && razorpay_payment_id) {
         await finalizeOrderFromPayment({
           razorpay_order_id,
           razorpay_payment_id,
+          capturedAmount,
+          capturedCurrency,
         });
-
+      } else if (razorpay_order_id && event === 'order.paid') {
+        console.log(`[WEBHOOK] order.paid received for ${razorpay_order_id} without payment ID; awaiting payment.captured event.`);
       }
     } else if (event === 'payment.failed') {
       const paymentEntity = payload?.payment?.entity;
