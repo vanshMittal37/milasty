@@ -248,6 +248,28 @@ async function runTests() {
   );
 
   // ─────────────────────────────────────────────────────────────────
+  // TEST GROUP 8: TRANSACTIONAL ATOMICITY & SAFE ROLLBACK
+  // ─────────────────────────────────────────────────────────────────
+  console.log('\n--- TEST GROUP 8: Transactional Atomicity & Rollback Protection ---');
+
+  assert(
+    paymentCtrlSrc.includes('[PAYMENT ATOMICITY] Failed to insert order items'),
+    'Implements atomicity rollback when order_items insert fails'
+  );
+  assert(
+    paymentCtrlSrc.includes("supabase.from('orders').delete().eq('id', newOrder.id)"),
+    'Deletes partial order row on items insert failure to prevent orphan orders'
+  );
+  assert(
+    paymentCtrlSrc.includes('Failed to persist order items for order'),
+    'Throws explicit error so webhook retry or client can safely re-attempt'
+  );
+  assert(
+    paymentCtrlSrc.includes('missingItemRows') && paymentCtrlSrc.includes('existingOrder.order_items = attachedItems'),
+    'Attaches missing items to existing pending orders upon payment transition'
+  );
+
+  // ─────────────────────────────────────────────────────────────────
   // SUMMARY
   // ─────────────────────────────────────────────────────────────────
   console.log('\n======================================================');

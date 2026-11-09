@@ -613,6 +613,29 @@ export const finalizeOrderFromPayment = async ({
       existingOrder.razorpay_order_id = razorpay_order_id || existingOrder.razorpay_order_id;
       existingOrder.paid_at = nowIso;
 
+      // If existing pending order was missing order_items, attach them from session
+      if ((!existingOrder.order_items || existingOrder.order_items.length === 0) && session?.items?.length > 0) {
+        try {
+          const missingItemRows = session.items.map((item) => ({
+            order_id: existingOrder.id,
+            product_id: item.product_id,
+            product_title: item.product_title,
+            product_image: item.product_image || null,
+            variant_id: item.variant_id || null,
+            variant_name: item.variant_name || 'Standard Pack',
+            unit_price: item.unit_price,
+            quantity: item.quantity,
+            total_price: item.total_price,
+            shipping_weight: item.shipping_weight || null,
+            customization_note: item.customization_note || null,
+          }));
+          const { data: attachedItems } = await supabase.from('order_items').insert(missingItemRows).select();
+          if (attachedItems) existingOrder.order_items = attachedItems;
+        } catch (itemAttachErr) {
+          console.warn('[ORDER FINALIZATION] Notice attaching items to existing pending order:', itemAttachErr.message);
+        }
+      }
+
       if (razorpay_order_id) {
         await setSessionStatus(razorpay_order_id, 'paid');
       }
@@ -635,10 +658,9 @@ export const finalizeOrderFromPayment = async ({
   if (capturedAmount && session) {
     const expectedPaise = session.amountInPaise || Math.round(Number(session.grandTotal || 0) * 100);
     if (expectedPaise) {
-      const diff = Math.abs(Number(capturedAmount) - Number(expectedPaise));
-      if (diff > 100) {
-        console.error(`[PAYMENT SECURITY] Amount mismatch for ${razorpay_order_id}: Expected ${expectedPaise} paise, received ${capturedAmount} paise.`);
-        throw new Error(`Payment amount mismatch: Expected ₹${(expectedPaise / 100).toFixed(2)}, received ₹${(capturedAmount / 100).toFixed(2)}`);
+      if (Number(capturedAmount) !== Number(expectedPaise)) {
+        console.error(`[PAYMENT SECURITY] Exact amount mismatch for ${razorpay_order_id}: Expected ${expectedPaise} paise, received ${capturedAmount} paise.`);
+        throw new Error(`Payment amount mismatch: Expected ₹${(expectedPaise / 100).toFixed(2)} (${expectedPaise} paise), received ₹${(capturedAmount / 100).toFixed(2)} (${capturedAmount} paise)`);
       }
     }
   }
@@ -799,9 +821,14 @@ export const finalizeOrderFromPayment = async ({
         })) : null;
       }
 
-      if (insertedItems) {
-        newOrder.order_items = insertedItems;
+      // ATOMICITY ROLLBACK: If all order items inserts failed, roll back the created order row
+      if (!insertedItems || insertedItems.length === 0) {
+        console.error(`[PAYMENT ATOMICITY] Failed to insert order items for order ${newOrder.id}. Rolling back order row to prevent orphaned record...`);
+        await supabase.from('orders').delete().eq('id', newOrder.id);
+        throw new Error(`Failed to persist order items for order ${newOrder.order_number}. Order row was safely rolled back.`);
       }
+
+      newOrder.order_items = insertedItems;
     }
 
     // Record Coupon Usage safely upon successful order completion
