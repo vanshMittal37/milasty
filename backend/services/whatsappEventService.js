@@ -515,7 +515,7 @@ async function buildCustomerNotification(eventName, payload) {
       const phone = await resolveCustomerMobile(order);
       if (!phone) return null;
       const displayId = order.order_number || order.orderNumber || order.id?.slice(0, 8);
-      const reviewUrl = payload.reviewUrl || templates.getCustomerOrderReviewUrl(order.id, displayId);
+      const reviewUrl = payload.reviewUrl || templates.GOOGLE_REVIEW_URL || templates.getCustomerOrderReviewUrl(order.id, displayId);
       const message = templates.customerOrderDelivered({
         customerName: order.customer_name || order.customerName || 'Valued Customer',
         orderId: order.id,

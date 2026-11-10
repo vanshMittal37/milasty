@@ -33,6 +33,8 @@ export const getCustomerOrderUrl = (orderId = '', orderNumber = '') => {
   return `${getFrontendBaseUrl()}/account/orders/${encodeURIComponent(String(targetId).trim())}`;
 };
 
+export const GOOGLE_REVIEW_URL = process.env.GOOGLE_REVIEW_URL || 'https://g.page/r/CSRCs2TeTXKyEBM/review';
+
 /**
  * Safely generate a customer direct order review URL: /account/orders/:id/review
  */
@@ -326,7 +328,7 @@ export const customerOrderDelivered = ({
   reviewUrl = '',
 }) => {
   const displayId = orderNumber || orderId || 'MILASTY';
-  const targetReviewUrl = reviewUrl || getCustomerOrderReviewUrl(orderId, orderNumber);
+  const targetReviewUrl = reviewUrl || GOOGLE_REVIEW_URL || getCustomerOrderReviewUrl(orderId, orderNumber);
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
   const finalReviewLink = targetReviewUrl || orderUrl;
 
