@@ -9,6 +9,9 @@ import {
   diagnoseCredentials,
   handleShipmentWebhook,
   sweepShippedOrders,
+  createPickupForOrder,
+  retryLabelGeneration,
+  getShippingSlip,
 } from '../controllers/shipratController.js';
 import { protect, adminOnly, optionalProtect } from '../middleware/authMiddleware.js';
 import { requestCancellation } from '../controllers/cancellationController.js';
@@ -42,6 +45,16 @@ router.post('/test-rate', protect, adminOnly, adminTestRate);
 
 // Manual shipment creation trigger
 router.post('/book', protect, adminOnly, bookShipmentForOrder);
+
+// ─── Post-Shipment Fulfillment: Pickup & Shipping Slip Endpoints ─────────────
+// Manual courier pickup creation
+router.post('/order/:id/pickup', protect, adminOnly, createPickupForOrder);
+
+// Retry shipping label generation
+router.post('/order/:id/retry-label', protect, adminOnly, retryLabelGeneration);
+
+// Direct shipping slip download / view
+router.get('/order/:id/shipping-label', protect, adminOnly, getShippingSlip);
 
 // Admin manual trigger to sweep & sync all active shipped orders with carrier tracking
 router.post('/sync-active', protect, adminOnly, async (req, res) => {

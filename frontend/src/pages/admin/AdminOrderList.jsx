@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Search, Filter, RefreshCw, Eye, X, Package, CreditCard, MapPin, User, Mail, Phone, Sparkles, Printer, Zap, ExternalLink, Truck, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Search, Filter, RefreshCw, Eye, X, Package, CreditCard, MapPin, User, Mail, Phone, Sparkles, Printer, Zap, ExternalLink, Truck, CheckCircle2, AlertCircle, Download, FileText, Clock } from 'lucide-react';
 import api from '../../api/axios';
 import CreateShipmentDialog from './CreateShipmentDialog';
 import { formatDateTime, calculateEstimatedDeliveryDate, formatInr } from '../../utils/orderDateTime';
@@ -59,6 +59,26 @@ const isShipmentCancelled = (o) =>
   String(o.shipment_status || '').toLowerCase() === 'cancelled' ||
   ['cancelled', 'manually_resolved'].includes(o.cancellation?.shipment_cancel_status);
 
+function getPickupStatusLabel(status) {
+  switch (String(status || '').toLowerCase()) {
+    case 'confirmed': return 'Pickup Confirmed';
+    case 'processing': return 'Processing';
+    case 'failed': return 'Pickup Failed';
+    case 'cancelled': return 'Pickup Cancelled';
+    default: return 'Not Created';
+  }
+}
+
+function getPickupBadgeStyle(status) {
+  switch (String(status || '').toLowerCase()) {
+    case 'confirmed': return { background: 'rgba(34,197,94,0.15)', color: '#15803D' };
+    case 'processing': return { background: 'rgba(59,130,246,0.15)', color: '#1D4ED8' };
+    case 'failed': return { background: 'rgba(239,68,68,0.15)', color: '#DC2626' };
+    case 'cancelled': return { background: 'rgba(107,114,128,0.15)', color: '#4B5563' };
+    default: return { background: 'rgba(217,119,6,0.15)', color: '#B45309' };
+  }
+}
+
 export default function AdminOrderList() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,6 +90,11 @@ export default function AdminOrderList() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showPrintView, setShowPrintView] = useState(false);
   const [shipDialogOrderId, setShipDialogOrderId] = useState(null); // Create Shipment dialog
+
+  // Post-shipment fulfillment: pickup and label state
+  const [pickupLoading, setPickupLoading] = useState(false);
+  const [labelLoading, setLabelLoading] = useState(false);
+  const [pickupNotice, setPickupNotice] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -139,6 +164,63 @@ export default function AdminOrderList() {
       setShipTracking({ orderId, loading: false, data: res.data, error: null });
     } catch (e) {
       setShipTracking({ orderId, loading: false, data: null, error: e.response?.data?.message || 'Could not reach the tracking service.' });
+    }
+  };
+
+  const handleCreatePickup = async (orderId) => {
+    if (!orderId) return;
+    setPickupLoading(true);
+    setPickupNotice(null);
+    try {
+      const res = await api.post(`/shiprat/order/${encodeURIComponent(orderId)}/pickup`);
+      if (res.data?.success) {
+        setPickupNotice({ type: 'success', text: res.data.message || 'Pickup scheduled with Shiprath!' });
+        if (res.data.order) {
+          const updated = res.data.order;
+          setSelectedOrder((prev) => ({ ...prev, ...updated }));
+          setOrders((prev) => prev.map((o) => (o.id === orderId || o._id === orderId || o.order_number === orderId ? { ...o, ...updated } : o)));
+        } else {
+          fetchOrders();
+        }
+      } else {
+        setPickupNotice({ type: 'error', text: res.data?.message || 'Pickup request was rejected.' });
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Error creating pickup request.';
+      setPickupNotice({ type: 'error', text: msg });
+    } finally {
+      setPickupLoading(false);
+    }
+  };
+
+  const handleRetryLabel = async (orderId) => {
+    if (!orderId) return;
+    setLabelLoading(true);
+    try {
+      const res = await api.post(`/shiprat/order/${encodeURIComponent(orderId)}/retry-label`);
+      if (res.data?.success && res.data.shipping_label_url) {
+        const patch = {
+          shipping_label_url: res.data.shipping_label_url,
+          shipping_label_status: 'generated',
+        };
+        setSelectedOrder((prev) => ({
+          ...prev,
+          ...patch,
+          shipment_booking_response: {
+            ...(prev.shipment_booking_response || {}),
+            label: res.data.shipping_label_url,
+            label_status: 'generated',
+            shipping_label_url: res.data.shipping_label_url,
+          },
+        }));
+        setOrders((prev) => prev.map((o) => (o.id === orderId || o._id === orderId || o.order_number === orderId ? { ...o, ...patch } : o)));
+      } else {
+        alert(res.data?.message || 'Could not generate label.');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || err.message || 'Error generating label.');
+    } finally {
+      setLabelLoading(false);
     }
   };
 
@@ -775,6 +857,287 @@ export default function AdminOrderList() {
                   </div>
                 </div>
               )}
+
+              {/* Post-Shipment Operations: Pickup & Shipping Slip Section */}
+              {(() => {
+                const so = selectedOrder;
+                const hasShipment = Boolean(so.awb_number || so.awb || String(so.shipment_status || '').toLowerCase() === 'booked');
+                if (!hasShipment) return null;
+
+                const activeAwb = String(so.awb_number || so.awb || '').trim();
+                const activeShipmentId = String(so.shipment_id || so.shipment_booking_response?.shipment_id || '').trim();
+
+                const storedPickup = so.shipment_booking_response?.pickup;
+                const storedPickupAwb = String(
+                  storedPickup?.awb ||
+                  storedPickup?.awb_number ||
+                  so.pickup_response?.awb ||
+                  so.pickup_response?.awb_number ||
+                  so.pickup_confirmation_ref ||
+                  ''
+                ).trim();
+
+                const storedPickupShipmentId = String(
+                  storedPickup?.shipment_id ||
+                  so.pickup_response?.shipment_id ||
+                  ''
+                ).trim();
+
+                // Strict matching rules:
+                // 1. Both active AWB and stored pickup AWB must exist and match
+                // 2. Missing AWB must not automatically count as a match
+                // 3. If both stored and active shipment IDs are present, they must also match
+                // 4. Missing shipment ID must not override an AWB mismatch
+                const awbMatches = Boolean(activeAwb && storedPickupAwb && activeAwb.toLowerCase() === storedPickupAwb.toLowerCase());
+                const shipmentIdMatches = (!activeShipmentId || !storedPickupShipmentId) ||
+                  (activeShipmentId.toLowerCase() === storedPickupShipmentId.toLowerCase());
+                const isSameShipment = awbMatches && shipmentIdMatches;
+
+                const rawPickupStatus = so.pickup_status || so.shipment_booking_response?.pickup?.status || storedPickup?.status;
+                const pickupStatus = (rawPickupStatus && isSameShipment) ? String(rawPickupStatus).toLowerCase() : 'not_created';
+                const pickupRequestId = isSameShipment ? (so.pickup_request_id || storedPickup?.request_id) : null;
+                const pickupDate = isSameShipment ? (so.pickup_scheduled_date || storedPickup?.scheduled_date) : null;
+                const pickupRef = isSameShipment ? (so.pickup_confirmation_ref || storedPickup?.confirmation_ref) : null;
+                const pickupError = isSameShipment ? (so.pickup_error || storedPickup?.error) : null;
+
+                const labelUrl = so.shipping_label_url ||
+                  so.shipment_booking_response?.label ||
+                  so.shipment_booking_response?.shipping_label_url ||
+                  so.shipment_booking_response?.data?.label;
+
+                const labelStatus = so.shipping_label_status || (labelUrl ? 'generated' : (so.shipment_booking_response?.label_status || 'not_generated'));
+
+                return (
+                  <div style={{ marginTop: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(231, 222, 213, 0.65)' }}>
+                    {/* 3-Column Operations Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '0.75rem', marginTop: '0.35rem' }}>
+                      
+                      {/* 1. Shipment Information */}
+                      <div style={{ background: '#FFFFFF', borderRadius: '8px', padding: '0.75rem', border: '1px solid #E5DCCE' }}>
+                        <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: '800', color: '#8C6845', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <Truck size={13} color="#C68A3A" />
+                          <span>Shipment Information</span>
+                        </div>
+                        <div style={{ fontSize: '0.78rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                          <div>
+                            <span style={{ color: '#786C63' }}>Courier: </span>
+                            <strong style={{ color: '#2C1810' }}>{so.courier_name || so.booked_service_name || 'Shiprath Partner'}</strong>
+                          </div>
+                          <div>
+                            <span style={{ color: '#786C63' }}>AWB: </span>
+                            <code style={{ background: '#F8FAFC', padding: '0.1rem 0.35rem', borderRadius: '4px', fontSize: '0.76rem', fontWeight: '700', color: '#381423' }}>
+                              {so.awb_number || so.awb}
+                            </code>
+                          </div>
+                          <div>
+                            <span style={{ color: '#786C63' }}>Shipment ID: </span>
+                            <span style={{ color: '#2C1810', fontWeight: '600' }}>
+                              {so.shipment_id || so.shipment_booking_response?.shipment_id || '—'}
+                            </span>
+                          </div>
+                          <div>
+                            <span style={{ color: '#786C63' }}>Status: </span>
+                            <span style={{
+                              display: 'inline-block',
+                              padding: '0.1rem 0.4rem',
+                              borderRadius: '999px',
+                              fontSize: '0.7rem',
+                              fontWeight: '700',
+                              background: 'rgba(34,197,94,0.12)',
+                              color: '#15803D'
+                            }}>
+                              {String(so.shipment_status || 'booked').replace(/_/g, ' ').toUpperCase()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 2. Pickup Information */}
+                      <div style={{ background: '#FFFFFF', borderRadius: '8px', padding: '0.75rem', border: '1px solid #E5DCCE' }}>
+                        <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: '800', color: '#8C6845', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <Clock size={13} color="#C68A3A" />
+                          <span>Pickup Information</span>
+                        </div>
+                        
+                        <div style={{ marginBottom: '0.45rem' }}>
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem',
+                            padding: '0.15rem 0.5rem',
+                            borderRadius: '999px',
+                            fontSize: '0.74rem',
+                            fontWeight: '800',
+                            ...getPickupBadgeStyle(pickupStatus)
+                          }}>
+                            {getPickupStatusLabel(pickupStatus)}
+                          </span>
+                        </div>
+
+                        {pickupStatus === 'confirmed' ? (
+                          <div style={{ fontSize: '0.76rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                            {pickupRequestId && (
+                              <div>
+                                <span style={{ color: '#786C63' }}>Req ID: </span>
+                                <code style={{ background: '#F8FAFC', padding: '0.1rem 0.35rem', borderRadius: '4px', fontSize: '0.74rem', fontWeight: '700', color: '#381423' }}>
+                                  {pickupRequestId}
+                                </code>
+                              </div>
+                            )}
+                            {pickupDate && (
+                              <div>
+                                <span style={{ color: '#786C63' }}>Date: </span>
+                                <strong style={{ color: '#2C1810' }}>
+                                  {new Date(pickupDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                </strong>
+                              </div>
+                            )}
+                            {pickupRef && pickupRef !== pickupRequestId && (
+                              <div>
+                                <span style={{ color: '#786C63' }}>Ref: </span>
+                                <span style={{ color: '#2C1810', fontWeight: '600' }}>{pickupRef}</span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div>
+                            {pickupStatus === 'failed' && pickupError && (
+                              <div style={{ fontSize: '0.72rem', color: '#DC2626', marginBottom: '0.4rem', background: '#FEF2F2', padding: '0.3rem 0.45rem', borderRadius: '4px', border: '1px solid #FCA5A5' }}>
+                                <strong>Error:</strong> {pickupError}
+                              </div>
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={() => handleCreatePickup(so.id || so._id)}
+                              disabled={pickupLoading}
+                              style={{
+                                width: '100%',
+                                padding: '0.5rem 0.75rem',
+                                borderRadius: '6px',
+                                background: pickupLoading ? '#9CA3AF' : '#381423',
+                                color: '#D4AF37',
+                                border: 'none',
+                                fontWeight: '800',
+                                fontSize: '0.78rem',
+                                cursor: pickupLoading ? 'wait' : 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.35rem',
+                              }}
+                            >
+                              <Zap size={12} color="#D4AF37" />
+                              <span>{pickupLoading ? 'Scheduling…' : (pickupStatus === 'failed' ? 'Retry Create Pickup' : 'CREATE PICKUP')}</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 3. Shipping Documents / Slip */}
+                      <div style={{ background: '#FFFFFF', borderRadius: '8px', padding: '0.75rem', border: '1px solid #E5DCCE' }}>
+                        <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: '800', color: '#8C6845', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <FileText size={13} color="#C68A3A" />
+                          <span>Shipping Documents</span>
+                        </div>
+
+                        <div style={{ marginBottom: '0.45rem' }}>
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem',
+                            padding: '0.15rem 0.5rem',
+                            borderRadius: '999px',
+                            fontSize: '0.74rem',
+                            fontWeight: '800',
+                            background: labelUrl ? 'rgba(34,197,94,0.12)' : (labelStatus === 'failed' ? 'rgba(239,68,68,0.12)' : 'rgba(156,163,175,0.15)'),
+                            color: labelUrl ? '#15803D' : (labelStatus === 'failed' ? '#DC2626' : '#6B7280'),
+                          }}>
+                            {labelUrl ? '✓ Slip Ready' : (labelStatus === 'failed' ? '⚠️ Slip Failed' : '⚪ Not Generated')}
+                          </span>
+                        </div>
+
+                        {labelUrl ? (
+                          <div>
+                            <a
+                              href={labelUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                width: '100%',
+                                boxSizing: 'border-box',
+                                padding: '0.5rem 0.75rem',
+                                borderRadius: '6px',
+                                background: '#15803D',
+                                color: '#FFFFFF',
+                                textDecoration: 'none',
+                                fontWeight: '800',
+                                fontSize: '0.78rem',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.35rem',
+                              }}
+                            >
+                              <Download size={13} />
+                              <span>DOWNLOAD SHIPPING SLIP</span>
+                            </a>
+                            <div style={{ marginTop: '0.3rem', fontSize: '0.68rem', color: '#786C63', textAlign: 'center' }}>
+                              Shiprath official shipping label
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <button
+                              type="button"
+                              onClick={() => handleRetryLabel(so.id || so._id)}
+                              disabled={labelLoading}
+                              style={{
+                                width: '100%',
+                                padding: '0.5rem 0.75rem',
+                                borderRadius: '6px',
+                                background: labelLoading ? '#9CA3AF' : '#854D0E',
+                                color: '#FFFFFF',
+                                border: 'none',
+                                fontWeight: '800',
+                                fontSize: '0.76rem',
+                                cursor: labelLoading ? 'wait' : 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.35rem',
+                              }}
+                            >
+                              <RefreshCw size={12} className={labelLoading ? 'animate-spin' : ''} />
+                              <span>{labelLoading ? 'Fetching Label…' : 'RETRY LABEL GENERATION'}</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                    </div>
+
+                    {pickupNotice && (
+                      <div style={{
+                        marginTop: '0.65rem',
+                        padding: '0.45rem 0.75rem',
+                        borderRadius: '6px',
+                        fontSize: '0.78rem',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        background: pickupNotice.type === 'success' ? '#F0FDF4' : '#FEF2F2',
+                        color: pickupNotice.type === 'success' ? '#166534' : '#991B1B',
+                        border: `1px solid ${pickupNotice.type === 'success' ? '#BBF7D0' : '#FECACA'}`,
+                      }}>
+                        {pickupNotice.type === 'success' ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
+                        <span>{pickupNotice.text}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Internal shipping details (admin only — never shown to customers) */}
               {(() => {

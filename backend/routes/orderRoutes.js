@@ -8,7 +8,13 @@ import {
   updateOrderStatus,
   getAdminAnalytics,
 } from '../controllers/orderController.js';
-import { bookShipmentForOrder, getShipmentPreview } from '../controllers/shipratController.js';
+import {
+  bookShipmentForOrder,
+  getShipmentPreview,
+  createPickupForOrder,
+  retryLabelGeneration,
+  getShippingSlip,
+} from '../controllers/shipratController.js';
 import { getCancellationQuote } from '../controllers/cancellationController.js';
 import { protect, adminOnly, optionalProtect } from '../middleware/authMiddleware.js';
 
@@ -29,6 +35,10 @@ router.put('/admin/:id/status', protect, adminOnly, updateOrderStatus);
 router.get('/admin/:id/shipment-preview', protect, adminOnly, getShipmentPreview);
 router.post('/admin/:id/book-shipment', protect, adminOnly, bookShipmentForOrder);
 router.post('/admin/:id/retry-shipment', protect, adminOnly, bookShipmentForOrder);
+// Admin: Pickup & Shipping Slip
+router.post('/admin/:id/create-pickup', protect, adminOnly, createPickupForOrder);
+router.post('/admin/:id/retry-label', protect, adminOnly, retryLabelGeneration);
+router.get('/admin/:id/shipping-label', protect, adminOnly, getShippingSlip);
 
 export default router;
 

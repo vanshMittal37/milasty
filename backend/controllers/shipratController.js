@@ -2143,3 +2143,518 @@ export const diagnoseCredentials = async (req, res) => {
 
 };
 
+// ─── Post-Shipment Fulfillment: Pickup & Shipping Slip Management ─────────────
+
+const activePickups = new Set();
+const activeLabelGenerations = new Set();
+
+/**
+ * Call Shiprath API to request courier pickup for an existing booked shipment.
+ * Uses strictly the configured endpoint (SHIPRATH_PICKUP_ENDPOINT || '/shipment/shipment_pickup').
+ * Zero fallback endpoints: if 404 or any rejection occurs, records the exact response and stops.
+ */
+export async function requestShiprathPickup({ order, awb, shipmentId, scheduledDate }) {
+  const secretKey = (process.env.SHIPRATH_SECRET_KEY || '').trim();
+  const customerId = (process.env.SHIPRATH_CUSTOMER_ID || '').trim();
+
+  if (!secretKey || !customerId) {
+    throw new Error('Shiprath credentials missing from server environment variables.');
+  }
+
+  const pickupDate = scheduledDate || new Date().toISOString().split('T')[0];
+  const payload = {
+    awb_number: awb,
+    awb: awb,
+    shipment_id: shipmentId || undefined,
+    address_id: WAREHOUSE_ADDRESS_ID,
+    pickup_date: pickupDate,
+    pickup_time: '14:00',
+    courier_id: order.booked_courier_id || undefined,
+    carrier_id: order.booked_carrier_id || undefined,
+    service_name: order.courier_name || order.booked_service_name || undefined,
+    expected_package_count: 1,
+    package_count: 1,
+  };
+
+  const endpoint = (process.env.SHIPRATH_PICKUP_ENDPOINT || '').trim() || '/shipment/shipment_pickup';
+  console.log(`[SHIPRATH PICKUP] ${order.order_number} (AWB: ${awb}) → POST ${endpoint}`);
+
+  try {
+    const res = await fetch(`${SHIPRATH_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers: getShiprathHeaders(),
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(20000),
+    });
+
+    const text = await res.text();
+    let data = null;
+    try { data = JSON.parse(text); } catch { data = { raw: text }; }
+
+    console.log(`[SHIPRATH PICKUP RESPONSE] ${order.order_number} ${endpoint} → HTTP ${res.status}:`, JSON.stringify(data));
+
+    // Handle 404 directly without any fallback request
+    if (res.status === 404) {
+      const notFoundMsg = data?.message || data?.error || `Shiprath pickup endpoint not found (${endpoint} returned HTTP 404)`;
+      return {
+        success: false,
+        error: notFoundMsg,
+        data,
+        httpStatus: 404,
+      };
+    }
+
+    const isSuccess = data?.status === true ||
+      /^(true|success|1)$/i.test(String(data?.status)) ||
+      (res.ok && Boolean(data?.pickup_id || data?.pickup_request_id || data?.token));
+
+    if (isSuccess) {
+      return {
+        success: true,
+        data,
+        pickup_request_id: data.pickup_request_id || data.pickup_id || data.request_id || data.id || `PKP-${order.order_number}`,
+        pickup_scheduled_date: data.pickup_date || data.scheduled_date || pickupDate,
+        pickup_confirmation_ref: data.confirmation_number || data.confirmation_ref || data.reference || data.token || awb,
+        label_url: data.label || data.label_url || data.print_label || data.shipping_label || null,
+      };
+    }
+
+    const rawError = data?.message || data?.error || `Shiprath pickup request rejected (HTTP ${res.status})`;
+
+    // Handle case where courier/Shiprath indicates pickup is already requested/scheduled
+    if (/already\s+(scheduled|booked|created|requested)/i.test(rawError)) {
+      return {
+        success: true,
+        alreadyScheduled: true,
+        data,
+        pickup_request_id: `PKP-${order.order_number}`,
+        pickup_scheduled_date: pickupDate,
+        pickup_confirmation_ref: awb,
+        label_url: data?.label || data?.label_url || null,
+      };
+    }
+
+    return {
+      success: false,
+      error: rawError,
+      data,
+      httpStatus: res.status,
+    };
+  } catch (err) {
+    const connError = `Shiprath pickup connection error: ${err.message}`;
+    console.error(`[SHIPRATH PICKUP] Connection exception on ${endpoint}:`, err.message);
+    return {
+      success: false,
+      error: connError,
+      data: null,
+    };
+  }
+}
+
+/**
+ * Automatically resolve or fetch the official Shiprath shipping label / slip.
+ * Priority:
+ * 1. Label returned directly in pickup response.
+ * 2. Label already stored on the order (shipping_label_url).
+ * 3. Original label returned during shipment creation (order.shipment_booking_response.label).
+ * 4. Shiprath label generation API fallback.
+ */
+export async function resolveShiprathLabel({ order, awb, shipmentId, pickupResult }) {
+  // 1. Direct from pickup response
+  if (pickupResult?.label_url && typeof pickupResult.label_url === 'string' && pickupResult.label_url.startsWith('http')) {
+    return { success: true, label_url: pickupResult.label_url, source: 'pickup_response' };
+  }
+
+  // 2. Existing shipping_label_url on the order
+  if (order.shipping_label_url && typeof order.shipping_label_url === 'string' && order.shipping_label_url.startsWith('http')) {
+    return { success: true, label_url: order.shipping_label_url, source: 'shipping_label_url' };
+  }
+
+  // 3. Retrieved from initial shipment booking response (Shiprath stores "label": "https://app.shiprath.com/print_label/<id>")
+  const bookingResp = order.shipment_booking_response;
+  const existingSlip = bookingResp?.label || bookingResp?.data?.label || bookingResp?.label_url || bookingResp?.data?.label_url;
+  if (existingSlip && typeof existingSlip === 'string' && existingSlip.startsWith('http')) {
+    return { success: true, label_url: existingSlip, source: 'shipment_booking_response' };
+  }
+
+  // 4. Call official Shiprath shipping label API
+  const secretKey = (process.env.SHIPRATH_SECRET_KEY || '').trim();
+  const customerId = (process.env.SHIPRATH_CUSTOMER_ID || '').trim();
+  if (secretKey && customerId && (awb || shipmentId)) {
+    const labelCandidates = [
+      '/shipment/generate_label',
+      '/shipment/shipment_label',
+      '/shipment/print_label',
+      '/shipment/label',
+    ];
+    for (const endpoint of labelCandidates) {
+      try {
+        const res = await fetch(`${SHIPRATH_BASE_URL}${endpoint}`, {
+          method: 'POST',
+          headers: getShiprathHeaders(),
+          body: JSON.stringify({ awb_number: awb, awb: awb, shipment_id: shipmentId || undefined }),
+          signal: AbortSignal.timeout(15000),
+        });
+        if (res.status === 404) continue;
+        const data = await res.json().catch(() => null);
+        const url = data?.label || data?.label_url || data?.url || data?.data?.label;
+        if (url && typeof url === 'string' && url.startsWith('http')) {
+          return { success: true, label_url: url, source: `api:${endpoint}` };
+        }
+      } catch (e) {
+        console.warn(`[SHIPRATH LABEL] Notice on ${endpoint}:`, e.message);
+      }
+    }
+  }
+
+  return { success: false, error: 'Original shipping slip could not be fetched from Shiprath.' };
+}
+
+/**
+ * Strict verification that a stored pickup record belongs to the currently active shipment and AWB.
+ * Rules:
+ * 1. Both active AWB and stored pickup AWB must exist and match exactly (case-insensitive, trimmed).
+ * 2. Missing stored AWB or missing active AWB must never count as a match.
+ * 3. If both stored and active shipment IDs are present, they must also match.
+ * 4. Missing shipment ID cannot override an AWB mismatch.
+ * 5. A pickup associated with an old AWB cannot block pickup creation for a newly booked shipment.
+ */
+export function isPickupForActiveShipment(order) {
+  if (!order) return false;
+
+  const activeAwb = String(order.awb_number || order.awb || '').trim();
+  if (!activeAwb) return false;
+
+  const storedPickup = order.shipment_booking_response?.pickup;
+  const storedPickupAwb = String(
+    storedPickup?.awb ||
+    storedPickup?.awb_number ||
+    order.pickup_response?.awb ||
+    order.pickup_response?.awb_number ||
+    order.pickup_confirmation_ref ||
+    ''
+  ).trim();
+
+  // Missing stored AWB must not automatically count as a match
+  if (!storedPickupAwb) return false;
+
+  // AWB must match
+  if (storedPickupAwb.toLowerCase() !== activeAwb.toLowerCase()) {
+    return false;
+  }
+
+  // If both stored and active shipment IDs are available, they must also match
+  const activeShipmentId = String(order.shipment_id || order.shipment_booking_response?.shipment_id || '').trim();
+  const storedPickupShipmentId = String(
+    storedPickup?.shipment_id ||
+    order.pickup_response?.shipment_id ||
+    ''
+  ).trim();
+
+  if (activeShipmentId && storedPickupShipmentId) {
+    if (activeShipmentId.toLowerCase() !== storedPickupShipmentId.toLowerCase()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * POST /api/shiprat/order/:id/pickup (and /api/orders/admin/:id/create-pickup)
+ * Manual admin trigger to schedule courier pickup for an existing shipment.
+ */
+export const createPickupForOrder = async (req, res) => {
+  const orderId = req.params.id || req.body?.orderId;
+  if (!orderId) {
+    return res.status(400).json({ success: false, message: 'Order ID is required.' });
+  }
+
+  // Concurrency guard: prevent duplicate parallel clicks
+  if (activePickups.has(orderId)) {
+    return res.status(409).json({
+      success: false,
+      code: 'PICKUP_IN_PROGRESS',
+      message: 'A pickup request for this order is already in progress. Please wait.',
+    });
+  }
+  activePickups.add(orderId);
+
+  try {
+    const isUuid = /^[0-9a-fA-F-]{36}$/.test(orderId);
+    let query = supabase.from('orders').select('*');
+    query = isUuid ? query.eq('id', orderId) : query.eq('order_number', orderId);
+    const { data: order, error: orderErr } = await query.maybeSingle();
+
+    if (orderErr || !order) {
+      return res.status(404).json({ success: false, message: 'Order not found.' });
+    }
+
+    if (String(order.order_status || '').toLowerCase() === 'cancelled') {
+      return res.status(400).json({ success: false, message: 'Cannot create pickup for a cancelled order.' });
+    }
+
+    const awb = order.awb_number || order.awb;
+    const shipmentId = order.shipment_id || order.shipment_booking_response?.shipment_id;
+    const shipmentStatus = String(order.shipment_status || '').toLowerCase();
+    if (!awb && shipmentStatus !== 'booked') {
+      return res.status(400).json({
+        success: false,
+        code: 'NO_SHIPMENT',
+        message: 'A shipment has not been created for this order yet. Create shipment before scheduling pickup.',
+      });
+    }
+
+    // Check if pickup is already confirmed for this active shipment / AWB
+    const rawPickupStatus = order.pickup_status || order.shipment_booking_response?.pickup?.status;
+    const isConfirmed = String(rawPickupStatus || '').toLowerCase() === 'confirmed';
+    const belongsToActiveShipment = isPickupForActiveShipment(order);
+
+    if (isConfirmed && belongsToActiveShipment) {
+      const existingLabel = order.shipping_label_url || order.shipment_booking_response?.label;
+      return res.status(409).json({
+        success: false,
+        code: 'ALREADY_CONFIRMED',
+        message: 'Pickup has already been confirmed for this order.',
+        pickup: {
+          status: 'confirmed',
+          awb: awb,
+          shipment_id: shipmentId,
+          request_id: order.pickup_request_id || order.shipment_booking_response?.pickup?.request_id,
+          scheduled_date: order.pickup_scheduled_date || order.shipment_booking_response?.pickup?.scheduled_date,
+          confirmation_ref: order.pickup_confirmation_ref || order.shipment_booking_response?.pickup?.confirmation_ref,
+        },
+        shipping_label_url: existingLabel,
+      });
+    }
+
+    // Call Shiprath pickup API
+    const pickupResult = await requestShiprathPickup({
+      order,
+      awb,
+      shipmentId: order.shipment_id,
+      scheduledDate: req.body?.scheduledDate,
+    });
+
+    if (!pickupResult.success) {
+      const failPatch = {
+        pickup_status: 'failed',
+        pickup_error: String(pickupResult.error).slice(0, 500),
+      };
+      const updatedBooking = {
+        ...(order.shipment_booking_response || {}),
+        pickup: {
+          status: 'failed',
+          awb: awb,
+          shipment_id: shipmentId || null,
+          error: failPatch.pickup_error,
+          attempted_at: new Date().toISOString(),
+        },
+      };
+      await safeUpdateOrder(order.id, { ...failPatch, shipment_booking_response: updatedBooking });
+      return res.status(400).json({
+        success: false,
+        message: pickupResult.error || 'Failed to create pickup request with Shiprath.',
+        pickup_status: 'failed',
+        error: pickupResult.error,
+      });
+    }
+
+    // Pickup succeeded! Now resolve/fetch the official shipping slip
+    const labelResult = await resolveShiprathLabel({
+      order,
+      awb,
+      shipmentId: order.shipment_id,
+      pickupResult,
+    });
+
+    const nowIso = new Date().toISOString();
+    const successPatch = {
+      pickup_status: 'confirmed',
+      pickup_request_id: pickupResult.pickup_request_id,
+      pickup_scheduled_date: pickupResult.pickup_scheduled_date,
+      pickup_confirmation_ref: pickupResult.pickup_confirmation_ref || awb,
+      pickup_created_at: nowIso,
+      pickup_error: null,
+      pickup_response: {
+        ...(pickupResult.data || {}),
+        awb: awb,
+        awb_number: awb,
+        shipment_id: shipmentId || null,
+      },
+      shipping_label_url: labelResult.success ? labelResult.label_url : null,
+      shipping_label_status: labelResult.success ? 'generated' : 'failed',
+      shipping_label_error: labelResult.success ? null : labelResult.error,
+      shipping_label_generated_at: labelResult.success ? nowIso : null,
+    };
+
+    const updatedBooking = {
+      ...(order.shipment_booking_response || {}),
+      pickup: {
+        status: 'confirmed',
+        awb: awb,
+        awb_number: awb,
+        shipment_id: shipmentId || null,
+        request_id: pickupResult.pickup_request_id,
+        scheduled_date: pickupResult.pickup_scheduled_date,
+        confirmation_ref: pickupResult.pickup_confirmation_ref || awb,
+        created_at: nowIso,
+        response: pickupResult.data || null,
+      },
+      label: labelResult.success ? labelResult.label_url : (order.shipment_booking_response?.label || null),
+      label_status: labelResult.success ? 'generated' : 'failed',
+      shipping_label_url: labelResult.success ? labelResult.label_url : (order.shipment_booking_response?.label || null),
+    };
+
+    await safeUpdateOrder(order.id, {
+      ...successPatch,
+      shipment_booking_response: updatedBooking,
+    });
+
+    console.log(`[SHIPRATH PICKUP] ✅ Order ${order.order_number} pickup confirmed (${pickupResult.pickup_request_id}). Label: ${labelResult.success ? 'generated' : 'failed'}`);
+
+    return res.json({
+      success: true,
+      message: 'Pickup successfully confirmed with Shiprath!',
+      pickup: {
+        status: 'confirmed',
+        request_id: pickupResult.pickup_request_id,
+        scheduled_date: pickupResult.pickup_scheduled_date,
+        confirmation_ref: pickupResult.pickup_confirmation_ref,
+      },
+      shipping_label: {
+        url: labelResult.success ? labelResult.label_url : null,
+        status: labelResult.success ? 'generated' : 'failed',
+        error: labelResult.success ? null : labelResult.error,
+      },
+      order: {
+        ...order,
+        ...successPatch,
+        shipment_booking_response: updatedBooking,
+      },
+    });
+  } catch (err) {
+    console.error('[SHIPRATH PICKUP ROUTE ERROR]', err);
+    return res.status(500).json({ success: false, message: `Error processing pickup: ${err.message}` });
+  } finally {
+    activePickups.delete(orderId);
+  }
+};
+
+/**
+ * POST /api/shiprat/order/:id/retry-label (and /api/orders/admin/:id/retry-label)
+ * Admin trigger to independently retry shipping slip generation without re-requesting pickup.
+ */
+export const retryLabelGeneration = async (req, res) => {
+  const orderId = req.params.id || req.body?.orderId;
+  if (!orderId) {
+    return res.status(400).json({ success: false, message: 'Order ID is required.' });
+  }
+
+  if (activeLabelGenerations.has(orderId)) {
+    return res.status(409).json({ success: false, message: 'Label generation is already in progress.' });
+  }
+  activeLabelGenerations.add(orderId);
+
+  try {
+    const isUuid = /^[0-9a-fA-F-]{36}$/.test(orderId);
+    let query = supabase.from('orders').select('*');
+    query = isUuid ? query.eq('id', orderId) : query.eq('order_number', orderId);
+    const { data: order, error } = await query.maybeSingle();
+
+    if (error || !order) {
+      return res.status(404).json({ success: false, message: 'Order not found.' });
+    }
+
+    const awb = order.awb_number || order.awb;
+    if (!awb && order.shipment_status !== 'booked') {
+      return res.status(400).json({ success: false, message: 'No booked shipment found for this order.' });
+    }
+
+    const labelResult = await resolveShiprathLabel({
+      order,
+      awb,
+      shipmentId: order.shipment_id,
+    });
+
+    if (!labelResult.success) {
+      const failPatch = {
+        shipping_label_status: 'failed',
+        shipping_label_error: String(labelResult.error).slice(0, 500),
+      };
+      await safeUpdateOrder(order.id, failPatch);
+      return res.status(400).json({
+        success: false,
+        message: labelResult.error || 'Failed to generate shipping slip from Shiprath.',
+      });
+    }
+
+    const nowIso = new Date().toISOString();
+    const successPatch = {
+      shipping_label_url: labelResult.label_url,
+      shipping_label_status: 'generated',
+      shipping_label_error: null,
+      shipping_label_generated_at: nowIso,
+    };
+    const updatedBooking = {
+      ...(order.shipment_booking_response || {}),
+      label: labelResult.label_url,
+      label_status: 'generated',
+      shipping_label_url: labelResult.label_url,
+    };
+
+    await safeUpdateOrder(order.id, {
+      ...successPatch,
+      shipment_booking_response: updatedBooking,
+    });
+
+    return res.json({
+      success: true,
+      message: 'Shipping slip successfully retrieved!',
+      shipping_label_url: labelResult.label_url,
+      shipping_label_status: 'generated',
+      status: 'generated',
+    });
+  } catch (err) {
+    console.error('[RETRY LABEL ROUTE ERROR]', err);
+    return res.status(500).json({ success: false, message: err.message });
+  } finally {
+    activeLabelGenerations.delete(orderId);
+  }
+};
+
+/**
+ * GET /api/shiprat/order/:id/shipping-label (and /api/orders/admin/:id/shipping-label)
+ * Direct access to download or view the official shipping slip.
+ */
+export const getShippingSlip = async (req, res) => {
+  const orderId = req.params.id;
+  if (!orderId) {
+    return res.status(400).json({ success: false, message: 'Order ID is required.' });
+  }
+
+  const isUuid = /^[0-9a-fA-F-]{36}$/.test(orderId);
+  let query = supabase.from('orders').select('*');
+  query = isUuid ? query.eq('id', orderId) : query.eq('order_number', orderId);
+  const { data: order, error } = await query.maybeSingle();
+
+  if (error || !order) {
+    return res.status(404).json({ success: false, message: 'Order not found.' });
+  }
+
+  const labelUrl = order.shipping_label_url ||
+    order.shipment_booking_response?.label ||
+    order.shipment_booking_response?.shipping_label_url ||
+    order.shipment_booking_response?.data?.label;
+
+  if (!labelUrl) {
+    return res.status(404).json({
+      success: false,
+      message: 'Shipping slip is not available for this order. Try clicking "Retry Label Generation".',
+    });
+  }
+
+  return res.redirect(labelUrl);
+};
+
+
