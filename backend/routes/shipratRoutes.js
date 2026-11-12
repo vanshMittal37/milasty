@@ -12,6 +12,7 @@ import {
   createPickupForOrder,
   retryLabelGeneration,
   getShippingSlip,
+  resetShipmentToProcessing,
 } from '../controllers/shipratController.js';
 import { protect, adminOnly, optionalProtect } from '../middleware/authMiddleware.js';
 import { requestCancellation } from '../controllers/cancellationController.js';
@@ -55,6 +56,9 @@ router.post('/order/:id/retry-label', protect, adminOnly, retryLabelGeneration);
 
 // Direct shipping slip download / view
 router.get('/order/:id/shipping-label', protect, adminOnly, getShippingSlip);
+
+// Reset Shipment Fulfillment to Processing (Admin only)
+router.post('/order/:id/reset-shipment', protect, adminOnly, resetShipmentToProcessing);
 
 // Admin manual trigger to sweep & sync all active shipped orders with carrier tracking
 router.post('/sync-active', protect, adminOnly, async (req, res) => {

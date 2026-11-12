@@ -224,12 +224,24 @@ export async function triggerEvent(eventName, payload = {}) {
       let suppressed = false;
       let suppressReason = '';
 
-      // Central Suppression for Customer Order Updates:
-      // Customers ONLY receive Order Confirmed, Order Shipped, and Order Delivered.
-      const isOrderEvent = category === 'order' || String(eventName).toUpperCase().startsWith('ORDER_');
-      if (isOrderEvent && !ALLOWED_CUSTOMER_ORDER_EVENTS.has(String(eventName).toUpperCase())) {
+      // Targeted suppression for Admin Re-fulfilment / Reset Shipment workflows
+      // Preserves security/OTP messages (channelTier === 'security') while silencing order updates
+      const isTargetedSuppressed =
+        Boolean(payload.suppressCustomerNotifications) ||
+        Boolean(payload.order?.suppress_customer_notifications) ||
+        Boolean(payload.order?.silent_refulfillment) ||
+        Boolean(targetUser?.suppress_customer_notifications);
+
+      if (isTargetedSuppressed && channelTier !== 'security') {
         suppressed = true;
-        suppressReason = `Suppressed customer event ${eventName} per simplified 3-update policy (only Confirmed, Shipped, Delivered sent to customers)`;
+        suppressReason = 'Targeted suppression active for admin shipment reset / re-fulfillment workflow';
+      } else if (category === 'order' || String(eventName).toUpperCase().startsWith('ORDER_')) {
+        // Central Suppression for Customer Order Updates:
+        // Customers ONLY receive Order Confirmed, Order Shipped, and Order Delivered.
+        if (!ALLOWED_CUSTOMER_ORDER_EVENTS.has(String(eventName).toUpperCase())) {
+          suppressed = true;
+          suppressReason = `Suppressed customer event ${eventName} per simplified 3-update policy (only Confirmed, Shipped, Delivered sent to customers)`;
+        }
       } else if (channelTier === 'security') {
         // Essential security and OTP messages are NEVER suppressed
         suppressed = false;

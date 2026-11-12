@@ -2147,6 +2147,7 @@ export const diagnoseCredentials = async (req, res) => {
 
 const activePickups = new Set();
 const activeLabelGenerations = new Set();
+const activeResets = new Set();
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -2718,5 +2719,237 @@ export const getShippingSlip = async (req, res) => {
 
   return res.redirect(labelUrl);
 };
+
+/**
+ * POST /api/shiprat/order/:id/reset-shipment
+ * POST /api/orders/admin/:id/reset-shipment
+ * Admin-only: Reset order fulfillment to 'processing' when courier returns without collecting package.
+ *
+ * Strict Guarantees:
+ * 1. Admin authorization check (validated by middleware & req.user).
+ * 2. Payment status MUST be 'paid' and is NEVER modified.
+ * 3. Rejects cancelled, refunded, delivered, or completed orders.
+ * 4. Preserves full historical shipment snapshot (AWB, courier, pickup, label, admin, reason, timestamp)
+ *    inside shipment_history and shipment_booking_response.history.
+ * 5. Clears active shipment reference and resets active order fulfillment status to 'processing'.
+ * 6. Suppresses all customer notifications (zero WhatsApp, zero SMS, zero email).
+ * 7. Concurrency lock prevents parallel reset attempts.
+ */
+export const resetShipmentToProcessing = async (req, res) => {
+  const orderId = req.params.id || req.body?.orderId;
+  const reason = (req.body?.reason || '').trim();
+
+  if (!orderId) {
+    return res.status(400).json({ success: false, message: 'Order ID is required.' });
+  }
+
+  if (!reason) {
+    return res.status(400).json({
+      success: false,
+      message: 'A reason for resetting the shipment is required (e.g. Package not ready – courier returned without collection).',
+    });
+  }
+
+  // Concurrency guard: prevent simultaneous reset requests
+  if (activeResets.has(orderId)) {
+    return res.status(409).json({
+      success: false,
+      code: 'RESET_IN_PROGRESS',
+      message: 'A reset operation for this order is already in progress. Please wait.',
+    });
+  }
+  activeResets.add(orderId);
+
+  try {
+    const isUuid = /^[0-9a-fA-F-]{36}$/.test(orderId);
+    let query = supabase.from('orders').select('*');
+    query = isUuid ? query.eq('id', orderId) : query.eq('order_number', orderId);
+    const { data: order, error: orderErr } = await query.maybeSingle();
+
+    if (orderErr || !order) {
+      return res.status(404).json({ success: false, message: 'Order not found.' });
+    }
+
+    // 1. Payment status verification: must be paid
+    const paymentStatus = String(order.payment_status || '').toLowerCase();
+    if (paymentStatus !== 'paid') {
+      return res.status(400).json({
+        success: false,
+        code: 'PAYMENT_NOT_PAID',
+        message: 'Only paid orders can have their shipment reset. This order is not paid.',
+      });
+    }
+
+    // 2. Reject refunded orders
+    if (paymentStatus === 'refunded') {
+      return res.status(400).json({
+        success: false,
+        code: 'ORDER_REFUNDED',
+        message: 'Cannot reset shipment for a refunded order.',
+      });
+    }
+
+    // 3. Reject cancelled orders
+    const orderStatus = String(order.order_status || '').toLowerCase();
+    if (orderStatus === 'cancelled') {
+      return res.status(400).json({
+        success: false,
+        code: 'ORDER_CANCELLED',
+        message: 'Cannot reset shipment for a cancelled order.',
+      });
+    }
+
+    // Check cancellation table
+    const { data: cancellation } = await supabase
+      .from('order_cancellations')
+      .select('id')
+      .eq('order_id', order.id)
+      .maybeSingle();
+    if (cancellation) {
+      return res.status(400).json({
+        success: false,
+        code: 'ORDER_CANCELLED',
+        message: 'This order has a cancellation record and cannot be reset.',
+      });
+    }
+
+    // 4. Reject delivered or completed orders
+    if (orderStatus === 'delivered' || orderStatus === 'completed') {
+      return res.status(400).json({
+        success: false,
+        code: 'ORDER_FINALIZED',
+        message: `Cannot reset shipment for an order that is already ${orderStatus}.`,
+      });
+    }
+
+    // 5. Must have an existing shipment
+    const hasShipment = Boolean(
+      order.awb_number ||
+      order.awb ||
+      String(order.shipment_status || '').toLowerCase() === 'booked' ||
+      order.shipment_id ||
+      order.shipment_booking_response?.shipment_id
+    );
+
+    if (!hasShipment) {
+      return res.status(400).json({
+        success: false,
+        code: 'NO_SHIPMENT_TO_RESET',
+        message: 'This order does not have an active shipment to reset.',
+      });
+    }
+
+    // 6. Capture full snapshot of the previous shipment to preserve history
+    const previousShipment = {
+      awb: order.awb_number || order.awb || null,
+      awb_number: order.awb_number || order.awb || null,
+      shipment_id: order.shipment_id || order.shipment_booking_response?.shipment_id || null,
+      courier_name: order.courier_name || order.booked_service_name || 'Shiprath Partner',
+      courier_id: order.booked_courier_id || null,
+      carrier_id: order.booked_carrier_id || null,
+      product_id: order.booked_product_id || null,
+      shipping_label_url: order.shipping_label_url || order.shipment_booking_response?.label || null,
+      shipping_label_status: order.shipping_label_status || null,
+      pickup_status: order.pickup_status || order.shipment_booking_response?.pickup?.status || 'not_created',
+      pickup_request_id: order.pickup_request_id || order.shipment_booking_response?.pickup?.request_id || null,
+      pickup_token_number: order.pickup_token_number || order.shipment_booking_response?.pickup?.token_number || null,
+      pickup_scheduled_date: order.pickup_scheduled_date || order.shipment_booking_response?.pickup?.scheduled_date || null,
+      pickup_scheduled_time: order.pickup_scheduled_time || order.shipment_booking_response?.pickup?.scheduled_time || null,
+      pickup_response: order.pickup_response || order.shipment_booking_response?.pickup || null,
+      pickup_confirmation_ref: order.pickup_confirmation_ref || null,
+      shipment_status: order.shipment_status || 'booked',
+      order_status_before_reset: order.order_status,
+      reset_reason: reason,
+      reset_at: new Date().toISOString(),
+      reset_by_admin_id: req.user?.id || 'admin',
+      reset_by_admin_email: req.user?.email || 'admin@milasty.com',
+    };
+
+    const existingHistory = Array.isArray(order.shipment_history)
+      ? order.shipment_history
+      : (Array.isArray(order.shipment_booking_response?.history) ? order.shipment_booking_response.history : []);
+    const updatedHistory = [...existingHistory, previousShipment];
+
+    // 7. Update order state back to processing while maintaining payment integrity
+    const updatePayload = {
+      order_status: 'processing',
+      status: 'Processing',
+      shipment_status: 'pending',
+      awb_number: null,
+      awb: null,
+      shipment_id: null,
+      courier_name: null,
+      booked_courier_id: null,
+      booked_carrier_id: null,
+      booked_product_id: null,
+      booked_service_name: null,
+      booked_shipping_charge: null,
+      shipping_label_url: null,
+      shipping_label_status: 'not_generated',
+      pickup_status: 'not_created',
+      pickup_request_id: null,
+      pickup_token_number: null,
+      pickup_scheduled_date: null,
+      pickup_scheduled_time: null,
+      pickup_confirmation_ref: null,
+      pickup_response: null,
+      pickup_error: null,
+      shipment_error: null,
+      suppress_customer_notifications: true,
+      silent_refulfillment: true,
+      shipment_history: updatedHistory,
+      shipment_booking_response: {
+        ...(typeof order.shipment_booking_response === 'object' && order.shipment_booking_response !== null
+          ? order.shipment_booking_response
+          : {}),
+        history: updatedHistory,
+        previous_shipment: previousShipment,
+        last_reset_at: previousShipment.reset_at,
+        last_reset_reason: reason,
+        suppress_customer_notifications: true,
+        silent_refulfillment: true,
+      },
+    };
+
+    const { error: updateErr } = await safeUpdateOrder(order.id, updatePayload);
+    if (updateErr) {
+      console.error('[ADMIN RESET SHIPMENT ERROR] Failed to update order:', updateErr.message);
+      return res.status(500).json({
+        success: false,
+        message: `Failed to reset shipment in database: ${updateErr.message}`,
+      });
+    }
+
+    // Refetch the updated order to return clean data to caller
+    let refetchQuery = supabase.from('orders').select('*, order_items(*)');
+    refetchQuery = isUuid ? refetchQuery.eq('id', orderId) : refetchQuery.eq('order_number', orderId);
+    const { data: updatedOrder } = await refetchQuery.maybeSingle();
+
+    console.log('[ADMIN RESET SHIPMENT SUCCESS]', {
+      orderId: order.id,
+      orderNumber: order.order_number,
+      oldAwb: previousShipment.awb,
+      resetBy: req.user?.email || req.user?.id,
+      reason,
+      historyCount: updatedHistory.length,
+    });
+
+    return res.json({
+      success: true,
+      message: 'Shipment has been reset to Processing. You may now create a new shipment.',
+      order: updatedOrder || { ...order, ...updatePayload },
+      previous_shipment: previousShipment,
+    });
+  } catch (err) {
+    console.error('[ADMIN RESET SHIPMENT EXCEPTION]', err);
+    return res.status(500).json({
+      success: false,
+      message: `Internal error resetting shipment: ${err.message}`,
+    });
+  } finally {
+    activeResets.delete(orderId);
+  }
+};
+
 
 

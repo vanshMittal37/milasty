@@ -20,7 +20,6 @@ export default function ProductCard({ product }) {
   })();
 
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(defaultVariantIndex);
-  const [selectedQty, setSelectedQty] = useState(1);
   const [btnText, setBtnText] = useState('Add');
 
   if (!product) return null;
@@ -78,18 +77,6 @@ export default function ProductCard({ product }) {
     updateQuantity(targetId, cartQuantity + 1);
   };
 
-  const handleLocalDecrement = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    setSelectedQty((prev) => Math.max(1, prev - 1));
-  };
-
-  const handleLocalIncrement = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    setSelectedQty((prev) => Math.min(maxStock, prev + 1));
-  };
-
   const handleAddToCart = async (e) => {
     if (e) {
       e.stopPropagation();
@@ -98,7 +85,7 @@ export default function ProductCard({ product }) {
     if (isOutOfStock) return;
     setBtnText('Adding...');
     try {
-      await addToCart(product, selectedVariant, selectedQty);
+      await addToCart(product, selectedVariant, 1);
       setBtnText('✓ Added');
       setTimeout(() => setBtnText('Add'), 1500);
     } catch (err) {
@@ -506,116 +493,33 @@ export default function ProductCard({ product }) {
                     </button>
                   </div>
                 ) : (
-                  /* Pre-Add Quantity Selector with Add Button */
-                  <div
-                    className="card-pre-add-group"
+                  /* Default Add to Cart Button (Only shows [Add] by default; stepper [- 1 +] appears after click) */
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="btn-primary add-cart-btn"
                     style={{
+                      padding: '0.42rem 0.85rem',
+                      fontSize: '0.78rem',
+                      borderRadius: '999px',
+                      backgroundColor: '#2F6B3A',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontWeight: '800',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.35rem',
+                      justifyContent: 'center',
+                      gap: '0.32rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      boxShadow: '0 2px 8px rgba(47, 107, 58, 0.25)',
+                      whiteSpace: 'nowrap',
                     }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                    }}
+                    aria-label={`Add ${product.title} to cart`}
                   >
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        backgroundColor: 'var(--card-inner-bg)',
-                        border: '1px solid var(--card-border-color)',
-                        borderRadius: '999px',
-                        padding: '2px',
-                      }}
-                    >
-                      <button
-                        type="button"
-                        onClick={handleLocalDecrement}
-                        disabled={selectedQty <= 1}
-                        aria-label="Decrease quantity"
-                        style={{
-                          width: '22px',
-                          height: '22px',
-                          borderRadius: '50%',
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          color: selectedQty <= 1 ? 'var(--text-muted)' : 'var(--text-heading)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: selectedQty <= 1 ? 'not-allowed' : 'pointer',
-                          opacity: selectedQty <= 1 ? 0.4 : 1,
-                          padding: 0,
-                        }}
-                      >
-                        <Minus size={11} strokeWidth={2.5} />
-                      </button>
-
-                      <span
-                        style={{
-                          minWidth: '16px',
-                          textAlign: 'center',
-                          fontSize: '0.76rem',
-                          fontWeight: '800',
-                          color: 'var(--text-heading)',
-                          userSelect: 'none',
-                          padding: '0 2px',
-                        }}
-                      >
-                        {selectedQty}
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={handleLocalIncrement}
-                        disabled={selectedQty >= maxStock}
-                        aria-label="Increase quantity"
-                        style={{
-                          width: '22px',
-                          height: '22px',
-                          borderRadius: '50%',
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          color: selectedQty >= maxStock ? 'var(--text-muted)' : 'var(--text-heading)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: selectedQty >= maxStock ? 'not-allowed' : 'pointer',
-                          opacity: selectedQty >= maxStock ? 0.4 : 1,
-                          padding: 0,
-                        }}
-                      >
-                        <Plus size={11} strokeWidth={2.5} />
-                      </button>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleAddToCart}
-                      className="btn-primary add-cart-btn"
-                      style={{
-                        padding: '0.42rem 0.72rem',
-                        fontSize: '0.78rem',
-                        borderRadius: '999px',
-                        backgroundColor: '#2F6B3A',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        fontWeight: '800',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.28rem',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        boxShadow: '0 2px 8px rgba(47, 107, 58, 0.25)',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      <ShoppingBag size={13} color="#FFFFFF" />
-                      <span>{btnText}</span>
-                    </button>
-                  </div>
+                    <ShoppingBag size={13} color="#FFFFFF" />
+                    <span>{btnText}</span>
+                  </button>
                 )}
               </div>
             </div>

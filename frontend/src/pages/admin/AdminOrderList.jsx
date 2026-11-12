@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Search, Filter, RefreshCw, Eye, X, Package, CreditCard, MapPin, User, Mail, Phone, Sparkles, Printer, Zap, ExternalLink, Truck, CheckCircle2, AlertCircle, Download, FileText, Clock } from 'lucide-react';
+import { Search, Filter, RefreshCw, Eye, X, Package, CreditCard, MapPin, User, Mail, Phone, Sparkles, Printer, Zap, ExternalLink, Truck, CheckCircle2, AlertCircle, Download, FileText, Clock, RotateCcw } from 'lucide-react';
 import api from '../../api/axios';
 import CreateShipmentDialog from './CreateShipmentDialog';
 import { formatDateTime, calculateEstimatedDeliveryDate, formatInr } from '../../utils/orderDateTime';
@@ -10,7 +10,8 @@ const STAGES = ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out 
 // Shipments are created manually by admin once the order is packed (nothing books at checkout).
 // The backend re-checks all of this and locks the order, so the button can't double-book.
 const STUCK_AFTER_MS = 10 * 60 * 1000;
-function canCreateShipment(o) {
+export function canCreateShipment(o) {
+  if (!o) return false;
   if (o.awb_number || o.awb) return false;
   if (String(o.paymentStatus || o.payment_status || '').toLowerCase() !== 'paid') return false;
   if (String(o.rawPaymentMethod || o.payment_method || '').toLowerCase() === 'cod') return false;
@@ -24,6 +25,34 @@ function canCreateShipment(o) {
     return Date.now() - lastTouch > STUCK_AFTER_MS;
   }
   return false;
+}
+
+/**
+ * Determine if an order is eligible to be reset back to 'processing' fulfillment state.
+ * Eligible only when:
+ * 1. Order is paid.
+ * 2. Active shipment has been created.
+ * 3. Order is NOT delivered or completed.
+ * 4. Order is NOT cancelled or refunded.
+ */
+export function canResetShipment(o) {
+  if (!o) return false;
+  const payStatus = String(o.paymentStatus || o.payment_status || '').toLowerCase();
+  if (payStatus !== 'paid') return false;
+  if (payStatus === 'refunded') return false;
+
+  const ordStatus = String(o.orderStatus || o.order_status || '').toLowerCase();
+  if (['delivered', 'completed', 'cancelled'].includes(ordStatus)) return false;
+  if (o.cancellation) return false;
+
+  const hasShipment = Boolean(
+    o.awb_number ||
+    o.awb ||
+    String(o.shipment_status || '').toLowerCase() === 'booked' ||
+    o.shipment_id ||
+    o.shipment_booking_response?.shipment_id
+  );
+  return hasShipment;
 }
 
 // Shipment status shown in the Orders Log (only states MILASTY actually records from Shiprath)
@@ -95,6 +124,12 @@ export default function AdminOrderList() {
   const [pickupLoading, setPickupLoading] = useState(false);
   const [labelLoading, setLabelLoading] = useState(false);
   const [pickupNotice, setPickupNotice] = useState(null);
+
+  // Reset shipment to processing state
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetReason, setResetReason] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetError, setResetError] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -221,6 +256,40 @@ export default function AdminOrderList() {
       alert(err.response?.data?.message || err.message || 'Error generating label.');
     } finally {
       setLabelLoading(false);
+    }
+  };
+
+  const handleConfirmReset = async () => {
+    if (!selectedOrder) return;
+    const orderId = selectedOrder.id || selectedOrder._id || selectedOrder.order_number;
+    if (!resetReason.trim()) {
+      setResetError('Please enter a reason for resetting the shipment.');
+      return;
+    }
+
+    setResetLoading(true);
+    setResetError(null);
+    try {
+      const res = await api.post(`/shiprat/order/${encodeURIComponent(orderId)}/reset-shipment`, {
+        reason: resetReason.trim(),
+      });
+      if (res.data?.success) {
+        const updated = res.data.order;
+        if (updated) {
+          setSelectedOrder((prev) => ({ ...prev, ...updated }));
+          setOrders((prev) => prev.map((o) => (o.id === orderId || o._id === orderId || o.order_number === orderId ? { ...o, ...updated } : o)));
+        } else {
+          await fetchOrders();
+        }
+        setShowResetModal(false);
+        setResetReason('');
+      } else {
+        setResetError(res.data?.message || 'Failed to reset shipment.');
+      }
+    } catch (err) {
+      setResetError(err.response?.data?.message || err.message || 'Error resetting shipment.');
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -766,6 +835,104 @@ export default function AdminOrderList() {
               </div>
             )}
 
+            {/* Previous Shipment History Section (Preserved snapshot when reset) */}
+            {(() => {
+              const history = Array.isArray(selectedOrder.shipment_history) && selectedOrder.shipment_history.length > 0
+                ? selectedOrder.shipment_history
+                : (Array.isArray(selectedOrder.shipment_booking_response?.history) ? selectedOrder.shipment_booking_response.history : []);
+
+              if (!history || history.length === 0) return null;
+
+              return (
+                <div style={{
+                  background: '#FFF9F5',
+                  border: '1px solid #FED7AA',
+                  borderRadius: '12px',
+                  padding: '1rem',
+                  marginBottom: '1.25rem',
+                }}>
+                  <div style={{
+                    fontSize: '0.74rem',
+                    textTransform: 'uppercase',
+                    fontWeight: '800',
+                    color: '#9A3412',
+                    letterSpacing: '0.05em',
+                    marginBottom: '0.75rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                  }}>
+                    <RotateCcw size={14} color="#EA580C" />
+                    <span>Previous Shipment History ({history.length})</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {[...history].reverse().map((entry, idx) => {
+                      const oldAwb = entry.awb || entry.awb_number || 'N/A';
+                      const oldCourier = entry.courier_name || entry.booked_service_name || 'Shiprath Partner';
+                      const prevPickupStatus = entry.pickup_status || 'not_created';
+                      const resetReason = entry.reset_reason || 'N/A';
+                      const resetDate = entry.reset_at ? formatDateTime(entry.reset_at) : 'N/A';
+                      const resetAdmin = entry.reset_by_admin_email || entry.reset_by_admin_id || 'Admin';
+
+                      return (
+                        <div
+                          key={idx}
+                          style={{
+                            backgroundColor: '#FFFFFF',
+                            borderRadius: '8px',
+                            padding: '0.75rem 0.85rem',
+                            border: '1px solid #FDBA74',
+                            fontSize: '0.78rem',
+                          }}
+                        >
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.4rem 1rem' }}>
+                            <div>
+                              <span style={{ color: '#786C63', fontSize: '0.72rem' }}>Old AWB: </span>
+                              <code style={{ background: '#F8FAFC', padding: '0.1rem 0.35rem', borderRadius: '4px', fontWeight: '700', color: '#9A3412' }}>
+                                {oldAwb}
+                              </code>
+                            </div>
+                            <div>
+                              <span style={{ color: '#786C63', fontSize: '0.72rem' }}>Old Courier: </span>
+                              <strong style={{ color: '#2C1810' }}>{oldCourier}</strong>
+                            </div>
+                            <div>
+                              <span style={{ color: '#786C63', fontSize: '0.72rem' }}>Previous Pickup Status: </span>
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                padding: '0.1rem 0.45rem',
+                                borderRadius: '999px',
+                                fontSize: '0.7rem',
+                                fontWeight: '800',
+                                ...getPickupBadgeStyle(prevPickupStatus),
+                              }}>
+                                {getPickupStatusLabel(prevPickupStatus)}
+                              </span>
+                            </div>
+                            <div>
+                              <span style={{ color: '#786C63', fontSize: '0.72rem' }}>Reset At: </span>
+                              <span style={{ color: '#4A3B2E' }}>{resetDate} ({resetAdmin})</span>
+                            </div>
+                          </div>
+
+                          <div style={{ marginTop: '0.45rem', paddingTop: '0.45rem', borderTop: '1px dashed #FED7AA', display: 'flex', gap: '0.4rem', alignItems: 'baseline' }}>
+                            <span style={{ color: '#9A3412', fontWeight: '700', fontSize: '0.72rem', textTransform: 'uppercase' }}>
+                              Reset Reason:
+                            </span>
+                            <span style={{ color: '#21150F', fontStyle: 'italic', fontSize: '0.78rem' }}>
+                              "{resetReason}"
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Shipment & AWB Details Banner */}
             <div style={{ background: 'rgba(252, 250, 247, 0.7)', border: '1px solid rgba(231, 222, 213, 0.65)', borderRadius: '12px', padding: '1rem', marginBottom: '1.25rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
@@ -781,24 +948,52 @@ export default function AdminOrderList() {
                     </div>
                   ) : (
                     <div style={{ marginTop: '0.25rem', fontSize: '0.82rem', color: '#B7791F', fontWeight: '600' }}>
-                      Shipment not created yet — create it once the order is packed
+                      Current Shipment: Not Created
                     </div>
                   )}
                 </div>
 
-                <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                   {(selectedOrder.awb_number || selectedOrder.awb) ? (
-                    // backend.shiprath.com/tracking/{awb} is not a real Shiprath page (it 404s with
-                    // "Cannot find module 'html'"), so track through the MILASTY backend instead.
-                    <button
-                      type="button"
-                      onClick={() => handleTrackShipment(selectedOrder.id || selectedOrder._id)}
-                      disabled={shipTracking.loading}
-                      style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', backgroundColor: '#381423', color: '#FFF', border: 'none', fontSize: '0.78rem', fontWeight: '700', cursor: shipTracking.loading ? 'wait' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
-                    >
-                      <Truck size={13} />
-                      <span>{shipTracking.loading ? 'Tracking...' : 'Track Shipment'}</span>
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleTrackShipment(selectedOrder.id || selectedOrder._id)}
+                        disabled={shipTracking.loading}
+                        style={{ padding: '0.45rem 0.85rem', borderRadius: '8px', backgroundColor: '#381423', color: '#FFF', border: 'none', fontSize: '0.78rem', fontWeight: '700', cursor: shipTracking.loading ? 'wait' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                      >
+                        <Truck size={13} />
+                        <span>{shipTracking.loading ? 'Tracking...' : 'Track Shipment'}</span>
+                      </button>
+
+                      {canResetShipment(selectedOrder) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setResetReason('');
+                            setResetError(null);
+                            setShowResetModal(true);
+                          }}
+                          style={{
+                            padding: '0.45rem 0.85rem',
+                            borderRadius: '8px',
+                            backgroundColor: '#FEF2F2',
+                            color: '#991B1B',
+                            border: '1px solid #FECACA',
+                            fontSize: '0.78rem',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                          }}
+                          title="Courier returned without collecting package? Reset fulfilment to create a new shipment."
+                        >
+                          <RotateCcw size={13} color="#991B1B" />
+                          <span>RESET SHIPMENT TO PROCESSING</span>
+                        </button>
+                      )}
+                    </>
                   ) : canCreateShipment(selectedOrder) ? (
                     <button
                       onClick={() => setShipDialogOrderId(selectedOrder.id || selectedOrder._id)}
@@ -1411,6 +1606,152 @@ export default function AdminOrderList() {
 
             <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#725D50', fontStyle: 'italic' }}>
               Please verify all special baking & packaging instructions before dispatch.
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* RESET SHIPMENT TO PROCESSING CONFIRMATION MODAL */}
+      {selectedOrder && showResetModal && createPortal(
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          backdropFilter: 'blur(6px)',
+          zIndex: 100005,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1.25rem',
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '14px',
+            maxWidth: '520px',
+            width: '100%',
+            padding: '1.5rem',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #E5DCCE',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #F3EDE6', paddingBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <RotateCcw size={20} color="#991B1B" />
+                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#21150F', fontWeight: '800' }}>
+                  Reset Shipment to Processing
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setShowResetModal(false); setResetError(null); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem', color: '#8A7B70' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.86rem', color: '#4A3B2E', lineHeight: '1.45', margin: '0 0 0.85rem 0' }}>
+              The courier returned without collecting the package. Resetting this order will allow you to create a new shipment and pickup.
+            </p>
+
+            {/* Safety Warning Notice (Requirement 9) */}
+            <div style={{
+              padding: '0.75rem',
+              borderRadius: '8px',
+              backgroundColor: '#FFFBEB',
+              border: '1px solid #FDE68A',
+              color: '#92400E',
+              fontSize: '0.78rem',
+              lineHeight: '1.4',
+              marginBottom: '1rem',
+              display: 'flex',
+              gap: '0.5rem',
+            }}>
+              <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <strong>Important Courier Notice:</strong> If an old courier pickup was already scheduled, please ensure it is cancelled through the Shiprath portal before arranging another pickup. Resetting the order in MILASTY does not automatically cancel an external courier pickup that is already in motion.
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#21150F', marginBottom: '0.4rem' }}>
+                Reason for Reset <span style={{ color: '#DC2626' }}>*</span>:
+              </label>
+              <textarea
+                rows={3}
+                value={resetReason}
+                onChange={(e) => setResetReason(e.target.value)}
+                placeholder="e.g. Package not ready – courier returned without collection."
+                style={{
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: '8px',
+                  border: '1px solid #D5C9BD',
+                  fontSize: '0.82rem',
+                  fontFamily: 'inherit',
+                  resize: 'vertical',
+                  outline: 'none',
+                }}
+              />
+            </div>
+
+            {resetError && (
+              <div style={{
+                padding: '0.6rem 0.75rem',
+                borderRadius: '6px',
+                backgroundColor: '#FEF2F2',
+                border: '1px solid #FCA5A5',
+                color: '#991B1B',
+                fontSize: '0.78rem',
+                marginBottom: '1rem',
+              }}>
+                {resetError}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem' }}>
+              <button
+                type="button"
+                onClick={() => { setShowResetModal(false); setResetError(null); }}
+                disabled={resetLoading}
+                style={{
+                  padding: '0.55rem 1rem',
+                  borderRadius: '8px',
+                  backgroundColor: '#F3EDE6',
+                  color: '#4A3B2E',
+                  border: 'none',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  cursor: resetLoading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmReset}
+                disabled={resetLoading || !resetReason.trim()}
+                style={{
+                  padding: '0.55rem 1.15rem',
+                  borderRadius: '8px',
+                  backgroundColor: resetLoading || !resetReason.trim() ? '#FCA5A5' : '#991B1B',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  fontSize: '0.82rem',
+                  fontWeight: '800',
+                  cursor: resetLoading || !resetReason.trim() ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                }}
+              >
+                {resetLoading && <RefreshCw size={13} className="animate-spin" />}
+                <span>{resetLoading ? 'Resetting…' : 'Confirm Reset'}</span>
+              </button>
             </div>
           </div>
         </div>,

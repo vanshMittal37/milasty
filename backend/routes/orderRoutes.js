@@ -14,6 +14,7 @@ import {
   createPickupForOrder,
   retryLabelGeneration,
   getShippingSlip,
+  resetShipmentToProcessing,
 } from '../controllers/shipratController.js';
 import { getCancellationQuote } from '../controllers/cancellationController.js';
 import { protect, adminOnly, optionalProtect } from '../middleware/authMiddleware.js';
@@ -39,6 +40,7 @@ router.post('/admin/:id/retry-shipment', protect, adminOnly, bookShipmentForOrde
 router.post('/admin/:id/create-pickup', protect, adminOnly, createPickupForOrder);
 router.post('/admin/:id/retry-label', protect, adminOnly, retryLabelGeneration);
 router.get('/admin/:id/shipping-label', protect, adminOnly, getShippingSlip);
+router.post('/admin/:id/reset-shipment', protect, adminOnly, resetShipmentToProcessing);
 
 export default router;
 

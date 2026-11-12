@@ -121,6 +121,18 @@ export async function sendOrderNotification({ order, eventType, extraData = {} }
       return { enqueued: false, reason: 'missing_order' };
     }
 
+    // Targeted suppression for Admin Re-fulfilment / Reset Shipment workflows
+    // Ensures zero customer WhatsApp/SMS/Email notifications during reset and re-shipping
+    if (
+      order.suppress_customer_notifications === true ||
+      order.silent_refulfillment === true ||
+      extraData.suppressNotification === true ||
+      extraData.suppressCustomerNotifications === true
+    ) {
+      console.log(`[ORDER NOTIFICATION] 🔕 Suppressed customer notification for order #${order.order_number || order.id} (${eventType}) due to silent fulfilment reset policy.`);
+      return { enqueued: false, suppressed: true, reason: 'suppressed_admin_refulfillment' };
+    }
+
     const standardEvent = LEGACY_EVENT_MAP[eventType] || eventType.toUpperCase();
     const result = await triggerEvent(standardEvent, {
       order,
