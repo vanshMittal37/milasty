@@ -114,30 +114,38 @@ async function runAll() {
   // ─────────────────────────────────────────────────────────────────
   console.log('\n--- TEST GROUP 2: Pickup Scheduling & Request Validation ---');
 
-  runTest('2.1 Pickup request payload includes AWB, warehouse address, and pickup date', () => {
-    assert(shipratCtrlSrc.includes("address_id: WAREHOUSE_ADDRESS_ID"), 'Sends configured warehouse address ID');
-    assert(shipratCtrlSrc.includes("pickup_date: pickupDate"), 'Sends formatted pickup date');
-    assert(shipratCtrlSrc.includes("expected_package_count: 1"), 'Specifies package count');
+  runTest('2.1 Pickup request payload strictly contains documented 3-field body (address_id, date, time)', () => {
+    assert(shipratCtrlSrc.includes("address_id: WAREHOUSE_ADDRESS_ID"), 'Sends configured warehouse address ID (1777118843112)');
+    assert(shipratCtrlSrc.includes("date: pickupDate"), 'Sends formatted pickup date');
+    assert(shipratCtrlSrc.includes("time: pickupTime"), 'Sends scheduled pickup time');
+    assert(!shipratCtrlSrc.includes("expected_package_count"), 'Speculative package count field removed');
+    assert(!shipratCtrlSrc.includes("pickup_date: pickupDate"), 'Speculative pickup_date key replaced with date');
   });
 
-  runTest('2.2 Uses strictly configured endpoint without fallback', () => {
-    assert(shipratCtrlSrc.includes("(process.env.SHIPRATH_PICKUP_ENDPOINT || '').trim() || '/shipment/shipment_pickup'"), 'Uses configured endpoint or default');
+  runTest('2.2 Uses strictly verified endpoint (/shipment/create_pickup_request_api) without fallback', () => {
+    assert(shipratCtrlSrc.includes("(process.env.SHIPRATH_PICKUP_ENDPOINT || '').trim() || '/shipment/create_pickup_request_api'"), 'Uses verified endpoint or configured override');
     assert(!shipratCtrlSrc.includes("candidateEndpoints"), 'Removed speculative candidate endpoints');
   });
 
-  await runAsyncTest('2.3 (a) Primary endpoint success', async () => {
+  await runAsyncTest('2.3 (a) Primary endpoint success & exact 3-field payload verification', async () => {
     let callCount = 0;
+    let interceptedUrl = null;
+    let interceptedBody = null;
+    let interceptedHeaders = null;
     const originalFetch = global.fetch;
     try {
-      global.fetch = async (url) => {
+      global.fetch = async (url, opts) => {
         callCount++;
+        interceptedUrl = url;
+        interceptedBody = JSON.parse(opts.body);
+        interceptedHeaders = opts.headers;
         return {
           ok: true,
           status: 200,
           text: async () => JSON.stringify({
             status: true,
             pickup_request_id: 'PR-TEST-12345',
-            scheduled_date: '2026-11-12',
+            date: '2026-11-12',
             confirmation_number: 'CONF-88899',
             message: 'Pickup scheduled successfully'
           })
@@ -153,6 +161,13 @@ async function runAll() {
 
       assert(res.success === true, 'Pickup must succeed');
       assert(callCount === 1, 'Exactly 1 API request made');
+      assert(interceptedUrl.endsWith('/shipment/create_pickup_request_api'), 'Calls verified official endpoint');
+      assert.strictEqual(interceptedBody.address_id, '1777118843112', 'Warehouse ID is 1777118843112');
+      assert.strictEqual(interceptedBody.date, '2026-11-12', 'Pickup date matches');
+      assert.strictEqual(interceptedBody.time, '14:00', 'Pickup time is formatted string');
+      assert.strictEqual(Object.keys(interceptedBody).length, 3, 'Payload contains strictly 3 fields');
+      assert(interceptedHeaders.secretkey, 'Includes secretkey header');
+      assert(interceptedHeaders.customerid, 'Includes customerid header');
       assert(res.pickup_request_id === 'PR-TEST-12345', 'Extracts pickup_request_id');
       assert(res.pickup_scheduled_date === '2026-11-12', 'Extracts scheduled_date');
       assert(res.pickup_confirmation_ref === 'CONF-88899', 'Extracts confirmation_number');
@@ -163,16 +178,18 @@ async function runAll() {
 
   await runAsyncTest('2.4 (b) Primary endpoint 404 without fallback', async () => {
     let callCount = 0;
+    let interceptedUrl = null;
     const originalFetch = global.fetch;
     try {
       global.fetch = async (url) => {
         callCount++;
+        interceptedUrl = url;
         return {
           ok: false,
           status: 404,
           text: async () => JSON.stringify({
             status: false,
-            message: 'Endpoint /shipment/shipment_pickup not found on vendor service'
+            message: 'Endpoint /shipment/create_pickup_request_api not found on vendor service'
           })
         };
       };
@@ -185,8 +202,9 @@ async function runAll() {
 
       assert(res.success === false, 'Must return failure on 404');
       assert(callCount === 1, 'Must NOT attempt fallback; exactly 1 call made');
+      assert(interceptedUrl.endsWith('/shipment/create_pickup_request_api'), 'Requested verified endpoint');
       assert(res.httpStatus === 404, 'Records 404 HTTP status');
-      assert(res.error.includes('Endpoint /shipment/shipment_pickup not found'), 'Records exact 404 response');
+      assert(res.error.includes('Endpoint /shipment/create_pickup_request_api not found'), 'Records exact 404 response');
     } finally {
       global.fetch = originalFetch;
     }

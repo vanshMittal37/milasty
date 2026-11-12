@@ -2150,10 +2150,11 @@ const activeLabelGenerations = new Set();
 
 /**
  * Call Shiprath API to request courier pickup for an existing booked shipment.
- * Uses strictly the configured endpoint (SHIPRATH_PICKUP_ENDPOINT || '/shipment/shipment_pickup').
+ * Uses strictly the verified endpoint (SHIPRATH_PICKUP_ENDPOINT || '/shipment/create_pickup_request_api').
+ * Exact 3-field body: { address_id: "1777118843112", date: "<date>", time: "<time>" }.
  * Zero fallback endpoints: if 404 or any rejection occurs, records the exact response and stops.
  */
-export async function requestShiprathPickup({ order, awb, shipmentId, scheduledDate }) {
+export async function requestShiprathPickup({ order, awb, shipmentId, scheduledDate, scheduledTime }) {
   const secretKey = (process.env.SHIPRATH_SECRET_KEY || '').trim();
   const customerId = (process.env.SHIPRATH_CUSTOMER_ID || '').trim();
 
@@ -2162,22 +2163,15 @@ export async function requestShiprathPickup({ order, awb, shipmentId, scheduledD
   }
 
   const pickupDate = scheduledDate || new Date().toISOString().split('T')[0];
+  const pickupTime = scheduledTime || '14:00';
   const payload = {
-    awb_number: awb,
-    awb: awb,
-    shipment_id: shipmentId || undefined,
     address_id: WAREHOUSE_ADDRESS_ID,
-    pickup_date: pickupDate,
-    pickup_time: '14:00',
-    courier_id: order.booked_courier_id || undefined,
-    carrier_id: order.booked_carrier_id || undefined,
-    service_name: order.courier_name || order.booked_service_name || undefined,
-    expected_package_count: 1,
-    package_count: 1,
+    date: pickupDate,
+    time: pickupTime,
   };
 
-  const endpoint = (process.env.SHIPRATH_PICKUP_ENDPOINT || '').trim() || '/shipment/shipment_pickup';
-  console.log(`[SHIPRATH PICKUP] ${order.order_number} (AWB: ${awb}) → POST ${endpoint}`);
+  const endpoint = (process.env.SHIPRATH_PICKUP_ENDPOINT || '').trim() || '/shipment/create_pickup_request_api';
+  console.log(`[SHIPRATH PICKUP] ${order.order_number} (AWB: ${awb}) → POST ${endpoint} payload:`, JSON.stringify(payload));
 
   try {
     const res = await fetch(`${SHIPRATH_BASE_URL}${endpoint}`, {
@@ -2212,10 +2206,10 @@ export async function requestShiprathPickup({ order, awb, shipmentId, scheduledD
       return {
         success: true,
         data,
-        pickup_request_id: data.pickup_request_id || data.pickup_id || data.request_id || data.id || `PKP-${order.order_number}`,
-        pickup_scheduled_date: data.pickup_date || data.scheduled_date || pickupDate,
+        pickup_request_id: data.pickup_request_id || data.pickup_id || data.request_id || data.data?.pickup_id || data.data?.request_id || data.id || `PKP-${order.order_number}`,
+        pickup_scheduled_date: data.pickup_date || data.scheduled_date || data.date || pickupDate,
         pickup_confirmation_ref: data.confirmation_number || data.confirmation_ref || data.reference || data.token || awb,
-        label_url: data.label || data.label_url || data.print_label || data.shipping_label || null,
+        label_url: data.label || data.label_url || data.print_label || data.shipping_label || data.data?.label || null,
       };
     }
 
@@ -2227,8 +2221,8 @@ export async function requestShiprathPickup({ order, awb, shipmentId, scheduledD
         success: true,
         alreadyScheduled: true,
         data,
-        pickup_request_id: `PKP-${order.order_number}`,
-        pickup_scheduled_date: pickupDate,
+        pickup_request_id: data?.pickup_request_id || data?.pickup_id || `PKP-${order.order_number}`,
+        pickup_scheduled_date: data?.date || data?.pickup_date || pickupDate,
         pickup_confirmation_ref: awb,
         label_url: data?.label || data?.label_url || null,
       };
@@ -2434,6 +2428,7 @@ export const createPickupForOrder = async (req, res) => {
       awb,
       shipmentId: order.shipment_id,
       scheduledDate: req.body?.scheduledDate,
+      scheduledTime: req.body?.scheduledTime,
     });
 
     if (!pickupResult.success) {
