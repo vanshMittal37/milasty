@@ -84,6 +84,8 @@ async function runAll() {
     retryLabelGeneration,
     getShippingSlip,
     isPickupForActiveShipment,
+    formatShiprathPickupDate,
+    formatShiprathPickupTime,
   } = await import('../controllers/shipratController.js');
 
   // ─────────────────────────────────────────────────────────────────
@@ -114,12 +116,22 @@ async function runAll() {
   // ─────────────────────────────────────────────────────────────────
   console.log('\n--- TEST GROUP 2: Pickup Scheduling & Request Validation ---');
 
-  runTest('2.1 Pickup request payload strictly contains documented 3-field body (address_id, date, time)', () => {
+  runTest('2.1 Pickup request payload strictly contains documented 3-field body in official Postman format', () => {
     assert(shipratCtrlSrc.includes("address_id: WAREHOUSE_ADDRESS_ID"), 'Sends configured warehouse address ID (1777118843112)');
-    assert(shipratCtrlSrc.includes("date: pickupDate"), 'Sends formatted pickup date');
-    assert(shipratCtrlSrc.includes("time: pickupTime"), 'Sends scheduled pickup time');
+    assert(shipratCtrlSrc.includes("date: formattedDate"), 'Sends formatted pickup date');
+    assert(shipratCtrlSrc.includes("time: formattedTime"), 'Sends formatted pickup time');
     assert(!shipratCtrlSrc.includes("expected_package_count"), 'Speculative package count field removed');
     assert(!shipratCtrlSrc.includes("pickup_date: pickupDate"), 'Speculative pickup_date key replaced with date');
+
+    // Test official Postman collection format requirements:
+    // Date: D Month YYYY (e.g. 5 January 2026)
+    // Time: H:mm (e.g. 9:00)
+    assert.strictEqual(formatShiprathPickupDate('2026-01-05'), '5 January 2026', 'Converts 2026-01-05 to 5 January 2026');
+    assert.strictEqual(formatShiprathPickupDate('5 January 2026'), '5 January 2026', 'Preserves 5 January 2026 as is');
+    assert.strictEqual(formatShiprathPickupDate('2026-11-12'), '12 November 2026', 'Converts 2026-11-12 to 12 November 2026');
+    assert.strictEqual(formatShiprathPickupTime('09:00'), '9:00', 'Formats 09:00 to 9:00 without leading zero');
+    assert.strictEqual(formatShiprathPickupTime('9:00'), '9:00', 'Preserves 9:00');
+    assert.strictEqual(formatShiprathPickupTime('14:00'), '14:00', 'Formats 14:00 to 14:00');
   });
 
   runTest('2.2 Uses strictly verified endpoint (/shipment/create_pickup_request_api) without fallback', () => {
@@ -127,7 +139,7 @@ async function runAll() {
     assert(!shipratCtrlSrc.includes("candidateEndpoints"), 'Removed speculative candidate endpoints');
   });
 
-  await runAsyncTest('2.3 (a) Primary endpoint success & exact 3-field payload verification', async () => {
+  await runAsyncTest('2.3 (a) Primary endpoint success & exact 3-field payload verification in official Postman format', async () => {
     let callCount = 0;
     let interceptedUrl = null;
     let interceptedBody = null;
@@ -145,7 +157,7 @@ async function runAll() {
           text: async () => JSON.stringify({
             status: true,
             pickup_request_id: 'PR-TEST-12345',
-            date: '2026-11-12',
+            date: '5 January 2026',
             confirmation_number: 'CONF-88899',
             message: 'Pickup scheduled successfully'
           })
@@ -156,20 +168,21 @@ async function runAll() {
         order: { order_number: 'MIL-TEST-99', booked_carrier_id: '123' },
         awb: 'AWB999999',
         shipmentId: 'SH-999',
-        scheduledDate: '2026-11-12'
+        scheduledDate: '2026-01-05',
+        scheduledTime: '09:00'
       });
 
       assert(res.success === true, 'Pickup must succeed');
       assert(callCount === 1, 'Exactly 1 API request made');
       assert(interceptedUrl.endsWith('/shipment/create_pickup_request_api'), 'Calls verified official endpoint');
       assert.strictEqual(interceptedBody.address_id, '1777118843112', 'Warehouse ID is 1777118843112');
-      assert.strictEqual(interceptedBody.date, '2026-11-12', 'Pickup date matches');
-      assert.strictEqual(interceptedBody.time, '14:00', 'Pickup time is formatted string');
+      assert.strictEqual(interceptedBody.date, '5 January 2026', 'Pickup date formatted strictly as D Month YYYY');
+      assert.strictEqual(interceptedBody.time, '9:00', 'Pickup time formatted strictly as H:mm');
       assert.strictEqual(Object.keys(interceptedBody).length, 3, 'Payload contains strictly 3 fields');
       assert(interceptedHeaders.secretkey, 'Includes secretkey header');
       assert(interceptedHeaders.customerid, 'Includes customerid header');
       assert(res.pickup_request_id === 'PR-TEST-12345', 'Extracts pickup_request_id');
-      assert(res.pickup_scheduled_date === '2026-11-12', 'Extracts scheduled_date');
+      assert(res.pickup_scheduled_date === '5 January 2026', 'Extracts scheduled_date');
       assert(res.pickup_confirmation_ref === 'CONF-88899', 'Extracts confirmation_number');
     } finally {
       global.fetch = originalFetch;

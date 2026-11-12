@@ -2148,10 +2148,77 @@ export const diagnoseCredentials = async (req, res) => {
 const activePickups = new Set();
 const activeLabelGenerations = new Set();
 
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+/**
+ * Format pickup date strictly to Shiprath's official B2C Postman format: "D Month YYYY" (e.g. "5 January 2026").
+ * @param {Date|string} [dateInput]
+ * @returns {string}
+ */
+export function formatShiprathPickupDate(dateInput) {
+  if (typeof dateInput === 'string' && dateInput.trim()) {
+    const trimmed = dateInput.trim();
+    // Already in "D Month YYYY" or "DD Month YYYY" (e.g. "5 January 2026")
+    if (/^\d{1,2}\s+[A-Za-z]+\s+\d{4}$/.test(trimmed)) {
+      return trimmed;
+    }
+    // "YYYY-MM-DD"
+    const ymMatch = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (ymMatch) {
+      const year = ymMatch[1];
+      const monthIdx = parseInt(ymMatch[2], 10) - 1;
+      const day = parseInt(ymMatch[3], 10);
+      if (monthIdx >= 0 && monthIdx < 12) {
+        return `${day} ${MONTH_NAMES[monthIdx]} ${year}`;
+      }
+    }
+    // "DD-MM-YYYY"
+    const dmMatch = trimmed.match(/^(\d{1,2})-(\d{1,2})-(\d{4})/);
+    if (dmMatch) {
+      const day = parseInt(dmMatch[1], 10);
+      const monthIdx = parseInt(dmMatch[2], 10) - 1;
+      const year = dmMatch[3];
+      if (monthIdx >= 0 && monthIdx < 12) {
+        return `${day} ${MONTH_NAMES[monthIdx]} ${year}`;
+      }
+    }
+  }
+
+  // Fallback to today
+  const now = dateInput ? new Date(dateInput) : new Date();
+  const validDate = isNaN(now.getTime()) ? new Date() : now;
+  const day = validDate.getDate(); // 1-31 without leading zero
+  const month = MONTH_NAMES[validDate.getMonth()];
+  const year = validDate.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+
+/**
+ * Format pickup time strictly to Shiprath's official B2C Postman format: "H:mm" (e.g. "9:00" or "14:00").
+ * @param {string} [timeInput]
+ * @returns {string}
+ */
+export function formatShiprathPickupTime(timeInput) {
+  const defaultTime = (process.env.SHIPRATH_DEFAULT_PICKUP_TIME || '14:00').trim();
+  const raw = (typeof timeInput === 'string' && timeInput.trim()) ? timeInput.trim() : defaultTime;
+  
+  // Strip leading zero from hour if present (e.g. "09:00" -> "9:00", "14:00" -> "14:00")
+  const match = raw.match(/^0?(\d{1,2}):(\d{2})/);
+  if (match) {
+    const hour = parseInt(match[1], 10);
+    const minute = match[2];
+    return `${hour}:${minute}`;
+  }
+  return raw;
+}
+
 /**
  * Call Shiprath API to request courier pickup for an existing booked shipment.
  * Uses strictly the verified endpoint (SHIPRATH_PICKUP_ENDPOINT || '/shipment/create_pickup_request_api').
- * Exact 3-field body: { address_id: "1777118843112", date: "<date>", time: "<time>" }.
+ * Exact 3-field body: { address_id: "1777118843112", date: "<D Month YYYY>", time: "<H:mm>" }.
  * Zero fallback endpoints: if 404 or any rejection occurs, records the exact response and stops.
  */
 export async function requestShiprathPickup({ order, awb, shipmentId, scheduledDate, scheduledTime }) {
@@ -2162,12 +2229,12 @@ export async function requestShiprathPickup({ order, awb, shipmentId, scheduledD
     throw new Error('Shiprath credentials missing from server environment variables.');
   }
 
-  const pickupDate = scheduledDate || new Date().toISOString().split('T')[0];
-  const pickupTime = scheduledTime || '14:00';
+  const formattedDate = formatShiprathPickupDate(scheduledDate);
+  const formattedTime = formatShiprathPickupTime(scheduledTime);
   const payload = {
     address_id: WAREHOUSE_ADDRESS_ID,
-    date: pickupDate,
-    time: pickupTime,
+    date: formattedDate,
+    time: formattedTime,
   };
 
   const endpoint = (process.env.SHIPRATH_PICKUP_ENDPOINT || '').trim() || '/shipment/create_pickup_request_api';
@@ -2207,7 +2274,7 @@ export async function requestShiprathPickup({ order, awb, shipmentId, scheduledD
         success: true,
         data,
         pickup_request_id: data.pickup_request_id || data.pickup_id || data.request_id || data.data?.pickup_id || data.data?.request_id || data.id || `PKP-${order.order_number}`,
-        pickup_scheduled_date: data.pickup_date || data.scheduled_date || data.date || pickupDate,
+        pickup_scheduled_date: data.pickup_date || data.scheduled_date || data.date || formattedDate,
         pickup_confirmation_ref: data.confirmation_number || data.confirmation_ref || data.reference || data.token || awb,
         label_url: data.label || data.label_url || data.print_label || data.shipping_label || data.data?.label || null,
       };
@@ -2222,7 +2289,7 @@ export async function requestShiprathPickup({ order, awb, shipmentId, scheduledD
         alreadyScheduled: true,
         data,
         pickup_request_id: data?.pickup_request_id || data?.pickup_id || `PKP-${order.order_number}`,
-        pickup_scheduled_date: data?.date || data?.pickup_date || pickupDate,
+        pickup_scheduled_date: data?.date || data?.pickup_date || formattedDate,
         pickup_confirmation_ref: awb,
         label_url: data?.label || data?.label_url || null,
       };
