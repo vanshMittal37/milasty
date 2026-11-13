@@ -1242,9 +1242,9 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
         shipment_id: shipmentId,
         courier_name: courierName,
         tracking_url: trackingUrl,
-        // When admin creates shipment, product/order status transitions to 'packed' for both admin and customer dashboards
-        order_status: 'packed',
-        status: 'Packed',
+        // When admin creates shipment, product/order status transitions to 'shipped' for both admin and customer dashboards
+        order_status: 'shipped',
+        status: 'Shipped',
         shipment_status: 'booked',
         ...packageFields,
         shipment_error: null,
@@ -1272,9 +1272,9 @@ export const bookShiprathShipment = async (order, { packageOverride = null } = {
       shipment_id: shipmentId,
       courier_name: courierName,
       tracking_url: trackingUrl,
-      order_status: 'packed',
-      orderStatus: 'Packed',
-      status: 'Packed',
+      order_status: 'shipped',
+      orderStatus: 'Shipped',
+      status: 'Shipped',
       carrier_id: bookedRate.carrier_id,
       courier_id: bookedRate.courier_id ?? '',
       product_id: bookedRate.product_id,
@@ -1441,15 +1441,15 @@ export const bookShipmentForOrder = async (req, res) => {
     }
 
     if (order.awb_number || order.awb || shipStatus === 'booked') {
-      if (['confirmed', 'processing'].includes(String(order.order_status || '').toLowerCase())) {
-        await safeUpdateOrder(order.id, { order_status: 'packed', status: 'Packed' });
+      if (['confirmed', 'processing', 'packed'].includes(String(order.order_status || '').toLowerCase())) {
+        await safeUpdateOrder(order.id, { order_status: 'shipped', status: 'Shipped' });
       }
       return res.status(409).json({
         success: false,
         code: 'ALREADY_BOOKED',
-        order_status: 'packed',
-        orderStatus: 'Packed',
-        status: 'Packed',
+        order_status: 'shipped',
+        orderStatus: 'Shipped',
+        status: 'Shipped',
         message: `Shipment already booked${order.awb_number ? ` (AWB ${order.awb_number})` : ''}. Not creating another one.`,
       });
     }
@@ -1514,9 +1514,9 @@ export const bookShipmentForOrder = async (req, res) => {
     return res.json({
       success: true,
       ...result,
-      order_status: 'packed',
-      orderStatus: 'Packed',
-      status: 'Packed',
+      order_status: 'shipped',
+      orderStatus: 'Shipped',
+      status: 'Shipped',
       raw: undefined,
     });
   } catch (error) {

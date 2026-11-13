@@ -587,7 +587,11 @@ export const formatOrderPayload = (o) => {
   const displayPaymentMethod = isRazorpay ? 'Razorpay' : 'Cash on Delivery';
 
   const rawOrderStatus = o.order_status || 'confirmed';
-  const canonicalOrderStatus = CANONICAL_STATUS_MAP[rawOrderStatus] || rawOrderStatus;
+  let canonicalOrderStatus = CANONICAL_STATUS_MAP[rawOrderStatus] || rawOrderStatus;
+  const hasAwb = Boolean(o.awb_number || o.awb);
+  if (hasAwb && !['cancelled', 'delivered', 'out_for_delivery'].includes(String(canonicalOrderStatus).toLowerCase())) {
+    canonicalOrderStatus = 'shipped';
+  }
 
   const discountVal = Number(o.discount_amount || o.discountAmount || o.coupon_discount || o.couponDiscount || 0);
   const couponCodeVal = o.coupon_code || o.couponCode || null;
@@ -711,6 +715,12 @@ export const formatCustomerOrderPayload = (o) => {
   // order_status is the single source of truth. The spread row also carries a legacy `orders.status`
   // column (never updated by admin/Shiprath) that customer pages read first — overwrite it so the
   // customer always sees the same status the admin set.
+  const hasAwb = Boolean(full.awb_number || full.awb);
+  const currentSt = String(full.orderStatus || '').toLowerCase();
+  if (hasAwb && !['cancelled', 'delivered', 'out_for_delivery'].includes(currentSt)) {
+    full.order_status = 'shipped';
+    full.orderStatus = 'Shipped';
+  }
   const label = CUSTOMER_STATUS_LABELS[String(full.orderStatus).toLowerCase()] || full.orderStatus;
   full.orderStatus = label;
   full.status = label;

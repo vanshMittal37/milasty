@@ -217,10 +217,11 @@ export default function OrderHistoryPage() {
       Delivered:     { bg: T.successBg, color: T.success },
       Cancelled:     { bg: T.dangerBg, color: T.danger },
     };
-    const style = map[s] || { bg: '#F3F4F6', color: '#6B7280' };
+    const matchedKey = Object.keys(map).find((k) => k.toLowerCase() === s.toLowerCase()) || 'Confirmed';
+    const style = map[matchedKey] || { bg: '#F3F4F6', color: '#6B7280' };
     return (
       <span style={{ padding: '0.25rem 0.75rem', borderRadius: '999px', fontSize: '0.72rem', fontWeight: '700', backgroundColor: style.bg, color: style.color, display: 'inline-block', whiteSpace: 'nowrap' }}>
-        {s}
+        {matchedKey}
       </span>
     );
   };
@@ -349,7 +350,7 @@ export default function OrderHistoryPage() {
                           ✦ Customized
                         </span>
                       )}
-                      <StatusBadge status={order.orderStatus || 'Confirmed'} />
+                      <StatusBadge status={(order.awb_number || order.awb) && !['cancelled', 'delivered', 'out for delivery', 'out_for_delivery'].includes(String(order.orderStatus || order.status || order.order_status || '').toLowerCase()) ? 'Shipped' : (order.orderStatus || order.status || order.order_status || 'Confirmed')} />
                       <span style={{ fontSize: '0.76rem', fontWeight: '600', color: isPaid ? T.success : T.warning, display: 'flex', alignItems: 'center', gap: '0.25rem', backgroundColor: isPaid ? T.successBg : T.warningBg, padding: '0.25rem 0.65rem', borderRadius: '8px' }}>
                         <ShieldCheck size={12} /> {order.paymentMethod} · {isPaid ? 'Paid' : 'Pending'}
                       </span>

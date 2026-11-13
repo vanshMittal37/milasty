@@ -29,17 +29,16 @@ const SHIPPED_STEP = 3;
 const normKey = (v) => String(v || '').trim().toLowerCase().replace(/\s+/g, '_');
 
 /**
- * Journey step from the order status (set by admin / auto-transition) and the shipment status
- * (from the courier). Courier states can skip ahead or arrive out of order, so take the furthest
- * stage either source has reached rather than forcing a fixed sequence.
+ * Journey step from the order status (set by admin / auto-transition), shipment status
+ * (from the courier), and active AWB presence. Takes the furthest stage reached.
  */
-function journeyIndex(orderStatus, shipmentStatus) {
+function journeyIndex(orderStatus, shipmentStatus, hasAwb = false) {
   const o = normKey(orderStatus);
   const s = normKey(shipmentStatus);
   let idx = 0;
   if (o === 'processing') idx = 1;
-  if (o === 'packed' || s === 'booked') idx = Math.max(idx, 2);
-  if (o === 'shipped' || s === 'picked_up') idx = Math.max(idx, 3);
+  if (o === 'packed') idx = Math.max(idx, 2);
+  if (o === 'shipped' || s === 'booked' || s === 'shipped' || s === 'picked_up' || hasAwb) idx = Math.max(idx, 3);
   if (s === 'in_transit') idx = Math.max(idx, 4);
   if (o === 'out_for_delivery' || s === 'out_for_delivery') idx = Math.max(idx, 5);
   if (o === 'delivered' || s === 'delivered') idx = 6;
@@ -216,8 +215,9 @@ export default function CustomerOrderDetailPage() {
       setOrder(fetchedOrder);
       const st = String(fetchedOrder?.orderStatus || fetchedOrder?.status || '').toLowerCase();
       if (st !== 'cancelled' && st !== 'delivered') fetchCancelQuote();
-      // Once dispatched, fetch courier tracking (this also refreshes the shipment status server-side)
-      if (['shipped', 'out_for_delivery', 'out for delivery', 'delivered'].includes(st)) {
+      // Once dispatched or has shipment/AWB, fetch courier tracking (this also refreshes the shipment status server-side)
+      const hasShipment = Boolean(fetchedOrder?.awb_number || fetchedOrder?.awb || fetchedOrder?.shipment_id || fetchedOrder?.shipment_status === 'booked');
+      if (['shipped', 'out_for_delivery', 'out for delivery', 'delivered'].includes(st) || hasShipment) {
         fetchShipTracking(fetchedOrder?.id || fetchedOrder?._id || id);
       }
     } catch (e) {
@@ -332,15 +332,19 @@ export default function CustomerOrderDetailPage() {
   const createdAtMs = new Date(order.createdAt || order.created_at).getTime();
   const isOlderThan3Hours = !isNaN(createdAtMs) && (Date.now() - createdAtMs >= 3 * 3600 * 1000);
 
+  const awb = order.awb_number || order.awb || shipTracking?.awb || null;
+  const courierName = order.courier_name || shipTracking?.courier_name || null;
+  const hasAwb = Boolean(awb);
+
   // Show "Preparing" after 3 hours if the order is still marked Confirmed
   let orderStatus = order.orderStatus || order.status || order.order_status || 'Confirmed';
   if (isOlderThan3Hours && String(orderStatus).toLowerCase() === 'confirmed') orderStatus = 'Processing';
 
   const isCancelled = String(orderStatus).toLowerCase() === 'cancelled';
   const shipmentStatus = shipTracking?.shipment_status || order.shipment_status;
-  const stepIdx = journeyIndex(orderStatus, shipmentStatus);
+  const stepIdx = journeyIndex(orderStatus, shipmentStatus, hasAwb);
   const isDelivered = stepIdx === JOURNEY.length - 1;
-  const isDispatched = stepIdx >= SHIPPED_STEP;
+  const isDispatched = stepIdx >= SHIPPED_STEP || hasAwb;
   const statusLabel = isCancelled ? 'Cancelled' : JOURNEY[stepIdx].title;
 
   const paymentStatus = String(order.paymentStatus || order.payment_status || '').toLowerCase();
@@ -384,8 +388,6 @@ export default function CustomerOrderDetailPage() {
   const grandTotal = Number(order.totalAmount || order.grandTotal || order.grand_total || (subtotal - discountAmount + deliveryFee));
   const transactionRef = !isCod ? (order.paymentId || order.payment_id || null) : null;
 
-  const awb = order.awb_number || order.awb || shipTracking?.awb || null;
-  const courierName = order.courier_name || shipTracking?.courier_name || null;
   const trackingEvents = shipTracking?.events || shipTracking?.tracking?.shipment_track || [];
   // The courier's estimate once shipped (if it is a real date), otherwise the order's own estimate
   const courierEstimate = shipTracking?.estimated_delivery || shipTracking?.tracking?.estimated_delivery;
