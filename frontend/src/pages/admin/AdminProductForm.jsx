@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link, useSearchParams, useLocation } from 'reac
 import {
   ArrowLeft, Save, Upload, Trash2, RefreshCw, Image as ImageIcon, Plus,
   Check, X, FileText, AlertCircle, Calendar, Sparkles, CheckSquare, Square,
-  ArrowUp, ArrowDown, Star
+  ArrowUp, ArrowDown, Star, GripVertical, Globe, Search, Copy, ExternalLink, HelpCircle
 } from 'lucide-react';
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
@@ -78,6 +78,10 @@ export default function AdminProductForm() {
     variants: [],
     allow_customization: false,
     customization_placeholder: '',
+    meta_title: '',
+    meta_description: '',
+    focus_keyword: '',
+    seo_slug: '',
   };
 
   const [formData, setFormData] = useState(emptyForm);
@@ -95,6 +99,8 @@ export default function AdminProductForm() {
   const [ingredientsList, setIngredientsList] = useState([]);
   const [newIngredientInput, setNewIngredientInput] = useState('');
   const [bulkIngredientsInput, setBulkIngredientsInput] = useState('');
+  const [draggedIngredientIdx, setDraggedIngredientIdx] = useState(null);
+  const [dropTargetIngredientIdx, setDropTargetIngredientIdx] = useState(null);
 
   const [benefitsList, setBenefitsList] = useState([]);
   const [newBenefitInput, setNewBenefitInput] = useState('');
@@ -104,6 +110,14 @@ export default function AdminProductForm() {
   const [customNutritionLabel, setCustomNutritionLabel] = useState('');
   const [customNutritionValue, setCustomNutritionValue] = useState('');
   const [customNutritionUnit, setCustomNutritionUnit] = useState('g');
+  const [draggedNutritionKey, setDraggedNutritionKey] = useState(null);
+  const [dropTargetNutritionKey, setDropTargetNutritionKey] = useState(null);
+
+  // Product-Level SEO State
+  const [secondaryKeywordsList, setSecondaryKeywordsList] = useState([]);
+  const [newSecondaryKeywordInput, setNewSecondaryKeywordInput] = useState('');
+  const [bulkSecondaryKeywordsInput, setBulkSecondaryKeywordsInput] = useState('');
+  const [originalProductSlug, setOriginalProductSlug] = useState('');
 
   // Multi-Image Gallery State
   const [galleryImages, setGalleryImages] = useState([]);
@@ -272,6 +286,10 @@ export default function AdminProductForm() {
       setBadgesList(['High Fiber']);
       setIngredientsList(['Millet Flour', 'Desi Ghee', 'Jaggery']);
       setBenefitsList(['Rich in Fiber', 'No Refined Sugar']);
+      setSecondaryKeywordsList([]);
+      setNewSecondaryKeywordInput('');
+      setBulkSecondaryKeywordsInput('');
+      setOriginalProductSlug('');
       const defaultNutr = {};
       PREDEFINED_NUTRITION_LIST.slice(0, 4).forEach((item) => {
         defaultNutr[item.key] = { label: item.label, value: '', unit: item.unit };
@@ -350,6 +368,10 @@ export default function AdminProductForm() {
           targetAudience: p.targetAudience || p.target_audience || '',
           allow_customization: Boolean(p.allow_customization || p.allowCustomization),
           customization_placeholder: p.customization_placeholder || p.customizationPlaceholder || '',
+          meta_title: p.meta_title || p.metaTitle || '',
+          meta_description: p.meta_description || p.metaDescription || '',
+          focus_keyword: p.focus_keyword || p.focusKeyword || '',
+          seo_slug: p.seo_slug || p.seoSlug || p.slug || '',
           variants: (p.variants || []).map((v) => ({
             id: v.id,
             name: v.name || '',
@@ -363,6 +385,15 @@ export default function AdminProductForm() {
             sku: v.sku || '',
           })),
         });
+
+        setOriginalProductSlug(p.slug || '');
+
+        // Secondary keywords parsing
+        const rawSec = p.secondary_keywords || p.secondaryKeywords || [];
+        const parsedSec = Array.isArray(rawSec)
+          ? rawSec.map((s) => String(s).trim()).filter(Boolean)
+          : (typeof rawSec === 'string' ? rawSec.split(',').map((s) => s.trim()).filter(Boolean) : []);
+        setSecondaryKeywordsList(parsedSec);
 
         // Ingredients parsing
         const rawIng = p.ingredients;
@@ -384,7 +415,7 @@ export default function AdminProductForm() {
 
         // Parse key-value entries. Internal fields stored in the same JSON are not nutrition rows —
         // loading them as rows re-saved them (e.g. shipping weight kept reappearing on the product page).
-        const INTERNAL_NUTRITION_KEYS = ['pieces', 'variant_stocks', 'shipping_weight', 'shippingWeight', 'net_weight', 'base_price', 'discount_type', 'discount_value'];
+        const INTERNAL_NUTRITION_KEYS = ['pieces', 'variant_stocks', 'shipping_weight', 'shippingWeight', 'net_weight', 'base_price', 'discount_type', 'discount_value', '_seo', 'seo_metadata'];
         Object.entries(rawNutr).forEach(([k, val]) => {
           if (INTERNAL_NUTRITION_KEYS.includes(k)) return;
           if (val && typeof val === 'object' && val.value !== undefined) {
@@ -544,6 +575,115 @@ export default function AdminProductForm() {
     setIngredientsList(merged);
     setBulkIngredientsInput('');
     toast.success(`Added ${splitItems.length} ingredients.`);
+  };
+
+  // Ingredient Drag & Drop Handlers
+  const handleIngredientDragStart = (e, index) => {
+    setDraggedIngredientIdx(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(index));
+  };
+
+  const handleIngredientDragOver = (e, index) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dropTargetIngredientIdx !== index) {
+      setDropTargetIngredientIdx(index);
+    }
+  };
+
+  const handleIngredientDrop = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedIngredientIdx === null || draggedIngredientIdx === dropIndex) {
+      setDraggedIngredientIdx(null);
+      setDropTargetIngredientIdx(null);
+      return;
+    }
+    const updated = [...ingredientsList];
+    const [movedItem] = updated.splice(draggedIngredientIdx, 1);
+    updated.splice(dropIndex, 0, movedItem);
+    setIngredientsList(updated);
+    setDraggedIngredientIdx(null);
+    setDropTargetIngredientIdx(null);
+  };
+
+  const handleIngredientDragEnd = () => {
+    setDraggedIngredientIdx(null);
+    setDropTargetIngredientIdx(null);
+  };
+
+  // Nutrition Facts Drag & Drop Handlers
+  const handleNutritionDragStart = (e, key) => {
+    setDraggedNutritionKey(key);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', key);
+  };
+
+  const handleNutritionDragOver = (e, key) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dropTargetNutritionKey !== key) {
+      setDropTargetNutritionKey(key);
+    }
+  };
+
+  const handleNutritionDrop = (e, targetKey) => {
+    e.preventDefault();
+    if (!draggedNutritionKey || draggedNutritionKey === targetKey) {
+      setDraggedNutritionKey(null);
+      setDropTargetNutritionKey(null);
+      return;
+    }
+    const entries = Object.entries(nutritionMap);
+    const fromIdx = entries.findIndex(([k]) => k === draggedNutritionKey);
+    const toIdx = entries.findIndex(([k]) => k === targetKey);
+    if (fromIdx >= 0 && toIdx >= 0) {
+      const [moved] = entries.splice(fromIdx, 1);
+      entries.splice(toIdx, 0, moved);
+      const newMap = {};
+      entries.forEach(([k, v]) => {
+        newMap[k] = v;
+      });
+      setNutritionMap(newMap);
+    }
+    setDraggedNutritionKey(null);
+    setDropTargetNutritionKey(null);
+  };
+
+  const handleNutritionDragEnd = () => {
+    setDraggedNutritionKey(null);
+    setDropTargetNutritionKey(null);
+  };
+
+  // Secondary Keywords Handlers
+  const addSingleSecondaryKeyword = () => {
+    const clean = newSecondaryKeywordInput.trim();
+    if (!clean) return;
+    if (!secondaryKeywordsList.some((k) => k.toLowerCase() === clean.toLowerCase())) {
+      setSecondaryKeywordsList([...secondaryKeywordsList, clean]);
+    }
+    setNewSecondaryKeywordInput('');
+  };
+
+  const removeSecondaryKeyword = (index) => {
+    setSecondaryKeywordsList(secondaryKeywordsList.filter((_, i) => i !== index));
+  };
+
+  const handleBulkSecondaryKeywords = () => {
+    if (!bulkSecondaryKeywordsInput.trim()) return;
+    const splitItems = bulkSecondaryKeywordsInput
+      .split(/[,;\n]+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    const merged = [...secondaryKeywordsList];
+    splitItems.forEach((item) => {
+      if (!merged.some((k) => k.toLowerCase() === item.toLowerCase())) {
+        merged.push(item);
+      }
+    });
+    setSecondaryKeywordsList(merged);
+    setBulkSecondaryKeywordsInput('');
+    toast.success(`Added ${splitItems.length} secondary keyword(s).`);
   };
 
   // Benefit helpers
@@ -779,6 +919,11 @@ export default function AdminProductForm() {
       badges: finalPayloadBadges,
       ingredients: ingredientsList,
       benefits: benefitsList,
+      meta_title: formData.meta_title ? formData.meta_title.trim() : '',
+      meta_description: formData.meta_description ? formData.meta_description.trim() : '',
+      focus_keyword: formData.focus_keyword ? formData.focus_keyword.trim() : '',
+      secondary_keywords: secondaryKeywordsList,
+      seo_slug: formData.seo_slug ? formData.seo_slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '',
       nutritionFacts: {
         ...nutritionMap,
         pieces: formData.pieces ? String(formData.pieces).trim() : '',
@@ -1366,29 +1511,68 @@ export default function AdminProductForm() {
               </button>
             </div>
 
-            {/* Ingredient Chips List */}
+            {/* Ingredient Chips List with Drag & Drop Reordering */}
             {ingredientsList.length > 0 ? (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
-                {ingredientsList.map((ing, idx) => (
-                  <span
-                    key={idx}
-                    style={{
-                      padding: '0.35rem 0.75rem',
-                      borderRadius: '8px',
-                      backgroundColor: 'var(--admin-surface-card)',
-                      border: '1px solid rgba(231, 222, 213, 0.65)',
-                      color: '#21150F',
-                      fontSize: '0.8rem',
-                      fontWeight: '700',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                    }}
-                  >
-                    <span>• {ing}</span>
-                    <X size={13} color="#C62828" style={{ cursor: 'pointer' }} onClick={() => removeIngredient(idx)} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', textTransform: 'uppercase' }}>
+                    Ingredient Display Order ({ingredientsList.length})
                   </span>
-                ))}
+                  <span style={{ fontSize: '0.7rem', color: '#8C5E38', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <GripVertical size={12} /> Drag chips to rearrange customer display order
+                  </span>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {ingredientsList.map((ing, idx) => {
+                    const isDragging = draggedIngredientIdx === idx;
+                    const isDropTarget = dropTargetIngredientIdx === idx && !isDragging;
+                    return (
+                      <span
+                        key={idx}
+                        draggable
+                        onDragStart={(e) => handleIngredientDragStart(e, idx)}
+                        onDragOver={(e) => handleIngredientDragOver(e, idx)}
+                        onDrop={(e) => handleIngredientDrop(e, idx)}
+                        onDragEnd={handleIngredientDragEnd}
+                        title="Click and drag to reorder"
+                        style={{
+                          padding: '0.4rem 0.75rem',
+                          borderRadius: '8px',
+                          backgroundColor: isDropTarget ? 'rgba(47, 107, 58, 0.12)' : (isDragging ? 'rgba(198, 138, 58, 0.15)' : 'var(--admin-surface-card)'),
+                          border: isDropTarget
+                            ? '2px solid #2F6B3A'
+                            : (isDragging ? '1.5px dashed #C68A3A' : '1px solid rgba(231, 222, 213, 0.75)'),
+                          color: '#21150F',
+                          fontSize: '0.8rem',
+                          fontWeight: '700',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.45rem',
+                          cursor: isDragging ? 'grabbing' : 'grab',
+                          opacity: isDragging ? 0.45 : 1,
+                          transform: isDragging ? 'scale(0.96)' : (isDropTarget ? 'scale(1.04)' : 'none'),
+                          transition: 'transform 0.15s ease, background-color 0.15s ease, border 0.15s ease',
+                          boxShadow: isDropTarget ? '0 0 10px rgba(47, 107, 58, 0.25)' : 'none',
+                          userSelect: 'none',
+                        }}
+                      >
+                        <GripVertical size={13} style={{ color: '#8C5E38', opacity: 0.75 }} />
+                        <span style={{ color: '#8C5E38', fontSize: '0.72rem', fontWeight: '800' }}>#{idx + 1}</span>
+                        <span>{ing}</span>
+                        <X
+                          size={13}
+                          color="#C62828"
+                          style={{ cursor: 'pointer', marginLeft: '0.2rem' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeIngredient(idx);
+                          }}
+                          title="Remove ingredient"
+                        />
+                      </span>
+                    );
+                  })}
+                </div>
               </div>
             ) : (
               <div style={{ fontSize: '0.75rem', color: '#665A52', fontStyle: 'italic' }}>
@@ -1449,55 +1633,80 @@ export default function AdminProductForm() {
             {/* Selected Nutrition Values Input Grid */}
             {Object.keys(nutritionMap).length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: '1px dashed rgba(231, 222, 213, 0.65)', paddingTop: '1rem' }}>
-                <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', textTransform: 'uppercase' }}>
-                  Configured Nutrition Values &amp; Units
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem' }}>
+                  <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', textTransform: 'uppercase', margin: 0 }}>
+                    Configured Nutrition Values &amp; Units
+                  </label>
+                  <span style={{ fontSize: '0.7rem', color: '#8C5E38', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <GripVertical size={12} /> Drag cards to reorder display on Product Detail page
+                  </span>
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.85rem' }}>
-                  {Object.entries(nutritionMap).map(([key, nObj]) => (
-                    <div
-                      key={key}
-                      style={{
-                        padding: '0.75rem',
-                        borderRadius: '10px',
-                        backgroundColor: 'var(--admin-surface-card)',
-                        border: '1px solid rgba(231, 222, 213, 0.65)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.35rem',
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#21150F' }}>{nObj.label}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeNutritionField(key)}
-                          style={{ background: 'none', border: 'none', color: '#C62828', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '700' }}
-                        >
-                          Remove
-                        </button>
-                      </div>
+                  {Object.entries(nutritionMap).map(([key, nObj], idx) => {
+                    const isDragging = draggedNutritionKey === key;
+                    const isDropTarget = dropTargetNutritionKey === key && !isDragging;
+                    return (
+                      <div
+                        key={key}
+                        draggable
+                        onDragStart={(e) => handleNutritionDragStart(e, key)}
+                        onDragOver={(e) => handleNutritionDragOver(e, key)}
+                        onDrop={(e) => handleNutritionDrop(e, key)}
+                        onDragEnd={handleNutritionDragEnd}
+                        style={{
+                          padding: '0.75rem',
+                          borderRadius: '10px',
+                          backgroundColor: isDropTarget ? 'rgba(47, 107, 58, 0.08)' : (isDragging ? 'rgba(198, 138, 58, 0.12)' : 'var(--admin-surface-card)'),
+                          border: isDropTarget
+                            ? '2px solid #2F6B3A'
+                            : (isDragging ? '1.5px dashed #C68A3A' : '1px solid rgba(231, 222, 213, 0.65)'),
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.35rem',
+                          opacity: isDragging ? 0.45 : 1,
+                          transform: isDropTarget ? 'scale(1.02)' : 'none',
+                          transition: 'all 0.15s ease',
+                          cursor: isDragging ? 'grabbing' : 'default',
+                          boxShadow: isDropTarget ? '0 0 10px rgba(47, 107, 58, 0.2)' : 'none',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.78rem', fontWeight: '800', color: '#21150F', cursor: 'grab' }} title="Drag to reorder">
+                            <GripVertical size={13} style={{ color: '#8C5E38', opacity: 0.8 }} />
+                            <span style={{ color: '#8C5E38', fontSize: '0.7rem' }}>#{idx + 1}</span>
+                            <span>{nObj.label}</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeNutritionField(key)}
+                            style={{ background: 'none', border: 'none', color: '#C62828', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '700' }}
+                          >
+                            Remove
+                          </button>
+                        </div>
 
-                      <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={nObj.value !== undefined ? nObj.value : ''}
-                          onChange={(e) => updateNutritionValue(key, e.target.value)}
-                          placeholder="e.g. 7.8"
-                          className="admin-input"
-                          style={{ flex: 1, padding: '0.4rem 0.6rem', fontSize: '0.85rem', fontWeight: '700' }}
-                        />
-                        <input
-                          type="text"
-                          value={nObj.unit || 'g'}
-                          onChange={(e) => updateNutritionUnit(key, e.target.value)}
-                          placeholder="unit"
-                          className="admin-input"
-                          style={{ width: '90px', padding: '0.4rem 0.6rem', fontSize: '0.8rem', textAlign: 'center' }}
-                        />
+                        <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={nObj.value !== undefined ? nObj.value : ''}
+                            onChange={(e) => updateNutritionValue(key, e.target.value)}
+                            placeholder="e.g. 7.8"
+                            className="admin-input"
+                            style={{ flex: 1, padding: '0.4rem 0.6rem', fontSize: '0.85rem', fontWeight: '700' }}
+                          />
+                          <input
+                            type="text"
+                            value={nObj.unit || 'g'}
+                            onChange={(e) => updateNutritionUnit(key, e.target.value)}
+                            placeholder="unit"
+                            className="admin-input"
+                            style={{ width: '90px', padding: '0.4rem 0.6rem', fontSize: '0.8rem', textAlign: 'center' }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ) : null}
@@ -2131,6 +2340,334 @@ export default function AdminProductForm() {
               </div>
             )}
           </div>
+
+          {/* ================================================================== */}
+          {/* SECTION 11: SEO & SEARCH ENGINE SETTINGS */}
+          {/* ================================================================== */}
+          {(() => {
+            const rawTitle = (formData.meta_title || '').trim();
+            const fallbackTitle = formData.title ? `${formData.title.trim()} | MILASTY` : 'MILASTY — Where Millets Meet Great Taste';
+            const effectiveTitle = rawTitle || fallbackTitle;
+
+            const rawDesc = (formData.meta_description || '').trim();
+            const fallbackDesc = (formData.subtitle || formData.description || 'Tasty snacks that happen to be healthy. Millet-based cookies slow-baked in pure Desi Ghee & sweetened with unrefined Jaggery. Zero maida, palm oil, or preservatives.').replace(/<[^>]*>?/gm, '').trim();
+            const effectiveDesc = rawDesc || fallbackDesc;
+
+            const rawSlug = (formData.seo_slug || formData.slug || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            const fallbackSlug = (formData.title || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            const effectiveSlug = rawSlug || fallbackSlug;
+            const liveProductUrl = `https://milasty.com/product/${effectiveSlug}`;
+
+            const titleCharCount = (formData.meta_title || '').length;
+            const descCharCount = (formData.meta_description || '').length;
+
+            const handleSlugChange = (val) => {
+              const cleaned = val.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+              setFormData((prev) => ({ ...prev, seo_slug: cleaned, slug: cleaned }));
+            };
+
+            const copyUrl = async () => {
+              try {
+                await navigator.clipboard.writeText(liveProductUrl);
+                toast.success('Product URL copied to clipboard!');
+              } catch (err) {
+                toast.info(`URL: ${liveProductUrl}`);
+              }
+            };
+
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', backgroundColor: 'var(--admin-surface-elevated)', padding: '1.35rem', borderRadius: '14px', border: '1px solid rgba(231, 222, 213, 0.75)' }}>
+                <div style={{ borderBottom: '1px solid rgba(231, 222, 213, 0.65)', paddingBottom: '0.65rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Globe size={18} color="#C68A3A" />
+                    <h3 style={{ fontSize: '0.95rem', color: '#C68A3A', fontWeight: '850', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      11. SEO &amp; Search Engine Settings
+                    </h3>
+                  </div>
+                  <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.75rem', color: '#665A52' }}>
+                    Configure how this product appears in Google Search, social shares (WhatsApp, Instagram), and manage its canonical URL slug.
+                  </p>
+                </div>
+
+                {/* Google Search Live SERP Preview */}
+                <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #DFE1E5', padding: '1rem 1.15rem', boxShadow: '0 1px 6px rgba(32, 33, 36, 0.08)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.55rem', borderBottom: '1px solid #F1F3F4', paddingBottom: '0.45rem' }}>
+                    <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#5F6368', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Search size={12} color="#1A73E8" /> Google Search Result Preview
+                    </span>
+                    <span style={{ fontSize: '0.68rem', color: '#70757A', fontStyle: 'italic' }}>
+                      Live simulation as seen by customers
+                    </span>
+                  </div>
+
+                  {/* SERP Snippet */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', fontFamily: 'Arial, sans-serif' }}>
+                    {/* URL Breadcrumb */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: '#202124', lineHeight: 1.3 }}>
+                      <div style={{ width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#2F6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '0.62rem', fontWeight: '900' }}>
+                        M
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#202124', fontWeight: '600' }}>MILASTY Organic Bakery</span>
+                        <span style={{ fontSize: '0.68rem', color: '#4D5156' }}>https://milasty.com › product › {effectiveSlug}</span>
+                      </div>
+                    </div>
+
+                    {/* Title Link */}
+                    <a
+                      href="#"
+                      onClick={(e) => e.preventDefault()}
+                      style={{
+                        color: '#1A0DAB',
+                        fontSize: '1.05rem',
+                        fontWeight: '500',
+                        textDecoration: 'none',
+                        margin: '0.25rem 0 0.15rem 0',
+                        lineHeight: 1.3,
+                        cursor: 'pointer',
+                        wordBreak: 'break-word',
+                      }}
+                      onMouseEnter={(e) => (e.target.style.textDecoration = 'underline')}
+                      onMouseLeave={(e) => (e.target.style.textDecoration = 'none')}
+                    >
+                      {effectiveTitle}
+                    </a>
+
+                    {/* Meta Description Snippet */}
+                    <p style={{ margin: 0, fontSize: '0.82rem', color: '#4D5156', lineHeight: 1.45, wordBreak: 'break-word' }}>
+                      {effectiveDesc.length > 165 ? `${effectiveDesc.slice(0, 162)}...` : effectiveDesc}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Form Fields Grid */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {/* Field A: SEO Meta Title */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                      <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', textTransform: 'uppercase' }}>
+                        A. SEO Meta Title
+                      </label>
+                      <span
+                        style={{
+                          fontSize: '0.7rem',
+                          fontWeight: '800',
+                          color: titleCharCount === 0 ? '#8C5E38' : (titleCharCount >= 50 && titleCharCount <= 60 ? '#2F6B3A' : (titleCharCount > 60 ? '#C62828' : '#B45309')),
+                        }}
+                      >
+                        {titleCharCount} / 60 characters {titleCharCount >= 50 && titleCharCount <= 60 ? '✓ (Optimal)' : (titleCharCount > 60 ? '⚠ Too long' : '(Recommended: 50–60)')}
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      value={formData.meta_title || ''}
+                      onChange={(e) => setFormData({ ...formData, meta_title: e.target.value })}
+                      placeholder={`e.g. ${formData.title ? `${formData.title} | Healthy Millet Snacks` : 'Choco Ragi Brownie | Healthy Millet Bakery'}`}
+                      className="admin-input"
+                      style={{ width: '100%', fontSize: '0.85rem' }}
+                    />
+                    <span style={{ fontSize: '0.68rem', color: '#665A52', marginTop: '0.25rem', display: 'block' }}>
+                      Custom title shown on Google tabs &amp; search results. If left blank, automatically defaults to: <strong>{formData.title ? `${formData.title} | MILASTY` : 'Product Title | MILASTY'}</strong>.
+                    </span>
+                  </div>
+
+                  {/* Field B: Meta Description */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                      <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', textTransform: 'uppercase' }}>
+                        B. Meta Description
+                      </label>
+                      <span
+                        style={{
+                          fontSize: '0.7rem',
+                          fontWeight: '800',
+                          color: descCharCount === 0 ? '#8C5E38' : (descCharCount >= 140 && descCharCount <= 160 ? '#2F6B3A' : (descCharCount > 160 ? '#C62828' : '#B45309')),
+                        }}
+                      >
+                        {descCharCount} / 160 characters {descCharCount >= 140 && descCharCount <= 160 ? '✓ (Optimal)' : (descCharCount > 160 ? '⚠ Too long' : '(Recommended: 140–160)')}
+                      </span>
+                    </div>
+                    <textarea
+                      rows={3}
+                      value={formData.meta_description || ''}
+                      onChange={(e) => setFormData({ ...formData, meta_description: e.target.value })}
+                      placeholder="e.g. Wholesome millet cookies baked with pure Desi Ghee and organic jaggery. 100% natural, maida-free, and preservative-free. Order fresh online from MILASTY."
+                      className="admin-input"
+                      style={{ width: '100%', resize: 'vertical', fontSize: '0.82rem', lineHeight: '1.45' }}
+                    />
+                    <span style={{ fontSize: '0.68rem', color: '#665A52', marginTop: '0.25rem', display: 'block' }}>
+                      Summarizes page content in search snippets. If left blank, falls back to the product subtitle or description.
+                    </span>
+                  </div>
+
+                  {/* Two-Column Grid: Focus Keyword & URL Slug */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
+                    {/* Field C: Focus Keyword */}
+                    <div>
+                      <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                        C. Focus Primary Keyword
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.focus_keyword || ''}
+                        onChange={(e) => setFormData({ ...formData, focus_keyword: e.target.value })}
+                        placeholder="e.g. Ragi Brownies Online"
+                        className="admin-input"
+                        style={{ width: '100%', fontSize: '0.82rem' }}
+                      />
+                      <span style={{ fontSize: '0.68rem', color: '#665A52', marginTop: '0.25rem', display: 'block' }}>
+                        The core search query you want this product to rank for.
+                      </span>
+                    </div>
+
+                    {/* Field E: SEO URL / Slug */}
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                        <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', textTransform: 'uppercase', margin: 0 }}>
+                          E. SEO URL Slug
+                        </label>
+                        <button
+                          type="button"
+                          onClick={copyUrl}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#2F6B3A',
+                            cursor: 'pointer',
+                            fontSize: '0.7rem',
+                            fontWeight: '800',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem',
+                            padding: 0,
+                          }}
+                        >
+                          <Copy size={11} /> Copy URL
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        value={formData.seo_slug !== undefined ? formData.seo_slug : (formData.slug || '')}
+                        onChange={(e) => handleSlugChange(e.target.value)}
+                        placeholder="e.g. choco-ragi-brownie"
+                        className="admin-input"
+                        style={{ width: '100%', fontSize: '0.82rem' }}
+                      />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.3rem', fontSize: '0.7rem', color: '#2F6B3A', fontWeight: '600' }}>
+                        <ExternalLink size={11} />
+                        <span style={{ wordBreak: 'break-all' }}>{liveProductUrl}</span>
+                      </div>
+                      {isEdit && originalProductSlug && formData.seo_slug && formData.seo_slug !== originalProductSlug && (
+                        <div style={{ marginTop: '0.4rem', padding: '0.45rem 0.65rem', backgroundColor: 'rgba(234, 179, 8, 0.12)', border: '1px solid rgba(234, 179, 8, 0.4)', borderRadius: '6px', fontSize: '0.68rem', color: '#854D0E', fontWeight: '600', lineHeight: 1.4 }}>
+                          ⚠️ You are changing the product slug from <code>{originalProductSlug}</code> to <code>{formData.seo_slug}</code>. Old bookmarks or links pointing to the previous URL will change.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Field D: Secondary Keywords Manager */}
+                  <div style={{ borderTop: '1px dashed rgba(231, 222, 213, 0.65)', paddingTop: '0.85rem' }}>
+                    <label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#4A3B2E', display: 'block', marginBottom: '0.45rem', textTransform: 'uppercase' }}>
+                      D. Secondary Keywords ({secondaryKeywordsList.length})
+                    </label>
+
+                    {/* Single Add */}
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <input
+                        type="text"
+                        value={newSecondaryKeywordInput}
+                        onChange={(e) => setNewSecondaryKeywordInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            addSingleSecondaryKeyword();
+                          }
+                        }}
+                        placeholder="e.g. Eggless Ragi Brownies"
+                        className="admin-input"
+                        style={{ flex: 1, fontSize: '0.8rem' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={addSingleSecondaryKeyword}
+                        className="admin-btn-secondary"
+                        style={{ padding: '0.55rem 0.95rem', fontSize: '0.78rem' }}
+                      >
+                        <Plus size={13} /> Add Keyword
+                      </button>
+                    </div>
+
+                    {/* Bulk Add */}
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.65rem' }}>
+                      <input
+                        type="text"
+                        value={bulkSecondaryKeywordsInput}
+                        onChange={(e) => setBulkSecondaryKeywordsInput(e.target.value)}
+                        placeholder="Or paste comma-separated keywords (e.g. Millet Brownies, Healthy Chocolate Brownies)..."
+                        className="admin-input"
+                        style={{ flex: 1, fontSize: '0.78rem' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleBulkSecondaryKeywords}
+                        className="admin-btn-secondary"
+                        style={{ padding: '0.55rem 0.85rem', fontSize: '0.78rem' }}
+                      >
+                        Bulk Add
+                      </button>
+                    </div>
+
+                    {/* Tags List */}
+                    {secondaryKeywordsList.length > 0 ? (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
+                        {secondaryKeywordsList.map((kw, idx) => (
+                          <span
+                            key={idx}
+                            style={{
+                              padding: '0.3rem 0.7rem',
+                              borderRadius: '7px',
+                              backgroundColor: 'var(--admin-surface-card)',
+                              border: '1px solid rgba(231, 222, 213, 0.75)',
+                              color: '#21150F',
+                              fontSize: '0.78rem',
+                              fontWeight: '700',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                            }}
+                          >
+                            <span>#{kw}</span>
+                            <X
+                              size={12}
+                              color="#C62828"
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => removeSecondaryKeyword(idx)}
+                              title="Remove keyword"
+                            />
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.74rem', color: '#665A52', fontStyle: 'italic' }}>
+                        No secondary keywords added yet. Add variants like &quot;Eggless Millet Cookies&quot;, &quot;Desi Ghee Cookies Online&quot;.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Section 5: SEO Admin Guidance Box */}
+                  <div style={{ backgroundColor: 'rgba(47, 107, 58, 0.06)', border: '1px solid rgba(47, 107, 58, 0.25)', borderRadius: '10px', padding: '0.85rem 1rem', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                    <HelpCircle size={18} color="#2F6B3A" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div style={{ fontSize: '0.74rem', color: '#274C37', lineHeight: 1.5 }}>
+                      <strong style={{ display: 'block', marginBottom: '0.2rem', color: '#1B4D2E', fontSize: '0.78rem' }}>
+                        SEO Content Strategy &amp; Compliance Guidelines:
+                      </strong>
+                      Focus on genuine product benefits: <em>organic millets, slow-baked in pure Desi Ghee, unrefined jaggery, maida-free, palm-oil-free</em>. Avoid making clinical or medical claims (e.g. &quot;cures diabetes&quot; or medicinal guarantees) to comply with search quality standards and food safety regulations.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Submit Button */}
           <button

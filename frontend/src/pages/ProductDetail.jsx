@@ -11,6 +11,7 @@ import ProductCard from '../components/ProductCard';
 import PriceDisplay from '../components/PriceDisplay';
 import AuthPromptModal from '../components/AuthPromptModal';
 import AllIndiaDeliveryBadge from '../components/common/AllIndiaDeliveryBadge';
+import ProductSeo from '../components/ProductSeo';
 
 export default function ProductDetail() {
   const { slug, id } = useParams();
@@ -339,8 +340,8 @@ export default function ProductDetail() {
 
   // Safe nutrition facts normalized list
   // Pricing / inventory keys can live in the same JSON blob — never show them to customers
-  // Internal fields stored alongside nutrition data — never shown to customers (shipping weight is courier-only)
-  const HIDDEN_NUTRITION_KEYS = new Set(['baseprice', 'discounttype', 'discountvalue', 'variantstocks', 'pieces', 'stock', 'stockquantity', 'shippingweight']);
+  // Internal fields stored alongside nutrition data — never shown to customers (shipping weight is courier-only, SEO internal keys)
+  const HIDDEN_NUTRITION_KEYS = new Set(['baseprice', 'discounttype', 'discountvalue', 'variantstocks', 'pieces', 'stock', 'stockquantity', 'shippingweight', 'seo', 'seometadata', '_seo']);
   const normalizeKey = (str) => String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   // null / undefined / '' / whitespace-only count as "not entered"; a genuinely stored 0 is kept
   const hasMeaningfulValue = (val) => val !== null && val !== undefined && String(val).trim() !== '';
@@ -498,6 +499,7 @@ export default function ProductDetail() {
         boxSizing: 'border-box'
       }}
     >
+      <ProductSeo product={product} />
 
       {/* Auth Prompt Modal for Logged-Out Guest Purchases */}
       <AuthPromptModal

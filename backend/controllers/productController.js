@@ -121,6 +121,39 @@ export function compareByDisplayOrder(a, b) {
 // "Bestseller"/"Best Seller" badges are never saved or shown.
 const isBestsellerBadge = (b) => /best\s*seller/i.test(String(b || ''));
 
+/**
+ * Resolves SEO metadata with dual-layer fallback: dedicated columns > seo_metadata JSON > nutrition_facts._seo.
+ */
+export const extractProductSeo = (p) => {
+  const seoData = (typeof p?.seo_metadata === 'object' && p?.seo_metadata !== null)
+    ? p.seo_metadata
+    : ((typeof p?.nutrition_facts?._seo === 'object' && p?.nutrition_facts?._seo !== null)
+      ? p.nutrition_facts._seo
+      : {});
+
+  const metaTitle = String(p?.meta_title || seoData.meta_title || seoData.metaTitle || '').trim();
+  const metaDescription = String(p?.meta_description || seoData.meta_description || seoData.metaDescription || '').trim();
+  const focusKeyword = String(p?.focus_keyword || seoData.focus_keyword || seoData.focusKeyword || '').trim();
+  const rawSec = p?.secondary_keywords || seoData.secondary_keywords || seoData.secondaryKeywords || [];
+  const secondaryKeywords = Array.isArray(rawSec)
+    ? rawSec.map((s) => String(s).trim()).filter(Boolean)
+    : (typeof rawSec === 'string' ? rawSec.split(',').map((s) => s.trim()).filter(Boolean) : []);
+  const seoSlug = String(p?.seo_slug || seoData.seo_slug || seoData.seoSlug || p?.slug || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+  return {
+    metaTitle,
+    metaDescription,
+    focusKeyword,
+    secondaryKeywords,
+    seoSlug,
+    meta_title: metaTitle,
+    meta_description: metaDescription,
+    focus_keyword: focusKeyword,
+    secondary_keywords: secondaryKeywords,
+    seo_slug: seoSlug,
+  };
+};
+
 // Explicit boolean from the admin dropdown ("true"/true → true). undefined = not provided.
 /**
  * Shipping weight is courier-only data: it lives in products.shipping_weight / product_variants.shipping_weight.
@@ -131,6 +164,7 @@ const withoutShippingWeight = (facts) => {
   if (!facts || typeof facts !== 'object' || Array.isArray(facts)) return facts || {};
   const clean = {};
   for (const [key, val] of Object.entries(facts)) {
+    if (key === '_seo' || key === 'seo_metadata') continue;
     const label = val && typeof val === 'object' ? val.label : '';
     if (/^shipping[\s_-]*weight$/i.test(key) || /^shipping[\s_-]*weight$/i.test(String(label || '').trim())) continue;
     clean[key] = val;
@@ -376,6 +410,7 @@ export const getProducts = async (req, res) => {
           rating: realRating,
           reviewCount: realReviewCount,
           variants,
+          ...extractProductSeo(p),
         };
       });
 
@@ -480,7 +515,21 @@ export const getProductBySlugOrId = async (req, res) => {
       query = query.eq('slug', identifier);
     }
 
-    const { data: p, error } = await query.maybeSingle();
+    let { data: p, error } = await query.maybeSingle();
+
+    // Fallback search by custom seo_slug if not matched by standard slug
+    if (!p && !isUuid) {
+      try {
+        const { data: seoMatch } = await supabase
+          .from('products')
+          .select('*, product_variants(*)')
+          .eq('seo_slug', identifier)
+          .maybeSingle();
+        if (seoMatch) p = seoMatch;
+      } catch (seoErr) {
+        // Column may not exist yet prior to migration, safe to ignore
+      }
+    }
 
     if (!error && p) {
       const variantStocksMap = p.nutrition_facts?.variant_stocks || {};
@@ -633,6 +682,7 @@ export const getProductBySlugOrId = async (req, res) => {
         rating: realRating,
         reviewCount: realReviewCount,
         variants,
+        ...extractProductSeo(p),
       };
       return res.json(formatted);
     }
@@ -650,6 +700,7 @@ export const getProductBySlugOrId = async (req, res) => {
         ...fallback,
         rating: realRating,
         reviewCount: realReviewCount,
+        ...extractProductSeo(fallback),
       });
     }
 
@@ -905,6 +956,23 @@ export const createProduct = async (req, res) => {
     const finalDiscType = req.body.discountType || req.body.discount_type || 'none';
     const finalDiscVal = Number(req.body.discountValue !== undefined ? req.body.discountValue : req.body.discount_value) || 0;
 
+    const cleanMetaTitle = String(req.body.meta_title || req.body.metaTitle || '').trim();
+    const cleanMetaDesc = String(req.body.meta_description || req.body.metaDescription || '').trim();
+    const cleanFocusKw = String(req.body.focus_keyword || req.body.focusKeyword || '').trim();
+    const rawSecKw = req.body.secondary_keywords || req.body.secondaryKeywords || [];
+    const cleanSecKw = Array.isArray(rawSecKw)
+      ? rawSecKw.map((s) => String(s).trim()).filter(Boolean)
+      : (typeof rawSecKw === 'string' ? rawSecKw.split(',').map((s) => s.trim()).filter(Boolean) : []);
+    const cleanSeoSlug = String(req.body.seo_slug || req.body.seoSlug || finalSlug).trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+    const seoPayload = {
+      meta_title: cleanMetaTitle,
+      meta_description: cleanMetaDesc,
+      focus_keyword: cleanFocusKw,
+      secondary_keywords: cleanSecKw,
+      seo_slug: cleanSeoSlug || finalSlug,
+    };
+
     const insertPayload = {
       title: title.trim(),
       slug: finalSlug,
@@ -928,10 +996,17 @@ export const createProduct = async (req, res) => {
       ingredients: parsedIngredients,
       nutrition_facts: {
         ...mergedNutritionFacts,
+        _seo: seoPayload,
         base_price: finalPriceVal,
         discount_type: finalDiscType,
         discount_value: finalDiscVal,
       },
+      meta_title: cleanMetaTitle,
+      meta_description: cleanMetaDesc,
+      focus_keyword: cleanFocusKw,
+      secondary_keywords: cleanSecKw,
+      seo_slug: cleanSeoSlug || finalSlug,
+      seo_metadata: seoPayload,
       badges: finalBadges,
       allergens: allergens || '',
       benefits: parsedBenefits,
@@ -1093,6 +1168,15 @@ export const createProduct = async (req, res) => {
       shippingWeight: finalShippingWeight,
       isFeatured: product.is_featured !== false,
       variants: formattedVariants,
+      ...extractProductSeo({
+        ...product,
+        meta_title: cleanMetaTitle,
+        meta_description: cleanMetaDesc,
+        focus_keyword: cleanFocusKw,
+        secondary_keywords: cleanSecKw,
+        seo_slug: cleanSeoSlug || product?.slug || finalSlug || '',
+        seo_metadata: seoPayload,
+      }),
     };
 
     return res.status(201).json(formattedProduct);
@@ -1161,8 +1245,62 @@ export const updateProduct = async (req, res) => {
 
     const finalNetWeight = updates.netWeight || updates.net_weight || updates.nutritionFacts?.net_weight || '';
 
+    const cleanMetaTitle = updates.meta_title !== undefined ? updates.meta_title : updates.metaTitle;
+    const cleanMetaDesc = updates.meta_description !== undefined ? updates.meta_description : updates.metaDescription;
+    const cleanFocusKw = updates.focus_keyword !== undefined ? updates.focus_keyword : updates.focusKeyword;
+    const rawSecKw = updates.secondary_keywords !== undefined ? updates.secondary_keywords : updates.secondaryKeywords;
+    const cleanSecKw = rawSecKw !== undefined
+      ? (Array.isArray(rawSecKw) ? rawSecKw.map((s) => String(s).trim()).filter(Boolean) : (typeof rawSecKw === 'string' ? rawSecKw.split(',').map((s) => s.trim()).filter(Boolean) : []))
+      : undefined;
+    const cleanSeoSlug = updates.seo_slug !== undefined
+      ? (updates.seo_slug ? String(updates.seo_slug).trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '')
+      : (updates.seoSlug !== undefined ? String(updates.seoSlug).trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : undefined);
+
+    const hasSeoUpdate = cleanMetaTitle !== undefined || cleanMetaDesc !== undefined || cleanFocusKw !== undefined || cleanSecKw !== undefined || cleanSeoSlug !== undefined;
+
+    let seoPayload = null;
+    if (hasSeoUpdate) {
+      seoPayload = {
+        meta_title: cleanMetaTitle !== undefined ? String(cleanMetaTitle || '').trim() : '',
+        meta_description: cleanMetaDesc !== undefined ? String(cleanMetaDesc || '').trim() : '',
+        focus_keyword: cleanFocusKw !== undefined ? String(cleanFocusKw || '').trim() : '',
+        secondary_keywords: cleanSecKw !== undefined ? cleanSecKw : [],
+        seo_slug: cleanSeoSlug !== undefined ? cleanSeoSlug : '',
+      };
+    }
+
+    if (updates.slug && updates.slug.trim()) {
+      const newSlug = updates.slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const { data: conflict } = await supabase
+        .from('products')
+        .select('id')
+        .eq('slug', newSlug)
+        .neq('id', id)
+        .maybeSingle();
+      if (conflict) {
+        return res.status(400).json({ message: `The URL slug "${newSlug}" is already in use by another product.` });
+      }
+    }
+
+    if (cleanSeoSlug) {
+      try {
+        const { data: conflictSeo } = await supabase
+          .from('products')
+          .select('id')
+          .or(`seo_slug.eq.${cleanSeoSlug},slug.eq.${cleanSeoSlug}`)
+          .neq('id', id)
+          .maybeSingle();
+        if (conflictSeo) {
+          return res.status(400).json({ message: `The SEO slug "${cleanSeoSlug}" is already in use by another product.` });
+        }
+      } catch (err) {
+        // Safe to ignore if column doesn't exist yet
+      }
+    }
+
     const updatePayload = {
       title: updates.title,
+      slug: updates.slug ? updates.slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : undefined,
       subtitle: updates.subtitle || '',
       description: updates.description,
       category: resolvedCatSlug || updates.category,
@@ -1185,6 +1323,7 @@ export const updateProduct = async (req, res) => {
       ingredients: parsedIngredients,
       nutrition_facts: {
         ...withoutShippingWeight(typeof updates.nutritionFacts === 'object' && updates.nutritionFacts !== null ? updates.nutritionFacts : {}),
+        ...(seoPayload ? { _seo: seoPayload } : (updates.nutritionFacts?._seo ? { _seo: updates.nutritionFacts._seo } : {})),
         pieces: updates.pieces || (typeof updates.nutritionFacts === 'object' ? updates.nutritionFacts?.pieces : '') || '',
         net_weight: finalNetWeight,
         variant_stocks: Object.keys(variantStocksMap).length > 0 ? variantStocksMap : updates.nutritionFacts?.variant_stocks,
@@ -1192,6 +1331,12 @@ export const updateProduct = async (req, res) => {
         discount_type: discountTypeVal,
         discount_value: discountVal,
       },
+      meta_title: cleanMetaTitle !== undefined ? String(cleanMetaTitle || '').trim() : undefined,
+      meta_description: cleanMetaDesc !== undefined ? String(cleanMetaDesc || '').trim() : undefined,
+      focus_keyword: cleanFocusKw !== undefined ? String(cleanFocusKw || '').trim() : undefined,
+      secondary_keywords: cleanSecKw !== undefined ? cleanSecKw : undefined,
+      seo_slug: cleanSeoSlug !== undefined ? cleanSeoSlug : undefined,
+      seo_metadata: seoPayload || undefined,
       badges: finalBadges,
       allergens: updates.allergens || '',
       benefits: parsedBenefits,
@@ -1414,6 +1559,15 @@ export const updateProduct = async (req, res) => {
       pieces: product.nutrition_facts?.pieces || updates.pieces || '',
       isFeatured: product.is_featured !== false,
       variants: formattedVariants,
+      ...extractProductSeo({
+        ...product,
+        meta_title: cleanMetaTitle,
+        meta_description: cleanMetaDesc,
+        focus_keyword: cleanFocusKw,
+        secondary_keywords: cleanSecKw,
+        seo_slug: cleanSeoSlug || product?.slug || updates?.slug || '',
+        seo_metadata: seoPayload,
+      }),
     };
 
     return res.json(formattedProduct);
