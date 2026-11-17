@@ -124,26 +124,20 @@ export const customerOrderConfirmed = ({
   const displayId = orderNumber || orderId || 'MILASTY';
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
 
-  const lines = [
-    `🌿 Namaste ${customerName},`,
+  return [
+    `Hello ${customerName},`,
     '',
     'Good news! Your MILASTY order has been confirmed 💛',
     '',
     `Order ID: #${displayId}`,
     '',
     'We are preparing your items with love and care.',
-  ];
-
-  if (orderUrl) {
-    lines.push('');
-    lines.push(`👉 View Your Order: ${orderUrl}`);
-  }
-
-  lines.push('');
-  lines.push('With love,');
-  lines.push('Team MILASTY 🌿');
-
-  return lines.join('\n');
+    '',
+    `👉 View Your Order: ${orderUrl}`,
+    '',
+    'With love,',
+    'Team MILASTY 🌿',
+  ].join('\n');
 };
 
 export const customerOrderProcessing = ({ customerName = 'Valued Customer', orderId = '', orderNumber = '' }) => {
@@ -202,6 +196,7 @@ export const customerOrderShipped = ({
   customerName = 'Valued Customer',
   orderId = '',
   orderNumber = '',
+  estimatedDeliveryDate = '',
   estimatedDelivery = '',
   courierName = '',
   trackingNumber = '',
@@ -210,30 +205,35 @@ export const customerOrderShipped = ({
 }) => {
   const displayId = orderNumber || orderId || 'MILASTY';
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
+  const estDelivery = estimatedDeliveryDate || estimatedDelivery || 'Within 3–5 business days';
 
-  const lines = [
-    `🌿 Namaste ${customerName},`,
+  return [
+    `Hello ${customerName}, 💛`,
     '',
-    `Your MILASTY order #${displayId} is on its way! 💛`,
+    `Your MILASTY order #${displayId} is on its way!`,
     '',
-  ];
-
-  if (estimatedDelivery && String(estimatedDelivery).trim()) {
-    lines.push(`Expected Delivery: ${String(estimatedDelivery).trim()}`);
-  } else {
-    lines.push('Your package is on its way. We will keep you updated.');
-  }
-
-  if (orderUrl) {
-    lines.push('');
-    lines.push(`👉 View Your Order: ${orderUrl}`);
-  }
-
-  lines.push('');
-  lines.push('With love,');
-  lines.push('Team MILASTY 🌿');
-
-  return lines.join('\n');
+    `📦 Expected Delivery: ${estDelivery}`,
+    '',
+    '👉 Track Your Order:',
+    orderUrl,
+    '',
+    'A Quick Note:',
+    '',
+    'We hope your order reaches you in the same perfect condition in which we carefully packed it!',
+    '',
+    'However, if you notice any missing items, damage, leakage or package tampering, we kindly request you to share a continuous, uncut unboxing video, starting from the sealed package and covering the entire opening process.',
+    '',
+    'This will help us understand the issue and assist you better.',
+    '',
+    'Complaints without a complete unboxing video may not be eligible for resolution.',
+    '',
+    'Thank you for choosing MILASTY and supporting our journey! 💛',
+    '',
+    'With love,',
+    'Team MILASTY 🌿',
+    '',
+    'Where millets meet great taste.',
+  ].join('\n');
 };
 
 export const customerOrderReachedCity = ({ customerName = 'Valued Customer', orderId = '', orderNumber = '', city = 'Your City' }) => {
@@ -328,29 +328,27 @@ export const customerOrderDelivered = ({
   reviewUrl = '',
 }) => {
   const displayId = orderNumber || orderId || 'MILASTY';
-  const targetReviewUrl = reviewUrl || GOOGLE_REVIEW_URL || getCustomerOrderReviewUrl(orderId, orderNumber);
+  const targetReviewUrl = reviewUrl || getCustomerOrderReviewUrl(orderId, orderNumber);
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
   const finalReviewLink = targetReviewUrl || orderUrl;
 
-  const lines = [
-    `🌿 Namaste ${customerName}!`,
+  return [
+    `Hello ${customerName}!`,
     '',
     `Your MILASTY order #${displayId} has been successfully delivered! 💛`,
     '',
-    'We hope you love your purchase.',
+    'We hope you love your purchase. Your experience means a lot to us.',
     '',
-    "Your experience means a lot to us. We'd love to hear what you think!",
+    "We'd love to hear what you think! ⭐",
     '',
-    '⭐ Share your experience:',
+    'Share your experience:',
     finalReviewLink,
     '',
     'Thank you for choosing MILASTY.',
     '',
     'With love,',
     'Team MILASTY 🌿',
-  ];
-
-  return lines.join('\n');
+  ].join('\n');
 };
 
 export const customerOrderCancelled = ({

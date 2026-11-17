@@ -20,6 +20,13 @@ import {
   updateAdminRecipient,
   deleteAdminRecipient,
 } from '../services/whatsappSettingsService.js';
+import {
+  getAllTemplates,
+  getTemplateById,
+  updateTemplate,
+  resetTemplateToDefault,
+  renderTemplateText,
+} from '../services/whatsappTemplateRegistry.js';
 import { normalizeIndianMobile } from '../utils/phone.js';
 
 // In-memory rate limiting for admin test messages: adminId/ip -> { count, windowStart }
@@ -444,5 +451,50 @@ export const deleteRecipientHandler = async (req, res) => {
   } catch (error) {
     console.error('[ADMIN WHATSAPP] Error deleting recipient:', error);
     res.status(500).json({ success: false, message: 'Failed to delete admin recipient', error: error.message });
+  }
+};
+
+/**
+ * 15. GET ALL WHATSAPP TEMPLATES
+ * GET /api/admin/whatsapp/templates
+ */
+export const getTemplatesHandler = async (req, res) => {
+  try {
+    const templates = await getAllTemplates();
+    res.json({ success: true, templates });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error fetching templates:', error);
+    res.status(500).json({ success: false, message: 'Failed to retrieve WhatsApp templates', error: error.message });
+  }
+};
+
+/**
+ * 16. UPDATE WHATSAPP TEMPLATE
+ * PUT /api/admin/whatsapp/templates/:id
+ */
+export const updateTemplateHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content, isActive } = req.body;
+    const updated = await updateTemplate(id, { content, isActive });
+    res.json({ success: true, message: 'Template updated successfully', template: updated });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error updating template:', error);
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * 17. RESET WHATSAPP TEMPLATE TO DEFAULT
+ * POST /api/admin/whatsapp/templates/:id/reset
+ */
+export const resetTemplateHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const reset = await resetTemplateToDefault(id);
+    res.json({ success: true, message: 'Template reset to official default successfully', template: reset });
+  } catch (error) {
+    console.error('[ADMIN WHATSAPP] Error resetting template:', error);
+    res.status(400).json({ success: false, message: error.message });
   }
 };

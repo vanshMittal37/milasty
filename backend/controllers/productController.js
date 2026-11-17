@@ -174,6 +174,56 @@ const withoutShippingWeight = (facts) => {
 
 const parseBool = (v) => (v === undefined || v === null || v === '' ? undefined : v === true || String(v).toLowerCase() === 'true');
 
+/**
+ * Deterministically sort variants using the explicit admin drag-and-drop order.
+ * Checks nutrition_facts.variant_order (array of IDs/names/weights), then sort_order, then display_order.
+ */
+export const sortVariantsHelper = (variants = [], variantOrder = []) => {
+  if (!Array.isArray(variants) || variants.length <= 1) return variants || [];
+
+  if (Array.isArray(variantOrder) && variantOrder.length > 0) {
+    const orderMap = new Map();
+    variantOrder.forEach((identifier, idx) => {
+      if (identifier !== undefined && identifier !== null) {
+        orderMap.set(String(identifier).trim().toLowerCase(), idx);
+      }
+    });
+
+    return [...variants].sort((a, b) => {
+      const aKeys = [a.id, a.name, a.weight].filter(Boolean).map((k) => String(k).trim().toLowerCase());
+      const bKeys = [b.id, b.name, b.weight].filter(Boolean).map((k) => String(k).trim().toLowerCase());
+
+      let aIdx = 999;
+      for (const k of aKeys) {
+        if (orderMap.has(k)) {
+          aIdx = orderMap.get(k);
+          break;
+        }
+      }
+
+      let bIdx = 999;
+      for (const k of bKeys) {
+        if (orderMap.has(k)) {
+          bIdx = orderMap.get(k);
+          break;
+        }
+      }
+
+      if (aIdx !== bIdx) return aIdx - bIdx;
+
+      const aOrd = a.sort_order ?? a.display_order ?? 999;
+      const bOrd = b.sort_order ?? b.display_order ?? 999;
+      return aOrd - bOrd;
+    });
+  }
+
+  return [...variants].sort((a, b) => {
+    const aOrd = a.sort_order ?? a.display_order ?? 999;
+    const bOrd = b.sort_order ?? b.display_order ?? 999;
+    return aOrd - bOrd;
+  });
+};
+
 export const getProducts = async (req, res) => {
   try {
     const {
@@ -259,7 +309,8 @@ export const getProducts = async (req, res) => {
       // Map DB schema to frontend expected format
       const formatted = dbProducts.map((p) => {
         const variantStocksMap = p.nutrition_facts?.variant_stocks || {};
-        const variants = (p.product_variants || []).map((v) => {
+        const variantOrderList = p.nutrition_facts?.variant_order || [];
+        const mappedVariants = (p.product_variants || []).map((v) => {
           const stockFromMap = variantStocksMap[v.id] !== undefined
             ? Number(variantStocksMap[v.id])
             : (variantStocksMap[v.weight] !== undefined
@@ -284,8 +335,12 @@ export const getProducts = async (req, res) => {
             sku: v.sku || '',
             stock: varStock,
             inStock: varStock > 0,
+            sort_order: v.sort_order ?? v.display_order ?? 0,
+            display_order: v.display_order ?? v.sort_order ?? 0,
           };
         });
+
+        const variants = sortVariantsHelper(mappedVariants, variantOrderList);
 
         const calculatedStock = variants.length > 0
           ? variants.reduce((sum, v) => sum + (v.stock || 0), 0)
@@ -533,7 +588,8 @@ export const getProductBySlugOrId = async (req, res) => {
 
     if (!error && p) {
       const variantStocksMap = p.nutrition_facts?.variant_stocks || {};
-      const variants = (p.product_variants || []).map((v) => {
+      const variantOrderList = p.nutrition_facts?.variant_order || [];
+      const mappedVariants = (p.product_variants || []).map((v) => {
         const stockFromMap = variantStocksMap[v.id] !== undefined
           ? Number(variantStocksMap[v.id])
           : (variantStocksMap[v.weight] !== undefined
@@ -558,8 +614,12 @@ export const getProductBySlugOrId = async (req, res) => {
           sku: v.sku || '',
           stock: varStock,
           inStock: varStock > 0,
+          sort_order: v.sort_order ?? v.display_order ?? 0,
+          display_order: v.display_order ?? v.sort_order ?? 0,
         };
       });
+
+      const variants = sortVariantsHelper(mappedVariants, variantOrderList);
 
       const calculatedStock = variants.length > 0
         ? variants.reduce((sum, v) => sum + (v.stock || 0), 0)
@@ -833,6 +893,9 @@ const safeInsertProduct = (payload) =>
 const safeUpdateProduct = (id, payload) =>
   runProductWrite('update', payload, (p) => supabase.from('products').update(p).eq('id', id).select().maybeSingle());
 
+const safeUpdateVariant = (id, payload) =>
+  runProductWrite(`update-variant-${id}`, payload, (p) => supabase.from('product_variants').update(p).eq('id', id).select().maybeSingle());
+
 /**
  * PUT /api/products/admin/reorder  { orderedIds: [productId, ...] }
  * Saves the admin's drag-and-drop order: first product → display_order 1, second → 2, …
@@ -1026,7 +1089,7 @@ export const createProduct = async (req, res) => {
 
     let insertedVariants = [];
     if (variants && Array.isArray(variants) && variants.length > 0) {
-      const variantRows = variants.map((v) => {
+      const variantRows = variants.map((v, idx) => {
         const vStock = Number(v.stock !== undefined && v.stock !== null && v.stock !== '' ? v.stock : 50);
         const vOrigPrice = Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : (v.price !== undefined && v.price !== '' ? v.price : price || 0));
         const vDiscType = v.discountType || v.discount_type || 'none';
@@ -1053,6 +1116,8 @@ export const createProduct = async (req, res) => {
           sku: v.sku || '',
           stock: vStock,
           in_stock: v.inStock !== false && vStock > 0,
+          sort_order: idx + 1,
+          display_order: idx + 1,
         };
         if (v.id && /^[0-9a-fA-F-]{36}$/.test(String(v.id))) {
           row.id = v.id;
@@ -1075,17 +1140,20 @@ export const createProduct = async (req, res) => {
       if (v.name) finalVariantStocksMap[v.name] = stk;
     });
 
+    const variantOrderList = insertedVariants.map((v) => v.id || v.name || v.weight);
+
     await supabase
       .from('products')
       .update({
         nutrition_facts: {
           ...mergedNutritionFacts,
           variant_stocks: finalVariantStocksMap,
+          variant_order: variantOrderList,
         },
       })
       .eq('id', product.id);
 
-    const formattedVariants = insertedVariants.map((v, idx) => {
+    const rawFormattedVariants = insertedVariants.map((v, idx) => {
       const origV = variants && variants[idx];
       const vStock = finalVariantStocksMap[v.id] !== undefined
         ? finalVariantStocksMap[v.id]
@@ -1102,8 +1170,12 @@ export const createProduct = async (req, res) => {
         sku: v.sku || '',
         stock: vStock,
         inStock: vStock > 0,
+        sort_order: v.sort_order ?? (idx + 1),
+        display_order: v.display_order ?? (idx + 1),
       };
     });
+
+    const formattedVariants = sortVariantsHelper(rawFormattedVariants, variantOrderList);
 
     const totalStock = formattedVariants.length > 0
       ? formattedVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
@@ -1327,6 +1399,9 @@ export const updateProduct = async (req, res) => {
         pieces: updates.pieces || (typeof updates.nutritionFacts === 'object' ? updates.nutritionFacts?.pieces : '') || '',
         net_weight: finalNetWeight,
         variant_stocks: Object.keys(variantStocksMap).length > 0 ? variantStocksMap : updates.nutritionFacts?.variant_stocks,
+        variant_order: Array.isArray(updates.variants)
+          ? updates.variants.map((v) => v.id || v.name || v.weight)
+          : (updates.nutritionFacts?.variant_order || []),
         base_price: basePriceVal,
         discount_type: discountTypeVal,
         discount_value: discountVal,
@@ -1380,7 +1455,7 @@ export const updateProduct = async (req, res) => {
           await supabase.from('product_variants').delete().eq('product_id', id);
         }
 
-        const variantRows = updates.variants.map((v) => {
+        const variantRows = updates.variants.map((v, idx) => {
           const vStock = Number(v.stock !== undefined && v.stock !== null && v.stock !== '' ? v.stock : 50);
           const vOrigPrice = Number(v.originalPrice !== undefined && v.originalPrice !== '' ? v.originalPrice : (v.price !== undefined && v.price !== '' ? v.price : 0));
           const vDiscType = v.discountType || v.discount_type || 'none';
@@ -1407,6 +1482,8 @@ export const updateProduct = async (req, res) => {
             sku: v.sku || '',
             stock: vStock,
             in_stock: v.inStock !== false && vStock > 0,
+            sort_order: idx + 1,
+            display_order: idx + 1,
           };
           if (v.id && /^[0-9a-fA-F-]{36}$/.test(String(v.id))) {
             row.id = v.id;
@@ -1420,7 +1497,7 @@ export const updateProduct = async (req, res) => {
         let savedExisting = [];
         for (const row of existingRows) {
           const { id: rowId, ...rowFields } = row;
-          const { data: updatedRow, error: upErr } = await supabase.from('product_variants').update(rowFields).eq('id', rowId).select().maybeSingle();
+          const { data: updatedRow, error: upErr } = await safeUpdateVariant(rowId, rowFields);
           if (!upErr && updatedRow) {
             savedExisting.push(updatedRow);
           } else {
@@ -1452,19 +1529,24 @@ export const updateProduct = async (req, res) => {
       if (v.name) finalVariantStocksMap[v.name] = stk;
     });
 
-    if (Object.keys(finalVariantStocksMap).length > 0) {
+    const activeVariantOrder = Array.isArray(updates.variants)
+      ? updates.variants.map((v) => v.id || v.name || v.weight)
+      : (product.nutrition_facts?.variant_order || []);
+
+    if (Object.keys(finalVariantStocksMap).length > 0 || activeVariantOrder.length > 0) {
       await supabase
         .from('products')
         .update({
           nutrition_facts: {
             ...(typeof product.nutrition_facts === 'object' && product.nutrition_facts !== null ? product.nutrition_facts : {}),
             variant_stocks: finalVariantStocksMap,
+            variant_order: activeVariantOrder,
           },
         })
         .eq('id', id);
     }
 
-    const formattedVariants = updatedVariants.map((v, idx) => {
+    const rawFormattedVariants = updatedVariants.map((v, idx) => {
       const origV = updates.variants && updates.variants[idx];
       const vStock = finalVariantStocksMap[v.id] !== undefined
         ? finalVariantStocksMap[v.id]
@@ -1481,8 +1563,12 @@ export const updateProduct = async (req, res) => {
         sku: v.sku || '',
         stock: vStock,
         inStock: vStock > 0,
+        sort_order: v.sort_order ?? (idx + 1),
+        display_order: v.display_order ?? (idx + 1),
       };
     });
+
+    const formattedVariants = sortVariantsHelper(rawFormattedVariants, activeVariantOrder);
 
     const totalStock = formattedVariants.length > 0
       ? formattedVariants.reduce((acc, v) => acc + (v.stock || 0), 0)

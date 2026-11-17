@@ -15,6 +15,9 @@ import {
   addRecipientHandler,
   updateRecipientHandler,
   deleteRecipientHandler,
+  getTemplatesHandler,
+  updateTemplateHandler,
+  resetTemplateHandler,
 } from '../controllers/adminWhatsAppController.js';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
@@ -39,6 +42,11 @@ router.post('/retry/:id', retryNotificationHandler);
 // Notification Matrix Settings
 router.get('/settings', getSettingsHandler);
 router.put('/settings', updateSettingsHandler);
+
+// WhatsApp Message Templates Management
+router.get('/templates', getTemplatesHandler);
+router.put('/templates/:id', updateTemplateHandler);
+router.post('/templates/:id/reset', resetTemplateHandler);
 
 // Admin Personal Recipients Management
 router.get('/recipients', getRecipientsHandler);

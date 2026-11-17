@@ -119,6 +119,10 @@ export default function AdminProductForm() {
   const [bulkSecondaryKeywordsInput, setBulkSecondaryKeywordsInput] = useState('');
   const [originalProductSlug, setOriginalProductSlug] = useState('');
 
+  // Pack Weight Variants Drag & Drop State
+  const [draggedVariantIdx, setDraggedVariantIdx] = useState(null);
+  const [dropTargetVariantIdx, setDropTargetVariantIdx] = useState(null);
+
   // Multi-Image Gallery State
   const [galleryImages, setGalleryImages] = useState([]);
   const [uploadingGallery, setUploadingGallery] = useState(false);
@@ -794,6 +798,42 @@ export default function AdminProductForm() {
     setFormData({ ...formData, variants: updated });
   };
 
+  // Variant Drag & Drop Handlers
+  const handleVariantDragStart = (e, index) => {
+    setDraggedVariantIdx(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(index));
+  };
+
+  const handleVariantDragOver = (e, index) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dropTargetVariantIdx !== index) {
+      setDropTargetVariantIdx(index);
+    }
+  };
+
+  const handleVariantDrop = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedVariantIdx === null || draggedVariantIdx === dropIndex) {
+      setDraggedVariantIdx(null);
+      setDropTargetVariantIdx(null);
+      return;
+    }
+    const updated = [...(formData.variants || [])];
+    const [movedItem] = updated.splice(draggedVariantIdx, 1);
+    updated.splice(dropIndex, 0, movedItem);
+    setFormData((prev) => ({ ...prev, variants: updated }));
+    setDraggedVariantIdx(null);
+    setDropTargetVariantIdx(null);
+    toast.success('Variant display order updated.');
+  };
+
+  const handleVariantDragEnd = () => {
+    setDraggedVariantIdx(null);
+    setDropTargetVariantIdx(null);
+  };
+
   const computeBasePrice = (origPrice, discType, discVal) => {
     const orig = parseFloat(origPrice);
     if (isNaN(orig) || orig <= 0) return '';
@@ -877,7 +917,7 @@ export default function AdminProductForm() {
     const isBestsellerActive = formData.isBestseller === true;
     const finalPayloadBadges = [...new Set(badgesList)].filter((b) => !/best\s*seller/i.test(String(b)));
 
-    let updatedPayloadVariants = (Array.isArray(formData.variants) ? formData.variants : []).map((v) => {
+    let updatedPayloadVariants = (Array.isArray(formData.variants) ? formData.variants : []).map((v, idx) => {
       const orig = Number(v.originalPrice);
       const pr = Number(v.price);
       const finalPrice = (!isNaN(pr) && pr >= 0) ? pr : ((!isNaN(orig) && orig > 0) ? orig : 0);
@@ -899,6 +939,9 @@ export default function AdminProductForm() {
         shippingWeight: shipWeight,
         shipping_weight: shipWeight,
         sku: v.sku || '',
+        sort_order: idx + 1,
+        sortOrder: idx + 1,
+        display_order: idx + 1,
       };
     });
 
@@ -926,6 +969,7 @@ export default function AdminProductForm() {
       seo_slug: formData.seo_slug ? formData.seo_slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '',
       nutritionFacts: {
         ...nutritionMap,
+        variant_order: updatedPayloadVariants.map((v) => v.id || v.name || v.weight),
         pieces: formData.pieces ? String(formData.pieces).trim() : '',
         net_weight: formData.netWeight ? String(formData.netWeight).trim() : '',
         // shipping weight is sent as shippingWeight only — never inside nutritionFacts (shown to customers)
@@ -2013,6 +2057,9 @@ export default function AdminProductForm() {
                 <div>
                   <h4 style={{ fontSize: '0.92rem', color: '#21150F', fontWeight: '800', margin: 0 }}>Pack Weight Variants</h4>
                   <p style={{ fontSize: '0.74rem', color: '#665A52', margin: '0.15rem 0 0 0' }}>Configure individual variant pricing, discounts, stock, and shipping weight.</p>
+                  <span style={{ fontSize: '0.7rem', color: '#8C5E38', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.25rem' }}>
+                    <GripVertical size={12} /> Drag variant cards using the grip handle to rearrange shop display order
+                  </span>
                 </div>
                 <button type="button" onClick={addVariant} className="admin-btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.78rem' }}>
                   <Plus size={14} /> Add Variant Option
@@ -2026,34 +2073,80 @@ export default function AdminProductForm() {
               )}
               {formData.variants && formData.variants.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {formData.variants.map((v, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        padding: '1rem',
-                        borderRadius: '12px',
-                        backgroundColor: 'var(--admin-surface-card)',
-                        border: '1px solid rgba(231, 222, 213, 0.75)',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.75rem'
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(231, 222, 213, 0.8)', paddingBottom: '0.4rem' }}>
-                        <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#8C5E38' }}>
-                          Variant #{index + 1}: {v.name || 'Unnamed Variant'} {v.price ? `— ₹${v.price}` : ''}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => removeVariant(index)}
-                          className="admin-icon-btn"
-                          style={{ color: '#C62828', height: '30px', width: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          title="Remove Variant"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
+                  {formData.variants.map((v, index) => {
+                    const isDragging = draggedVariantIdx === index;
+                    const isDropTarget = dropTargetVariantIdx === index && !isDragging;
+                    return (
+                      <div
+                        key={v.id || index}
+                        draggable
+                        onDragStart={(e) => handleVariantDragStart(e, index)}
+                        onDragOver={(e) => handleVariantDragOver(e, index)}
+                        onDrop={(e) => handleVariantDrop(e, index)}
+                        onDragEnd={handleVariantDragEnd}
+                        style={{
+                          padding: '1rem',
+                          borderRadius: '12px',
+                          backgroundColor: isDropTarget
+                            ? 'rgba(47, 107, 58, 0.08)'
+                            : isDragging
+                            ? 'rgba(198, 138, 58, 0.08)'
+                            : 'var(--admin-surface-card)',
+                          border: isDropTarget
+                            ? '2px solid #2F6B3A'
+                            : isDragging
+                            ? '1.5px dashed #C68A3A'
+                            : '1px solid rgba(231, 222, 213, 0.75)',
+                          boxShadow: isDropTarget ? '0 0 12px rgba(47, 107, 58, 0.2)' : '0 2px 6px rgba(0,0,0,0.02)',
+                          opacity: isDragging ? 0.5 : 1,
+                          transform: isDragging ? 'scale(0.98)' : isDropTarget ? 'scale(1.01)' : 'none',
+                          transition: 'transform 0.15s ease, background-color 0.15s ease, border 0.15s ease',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.75rem',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(231, 222, 213, 0.8)', paddingBottom: '0.4rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                            <div
+                              style={{
+                                cursor: isDragging ? 'grabbing' : 'grab',
+                                display: 'flex',
+                                alignItems: 'center',
+                                color: '#8C5E38',
+                                padding: '2px',
+                              }}
+                              title="Click and drag to reorder variant"
+                            >
+                              <GripVertical size={16} />
+                            </div>
+                            <span
+                              style={{
+                                fontSize: '0.72rem',
+                                fontWeight: '800',
+                                backgroundColor: isDropTarget ? '#2F6B3A' : '#8C5E38',
+                                color: '#FFFFFF',
+                                padding: '2px 7px',
+                                borderRadius: '999px',
+                                letterSpacing: '0.04em',
+                              }}
+                            >
+                              #{index + 1}
+                            </span>
+                            <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#21150F' }}>
+                              {v.name || `Variant ${index + 1}`} {v.weight ? `(${v.weight})` : ''} {v.price ? `— ₹${v.price}` : ''}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeVariant(index)}
+                            className="admin-icon-btn"
+                            style={{ color: '#C62828', height: '30px', width: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            title="Remove Variant"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
 
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem', alignItems: 'end' }}>
                         {/* 1. Variant Name */}
@@ -2187,7 +2280,8 @@ export default function AdminProductForm() {
                         </div>
                       </div>
                     </div>
-                  ))}
+                  );
+                })}
                 </div>
               ) : (
                 <div style={{ fontSize: '0.78rem', color: '#665A52', fontStyle: 'italic', textAlign: 'center', padding: '1rem' }}>

@@ -36,9 +36,9 @@ export const customerCancellationRequested = ({ customerName = 'Valued Customer'
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
 
   const lines = [
-    `🌿 Namaste ${customerName},`,
+    `Hello ${customerName},`,
     '',
-    `Your cancellation request for order *#${displayId}* has been received.`,
+    `Your cancellation request for order #${displayId} has been received.`,
     '',
     'Our team will review it and share an update shortly.',
   ];
@@ -63,14 +63,16 @@ export const customerRefundCompleted = ({
 }) => {
   const displayId = orderNumber || orderId;
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
+  const cleanRefundAmount = typeof refundAmount === 'number'
+    ? refundAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })
+    : String(refundAmount).replace(/^₹\s*/, '');
 
   const lines = [
-    '💛 Your refund is complete!',
-    '',
     `Hello ${customerName},`,
-    `A refund of ${formatINR(refundAmount)} for order *#${displayId}* has been successfully processed.`,
     '',
-    'Depending on your payment method or bank, it will reflect in your account within 5-7 business days.',
+    `A refund of ₹${cleanRefundAmount} for order #${displayId} has been successfully processed.`,
+    '',
+    'Depending on your payment method or bank, it will reflect in your account within 5–7 business days.',
     '',
     'Thank you for your patience and understanding.',
   ];

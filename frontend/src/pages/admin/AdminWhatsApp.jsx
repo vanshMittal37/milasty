@@ -3,7 +3,8 @@ import {
   MessageSquare, RefreshCw, QrCode, Smartphone, Send, ShieldCheck,
   AlertTriangle, CheckCircle2, Clock, XCircle, LogOut, ArrowRight,
   HelpCircle, Search, Filter, PhoneCall, ExternalLink, Zap, Trash2,
-  Users, Sliders, RotateCw, Eye, Plus, Check, X, Shield, Bell
+  Users, Sliders, RotateCw, Eye, Plus, Check, X, Shield, Bell,
+  FileText, Edit3, RotateCcw, Copy
 } from 'lucide-react';
 import api from '../../api/axios';
 import { useToast } from '../../context/ToastContext';
@@ -75,6 +76,17 @@ export default function AdminWhatsApp() {
   });
   const [savingRecipient, setSavingRecipient] = useState(false);
   const [deletingRecipientId, setDeletingRecipientId] = useState(null);
+
+  // Message Templates State
+  const [templatesList, setTemplatesList] = useState([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [templateCategoryFilter, setTemplateCategoryFilter] = useState('all');
+  const [templateSearchTerm, setTemplateSearchTerm] = useState('');
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [templateContentInput, setTemplateContentInput] = useState('');
+  const [savingTemplate, setSavingTemplate] = useState(false);
+  const [resettingTemplateId, setResettingTemplateId] = useState(null);
+  const [previewModeMap, setPreviewModeMap] = useState({});
 
   // 1. Fetch Status & Stats
   const fetchStatusAndStats = async (isManual = false) => {
@@ -168,12 +180,106 @@ export default function AdminWhatsApp() {
     }
   };
 
+  // 6. Fetch Message Templates
+  const fetchTemplates = async () => {
+    setLoadingTemplates(true);
+    try {
+      const res = await api.get('/admin/whatsapp/templates');
+      if (res.data?.success && Array.isArray(res.data.templates)) {
+        setTemplatesList(res.data.templates);
+      }
+    } catch (err) {
+      console.error('[ADMIN WHATSAPP] Templates fetch error:', err);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
+
+  const handleToggleTemplateActive = async (template) => {
+    try {
+      const updatedActive = !template.isActive;
+      const res = await api.put(`/admin/whatsapp/templates/${template.id}`, {
+        isActive: updatedActive,
+      });
+      if (res.data?.success) {
+        toast.success(`Template ${template.id} ${updatedActive ? 'activated' : 'paused'}.`);
+        setTemplatesList((prev) =>
+          prev.map((t) => (t.id === template.id ? { ...t, isActive: updatedActive } : t))
+        );
+      }
+    } catch (err) {
+      toast.error('Failed to update template status');
+    }
+  };
+
+  const handleOpenEditTemplate = (tmpl) => {
+    setEditingTemplate(tmpl);
+    setTemplateContentInput(tmpl.content);
+  };
+
+  const handleSaveTemplateContent = async () => {
+    if (!editingTemplate) return;
+    setSavingTemplate(true);
+    try {
+      const res = await api.put(`/admin/whatsapp/templates/${editingTemplate.id}`, {
+        content: templateContentInput,
+      });
+      if (res.data?.success) {
+        toast.success(`Template ${editingTemplate.id} updated successfully.`);
+        setTemplatesList((prev) =>
+          prev.map((t) => (t.id === editingTemplate.id ? res.data.template : t))
+        );
+        setEditingTemplate(null);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to save template');
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
+
+  const handleResetTemplate = async (templateId) => {
+    setResettingTemplateId(templateId);
+    try {
+      const res = await api.post(`/admin/whatsapp/templates/${templateId}/reset`);
+      if (res.data?.success) {
+        toast.success(`Template ${templateId} reset to official client default.`);
+        setTemplatesList((prev) =>
+          prev.map((t) => (t.id === templateId ? res.data.template : t))
+        );
+        if (editingTemplate?.id === templateId) {
+          setEditingTemplate(res.data.template);
+          setTemplateContentInput(res.data.template.content);
+        }
+      }
+    } catch (err) {
+      toast.error('Failed to reset template');
+    } finally {
+      setResettingTemplateId(null);
+    }
+  };
+
+  const togglePreviewMode = (templateId) => {
+    setPreviewModeMap((prev) => ({
+      ...prev,
+      [templateId]: !prev[templateId],
+    }));
+  };
+
+  const renderSamplePreview = (text, sampleData = {}) => {
+    if (!text) return '';
+    return text.replace(/\{\{([a-zA-Z0-9_]+)\}\}/g, (match, varName) => {
+      return sampleData[varName] !== undefined ? sampleData[varName] : match;
+    });
+  };
+
   // Polling & Lifecycle
   useEffect(() => {
     fetchStatusAndStats();
     fetchHistory();
     fetchSettings();
     fetchRecipients();
+    fetchTemplates();
 
     const interval = setInterval(() => {
       fetchStatusAndStats();
@@ -377,6 +483,19 @@ export default function AdminWhatsApp() {
       toast.error('Failed to remove admin recipient.');
     }
   };
+
+  const filteredTemplates = templatesList.filter((t) => {
+    const matchesCategory =
+      templateCategoryFilter === 'all' || t.category === templateCategoryFilter;
+    const cleanSearch = templateSearchTerm.trim().toLowerCase();
+    const matchesSearch =
+      !cleanSearch ||
+      t.id.toLowerCase().includes(cleanSearch) ||
+      t.name.toLowerCase().includes(cleanSearch) ||
+      t.content.toLowerCase().includes(cleanSearch) ||
+      (t.variables || []).some((v) => v.toLowerCase().includes(cleanSearch));
+    return matchesCategory && matchesSearch;
+  });
 
   const isConnected = statusData?.isConnected;
   const statusType = statusData?.status || 'disconnected';
@@ -640,6 +759,7 @@ export default function AdminWhatsApp() {
         {[
           { id: 'overview', label: 'Overview & Device', icon: Smartphone },
           { id: 'history', label: 'Delivery Audit Log', icon: MessageSquare, badge: historyTotal },
+          { id: 'templates', label: 'Message Templates', icon: FileText, badge: templatesList.length || 12 },
           { id: 'settings', label: 'Notification Matrix', icon: Sliders },
           { id: 'recipients', label: 'Admin Recipients', icon: Users, badge: recipients.length },
         ].map((tab) => {
@@ -1403,6 +1523,330 @@ export default function AdminWhatsApp() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════════════
+          TAB: MESSAGE TEMPLATES MANAGEMENT
+      ══════════════════════════════════════════════════════════════════════════════ */}
+      {activeTab === 'templates' && (
+        <div style={panelCardStyle}>
+          {/* Header */}
+          <div style={panelHeaderStyle}>
+            <div>
+              <h2 style={panelTitleStyle}>Official WhatsApp Message Templates</h2>
+              <div style={{ fontSize: '0.8rem', color: '#5A4438', marginTop: '0.2rem' }}>
+                View, customize, and preview all 12 client-approved WhatsApp notification templates.
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={fetchTemplates}
+              disabled={loadingTemplates}
+              style={{
+                backgroundColor: '#FAF7F2',
+                color: '#2B1710',
+                border: '1.5px solid #D8CCB8',
+                borderRadius: '10px',
+                padding: '0.55rem 1rem',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+              }}
+            >
+              <RefreshCw size={14} style={{ animation: loadingTemplates ? 'spin 1s linear infinite' : 'none' }} />
+              <span>Refresh Templates</span>
+            </button>
+          </div>
+
+          {/* Filters & Search Bar */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '1rem',
+              marginBottom: '1.5rem',
+            }}
+          >
+            {/* Category Pills */}
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+              {[
+                { id: 'all', label: 'All Templates', count: templatesList.length },
+                { id: 'account', label: 'Account & Auth', count: templatesList.filter((t) => t.category === 'account').length },
+                { id: 'payment', label: 'Payments', count: templatesList.filter((t) => t.category === 'payment').length },
+                { id: 'order', label: 'Orders', count: templatesList.filter((t) => t.category === 'order').length },
+                { id: 'returns', label: 'Cancellations & Refunds', count: templatesList.filter((t) => t.category === 'returns').length },
+                { id: 'enquiry', label: 'Support & Inquiries', count: templatesList.filter((t) => t.category === 'enquiry').length },
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setTemplateCategoryFilter(cat.id)}
+                  style={{
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: '999px',
+                    fontSize: '0.78rem',
+                    fontWeight: '700',
+                    border: templateCategoryFilter === cat.id ? '1.5px solid #1F5A28' : '1px solid #D8CCB8',
+                    backgroundColor: templateCategoryFilter === cat.id ? '#1F5A28' : '#FAF7F2',
+                    color: templateCategoryFilter === cat.id ? '#FFFFFF' : '#5A4438',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                  }}
+                >
+                  <span>{cat.label}</span>
+                  <span
+                    style={{
+                      fontSize: '0.7rem',
+                      padding: '1px 5px',
+                      borderRadius: '999px',
+                      backgroundColor: templateCategoryFilter === cat.id ? 'rgba(255,255,255,0.25)' : '#E8DCCB',
+                      color: templateCategoryFilter === cat.id ? '#FFFFFF' : '#2B1710',
+                    }}
+                  >
+                    {cat.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Search Input */}
+            <div style={{ position: 'relative', minWidth: '220px' }}>
+              <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#8C7E72' }} />
+              <input
+                type="text"
+                placeholder="Search templates or variables..."
+                value={templateSearchTerm}
+                onChange={(e) => setTemplateSearchTerm(e.target.value)}
+                style={{
+                  ...inputStyle,
+                  paddingLeft: '30px',
+                  paddingTop: '0.45rem',
+                  paddingBottom: '0.45rem',
+                  fontSize: '0.82rem',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Templates Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.25rem' }}>
+            {filteredTemplates.map((t) => {
+              const isPreview = previewModeMap[t.id] ?? false;
+              const displayText = isPreview ? renderSamplePreview(t.content, t.sampleData) : t.content;
+
+              return (
+                <div
+                  key={t.id}
+                  style={{
+                    backgroundColor: '#FAF7F2',
+                    border: '1.5px solid #E8DCCB',
+                    borderRadius: '14px',
+                    padding: '1.15rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                  }}
+                >
+                  <div>
+                    {/* Card Header: ID, Category & Active Toggle */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                        <span
+                          style={{
+                            fontFamily: 'monospace',
+                            fontSize: '0.78rem',
+                            fontWeight: '800',
+                            backgroundColor: '#2B1710',
+                            color: '#FAF7F2',
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            letterSpacing: '0.04em',
+                          }}
+                        >
+                          {t.id}
+                        </span>
+                        {t.isCustom && (
+                          <span
+                            style={{
+                              fontSize: '0.68rem',
+                              fontWeight: '800',
+                              backgroundColor: '#FEF3C7',
+                              color: '#92400E',
+                              padding: '2px 7px',
+                              borderRadius: '999px',
+                              border: '1px solid #F59E0B',
+                            }}
+                          >
+                            Customized
+                          </span>
+                        )}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleToggleTemplateActive(t)}
+                        style={{
+                          fontSize: '0.72rem',
+                          fontWeight: '800',
+                          padding: '3px 9px',
+                          borderRadius: '999px',
+                          border: 'none',
+                          cursor: 'pointer',
+                          backgroundColor: t.isActive ? '#CDE5CB' : '#F3EDE2',
+                          color: t.isActive ? '#1F5A28' : '#8C7E72',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: t.isActive ? '#1F5A28' : '#8C7E72' }} />
+                        {t.isActive ? 'Active' : 'Paused'}
+                      </button>
+                    </div>
+
+                    {/* Template Name & Trigger Description */}
+                    <h3 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#2B1710', margin: '0 0 0.25rem 0' }}>
+                      {t.name}
+                    </h3>
+                    <p style={{ fontSize: '0.75rem', color: '#665A52', margin: '0 0 0.75rem 0', lineHeight: '1.4' }}>
+                      {t.triggerDescription || `Triggered by event ${t.event}`}
+                    </p>
+
+                    {/* Dynamic Variables */}
+                    <div style={{ marginBottom: '0.75rem' }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#8C7E72', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.3rem' }}>
+                        Supported Variables:
+                      </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem' }}>
+                        {(t.variables || []).map((v) => (
+                          <span
+                            key={v}
+                            style={{
+                              fontFamily: 'monospace',
+                              fontSize: '0.7rem',
+                              fontWeight: '700',
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #D8CCB8',
+                              color: '#1F5A28',
+                              padding: '1px 6px',
+                              borderRadius: '4px',
+                            }}
+                          >
+                            {`{{${v}}}`}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* View Switcher: Raw vs Preview */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#8C7E72', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        {isPreview ? 'Live Sample Preview' : 'Template Message Body'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => togglePreviewMode(t.id)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          fontSize: '0.72rem',
+                          color: '#1F5A28',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                          padding: 0,
+                        }}
+                      >
+                        <Eye size={12} />
+                        {isPreview ? 'View Raw' : 'Preview Live'}
+                      </button>
+                    </div>
+
+                    {/* Message Body Content Box */}
+                    <div
+                      style={{
+                        backgroundColor: '#FFFFFF',
+                        border: '1px solid #E8DCCB',
+                        borderRadius: '10px',
+                        padding: '0.85rem',
+                        fontSize: '0.8rem',
+                        color: '#2B1710',
+                        lineHeight: '1.45',
+                        whiteSpace: 'pre-wrap',
+                        fontFamily: isPreview ? 'Inter, sans-serif' : 'monospace',
+                        maxHeight: '220px',
+                        overflowY: 'auto',
+                      }}
+                    >
+                      {displayText}
+                    </div>
+                  </div>
+
+                  {/* Card Actions: Edit & Reset */}
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', borderTop: '1px dashed #E8DCCB', paddingTop: '0.85rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditTemplate(t)}
+                      style={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem',
+                        backgroundColor: '#1F5A28',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '0.55rem',
+                        fontSize: '0.8rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Edit3 size={13} /> Edit Content
+                    </button>
+
+                    {t.isCustom && (
+                      <button
+                        type="button"
+                        onClick={() => handleResetTemplate(t.id)}
+                        disabled={resettingTemplateId === t.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.35rem',
+                          backgroundColor: '#FAF7F2',
+                          color: '#C62828',
+                          border: '1px solid #FCA5A5',
+                          borderRadius: '8px',
+                          padding: '0.55rem 0.85rem',
+                          fontSize: '0.78rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                        }}
+                        title="Reset this template back to official default content"
+                      >
+                        <RotateCcw size={13} /> Reset
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════════════
           TAB 3: NOTIFICATION MATRIX SETTINGS
       ══════════════════════════════════════════════════════════════════════════════ */}
       {activeTab === 'settings' && (
@@ -1989,6 +2433,191 @@ export default function AdminWhatsApp() {
         confirmText="Clear & Generate QR"
         confirmColor="#DC2626"
       />
+
+      {/* Edit Template Modal */}
+      {editingTemplate && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '18px',
+              maxWidth: '680px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.2)',
+              border: '1.5px solid #E8DCCB',
+              padding: '1.75rem',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#2B1710', margin: 0 }}>
+                    Edit Template: {editingTemplate.name}
+                  </h3>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', backgroundColor: '#2B1710', color: '#FAF7F2', padding: '2px 7px', borderRadius: '4px' }}>
+                    {editingTemplate.id}
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#665A52', marginTop: '0.2rem' }}>
+                  {editingTemplate.triggerDescription}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingTemplate(null)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8C7E72' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Variable Pills to click to insert */}
+            <div style={{ marginBottom: '1rem', backgroundColor: '#FAF7F2', padding: '0.75rem', borderRadius: '10px', border: '1px solid #E8DCCB' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#5A4438', display: 'block', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                Click to Insert Variable:
+              </span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                {(editingTemplate.variables || []).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => {
+                      setTemplateContentInput((prev) => `${prev} {{${v}}}`);
+                    }}
+                    style={{
+                      fontFamily: 'monospace',
+                      fontSize: '0.72rem',
+                      fontWeight: '700',
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #1F5A28',
+                      color: '#1F5A28',
+                      padding: '3px 8px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    + {`{{${v}}}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Content Textarea */}
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={labelStyle}>MESSAGE CONTENT</label>
+              <textarea
+                rows={10}
+                value={templateContentInput}
+                onChange={(e) => setTemplateContentInput(e.target.value)}
+                style={{
+                  ...inputStyle,
+                  fontFamily: 'monospace',
+                  fontSize: '0.85rem',
+                  lineHeight: '1.45',
+                  resize: 'vertical',
+                }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#8C7E72', marginTop: '0.25rem' }}>
+                <span>{templateContentInput.length} characters</span>
+                <span>{templateContentInput.split('\n').length} lines</span>
+              </div>
+            </div>
+
+            {/* Live Substituted Preview */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={labelStyle}>LIVE SUBSTITUTED PREVIEW</label>
+              <div
+                style={{
+                  backgroundColor: '#E7F4E8',
+                  border: '1px solid #CDE5CB',
+                  borderRadius: '10px',
+                  padding: '1rem',
+                  fontSize: '0.82rem',
+                  color: '#2B1710',
+                  lineHeight: '1.45',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {renderSamplePreview(templateContentInput, editingTemplate.sampleData)}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => handleResetTemplate(editingTemplate.id)}
+                disabled={resettingTemplateId === editingTemplate.id}
+                style={{
+                  backgroundColor: '#FAF7F2',
+                  color: '#C62828',
+                  border: '1px solid #FCA5A5',
+                  borderRadius: '10px',
+                  padding: '0.65rem 1rem',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                }}
+              >
+                <RotateCcw size={14} /> Reset to Official Default
+              </button>
+
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingTemplate(null)}
+                  style={{
+                    backgroundColor: '#FAF7F2',
+                    color: '#5A4438',
+                    border: '1px solid #D8CCB8',
+                    borderRadius: '10px',
+                    padding: '0.65rem 1.25rem',
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveTemplateContent}
+                  disabled={savingTemplate}
+                  style={{
+                    backgroundColor: '#1F5A28',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '0.65rem 1.5rem',
+                    fontSize: '0.85rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(31, 90, 40, 0.2)',
+                  }}
+                >
+                  {savingTemplate ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

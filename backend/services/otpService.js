@@ -183,13 +183,13 @@ export async function generateAndSendWhatsAppOtp({ phone: rawPhone, purpose, ip 
     });
   }
 
-  // 5. Build and Send WhatsApp OTP Message
+  // 5. Build and Send WhatsApp OTP Message (AUTH_OTP / PASS_RESET_OTP)
   let messageText = '';
   if (purpose === 'signup') {
     messageText = [
-      '*MILASTY*',
+      'MILASTY',
       '',
-      `Your account verification code is: *${rawOtp}*`,
+      `Your account verification code is: ${rawOtp}`,
       '',
       'Valid for 10 minutes. For your security, do not share this code with anyone.',
       '',
@@ -197,9 +197,9 @@ export async function generateAndSendWhatsAppOtp({ phone: rawPhone, purpose, ip 
     ].join('\n');
   } else {
     messageText = [
-      '*MILASTY*',
+      'MILASTY',
       '',
-      `Your password reset code is: *${rawOtp}*`,
+      `Your password reset code is: ${rawOtp}`,
       '',
       'Valid for 10 minutes. If you did not request this, please ignore this message.',
       '',

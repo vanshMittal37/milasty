@@ -7,6 +7,26 @@ const getFrontendBaseUrl = () => {
 /**
  * ─── CUSTOMER ACCOUNT NOTIFICATIONS ─────────────────────────────────────────
  */
+
+/**
+ * AUTH_OTP – Signup Verification Code
+ */
+export const authOtpTemplate = ({ otp = '', OTP = '' }) => {
+  const code = otp || OTP || '';
+  return [
+    'MILASTY',
+    '',
+    `Your account verification code is: ${code}`,
+    '',
+    'Valid for 10 minutes. For your security, do not share this code with anyone.',
+    '',
+    'Thank you for joining MILASTY!',
+  ].join('\n');
+};
+
+/**
+ * AUTH_WELCOME – New User Welcome
+ */
 export const customerWelcome = ({ customerName = 'Friend' }) => {
   return [
     `🌿 Welcome to MILASTY, ${customerName}!`,
@@ -17,41 +37,48 @@ export const customerWelcome = ({ customerName = 'Friend' }) => {
     '',
     'Enjoy a nourishing, guilt-free snacking experience!',
     '',
-    `👉 Explore MILASTY: ${getFrontendBaseUrl()}/shop`,
+    '👉 Explore MILASTY: https://milasty.com/shop',
     '',
     'With love,',
     'Team MILASTY 🌿',
   ].join('\n');
 };
 
-export const customerPasswordChanged = ({ customerName = 'Valued Customer' }) => {
+/**
+ * PASS_RESET_OTP – Password Reset Code
+ */
+export const passResetOtpTemplate = ({ otp = '', OTP = '' }) => {
+  const code = otp || OTP || '';
   return [
-    '🔐 MILASTY Security Alert',
+    'MILASTY',
     '',
-    `Hello ${customerName},`,
-    'Your account password was just changed successfully.',
+    `Your password reset code is: ${code}`,
     '',
-    'If you did not perform this action, please contact our support team immediately or reset your password on our website.',
+    'Valid for 10 minutes. If you did not request this, please ignore this message.',
     '',
-    `👉 MILASTY Security: ${getFrontendBaseUrl()}/login`,
-    '',
-    'Team MILASTY 🌿',
+    '© MILASTY All rights reserved.',
   ].join('\n');
 };
 
+/**
+ * PASS_RESET_SUCCESS – Password Reset Confirmation
+ */
 export const customerPasswordResetCompleted = ({ customerName = 'Valued Customer' }) => {
   return [
     '🔐 MILASTY Security Alert',
     '',
     `Hello ${customerName},`,
-    'Your password reset has been completed successfully.',
     '',
-    'You can now log in to your account with your new credentials.',
+    'Your password reset has been completed successfully. You can now log in to your account with your new credentials.',
     '',
-    `👉 Login: ${getFrontendBaseUrl()}/login`,
+    '👉 Login: https://milasty.com/login',
     '',
     'Team MILASTY 🌿',
   ].join('\n');
+};
+
+export const customerPasswordChanged = ({ customerName = 'Valued Customer' }) => {
+  return customerPasswordResetCompleted({ customerName });
 };
 
 /**

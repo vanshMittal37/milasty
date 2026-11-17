@@ -13,7 +13,7 @@ export const customerEnquiryAck = ({
   enquirySubject = 'Customer Enquiry',
 }) => {
   return [
-    `🌿 Namaste ${customerName}!`,
+    `Hello ${customerName}!`,
     '',
     'Thank you for reaching out to MILASTY. 💛',
     '',

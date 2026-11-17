@@ -13,27 +13,22 @@ export const customerPaymentSuccess = ({
   orderNumber = '',
   amount = 0,
 }) => {
-  const displayId = orderNumber || orderId;
+  const displayId = orderNumber || orderId || 'MILASTY';
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
 
-  const lines = [
+  return [
     '💳 Payment Successful!',
     '',
     `Hello ${customerName},`,
-    `Your payment of ${formatINR(amount)} for MILASTY order *#${displayId}* has been received successfully.`,
+    '',
+    `Your payment of ₹${amount} for MILASTY order #${displayId} has been received successfully.`,
     '',
     'Our bakers are crafting your order with fresh, organic ingredients.',
-  ];
-
-  if (orderUrl) {
-    lines.push('');
-    lines.push(`👉 View Order: ${orderUrl}`);
-  }
-
-  lines.push('');
-  lines.push('Thank you for choosing MILASTY! 🌿');
-
-  return lines.join('\n');
+    '',
+    `👉 View Order: ${orderUrl}`,
+    '',
+    'Thank you for choosing MILASTY! 🌿',
+  ].join('\n');
 };
 
 export const customerPaymentFailed = ({
@@ -42,28 +37,24 @@ export const customerPaymentFailed = ({
   orderNumber = '',
   amount = 0,
 }) => {
-  const displayId = orderNumber || orderId;
+  const displayId = orderNumber || orderId || 'MILASTY';
   const orderUrl = getCustomerOrderUrl(orderId, orderNumber);
 
-  const lines = [
+  return [
     '⚠️ Payment Update',
     '',
     `Hello ${customerName},`,
-    `We couldn't confirm your payment${amount ? ` of ${formatINR(amount)}` : ''} for order *#${displayId}*.`,
+    '',
+    `We couldn't confirm your payment of ₹${amount} for order #${displayId}.`,
     '',
     'If your amount was deducted, please allow your bank or payment provider a few moments to update the status before trying again.',
-  ];
-
-  if (orderUrl) {
-    lines.push('');
-    lines.push(`👉 Retry or View Order: ${orderUrl}`);
-  }
-
-  lines.push('');
-  lines.push('Need help? Reply to this message for assistance.');
-  lines.push('Team MILASTY 🌿');
-
-  return lines.join('\n');
+    '',
+    `👉 Retry or View Order: ${orderUrl}`,
+    '',
+    'Need help? Reply to this message for assistance.',
+    '',
+    'Team MILASTY 🌿',
+  ].join('\n');
 };
 
 /**
